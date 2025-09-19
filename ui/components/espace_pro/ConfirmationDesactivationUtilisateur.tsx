@@ -1,14 +1,16 @@
 "use client"
 
-import { FormControl, FormLabel, Heading, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box } from "@mui/material"
+import Input from "@codegouvfr/react-dsfr/Input"
+import Select from "@codegouvfr/react-dsfr/Select"
+import { Box, Typography } from "@mui/material"
 import { useState } from "react"
 import { IUserRecruteurJson } from "shared"
 
-import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
+import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 import { AUTHTYPE } from "../../common/contants"
 
@@ -58,46 +60,40 @@ const ConfirmationDesactivationUtilisateur = ({
   }
 
   return (
-    <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0} data-testid="confirmation-desactivation-utilisateur-modal">
-        <ModalCloseButton onClose={onClose} />
-        <ModalHeader>
-          <Heading as="h2" mb={0} fontSize="1.5rem">
-            Désactivation du compte
-          </Heading>
-        </ModalHeader>
-        <ModalBody pb={6}>
-          <Text as="span">Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?</Text>
-          <FormControl isRequired mt={5}>
-            <FormLabel>Motif de refus</FormLabel>
-            <Select onChange={(e) => handleReason(e.target.value)}>
-              <option value="" hidden>
-                Sélectionnez un motif
-              </option>
-              <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
-              <option value="Tentative de fraude">Tentative de fraude</option>
-              <option value="Injoignable">Injoignable</option>
-              <option value="Compte en doublon">Compte en doublon</option>
-              {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue</option>}
-              <option value="Autre">Autre</option>
-            </Select>
-          </FormControl>
-        </ModalBody>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+          Désactivation du compte
+        </Typography>
+
+        <Box sx={{ pb: fr.spacing("1w") }}>
+          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+            Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?
+          </Typography>
+
+          <Select label="Motif de refus" nativeSelectProps={{ name: "motif", required: true, onChange: (e) => handleReason(e.target.value) }}>
+            <option value="" hidden>
+              Sélectionnez un motif
+            </option>
+            <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
+            <option value="Tentative de fraude">Tentative de fraude</option>
+            <option value="Injoignable">Injoignable</option>
+            <option value="Compte en doublon">Compte en doublon</option>
+            {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue</option>}
+            <option value="Autre">Autre</option>
+          </Select>
+        </Box>
 
         {reasonComment.isOpen && (
-          // @ts-expect-error: TODO
-          <ModalBody isRequired>
-            <FormLabel>Autre</FormLabel>
-            <FormControl isRequired>
-              {/* @ts-expect-error: TODO */}
-              <Input onChange={(e) => setReason(e.target.value)} isRequired minLength="3" />
-            </FormControl>
-          </ModalBody>
+          <Box sx={{ pb: fr.spacing("1w") }}>
+            <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+              <Input label="Autre" nativeInputProps={{ type: "text", name: "autre", minLength: 3, onChange: (e) => setReason(e.target.value) }} />
+            </Typography>
+          </Box>
         )}
 
-        <ModalFooter>
-          <Box sx={{ marginRight: "10px" }}>
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
+          <Box mr={fr.spacing("3v")}>
             <Button
               priority="secondary"
               onClick={() => {
@@ -111,9 +107,9 @@ const ConfirmationDesactivationUtilisateur = ({
           <Button onClick={() => handleUpdate()} disabled={!reason}>
             Supprimer
           </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </Box>
+      </Box>
+    </ModalReadOnly>
   )
 }
 

@@ -1,5 +1,3 @@
-// import { Box, Container, ContainerProps } from "@chakra-ui/react"
-
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 import { PropsWithChildren, ReactNode } from "react"

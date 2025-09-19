@@ -1,4 +1,5 @@
-import { Box, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
 
 import { MapPin2Fill } from "../../../../theme/components/icons"
 
@@ -17,22 +18,18 @@ export const ContactCfaSummary = (props: Props) => {
   const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 
   return (
-    <Box py={[0, 7]} mt={2}>
-      <Text fontWeight="700" color="grey.750">
-        {entrepriseRaisonSociale}
-      </Text>
-      <Text fontWeight="400" color="grey.750">
-        {intitule}
-      </Text>
+    <Box sx={{ py: { xs: 0, sm: fr.spacing("7v"), mt: fr.spacing("1w") } }}>
+      <Typography sx={{ fontWeight: "700", color: "#2a2a2a" }}>{entrepriseRaisonSociale}</Typography>
+      <Typography sx={{ fontWeight: "400", color: "#2a2a2a" }}>{intitule}</Typography>
       {adresse && codePostal && (
         <Box mt={1}>
-          <MapPin2Fill color="info" mb={1} />
-          <Text as="span" ml={2}>
+          <MapPin2Fill sx={{ color: "#3a55d1", mb: fr.spacing("1v") }} />
+          <Typography component="span" ml={fr.spacing("1w")}>
             {adresse},{" "}
-            <Text as="span">
+            <Typography component="span">
               {codePostal} {ville}
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         </Box>
       )}
       <Box mt={8} borderBottom="1px solid #D0C9C4" />

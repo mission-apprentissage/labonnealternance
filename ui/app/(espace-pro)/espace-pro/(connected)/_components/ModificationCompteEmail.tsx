@@ -1,6 +1,9 @@
-import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 
+import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { apiGet } from "@/utils/api.utils"
 
 export default function ModificationCompteEmail(props) {
@@ -13,24 +16,25 @@ export default function ModificationCompteEmail(props) {
   }
 
   return (
-    <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0}>
-        <ModalHeader>
-          <Heading as="h2" fontSize="1.5rem">
-            <Text>Changement d'email détecté</Text>
-          </Heading>
-        </ModalHeader>
-        <ModalBody pb={6}>
-          <Text>Vous venez de modifier votre email. Vous allez être redirigé vers la page d'authentification.</Text>
-          <Text pt={5}>Merci de vous connecter avec votre nouvel email.</Text>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="primary" onClick={handleLogout}>
-            Confirmer
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
+      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: 2 }} component="h2">
+          Changement d'email détecté
+        </Typography>
+        <Box pb={fr.spacing("1w")}>
+          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+            Vous venez de modifier votre email. Vous allez être redirigé vers la page d'authentification.
+          </Typography>
+          <Typography pt={fr.spacing("5v")}>Merci de vous connecter avec votre nouvel email.</Typography>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
+          <Box ml={fr.spacing("3v")}>
+            <Button priority="primary" onClick={handleLogout}>
+              Confirmer
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+    </ModalReadOnly>
   )
 }

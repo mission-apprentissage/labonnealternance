@@ -27,7 +27,7 @@ export const ModalReadOnly = ({
   return (
     <Dialog open={isOpen} onClose={onClose} fullScreen={isMobile} maxWidth={size}>
       {!hideCloseButton && (
-        <Box sx={{ display: "flex", mr: { xs: 4, sm: 2, md: 0 }, alignSelf: "flex-end" }}>
+        <Box sx={{ display: "flex", alignSelf: "flex-end" }}>
           <ModalCloseButton onClose={onClose} />
         </Box>
       )}

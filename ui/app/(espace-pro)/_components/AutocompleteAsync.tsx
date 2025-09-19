@@ -1,4 +1,4 @@
-import { Box, Spinner, Text } from "@chakra-ui/react"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { useCombobox } from "downshift"
 import { useMemo, useState } from "react"
 
@@ -18,14 +18,10 @@ export default function AutocompleteAsync<T>({
   onInputFieldChange,
   renderError,
   onError,
-  renderNoResult = (
-    <Text padding="8px 16px" fontSize="12px" lineHeight="20px" color="#666666">
-      Pas de résultats pour votre recherche
-    </Text>
-  ),
+  renderNoResult = <Typography sx={{ padding: "8px 16px", fontSize: "12px", lineHeight: "20px", color: "#666666" }}>Pas de résultats pour votre recherche</Typography>,
   renderLoading = (
-    <Box padding="8px 16px">
-      <Spinner thickness="4px" speed="0.7s" emptyColor="white" color="#CFCFCF" size="lg" />
+    <Box sx={{ padding: "8px 16px" }}>
+      <CircularProgress size={30} sx={{ fontWeight: "bold", color: "#CFCFCF" }} />
     </Box>
   ),
   allowHealFromError,
@@ -51,6 +47,7 @@ export default function AutocompleteAsync<T>({
   const [inputItems, setInputJobItems] = useState([])
   const debouncedSearch = useMemo(() => {
     return debounce(handleSearch, debounceDelayInMs)
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [])
 
   const { isOpen, getMenuProps, getInputProps, getComboboxProps, getItemProps, highlightedIndex } = useCombobox<T>({
@@ -109,7 +106,7 @@ export default function AutocompleteAsync<T>({
           width: "100%",
           margin: 0,
           marginTop: "6px",
-          zIndex: 1,
+          zIndex: 2000,
           position: "absolute",
           listStyle: "none",
           background: "#fff",
@@ -121,7 +118,7 @@ export default function AutocompleteAsync<T>({
         {...getMenuProps()}
       >
         {isOpen && shouldRenderDropdown && (
-          <Box padding="8px 0px">
+          <Box sx={{ padding: "8px 0px" }}>
             {shouldRenderItems && (
               <Box>
                 {inputItems.map((item, index) => (

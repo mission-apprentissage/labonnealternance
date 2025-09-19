@@ -1,7 +1,8 @@
 "use client"
 
-import { Box, Flex, Modal, ModalContent, ModalHeader, ModalOverlay } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
@@ -11,10 +12,10 @@ import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPaginat
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableString } from "@/common/utils/dateUtils"
-import { ArrowRightLine2 } from "@/theme/components/icons"
+import { ModalReadOnly } from "@/components/ModalReadOnly"
+import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -41,27 +42,24 @@ export default function GestionDesAdministrateurs() {
   return (
     <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
-      <Modal isOpen={newUser.isOpen} onClose={newUser.onClose} size="4xl">
-        <ModalOverlay />
-        <ModalContent borderRadius="0" p={10}>
-          <ModalHeader paddingX="8w" fontWeight="700" color="grey.800" fontSize="alpha" textAlign="left">
-            <Box as="span" verticalAlign="middle">
-              Ajouter un nouvel utilisateur
-            </Box>
-          </ModalHeader>
-          <ModalCloseButton onClose={newUser.onClose} />
+      <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose} size="md">
+        <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
+          <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+            Ajouter un nouvel utilisateur
+          </Typography>
+
           <AdminUserForm
             onCreate={async () => {
               newUser.onClose()
               await refetchUsers()
             }}
           />
-        </ModalContent>
-      </Modal>
+        </Box>
+      </ModalReadOnly>
 
-      <Flex justifyContent="flex-end">
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Button onClick={newUser.onOpen}>Créer un utilisateur</Button>
-      </Flex>
+      </Box>
 
       <TableWithPagination
         data={users || []}
@@ -74,7 +72,7 @@ export default function GestionDesAdministrateurs() {
             accessor: (row) => {
               return (
                 <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
-                  <ArrowRightLine2 w="1w" />
+                  <ArrowRightLine sx={{ mr: fr.spacing("1w") }} width={5} />
                 </Button>
               )
             },

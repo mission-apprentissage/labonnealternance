@@ -1,19 +1,21 @@
-import { Box, Button, Link } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 
 import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
 
 const PageLink = ({ pageNumber, onClick, isActive = false }: { pageNumber: number; onClick: () => unknown; isActive: boolean }) => {
   return (
-    // @ts-expect-error: TODO
-    <Link onClick={() => onClick()} alt={`Page ${pageNumber}`} className={`${isActive ? "active" : ""}`}>
+    <Button priority="tertiary no outline" onClick={() => onClick()} nativeButtonProps={{ "aria-label": `Page ${pageNumber}` }} disabled={!!isActive}>
       {pageNumber}
-    </Link>
+    </Button>
   )
 }
 
 const PreviousLink = ({ previousPage, canPreviousPage }: { previousPage: () => unknown; canPreviousPage: boolean }) => {
   return (
-    <Button leftIcon={<ChevronLeft />} as={Link} variant="link" isDisabled={!canPreviousPage} onClick={previousPage}>
+    <Button priority="tertiary no outline" disabled={!canPreviousPage} onClick={previousPage}>
+      <ChevronLeft sx={{ mr: fr.spacing("1v") }} />
       Précédent
     </Button>
   )
@@ -21,8 +23,9 @@ const PreviousLink = ({ previousPage, canPreviousPage }: { previousPage: () => u
 
 const NextLink = ({ nextPage, canNextPage }: { nextPage: () => unknown; canNextPage: boolean }) => {
   return (
-    <Button rightIcon={<ChevronRight />} as={Link} variant="link" isDisabled={!canNextPage} onClick={nextPage}>
+    <Button priority="tertiary no outline" disabled={!canNextPage} onClick={nextPage}>
       Suivant
+      <ChevronRight sx={{ ml: fr.spacing("1v") }} />
     </Button>
   )
 }
@@ -49,7 +52,7 @@ function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage:
   const previousPage = () => goToPageIndex(pageIndex - 1)
 
   return (
-    <Box className={"search-pagination"} textAlign={"center"} my={3} mx={1}>
+    <Box className={"search-pagination"} sx={{ display: "flex", justifyContent: "center", my: fr.spacing("3v"), mx: fr.spacing("1v") }}>
       <PreviousLink previousPage={previousPage} canPreviousPage={canPreviousPage} />
       {
         displayedPages.reduce(

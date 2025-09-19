@@ -1,6 +1,7 @@
 "use client"
 
-import { Box, Flex, Heading, SimpleGrid, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
@@ -9,7 +10,6 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { useAuth } from "@/context/UserContext"
-import { InfoCircle } from "@/theme/components/icons"
 import { getEntrepriseInformation } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -43,20 +43,20 @@ const CreationCompte = () => {
 }
 
 const InformationSiret = () => (
-  <Box border="1px solid #000091" p={["4", "8"]}>
-    <Heading fontSize="24px" mb={3}>
+  <Box sx={{ border: "1px solid #000091", p: { xs: fr.spacing("2w"), sm: fr.spacing("4w") } }}>
+    <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "30px" }} component="h2">
       Où trouver votre SIRET ?
-    </Heading>
-    <Flex alignItems="flex-start">
-      <InfoCircle mr={2} mt={1} />
-      <Text textAlign="justify">
+    </Typography>
+    <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+      <Typography sx={{ mr: fr.spacing("1w") }} color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
+      <Typography sx={{ textAlign: "justify" }}>
         Le numéro d’identification de votre entreprise partenaire peut être trouvé sur{" "}
         <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
           l’annuaire des entreprises
         </DsfrLink>
         .
-      </Text>
-    </Flex>
+      </Typography>
+    </Box>
   </Box>
 )
 
@@ -64,12 +64,23 @@ function CreationEntreprise() {
   return (
     <DepotSimplifieStyling>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise]} />
-      <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
-        <Box>
-          <Heading>Renseignements entreprise</Heading>
-          <Text fontSize="20px" textAlign="justify" mt={2}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            lg: "repeat(2, 1fr)",
+          },
+          gap: { xs: 0, sm: 2, lg: 5 },
+        }}
+      >
+        <Box sx={{ mb: 2 }}>
+          <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "30px" }} component="h1">
+            Renseignements entreprise
+          </Typography>
+          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>
             Précisez le nom ou le SIRET de l’entreprise partenaire pour laquelle vous souhaitez diffuser des offres.
-          </Text>
+          </Typography>
           <Box mt={4}>
             <CreationCompte />
           </Box>
@@ -77,7 +88,7 @@ function CreationEntreprise() {
         <Box>
           <InformationSiret />
         </Box>
-      </SimpleGrid>
+      </Box>
     </DepotSimplifieStyling>
   )
 }
