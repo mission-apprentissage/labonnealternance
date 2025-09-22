@@ -160,7 +160,7 @@ export const importRecruteurLbaToComputed = async () => {
       for (const document of documents) {
         try {
           const parsedDocument = ZRecruteursLbaRaw.parse(document)
-          const { apply_email, apply_phone, updated_at, ...rest } = recruteursLbaToJobPartners(parsedDocument)
+          const { apply_email, apply_phone, updated_at, offer_creation, ...rest } = recruteursLbaToJobPartners(parsedDocument)
           const { workplace_address_zipcode } = rest
 
           if (workplace_address_zipcode) {
@@ -179,6 +179,7 @@ export const importRecruteurLbaToComputed = async () => {
                 $set: {
                   apply_email: isEmailBl ? null : apply_email,
                   apply_phone,
+                  offer_creation,
                   updated_at: importDate,
                 },
                 $setOnInsert: {

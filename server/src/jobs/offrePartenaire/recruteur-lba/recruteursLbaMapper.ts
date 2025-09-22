@@ -24,6 +24,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     coordonneeLambertAbscisseEtablissement,
     coordonneeLambertOrdonneeEtablissement,
     libelleCommuneEtablissement,
+    createdAt,
   } = recruteursLba
 
   return {
@@ -46,6 +47,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     apply_phone: phone,
     offer_rome_codes: rome_codes.map(({ rome_code }) => rome_code),
     // laisser recruteurs_lba pour les entreprises issue de l'algorithme de lba (passer la validation & l'import dans jobs_partners)
+    offer_creation: createdAt,
     offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   }
