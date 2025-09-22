@@ -6,7 +6,7 @@ import { Box, Typography, FormControl, FormLabel, Select, MenuItem, Input, Selec
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import { history } from "instantsearch.js/es/lib/routers"
 import React, { useState, useEffect, useMemo } from "react"
-import { InstantSearch, Highlight, useInstantSearch, useConfigure, useStats, Hits, useNumericMenu } from "react-instantsearch"
+import { InstantSearch, Highlight, useInstantSearch, useConfigure, useStats, Hits } from "react-instantsearch"
 
 import CustomAddressInput from "@/app/(algolia)/_components/CustomAddressInput"
 import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
@@ -211,46 +211,55 @@ function RadiusSelect() {
 }
 
 function PublicationDateSelect() {
-  const menuItems = useMemo(() => {
+  const [selectedFilter, setSelectedFilter] = useState("")
+
+  const filterOptions = useMemo(() => {
     const now = Date.now()
     return [
-      { label: "Toutes" },
-      { label: "Aujourd'hui", start: now - 24 * 60 * 60 * 1000 },
-      { label: "3 derniers jours", start: now - 3 * 24 * 60 * 60 * 1000 },
-      { label: "Semaine précédente", start: now - 7 * 24 * 60 * 60 * 1000 },
-      { label: "30 jours précédent", start: now - 30 * 24 * 60 * 60 * 1000 },
+      { value: "", label: "Toutes", filters: "" },
+      { value: "24h", label: "Aujourd'hui", filters: `publication_date >= ${now - 24 * 60 * 60 * 1000}` },
+      { value: "3d", label: "3 derniers jours", filters: `publication_date >= ${now - 3 * 24 * 60 * 60 * 1000}` },
+      { value: "1w", label: "Semaine précédente", filters: `publication_date >= ${now - 7 * 24 * 60 * 60 * 1000}` },
+      { value: "1m", label: "30 jours précédent", filters: `publication_date >= ${now - 30 * 24 * 60 * 60 * 1000}` },
     ]
-  }, []) // Empty dependency array means this only calculates once
-
-  const { refine, items } = useNumericMenu({
-    attribute: "publication_date",
-    items: menuItems,
-  })
-
-  // Find the currently selected item
-  const selectedItem = items.find((item) => item.isRefined)
+  }, [])
 
   const handleChange = (e: SelectChangeEvent) => {
-    const selectedIndex = parseInt(e.target.value)
+    const value = e.target.value
+    setSelectedFilter(value)
 
-    if (selectedIndex >= 0 && selectedIndex < items.length) {
-      refine(items[selectedIndex].value)
-      console.log("Applied filter:", items[selectedIndex].label, items[selectedIndex])
+    const option = filterOptions.find((opt) => opt.value === value)
+    if (option) {
+      console.log("Applied filter:", option.label, option.filters)
     }
   }
 
+  // Use a separate component to apply the filter
   return (
-    <FormControl sx={{ minWidth: 160 }}>
-      <FormLabel>Date de publication</FormLabel>
-      <Select value={selectedItem ? items.indexOf(selectedItem).toString() : "0"} onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
-        {items.map((item, index) => (
-          <MenuItem key={index} value={index.toString()}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <>
+      <FormControl sx={{ minWidth: 160 }}>
+        <FormLabel>Date de publication</FormLabel>
+        <Select value={selectedFilter} onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
+          {filterOptions.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <PublicationDateFilter selectedFilter={selectedFilter} filterOptions={filterOptions} />
+    </>
   )
+}
+
+function PublicationDateFilter({ selectedFilter, filterOptions }: { selectedFilter: string; filterOptions: Array<{ value: string; label: string; filters: string }> }) {
+  const option = filterOptions.find((opt) => opt.value === selectedFilter)
+
+  useConfigure({
+    filters: option?.filters || "",
+  })
+
+  return null
 }
 
 function DynamicConfigure() {
@@ -269,8 +278,6 @@ function DynamicConfigure() {
     aroundRadius: globalRadius,
     // Don't set filters here - let them be managed by individual components
   }
-
-  console.log("useConfigure options:", configureOptions)
 
   useConfigure(configureOptions)
 
