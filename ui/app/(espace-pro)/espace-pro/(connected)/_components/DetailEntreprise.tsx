@@ -200,7 +200,9 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                   }}
                 >
                   <Box>
-                    <Typography sx={{ fontSize: "20px", fontWeight: "700" }}>Informations de contact</Typography>
+                    <Typography component="h2" sx={{ fontSize: "20px", fontWeight: "700" }}>
+                      Informations de contact
+                    </Typography>
                     <Box mt={4}>
                       <Form>
                         <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
@@ -226,7 +228,12 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         )}
                         <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                           <Button type="submit" disabled={!isValid || isSubmitting}>
-                            {isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />}Enregistrer
+                            {isSubmitting ? (
+                              <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                            ) : (
+                              <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                            )}
+                            Enregistrer
                           </Button>
                         </Box>
                       </Form>

@@ -120,9 +120,9 @@ export default function CompteRenderer() {
                       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("5w"), mb: fr.spacing("2w") }}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
                           {isSubmitting ? (
-                            <CircularProgress size={fr.spacing("7v")} sx={{ color: "white", mr: fr.spacing("1w") }} />
+                            <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
                           ) : (
-                            <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />
+                            <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
                           )}
                           Enregistrer
                         </Button>
