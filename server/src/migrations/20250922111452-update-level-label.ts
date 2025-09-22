@@ -38,7 +38,7 @@ export const up = async () => {
         }
       })
       // @ts-ignore
-      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { jobs: jobsToUpdate } }, { bypassDocumentValidation: true })
+      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { jobs: jobsToUpdate } })
       callback()
     },
   })
