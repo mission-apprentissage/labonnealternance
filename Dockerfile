@@ -1,4 +1,4 @@
-FROM node:22.17-slim AS builder_root
+FROM node:24-slim AS builder_root
 WORKDIR /app
 RUN yarn set version 3.3.1
 COPY .yarn /app/.yarn
@@ -34,14 +34,14 @@ RUN yarn --cwd server build
 RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 
 # Production image, copy all the files and run next
-FROM node:22.17-slim AS server
+FROM node:24-slim AS server
 WORKDIR /app
 
 RUN apt-get update \
   && apt-get install -y curl debsecan \
   && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
   && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
-  && apt-get purge -y debsecan \
+  && apt-get purge -y --auto-remove debsecan \
   && apt-get clean
 
 ENV NODE_ENV=production
@@ -90,14 +90,14 @@ RUN yarn --cwd ui build
 # RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
-FROM node:22.17-slim AS ui
+FROM node:24-slim AS ui
 WORKDIR /app
 
 RUN apt-get update \
   && apt-get install -y debsecan \
   && codename=$(sh -c '. /etc/os-release; echo $VERSION_CODENAME') \
   && apt-get install $(debsecan --suite $codename --format packages --only-fixed) \
-  && apt-get purge -y debsecan \
+  && apt-get purge -y --auto-remove debsecan \
   && apt-get clean
 
 ENV NODE_ENV=production

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><jobs>
+
+<job>
+    <guid><![CDATA[-6366765753872521621]]></guid>
+    <referencenumber><![CDATA[-6366765753872521621]]></referencenumber>
+    <url><![CDATA[https://fr.jooble.org/external/-6366765753872555555?cpc=d0FU&utm_source=affiliate&utm_medium=labonnealternance_fr_xml&extra_id_consumer_run=587462d2-d72f-445f-aeb8-e1c364377858]]></url>
+    <title><![CDATA[Responsable de marché]]></title>
+    <region>
+        <country><![CDATA[FR]]></country>
+        <state><![CDATA[Canton de Puteaux; Arrondissement de Nanterre; Hauts-de-Seine (92); Ile-de-France]]></state>
+        <city><![CDATA[Puteaux, Hauts-de-Seine]]></city>
+    </region>
+    <date_updated><![CDATA[2025-09-09 00:00:00]]></date_updated>
+    <cpc><![CDATA[0.0]]></cpc>
+    <currency><![CDATA[EUR]]></currency>
+    <company><![CDATA[Truc France]]></company>
+    <date_expired><![CDATA[]]></date_expired>
+    <jobtype><![CDATA[]]></jobtype>
+    <salary>
+        <min><![CDATA[]]></min>
+        <max><![CDATA[]]></max>
+        <currency><![CDATA[]]></currency>
+        <rate><![CDATA[]]></rate>
+    </salary>
+    <description><![CDATA[<p> Truc est un groupe industriel et un laboratoire pharmaceutique international</p>]]></description>
+</job>
+
+<job>
+    <guid><![CDATA[-4721165160650161896]]></guid>
+    <referencenumber><![CDATA[-4721165160650161896]]></referencenumber>
+    <url><![CDATA[https://fr.jooble.org/external/-4721165160650165555?utm_source=affiliate&utm_medium=labonnealternance_fr_xml&extra_id_consumer_run=587462d2-d72f-445f-aeb8-e1c364377858&cpc=d0FU]]></url>
+    <title><![CDATA[Conseiller entreprise developpement h/f (CDI)]]></title>
+    <region>
+        <country><![CDATA[FR]]></country>
+        <state><![CDATA[Canton de Cahors; Arrondissement de Cahors; Lot (46); Midi-Pyrénées]]></state>
+        <city><![CDATA[Cahors, Lot]]></city>
+    </region>
+    <date_updated><![CDATA[2025-09-09 00:00:00]]></date_updated>
+    <cpc><![CDATA[0.0]]></cpc>
+    <currency><![CDATA[EUR]]></currency>
+    <company><![CDATA[CCI Lot]]></company>
+    <date_expired><![CDATA[]]></date_expired>
+    <jobtype><![CDATA[]]></jobtype>
+    <salary>
+        <min><![CDATA[33000.000]]></min>
+        <max><![CDATA[37000.000]]></max>
+        <currency><![CDATA[EUR]]></currency>
+        <rate><![CDATA[]]></rate>
+    </salary>
+    <description><![CDATA[A propos de l'entreprise : Les Chambres de Commerce et d'Industrie (CCI)]]></description>
+</job>
+
+</jobs>

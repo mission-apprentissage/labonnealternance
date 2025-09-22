@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 6f7fcddcf642524f8a2a169c5d9ac72d40d8e9ae34caceefe7cc23770b02619b
+  checksum: e572c878e3c4fca75ad365fb4ed6f2fedf99442fb68089f1c03936e9a9bd446c
 - filename: .infra/vault/vault.yml
   checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -284,7 +284,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
   checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
-  checksum: 9fdf1481f25bc9c997e50069009c354c35c6a123805c20c163648e19d355a0b3
+  checksum: 67bbb036037f6e12b0e63c746ad37c8f80ebd0a627aebe2eab2f6b9a969ed0cf
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
   checksum: a681f3f410db93db9fc2640636b70df05fe2d9e3d0879f8afc19f9cd451bae59
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx

@@ -10293,6 +10293,7 @@ export const up = async () => {
 
   // Add LBA SIRETs
   distinctSiretLba.forEach((siret) => {
+    // @ts-ignore
     siretMap.set(siret, { _id: new ObjectId(), siret, engagement: "handicap", sources: ["lba"] })
   })
 
@@ -10300,8 +10301,10 @@ export const up = async () => {
   distinctSiretFT.forEach((siret) => {
     if (siretMap.has(siret)) {
       const existing = siretMap.get(siret)!
+      // @ts-ignore
       existing.sources = [...existing.sources, "france-travail"]
     } else {
+      // @ts-ignore
       siretMap.set(siret, { _id: new ObjectId(), siret, engagement: "handicap", sources: ["france-travail"] })
     }
   })
