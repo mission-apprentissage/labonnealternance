@@ -264,7 +264,7 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Synchronisation Onisep entre Id formation Onisep et Clé ME du catalogue RCO": {
-            cron_string: "45 23 * * 2",
+            cron_string: "45 23 * * *",
             handler: importReferentielOnisep,
             tag: "main",
           },

@@ -158,18 +158,18 @@ export const getCatalogueEtablissements = (query: object = {}, select: object = 
  * @returns {Promise<Object[]>}
  */
 export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { rome: string[]; origin: { latitude: number; longitude: number }; limit: number }) => {
-  const formations = await getCatalogueFormations(
-    {
-      rome_codes: { $in: rome },
-      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
-      catalogue_published: true,
-    },
-    {
-      etablissement_formateur_id: 1,
-      romes: 1,
-      geo_coordonnees_etablissement_formateur: 1,
-    }
-  )
+  const formationQuery: { rome_codes: { $in: string[] } | { $regex: RegExp }; etablissement_formateur_courriel: { $nin: [null, ""] }; catalogue_published: boolean } = {
+    rome_codes: { $in: rome },
+    etablissement_formateur_courriel: { $nin: [null, ""] },
+    catalogue_published: true,
+  }
+  const projection = { etablissement_formateur_id: 1, romes: 1, geo_coordonnees_etablissement_formateur: 1 }
+  let formations = await getCatalogueFormations(formationQuery, projection)
+
+  if (formations.length === 0) {
+    formationQuery.rome_codes = { $regex: new RegExp("^" + rome[0].substring(0, 3), "i") } // always only one rome in catalogue
+    formations = await getCatalogueFormations(formationQuery, projection)
+  }
 
   const etablissementsToRetrieve = new Set()
   formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))

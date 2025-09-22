@@ -946,9 +946,12 @@ function getSkillsFromRome(skills) {
 const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
   const now = new Date()
 
-  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
+  const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
+    getRomeDetailsFromDB(job.rome_code[0]),
+    recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
+    getEntrepriseEngagement(recruiter.establishment_siret),
+  ])
 
-  const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
   const { definition, acces_metier } = romeDetails ?? {}
 
   const delegatedFields = recruiter.is_delegated
@@ -981,7 +984,9 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     contract_start: job.job_start_date ?? null,
     contract_duration: job.job_duration ?? null,
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    contract_is_disabled_elligible: job.is_disabled_elligible ?? false,
+
+    contract_is_disabled_elligible: disabledEngagement,
+
     contract_rythm: job.job_rythm ?? null,
 
     workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
