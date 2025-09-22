@@ -205,6 +205,55 @@ function RadiusSelect() {
   )
 }
 
+function PublicationDateSelect() {
+  const { setUiState } = useInstantSearch()
+
+  const handleChange = (e: SelectChangeEvent) => {
+    const now = Date.now()
+    let minDate
+
+    switch (e.target.value) {
+      case "24h":
+        minDate = now - 24 * 60 * 60 * 1000
+        break
+      case "3d":
+        minDate = now - 3 * 24 * 60 * 60 * 1000
+        break
+      case "1w":
+        minDate = now - 7 * 24 * 60 * 60 * 1000
+        break
+      case "1m":
+        minDate = now - 30 * 24 * 60 * 60 * 1000
+        break
+      default:
+        minDate = null
+    }
+
+    setUiState((uiState) => ({
+      ...uiState,
+      lba: {
+        ...uiState.lba,
+        configure: {
+          ...uiState.lba?.configure,
+          filters: minDate ? `offer_creation >= ${Math.floor(minDate / 1000)}` : undefined,
+        },
+      },
+    }))
+  }
+
+  return (
+    <FormControl sx={{ minWidth: 160 }}>
+      <FormLabel>Date de publication</FormLabel>
+      <Select onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
+        <MenuItem value={"24h"}>Aujourd'hui</MenuItem>
+        <MenuItem value={"3d"}>3 derniers jours</MenuItem>
+        <MenuItem value={"1w"}>Semaine précédente</MenuItem>
+        <MenuItem value={"1m"}>30 jours précédent</MenuItem>
+      </Select>
+    </FormControl>
+  )
+}
+
 function DynamicConfigure() {
   const { uiState } = useInstantSearch()
   const coordinates = uiState.lba?.configure?.aroundLatLng
@@ -247,6 +296,7 @@ export default function AlogliaPage() {
             <CustomSearchBox />
             <AddressInputWithRouting />
             <RadiusSelect />
+            <PublicationDateSelect />
           </Box>
           <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w"), flexWrap: "wrap" }}>
             <CustomRefinementList attribute="type" title="Type" />
