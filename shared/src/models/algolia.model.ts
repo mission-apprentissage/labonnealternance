@@ -1,3 +1,4 @@
+import { TRAINING_CONTRACT_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
@@ -10,7 +11,10 @@ export const ZAlgolia = z
     _id: zObjectId,
     objectID: z.string(), // id obligatoire algolia = _id mongodb
     type: z.enum(["formation", "offre"]),
-    sub_type: z.enum(["offre-partenaire", "offre-labonnealternance", "candidature-spontannée", "formation-presentiel", "formation-a-distance"]),
+    sub_type: z.string(),
+    contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable(),
+    publication_date: z.number().nullable(),
+    smart_apply: z.string().nullable(),
     title: z.string(), // formation -> intitule_rco | offre: offer_title
     description: z.string(), // formation -> contenue | offer: offer_description
     address: z.string(),

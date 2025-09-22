@@ -248,11 +248,14 @@ export default function AlogliaPage() {
             <AddressInputWithRouting />
             <RadiusSelect />
           </Box>
-          <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w") }}>
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w"), flexWrap: "wrap" }}>
             <CustomRefinementList attribute="type" title="Type" />
             <CustomRefinementList attribute="level" title="Niveau" />
             <CustomRefinementList attribute="sub_type" title="Partenaire" />
             <CustomRefinementList attribute="organization_name" title="Entreprise" />
+            <CustomRefinementList attribute="contract_type" title="Type de contrat" />
+            <CustomRefinementList attribute="activity_sector" title="Secteur d'activité" />
+            <CustomRefinementList attribute="smart_apply" title="Candidatures simplifiées" />
           </Box>
         </Box>
         <Box sx={{ backgroundColor: "#f6f6f6", px: fr.spacing("3w"), py: fr.spacing("2w") }}>

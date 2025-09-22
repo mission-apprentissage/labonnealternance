@@ -20,38 +20,45 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   offer_title: 1,
   offer_description: 1,
   offer_target_diploma: 1,
+  offer_creation: 1,
+
   workplace_legal_name: 1,
   workplace_address_label: 1,
   workplace_geopoint: 1,
   workplace_naf_label: 1,
+
   partner_label: 1,
+  apply_email: 1,
+  is_delegated: 1,
+  contract_type: 1,
 }
 
 const convertFormationNiveauDiplome = (niveau: string) => {
   switch (niveau) {
     case "3 (CAP...)":
-      return "Cap, autres formations niveau (Infrabac)"
+      return "Cap, autres formations (Infrabac)"
     case "4 (BAC...)":
-      return "BP, Bac, autres formations niveau (Bac)"
+      return "BP, Bac, autres formations (Bac)"
     case "5 (BTS, DEUST...)":
-      return "BTS, DEUST, autres formations niveaux (Bac+2)"
+      return "BTS, DEUST, autres formations (Bac+2)"
     case "6 (Licence, BUT...)":
-      return "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)"
+      return "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)"
     case "7 (Master, titre ingénieur...)":
-      return "Master, titre ingénieur, autres formations niveau (Bac+5)"
+      return "Master, titre ingénieur, autres formations (Bac+5)"
     default:
-      return ""
+      return "Indifférent"
   }
 }
 
-const getSubType = (partner_label: string) => {
+const getSubType = (partner_label: string, fromCfa?: boolean) => {
+  if (fromCfa) return "Offres d'emploi postées par des écoles"
   switch (partner_label) {
     case "offres_emploi_lba":
-      return "offre-labonnealternance"
+      return "Offre d'emploi La bonne alternance"
     case "recruteurs_lba":
-      return "candidature-spontannée"
+      return "Candidatures spontannées"
     default:
-      return "offre-partenaire"
+      return "Offre d'emploi partenaires"
   }
 }
 
@@ -73,7 +80,10 @@ export const fillAlgoliaCollection = async () => {
       _id: formation._id,
       objectID: formation._id.toString(),
       type: "formation",
-      sub_type: formation.entierement_a_distance ? "formation-a-distance" : "formation-presentiel",
+      sub_type: formation.entierement_a_distance ? "Formation à distance" : "Formation en présentiel",
+      contract_type: null,
+      publication_date: null,
+      smart_apply: null,
       title: formation.intitule_rco || "",
       description: formation.contenu || "",
       address: `${formation.lieu_formation_adresse} ${formation.code_postal} ${formation.localite}` || "",
@@ -93,7 +103,10 @@ export const fillAlgoliaCollection = async () => {
       _id: job._id,
       objectID: job._id.toString(),
       type: "offre",
-      sub_type: getSubType(job.partner_label),
+      sub_type: getSubType(job.partner_label, job.is_delegated),
+      smart_apply: job.apply_email ? "Oui" : "Non",
+      contract_type: job.contract_type,
+      publication_date: job.offer_creation?.getTime() || null,
       title: job.offer_title || "",
       description: job.offer_description || "",
       address: job.workplace_address_label || "",
@@ -113,6 +126,9 @@ export const fillAlgoliaCollection = async () => {
       objectID: job._id.toString(),
       type: "offre",
       sub_type: getSubType(job.partner_label),
+      contract_type: ["Apprentissage", "Professionnalisation"],
+      publication_date: job.offer_creation?.getTime() || null,
+      smart_apply: job.apply_email ? "Oui" : "Non",
       title: job.offer_title || "",
       description: job.offer_description || "",
       address: job.workplace_address_label || "",

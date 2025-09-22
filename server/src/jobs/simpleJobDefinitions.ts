@@ -1,4 +1,4 @@
-import { fillAlgoliaCollection } from "@/jobs/algolia/generateData"
+import { fillAlgoliaCollection } from "@/jobs/algolia/generateAlgoliaCollection"
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
