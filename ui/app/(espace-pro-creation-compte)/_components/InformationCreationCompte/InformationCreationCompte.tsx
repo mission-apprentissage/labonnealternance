@@ -84,7 +84,6 @@ const Formulaire = ({
                   <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
                   <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                   <CustomInput
-                    sx={{ textTransform: "lowercase" }}
                     required={false}
                     isDisabled={email ? true : false}
                     name="email"
