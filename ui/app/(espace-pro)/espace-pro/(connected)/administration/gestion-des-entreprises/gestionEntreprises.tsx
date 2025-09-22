@@ -111,7 +111,9 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
           <Alert severity="success" title="Succès" description={`Le SIRET ${currentCompany.siret} a été mis à jour.`} />
         </Box>
       )}
-      <Typography sx={{ my: fr.spacing("2w") }}>Mise à jour des coordonnées pour l’entreprise :</Typography>
+      <Typography component="h2" sx={{ fontWeight: 700, my: fr.spacing("3w") }}>
+        Mise à jour des coordonnées pour l’entreprise :
+      </Typography>
 
       <Box sx={{ borderColor: "#000091", borderWidth: "1px", p: fr.spacing("2w"), mb: fr.spacing("2w") }}>
         <Formik
@@ -168,9 +170,9 @@ export default function GestionEntreprises() {
   return (
     <AdminLayout currentAdminPage="ENTREPRISES_ALGO">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
-      <Box px={4}>
+      <Box>
         <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("2w") }}>
-          Entreprises de l'algorithme
+          Entreprises de l'algorithme :
         </Typography>
         <FormulaireRechercheEntreprise onSiretChange={setSiret} />
         <FormulaireModificationEntreprise siret={siret} />
