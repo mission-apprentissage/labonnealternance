@@ -241,7 +241,16 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                             data-testid={`cfa-${index}`}
                           >
                             <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }}>
-                              <Checkbox disabled={isDisabled} defaultChecked={isDisabled} onChange={() => changeEtablissement(etablissement)} />
+                              <Checkbox
+                                sx={{
+                                  "&.Mui-disabled .MuiSvgIcon-root": {
+                                    display: "none",
+                                  },
+                                }}
+                                disabled={isDisabled}
+                                defaultChecked={isDisabled}
+                                onChange={() => changeEtablissement(etablissement)}
+                              />
                             </Box>
                             <Box sx={{ flex: 1 }}>
                               {isDisabled && (
