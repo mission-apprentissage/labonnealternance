@@ -2,8 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
-import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
 import { Footer } from "@/app/_components/Footer"
+import { PublicHeader } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/getSession"
 
 export default async function RecruteurLayout({ children }: PropsWithChildren) {

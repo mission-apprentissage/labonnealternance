@@ -1,8 +1,8 @@
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import type { PropsWithChildren } from "react"
 
-import { PublicHeader } from "@/app/(espace-pro)/_components/PublicHeader"
 import { Footer } from "@/app/_components/Footer"
+import { PublicHeader } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/getSession"
 
 export default async function HomeLayout({ children }: PropsWithChildren) {
