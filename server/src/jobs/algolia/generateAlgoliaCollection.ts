@@ -54,11 +54,11 @@ const getSubType = (partner_label: string, fromCfa?: boolean) => {
   if (fromCfa) return "Offres d'emploi postées par des écoles"
   switch (partner_label) {
     case "offres_emploi_lba":
-      return "Offre d'emploi La bonne alternance"
+      return "Offres d'emploi La bonne alternance"
     case "recruteurs_lba":
       return "Candidatures spontannées"
     default:
-      return "Offre d'emploi partenaires"
+      return "Offres d'emploi partenaires"
   }
 }
 
