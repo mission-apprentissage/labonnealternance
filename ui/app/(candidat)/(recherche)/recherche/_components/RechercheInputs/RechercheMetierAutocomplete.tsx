@@ -38,7 +38,7 @@ async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[
 
 export function RechercheMetierAutocomplete() {
   return (
-    <Box id="home-search-form">
+    <Box id="search-form">
       <AutocompleteAsync
         noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
         id="metier"
