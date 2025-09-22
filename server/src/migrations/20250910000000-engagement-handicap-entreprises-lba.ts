@@ -1,6 +1,6 @@
 import entrepriseModel, { EntrepriseEngagementHandicapOrigin } from "shared/models/entreprise.model"
 import recruiterModel from "shared/models/recruiter.model"
-import referentielEngagementEntrepriseModel from "shared/models/referentielEngagementEntreprise.model"
+import referentielEngagementEntrepriseModel, { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -18,7 +18,7 @@ export const up = async () => {
   console.info("updating engagement FT")
   const engagementsHandicap = await getDbCollection(referentielEngagementEntrepriseModel.collectionName)
     .find({
-      sources: { $in: ["france-travail"] },
+      sources: { $in: [EntrepriseEngagementSources.FRANCE_TRAVAIL] },
       engagement: "handicap",
     })
     .toArray()
