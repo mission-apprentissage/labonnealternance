@@ -15,9 +15,9 @@ const CustomInput = (props) => {
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
         {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
         {props.info && (
-          <FormHelperText className={fr.cx("fr-hint-text")} sx={{ pb: 1 }}>
+          <Box className={fr.cx("fr-hint-text")} sx={{ pb: 1 }}>
             {props.info}
-          </FormHelperText>
+          </Box>
         )}
         <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
