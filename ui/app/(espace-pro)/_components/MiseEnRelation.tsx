@@ -290,8 +290,8 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     position: "sticky",
                     bottom: 0,
                     left: 0,
-                    bgColor: "white",
-                    zIndex: 1,
+                    backgroundColor: "white",
+                    zIndex: 1000,
                     p: 5,
                   }}
                 >
