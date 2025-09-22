@@ -5,8 +5,8 @@ import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Typography, FormControl, FormLabel, Select, MenuItem, Input, SelectChangeEvent } from "@mui/material"
 import { liteClient as algoliasearch } from "algoliasearch/lite"
 import { history } from "instantsearch.js/es/lib/routers"
-import React, { useState, useEffect } from "react"
-import { InstantSearch, Highlight, useInstantSearch, useConfigure, useStats, Hits } from "react-instantsearch"
+import React, { useState, useEffect, useMemo } from "react"
+import { InstantSearch, Highlight, useInstantSearch, useConfigure, useStats, Hits, useNumericMenu } from "react-instantsearch"
 
 import CustomAddressInput from "@/app/(algolia)/_components/CustomAddressInput"
 import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
@@ -37,7 +37,7 @@ const customStateMapping = {
       page: indexUiState.page,
       coordinates: indexUiState.configure?.aroundLatLng,
       radius: globalRadius,
-      publication_filter: indexUiState.configure?.filters?.includes("publication_date >=") ? indexUiState.configure.filters : undefined,
+      publication_filter: indexUiState.configure?.filters && indexUiState.configure.filters.includes("publication_date >=") ? indexUiState.configure.filters : undefined,
     }
     return route
   },
@@ -46,7 +46,8 @@ const customStateMapping = {
     if (routeState.radius) {
       globalRadius = Number(routeState.radius)
     }
-    return {
+    console.log("routeToState - routeState:", routeState)
+    const state = {
       lba: {
         query: routeState.q,
         page: routeState.page,
@@ -62,6 +63,8 @@ const customStateMapping = {
         },
       },
     }
+    console.log("routeToState - returning state:", JSON.stringify(state, null, 2))
+    return state
   },
 }
 
@@ -208,79 +211,43 @@ function RadiusSelect() {
 }
 
 function PublicationDateSelect() {
-  const { setUiState, uiState } = useInstantSearch()
-  const [currentFilter, setCurrentFilter] = useState("")
+  const menuItems = useMemo(() => {
+    const now = Date.now()
+    return [
+      { label: "Toutes" },
+      { label: "Aujourd'hui", start: now - 24 * 60 * 60 * 1000 },
+      { label: "3 derniers jours", start: now - 3 * 24 * 60 * 60 * 1000 },
+      { label: "Semaine précédente", start: now - 7 * 24 * 60 * 60 * 1000 },
+      { label: "30 jours précédent", start: now - 30 * 24 * 60 * 60 * 1000 },
+    ]
+  }, []) // Empty dependency array means this only calculates once
 
-  // Extract current filter from UI state on mount and updates
-  useEffect(() => {
-    const filters = uiState.lba?.configure?.filters
-    if (filters && filters.includes("publication_date >=")) {
-      // Parse the filter to determine which option is selected
-      const timestamp = parseInt(filters.split("publication_date >= ")[1])
-      const now = Date.now()
-      const diff = now - timestamp
+  const { refine, items } = useNumericMenu({
+    attribute: "publication_date",
+    items: menuItems,
+  })
 
-      if (diff <= 24 * 60 * 60 * 1000) {
-        setCurrentFilter("24h")
-      } else if (diff <= 3 * 24 * 60 * 60 * 1000) {
-        setCurrentFilter("3d")
-      } else if (diff <= 7 * 24 * 60 * 60 * 1000) {
-        setCurrentFilter("1w")
-      } else if (diff <= 30 * 24 * 60 * 60 * 1000) {
-        setCurrentFilter("1m")
-      } else {
-        setCurrentFilter("")
-      }
-    } else {
-      setCurrentFilter("")
-    }
-  }, [uiState.lba?.configure?.filters])
+  // Find the currently selected item
+  const selectedItem = items.find((item) => item.isRefined)
 
   const handleChange = (e: SelectChangeEvent) => {
-    const value = e.target.value
-    setCurrentFilter(value)
+    const selectedIndex = parseInt(e.target.value)
 
-    const now = Date.now()
-    let minDate: number | null
-
-    switch (value) {
-      case "24h":
-        minDate = now - 24 * 60 * 60 * 1000
-        break
-      case "3d":
-        minDate = now - 3 * 24 * 60 * 60 * 1000
-        break
-      case "1w":
-        minDate = now - 7 * 24 * 60 * 60 * 1000
-        break
-      case "1m":
-        minDate = now - 30 * 24 * 60 * 60 * 1000
-        break
-      default:
-        minDate = null
+    if (selectedIndex >= 0 && selectedIndex < items.length) {
+      refine(items[selectedIndex].value)
+      console.log("Applied filter:", items[selectedIndex].label, items[selectedIndex])
     }
-
-    setUiState((uiState) => ({
-      ...uiState,
-      lba: {
-        ...uiState.lba,
-        configure: {
-          ...uiState.lba?.configure,
-          filters: minDate ? `publication_date >= ${minDate}` : undefined,
-        },
-      },
-    }))
   }
 
   return (
     <FormControl sx={{ minWidth: 160 }}>
       <FormLabel>Date de publication</FormLabel>
-      <Select value={currentFilter} onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
-        <MenuItem value="">Toutes</MenuItem>
-        <MenuItem value={"24h"}>Aujourd'hui</MenuItem>
-        <MenuItem value={"3d"}>3 derniers jours</MenuItem>
-        <MenuItem value={"1w"}>Semaine précédente</MenuItem>
-        <MenuItem value={"1m"}>30 jours précédent</MenuItem>
+      <Select value={selectedItem ? items.indexOf(selectedItem).toString() : "0"} onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
+        {items.map((item, index) => (
+          <MenuItem key={index} value={index.toString()}>
+            {item.label}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   )
@@ -290,11 +257,22 @@ function DynamicConfigure() {
   const { uiState } = useInstantSearch()
   const coordinates = uiState.lba?.configure?.aroundLatLng
 
-  useConfigure({
+  // Don't read filters from uiState here to avoid circular dependency
+  // Let the publication date component manage filters directly
+
+  console.log("DynamicConfigure - uiState:", JSON.stringify(uiState, null, 2))
+  console.log("DynamicConfigure - configure:", uiState.lba?.configure)
+
+  const configureOptions = {
     hitsPerPage: 20,
     ...(coordinates && { aroundLatLng: coordinates }),
     aroundRadius: globalRadius,
-  })
+    // Don't set filters here - let them be managed by individual components
+  }
+
+  console.log("useConfigure options:", configureOptions)
+
+  useConfigure(configureOptions)
 
   return null
 }
