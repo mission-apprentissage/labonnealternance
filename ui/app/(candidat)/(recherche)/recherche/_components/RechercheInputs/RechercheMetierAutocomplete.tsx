@@ -1,5 +1,6 @@
 "use client"
 
+import { Box } from "@mui/material"
 import { type IMetierEnrichi } from "shared"
 
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
@@ -37,16 +38,18 @@ async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[
 
 export function RechercheMetierAutocomplete() {
   return (
-    <AutocompleteAsync
-      noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
-      id="metier"
-      key="metier"
-      label="Métier ou formation *"
-      fetchOptions={fetchRomeSearchOptions}
-      getOptionKey={(option) => `${option.type}:${option.label}`}
-      getOptionLabel={(option) => option.label}
-      groupBy={(option: IRomeSearchOption) => option.group}
-      placeholder="Indiquer un métier ou une formation"
-    />
+    <Box id="home-search-form">
+      <AutocompleteAsync
+        noOptionsText="Nous ne parvenons pas à identifier le métier ou la formation que vous cherchez, veuillez reformuler votre recherche"
+        id="metier"
+        key="metier"
+        label="Métier ou formation *"
+        fetchOptions={fetchRomeSearchOptions}
+        getOptionKey={(option) => `${option.type}:${option.label}`}
+        getOptionLabel={(option) => option.label}
+        groupBy={(option: IRomeSearchOption) => option.group}
+        placeholder="Indiquer un métier ou une formation"
+      />
+    </Box>
   )
 }
