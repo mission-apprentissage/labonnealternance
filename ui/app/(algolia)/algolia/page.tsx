@@ -37,6 +37,7 @@ const customStateMapping = {
       page: indexUiState.page,
       coordinates: indexUiState.configure?.aroundLatLng,
       radius: globalRadius,
+      publication_filter: indexUiState.configure?.filters?.includes("publication_date >=") ? indexUiState.configure.filters : undefined,
     }
     return route
   },
@@ -57,6 +58,7 @@ const customStateMapping = {
         },
         configure: {
           ...(routeState.coordinates && { aroundLatLng: routeState.coordinates }),
+          ...(routeState.publication_filter && { filters: routeState.publication_filter }),
         },
       },
     }
@@ -206,13 +208,42 @@ function RadiusSelect() {
 }
 
 function PublicationDateSelect() {
-  const { setUiState } = useInstantSearch()
+  const { setUiState, uiState } = useInstantSearch()
+  const [currentFilter, setCurrentFilter] = useState("")
+
+  // Extract current filter from UI state on mount and updates
+  useEffect(() => {
+    const filters = uiState.lba?.configure?.filters
+    if (filters && filters.includes("publication_date >=")) {
+      // Parse the filter to determine which option is selected
+      const timestamp = parseInt(filters.split("publication_date >= ")[1])
+      const now = Date.now()
+      const diff = now - timestamp
+
+      if (diff <= 24 * 60 * 60 * 1000) {
+        setCurrentFilter("24h")
+      } else if (diff <= 3 * 24 * 60 * 60 * 1000) {
+        setCurrentFilter("3d")
+      } else if (diff <= 7 * 24 * 60 * 60 * 1000) {
+        setCurrentFilter("1w")
+      } else if (diff <= 30 * 24 * 60 * 60 * 1000) {
+        setCurrentFilter("1m")
+      } else {
+        setCurrentFilter("")
+      }
+    } else {
+      setCurrentFilter("")
+    }
+  }, [uiState.lba?.configure?.filters])
 
   const handleChange = (e: SelectChangeEvent) => {
-    const now = Date.now()
-    let minDate
+    const value = e.target.value
+    setCurrentFilter(value)
 
-    switch (e.target.value) {
+    const now = Date.now()
+    let minDate: number | null
+
+    switch (value) {
       case "24h":
         minDate = now - 24 * 60 * 60 * 1000
         break
@@ -235,7 +266,7 @@ function PublicationDateSelect() {
         ...uiState.lba,
         configure: {
           ...uiState.lba?.configure,
-          filters: minDate ? `offer_creation >= ${Math.floor(minDate / 1000)}` : undefined,
+          filters: minDate ? `publication_date >= ${minDate}` : undefined,
         },
       },
     }))
@@ -244,7 +275,8 @@ function PublicationDateSelect() {
   return (
     <FormControl sx={{ minWidth: 160 }}>
       <FormLabel>Date de publication</FormLabel>
-      <Select onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
+      <Select value={currentFilter} onChange={handleChange} input={<Input className={fr.cx("fr-input")} />} size="small">
+        <MenuItem value="">Toutes</MenuItem>
         <MenuItem value={"24h"}>Aujourd'hui</MenuItem>
         <MenuItem value={"3d"}>3 derniers jours</MenuItem>
         <MenuItem value={"1w"}>Semaine précédente</MenuItem>
