@@ -13,8 +13,9 @@ import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offreParte
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { syncLbaJobsIntoJobsPartners } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
+import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
@@ -225,6 +226,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres La Poste dans la collection raw & computed",
   },
   {
+    fct: processJooble,
+    description: "Importe les offres Jooble dans la collection raw & computed",
+  },
+  {
     fct: processPass,
     description: "Importe les offres Pass dans la collection raw & computed",
   },
@@ -351,6 +356,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Envoi les mails de validation de compte",
   },
   { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
+  {
+    fct: syncLbaJobsIntoJobsPartnersFull,
+    description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
+  },
   {
     fct: analyzeClosedCompanies,
     description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",

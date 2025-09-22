@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 set -euo pipefail
 
 VERSION=${1:?"Veuillez préciser la version à build"}

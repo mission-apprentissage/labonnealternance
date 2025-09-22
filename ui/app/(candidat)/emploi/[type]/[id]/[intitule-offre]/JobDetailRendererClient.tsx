@@ -1,7 +1,6 @@
 "use client"
-import { Box, Flex } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
@@ -91,11 +90,10 @@ function JobDetail({
 
   return (
     <Box
-      as="section"
       onScroll={handleScroll}
       id="itemDetailColumn"
-      display={selectedItem ? "block" : "none"}
       sx={{
+        display: selectedItem ? "block" : "none",
         overflowY: "auto",
         position: "relative",
         height: "100vh",
@@ -106,19 +104,19 @@ function JobDetail({
       <InfoBanner />
       {/* @ts-expect-error: TODO */}
       <Box
-        as="header"
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
           padding: "10px 20px 0px 10px",
+          backgroundColor: "white",
+          zIndex: 2, // DSFR Accordion gets zIndex 1 when manipulated for some reason.
         }}
-        background="white"
         {...stickyHeaderProperties}
       >
-        <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
-          <Flex justifyContent="space-between" alignItems="center">
+        <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <LbaItemTags item={selectedItem} />
             <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-          </Flex>
+          </Box>
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
 
@@ -128,16 +126,16 @@ function JobDetail({
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-          <Flex flexDirection="row" justifyContent="space-between" gap={2} alignItems="center">
-            <Box>
+          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 2, alignItems: "center" }}>
+            <div>
               {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}
               {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
               {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
-            </Box>
-            <Box>
+            </div>
+            <div>
               <ShareLink item={selectedItem} />
-            </Box>
-          </Flex>
+            </div>
+          </Box>
         </Box>
       </Box>
 
@@ -147,7 +145,7 @@ function JobDetail({
 
       <AideApprentissage />
 
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (
+      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && (
         <>
           <DidYouKnow />
           {/**TODO: before check was only on FT jobs (LBA_ITEM_TYPE_OLD.PE) */}

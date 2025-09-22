@@ -1,23 +1,21 @@
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Checkbox,
-  CheckboxGroup,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Radio,
-  RadioGroup,
-  Stack,
-  Text,
-} from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import {
+  Box,
+  Input,
+  Typography,
+  FormControl,
+  FormLabel,
+  FormHelperText,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Select,
+  MenuItem,
+  ListItemText,
+  SelectChangeEvent,
+  Checkbox,
+} from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
 import { useState } from "react"
@@ -102,79 +100,67 @@ export const DemandeDeContactForm = ({
       {(formik) => {
         return (
           <form onSubmit={formik.handleSubmit}>
-            <Flex direction={["column", "column", "row"]}>
-              <Text mt={7} pb={2}>
-                Vous êtes * :
-              </Text>
-              <RadioGroup
-                mt={7}
-                ml={10}
-                data-testid="fieldset-who-type"
-                value={formik.values.applicantType}
-                onChange={(value) => formik.setFieldValue("applicantType", value, true)}
-              >
-                <Stack direction="row" spacing={3}>
-                  <Radio size="lg" value={EApplicantType.ETUDIANT}>
-                    L'étudiant
-                  </Radio>
-                  <Radio size="lg" value={EApplicantType.PARENT}>
-                    Le parent
-                  </Radio>
-                </Stack>
-              </RadioGroup>
-            </Flex>
-            <Flex direction={["column", "column", "row"]}>
-              <FormControl data-testid="fieldset-lastname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.lastname && formik.errors.lastname)}>
+            <FormControl>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("2w") }}>
+                <Typography sx={{ mr: { xs: 0, md: 3 }, mb: { xs: 1, sm: 1, md: 0 } }}>Vous êtes * :</Typography>
+                <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={(_, value) => formik.setFieldValue("applicantType", value)}>
+                  <FormControlLabel value={EApplicantType.ETUDIANT} label="L'étudiant" control={<Radio />} />
+                  <FormControlLabel value={EApplicantType.PARENT} label="Le parent" control={<Radio />} />
+                </RadioGroup>
+              </Box>
+            </FormControl>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("2w") }}>
+              <FormControl data-testid="fieldset-lastname" error={formik.touched.lastname && Boolean(formik.errors.lastname)} fullWidth>
                 <FormLabel htmlFor="lastname">Nom *</FormLabel>
                 <Input
+                  className={fr.cx("fr-input")}
                   data-testid="lastname"
                   name="lastname"
                   type="text"
-                  width={["100%", "100%", "95%"]}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.lastname}
                 />
-                <FormErrorMessage>{formik.errors.lastname}</FormErrorMessage>
+                <FormHelperText>{formik.touched.lastname && formik.errors.lastname}</FormHelperText>
               </FormControl>
-              <FormControl data-testid="fieldset-firstname" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.firstname && formik.errors.firstname)}>
+              <FormControl data-testid="fieldset-firstname" error={formik.touched.firstname && Boolean(formik.errors.firstname)} fullWidth>
                 <FormLabel htmlFor="firstname">Prénom *</FormLabel>
                 <Input
+                  className={fr.cx("fr-input")}
                   data-testid="firstname"
                   name="firstname"
                   type="text"
-                  width={["100%", "100%", "95%"]}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.firstname}
                 />
-                <FormErrorMessage>{formik.errors.firstname}</FormErrorMessage>
+                <FormHelperText>{formik.touched.firstname && formik.errors.firstname}</FormHelperText>
               </FormControl>
-            </Flex>
-            <Flex direction={["column", "column", "row"]} mt={4}>
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("2w") }}>
               <EmailField />
-              <FormControl data-testid="fieldset-phone" mt={{ base: 3, md: "0" }} isInvalid={!!(formik.touched.phone && formik.errors.phone)}>
+              <FormControl data-testid="fieldset-phone" error={formik.touched.phone && Boolean(formik.errors.phone)} fullWidth>
                 <FormLabel htmlFor="email">Téléphone *</FormLabel>
                 <Input
+                  className={fr.cx("fr-input")}
                   data-testid="phone"
                   name="phone"
                   type="phone"
-                  width={["100%", "100%", "95%"]}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.phone}
                 />
-                <FormErrorMessage>{formik.errors.phone}</FormErrorMessage>
+                <FormHelperText>{formik.touched.phone && formik.errors.phone}</FormHelperText>
               </FormControl>
-            </Flex>
-            <Flex direction={["column", "column", "row"]} mt={4}>
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("2w") }}>
               <ReasonsField formik={formik} />
-            </Flex>
-            <Box width="95%" my={4} fontSize="12px">
-              <Text mb={2} color="grey.600" mt={6}>
+            </Box>
+            <Box width="95%" fontSize="12px">
+              <Typography sx={{ mb: fr.spacing("2w") }} color="grey.600">
                 * Champs obligatoires
-              </Text>
-              <Text mt={4}>
+              </Typography>
+              <Typography sx={{ mb: fr.spacing("2w") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
                 <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
                   Conditions générales d&apos;utilisation
@@ -186,17 +172,17 @@ export const DemandeDeContactForm = ({
                   Politique de confidentialité
                 </DsfrLink>{" "}
                 de La bonne alternance.
-              </Text>
+              </Typography>
             </Box>
             {error && (
               <Box pt={4}>
-                <Text data-testid="prdv-submit-error" color="redmarianne">
+                <Typography data-testid="prdv-submit-error" color="redmarianne">
                   {error}
-                </Text>
+                </Typography>
               </Box>
             )}
             <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
-            <Box mb={8} textAlign="right" mr={4}>
+            <Box textAlign="right">
               <Button data-tracking-id="prendre-rdv-cfa" aria-label="Envoyer la demande de contact" type="submit" disabled={formik.isSubmitting}>
                 J'envoie ma demande
               </Button>
@@ -230,14 +216,14 @@ const EmailField = () => {
   }
 
   return (
-    <FormControl data-testid="fieldset-email" mt={{ base: 3, md: "0" }} isInvalid={!!(meta.touched && meta.error)}>
+    <FormControl data-testid="fieldset-email" error={!!(meta.touched && meta.error)} fullWidth>
       <FormLabel htmlFor="email">E-mail *</FormLabel>
-      <Input data-testid="email" name="email" type="email" width={["100%", "100%", "95%"]} onChange={onEmailChange} onBlur={field.onBlur} value={field.value} />
+      <Input className={fr.cx("fr-input")} data-testid="email" name="email" type="email" onChange={onEmailChange} onBlur={field.onBlur} value={field.value} />
       {suggestedEmails.length > 0 && (
         <Box mt={2} fontSize="12px" color="grey.600">
-          <Text as="span" mr={2}>
+          <Typography component="span" mr={2}>
             Voulez vous dire ?
-          </Text>
+          </Typography>
           {suggestedEmails.map((suggestedEmail) => (
             <Button type="button" key={suggestedEmail.corrected} onClick={onClickEmailSuggestion} priority="tertiary no outline" size="small">
               {suggestedEmail.corrected}
@@ -245,7 +231,7 @@ const EmailField = () => {
           ))}
         </Box>
       )}
-      <FormErrorMessage>{meta.error}</FormErrorMessage>
+      <FormHelperText>{meta.touched && meta.error}</FormHelperText>
     </FormControl>
   )
 }
@@ -253,70 +239,59 @@ const EmailField = () => {
 const ReasonsField = ({ formik }: { formik: any }) => {
   const [field, meta, helper] = useField("applicantReasons")
   const applicantReasons: EReasonsKey[] = field.value || []
-  const hasApplicantReasonChecked = applicantReasons.length > 0
 
   /**
    * On change on applicant reasons, it updates the state.
    */
-  const onChangeApplicantReasons = (values: EReasonsKey[]) => {
-    helper.setValue(values, true)
+  const onChangeApplicantReasons = (event: SelectChangeEvent<EReasonsKey[]>) => {
+    const {
+      target: { value },
+    } = event
+    helper.setValue(typeof value === "string" ? value.split(",") : value, true)
   }
 
   return (
-    <FormControl data-testid="fieldset-reasons" mt={{ base: 3, md: "0" }}>
+    <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Accordion allowToggle borderLeftWidth={1} borderRightWidth={1} mr={4} width={["100%", "100%", "auto", "auto"]}>
-        <AccordionItem _expanded={{ _last: { borderBottomWidth: "1px" } }} sx={{ _last: { borderBottomWidth: "0" } }}>
-          <h2>
-            <AccordionButton
-              sx={{
-                borderRadius: 0,
-                height: "40px",
-                bg: "grey.200",
-                color: "grey.800",
-                borderBottom: "solid 2px #000",
-              }}
-            >
-              <Box as="span" flex="1" textAlign="left" sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {RdvReasons.flatMap(({ key, title }) => (applicantReasons.includes(key) ? [title] : [])).join(", ") || "Sélectionner une ou des options"}
-              </Box>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            <CheckboxGroup onChange={onChangeApplicantReasons}>
-              <Stack direction="column" spacing={3} mt={1} ml={1}>
-                {RdvReasons.map(({ key, title }, index) => {
-                  const checked = applicantReasons.includes(key)
-                  return (
-                    <Checkbox key={key} id={`reason-${index}`} size="lg" defaultChecked={checked} value={key}>
-                      {title}
-                    </Checkbox>
-                  )
-                })}
-              </Stack>
-            </CheckboxGroup>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
+      <Select
+        multiple
+        value={field.value}
+        onChange={onChangeApplicantReasons}
+        renderValue={(selected) => {
+          const selectedReasons = RdvReasons.filter((reason) => selected.includes(reason.key))
+          return selectedReasons.map((reason) => reason.title).join(", ")
+        }}
+        input={<Input className={fr.cx("fr-input")} />}
+      >
+        {RdvReasons.map(({ key, title }, index) => {
+          const checked = applicantReasons.includes(key)
+          return (
+            <MenuItem key={key} value={key} id={`reason-${index}`}>
+              <Checkbox checked={checked} />
+              <ListItemText primary={title} />
+            </MenuItem>
+          )
+        })}
+      </Select>
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
-        <FormControl data-testid="fieldset-applicantMessageToCfa">
-          <Input
-            id="applicantMessageToCfa"
-            data-testid="applicantMessageToCfa"
-            name="applicantMessageToCfa"
-            type="text"
-            width="98%"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.applicantMessageToCfa}
-          />
-          <FormErrorMessage>{formik.errors.applicantMessageToCfa}</FormErrorMessage>
-        </FormControl>
+        <Box sx={{ mt: fr.spacing("2w") }}>
+          <FormControl data-testid="fieldset-applicantMessageToCfa" fullWidth>
+            <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
+            <Input
+              id="applicantMessageToCfa"
+              data-testid="applicantMessageToCfa"
+              name="applicantMessageToCfa"
+              type="text"
+              fullWidth
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.applicantMessageToCfa}
+              className={fr.cx("fr-input")}
+            />
+          </FormControl>
+        </Box>
       )}
-      <FormControl isInvalid={!hasApplicantReasonChecked && meta.touched}>
-        <FormErrorMessage>Le(s) sujet(s) que je souhaite aborder doit/doivent être renseigné(s).</FormErrorMessage>
-      </FormControl>
+      <FormHelperText>{meta.touched && meta.error}</FormHelperText>
     </FormControl>
   )
 }

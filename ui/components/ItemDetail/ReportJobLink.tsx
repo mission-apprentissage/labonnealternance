@@ -1,7 +1,9 @@
 "use client"
-import { Box, Flex, Image, Text, Textarea } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Stack, Typography, TextField } from "@mui/material"
 import { Formik } from "formik"
+import Image from "next/image"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
@@ -83,7 +85,7 @@ export const ReportJobLink = ({
   const content = contentByItemType[type] ?? contentByItemType.offres_emploi_lba
 
   return (
-    <Flex alignItems="center">
+    <Stack direction="row" alignItems="center">
       {storedValue ? (
         <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
           {linkLabelReported}
@@ -96,38 +98,28 @@ export const ReportJobLink = ({
       <InfoTooltipOrModal tooltipContent={tooltip}>
         <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="label" />
       </InfoTooltipOrModal>
-      <ModalReadOnly
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        modalContentProps={{
-          width: 792,
-          px: [6, 12],
-          pb: [12, 16],
-        }}
-      >
+      <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
-          <>
-            <Text as="h1" fontSize="24px" fontWeight={700}>
+          <Box sx={{ p: fr.spacing("4w") }}>
+            <Typography variant="h1" sx={{ fontSize: "24px", fontWeight: 700 }}>
               {content.title}
-            </Text>
-            <Text my={6} fontSize="14px">
-              {content.introductionText}
-            </Text>
+            </Typography>
+            <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
             <Formik initialValues={{ reason: "", reason_details: "" }} validationSchema={toFormikValidationSchema(ZFormValues)} onSubmit={(formikValues) => onReport(formikValues)}>
               {({ values, handleChange, handleBlur, submitForm, dirty, isValid, isSubmitting, setFieldValue }) => {
                 return (
-                  <Flex flexDirection="column">
-                    <Text fontWeight={700} mb={4}>
-                      Veuillez sélectionner un motif dans la liste ci-dessous :
-                    </Text>
+                  <Stack direction="column" spacing={2}>
+                    <Typography sx={{ fontWeight: 700 }}>Veuillez sélectionner un motif dans la liste ci-dessous :</Typography>
                     <CustomRadio
                       radioProps={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1,
-                        mb: 1,
+                        sx: {
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                          mb: 1,
+                        },
                       }}
                       size="small"
                       name="reason"
@@ -141,9 +133,9 @@ export const ReportJobLink = ({
                         name="reason_details"
                         label={
                           <>
-                            <Box fontWeight={400}>
+                            <Box sx={{ fontWeight: 400 }}>
                               {additionalMessageByMotif[values.reason] ?? "Informations complémentaires"}
-                              <Box as="span" fontWeight={400} color="#666666">
+                              <Box component="span" sx={{ fontWeight: 400, color: "#666666" }}>
                                 {" "}
                                 (Facultatif)
                               </Box>
@@ -151,33 +143,39 @@ export const ReportJobLink = ({
                           </>
                         }
                       >
-                        <Textarea mb={7} data-testid="reason_details" name="reason_details" onBlur={handleBlur} onChange={handleChange} value={values.reason_details} />
+                        <TextField
+                          multiline
+                          rows={4}
+                          data-testid="reason_details"
+                          name="reason_details"
+                          onBlur={handleBlur}
+                          onChange={handleChange}
+                          value={values.reason_details}
+                        />
                       </CustomFormControl>
                     )}
                     <Button disabled={!(isValid && dirty) || isSubmitting} onClick={submitForm} data-testid="report_offer">
                       Envoyer le signalement
                     </Button>
-                  </Flex>
+                  </Stack>
                 )
               }}
             </Formik>
-          </>
+          </Box>
         )}
       </ModalReadOnly>
-    </Flex>
+    </Stack>
   )
 }
 
 const ReportedAcknowledgement = () => {
   return (
-    <Box justifySelf="center">
-      <Flex mb={2} gap={4} alignItems="center">
-        <Image width="56px" height="56px" src="/images/paperplane2.svg" alt="" />
-        <Text as="h1" fontSize="20px" lineHeight={6} fontWeight={700}>
-          Votre signalement a bien été envoyé à notre équipe.
-        </Text>
-      </Flex>
-      <Text as="span">Merci de votre participation à l’amélioration du service La bonne alternance.</Text>
+    <Box sx={{ justifySelf: "center", p: fr.spacing("4w") }}>
+      <Stack direction="row" spacing={4} alignItems="center" sx={{ mb: 2 }}>
+        <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />
+        <Typography variant="h2">Votre signalement a bien été envoyé à notre équipe.</Typography>
+      </Stack>
+      <Typography component="span">Merci de votre participation à l'amélioration du service La bonne alternance.</Typography>
     </Box>
   )
 }

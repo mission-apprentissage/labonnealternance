@@ -33,7 +33,7 @@ export function RechercheElligibleHandicapCheckbox({
 
   const label = (
     <>
-      Employeur engagé handicap{displayedCount === null ? "" : ` (${displayedCount})`}
+      Employeur handi-engagé{displayedCount === null ? "" : ` (${displayedCount})`}
       <InfoTooltipOrModal
         tooltipContent={
           <Box sx={{ maxWidth: "800px" }}>

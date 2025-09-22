@@ -1,5 +1,7 @@
 "use client"
-import { Accordion, Box, Flex, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Stack, Typography, Link } from "@mui/material"
+import Image from "next/image"
 import React, { useEffect } from "react"
 import { IJobJson, ILbaItemLbaJobJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -45,193 +47,202 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: s
   return (
     <>
       <JobPostingSchema title={title} description={validCustomDescription || romeDescription || null} id={job?.job?.id} job={job} />
-      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
-        </Text>
-        <Box p={4} mb={6} borderRadius="8px" background="#f6f6f6">
-          <Box>
+        </Typography>
+        <Stack spacing={1} sx={{ p: 2, mb: fr.spacing("2w"), borderRadius: "8px", background: "#f6f6f6" }}>
+          <div>
             <strong>Début du contrat le : </strong> {jobStartDate}
-          </Box>
+          </div>
           {job?.job?.dureeContrat && (
-            <Box my={2}>
+            <div>
               <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
-            </Box>
+            </div>
           )}
-          <Box my={2}>
+          <div>
             <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-          </Box>
+          </div>
           {job?.job?.quantiteContrat > 1 && (
-            <Box my={2}>
+            <div>
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
-            </Box>
+            </div>
           )}
           {job?.job?.contract_rythm && (
-            <Box my={2}>
+            <div>
               <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
-            </Box>
+            </div>
           )}
-          <Flex direction="row" wrap="wrap">
+          <Stack direction="row" flexWrap="wrap">
             <strong>Niveau visé en fin d&apos;études : </strong>{" "}
             {job?.target_diploma_level ? (
-              <Flex direction="row" wrap="wrap">
+              <Stack direction="row" flexWrap="wrap">
                 {job?.target_diploma_level.split(", ").map(function (d, idx) {
                   return (
-                    <Text as="span" key={idx} fontSize="14px" textAlign="center" color="bluefrance.500" background="#e3e3fd" py={1} px={4} borderRadius="40px" ml={2} mb={1}>
+                    <Typography
+                      component="span"
+                      key={idx}
+                      sx={{
+                        fontSize: "14px",
+                        textAlign: "center",
+                        color: "bluefrance.500",
+                        background: "#e3e3fd",
+                        py: 0.5,
+                        px: 2,
+                        borderRadius: "40px",
+                        ml: 2,
+                        mb: 1,
+                      }}
+                    >
                       {d}
-                    </Text>
+                    </Typography>
                   )
                 })}
-              </Flex>
+              </Stack>
             ) : (
-              <Text as="span" ml={2} mb={1}>
+              <Typography component="span" sx={{ ml: 2, mb: 1 }}>
                 Indifférent
-              </Text>
+              </Typography>
             )}
-          </Flex>
-        </Box>
-        {job?.job?.elligibleHandicap && <LbaJobEngagement />}
-        {job?.company?.mandataire && (
-          <Text>
-            Offre publiée par{" "}
-            <Text as="span" fontWeight={700}>
-              {job.company.name}
-            </Text>{" "}
-            pour une entreprise partenaire du centre de formation.
-          </Text>
-        )}
+          </Stack>
+          {job?.company?.mandataire && (
+            <Box sx={{ display: "flex", p: 2, background: "white", fontSize: "12px", alignItems: "center" }}>
+              <Typography>
+                Offre publiée par{" "}
+                <Typography component="span" sx={{ fontWeight: 700 }}>
+                  {job.company.name}
+                </Typography>{" "}
+                pour une entreprise partenaire du centre de formation.
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
-        <Accordion allowToggle defaultIndex={0}>
-          <JobDescription job={job} />
-          <LbaJobQualites job={job} />
-        </Accordion>
-        <Box marginTop="10px">
+        <JobDescription job={job} />
+        <LbaJobQualites job={job} />
+
+        <Box sx={{ mt: fr.spacing("2w") }}>
           <ReportJobLink
             itemId={job?.job?.id}
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
             tooltip={
-              <Box>
-                <Text fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+              <Box sx={{ p: 1 }}>
+                <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: "700", marginBottom: "8px", color: "#161616" }}>
                   Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
-                </Text>
-                <UnorderedList style={{ color: "#383838", fontSize: "16px", lineHeight: "24px" }}>
-                  <ListItem>Offre offensante ou discriminatoire</ListItem>
-                  <ListItem>Offre inexacte ou expirée</ListItem>
-                  <ListItem>Fausse offre provenant d’un centre de formation</ListItem>
-                  <ListItem>Tentative d'escroquerie</ListItem>
-                </UnorderedList>
+                </Typography>
+                <ul>
+                  <li>Offre offensante ou discriminatoire</li>
+                  <li>Offre inexacte ou expirée</li>
+                  <li>Fausse offre provenant d'un centre de formation</li>
+                  <li>Tentative d'escroquerie</li>
+                </ul>
               </Box>
             }
           />
         </Box>
       </Box>
 
-      <Flex padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Box mt={2} width="30px" minWidth="30px" mr={2}>
-          <Image mt="2px" src="/images/whisper.svg" alt="" aria-hidden={true} />
-        </Box>
+      <Stack spacing={2} direction="row" alignItems="center" sx={{ my: fr.spacing("3w"), maxWidth: "970px", mx: { xs: 2, sm: 2, md: "auto" } }}>
+        <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
         <Box>
-          <Text as="div" fontWeight={700} fontSize="20px" color="#3a3a3a">
+          <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
             Psst !
-          </Text>
-          <Box color="grey.700">
-            Pour convaincre l’entreprise de vous embaucher,{" "}
-            <Link isExternal textDecoration="underline" href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">
+          </Typography>
+          <Box sx={{ color: "grey.700" }}>
+            Pour convaincre l'entreprise de vous embaucher,{" "}
+            <Link href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e" target="_blank" rel="noopener noreferrer" underline="always">
               on vous donne des conseils ici pour vous aider !
             </Link>
           </Box>
         </Box>
-      </Flex>
+      </Stack>
 
-      <Box pb="0px" position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>{`En savoir plus sur le métier ${job.title}`}</Text>
+      <Box sx={{ position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>
         <Box data-testid="lbb-component">
-          <Box mb={4}>
-            <Accordion allowToggle>
-              <LbaJobCompetences job={job} />
-              <LbaJobTechniques job={job} />
-              <LbaJobAcces job={job} />
-            </Accordion>
+          <Box sx={{ mb: 4 }}>
+            <LbaJobCompetences job={job} />
+            <LbaJobTechniques job={job} />
+            <LbaJobAcces job={job} />
           </Box>
         </Box>
       </Box>
 
-      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>
+      <Box sx={{ mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
-        </Text>
+        </Typography>
 
-        <Text my={3}>
+        <Typography sx={{ my: 3 }}>
           {job?.company?.mandataire
-            ? "Le centre de formation peut vous renseigner sur l’entreprise."
-            : "Renseignez-vous sur l’entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les réseaux sociaux."}
-        </Text>
+            ? "Le centre de formation peut vous renseigner sur l'entreprise."
+            : "Renseignez-vous sur l'entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les réseaux sociaux."}
+        </Typography>
 
         {!job?.company?.mandataire ? (
           <ItemLocalisation item={job} />
         ) : (
-          <Text mt={1}>
-            <Text as="span" fontWeight={700}>
+          <Typography sx={{ mt: 1 }}>
+            <Typography component="span" sx={{ fontWeight: 700 }}>
               Localisation :{" "}
-            </Text>
-            <Text as="span">{job.place.city}</Text>
+            </Typography>
+            <Typography component="span">{job.place.city}</Typography>
             <br />
             <ItemDistanceToCenter item={job} />
-          </Text>
+          </Typography>
         )}
 
-        <Text mt={1}>
-          <Text as="span" fontWeight={700}>
+        <Typography sx={{ mt: 1 }}>
+          <Typography component="span" sx={{ fontWeight: 700 }}>
             Taille de l'entreprise :{" "}
-          </Text>
-          <Text as="span">{getCompanySize(job)}</Text>
-        </Text>
+          </Typography>
+          <Typography component="span">{getCompanySize(job)}</Typography>
+        </Typography>
 
         {(job.nafs as ILbaItemNaf[])[0]?.label && (
-          <Text mt={1}>
-            <Text as="span" fontWeight={700}>
+          <Typography sx={{ mt: 1 }}>
+            <Typography component="span" sx={{ fontWeight: 700 }}>
               Secteur d'activité :{" "}
-            </Text>
-            <Text as="span">{(job.nafs as ILbaItemNaf[])[0].label}</Text>
-          </Text>
+            </Typography>
+            <Typography component="span">{(job.nafs as ILbaItemNaf[])[0].label}</Typography>
+          </Typography>
         )}
 
         {!job?.company?.mandataire && job?.contact?.phone && (
-          <Text mt={1}>
-            <Text as="span" fontWeight={700}>
+          <Typography sx={{ mt: 1 }}>
+            <Typography component="span" sx={{ fontWeight: 700 }}>
               Téléphone :{" "}
-            </Text>
-            <Text as="span">
+            </Typography>
+            <Typography component="span">
               <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Appeler la société au téléphone">
                 {job.contact.phone}
               </DsfrLink>
-            </Text>
-          </Text>
+            </Typography>
+          </Typography>
         )}
 
         {!job?.company?.mandataire && <ItemGoogleSearchLink item={job} />}
       </Box>
 
       {job?.company?.mandataire && (
-        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" maxWidth="970px" mx={["0", "30px", "30px", "auto"]}>
-          <Text as="h2" variant="itemDetailH2" mt={2}>
-            Contactez le CFA pour avoir plus d’informations
-          </Text>
+        <Box sx={{ pb: "0px", mt: 6, position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: ["0", "30px", "30px", "auto"] }}>
+          <Typography variant="h2" sx={{ mt: 2 }}>
+            Contactez le CFA pour avoir plus d'informations
+          </Typography>
 
-          <Text my={2}>Le centre de formation peut vous renseigner sur les formations qu’il propose.</Text>
+          <Typography sx={{ my: 2 }}>Le centre de formation peut vous renseigner sur les formations qu'il propose.</Typography>
           <ItemLocalisation item={job} />
 
           {job?.contact?.phone && (
-            <Flex mt={2} mb={4}>
-              <Box fontWeight={700} pl="2px" mr={2}>
-                Téléphone :
-              </Box>
+            <Stack direction="row" sx={{ mt: 2, mb: 4 }}>
+              <Box sx={{ fontWeight: 700, pl: "2px", mr: 2 }}>Téléphone :</Box>
               <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
                 {job.contact.phone}
               </DsfrLink>
-            </Flex>
+            </Stack>
           )}
 
           <ItemGoogleSearchLink item={job} />

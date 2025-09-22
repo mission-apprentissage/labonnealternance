@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 9893d5614e4910a425cb2b178dffe1ec824fecd33dce2b78922b2b30bd636082
+  checksum: e572c878e3c4fca75ad365fb4ed6f2fedf99442fb68089f1c03936e9a9bd446c
 - filename: .infra/vault/vault.yml
-  checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
+  checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -233,6 +233,8 @@ fileignoreconfig:
   checksum: 08eeb75b0a0b4ef859ea9fff944077f347a53648ee93e26ea13b27f621f04d3e
 - filename: ui/app/(espace-pro)/_components/OffresGratuites.tsx
   checksum: a81881696ad47f4efd1e7956f1972f0425cce0b07dba4afbcc7c088fb5edd90d
+- filename: ui/app/(home)/_components/AmeliorerLBA.tsx
+  checksum: b964e92051d750feaf2e3b33ec43b64d164705763fb50f225b6f3fbf243452de
 - filename: ui/app/(home)/faq/page.tsx
   checksum: 9ffb966754ed1d21f8fb933e48bab51024b9d4c11218caf1c5a1e17e474a4d4d
 - filename: ui/app/(home)/mentions-legales/page.tsx
@@ -282,7 +284,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
   checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
-  checksum: 5d8d24178d6390f4745bcddcaca7e7ea3f8f6af79ef304bb48187a6bea7ccfa1
+  checksum: a64c6d89b1b8a6fbdabcbd0d65a6b99cfdd24e9098602da56a273ef045a1bc97
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
   checksum: a681f3f410db93db9fc2640636b70df05fe2d9e3d0879f8afc19f9cd451bae59
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
@@ -307,8 +309,6 @@ fileignoreconfig:
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
-- filename: ui/public/assets/logo-republique-francaise-short.svg
-  checksum: bc174b3196566a2242eb58c76cfbf51d16422d75d0db7b28b6299c06b5917384
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg

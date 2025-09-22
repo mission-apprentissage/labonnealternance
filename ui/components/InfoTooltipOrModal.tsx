@@ -1,4 +1,5 @@
-import { Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Typography, Box } from "@mui/material"
 import { ReactElement } from "react"
 
 import { useDisclosure } from "@/common/hooks/useDisclosure"
@@ -18,18 +19,12 @@ export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipConten
 
   return (
     <>
-      <ModalReadOnly
-        isOpen={isModalOpen /* && isMobileBool*/}
-        onClose={closeModal}
-        modalContentProps={{
-          padding: 6,
-        }}
-      >
-        {tooltipContent}
+      <ModalReadOnly isOpen={isModalOpen /* && isMobileBool*/} onClose={closeModal}>
+        <Box sx={{ p: fr.spacing("4w") }}>{tooltipContent}</Box>
       </ModalReadOnly>
-      <Text as={"span"} _hover={{ cursor: "pointer" }} onClick={onClick}>
+      <Typography component={"span"} sx={{ ":hover": { cursor: "pointer" } }} onClick={onClick}>
         {children}
-      </Text>
+      </Typography>
     </>
   )
 }

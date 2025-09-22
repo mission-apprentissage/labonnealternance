@@ -256,9 +256,9 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
   return {
     siret: input.is_delegated ? input.cfa_siret! : input.workplace_siret,
     brand: input.is_delegated ? null : input.workplace_brand,
-    legal_name: (input.is_delegated ? input.cfa_legal_name! : input.workplace_legal_name) || null,
+    legal_name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name) || null,
     website: input.workplace_website,
-    name: input.workplace_name,
+    name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name || input.workplace_brand) || null,
     description: input.workplace_description,
     size: input.workplace_size,
     location: {
@@ -276,7 +276,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
 function convertToJobApplyReadV3(input: IJobsPartnersOfferApi | IJobsPartnersRecruiterApi): IJobRecruiterApiReadV3["apply"] {
   return {
     url: input.apply_url,
-    phone: input.apply_phone || null,
+    phone: (input.is_delegated ? input.cfa_apply_phone : input.apply_phone) || null,
     recipient_id: input.apply_recipient_id || null,
   }
 }

@@ -32,6 +32,7 @@ export enum JOBPARTNERS_LABEL {
   NOS_TALENTS_NOS_EMPLOIS = "Nos Talents Nos Emplois",
   VITE_UN_EMPLOI = "Vite un emploi",
   TOULOUSE_METROPOLE = "Toulouse metropole",
+  JOOBLE = "Jooble",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
@@ -67,28 +68,29 @@ export const ZJobsPartnersRecruiterApi = z.object({
   cfa_legal_name: z.string().nullish().describe("Raison sociale du CFA si offre déléguée"),
   cfa_siret: extensions.siret.nullish().describe("Siret du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
+  cfa_apply_phone: z.string().nullish().describe("Téléphone de contact du CFA"),
 })
 
 export const NIVEAUX_DIPLOMES_EUROPEENS = [
   {
     value: "3",
-    label: "Cap, autres formations niveau 3",
+    label: "Cap, autres formations niveau (Infrabac)",
   },
   {
     value: "4",
-    label: "Bac, autres formations niveau 4",
+    label: "BP, Bac, autres formations niveau (Bac)",
   },
   {
     value: "5",
-    label: "BTS, DEUST, autres formations niveaux 5 (Bac+2)",
+    label: "BTS, DEUST, autres formations niveau (Bac+2)",
   },
   {
     value: "6",
-    label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+    label: "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
   },
   {
     value: "7",
-    label: "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)",
+    label: "Master, titre ingénieur, autres formations niveau (Bac+5)",
   },
 ] as const
 
