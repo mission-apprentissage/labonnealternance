@@ -34,7 +34,6 @@ const CompetenceSelectionDiv = styled.div`
     }
   }
   .competence-checkbox-line {
-    margin-bottom: 16px;
     display: block;
 
     .competence-checkbox {
