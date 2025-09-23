@@ -1,5 +1,7 @@
-import { Accordion, Box, Checkbox, Heading, Text } from "@chakra-ui/react"
+import { Accordion, Checkbox } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import styled from "@emotion/styled"
+import { Box, Typography } from "@mui/material"
 import { useState } from "react"
 import { IReferentielRomeForJobJson } from "shared"
 
@@ -64,8 +66,10 @@ export const RomeDetail = ({
 
   return (
     <BorderedBox>
-      <Heading mb={4}>{title}</Heading>
-      <Text backgroundColor="#F5F5FE" padding={3} color="#000091" my={3}>
+      <Typography component="h2" fontWeight={700} mb={4}>
+        {title}
+      </Typography>
+      <Typography sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", my: fr.spacing("3v") }}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
         <b>
@@ -73,7 +77,7 @@ export const RomeDetail = ({
           <br />
           Veuillez conserver au minimum 3 items.
         </b>
-      </Text>
+      </Typography>
 
       <Accordion defaultIndex={[0, 1]} allowMultiple>
         <CustomAccordion
@@ -81,13 +85,13 @@ export const RomeDetail = ({
           header={
             <AccordionHeader>
               Descriptif du métier
-              <Text as="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
+              <Typography component="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
                 Non modifiable
-              </Text>
+              </Typography>
             </AccordionHeader>
           }
         >
-          <Text>{definition}</Text>
+          <Typography>{definition}</Typography>
         </CustomAccordion>
         {competences?.savoir_etre_professionnel && (
           <RequiredCompetenceAccordion
@@ -118,12 +122,10 @@ export const RomeDetail = ({
         )}
 
         <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <Text>{acces_metier}</Text>
+          <Typography>{acces_metier}</Typography>
         </CustomAccordion>
       </Accordion>
-      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
-        La fiche métier se base sur la classification ROME de France Travail
-      </Text>
+      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
     </BorderedBox>
   )
 }
@@ -140,7 +142,7 @@ const CompetenceSelection = ({
   const areAllUnselected = competences.every((competence) => !competence.selected)
   return (
     <CompetenceSelectionDiv>
-      {groupTitle && <Text className={classNames({ "competences-group-title": true, unselected: areAllUnselected })}>{groupTitle}</Text>}
+      {groupTitle && <Typography className={classNames({ "competences-group-title": true, unselected: areAllUnselected })}>{groupTitle}</Typography>}
       {competences.map((competence) => {
         return (
           <Box key={competence.label} className="competence-checkbox-line">
@@ -150,9 +152,9 @@ const CompetenceSelection = ({
               defaultChecked={competence.selected}
               onChange={() => onChange(competence.label, !competence.selected)}
             >
-              <Text>{competence.label}</Text>
+              <Typography>{competence.label}</Typography>
             </Checkbox>
-            {competence.error && <Text className="error-text">{competence.error}</Text>}
+            {competence.error && <Typography className="error-text">{competence.error}</Typography>}
           </Box>
         )
       })}
