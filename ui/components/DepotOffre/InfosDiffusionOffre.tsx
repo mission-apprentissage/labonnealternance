@@ -11,7 +11,7 @@ export const InfosDiffusionOffre = () => {
       <Heading mb={3}>Profitez d'une visibilité accrue</Heading>
       <Flex alignItems="flex-start" gap={1}>
         <Box as="span" fontSize="15px">
-          <InfoCircle color="#000091" w="20px" h="20px" />
+          <InfoCircle sx={{ color: "#000091", width: "20px", height: "20px" }} />
         </Box>
         <Text mb={6}>Cela permettra à votre offre d’être visible des candidats intéressés.</Text>
       </Flex>

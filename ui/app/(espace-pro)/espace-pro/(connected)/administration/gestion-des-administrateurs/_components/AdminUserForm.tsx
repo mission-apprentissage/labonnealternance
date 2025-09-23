@@ -1,6 +1,8 @@
-import { Box, FormControl, FormLabel, HStack, Input, VStack, useToast } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
+import { Box } from "@mui/material"
 import { FormikProvider, useFormik } from "formik"
 import { SyntheticEvent } from "react"
 import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
@@ -11,6 +13,7 @@ import { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { useToast } from "@/app/hooks/useToast"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { createSuperUser, updateUser } from "@/utils/api"
 import { ApiError, apiDelete } from "@/utils/api.utils"
@@ -30,7 +33,7 @@ export const AdminUserForm = ({
   onDelete?: () => void
   onUpdate?: () => void
 }) => {
-  const toast = useToast()
+  const { toast, ToastComponent } = useToast()
   const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString())
 
   const errorHandler = (error: any) => {
@@ -40,7 +43,6 @@ export const AdminUserForm = ({
     toast({
       title: error + "",
       status: "error",
-      isClosable: true,
     })
   }
 
@@ -52,7 +54,6 @@ export const AdminUserForm = ({
           toast({
             title: "Utilisateur mis à jour",
             status: "success",
-            isClosable: true,
           })
           onUpdate?.()
         })
@@ -67,7 +68,6 @@ export const AdminUserForm = ({
           toast({
             title: "Utilisateur créé",
             status: "success",
-            isClosable: true,
           })
           onCreate?.(user._id.toString())
         })
@@ -83,13 +83,11 @@ export const AdminUserForm = ({
         toast({
           title: "Utilisateur supprimé",
           status: "success",
-          isClosable: true,
         })
       } else {
         toast({
           title: "Erreur lors de la suppression de l'utilisateur.",
           status: "error",
-          isClosable: true,
           description: " Merci de réessayer plus tard",
         })
       }
@@ -103,15 +101,16 @@ export const AdminUserForm = ({
 
   return (
     <>
+      {ToastComponent}
       {user && (
         <>
-          <HStack mt={4} mb={4} alignItems="baseline">
-            <Box w="300px">Type de compte </Box>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", my: fr.spacing("2v") }}>
+            <Box sx={{ width: "300px" }}>Type de compte </Box>
             <Box>ADMIN</Box>
-          </HStack>
-          <HStack mb={4} alignItems="baseline">
-            <Box w="300px">Statut du compte </Box>=
-            <HStack spacing={6}>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", mb: fr.spacing("2v") }}>
+            <Box sx={{ width: "300px" }}>Statut du compte </Box>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", gap: 3 }}>
               <Box> {accessStatus}</Box>
               {accessStatus !== AccessStatus.GRANTED && (
                 <ActivateUserButton
@@ -134,8 +133,8 @@ export const AdminUserForm = ({
                   Supprimer l&apos;utilisateur
                 </Button>
               </Box>
-            </HStack>
-          </HStack>
+            </Box>
+          </Box>
         </>
       )}
       <UserFieldsForm user={user} onSubmit={onSubmit} type={parseEnum({ OPCO, ADMIN }, role?.authorized_type)} opco={parseEnum(OPCOS_LABEL, role?.authorized_id)} />
@@ -181,13 +180,8 @@ const UserFieldsForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={handleSubmit}>
-        <VStack gap={2} alignItems="baseline" my={8}>
-          {user && (
-            <FormControl py={2}>
-              <FormLabel>Identifiant</FormLabel>
-              <Input type="text" id="id" name="id" value={user._id.toString()} disabled />
-            </FormControl>
-          )}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "baseline", my: fr.spacing("2w") }}>
+          {user && <Input disabled={true} label="Identifiant" nativeInputProps={{ type: "text", name: "id", value: user._id.toString() }} />}
           <Select
             label="Type de compte"
             nativeSelectProps={{
@@ -195,6 +189,7 @@ const UserFieldsForm = ({
               name: "type",
               disabled: Boolean(user),
             }}
+            style={{ minWidth: "300px", width: "100%", maxWidth: "400px" }}
           >
             <option value={AUTHTYPE.OPCO}>{AUTHTYPE.OPCO}</option>
             <option value={AUTHTYPE.ADMIN}>{AUTHTYPE.ADMIN}</option>
@@ -209,6 +204,7 @@ const UserFieldsForm = ({
                 disabled: Boolean(user),
                 value: values.opco,
               }}
+              style={{ textOverflow: "ellipsis", minWidth: "300px", width: "100%", maxWidth: "400px" }}
             >
               <option value={AUTHTYPE.OPCO}>{AUTHTYPE.OPCO}</option>
               <option value={AUTHTYPE.ADMIN}>{AUTHTYPE.ADMIN}</option>
@@ -219,16 +215,14 @@ const UserFieldsForm = ({
               ))}
             </Select>
           )}
-          <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />
-          <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
-          <CustomInput required={true} name="email" label="Email" type="email" value={values.email ?? ""} />
-          <CustomInput required={false} name="phone" label="Téléphone" type="phone" value={values.phone ?? ""} />
-          <Box paddingTop={10} mr={5}>
-            <Button type="submit" disabled={!dirty || !isValid}>
-              {user ? "Enregistrer" : "Créer l'utilisateur"}
-            </Button>
-          </Box>
-        </VStack>
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={true} name="email" label="Email" type="email" value={values.email ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={false} name="phone" label="Téléphone" type="phone" value={values.phone ?? ""} />
+          <Button type="submit" disabled={!dirty || !isValid}>
+            {user ? "Enregistrer" : "Créer l'utilisateur"}
+          </Button>
+        </Box>
       </form>
     </FormikProvider>
   )
