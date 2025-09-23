@@ -72,7 +72,7 @@ export default function GestionDesAdministrateurs() {
             accessor: (row) => {
               return (
                 <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
-                  <ArrowRightLine sx={{ mr: fr.spacing("1w") }} width={5} />
+                  <ArrowRightLine sx={{ mr: fr.spacing("1w"), width: 16, height: 16 }} />
                 </Button>
               )
             },

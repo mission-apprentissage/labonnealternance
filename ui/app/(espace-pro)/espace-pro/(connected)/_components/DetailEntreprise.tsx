@@ -122,7 +122,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       <AnimationContainer>
         <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
 
-        <Box sx={{ borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
+        <Box sx={{ px: fr.spacing("2w"), borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
           {user.type !== "CFA" && (
             <>
               <Typography component="h2" sx={{ fontSize: "32px", ...webkitLineClamp }}>
@@ -148,128 +148,137 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             </Box>
           )}
         </Box>
-        <Formik
-          validateOnMount={true}
-          enableReinitialize={true}
-          initialValues={{
-            last_name: userRecruteur.last_name,
-            first_name: userRecruteur.first_name,
-            phone: userRecruteur.phone,
-            email: userRecruteur.email,
-            opco: userRecruteur.opco,
-            type: userRecruteur.type,
-          }}
-          validationSchema={Yup.object().shape({
-            last_name: Yup.string().required("champ obligatoire"),
-            first_name: Yup.string().required("champ obligatoire"),
-            phone: Yup.string()
-              .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-              .min(10, "le téléphone est sur 10 chiffres")
-              .max(10, "le téléphone est sur 10 chiffres")
-              .required("champ obligatoire"),
-            email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-            type: Yup.string().default(userRecruteur.type),
-            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
-          })}
-          onSubmit={async (values, { setSubmitting }) => {
-            setSubmitting(true)
-            // For companies we update the User Collection and the Formulaire collection at the same time
-            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret })
+        <Box sx={{ px: fr.spacing("2w") }}>
+          <Formik
+            validateOnMount={true}
+            enableReinitialize={true}
+            initialValues={{
+              last_name: userRecruteur.last_name,
+              first_name: userRecruteur.first_name,
+              phone: userRecruteur.phone,
+              email: userRecruteur.email,
+              opco: userRecruteur.opco,
+              type: userRecruteur.type,
+            }}
+            validationSchema={Yup.object().shape({
+              last_name: Yup.string().required("champ obligatoire"),
+              first_name: Yup.string().required("champ obligatoire"),
+              phone: Yup.string()
+                .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
+                .min(10, "le téléphone est sur 10 chiffres")
+                .max(10, "le téléphone est sur 10 chiffres")
+                .required("champ obligatoire"),
+              email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+              type: Yup.string().default(userRecruteur.type),
+              opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
+            })}
+            onSubmit={async (values, { setSubmitting }) => {
+              setSubmitting(true)
+              // For companies we update the User Collection and the Formulaire collection at the same time
+              userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret })
 
-            setSubmitting(false)
-          }}
-        >
-          {({ values, isSubmitting, isValid, setFieldValue, errors, touched }) => {
-            return (
-              <>
-                <ConfirmationModificationOpco
-                  {...confirmationModificationOpco}
-                  establishment_raison_sociale={establishmentLabel}
-                  setFieldValue={setFieldValue}
-                  previousValue={userRecruteur.opco}
-                  newValue={values.opco}
-                />
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      lg: "repeat(2, 1fr)",
-                    },
-                    gap: { xs: 0, sm: 2, lg: 5 },
-                  }}
-                >
-                  <Box>
-                    <Typography sx={{ fontSize: "20px", fontWeight: "700" }}>Informations de contact</Typography>
-                    <Box mt={4}>
-                      <Form>
-                        <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
-                        <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
-                        <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
-                        <CustomInput name="email" label="Email" type="email" value={values.email} />
-                        {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
-                          <OpcoSelect
-                            value={values.opco}
-                            name="opco"
-                            errors={errors}
-                            touched={touched}
-                            onChange={(newValue) => {
-                              setFieldValue("opco", newValue)
-                              confirmationModificationOpco.onOpen()
-                            }}
-                          />
-                        )}
-                        {userMutation.error && (
-                          <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
-                            {userMutation.error + ""}
-                          </Alert>
-                        )}
-                        <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
-                          <Button type="submit" disabled={!isValid || isSubmitting}>
-                            {isSubmitting ? <CircularProgress size={24} /> : <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />}Enregistrer
-                          </Button>
-                        </Box>
-                      </Form>
-                    </Box>
-                  </Box>
-                  <Box>
-                    <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
-                    {user.type !== "CFA" && (
-                      <Box my={4}>
-                        <FieldWithValue title="Origine" value={userRecruteur.origin} />
+              setSubmitting(false)
+            }}
+          >
+            {({ values, isSubmitting, isValid, setFieldValue, errors, touched }) => {
+              return (
+                <>
+                  <ConfirmationModificationOpco
+                    {...confirmationModificationOpco}
+                    establishment_raison_sociale={establishmentLabel}
+                    setFieldValue={setFieldValue}
+                    previousValue={userRecruteur.opco}
+                    newValue={values.opco}
+                  />
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: {
+                        xs: "1fr",
+                        lg: "repeat(2, 1fr)",
+                      },
+                      gap: { xs: 0, sm: 2, lg: 5 },
+                    }}
+                  >
+                    <Box>
+                      <Typography component="h2" sx={{ fontSize: "20px", fontWeight: "700" }}>
+                        Informations de contact
+                      </Typography>
+                      <Box mt={4}>
+                        <Form>
+                          <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
+                          <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
+                          <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
+                          <CustomInput name="email" label="Email" type="email" value={values.email} />
+                          {userRecruteur.type === AUTHTYPE.ENTREPRISE && (
+                            <OpcoSelect
+                              value={values.opco}
+                              name="opco"
+                              errors={errors}
+                              touched={touched}
+                              onChange={(newValue) => {
+                                setFieldValue("opco", newValue)
+                                confirmationModificationOpco.onOpen()
+                              }}
+                            />
+                          )}
+                          {userMutation.error && (
+                            <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
+                              {userMutation.error + ""}
+                            </Alert>
+                          )}
+                          <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
+                            <Button type="submit" disabled={!isValid || isSubmitting}>
+                              {isSubmitting ? (
+                                <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                              ) : (
+                                <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                              )}
+                              Enregistrer
+                            </Button>
+                          </Box>
+                        </Form>
                       </Box>
-                    )}
+                    </Box>
+                    <Box>
+                      <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} />
+                      {user.type !== "CFA" && (
+                        <Box my={4}>
+                          <FieldWithValue title="Origine" value={userRecruteur.origin} />
+                        </Box>
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-                {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
-                  <>
-                    <hr style={{ marginTop: 24 }} />
-                    <Box my={6}>
-                      <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
-                      <OffresTabs
-                        recruiter={recruiter}
-                        buildOfferEditionUrl={(offerId) => {
-                          return PAGES.dynamic
-                            .offreUpsert({
-                              offerId,
-                              establishment_id: userRecruteur.establishment_id,
-                              userType: user.type,
-                              userId: userRecruteur._id,
-                              raison_sociale: establishmentLabel,
-                            })
-                            .getPath()
-                        }}
-                      />
-                    </Box>
-                    <Box mb={12}>
-                      <UserValidationHistory histories={userRecruteur.status} />
-                    </Box>
-                  </>
-                )}
-              </>
-            )
-          }}
-        </Formik>
+                  {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
+                    <>
+                      <hr style={{ marginTop: 24 }} />
+                      <Box my={6}>
+                        <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
+                        <OffresTabs
+                          recruiter={recruiter}
+                          buildOfferEditionUrl={(offerId) => {
+                            return PAGES.dynamic
+                              .offreUpsert({
+                                offerId,
+                                establishment_id: userRecruteur.establishment_id,
+                                userType: user.type,
+                                userId: userRecruteur._id,
+                                raison_sociale: establishmentLabel,
+                              })
+                              .getPath()
+                          }}
+                        />
+                      </Box>
+                      <Box mb={12}>
+                        <UserValidationHistory histories={userRecruteur.status} />
+                      </Box>
+                    </>
+                  )}
+                </>
+              )
+            }}
+          </Formik>
+        </Box>
       </AnimationContainer>
     </>
   )

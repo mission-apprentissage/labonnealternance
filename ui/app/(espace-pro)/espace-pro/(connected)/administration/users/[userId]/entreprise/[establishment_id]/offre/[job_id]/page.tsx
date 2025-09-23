@@ -24,7 +24,11 @@ export default function UpdateOffre() {
       <UpsertOffre
         establishment_id={establishment_id}
         job_id={job_id}
-        onSuccess={() => router.push(PAGES.dynamic.successEditionOffre({ establishment_id, userType: "ADMIN", user_id: userId }).getPath())}
+        onSuccess={() =>
+          setTimeout(() => {
+            router.push(PAGES.dynamic.successEditionOffre({ establishment_id, userType: "ADMIN", user_id: userId }).getPath())
+          }, 2000)
+        }
       />
     </>
   )

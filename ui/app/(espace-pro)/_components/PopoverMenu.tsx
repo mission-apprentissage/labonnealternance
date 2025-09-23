@@ -85,11 +85,11 @@ export const PopoverMenu = ({
                         key={idx}
                         onClick={handleClose}
                         disableGutters
-                        sx={{ py: fr.spacing("1v"), mx: `0 !important`, px: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                        sx={{ py: fr.spacing("3v"), mx: `0 !important`, px: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
                       >
                         {action.type === "link" || action.type === "externalLink" ? (
                           <Link
-                            underline="hover"
+                            underline="none"
                             sx={{ width: "100%", textAlign: "left" }}
                             href={action.link}
                             aria-label={action.ariaLabel || (action.label as string)}
@@ -98,7 +98,7 @@ export const PopoverMenu = ({
                             {action.label}
                           </Link>
                         ) : (
-                          <Link underline="hover" component="button" onClick={action.onClick} sx={{ width: "100%", textAlign: "left" }}>
+                          <Link underline="none" component="button" onClick={action.onClick} sx={{ width: "100%", textAlign: "left" }}>
                             {action.label}
                           </Link>
                         )}

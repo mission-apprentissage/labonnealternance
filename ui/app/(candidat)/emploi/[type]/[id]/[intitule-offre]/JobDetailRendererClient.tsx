@@ -145,17 +145,9 @@ function JobDetail({
 
       <AideApprentissage />
 
-      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && (
-        <>
-          <DidYouKnow />
-          {/**TODO: before check was only on FT jobs (LBA_ITEM_TYPE_OLD.PE) */}
-          {!(kind !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
-        </>
-      )}
+      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && <DidYouKnow />}
 
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && (
-        <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-      )}
+      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }

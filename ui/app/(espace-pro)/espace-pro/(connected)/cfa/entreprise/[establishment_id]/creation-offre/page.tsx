@@ -13,7 +13,7 @@ export default function EntrepriseCreationOffrePage() {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.backCfaEntrepriseCreationOffre(establishment_id)]} />
-      <UpsertOffre establishment_id={establishment_id} onSuccess={() => router.push(PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath())} />
+      <UpsertOffre establishment_id={establishment_id} onSuccess={() => setTimeout(() => router.push(PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()), 2000)} />
     </>
   )
 }

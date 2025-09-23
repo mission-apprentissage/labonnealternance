@@ -23,8 +23,15 @@ export const CustomTabs = <Name extends string>({
 
   return (
     <TabContext value={currentPanel.id}>
-      <Box mx={fr.spacing("4w")} className="fr-tabs">
-        <TabList className="fr-tabs__list" onChange={(_, index) => setTabIndex(index)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+      <Box sx={{ xs: 0, sm: fr.spacing("1v"), md: fr.spacing("4w") }} className="fr-tabs">
+        <TabList
+          sx={{ maxWidth: "90%", px: { xs: 0, sm: "inherit" } }}
+          className="fr-tabs__list"
+          onChange={(_, index) => setTabIndex(index)}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+        >
           {panels.map(({ title, id }) => (
             <Tab key={id} label={title} value={id} className="fr-tabs__tab" wrapped />
           ))}

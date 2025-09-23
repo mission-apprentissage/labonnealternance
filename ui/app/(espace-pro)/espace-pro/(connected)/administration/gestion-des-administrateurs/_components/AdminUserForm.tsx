@@ -189,6 +189,7 @@ const UserFieldsForm = ({
               name: "type",
               disabled: Boolean(user),
             }}
+            style={{ minWidth: "300px", width: "100%", maxWidth: "400px" }}
           >
             <option value={AUTHTYPE.OPCO}>{AUTHTYPE.OPCO}</option>
             <option value={AUTHTYPE.ADMIN}>{AUTHTYPE.ADMIN}</option>
@@ -203,6 +204,7 @@ const UserFieldsForm = ({
                 disabled: Boolean(user),
                 value: values.opco,
               }}
+              style={{ textOverflow: "ellipsis", minWidth: "300px", width: "100%", maxWidth: "400px" }}
             >
               <option value={AUTHTYPE.OPCO}>{AUTHTYPE.OPCO}</option>
               <option value={AUTHTYPE.ADMIN}>{AUTHTYPE.ADMIN}</option>
@@ -213,10 +215,10 @@ const UserFieldsForm = ({
               ))}
             </Select>
           )}
-          <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />
-          <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
-          <CustomInput required={true} name="email" label="Email" type="email" value={values.email ?? ""} />
-          <CustomInput required={false} name="phone" label="Téléphone" type="phone" value={values.phone ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={true} name="first_name" label="Prénom" type="text" value={values.first_name ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={true} name="last_name" label="Nom" type="text" value={values.last_name ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={true} name="email" label="Email" type="email" value={values.email ?? ""} />
+          <CustomInput sx={{ minWidth: "300px", width: "100%", maxWidth: "400px" }} required={false} name="phone" label="Téléphone" type="phone" value={values.phone ?? ""} />
           <Button type="submit" disabled={!dirty || !isValid}>
             {user ? "Enregistrer" : "Créer l'utilisateur"}
           </Button>

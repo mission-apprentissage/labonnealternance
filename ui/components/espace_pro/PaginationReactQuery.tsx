@@ -52,7 +52,7 @@ function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage:
   const previousPage = () => goToPageIndex(pageIndex - 1)
 
   return (
-    <Box className={"search-pagination"} sx={{ display: "flex", justifyContent: "center", my: fr.spacing("3v"), mx: fr.spacing("1v") }}>
+    <Box className={"search-pagination"} sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "center", my: fr.spacing("3v"), mx: fr.spacing("1v") }}>
       <PreviousLink previousPage={previousPage} canPreviousPage={canPreviousPage} />
       {
         displayedPages.reduce(

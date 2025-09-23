@@ -252,7 +252,16 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
     const allJobs = [...allJobQueryResult.lbaJobs, ...allJobQueryResult.partnerJobs, ...allJobQueryResult.lbaCompanies]
     const handicapJobs = [...handicapJobQueryResult.lbaJobs, ...handicapJobQueryResult.partnerJobs, ...handicapJobQueryResult.lbaCompanies]
 
-    const displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
+    let displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
+
+    if (!rechercheParams.displayPartenariats) {
+      displayedJobs = displayedJobs.filter((item) => {
+        if ("company" in item) {
+          return !item.company.mandataire
+        }
+        return true
+      })
+    }
 
     const displayedFormations = rechercheParams.elligibleHandicapFilter ? [] : formationQueryResult.formations
 
@@ -268,7 +277,7 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
       elligibleHandicapCount,
     }
     return result
-  }, [rechercheParams.elligibleHandicapFilter, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
+  }, [rechercheParams.elligibleHandicapFilter, rechercheParams.displayPartenariats, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
 
   return result
 }
