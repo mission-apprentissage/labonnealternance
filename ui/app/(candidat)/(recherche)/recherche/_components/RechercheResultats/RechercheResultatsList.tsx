@@ -12,6 +12,7 @@ import { ILbaItem, useRechercheResults } from "@/app/(candidat)/(recherche)/rech
 import { useSearchViewNotifier } from "@/app/(candidat)/(recherche)/recherche/_hooks/useSearchViewNotifier"
 import { IWhisper, useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
 import { IRecherchePageParams, isItemReferenceInList, type WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 
@@ -59,7 +60,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   const jobsCount = result.displayedJobs.length
 
   return [
-    <Box key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
+    <Box id="search-content-container" key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
       {jobQuery.errorMessage && <ErrorMessage message={jobQuery.errorMessage} />}
 
@@ -93,6 +94,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
     >
       <RechercheResultatsFooter jobStatus={jobQuery.status} searchParams={props.rechercheParams} jobCount={jobQuery.status === "loading" ? 0 : jobsCount} />
     </Box>,
+    <Footer key="global-footer" />,
   ]
 }
 

@@ -6,9 +6,8 @@ export default async function RechercheLayout({ children }: PropsWithChildren) {
     <>
       <SkipLinks
         links={[
-          { label: "Recherche", anchor: "#header-links" },
+          { label: "Recherche", anchor: "#search-form" },
           { label: "Contenu", anchor: "#search-content-container" },
-          { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
       {children}

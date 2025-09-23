@@ -94,7 +94,11 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 export function RecherchePageComponent(props: { rechercheParams: IRecherchePageParams }) {
   const rechercheResult = useRechercheResults(props.rechercheParams)
   if (rechercheResult.status === "disabled") {
-    return <RecherchePageEmpty {...props} />
+    return (
+      <Box id="search-content-container">
+        <RecherchePageEmpty {...props} />
+      </Box>
+    )
   }
   return <RecherchePageComponentWithParams {...props} />
 }
