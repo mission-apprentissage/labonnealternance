@@ -65,7 +65,6 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
     )
   }
 
-  console.log(data)
   const { applicant_first_name, applicant_last_name, recruiter_email, recruiter_phone, company_name } = data
   const positiveNegative = company_recruitment_intention === ApplicationIntention.ENTRETIEN ? "positive" : "négative"
 
