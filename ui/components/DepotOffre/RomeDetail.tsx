@@ -1,7 +1,7 @@
-import { Accordion, Checkbox } from "@chakra-ui/react"
+import { Accordion } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
 import styled from "@emotion/styled"
-import { Box, Typography } from "@mui/material"
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
 import { useState } from "react"
 import { IReferentielRomeForJobJson } from "shared"
 
@@ -146,14 +146,10 @@ const CompetenceSelection = ({
       {competences.map((competence) => {
         return (
           <Box key={competence.label} className="competence-checkbox-line">
-            <Checkbox
-              className={classNames({ "competence-checkbox": true, unselected: !competence.selected })}
-              isChecked={competence.selected}
-              defaultChecked={competence.selected}
-              onChange={() => onChange(competence.label, !competence.selected)}
-            >
-              <Typography>{competence.label}</Typography>
-            </Checkbox>
+            <FormControlLabel
+              label={competence.label}
+              control={<Checkbox defaultChecked={competence.selected} onChange={() => onChange(competence.label, !competence.selected)} />}
+            />
             {competence.error && <Typography className="error-text">{competence.error}</Typography>}
           </Box>
         )

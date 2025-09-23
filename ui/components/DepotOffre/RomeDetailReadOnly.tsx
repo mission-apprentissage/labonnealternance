@@ -1,5 +1,7 @@
-import { Accordion, Box, Heading, Text } from "@chakra-ui/react"
+import { Accordion } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import styled from "@emotion/styled"
+import { Box, Typography } from "@mui/material"
 import { IReferentielRomeForJobJson } from "shared"
 
 import { CustomAccordion } from "./CustomAccordion"
@@ -39,13 +41,13 @@ export const RomeDetailReadOnly = ({
   appellation: string
 }) => {
   return (
-    <Box border="1px solid #000091" p={5} mb={5}>
-      <Heading fontSize="24px" mb="16px" lineHeight="32px">
+    <Box sx={{ border: "1px solid #000091", p: fr.spacing("5v"), mb: fr.spacing("5v") }}>
+      <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("2w") }}>
         {appellation}
-      </Heading>
+      </Typography>
       <Accordion defaultIndex={[0]} allowMultiple>
         <CustomAccordion id="metier" header={<AccordionHeader>Descriptif du métier</AccordionHeader>}>
-          <Text>{definition}</Text>
+          <Typography>{definition}</Typography>
         </CustomAccordion>
         {competences?.savoir_etre_professionnel && (
           <CustomAccordion id="qualites" header={<AccordionHeader>Qualités souhaitées pour ce métier</AccordionHeader>}>
@@ -60,7 +62,7 @@ export const RomeDetailReadOnly = ({
           <CustomAccordion id="competences" header={<AccordionHeader>Compétences qui seront acquises durant l’alternance</AccordionHeader>}>
             {competences.savoir_faire.map(({ libelle, items = [] }) => (
               <CompetencesGroupDiv key={libelle}>
-                <Text className="competences-group-title">{libelle}</Text>
+                <Typography className="competences-group-title">{libelle}</Typography>
                 {items.map(({ libelle }) => (
                   <li key={libelle}>{libelle}</li>
                 ))}
@@ -72,7 +74,7 @@ export const RomeDetailReadOnly = ({
           <CustomAccordion id="techniques" header={<AccordionHeader>Domaines et techniques de travail</AccordionHeader>}>
             {competences.savoirs.map(({ libelle, items = [] }) => (
               <CompetencesGroupDiv key={libelle}>
-                <Text className="competences-group-title">{libelle}</Text>
+                <Typography className="competences-group-title">{libelle}</Typography>
                 {items.map(({ libelle }) => (
                   <li key={libelle}>{libelle}</li>
                 ))}
@@ -82,12 +84,10 @@ export const RomeDetailReadOnly = ({
         )}
 
         <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <Text>{acces_metier}</Text>
+          <Typography>{acces_metier}</Typography>
         </CustomAccordion>
       </Accordion>
-      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
-        La fiche métier se base sur la classification ROME de France Travail
-      </Text>
+      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
     </Box>
   )
 }
