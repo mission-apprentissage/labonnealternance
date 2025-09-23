@@ -50,7 +50,6 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           </Box>
         </Stack>
       </Box>
-      <LbaJobEngagement />
 
       <Box sx={{ mb: fr.spacing("2w") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
