@@ -18,7 +18,7 @@ export default function CompteEnAttente() {
 
   return (
     <DepotSimplifieStyling>
-      <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", my: 2 }}>
+      <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", my: fr.spacing("1w") }}>
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
         <Box>
           <Typography component="h1" sx={{ fontSize: "28px", mb: 3, fontWeight: "bold", lineHeight: "28px" }}>
