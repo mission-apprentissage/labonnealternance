@@ -150,7 +150,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
 function ValidationBanner({ children }: { children: React.ReactNode }) {
   return (
     <Box sx={{ px: "16px", py: "8px", backgroundColor: "#E1FEE8", color: "#18753C", width: "100%", display: "flex", gap: "10px" }}>
-      <SuccessCircle width="20px" fillHexaColor="#18753C" marginTop="2px" />
+      <SuccessCircle style={{ marginTop: "2px" }} width="20px" fillHexaColor="#18753C" />
       <Typography>{children}</Typography>
     </Box>
   )
