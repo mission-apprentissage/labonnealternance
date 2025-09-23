@@ -219,7 +219,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
   return (
     <>
       <Box
-        id="search-content-container"
+        id="detail-content-container"
         sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}
       >
         <TrainingDescriptionDetails training={training.training} />

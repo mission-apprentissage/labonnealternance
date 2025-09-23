@@ -1,3 +1,4 @@
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
@@ -52,9 +53,18 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
   if (!job) redirect("/404")
 
   return (
-    <JobDetailRendererClient
-      job={job as ILbaItemLbaCompanyJson /*| ILbaItemLbaJobJson*/ | ILbaItemPartnerJobJson}
-      rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
-    />
+    <>
+      <SkipLinks
+        links={[
+          { label: "En-tête", anchor: "#detail-header" },
+          { label: "Contenu", anchor: "#detail-content-container" },
+          { label: "Pied de page", anchor: "#footer-links" },
+        ]}
+      />
+      <JobDetailRendererClient
+        job={job as ILbaItemLbaCompanyJson /*| ILbaItemLbaJobJson*/ | ILbaItemPartnerJobJson}
+        rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}
+      />
+    </>
   )
 }

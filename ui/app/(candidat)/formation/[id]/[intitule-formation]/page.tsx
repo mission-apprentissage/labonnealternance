@@ -29,7 +29,7 @@ export default async function FormationPage({ params, searchParams }: { params: 
       <SkipLinks
         links={[
           { label: "En-tête", anchor: "#detail-header" },
-          { label: "Contenu", anchor: "#search-content-container" },
+          { label: "Contenu", anchor: "#detail-content-container" },
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
