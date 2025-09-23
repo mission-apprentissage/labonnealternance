@@ -10,8 +10,10 @@ export const ZAlgolia = z
   .object({
     _id: zObjectId,
     objectID: z.string(), // id obligatoire algolia = _id mongodb
+    url_id: z.string(),
     type: z.enum(["formation", "offre"]),
     sub_type: z.string(),
+    type_filter_label: z.string(),
     contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable(),
     publication_date: z.number().nullable(),
     smart_apply: z.string().nullable(),

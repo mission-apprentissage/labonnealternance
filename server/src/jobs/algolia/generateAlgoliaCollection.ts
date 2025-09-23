@@ -1,4 +1,5 @@
 import { IFormationCatalogue } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IAlgolia } from "shared/models/algolia.model"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
@@ -14,6 +15,7 @@ const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> = {
   localite: 1,
   etablissement_formateur_entreprise_raison_sociale: 1,
   entierement_a_distance: 1,
+  cle_ministere_educatif: 1,
 }
 
 const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
@@ -26,6 +28,7 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   workplace_address_label: 1,
   workplace_geopoint: 1,
   workplace_naf_label: 1,
+  workplace_siret: 1,
 
   partner_label: 1,
   apply_email: 1,
@@ -50,7 +53,7 @@ const convertFormationNiveauDiplome = (niveau: string) => {
   }
 }
 
-const getSubType = (partner_label: string, fromCfa?: boolean) => {
+const getTypeFilterLabel = (partner_label: string, fromCfa?: boolean) => {
   if (fromCfa) return "Offres d'emploi postées par des écoles"
   switch (partner_label) {
     case "offres_emploi_lba":
@@ -59,6 +62,17 @@ const getSubType = (partner_label: string, fromCfa?: boolean) => {
       return "Candidatures spontannées"
     default:
       return "Offres d'emploi partenaires"
+  }
+}
+
+const getJobType = (partner_label: string) => {
+  switch (partner_label) {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+      return LBA_ITEM_TYPE.RECRUTEURS_LBA
+    default:
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
   }
 }
 
@@ -138,8 +152,10 @@ export const fillAlgoliaCollection = async () => {
     payload.push({
       _id: formation._id,
       objectID: formation._id.toString(),
+      url_id: formation.cle_ministere_educatif,
       type: "formation",
-      sub_type: formation.entierement_a_distance ? "Formation à distance" : "Formation en présentiel",
+      type_filter_label: formation.entierement_a_distance ? "Formation à distance" : "Formation en présentiel",
+      sub_type: LBA_ITEM_TYPE.FORMATION,
       contract_type: null,
       publication_date: null,
       smart_apply: null,
@@ -162,8 +178,10 @@ export const fillAlgoliaCollection = async () => {
     payload.push({
       _id: job._id,
       objectID: job._id.toString(),
+      url_id: job._id.toString(),
       type: "offre",
-      sub_type: getSubType(job.partner_label, job.is_delegated),
+      type_filter_label: getTypeFilterLabel(job.partner_label, job.is_delegated),
+      sub_type: getJobType(job.partner_label),
       contract_type: job.contract_type,
       publication_date: job.offer_creation?.getTime() || null,
       smart_apply: job.apply_email ? "Oui" : "Non",
@@ -185,8 +203,10 @@ export const fillAlgoliaCollection = async () => {
     payload.push({
       _id: job._id,
       objectID: job._id.toString(),
+      url_id: job.workplace_siret,
       type: "offre",
-      sub_type: getSubType(job.partner_label),
+      type_filter_label: getTypeFilterLabel(job.partner_label),
+      sub_type: getJobType(job.partner_label),
       contract_type: ["Apprentissage", "Professionnalisation"],
       publication_date: job.offer_creation?.getTime() || null,
       smart_apply: job.apply_email ? "Oui" : "Non",

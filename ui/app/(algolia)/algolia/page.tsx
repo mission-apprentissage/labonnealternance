@@ -13,6 +13,7 @@ import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
 import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
 import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
 import { CardStyling } from "@/app/(candidat)/recherche/_components/RechercheResultats/CardStyling"
+import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
@@ -69,6 +70,8 @@ const customStateMapping = {
 }
 
 function HitCard({ hit }: { hit: any }) {
+  // @ts-ignore
+  const itemUrl = useResultItemUrl({ id: hit.url_id, ideaType: hit.sub_type }, {})
   return (
     <Box>
       <CardStyling>
@@ -76,12 +79,12 @@ function HitCard({ hit }: { hit: any }) {
           background
           style={{ paddingBottom: fr.spacing("1v") }}
           border
-          // enlargeLink
+          enlargeLink
           horizontal
-          // linkProps={{
-          //   href: "itemUrl",
-          //   prefetch: false,
-          // }}
+          linkProps={{
+            href: itemUrl,
+            prefetch: false,
+          }}
           start={hit.type === "formation" ? <TagFormation /> : <TagOffreEmploi />}
           title={
             <Typography
@@ -331,7 +334,7 @@ export default function AlogliaPage() {
           <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w"), flexWrap: "wrap" }}>
             <CustomRefinementList attribute="type" title="Type" />
             <CustomRefinementList attribute="level" title="Niveau" />
-            <CustomRefinementList attribute="sub_type" title="Partenaire" />
+            <CustomRefinementList attribute="type_filter_label" title="Partenaire" />
             <CustomRefinementList attribute="organization_name" title="Entreprise" />
             <CustomRefinementList attribute="contract_type" title="Type de contrat" />
             <CustomRefinementList attribute="activity_sector" title="Secteur d'activité" />
