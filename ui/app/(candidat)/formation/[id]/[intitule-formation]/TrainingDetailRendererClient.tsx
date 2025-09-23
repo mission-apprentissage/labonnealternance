@@ -13,6 +13,7 @@ import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaite
 import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { Footer } from "@/app/_components/Footer"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -142,7 +143,7 @@ function TrainingDetailPage({
             <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Box>
 
-          <Box component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>
+          <Box id="detail-header" component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>
             <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
             <Typography component="span" fontWeight={400}>
               &nbsp;propose cette formation
@@ -190,6 +191,9 @@ function TrainingDetailPage({
       <AideApprentissage />
 
       {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
+
+      <Box mt={fr.spacing("6w")} />
+      <Footer />
     </Box>
   )
 }
@@ -214,7 +218,10 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
   return (
     <>
-      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box
+        id="search-content-container"
+        sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}
+      >
         <TrainingDescriptionDetails training={training.training} />
         <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("3w"), p: 2 }}>
           {training.training.onisepUrl && (
