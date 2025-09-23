@@ -1,5 +1,5 @@
-import { Accordion } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
+import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import styled from "@emotion/styled"
 import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
 import { useState } from "react"
@@ -9,19 +9,6 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import { classNames } from "@/utils/classNames"
 
 import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
-
-import { CustomAccordion } from "./CustomAccordion"
-
-const AccordionHeader = styled.p`
-  font-weight: 700;
-
-  .subtitle {
-    color: #666666;
-    font-style: italic;
-    font-weight: 400;
-    margin-left: 4px;
-  }
-`
 
 const CompetenceSelectionDiv = styled.div`
   .competences-group-title {
@@ -68,7 +55,7 @@ export const RomeDetail = ({
       <Typography component="h2" fontWeight={700} mb={4}>
         {title}
       </Typography>
-      <Typography sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", my: fr.spacing("3v") }}>
+      <Box sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("3w") }}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
         <b>
@@ -76,54 +63,56 @@ export const RomeDetail = ({
           <br />
           Veuillez conserver au minimum 3 items.
         </b>
-      </Typography>
+      </Box>
 
-      <Accordion defaultIndex={[0, 1]} allowMultiple>
-        <CustomAccordion
-          id="metier"
-          header={
-            <AccordionHeader>
-              Descriptif du métier
-              <Typography component="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
-                Non modifiable
-              </Typography>
-            </AccordionHeader>
-          }
-        >
-          <Typography>{definition}</Typography>
-        </CustomAccordion>
-        {competences?.savoir_etre_professionnel && (
-          <RequiredCompetenceAccordion
-            id="qualites"
-            title="Qualités souhaitées pour ce métier"
-            competences={[{ labels: competences.savoir_etre_professionnel.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }]}
-            onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
-            isSelected={(competence) => isSelected("savoir_etre_professionnel", competence)}
-          />
-        )}
-        {competences?.savoir_faire && (
-          <RequiredCompetenceAccordion
-            id="competences"
-            title="Compétences qui seront acquises durant l’alternance"
-            competences={competences.savoir_faire.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
-            onChange={(competence, newValue) => onChange("savoir_faire", competence, newValue)}
-            isSelected={(competence) => isSelected("savoir_faire", competence)}
-          />
-        )}
-        {competences?.savoirs && (
-          <RequiredCompetenceAccordion
-            id="techniques"
-            title="Domaines et techniques de travail"
-            competences={competences.savoirs.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
-            onChange={(competence, newValue) => onChange("savoirs", competence, newValue)}
-            isSelected={(competence) => isSelected("savoirs", competence)}
-          />
-        )}
-
-        <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <Typography>{acces_metier}</Typography>
-        </CustomAccordion>
+      <Accordion
+        style={{ marginBottom: fr.spacing("2w") }}
+        id="metier"
+        defaultExpanded={true}
+        label={
+          <Box>
+            Descriptif du métier{" "}
+            <Typography component="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
+              Non modifiable
+            </Typography>
+          </Box>
+        }
+      >
+        <Typography>{definition}</Typography>
       </Accordion>
+
+      {competences?.savoir_etre_professionnel && (
+        <RequiredCompetenceAccordion
+          id="qualites"
+          title="Qualités souhaitées pour ce métier"
+          competences={[{ labels: competences.savoir_etre_professionnel.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }]}
+          onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
+          isSelected={(competence) => isSelected("savoir_etre_professionnel", competence)}
+        />
+      )}
+      {competences?.savoir_faire && (
+        <RequiredCompetenceAccordion
+          id="competences"
+          title="Compétences qui seront acquises durant l’alternance"
+          competences={competences.savoir_faire.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
+          onChange={(competence, newValue) => onChange("savoir_faire", competence, newValue)}
+          isSelected={(competence) => isSelected("savoir_faire", competence)}
+        />
+      )}
+      {competences?.savoirs && (
+        <RequiredCompetenceAccordion
+          id="techniques"
+          title="Domaines et techniques de travail"
+          competences={competences.savoirs.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
+          onChange={(competence, newValue) => onChange("savoirs", competence, newValue)}
+          isSelected={(competence) => isSelected("savoirs", competence)}
+        />
+      )}
+
+      <Accordion style={{ marginBottom: fr.spacing("2w") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
+        <Typography>{acces_metier}</Typography>
+      </Accordion>
+
       <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
     </BorderedBox>
   )
@@ -176,12 +165,16 @@ const RequiredCompetenceAccordion = ({
   const totalSelected = competenceLabels.filter(isSelected).length
   const minRequired = Math.min(3, totalCompetences)
   return (
-    <CustomAccordion
+    <Accordion
+      style={{ marginBottom: fr.spacing("2w") }}
       id={id}
-      header={
-        <AccordionHeader>
-          {title} <Badge className="count-badge">{totalSelected}</Badge>
-        </AccordionHeader>
+      label={
+        <>
+          <Typography component="span" sx={{ mr: fr.spacing("1w") }}>
+            {title}
+          </Typography>
+          <Badge className="count-badge">{totalSelected}</Badge>
+        </>
       }
     >
       {competences.map(({ category, labels }) => (
@@ -205,6 +198,6 @@ const RequiredCompetenceAccordion = ({
           }
         />
       ))}
-    </CustomAccordion>
+    </Accordion>
   )
 }
