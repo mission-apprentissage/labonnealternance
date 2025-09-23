@@ -29,11 +29,6 @@ export type IEntrepriseStatusEvent = z.output<typeof ZEntrepriseStatusEvent>
 
 const collectionName = "entreprises" as const
 
-export enum EntrepriseEngagementHandicapOrigin {
-  FRANCE_TRAVAIL = "FRANCE_TRAVAIL",
-  LA_BONNE_ALTERNANCE = "LA_BONNE_ALTERNANCE",
-}
-
 export const ZEntreprise = z
   .object({
     _id: zObjectId,
@@ -51,10 +46,6 @@ export const ZEntreprise = z
     naf_code: z.string().nullish().describe("Code NAF de l'entreprise"),
     naf_label: z.string().nullish().describe("Libelle NAF de l'entreprise"),
     status: z.array(ZEntrepriseStatusEvent).describe("historique de la mise à jour des données entreprise"),
-    engagementHandicapOrigin: extensions
-      .buildEnum(EntrepriseEngagementHandicapOrigin)
-      .nullish()
-      .describe("Si l'entreprise est engagée en faveur du handicap, origine de l'information"),
   })
   .strict()
 

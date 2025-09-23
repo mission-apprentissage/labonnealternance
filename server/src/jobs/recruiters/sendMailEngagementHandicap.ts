@@ -10,6 +10,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import mailer from "@/services/mailer.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 
 const SEND_AFTER_N_DAYS = 3
 
@@ -59,12 +60,25 @@ export async function sendMailEngagementHandicap(delayInDays = SEND_AFTER_N_DAYS
     if (!isValidRole(role, limitDate)) {
       continue
     }
+    const hasHandiEngagementFT = await getEntrepriseEngagementFranceTravail(role.entreprise.siret)
+    if (hasHandiEngagementFT) {
+      await getDbCollection("rolemanagements").updateOne(
+        { _id: role._id },
+        {
+          $set: {
+            engagementHandicapEmail: {
+              date: now,
+              messageId: "déjà handi-engagement FT",
+            },
+          },
+        }
+      )
+      continue
+    }
     const { user, entreprise } = role
     const messageId = await sendEngagementHandicapEmail(user, entreprise)
     await getDbCollection("rolemanagements").updateOne(
-      {
-        _id: role._id,
-      },
+      { _id: role._id },
       {
         $set: {
           engagementHandicapEmail: {

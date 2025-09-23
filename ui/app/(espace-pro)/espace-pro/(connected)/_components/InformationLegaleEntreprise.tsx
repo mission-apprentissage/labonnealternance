@@ -1,8 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { EntrepriseEngagementHandicapOrigin, parseEnum } from "shared"
+import { parseEnum } from "shared"
 import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
+import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { AUTHTYPE } from "@/common/contants"
@@ -96,7 +97,7 @@ const OrganizationInfoFields = ({
   type: typeof CFA | typeof ENTREPRISE
   opco?: OPCOS_LABEL
   is_qualiopi?: boolean
-  engagementHandicapOrigin?: EntrepriseEngagementHandicapOrigin
+  engagementHandicapOrigin?: EntrepriseEngagementSources
   viewerType: AUTHTYPE
 }) => {
   const RAISON_SOCIALE =
@@ -186,16 +187,16 @@ const OrganizationInfoFields = ({
 }
 
 const engagementHandicapLabels: Record<
-  EntrepriseEngagementHandicapOrigin,
+  EntrepriseEngagementSources,
   {
     label: string
     tooltip?: React.ReactNode
   }
 > = {
-  [EntrepriseEngagementHandicapOrigin.FRANCE_TRAVAIL]: {
+  [EntrepriseEngagementSources.FRANCE_TRAVAIL]: {
     label: "France Travail",
   },
-  [EntrepriseEngagementHandicapOrigin.LA_BONNE_ALTERNANCE]: {
+  [EntrepriseEngagementSources.LBA]: {
     label: "La bonne alternance",
     tooltip: (
       <>
@@ -210,6 +211,9 @@ const engagementHandicapLabels: Record<
         </DsfrLink>
       </>
     ),
+  },
+  [EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT]: {
+    label: "Les entreprises s'engagent",
   },
 }
 
