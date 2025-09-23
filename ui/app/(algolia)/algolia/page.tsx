@@ -115,6 +115,19 @@ function HitCard({ hit }: { hit: any }) {
               >
                 {hit.address}
               </Typography>
+              {hit.application_count && hit.application_count > 0 ? (
+                <Typography
+                  component="span"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    color: fr.colors.decisions.text.default.info.default,
+                    py: fr.spacing("1v"),
+                  }}
+                  className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
+                >
+                  {`${hit.application_count} CANDIDATURE${hit.application_count > 1 ? "S" : ""}`}
+                </Typography>
+              ) : null}
             </Box>
           }
           shadow

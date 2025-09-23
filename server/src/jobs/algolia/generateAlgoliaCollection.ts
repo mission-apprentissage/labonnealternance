@@ -67,9 +67,68 @@ export const fillAlgoliaCollection = async () => {
   const [formations, jobs, recruteur] = await Promise.all([
     getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).toArray(),
     getDbCollection("jobs_partners")
-      .find({ partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA } }, { projection: jobsProjection })
+      .aggregate([
+        {
+          $match: {
+            partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+          },
+        },
+        {
+          $lookup: {
+            from: "applications",
+            let: { jobIdStr: { $toString: "$_id" } },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$job_id", "$$jobIdStr"] },
+                },
+              },
+            ],
+            as: "applications",
+          },
+        },
+        {
+          $addFields: {
+            application_count: { $size: "$applications" },
+          },
+        },
+        {
+          $project: {
+            ...jobsProjection,
+            application_count: 1,
+          },
+        },
+      ])
       .toArray(),
-    getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { projection: jobsProjection }).limit(120_000).toArray(),
+    getDbCollection("jobs_partners")
+      .aggregate([
+        {
+          $match: {
+            partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+          },
+        },
+        {
+          $lookup: {
+            from: "applications",
+            localField: "workplace_siret",
+            foreignField: "company_siret",
+            as: "applications",
+          },
+        },
+        {
+          $addFields: {
+            application_count: { $size: "$applications" },
+          },
+        },
+        {
+          $project: {
+            ...jobsProjection,
+            application_count: 1,
+          },
+        },
+      ])
+      .limit(120_000)
+      .toArray(),
   ])
 
   const payload: IAlgolia[] = []
@@ -84,6 +143,7 @@ export const fillAlgoliaCollection = async () => {
       contract_type: null,
       publication_date: null,
       smart_apply: null,
+      application_count: null,
       title: formation.intitule_rco || "",
       description: formation.contenu || "",
       address: `${formation.lieu_formation_adresse} ${formation.code_postal} ${formation.localite}` || "",
@@ -104,9 +164,10 @@ export const fillAlgoliaCollection = async () => {
       objectID: job._id.toString(),
       type: "offre",
       sub_type: getSubType(job.partner_label, job.is_delegated),
-      smart_apply: job.apply_email ? "Oui" : "Non",
       contract_type: job.contract_type,
       publication_date: job.offer_creation?.getTime() || null,
+      smart_apply: job.apply_email ? "Oui" : "Non",
+      application_count: job.application_count,
       title: job.offer_title || "",
       description: job.offer_description || "",
       address: job.workplace_address_label || "",
@@ -129,6 +190,7 @@ export const fillAlgoliaCollection = async () => {
       contract_type: ["Apprentissage", "Professionnalisation"],
       publication_date: job.offer_creation?.getTime() || null,
       smart_apply: job.apply_email ? "Oui" : "Non",
+      application_count: job.application_count,
       title: job.offer_title || "",
       description: job.offer_description || "",
       address: job.workplace_address_label || "",
