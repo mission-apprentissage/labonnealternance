@@ -78,7 +78,6 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
     pageCount,
     gotoPage,
     prepareRow,
-    preGlobalFilteredRows,
     setGlobalFilter,
     state: { globalFilter, pageIndex },
   } = useTable(
@@ -100,9 +99,8 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
     <Box className="search-page">
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <Box width="90%">
-          <Box width="50%">
-            {/*  @ts-expect-error: TODO */}
-            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
+          <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" } }}>
+            <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
           </Box>
           {description && (
             <Box width="95%">

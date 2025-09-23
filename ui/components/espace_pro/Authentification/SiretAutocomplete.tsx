@@ -1,5 +1,6 @@
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
 import { Form, Formik, FormikHelpers } from "formik"
 import { useState } from "react"
@@ -8,8 +9,8 @@ import * as Yup from "yup"
 
 import { searchEntreprise } from "@/services/searchEntreprises"
 
+import AutocompleteAsync from "../../../app/(espace-pro)/_components/AutocompleteAsync"
 import { SIRETValidation } from "../../../common/validation/fieldValidations"
-import AutocompleteAsync from "../AutocompleteAsync"
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
@@ -60,39 +61,35 @@ export const SiretAutocomplete = ({
               renderNoResult={
                 /^[0-9]{14}$/.test(searchInput) && !validateSIRET(searchInput) ? (
                   <Box>
-                    <Text fontSize="12px" lineHeight="20px" color="#CE0500" padding="8px 16px">
-                      Le numéro de SIRET saisi n’est pas valide
-                    </Text>
+                    <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>Le numéro de SIRET saisi n’est pas valide</Typography>
                   </Box>
                 ) : undefined
               }
               renderError={() =>
                 values?.establishment_siret && !errors?.establishment_siret ? null : (
                   <Box>
-                    <Text fontSize="12px" lineHeight="20px" color="#CE0500" padding="8px 16px">
+                    <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#CE0500", padding: "8px 16px" }}>
                       La recherche par raison sociale est temporairement indisponible.
                       <br />
                       <b>Veuillez renseigner votre numéro de SIRET.</b>
-                    </Text>
+                    </Typography>
                   </Box>
                 )
               }
             />
             {selectedEntreprise && (
-              <Box marginTop="32px">
-                <Text fontSize="16px" lineHeight="24px">
-                  Établissement sélectionné :
-                </Text>
-                <Box border="solid 1px #000091" marginTop="8px">
+              <Box sx={{ marginTop: fr.spacing("4w") }}>
+                <Typography sx={{ fontSize: "16px", lineHeight: "24px" }}>Établissement sélectionné :</Typography>
+                <Box sx={{ border: "solid 1px #000091", marginTop: fr.spacing("1w") }}>
                   <EntrepriseCard {...selectedEntreprise} />
                 </Box>
               </Box>
             )}
-            <Flex justify="flex-start" marginTop="32px">
+            <Box sx={{ display: "flex", justifyItems: "flex-start", mt: fr.spacing("4w") }}>
               <Button type="submit" disabled={!isValid || isSubmitting}>
-                {isSubmitting ? <Spinner mr={2} /> : null}Continuer
+                {isSubmitting && <CircularProgress size={24} thickness={4} sx={{ color: "inherit", mr: fr.spacing("1w") }} />}Continuer
               </Button>
-            </Flex>
+            </Box>
           </Form>
         )
       }}
@@ -102,12 +99,10 @@ export const SiretAutocomplete = ({
 
 const EntrepriseCard = ({ adresse, raison_sociale, siret, highlighted }: { highlighted?: boolean; raison_sociale: string; siret: string; adresse: string }) => {
   return (
-    <Box backgroundColor={highlighted ? "#F6F6F6" : "white"} py={2} px={4}>
-      <Text color="#161616" fontWeight={700}>
-        {raison_sociale}
-      </Text>
-      <Text color="#161616">{siret}</Text>
-      <Text color="#666666">{adresse}</Text>
+    <Box sx={{ backgroundColor: highlighted ? "#F6F6F6" : "white", py: fr.spacing("1w"), px: fr.spacing("2w") }}>
+      <Typography sx={{ fontWeight: 700, color: "#161616" }}>{raison_sociale}</Typography>
+      <Typography sx={{ color: "#161616" }}>{siret}</Typography>
+      <Typography sx={{ color: "#666666" }}>{adresse}</Typography>
     </Box>
   )
 }
