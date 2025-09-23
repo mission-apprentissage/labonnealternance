@@ -6,6 +6,7 @@ import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
+import { AnyBulkWriteOperation } from "mongodb"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -31,6 +32,8 @@ const { streamArray } = require("stream-json/streamers/StreamArray")
 const CURRENT_DIR_PATH = __dirname(import.meta.url)
 const PREDICTION_FILE_PATH = path.join(CURRENT_DIR_PATH, "./assets/recruteurslba.json")
 const S3_FILE = config.algoRecuteursLba.s3File
+
+type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
 
 export const createAssetsFolder = async () => {
   const assetsPath = path.join(CURRENT_DIR_PATH, "./assets")
@@ -148,53 +151,67 @@ export const importRecruteurLbaToComputed = async () => {
   const importDate = new Date()
   const transformStream = new Transform({
     objectMode: true,
-    async transform(document, _encoding, callback) {
-      counters.total++
-      try {
-        const parsedDocument = ZRecruteursLbaRaw.parse(document)
-        const { apply_email, apply_phone, updated_at, ...rest } = recruteursLbaToJobPartners(parsedDocument)
-        const { workplace_address_zipcode } = rest
+    async transform(documents, _encoding, callback) {
+      counters.total += documents.length
+      if (counters.total % 1000 === 0) logger.info(`processing document ${counters.total}`)
 
-        if (!extensions.zipCode().safeParse(workplace_address_zipcode).success) {
+      const operations: BulkOperation[] = []
+
+      for (const document of documents) {
+        try {
+          const parsedDocument = ZRecruteursLbaRaw.parse(document)
+          const { apply_email, apply_phone, updated_at, offer_creation, ...rest } = recruteursLbaToJobPartners(parsedDocument)
+          const { workplace_address_zipcode } = rest
+
+          if (workplace_address_zipcode) {
+            if (!extensions.zipCode().safeParse(workplace_address_zipcode).success) {
+              counters.error++
+              continue
+            }
+          }
+
+          const isEmailBl = apply_email ? await isEmailBlacklisted(apply_email) : false
+
+          operations.push({
+            updateOne: {
+              filter: { workplace_siret: rest.workplace_siret },
+              update: {
+                $set: {
+                  apply_email: isEmailBl ? null : apply_email,
+                  apply_phone,
+                  offer_creation,
+                  updated_at: importDate,
+                },
+                $setOnInsert: {
+                  ...rest,
+                  offer_status_history: [],
+                  _id: new ObjectId(),
+                },
+              },
+              upsert: true,
+            },
+          })
+
+          counters.success++
+        } catch (err) {
           counters.error++
-          logger.warn(`received bad zip code for id=${document._id} partner_label=${partnerLabel}. zip code=${workplace_address_zipcode}`)
-          callback()
-          return
+          const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
+          logger.error(newError.message, err)
+          logger.error(JSON.stringify(err))
+          newError.cause = err
+          sentryCaptureException(newError)
         }
-
-        const isEmailBl = apply_email ? await isEmailBlacklisted(apply_email) : false
-
-        await getDbCollection("computed_jobs_partners").updateOne(
-          { workplace_siret: rest.workplace_siret },
-          {
-            $set: {
-              apply_email: isEmailBl ? null : apply_email,
-              apply_phone,
-              updated_at: importDate,
-            },
-            $setOnInsert: {
-              ...rest,
-              offer_status_history: [],
-              _id: new ObjectId(),
-            },
-          },
-          { upsert: true }
-        )
-        counters.success++
-        callback()
-      } catch (err) {
-        counters.error++
-        const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
-        logger.error(newError.message, err)
-        logger.error(JSON.stringify(err))
-        newError.cause = err
-        sentryCaptureException(newError)
-        callback()
       }
+
+      if (operations.length > 0) {
+        await getDbCollection("computed_jobs_partners").bulkWrite(operations, { ordered: true })
+      }
+
+      callback()
     },
   })
 
-  await pipeline(getDbCollection(rawRecruteursLbaModel.collectionName).find({}).stream(), transformStream)
+  await pipeline(getDbCollection(rawRecruteursLbaModel.collectionName).find({}).stream(), groupStreamData({ size: 10_000 }), transformStream)
 
   const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
   logger.info(message)

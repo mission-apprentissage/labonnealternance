@@ -1,15 +1,17 @@
 "use client"
 
-import { Box, Container, Flex, Spinner, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Typography, Container, Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
+import { FormHeaderComponent } from "@/components/espace_pro/Candidat/layout/FormHeaderComponent"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
-import { IconeLogo } from "@/theme/components/icons"
 import { getPrdvContext } from "@/utils/api"
 
 /**
@@ -21,25 +23,14 @@ export default function PriseDeRendezVous() {
   const referrer = searchParams.get("referrer")
 
   return (
-    <Container maxWidth="82ch" mt={5}>
-      <Box bg="#F9F8F6">
-        <Flex alignItems="center" flexDirection={["column", "column", "row"]}>
-          <Box flex="1" ml={["0", "0", "6em"]}>
-            <Flex flexDirection={["column", "column", "row"]} mt={[7, 0, 0]}>
-              <Text fontSize="2rem" fontWeight="bold" lineHeight="2.5rem" color="info">
-                Envoyer <br />
-                une demande de contact <br />
-                <Text textStyle="h2" as="span" color="grey.700">
-                  au centre de formation
-                </Text>
-              </Text>
-            </Flex>
-          </Box>
-          <Box mr="2rem" mt={8}>
-            <IconeLogo w={["0px", "0px", "300px"]} h={["0px", "0px", "174px"]} />
-          </Box>
-        </Flex>
-      </Box>
+    <Container disableGutters>
+      <FormHeaderComponent>
+        <>
+          Un candidat souhaite <br />
+          être contacté <br />
+          <Typography sx={{ color: "black" }}>par votre centre de formation</Typography>
+        </>
+      </FormHeaderComponent>
       <PageContent cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
     </Container>
   )
@@ -61,7 +52,7 @@ const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif:
   const { setPrdvDone } = useFormationPrdvTracker(cleMinistereEducatif)
   const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
 
-  if (isLoading) return <Spinner display="block" mx="auto" size="xl" my="10rem" />
+  if (isLoading) return <LoadingEmptySpace />
   let error: string | null = null
   if (fetchError) {
     error = fetchError + ""
@@ -71,11 +62,7 @@ const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif:
     error = data.error + ""
   }
   if (error) {
-    return (
-      <Box my="5rem" textAlign="center">
-        {error}
-      </Box>
-    )
+    return <Box sx={{ my: "5rem", textAlign: "center" }}>{error}</Box>
   }
 
   if (confirmation) {
@@ -92,7 +79,7 @@ const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif:
   }
 
   return (
-    <>
+    <Box sx={{ my: fr.spacing("3w") }}>
       <ContactCfaSummary
         entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
         intitule={data?.intitule_long}
@@ -101,6 +88,6 @@ const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif:
         ville={data?.localite}
       />
       <DemandeDeContactForm context={context} referrer={referrer} onRdvSuccess={localOnSuccess} />
-    </>
+    </Box>
   )
 }

@@ -1,8 +1,9 @@
-import { Box, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 
-import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
+import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 interface ConfirmationActivationUtilisateurProps {
   isOpen: boolean
@@ -21,30 +22,29 @@ const ConfirmationActivationUtilisateur = (props: ConfirmationActivationUtilisat
   }
 
   return (
-    <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="xl" isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} mb={0} borderRadius={0}>
-        <ModalCloseButton onClose={onClose} />
-        <ModalHeader>
-          <Heading as="h2" mb={0} fontSize="1.5rem">
-            Activation du compte
-          </Heading>
-        </ModalHeader>
-        <ModalBody pb={6}>
-          Vous êtes sur le point d’activer le compte de l’entreprise {establishment_raison_sociale}. Une fois le compte validé, l’entreprise pourra accéder au service de dépot
-          d’offres et modifier ses informations.
-        </ModalBody>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
+      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+          Activation du compte
+        </Typography>
 
-        <ModalFooter>
-          <Box mr={3}>
+        <Box sx={{ pb: fr.spacing("1w") }}>
+          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+            Vous êtes sur le point d’activer le compte de l’entreprise {establishment_raison_sociale}. Une fois le compte validé, l’entreprise pourra accéder au service de dépot
+            d’offres et modifier ses informations.
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
+          <Box mr={fr.spacing("3v")}>
             <Button priority="secondary" onClick={() => onClose()}>
               Annuler
             </Button>
           </Box>
           <Button onClick={() => activateUser()}>Activer le compte</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+        </Box>
+      </Box>
+    </ModalReadOnly>
   )
 }
 

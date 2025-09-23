@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Container } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 
@@ -40,10 +40,10 @@ export default function User() {
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
   return (
     <>
-      <Box as="header">
+      <Box component="header">
         <NavigationAdmin currentPage="GESTION_RECRUTEURS" />
       </Box>
-      <Container as="main" p={0} maxW="container.xl" flexGrow="1">
+      <Box maxWidth={1200} marginX="auto">
         <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: establishmentLabel })]} />
         <DetailEntreprise
           userRecruteur={userRecruteur}
@@ -53,7 +53,7 @@ export default function User() {
             refetchRecruiter()
           }}
         />
-      </Container>
+      </Box>
     </>
   )
 }

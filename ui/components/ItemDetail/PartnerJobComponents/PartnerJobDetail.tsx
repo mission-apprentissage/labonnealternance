@@ -99,9 +99,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           </Stack>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("2w") }}>
-          <LbaJobEngagement />
-        </Box>
+        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
         <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} />

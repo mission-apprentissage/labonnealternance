@@ -1014,6 +1014,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
   [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
   [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
+  [JOB_PARTNER_BUSINESS_ERROR.FULL_TIME]: "The offer is considered a full-time position",
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
   [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
 }

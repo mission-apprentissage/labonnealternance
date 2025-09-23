@@ -19,7 +19,7 @@ export function BackEntrepriseUpsertOffre({ establishment_id, job_id }: { establ
       <UpsertOffre
         establishment_id={establishment_id}
         job_id={job_id}
-        onSuccess={() => router.push(PAGES.dynamic.successEditionOffre({ userType: user.type, establishment_id, user_id: user._id }).getPath())}
+        onSuccess={() => setTimeout(() => router.push(PAGES.dynamic.successEditionOffre({ userType: user.type, establishment_id, user_id: user._id }).getPath()), 2000)}
       />
     </DepotSimplifieStyling>
   )

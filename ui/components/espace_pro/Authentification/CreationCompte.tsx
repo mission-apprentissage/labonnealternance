@@ -1,7 +1,8 @@
 "use client"
 
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Alert, AlertIcon, Box, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
+import { Box, Link, Typography } from "@mui/material"
 import { FormikHelpers } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
@@ -45,6 +46,7 @@ const CreationCompteForm = ({
 
   const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setFieldError }: FormikHelpers<{ establishment_siret: string }>) => {
     setBandeau(null)
+
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
 
     const nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: organisationType, origin, isWidget }).getPath()
@@ -110,11 +112,12 @@ const CreationCompteForm = ({
                     <>
                       <Link
                         aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
-                        isExternal
-                        textDecoration="underline"
+                        underline="hover"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
                       >
-                        Contactez-nous <ExternalLinkIcon mx="2px" />
+                        Contactez-nous
                       </Link>{" "}
                       pour obtenir plus d'informations.
                     </>
@@ -132,21 +135,27 @@ const CreationCompteForm = ({
   return (
     <>
       {isCfa && (
-        <Alert status="info" variant="top-accent">
-          <AlertIcon />
-          <Text>
-            Pour les organismes de formation,{" "}
-            <Link
-              variant="classic"
-              onClick={() => {
-                setIsCfa(false)
-                router.push(PAGES.static.espaceProCreationCfa.getPath())
-              }}
-            >
-              veuillez utiliser ce lien
-            </Link>
-          </Text>
-        </Alert>
+        <Alert
+          severity="info"
+          title={
+            <Typography>
+              Pour les organismes de formation,{" "}
+              <Link
+                onClick={() => {
+                  setIsCfa(false)
+                  router.push(PAGES.static.espaceProCreationCfa.getPath())
+                }}
+                underline="hover"
+                target="_blank"
+                href="#"
+                rel="noopener noreferrer"
+                sx={{ cursor: "pointer" }}
+              >
+                veuillez utiliser ce lien
+              </Link>
+            </Typography>
+          }
+        />
       )}
       <SiretAutocomplete onSubmit={submitSiret} onSelectOrganisation={onSelectOrganisation} />
     </>
@@ -183,18 +192,20 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
   return (
     <AnimationContainer>
       {bandeau && <Bandeau {...bandeau} />}
-      <SimpleGrid columns={[1, 1, 2, 2]} spacing={[0, 0, 4, 4]} mt={0}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: { xs: 0, md: fr.spacing("2w") }, mt: 0 }}>
         <Box mb={4}>
-          <Heading className="big">Vous recrutez des alternants ?</Heading>
-          <Text className="big" mt={2} mb={4}>
+          <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
+            Vous recrutez des alternants ?
+          </Typography>
+          <Typography component="div" sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("2w"), mt: fr.spacing("4w") }}>
             Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
-          </Text>
+          </Typography>
           <CreationCompteForm organisationType={organisationType} setBandeau={setBandeau} origin={origin} isWidget={isWidget} onSelectOrganisation={onSelectOrganisation} />
         </Box>
         <BorderedBox>
           <InformationsSiret currentTab={selectedTab} onCurrentTabChange={setSelectedTab} />
         </BorderedBox>
-      </SimpleGrid>
+      </Box>
     </AnimationContainer>
   )
 }

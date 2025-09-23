@@ -1,5 +1,6 @@
 "use client"
-import { Box, Heading, Link, Text } from "@chakra-ui/react"
+
+import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
@@ -10,29 +11,27 @@ import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 const EmailEnValidationManuelle = () => (
-  <Box pt={["6", "12"]} px={["6", "8"]}>
-    <Heading fontSize="28px" as="h1" mb={7}>
+  <Box sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
+    <Typography component="h1" sx={{ fontSize: "28px", mb: 3 }}>
       Merci ! Votre adresse email est bien confirmée.
-    </Heading>
-    <Text fontSize="18px">Nos équipes se chargent à présent de valider votre compte. Vous serez notifié par email dès que ce sera fait.</Text>
-    <Text fontSize="18px">À bientôt sur La bonne alternance !</Text>
-    <Text fontSize="18px" pt={3}>
-      Vous allez être redirigé automatiquement dans quelques instants...
-    </Text>
+    </Typography>
+    <Typography sx={{ fontSize: "18px" }}>Nos équipes se chargent à présent de valider votre compte. Vous serez notifié par email dès que ce sera fait.</Typography>
+    <Typography sx={{ fontSize: "18px" }}>À bientôt sur La bonne alternance !</Typography>
+    <Typography sx={{ fontSize: "18px", pt: 1 }}>Vous allez être redirigé automatiquement dans quelques instants...</Typography>
   </Box>
 )
 
 const ErreurValidation = () => (
-  <Box pt={["6", "12"]} px={["6", "8"]}>
-    <Heading fontSize="28px" as="h1" mb={7}>
+  <Box sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
+    <Typography component="h1" sx={{ fontSize: "28px", mb: 3 }}>
       Mail invalide
-    </Heading>
-    <Text fontSize="18px">
+    </Typography>
+    <Typography sx={{ fontSize: "18px" }}>
       La validation de votre email a échoué. Merci de{" "}
-      <Link pl={2} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Authentification%20LBAR%20-%20Mail%20invalide" textDecoration="underline">
+      <Link sx={{ ml: 1 }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Authentification%20LBAR%20-%20Mail%20invalide">
         Contacter l'équipe La bonne alternance
       </Link>
-    </Text>
+    </Typography>
   </Box>
 )
 

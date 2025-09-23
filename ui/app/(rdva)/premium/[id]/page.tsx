@@ -1,7 +1,8 @@
 "use client"
 
-import { Box, Container, Stack, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Typography, Box, Container, Stack } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { IEtablissementJson } from "shared"
@@ -89,74 +90,66 @@ export default function PremiumParcoursup() {
   }
 
   return (
-    <Box w="100%" py={[4, 4, 8]} px={[1, 1, 12, 24]}>
-      <Container maxW="996px" pl={20} pr={24}>
+    <Container sx={{ my: fr.spacing("6w") }}>
+      <Box sx={{ border: `1px solid ${fr.colors.decisions.text.actionHigh.blueFrance.default}`, px: fr.spacing("7w") }}>
+        <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
+          Activation du service “RDV Apprentissage” sur Parcoursup
+        </Typography>
         {hasRefused && !hasAccepted && (
-          <Stack direction="row" alignItems="flex-start">
-            <SuccessCircle width={33} fillHexaColor="#000091" mt={2} />
-            <Box w="100%">
-              <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800" ml={2}>
-                Votre choix a bien été pris en compte
-              </Text>
-              <Text mt={4} color="grey.800" ml={2}>
-                Le service RDV Apprentissage ne sera pas activé pour vos formations. Si vous changez d'avis, merci de nous contacter à l'adresse suivante:{" "}
-                <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
-                  labonnealternance@apprentissage.beta.gouv.fr
-                </a>
-                .
-              </Text>
-            </Box>
-          </Stack>
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), mb: fr.spacing("3w"), alignItems: "center" }}>
+            <SuccessCircle width={33} fillHexaColor="#000091" />
+
+            <Typography sx={{ fontWeight: 700 }}>
+              Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
+              l'adresse suivante:{" "}
+              <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
+                labonnealternance@apprentissage.beta.gouv.fr
+              </a>
+            </Typography>
+          </Box>
         )}
         {hasAccepted && (
-          <Stack direction="row" alignItems="flex-start">
-            <SuccessCircle width={33} fillHexaColor="#000091" mt={2} />
-            <Box w="100%">
-              <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800" ml={2}>
-                Félicitations, votre choix a bien été pris en compte.
-              </Text>
-              <Text mt={4} color="grey.800" ml={2}>
-                Le service RDV Apprentissage est désormais activé sur Parcoursup.
-              </Text>
-            </Box>
-          </Stack>
+          <Box sx={{ display: "flex", gap: fr.spacing("2w"), mb: fr.spacing("3w"), alignItems: "center" }}>
+            <SuccessCircle width={33} fillHexaColor="#000091" />
+            <Typography sx={{ fontWeight: 700 }}>
+              Félicitations, votre choix a bien été pris en compte.
+              <br />
+              Le service RDV Apprentissage est désormais activé sur Parcoursup.
+            </Typography>
+          </Box>
         )}
         {!hasRefused && !hasAccepted && (
           <>
-            <Box>
-              <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800">
-                Activation du service “RDV Apprentissage” sur Parcoursup
-              </Text>
-            </Box>
-            <Text mt={6}>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Text>
-            <Stack direction="row" align="center">
-              <SuccessCircle fillHexaColor="#00AC8C" />
-              <Text fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Text>
+            <Typography>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Typography>
+
+            <Stack sx={{ mt: fr.spacing("2w") }} gap={fr.spacing("1w")}>
+              <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
+                <SuccessCircle fillHexaColor="#00AC8C" />
+                <Typography fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
+                <SuccessCircle fillHexaColor="#00AC8C" />
+                <Typography fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Typography>
+              </Box>
             </Stack>
-            <Stack direction="row" align="center">
-              <SuccessCircle fillHexaColor="#00AC8C" />
-              <Text fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Text>
-            </Stack>
-            <Box mt={5} mr={6}>
+
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
               <Button onClick={accept}>Oui, j’accepte les conditions</Button>
-            </Box>
-            <Box mt={5}>
+
               <Button priority="secondary" onClick={refuse}>
                 Non, je ne suis pas prêt
               </Button>
             </Box>
-            <Box>
-              <Text mt={5}>
-                Le service sera activé sur toutes les formations éligibles à être affichées sur Parcoursup, liées à votre SIRET{" "}
-                <Text as="span" fontWeight="700">
-                  {etablissement.gestionnaire_siret}
-                </Text>
-                .
-              </Text>
+            <Box sx={{ mb: fr.spacing("3w") }}>
+              <Typography>
+                Le service sera activé sur toutes les formations éligibles à être affichées sur Parcoursup, <br /> liées à votre SIRET{" "}
+                <strong>{etablissement.gestionnaire_siret}</strong>.
+              </Typography>
             </Box>
           </>
         )}
-      </Container>
-    </Box>
+      </Box>
+    </Container>
   )
 }
