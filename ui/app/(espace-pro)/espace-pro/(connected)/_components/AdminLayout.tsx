@@ -9,7 +9,7 @@ export const AdminLayout = ({ currentAdminPage, children }: { currentAdminPage: 
   return (
     <>
       <NavigationAdmin currentPage={currentAdminPage} />
-      <Container maxWidth="xl" sx={{ paddingY: 0, paddingRight: 0, paddingLeft: fr.spacing("4w") }}>
+      <Container maxWidth="xl" sx={{ paddingY: 0, px: fr.spacing("2w"), paddingBottom: fr.spacing("4w") }}>
         {children}
       </Container>
     </>
