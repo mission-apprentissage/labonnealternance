@@ -43,7 +43,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
       <Typography sx={{ mb: fr.spacing("3w") }}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Typography>
       <Box sx={{ display: "flex", backgroundColor: "#F9F8F6" }}>
         <Box sx={{ width: "100px", px: "40px", py: "16px" }}>
-          <BarberGuy w="34px" h="38px" />
+          <BarberGuy sx={{ width: "34px", height: "38px" }} />
         </Box>
         <Box sx={{ mt: "12px", pb: "24px", pr: "10px" }}>
           <Typography sx={{ fontSize: "20px", fontWeight: 700, mt: "6px" }}>

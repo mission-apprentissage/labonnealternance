@@ -1,9 +1,8 @@
-import { Icon, IconProps } from "@chakra-ui/react"
-import React from "react"
+import { SvgIcon, SvgIconProps } from "@mui/material"
 
-export function Disquette(props: IconProps) {
+export function Disquette(props: SvgIconProps) {
   return (
-    <Icon viewBox="0 0 611.923 611.923" {...props}>
+    <SvgIcon viewBox="0 0 611.923 611.923" {...props}>
       <path
         d="M606.157,120.824L489.908,4.575c-2.46-2.46-6.612-4.152-10.764-4.152H434.32H175.988H40.672
 		C18.222,0.423,0,18.721,0,41.095v529.734c0,22.45,18.298,40.672,40.672,40.672h86.341h368.661h75.577
@@ -19,6 +18,6 @@ export function Disquette(props: IconProps) {
 		c-8.304,0-14.916-6.612-14.916-14.916s6.612-14.916,14.916-14.916h189.289C415.945,394.84,422.634,401.529,422.634,410.678z"
         fill="currentColor"
       />
-    </Icon>
+    </SvgIcon>
   )
 }
