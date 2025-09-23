@@ -184,7 +184,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
               <Box sx={{ ml: 1 }}>
                 {/*  @ts-expect-error: TODO */}
                 <Button onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
-                  <Disquette w="16px" h="16px" />
+                  <Disquette sx={{ width: "16px", height: "16px" }} />
                 </Button>
               </Box>
             </Box>
