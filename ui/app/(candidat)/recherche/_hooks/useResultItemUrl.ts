@@ -11,3 +11,11 @@ export function useResultItemUrl(item: ItemReferenceLike, rechercheParams: IRech
 
   return url
 }
+
+export function useResultItemUrlAlgolia(item: ItemReferenceLike): string {
+  const url = useMemo(() => {
+    return item ? getResultItemUrl(item) : null
+  }, [item])
+
+  return url
+}

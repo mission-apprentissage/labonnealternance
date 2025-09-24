@@ -13,7 +13,7 @@ import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
 import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
 import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
 import { CardStyling } from "@/app/(candidat)/recherche/_components/RechercheResultats/CardStyling"
-import { useResultItemUrl } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
+import { useResultItemUrlAlgolia } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { publicConfig } from "@/config.public"
@@ -79,7 +79,7 @@ const customStateMapping = {
 
 function HitCard({ hit }: { hit: any }) {
   // @ts-ignore
-  const itemUrl = useResultItemUrl({ id: hit.url_id, ideaType: hit.sub_type }, {})
+  const itemUrl = useResultItemUrlAlgolia({ id: hit.url_id, ideaType: hit.sub_type })
   return (
     <Box>
       <CardStyling>
