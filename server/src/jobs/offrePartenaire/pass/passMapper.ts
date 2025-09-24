@@ -148,11 +148,11 @@ function parseDiploma(field) {
   }
 
   const diplomaLabels = {
-    "Niveau 3": "Cap, autres formations niveau (Infrabac)",
-    "Niveau 4": "BP, Bac, autres formations niveau (Bac)",
-    "Niveau 5": "BTS, DEUST, autres formations niveau (Bac+2)",
-    "Niveau 6": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
-    "Niveau 7": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+    "Niveau 3": "Cap, autres formations (Infrabac)",
+    "Niveau 4": "BP, Bac, autres formations (Bac)",
+    "Niveau 5": "BTS, DEUST, autres formations (Bac+2)",
+    "Niveau 6": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    "Niveau 7": "Master, titre ingénieur, autres formations (Bac+5)",
   }
 
   for (const pattern of Object.keys(diplomaLevels)) {
