@@ -5,8 +5,8 @@ import { Box, Divider, Grid2 as Grid, Tab, Tabs, Typography } from "@mui/materia
 import { useState } from "react"
 
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { publicConfig } from "@/config.public"
 
-import { publicConfig } from "../../../config.public"
 import { PAGES } from "../../../utils/routes.utils"
 import { Breadcrumb } from "../../_components/Breadcrumb"
 
@@ -90,7 +90,7 @@ export default function StatistiquesClient() {
                 width="100%"
                 // @ts-expect-error: ?
                 border="none"
-                height="800px"
+                height="2100px"
                 title="stats_plausible"
                 plausible-embed="true"
                 src="https://plausible.io/share/labonnealternance.apprentissage.beta.gouv.fr?auth=Ck7r5NwNNf9IveZVA5U0O&embed=true&theme=light&background=transparent"
@@ -100,17 +100,17 @@ export default function StatistiquesClient() {
 
             <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
               <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les offres d'emploi
+                Les opportunités d’emploi
               </Typography>
               <Divider sx={{ mt: 6, mb: 2 }} />
               <iframe
                 width="100%"
                 // @ts-expect-error: ?
                 border="none"
-                height="450px"
+                height="1100px"
                 // onLoad={metabaseIframeOnLoad}
                 title="stats_offres_lba"
-                src={`${publicConfig.baseUrl}/metabase/public/dashboard/74a0d3f7-97e7-41b3-86ac-38cadbc21a76`}
+                src={`${publicConfig.baseUrl}/metabase/public/dashboard/882fcfcc-8020-4387-9ab1-0180f5dd38b4`}
                 loading="lazy"
               ></iframe>
             </Box>
@@ -124,10 +124,10 @@ export default function StatistiquesClient() {
                 width="100%"
                 // @ts-expect-error: ?
                 border="none"
-                height="500px"
+                height="600px"
                 // onLoad={metabaseIframeOnLoad}
                 title="stats_formations_lba"
-                src={`${publicConfig.baseUrl}/metabase/public/dashboard/ff285493-4d51-4429-b330-497a14c92974`}
+                src={`${publicConfig.baseUrl}/metabase/public/dashboard/d871dd8b-4021-493b-9081-0ad4ac4b066a`}
                 loading="lazy"
               ></iframe>
             </Box>
@@ -136,34 +136,34 @@ export default function StatistiquesClient() {
           <TabPanel value={value} index={1}>
             <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
               <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les candidatures
+                Les candidatures aux opportunités d’emploi
               </Typography>
               <Divider sx={{ mt: 6, mb: 2 }} />
               <iframe
                 width="100%"
                 // @ts-expect-error: ?
                 border="none"
-                height="500px"
+                height="1200px"
                 // onLoad={metabaseIframeOnLoad}
                 title="stats_candidatures_lba"
-                src={`${publicConfig.baseUrl}/metabase/public/dashboard/9b0132ca-2629-4fa7-9be8-9183f2f7d98d`}
+                src={`${publicConfig.baseUrl}/metabase/public/dashboard/08660119-0ec8-4311-a9a3-694a6b5504ee`}
                 loading="lazy"
               ></iframe>
             </Box>
 
             <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
               <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les demandes de rendez-vous
+                Les demandes d’informations aux CFA
               </Typography>
               <Divider sx={{ mt: 6, mb: 2 }} />
               <iframe
                 width="100%"
                 // @ts-expect-error: ?
                 border="none"
-                height="330px"
+                height="1300px"
                 title="stats_count_prdv"
                 // onLoad={metabaseIframeOnLoad}
-                src={`${publicConfig.baseUrl}/metabase/public/dashboard/d9818d96-22b4-4fa8-bf90-3109c8f86f14`}
+                src={`${publicConfig.baseUrl}/metabase/public/dashboard/da0e20fb-3fbf-4cf8-971c-ac06dadf75c9`}
                 loading="lazy"
               ></iframe>
             </Box>
@@ -226,10 +226,10 @@ export default function StatistiquesClient() {
                     max-width="300px"
                     // @ts-expect-error: ?
                     border="none"
-                    height="350px"
+                    height="1000px"
                     title="stats_signatures_contrat"
                     // onLoad={metabaseIframeOnLoad}
-                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/2984c1be-175b-41bd-9bf8-8a892dac5565`}
+                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/19e1b709-f955-415b-8212-4e085569810c`}
                     loading="lazy"
                   ></iframe>
                 </Box>
@@ -246,10 +246,10 @@ export default function StatistiquesClient() {
                     max-width="300px"
                     // @ts-expect-error: ?
                     border="none"
-                    height="350px"
+                    height="1000px"
                     title="stats_inscriptions_formations"
                     // onLoad={metabaseIframeOnLoad}
-                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/46675941-a800-4f05-98f2-667d9810a912`}
+                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/c570909c-044a-4906-b0a3-61b6c47c9d6e`}
                     loading="lazy"
                   ></iframe>
                 </Box>
