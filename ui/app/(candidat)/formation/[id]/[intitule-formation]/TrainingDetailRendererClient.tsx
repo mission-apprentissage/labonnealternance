@@ -29,7 +29,6 @@ import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import fetchInserJeuneStats from "@/services/fetchInserJeuneStats"
 import { SendPlausibleEvent } from "@/utils/plausible"
-import { PAGES } from "@/utils/routes.utils"
 import { formatDate } from "@/utils/strutils"
 
 import { IRecherchePageParams } from "../../../recherche/_utils/recherche.route.utils"
@@ -88,7 +87,7 @@ function TrainingDetailPage({
 
   const router = useRouter()
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
+  const handleClose = () => router.back()
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
