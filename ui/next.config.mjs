@@ -50,6 +50,7 @@ const contentSecurityPolicy = `
               https://recherche-entreprises.api.gouv.fr
               https://kl08pfb3hu-3.algolianet.com
               https://kl08pfb3hu-dsn.algolia.net
+              https://cdn.jsdelivr.net
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
   img-src 'self'
               data:
