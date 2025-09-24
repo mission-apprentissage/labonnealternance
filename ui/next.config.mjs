@@ -17,6 +17,7 @@ const withBundleAnalyzer = createWithBundleAnalyzer({
 
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
+ * @param {string} value
  */
 function inline(value) {
   return value.replace(/\s{2,}/g, " ").trim()
@@ -33,6 +34,7 @@ const contentSecurityPolicy = `
               http://localhost:3000
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr
+              https://cdn.jsdelivr.net
               blob:;
   script-src-attr 'none';
   connect-src 'self'
@@ -48,6 +50,9 @@ const contentSecurityPolicy = `
               https://exposition.inserjeunes.beta.gouv.fr
               https://sentry.apprentissage.beta.gouv.fr
               https://recherche-entreprises.api.gouv.fr
+              https://kl08pfb3hu-3.algolianet.com
+              https://kl08pfb3hu-dsn.algolia.net
+              https://insights.algolia.io
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
   img-src 'self'
               data:

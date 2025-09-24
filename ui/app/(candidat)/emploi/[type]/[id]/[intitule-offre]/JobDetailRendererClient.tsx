@@ -26,7 +26,6 @@ import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/P
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
-import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
@@ -65,7 +64,7 @@ function JobDetail({
 
   const kind = selectedItem.ideaType
   const isMandataire = selectedItem?.company?.mandataire
-  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
+  const handleClose = () => router.back()
 
   // @ts-expect-error
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && selectedItem?.nafs?.length > 0 ? selectedItem.nafs[0]?.label : selectedItem.title
