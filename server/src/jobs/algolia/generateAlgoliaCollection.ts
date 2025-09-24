@@ -113,6 +113,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
+      .limit(100_000)
       .toArray(),
     getDbCollection("jobs_partners")
       .aggregate([
@@ -141,7 +142,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(120_000)
+      .limit(80_000)
       .toArray(),
   ])
 
