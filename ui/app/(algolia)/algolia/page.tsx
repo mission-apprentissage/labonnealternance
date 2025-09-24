@@ -34,7 +34,11 @@ const customStateMapping = {
       type: indexUiState.refinementList?.type,
       level: indexUiState.refinementList?.level,
       sub_type: indexUiState.refinementList?.sub_type,
+      type_filter_label: indexUiState.refinementList?.type_filter_label,
       organization_name: indexUiState.refinementList?.organization_name,
+      activity_sector: indexUiState.refinementList?.activity_sector,
+      contract_type: indexUiState.refinementList?.contract_type,
+      smart_apply: indexUiState.refinementList?.smart_apply,
       page: indexUiState.page,
       coordinates: indexUiState.configure?.aroundLatLng,
       radius: globalRadius,
@@ -47,7 +51,7 @@ const customStateMapping = {
     if (routeState.radius) {
       globalRadius = Number(routeState.radius)
     }
-    console.log("routeToState - routeState:", routeState)
+
     const state = {
       lba: {
         query: routeState.q,
@@ -57,6 +61,10 @@ const customStateMapping = {
           level: routeState.level,
           sub_type: routeState.sub_type,
           organization_name: routeState.organization_name,
+          activity_sector: routeState.activity_sector,
+          contract_type: routeState.contract_type,
+          type_filter_label: routeState.type_filter_label,
+          smart_apply: routeState.smart_apply,
         },
         configure: {
           ...(routeState.coordinates && { aroundLatLng: routeState.coordinates }),
@@ -64,7 +72,7 @@ const customStateMapping = {
         },
       },
     }
-    console.log("routeToState - returning state:", JSON.stringify(state, null, 2))
+
     return state
   },
 }
@@ -243,11 +251,6 @@ function PublicationDateSelect() {
   const handleChange = (e: SelectChangeEvent) => {
     const value = e.target.value
     setSelectedFilter(value)
-
-    const option = filterOptions.find((opt) => opt.value === value)
-    if (option) {
-      console.log("Applied filter:", option.label, option.filters)
-    }
   }
 
   // Use a separate component to apply the filter
@@ -281,12 +284,6 @@ function PublicationDateFilter({ selectedFilter, filterOptions }: { selectedFilt
 function DynamicConfigure() {
   const { uiState } = useInstantSearch()
   const coordinates = uiState.lba?.configure?.aroundLatLng
-
-  // Don't read filters from uiState here to avoid circular dependency
-  // Let the publication date component manage filters directly
-
-  console.log("DynamicConfigure - uiState:", JSON.stringify(uiState, null, 2))
-  console.log("DynamicConfigure - configure:", uiState.lba?.configure)
 
   const configureOptions = {
     hitsPerPage: 20,
@@ -322,6 +319,7 @@ export default function AlogliaPage() {
           router: history(),
           stateMapping: customStateMapping,
         }}
+        // future={{ preserveSharedStateOnUnmount: true }}
       >
         <DynamicConfigure />
         <Box sx={{}}>
