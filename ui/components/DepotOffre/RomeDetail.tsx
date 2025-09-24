@@ -88,6 +88,7 @@ export const RomeDetail = ({
           competences={[{ labels: competences.savoir_etre_professionnel.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }]}
           onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
           isSelected={(competence) => isSelected("savoir_etre_professionnel", competence)}
+          defaultExpanded={true}
         />
       )}
       {competences?.savoir_faire && (
@@ -152,12 +153,14 @@ const RequiredCompetenceAccordion = ({
   isSelected,
   id,
   title,
+  defaultExpanded = false,
 }: {
   competences: { category?: string; labels: string[] }[]
   onChange: (competence: string, newValue: boolean) => void
   isSelected: (competence: string) => boolean
   id: string
   title: React.ReactNode
+  defaultExpanded?: boolean
 }) => {
   const [error, setError] = useState<{ competence: string; error: string } | null>(null)
   const competenceLabels = competences.flatMap(({ labels }) => labels)
@@ -176,6 +179,7 @@ const RequiredCompetenceAccordion = ({
           <Badge className="count-badge">{totalSelected}</Badge>
         </>
       }
+      defaultExpanded={defaultExpanded}
     >
       {competences.map(({ category, labels }) => (
         <CompetenceSelection

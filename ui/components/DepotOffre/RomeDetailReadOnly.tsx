@@ -33,7 +33,7 @@ export const RomeDetailReadOnly = ({
         {definition}
       </Accordion>
       {competences?.savoir_etre_professionnel && (
-        <Accordion id="qualites" label="Qualités souhaitées pour ce métier">
+        <Accordion style={{ marginBottom: fr.spacing("2w") }} defaultExpanded={true} id="qualites" label="Qualités souhaitées pour ce métier">
           <CompetencesGroupDiv>
             {competences.savoir_etre_professionnel.map(({ libelle }) => (
               <li key={libelle}>{libelle}</li>
