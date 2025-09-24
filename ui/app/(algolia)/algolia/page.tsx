@@ -314,7 +314,7 @@ export default function AlogliaPage() {
       <InstantSearch
         searchClient={searchClient}
         indexName="lba"
-        insights={false}
+        insights={true}
         routing={{
           router: history(),
           stateMapping: customStateMapping,
