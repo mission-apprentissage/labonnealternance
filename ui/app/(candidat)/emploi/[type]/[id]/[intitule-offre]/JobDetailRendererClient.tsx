@@ -15,7 +15,6 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
 import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
-import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
@@ -144,8 +143,6 @@ function JobDetail({
       <AideApprentissage />
 
       {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && <DidYouKnow />}
-
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
     </Box>
   )
 }
