@@ -317,6 +317,7 @@ describe("POST /v2/application", () => {
     expect.soft(response.json()).toEqual({
       applicant_first_name: "applicant_firstname",
       applicant_last_name: "applicant_lastname",
+      company_name: "ASSEMBLEE NATIONALE",
       recruiter_email: "faux_email@faux-domaine-compagnie.com",
       recruiter_phone: "0300000000",
     })
@@ -343,7 +344,6 @@ describe("POST /v2/application", () => {
     })
 
     expect.soft(response.statusCode).toEqual(200)
-    expect.soft(response.json()).toEqual({ result: "ok", message: "intention canceled" })
     const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
     expect.soft(application).toMatchObject({
       company_feedback_reasons: null,

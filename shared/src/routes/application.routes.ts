@@ -52,12 +52,7 @@ export const zApplicationRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-            message: z.literal("comment registered"),
-          })
-          .strict(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "access-token",
@@ -70,12 +65,7 @@ export const zApplicationRoutes = {
       method: "post",
       params: z.object({ id: z.string() }).strict(),
       response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-            message: z.literal("intention canceled"),
-          })
-          .strict(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "access-token",
@@ -110,6 +100,7 @@ export const zApplicationRoutes = {
             recruiter_phone: z.string(),
             applicant_first_name: z.string(),
             applicant_last_name: z.string(),
+            company_name: z.string(),
           })
           .strict(),
       },
