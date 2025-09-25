@@ -156,6 +156,7 @@ const config = {
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
+  decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },
