@@ -18,7 +18,7 @@ describe("create-recruiter-account", () => {
     const firstName = `John-${generateRandomString()}`
     const lastName = `Doe-${generateRandomString()}`
     const romeLabel = "Net surfeur / Net surfeuse"
-    const studyLevel = "Cap, autres formations niveau (Infrabac)"
+    const studyLevel = "Cap, autres formations (Infrabac)"
 
     FlowCreationEntreprise.siretPage.goTo()
     FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
