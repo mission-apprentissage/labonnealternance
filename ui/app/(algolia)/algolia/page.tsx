@@ -11,7 +11,7 @@ import { InstantSearch, Highlight, useInstantSearch, useConfigure, useStats, Hit
 import CustomAddressInput from "@/app/(algolia)/_components/CustomAddressInput"
 import { CustomPagination } from "@/app/(algolia)/_components/CustomPagination"
 import { CustomRefinementList } from "@/app/(algolia)/_components/CustomRefinementList"
-import { CustomSearchBox } from "@/app/(algolia)/_components/CustomSearchBox"
+import { CustomSearchBoxWithSuggestions } from "@/app/(algolia)/_components/CustomSearchBoxWithSuggestions"
 import { CardStyling } from "@/app/(candidat)/recherche/_components/RechercheResultats/CardStyling"
 import { useResultItemUrlAlgolia } from "@/app/(candidat)/recherche/_hooks/useResultItemUrl"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
@@ -324,7 +324,7 @@ export default function AlogliaPage() {
         <DynamicConfigure />
         <Box sx={{}}>
           <Box sx={{ display: "flex", gap: fr.spacing("2w"), marginBottom: fr.spacing("3w"), px: fr.spacing("3w") }}>
-            <CustomSearchBox />
+            <CustomSearchBoxWithSuggestions />
             <AddressInputWithRouting />
             <RadiusSelect />
             <PublicationDateSelect />
