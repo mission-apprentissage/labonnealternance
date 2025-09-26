@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
-import { ENTREPRISE } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
@@ -108,7 +108,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
           <Formulaire siret={siret} />
         </Box>
         <Box sx={{ gridRowStart: { xs: "auto", sm: 2 }, pt: { xs: fr.spacing("2w"), sm: fr.spacing("4w") }, minW: "0" }}>
-          <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} />
+          <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} viewerType={CFA} />
         </Box>
       </Box>
     </>
