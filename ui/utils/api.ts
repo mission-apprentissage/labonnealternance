@@ -1,9 +1,8 @@
 import { captureException } from "@sentry/nextjs"
-import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
+import { IJobCreate, INewDelegations, INewSuperUser, IRecruiterJson, IResponse, IRoutes, IUserWithAccountFields, removeUndefinedFields, type IBody } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IEntrepriseJson } from "shared/models/entreprise.model"
 
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
@@ -127,10 +126,11 @@ export const getCfaInformation = async (siret: string) => {
 }
 export const validateCfaCreation = async (siret: string) => apiGet("/etablissement/cfa/:siret/validate-creation", { params: { siret } })
 
+type EntrepriseInfos = IResponse<IRoutes["get"]["/etablissement/entreprise/:siret"]>
 export const getEntrepriseInformation = async (
   siret: string,
   { cfa_delegated_siret, skipUpdate }: { cfa_delegated_siret?: string; skipUpdate?: boolean } = {}
-): Promise<{ statusCode: 200; data: IEntrepriseJson; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
+): Promise<{ statusCode: 200; data: EntrepriseInfos; error: false } | { statusCode: number; message: string; data?: { errorCode?: BusinessErrorCodes }; error: true }> => {
   try {
     const data = await apiGet(
       "/etablissement/entreprise/:siret",

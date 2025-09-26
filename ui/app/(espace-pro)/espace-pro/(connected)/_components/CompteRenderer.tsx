@@ -131,7 +131,7 @@ export default function CompteRenderer() {
                   </Box>
                 </Box>
                 <Box>
-                  <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />
+                  <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
                 </Box>
               </Box>
             </>

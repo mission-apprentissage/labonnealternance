@@ -32,7 +32,7 @@ import {
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getPartnerJobs } from "@/services/partnerJob.service"
-import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -784,7 +784,7 @@ async function upsertJobOfferPrivate({
   let contract_is_disabled_elligible = false
 
   if (current === null) {
-    contract_is_disabled_elligible = await getEntrepriseEngagement(data.workplace.siret)
+    contract_is_disabled_elligible = await getEntrepriseEngagementFranceTravail(data.workplace.siret)
   }
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {

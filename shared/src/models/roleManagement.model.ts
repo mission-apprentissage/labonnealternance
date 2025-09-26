@@ -44,6 +44,13 @@ export const ZRoleManagement = z
     user_id: zObjectId.describe("ID de l'utilisateur ayant accès"),
     createdAt: z.date(),
     updatedAt: z.date(),
+    engagementHandicapEmail: z
+      .object({
+        date: z.date().describe("date de l'envoi de l'email"),
+        messageId: z.string().describe("id brevo de l'email"),
+      })
+      .nullish()
+      .describe("Présent si l'envoi de l'email de sensibilisation à l'handi-engagement a été envoyé"),
   })
   .strict()
 
@@ -58,6 +65,8 @@ export default {
     [{ authorized_type: 1 }, {}],
     [{ user_id: 1 }, {}],
     [{ user_id: 1, authorized_id: 1, authorized_type: 1 }, { unique: true }],
+    [{ "status.status": 1 }, {}],
+    [{ "status.date": 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
