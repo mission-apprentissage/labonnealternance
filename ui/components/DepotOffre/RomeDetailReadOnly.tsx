@@ -29,11 +29,11 @@ export const RomeDetailReadOnly = ({
       <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("2w") }}>
         {appellation}
       </Typography>
-      <Accordion style={{ marginBottom: fr.spacing("2w") }} defaultExpanded={true} id="metier" label="Descriptif du métier">
+      <Accordion defaultExpanded={true} id="metier" label="Descriptif du métier">
         {definition}
       </Accordion>
       {competences?.savoir_etre_professionnel && (
-        <Accordion style={{ marginBottom: fr.spacing("2w") }} defaultExpanded={true} id="qualites" label="Qualités souhaitées pour ce métier">
+        <Accordion defaultExpanded={true} id="qualites" label="Qualités souhaitées pour ce métier">
           <CompetencesGroupDiv>
             {competences.savoir_etre_professionnel.map(({ libelle }) => (
               <li key={libelle}>{libelle}</li>
@@ -42,7 +42,7 @@ export const RomeDetailReadOnly = ({
         </Accordion>
       )}
       {competences?.savoir_faire && (
-        <Accordion style={{ marginBottom: fr.spacing("2w") }} id="competences" label="Compétences qui seront acquises durant l’alternance">
+        <Accordion id="competences" label="Compétences qui seront acquises durant l’alternance">
           {competences.savoir_faire.map(({ libelle, items = [] }) => (
             <CompetencesGroupDiv key={libelle}>
               <Typography className="competences-group-title">{libelle}</Typography>
@@ -54,7 +54,7 @@ export const RomeDetailReadOnly = ({
         </Accordion>
       )}
       {competences?.savoirs && (
-        <Accordion style={{ marginBottom: fr.spacing("2w") }} id="techniques" label="Domaines et techniques de travail">
+        <Accordion id="techniques" label="Domaines et techniques de travail">
           {competences.savoirs.map(({ libelle, items = [] }) => (
             <CompetencesGroupDiv key={libelle}>
               <Typography className="competences-group-title">{libelle}</Typography>
@@ -66,11 +66,13 @@ export const RomeDetailReadOnly = ({
         </Accordion>
       )}
 
-      <Accordion style={{ marginBottom: fr.spacing("2w") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
+      <Accordion id="accessibilite" label="À qui ce métier est-il accessible ?">
         <Typography>{acces_metier}</Typography>
       </Accordion>
 
-      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
+      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px", mt: fr.spacing("2w") }}>
+        La fiche métier se base sur la classification ROME de France Travail
+      </Typography>
     </Box>
   )
 }

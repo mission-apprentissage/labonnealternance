@@ -66,7 +66,6 @@ export const RomeDetail = ({
       </Box>
 
       <Accordion
-        style={{ marginBottom: fr.spacing("2w") }}
         id="metier"
         defaultExpanded={true}
         label={
@@ -169,7 +168,6 @@ const RequiredCompetenceAccordion = ({
   const minRequired = Math.min(3, totalCompetences)
   return (
     <Accordion
-      style={{ marginBottom: fr.spacing("2w") }}
       id={id}
       label={
         <>
