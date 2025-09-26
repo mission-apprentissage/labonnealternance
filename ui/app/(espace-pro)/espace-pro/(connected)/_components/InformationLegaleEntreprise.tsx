@@ -6,8 +6,8 @@ import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
-import { AUTHTYPE } from "@/common/contants"
 import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
+import { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { useAuth } from "@/context/UserContext"
@@ -160,23 +160,21 @@ const OrganizationInfoFields = ({
           title="Engagement Handicap recensé par"
           value={engagementHandicapLabels[engagementHandicapOrigin]?.label ?? "inconnu"}
           tooltip={
-            <InfoTooltip
-              description={
-                (viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
-                  <>
-                    La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par
-                    France Travail, Cap emploi et leurs partenaires.{" "}
-                    <DsfrLink
-                      href="https://www.francetravail.fr/candidat/vos-services-en-ligne/favoriser-la-mise-en-relation-en.html"
-                      external
-                      aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre"
-                    >
-                      En savoir plus
-                    </DsfrLink>
-                  </>
-                )
-              }
-            />
+            <InfoTooltip>
+              {(viewerType === ENTREPRISE && engagementHandicapLabels[engagementHandicapOrigin]?.tooltip) || (
+                <>
+                  La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
+                  Travail, Cap emploi et leurs partenaires.{" "}
+                  <DsfrLink
+                    href="https://www.francetravail.fr/candidat/vos-services-en-ligne/favoriser-la-mise-en-relation-en.html"
+                    external
+                    aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre"
+                  >
+                    En savoir plus
+                  </DsfrLink>
+                </>
+              )}
+            </InfoTooltip>
           }
         />
       )}
