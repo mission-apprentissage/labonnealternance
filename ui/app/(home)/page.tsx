@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
 import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"

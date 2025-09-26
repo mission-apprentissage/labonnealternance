@@ -1,9 +1,9 @@
 "use client"
 import { Box } from "@mui/material"
 
-import { PublicHeaderStatic } from "@/app/(espace-pro)/_components/PublicHeader"
 import { ErrorComponent, type ErrorProps } from "@/app/_components/ErrorComponent"
 import { Footer } from "@/app/_components/Footer"
+import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
 
 export default function ErrorPage(props: ErrorProps) {
   return (

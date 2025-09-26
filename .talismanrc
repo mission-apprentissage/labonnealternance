@@ -309,6 +309,8 @@ fileignoreconfig:
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
+- filename: ui/public/assets/logo-republique-francaise-short.svg
+  checksum: bc174b3196566a2242eb58c76cfbf51d16422d75d0db7b28b6299c06b5917384
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg

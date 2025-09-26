@@ -1,8 +1,9 @@
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
 
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import TrainingDetailRendererClient from "@/app/(candidat)/formation/[id]/[intitule-formation]/TrainingDetailRendererClient"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
 export async function generateMetadata({ params }): Promise<Metadata> {
@@ -23,5 +24,16 @@ export default async function FormationPage({ params, searchParams }: { params: 
   const formation = await apiGet("/_private/formations/:id", { params: { id: idParam } })
   if (!formation) redirect("/404")
 
-  return <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
+  return (
+    <>
+      <SkipLinks
+        links={[
+          { label: "En-tête", anchor: "#detail-header" },
+          { label: "Contenu", anchor: "#detail-content-container" },
+          { label: "Pied de page", anchor: "#footer-links" },
+        ]}
+      />
+      <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
+    </>
+  )
 }

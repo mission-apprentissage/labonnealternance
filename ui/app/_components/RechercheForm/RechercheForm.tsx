@@ -6,7 +6,7 @@ import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
-import { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export enum UserItemTypes {
   EMPLOI = "Emplois",

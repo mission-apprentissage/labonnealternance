@@ -115,6 +115,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
 
   return (
     <DsfrFooter
+      id="footer-links"
       accessibility="partially compliant"
       accessibilityLinkProps={{
         href: PAGES.static.accessibilite.getPath(),

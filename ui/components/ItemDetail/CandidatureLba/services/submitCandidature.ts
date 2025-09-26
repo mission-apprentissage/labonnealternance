@@ -3,7 +3,7 @@ import { useContext } from "react"
 import { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
-import { ILbaItem } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
+import { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { sessionStorageSet } from "@/utils/localStorage"
