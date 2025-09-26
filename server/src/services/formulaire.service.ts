@@ -32,7 +32,7 @@ import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
-import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -178,7 +178,7 @@ export const createJob = async ({
   if (!recruiter) {
     throw internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
-  const is_disabled_elligible = await getEntrepriseEngagement(recruiter.establishment_siret)
+  const is_disabled_elligible = await getEntrepriseEngagementFranceTravail(recruiter.establishment_siret)
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret
     ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
@@ -949,7 +949,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
   const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
     getRomeDetailsFromDB(job.rome_code[0]),
     recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
-    getEntrepriseEngagement(recruiter.establishment_siret),
+    getEntrepriseEngagementFranceTravail(recruiter.establishment_siret),
   ])
 
   const { definition, acces_metier } = romeDetails ?? {}

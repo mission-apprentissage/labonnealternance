@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { CSSProperties } from "react"
 
-const cssProps = {
+export const customTagColors = {
   pink: {
     backgroundColor: "#FEE7FC",
     color: "#6E445A",
@@ -15,9 +15,13 @@ const cssProps = {
     color: fr.colors.decisions.background.actionHigh.greenEmeraude.default,
     background: fr.colors.decisions.background.contrast.greenEmeraude.default,
   },
+  yellow: {
+    color: "#716043",
+    background: "#FEECC2",
+  },
 } satisfies Record<string, CSSProperties>
 
-export type CustomTagColor = keyof typeof cssProps
+export type CustomTagColor = keyof typeof customTagColors
 
 export function CustomTag({ children, icon, color }: { children: React.ReactNode; icon?: React.ReactNode; color: CustomTagColor }) {
   return (
@@ -31,7 +35,8 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
         paddingLeft: icon ? "4px" : "6px",
         borderRadius: "4px",
         maxHeight: "20px",
-        ...cssProps[color],
+        fontWeight: 700,
+        ...customTagColors[color],
       }}
     >
       <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>

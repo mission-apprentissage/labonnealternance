@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { RechercheResultatsFooter } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheResultatsFooter"
 import { ResultCard } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/ResultatListCard"
@@ -15,6 +16,7 @@ import { IRecherchePageParams, isItemReferenceInList, type WithRecherchePagePara
 import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
+import { getObjectId } from "@/utils/api"
 
 export function RechercheResultatsList(props: WithRecherchePageParams) {
   const { displayMap } = props.rechercheParams
@@ -78,7 +80,15 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
     ...items.map((item, index) => ({
       height: item?.ideaType === "whisper" ? 112 : 270,
       render: () => <WhisperOrCard key={index} rechercheParams={props.rechercheParams} item={item} displayMap={displayMap} />,
-      onRender: item?.ideaType !== "whisper" ? () => addSearchView(item.id) : undefined,
+      onRender:
+        item?.ideaType !== "whisper" && item?.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION
+          ? () => {
+              const jobId = getObjectId(item)
+              if (jobId) {
+                addSearchView(jobId)
+              }
+            }
+          : undefined,
       item,
     })),
     <Box

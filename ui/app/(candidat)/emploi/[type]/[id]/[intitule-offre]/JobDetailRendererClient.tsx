@@ -3,9 +3,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
 import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -13,10 +14,8 @@ import { Footer } from "@/app/_components/Footer"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
-import { CandidatureLba, NoCandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
-import isCandidatureLba from "@/components/ItemDetail/CandidatureLba/services/isCandidatureLba"
+import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
 import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
-import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
@@ -25,6 +24,7 @@ import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/Na
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
+import { RecruteurLbaCandidater } from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaCandidater"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import { PAGES } from "@/utils/routes.utils"
@@ -68,8 +68,8 @@ function JobDetail({
   const isMandataire = selectedItem?.company?.mandataire
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
-  // @ts-expect-error
-  const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && selectedItem?.nafs?.length > 0 ? selectedItem.nafs[0]?.label : selectedItem.title
+  const [firstNaf] = selectedItem?.nafs as ILbaItemNaf[]
+  const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title
 
   const maxScroll = 100
   const handleScroll = () => {
@@ -77,17 +77,6 @@ function JobDetail({
     currentScroll += isCollapsedHeader ? 100 : -100
     setIsCollapsedHeader(currentScroll > maxScroll)
   }
-
-  const stickyHeaderProperties = isCollapsedHeader
-    ? {
-        position: "sticky",
-        zIndex: "1",
-        top: "0",
-        left: "0",
-        display: "flex",
-        width: "100%",
-      }
-    : {}
 
   return (
     <Box
@@ -103,7 +92,6 @@ function JobDetail({
       {...swipeHandlers}
     >
       <InfoBanner />
-      {/* @ts-expect-error: TODO */}
       <Box
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
@@ -111,7 +99,16 @@ function JobDetail({
           backgroundColor: "white",
           zIndex: 2, // DSFR Accordion gets zIndex 1 when manipulated for some reason.
         }}
-        {...stickyHeaderProperties}
+        {...(isCollapsedHeader
+          ? {
+              position: "sticky",
+              zIndex: "1",
+              top: "0",
+              left: "0",
+              display: "flex",
+              width: "100%",
+            }
+          : {})}
       >
         <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -121,7 +118,7 @@ function JobDetail({
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
 
-          <Typography id="detail-header" variant={"h3"} sx={{ color: fr.colors.decisions.border.default.blueCumulus.default }}>
+          <Typography id="detail-header" variant={"h3"} sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}>
             {actualTitle}
           </Typography>
 
@@ -129,8 +126,8 @@ function JobDetail({
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 2, alignItems: "center" }}>
             <div>
-              {isCandidatureLba(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemLbaCompanyJson} />}
-              {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && !isCandidatureLba(selectedItem) && <NoCandidatureLba />}
+              {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasValidEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
+              {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
               {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler isCollapsedHeader={isCollapsedHeader} job={selectedItem} />}
             </div>
             <div>
@@ -148,8 +145,6 @@ function JobDetail({
       <AideApprentissage />
 
       {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && <DidYouKnow />}
-
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
       <Box mt={fr.spacing("6w")} />
       <Footer />
     </Box>

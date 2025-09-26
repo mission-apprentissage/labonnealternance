@@ -15,7 +15,7 @@ describe("create-entreprise-account-no-delegation", () => {
     const firstName = "John"
     const lastName = "Doe"
     const romeLabel = "Net surfeur / Net surfeuse"
-    const studyLevel = "Cap, autres formations niveau (Infrabac)"
+    const studyLevel = "Cap, autres formations (Infrabac)"
 
     FlowCreationEntreprise.siretPage.goTo()
     FlowCreationEntreprise.siretPage.searchAndSelectSiret(siret)
