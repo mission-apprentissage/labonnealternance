@@ -2,12 +2,12 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Tooltip, Typography } from "@mui/material"
 import React from "react"
 
-const InfoTooltip = ({ description }) => {
+export const InfoTooltip = ({ children }: { children: React.ReactNode }) => {
   return (
     <Tooltip
       title={
         <Typography sx={{ backgroundColor: "white", color: "#1e1e1e" }} p={1}>
-          {description}
+          {children}
         </Typography>
       }
       leaveDelay={200}
@@ -28,5 +28,3 @@ const InfoTooltip = ({ description }) => {
     </Tooltip>
   )
 }
-
-export default InfoTooltip
