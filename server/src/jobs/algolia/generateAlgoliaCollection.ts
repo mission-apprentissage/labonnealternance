@@ -1,4 +1,4 @@
-import { IFormationCatalogue } from "shared"
+import { IFormationCatalogue, JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IAlgolia } from "shared/models/algolia.model"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -85,6 +85,7 @@ export const fillAlgoliaCollection = async () => {
         {
           $match: {
             partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
           },
         },
         {
