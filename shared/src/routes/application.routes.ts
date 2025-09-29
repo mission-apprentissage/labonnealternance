@@ -44,13 +44,22 @@ export const zApplicationRoutes = {
       params: z.object({ id: z.string() }).strict(),
       body: z
         .object({
-          company_feedback: z.string(),
-          company_recruitment_intention: extensions.buildEnum(ApplicationIntention),
-          email: z.string().email().or(z.literal("")),
-          phone: extensions.phone().or(z.literal("")),
-          refusal_reasons: z.array(extensions.buildEnum(RefusalReasons)),
+          company_feedback: z.string().nonempty("Veuillez remplir le message"),
+          company_recruitment_intention: z.literal(ApplicationIntention.ENTRETIEN),
+          email: z.string().email("Adresse e-mail invalide"),
+          phone: z.string().regex(/^[0-9]{10}$/, "Le numéro de téléphone doit avoir exactement 10 chiffres"),
         })
-        .strict(),
+        .passthrough()
+        .or(
+          z
+            .object({
+              company_feedback: z.string().nonempty("Veuillez remplir le message"),
+              company_recruitment_intention: z.literal(ApplicationIntention.REFUS),
+              refusal_reasons: z.array(extensions.buildEnum(RefusalReasons)),
+            })
+            .passthrough()
+        ),
+
       response: {
         "200": z.object({}).strict(),
       },

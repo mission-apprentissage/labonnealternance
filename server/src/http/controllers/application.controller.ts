@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
+import { ApplicationIntention } from "shared/constants/application"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { CompanyFeebackSendStatus, zRoutes } from "shared/index"
+import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "../../services/application.service"
@@ -57,16 +58,38 @@ export default function (server: Server) {
     },
     async (req, res) => {
       const { id } = req.params
-      const { company_recruitment_intention, company_feedback, email, phone, refusal_reasons } = req.body
+      const { company_recruitment_intention } = req.body
+      const application_id = new ObjectId(id)
 
-      await sendRecruiterIntention({
-        application_id: new ObjectId(id),
-        company_recruitment_intention,
-        company_feedback,
-        email,
-        phone,
-        refusal_reasons,
-      })
+      switch (company_recruitment_intention) {
+        case ApplicationIntention.ENTRETIEN: {
+          const { company_recruitment_intention, company_feedback, email, phone } = req.body
+          await sendRecruiterIntention({
+            application_id,
+            company_recruitment_intention,
+            company_feedback,
+            email,
+            phone,
+            refusal_reasons: [],
+          })
+          break
+        }
+        case ApplicationIntention.REFUS: {
+          const { company_recruitment_intention, company_feedback, refusal_reasons } = req.body
+          await sendRecruiterIntention({
+            application_id,
+            company_recruitment_intention,
+            company_feedback,
+            refusal_reasons,
+            email: "",
+            phone: "",
+          })
+          break
+        }
+        default: {
+          assertUnreachable(company_recruitment_intention)
+        }
+      }
 
       return res.status(200).send({})
     }
