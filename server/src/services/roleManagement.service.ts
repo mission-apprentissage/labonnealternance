@@ -164,8 +164,6 @@ export const getPublicUserRecruteurPropsOrError = async (
 }
 
 export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagement[]) => {
-  // TODO
-  // const indirectUserRoles = await RoleManagement.find({  })
   const userAccess: ComputedUserAccess = {
     admin: grantedRoles.some((role) => role.authorized_type === AccessEntityType.ADMIN),
     users: [userId],

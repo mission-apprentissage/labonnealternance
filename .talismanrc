@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 80f0c66744ac1a618a25e66bcc12d594c198492aa17059a5dd7903b556e7428f
+  checksum: 5c2f370fc0eac53330c11394fdede49f3240c19541d86ca7fb837270596fa138
 - filename: .infra/vault/vault.yml
-  checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
+  checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -309,6 +309,8 @@ fileignoreconfig:
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
+- filename: ui/public/assets/logo-republique-francaise-short.svg
+  checksum: bc174b3196566a2242eb58c76cfbf51d16422d75d0db7b28b6299c06b5917384
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg

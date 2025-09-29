@@ -79,7 +79,9 @@ function DelegationsEnregistrees({
         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "center", md: "flex-start" } }}>
           <Image fetchPriority="high" src="/images/espace_pro/miseEnRelationEnvoyee.svg" alt="" unoptimized width={268} height={150} style={{ width: "100%", maxWidth: "268px" }} />
           <Box sx={{ mt: { xs: fr.spacing("2w"), md: 0 }, ml: { xs: 0, md: fr.spacing("5v") } }}>
-            <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v") }}>Votre offre a été partagée aux CFA sélectionnés</Typography>
+            <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold", mb: fr.spacing("2w") }}>
+              Votre offre a été partagée aux CFA sélectionnés
+            </Typography>
             <Box>
               Les écoles que vous avez sélectionnées ont reçu par email votre offre et vos coordonnées suivantes :
               <Typography sx={{ mt: fr.spacing("1w") }}>
