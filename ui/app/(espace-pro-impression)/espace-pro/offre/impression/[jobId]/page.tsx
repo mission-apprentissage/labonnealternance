@@ -98,7 +98,7 @@ export default function PrintableJobPage() {
           labonnealternance.apprentissage.beta.gouv.fr
         </Typography>
       </Typography>
-      <LbaNew mt={6} w="143px" h="37px" />
+      <LbaNew sx={{ mt: 6, width: "143px", height: "37px" }} />
     </Box>
   )
 }

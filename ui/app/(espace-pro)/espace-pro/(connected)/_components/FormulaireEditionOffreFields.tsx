@@ -157,7 +157,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         </Box>
         {errors.job_duration && (
           <Box sx={{ color: fr.colors.decisions.text.default.error.default, display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <Warning m={0} />
+            <Warning sx={{ m: 0 }} />
             <Box sx={{ display: "flex" }} ml={1}>
               {errors.job_duration as string}
             </Box>

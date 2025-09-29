@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, Heading, Image, Link, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { Box, Checkbox, Flex, Heading, Image, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { captureException } from "@sentry/browser"
@@ -10,6 +10,7 @@ import * as Yup from "yup"
 
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
@@ -28,9 +29,9 @@ const unsubscribeReasons = [
 const SupportLink = ({ subject }: { subject: string }) => {
   const fullSubject = `Candidature spontanée - Déréférencement - ${subject}`
   return (
-    <Link textDecoration="underline" href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent(fullSubject)}`}>
+    <DsfrLink external href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent(fullSubject)}`}>
       support
-    </Link>
+    </DsfrLink>
   )
 }
 
@@ -242,7 +243,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
 
               {errorMessage && (
                 <Flex direction="row" alignItems="center" color="red.500">
-                  <Warning m={0} />
+                  <Warning sx={{ m: 0 }} />
                   <Box ml={1}>{errorMessage}</Box>
                 </Flex>
               )}
