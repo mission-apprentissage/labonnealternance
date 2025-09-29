@@ -23,6 +23,7 @@ import {
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
+import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
 import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
@@ -323,6 +324,7 @@ export default (server: Server) => {
         const mainRole = await getMainRoleManagement(user._id, true)
         if (mainRole && isGrantedAndAutoValidatedRole(mainRole)) {
           await sendWelcomeEmailToUserRecruteur(user)
+          await sendEngagementHandicapEmailIfNeeded(user, mainRole)
         }
       }
 

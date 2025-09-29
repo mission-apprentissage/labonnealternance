@@ -10,6 +10,7 @@ import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import config from "@/config"
+import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
 
 import { getDbCollection } from "../common/utils/mongodbUtils"
 import { sanitizeTextField } from "../common/utils/stringUtils"
@@ -361,6 +362,7 @@ export const activateUserRole = async ({ userId, requestedBy }: { userId: Object
 
   // validate user email addresse
   await sendWelcomeEmailToUserRecruteur(user)
+  await sendEngagementHandicapEmailIfNeeded(user, updatedRole)
 }
 
 export const isGrantedAndAutoValidatedRole = (role: IRoleManagement): boolean => {

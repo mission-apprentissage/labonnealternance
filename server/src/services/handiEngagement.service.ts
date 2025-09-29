@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { IEntreprise, IUserWithAccount } from "shared"
+import { AccessEntityType, IEntreprise, IRoleManagement, IUserWithAccount } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -7,9 +7,13 @@ import config from "@/config"
 import mailer from "@/services/mailer.service"
 import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
 
-export async function sendEngagementHandicapEmailIfNeeded(user: IUserWithAccount, roleId: ObjectId, entreprise: IEntreprise): Promise<void> {
+export async function sendEngagementHandicapEmailIfNeeded(user: IUserWithAccount, role: IRoleManagement): Promise<void> {
+  if (role.authorized_type !== AccessEntityType.ENTREPRISE) return
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(role.authorized_id) })
+  if (!entreprise) return
   const { siret } = entreprise
   const hasHandiEngagement = await getEntrepriseHandiEngagement(siret)
+  const roleId = role._id
   if (hasHandiEngagement) {
     await getDbCollection("rolemanagements").updateOne(
       { _id: roleId },

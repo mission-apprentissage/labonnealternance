@@ -30,7 +30,6 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
 import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
 
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
@@ -570,7 +569,7 @@ export const entrepriseOnboardingWorkflow = {
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
 
     let validated = false
-    const { user: managingUser, role } = await createOrganizationUser({
+    const { user: managingUser } = await createOrganizationUser({
       userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
@@ -605,9 +604,6 @@ export const entrepriseOnboardingWorkflow = {
       },
       managingUser._id.toString()
     )
-
-    await sendEngagementHandicapEmailIfNeeded(managingUser, role._id, entreprise)
-
     return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({
