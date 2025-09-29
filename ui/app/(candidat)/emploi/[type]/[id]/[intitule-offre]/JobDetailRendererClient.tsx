@@ -6,10 +6,11 @@ import { useState } from "react"
 import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { hasValidEmail } from "@/app/(candidat)/recherche/_components/hasValidEmail"
-import { RechercheCarte } from "@/app/(candidat)/recherche/_components/RechercheResultats/RechercheMap"
-import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import type { IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
+import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
+import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { Footer } from "@/app/_components/Footer"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
@@ -117,7 +118,7 @@ function JobDetail({
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />}
 
-          <Typography variant={"h3"} sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}>
+          <Typography id="detail-header" variant={"h3"} sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}>
             {actualTitle}
           </Typography>
 
@@ -136,6 +137,7 @@ function JobDetail({
         </Box>
       </Box>
 
+      <Box id="detail-content-container" />
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJobJson} />}
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
@@ -143,6 +145,8 @@ function JobDetail({
       <AideApprentissage />
 
       {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && <DidYouKnow />}
+      <Box mt={fr.spacing("6w")} />
+      <Footer />
     </Box>
   )
 }
