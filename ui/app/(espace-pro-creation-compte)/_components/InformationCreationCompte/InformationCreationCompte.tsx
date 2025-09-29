@@ -32,12 +32,14 @@ const Formulaire = ({
   type,
   origin,
   email,
+  viewerType,
 }: {
   onSubmit: (values: any, { setSubmitting, setFieldError }: any) => void
   siret: string
   type: "CFA" | "ENTREPRISE"
   origin: string
   email?: string
+  viewerType: AUTHTYPE
 }) => {
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
@@ -120,7 +122,7 @@ const Formulaire = ({
               }
               right={
                 <>
-                  <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} />
+                  <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} viewerType={viewerType} />
                   {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
                 </>
               }
@@ -229,7 +231,7 @@ export const InformationCreationCompte = ({
 
   return (
     <AnimationContainer>
-      <Formulaire onSubmit={submitForm} siret={establishment_siret} type={type} origin={origin} email={email} />
+      <Formulaire onSubmit={submitForm} siret={establishment_siret} type={type} origin={origin} email={email} viewerType={type} />
     </AnimationContainer>
   )
 }

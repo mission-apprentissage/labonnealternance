@@ -2,7 +2,7 @@ import { LbaItemTag } from "@/components/SearchForTrainingsAndJobs/components/Lb
 
 export const TagCandidatureSpontanee = () => {
   return (
-    <LbaItemTag color="darkBlue" iconImageUri="/images/briefcase.svg">
+    <LbaItemTag color="yellow" iconClassName="fr-icon-compass-3-fill">
       CANDIDATURE SPONTANÉE
     </LbaItemTag>
   )
