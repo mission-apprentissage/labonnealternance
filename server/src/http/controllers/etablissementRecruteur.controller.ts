@@ -228,7 +228,7 @@ export default (server: Server) => {
           } = await validateEligibiliteCfa(establishment_siret, origin)
 
           const organization: Organization = { type: CFA, cfa }
-          const userCfa = await createOrganizationUser({
+          const { user: userCfa } = await createOrganizationUser({
             userFields: {
               first_name,
               last_name,
