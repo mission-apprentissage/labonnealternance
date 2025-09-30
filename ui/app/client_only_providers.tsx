@@ -1,5 +1,6 @@
 "use client"
 
+import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui"
 import { Suspense, useEffect, type PropsWithChildren } from "react"
 
 import Providers from "@/context/Providers"
@@ -21,11 +22,11 @@ function Tracking(): null {
 
 export default function RootTemplate({ children }: PropsWithChildren) {
   return (
-    <>
+    <MuiDsfrThemeProvider>
       <Suspense fallback={null}>
         <Tracking />
       </Suspense>
       <Providers>{children}</Providers>
-    </>
+    </MuiDsfrThemeProvider>
   )
 }

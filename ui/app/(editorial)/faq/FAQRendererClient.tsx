@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
-import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import { Box, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import { ExtendedRecordMap } from "notion-types"
 import { useEffect, useRef, useState } from "react"

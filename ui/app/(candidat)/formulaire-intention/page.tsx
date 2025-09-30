@@ -1,6 +1,5 @@
 "use client"
 
-// import { NextSeo } from "next-seo"
 import { parseEnum } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 
@@ -12,7 +11,6 @@ export default function FormulaireIntentionPage() {
 
   return (
     <>
-      {/* <NextSeo title="Formulaire d'intention | La bonne alternance | Trouvez votre alternance" description="Formulaire d'intention." /> */}
       <IntentionForm id={id} company_recruitment_intention={parseEnum(ApplicationIntention, company_recruitment_intention)} token={token} />
     </>
   )

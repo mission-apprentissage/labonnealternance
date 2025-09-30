@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Typography, Box, Grid2 as Grid } from "@mui/material"
+import { Typography, Box, Grid } from "@mui/material"
 import { Metadata } from "next"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"

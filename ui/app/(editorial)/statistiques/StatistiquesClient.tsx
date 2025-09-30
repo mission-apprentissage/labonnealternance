@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Divider, Grid2 as Grid, Tab, Tabs, Typography } from "@mui/material"
+import { Box, Divider, Grid, Tab, Tabs, Typography } from "@mui/material"
 import { useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"

@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import { Box, Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
 export const GerezOffres = () => {
