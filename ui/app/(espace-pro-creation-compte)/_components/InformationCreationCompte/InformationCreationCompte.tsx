@@ -145,13 +145,12 @@ const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right:
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
           {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
         </Typography>
-        <Box sx={{ fontSize: "20px", mb: fr.spacing("2w"), pt: fr.spacing("1w"), pb: fr.spacing("2w") }}>
-          <Typography>
-            {type === AUTHTYPE.ENTREPRISE
-              ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
-              : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
-          </Typography>
-        </Box>
+        <Typography sx={{ fontSize: "20px", pt: fr.spacing("1w"), pb: fr.spacing("2w") }}>
+          {type === AUTHTYPE.ENTREPRISE
+            ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
+            : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
+        </Typography>
+        {type === AUTHTYPE.ENTREPRISE && <Typography sx={{ pb: fr.spacing("2w") }}>Tous les champs sont obligatoires.</Typography>}
         <Box>{left}</Box>
       </Box>
       <Box>{right}</Box>
