@@ -74,9 +74,6 @@ export function IntentionPageForm({
                 onChange={(event) => {
                   const value = event.target.value
                   formik.setFieldValue("company_feedback", value, true)
-                  // if (!value) {
-                  //   validateForm({ ...values, company_feedback: value })
-                  // }
                 }}
                 value={values.company_feedback}
                 multiline={true}
