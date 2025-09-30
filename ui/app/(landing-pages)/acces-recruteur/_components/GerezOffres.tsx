@@ -6,7 +6,7 @@ export const GerezOffres = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 6 }}>
-        <Image src="/images/home_pics/illu-candidatures.svg" alt="" width={571} height={308} />
+        <Image src="/images/home_pics/illu-candidatures.svg" alt="" width={571} height={308} style={{ width: "100%", height: "auto" }} />
       </Grid>
       <Grid container size={{ xs: 12, md: 6 }} spacing={fr.spacing("3w")} sx={{ alignItems: "center", justifyContent: "left" }}>
         <Grid>

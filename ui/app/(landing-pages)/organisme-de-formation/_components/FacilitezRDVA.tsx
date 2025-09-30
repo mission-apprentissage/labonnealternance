@@ -20,7 +20,7 @@ export const FacilitezRDVA = () => {
         </Typography>
       </Grid>
       <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 1, md: 2 } }}>
-        <Image src="/images/home_pics/facilitezRDVA.svg" width={585} height={298} alt="" />
+        <Image src="/images/home_pics/facilitezRDVA.svg" width={585} height={298} alt="" style={{ width: "100%", height: "auto" }} />
       </Grid>
     </Grid>
   )

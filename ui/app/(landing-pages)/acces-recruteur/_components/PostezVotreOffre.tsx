@@ -5,7 +5,7 @@ export const PostezVotreOffre = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 6 }}>
-        <Image src="/images/home_pics/illu-offreemploi.svg" width={529} height={280} alt="" />
+        <Image src="/images/home_pics/illu-offreemploi.svg" width={529} height={280} alt="" style={{ width: "100%", height: "auto" }} />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
         <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
