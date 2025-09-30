@@ -152,12 +152,12 @@ export const createOrganizationUser = async ({
   organization: Organization
   grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
-}): Promise<IUserWithAccount> => {
+}) => {
   const user = await createUser2IfNotExist(userFields, is_email_checked, grantedBy ?? "")
   const org = organization.type === CFA ? organization.cfa : organization.entreprise
   const orgId = org._id
   const { type } = organization
-  await modifyPermissionToUser(
+  const role = await modifyPermissionToUser(
     {
       user_id: user._id,
       authorized_id: orgId.toString(),
@@ -170,7 +170,7 @@ export const createOrganizationUser = async ({
       validation_type: VALIDATION_UTILISATEUR.AUTO,
     }
   )
-  return user
+  return { user, role }
 }
 
 export const createOpcoUser = async (

@@ -7,7 +7,6 @@ import { create as createMigration, status as statusMigration, up as upMigration
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
-import { sendMailEngagementHandicap } from "@/jobs/recruiters/sendMailEngagementHandicap"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -286,11 +285,6 @@ export async function setupJobProcessor() {
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
             handler: removeBrevoContacts,
-            tag: "main",
-          },
-          "Envoi des mails de sensibilisation aux entreprises pour l'handi-engagement": {
-            cron_string: "30 0 * * *",
-            handler: () => sendMailEngagementHandicap(),
             tag: "main",
           },
         },

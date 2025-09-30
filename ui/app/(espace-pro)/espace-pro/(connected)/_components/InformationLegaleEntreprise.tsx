@@ -165,11 +165,7 @@ const OrganizationInfoFields = ({
                 <>
                   La bonne alternance met en avant les employeurs engagés pour l’emploi en faveur des personnes en situation de handicap. Ces entreprises sont vérifiées par France
                   Travail, Cap emploi et leurs partenaires.{" "}
-                  <DsfrLink
-                    href="https://www.francetravail.fr/candidat/vos-services-en-ligne/favoriser-la-mise-en-relation-en.html"
-                    external
-                    aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre"
-                  >
+                  <DsfrLink href="/faq?engagement-handicap=1" external aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre">
                     En savoir plus
                   </DsfrLink>
                 </>
@@ -198,11 +194,7 @@ const engagementHandicapLabels: Record<
       <>
         La bonne alternance mène des travaux visant à valoriser les entreprises engagées en faveur de l’emploi des personnes en situation de handicap. Votre entreprise a déjà par
         le passé publié des offres mentionnant votre engagement.{" "}
-        <DsfrLink
-          href="https://www.francetravail.fr/candidat/vos-services-en-ligne/favoriser-la-mise-en-relation-en.html"
-          external
-          aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre"
-        >
+        <DsfrLink href="/faq?engagement-handicap=1" external aria-label="Employeur handi-engagé avec France Travail - nouvelle fenêtre">
           En savoir plus
         </DsfrLink>
       </>
