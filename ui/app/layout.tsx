@@ -1,3 +1,4 @@
+import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui"
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead"
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider"
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes"
@@ -75,7 +76,9 @@ export default function RootLayout({ children }: PropsWithChildren) {
             </Alert> */}
             <AppRouterCacheProvider>
               <DsfrProvider lang={lang} defaultColorScheme={defaultColorScheme} Link={Link}>
-                <RootTemplate>{children}</RootTemplate>
+                <MuiDsfrThemeProvider>
+                  <RootTemplate>{children}</RootTemplate>
+                </MuiDsfrThemeProvider>
               </DsfrProvider>
             </AppRouterCacheProvider>
           </>
