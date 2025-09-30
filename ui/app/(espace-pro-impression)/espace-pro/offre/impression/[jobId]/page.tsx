@@ -12,7 +12,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
-import { LbaNew } from "@/theme/components/logos"
+import { LbaNew } from "@/theme/components/logos/LbaNew"
 import { PAGES } from "@/utils/routes.utils"
 
 const printExactColor = { WebkitPrintColorAdjust: "exact", printColorAdjust: "exact" }
