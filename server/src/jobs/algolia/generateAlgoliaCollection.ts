@@ -29,6 +29,8 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   workplace_geopoint: 1,
   workplace_naf_label: 1,
   workplace_siret: 1,
+  workplace_brand: 1,
+  workplace_name: 1,
 
   partner_label: 1,
   apply_email: 1,
@@ -195,7 +197,7 @@ export const fillAlgoliaCollection = async () => {
         lat: job.workplace_geopoint.coordinates[1],
         lng: job.workplace_geopoint.coordinates[0],
       },
-      organization_name: job.workplace_legal_name || "",
+      organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
     })
@@ -220,7 +222,7 @@ export const fillAlgoliaCollection = async () => {
         lat: job.workplace_geopoint.coordinates[1],
         lng: job.workplace_geopoint.coordinates[0],
       },
-      organization_name: job.workplace_legal_name || "",
+      organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
     })
