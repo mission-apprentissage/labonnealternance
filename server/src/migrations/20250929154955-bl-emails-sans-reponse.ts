@@ -18,7 +18,7 @@ export const up = async () => {
   logger.info(`Found ${notAnsweringEmails.length} emails in the list.`)
 
   const now = new Date()
-  const blackListAdditions = notAnsweringEmails.map((email) => ({
+  const blackListAdditions: { _id: ObjectId; email: string; created_at: Date; blacklisting_origin: string }[] = notAnsweringEmails.map((email) => ({
     _id: new ObjectId(),
     email,
     created_at: now,
