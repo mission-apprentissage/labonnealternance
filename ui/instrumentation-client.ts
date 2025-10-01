@@ -30,7 +30,7 @@ init({
       return null
     }
 
-    console.log(event)
+    console.info(event)
     return event
   },
 })

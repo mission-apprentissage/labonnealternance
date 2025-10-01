@@ -569,7 +569,7 @@ export const entrepriseOnboardingWorkflow = {
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
 
     let validated = false
-    const managingUser = await createOrganizationUser({
+    const { user: managingUser } = await createOrganizationUser({
       userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
@@ -604,7 +604,6 @@ export const entrepriseOnboardingWorkflow = {
       },
       managingUser._id.toString()
     )
-
     return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({

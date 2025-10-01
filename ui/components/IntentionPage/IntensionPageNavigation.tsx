@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-export const IntensionFormNavigation = () => {
+export const IntensionPageNavigation = () => {
   return (
     <Box sx={{ display: "flex", width: "80%", maxWidth: "800px", margin: "auto", pt: fr.spacing("4w") }}>
       <DsfrLink style={{ backgroundImage: "none" }} href="/">

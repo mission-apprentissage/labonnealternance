@@ -20,6 +20,7 @@ import {
   JOB_STATUS,
   JobCollectionName,
   assertUnreachable,
+  parseEnum,
 } from "shared"
 import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -1300,17 +1301,21 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
   const { recruiter, job, type } = jobOrCompany ?? {}
   let recruiter_phone = ""
+  let company_name = ""
 
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
 
-    const { managed_by } = recruiter
+    const { managed_by, establishment_enseigne, establishment_raison_sociale } = recruiter
+    company_name = establishment_enseigne || establishment_raison_sociale || ""
     await validateUserWithAccountEmail(new ObjectId(managed_by))
     recruiter_phone = recruiter.phone || ""
   }
 
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    recruiter_phone = job.apply_phone || ""
+    const { apply_phone, workplace_brand, workplace_name, workplace_legal_name } = job
+    recruiter_phone = apply_phone || ""
+    company_name = workplace_brand || workplace_name || workplace_legal_name || ""
   }
 
   await getDbCollection("applications").updateOne(
@@ -1331,6 +1336,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     recruiter_phone,
     applicant_first_name: applicant.firstname,
     applicant_last_name: applicant.lastname,
+    company_name,
   }
 }
 
@@ -1340,11 +1346,8 @@ export const processRecruiterIntention = async ({ application }: { application: 
   if (!applicant) {
     throw notFound(`unexpected: applicant not found for application ${application._id}`)
   }
-
-  const company_feedback =
-    application.company_recruitment_intention === ApplicationIntention.REFUS ? ApplicationIntentionDefaultText.REFUS : ApplicationIntentionDefaultText.ENTRETIEN
-
-  const company_recruitment_intention = application.company_recruitment_intention === ApplicationIntention.REFUS ? ApplicationIntention.REFUS : ApplicationIntention.ENTRETIEN
+  const company_recruitment_intention = parseEnum(ApplicationIntention, application.company_recruitment_intention) ?? ApplicationIntention.ENTRETIEN
+  const company_feedback = ApplicationIntentionDefaultText[company_recruitment_intention]
 
   const sentMessageId = await sendMailToApplicant({
     application,

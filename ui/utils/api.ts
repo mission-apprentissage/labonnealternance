@@ -244,9 +244,29 @@ export async function unsubscribeCompanySirets({ email, reason, sirets }: { emai
   return apiPost("/unsubscribe/sirets", { body: { email, reason, sirets } })
 }
 
+export async function sendIntentionComment(id: string, token: string, body: IBody<IRoutes["post"]["/application/intentionComment/:id"]>) {
+  return apiPost("/application/intentionComment/:id", {
+    params: { id },
+    body,
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+export async function cancelIntentionComment(id: string, token: string) {
+  return apiPost("/application/intention/cancel/:id", {
+    params: { id },
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  })
+}
+
 function lookLikeObjectId(id: string): boolean {
   return /^[0-9a-f]{24}$/gi.test(id)
 }
+
 export function getObjectId(job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson): string | null {
   const { id, recipient_id } = job
   if (lookLikeObjectId(id)) return id
