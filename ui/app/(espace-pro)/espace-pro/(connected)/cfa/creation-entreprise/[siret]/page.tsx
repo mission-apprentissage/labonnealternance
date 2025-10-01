@@ -35,9 +35,8 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         })
         router.push(PAGES.dynamic.backCfaEntrepriseCreationOffre(data.establishment_id).getPath())
       })
-      .catch(({ response }) => {
-        const payload: { error: string; statusCode: number; message: string } = response.data as any
-        setFieldError("email", payload.message)
+      .catch((err) => {
+        setFieldError("email", err.message)
         setSubmitting(false)
       })
   }
