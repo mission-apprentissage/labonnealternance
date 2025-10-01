@@ -16,7 +16,7 @@ export const ZAlgolia = z
     type_filter_label: z.string(),
     contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).nullable(),
     publication_date: z.number().nullable(),
-    smart_apply: z.string().nullable(),
+    smart_apply: z.boolean().nullable(),
     application_count: z.number().nullable(),
     title: z.string(), // formation -> intitule_rco | offre: offer_title
     description: z.string(), // formation -> contenue | offer: offer_description

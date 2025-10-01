@@ -336,7 +336,11 @@ export default function AlogliaPage() {
             <CustomRefinementList attribute="organization_name" title="Entreprise" />
             <CustomRefinementList attribute="contract_type" title="Type de contrat" />
             <CustomRefinementList attribute="activity_sector" title="Secteur d'activité" />
-            <CustomRefinementList attribute="smart_apply" title="Candidatures simplifiées" />
+            <CustomRefinementList
+              attribute="smart_apply"
+              title="Candidatures simplifiées"
+              transformItems={(items) => items.map((item) => ({ ...item, label: item.label === "true" ? "Oui" : "Non" }))}
+            />
           </Box>
         </Box>
         <Box sx={{ backgroundColor: "#f6f6f6", px: fr.spacing("3w"), py: fr.spacing("2w") }}>
