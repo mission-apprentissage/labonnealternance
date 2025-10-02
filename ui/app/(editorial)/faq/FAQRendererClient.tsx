@@ -1,7 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs"
 import { Box, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import { ExtendedRecordMap } from "notion-types"
@@ -100,49 +99,42 @@ function FAQRendererClientGeneric({
   const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
-    <Box ref={pageRef}>
+    <Box ref={pageRef} mb={fr.spacing("3w")}>
       <Breadcrumb pages={[PAGES.static.faq]} />
+
       <DefaultContainer>
-        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <Grid container spacing={fr.spacing("5w")}>
-            <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: 2 }}>
-                Questions
-                <br />
-                <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
-                  fréquemment
-                  <br />
-                </Typography>
-                <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
-                  posées
-                </Typography>{" "}
-              </Typography>
-              <Box
-                component="hr"
-                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Tabs
-                selectedTabId={selectedTabId}
-                tabs={tabs}
-                onTabChange={(tabId) => {
-                  window.location.hash = tabId
-                }}
-              >
-                <Box height="auto" color="grey.800" padding="0 !important;">
-                  <NotionRenderer
-                    recordMap={displayedTab.recordMap}
-                    fullPage={false}
-                    darkMode={false}
-                    disableHeader={true}
-                    rootDomain={publicConfig.baseUrl}
-                    bodyClassName="notion-body"
-                  />
-                </Box>
-              </Tabs>
-            </Grid>
+        <Box mb={fr.spacing("3w")}>
+          <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+            Questions fréquement posées
+          </Typography>
+        </Box>
+        <Grid container>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <nav className="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
+              <div className="fr-sidemenu__inner">
+                <button className="fr-sidemenu__btn" aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
+                  Dans cette rubrique
+                </button>
+                <div className="fr-collapse" id="fr-sidemenu-wrapper">
+                  <ul className="fr-sidemenu__list">
+                    {tabs.map(({ tabId, label }) => (
+                      <li key={tabId} className={`fr-sidemenu__item ${selectedTabId === tabId ? "fr-sidemenu__item--active" : ""}`}>
+                        <a className="fr-sidemenu__link" href={`#${tabId}`} target="_self" aria-current={selectedTabId === tabId ? "page" : undefined}>
+                          {label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </nav>
           </Grid>
+          <Grid size={{ xs: 12, md: 9 }}>
+            <NotionRenderer recordMap={displayedTab.recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} />
+          </Grid>
+        </Grid>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(7, 1fr)" } }}>
+          <Box sx={{ gridColumn: { xs: "span 5", lg: "span 1" }, pb: { xs: fr.spacing("2w"), lg: 0 } }}></Box>
         </Box>
       </DefaultContainer>
     </Box>
