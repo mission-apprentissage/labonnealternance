@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Grid2 as Grid, Typography } from "@mui/material"
+import { Grid, Typography } from "@mui/material"
 
 export const FollowLinkedIn = () => {
   return (

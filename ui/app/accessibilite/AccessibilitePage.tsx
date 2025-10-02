@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import { Box, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"

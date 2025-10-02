@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Grid2 as Grid, List, ListItem } from "@mui/material"
+import { Box, Stack, Typography, Grid, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"

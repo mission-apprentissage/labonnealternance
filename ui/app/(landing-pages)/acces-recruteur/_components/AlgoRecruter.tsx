@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid2 as Grid, Typography, Stack } from "@mui/material"
+import { Box, Grid, Typography, Stack } from "@mui/material"
 import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -40,7 +40,7 @@ export const AlgoRecruteur = ({ withLinks = false }: { withLinks?: boolean }) =>
           )}
         </Grid>
         <Grid size={{ xs: 12, md: 5 }}>
-          <Image src="/images/icons/algo_recruiter.svg" alt="" width={398} height={431} />
+          <Image src="/images/icons/algo_recruiter.svg" alt="" width={398} height={431} style={{ width: "100%", height: "auto" }} />
         </Grid>
       </Grid>
     </Box>

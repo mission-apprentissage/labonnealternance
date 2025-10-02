@@ -1,4 +1,4 @@
-import { Box, Grid2 as Grid, Typography } from "@mui/material"
+import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
@@ -22,10 +22,8 @@ export const Entreprise = () => {
         <ConnectionActions service="entreprise" />
       </Grid>
 
-      <Grid size={{ xs: 0, md: 6 }}>
-        <Box>
-          <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" width={716} height={414} />
-        </Box>
+      <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: "none", md: "block" } }}>
+        <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" width={600} height={414} />
       </Grid>
     </Grid>
   )
