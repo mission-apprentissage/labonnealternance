@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 
 import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { s3ReadAsString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -18,14 +19,19 @@ export const up = async () => {
   logger.info(`Found ${notAnsweringEmails.length} emails in the list.`)
 
   const now = new Date()
-  const blackListAdditions: { _id: ObjectId; email: string; created_at: Date; blacklisting_origin: string }[] = notAnsweringEmails.map((email) => ({
-    _id: new ObjectId(),
-    email,
-    created_at: now,
-    blacklisting_origin: "campagne 04/25 - RDVA sans réponse",
-  }))
 
-  await getDbCollection("emailblacklists").insertMany(blackListAdditions)
+  await asyncForEach(notAnsweringEmails, async (email: string) => {
+    const existingEntry = await getDbCollection("emailblacklists").findOne({ email })
+    if (!existingEntry) {
+      const blackListAddition: { _id: ObjectId; email: string; created_at: Date; blacklisting_origin: string } = {
+        _id: new ObjectId(),
+        email,
+        created_at: now,
+        blacklisting_origin: "campagne 04/25 - RDVA sans réponse",
+      }
+      await getDbCollection("emailblacklists").insertOne(blackListAddition)
+    }
+  })
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
