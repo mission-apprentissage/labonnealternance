@@ -39,8 +39,8 @@ export default function APropos() {
         <Breadcrumb pages={[PAGES.static.aPropos]} />
         <DefaultContainer>
           <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-            <Grid container spacing={fr.spacing("5w")}>
-              <Grid size={{ xs: 12, md: 5 }}>
+            <Grid container spacing={fr.spacing("1w")}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
                   A propos
                 </Typography>
@@ -49,7 +49,7 @@ export default function APropos() {
                   sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
                 />
               </Grid>
-              <Grid size={{ xs: 12, md: 7 }}>
+              <Grid size={{ xs: 12, md: 9 }}>
                 <Typography variant="h4" mb={fr.spacing("2w")}>
                   Constat
                 </Typography>
@@ -149,25 +149,25 @@ export default function APropos() {
                     },
                   }}
                 >
-                  <Image src={franceTravail} alt="France Travail" />
-                  <Image src={parcoursup} alt="Parcoursup" />
-                  <Image src={onisep} alt="Onisep" />
-                  <Image src={portailAlternance} alt="Portail de l'alternance" />
-                  <Image src={j1s} alt="un jeune une solution" />
-                  <Image src={affelnet} alt="affelnet" />
-                  <Image src={ocapiat} alt="opco ocapiat" />
-                  <Image src={opco2i} alt="opco 2i" />
-                  <Image src={sante} alt="opco santé" />
-                  <Image src={atlas} alt="opco atlas" />
-                  <Image src={afdas} alt="opco afdas" />
-                  <Image src={ep} alt="opco ep" />
-                  <Image src={commerce} alt="opco commerce" />
-                  <Image src={constructys} alt="opco constructys" />
-                  <Image src={uniformation} alt="opco uniformation" />
-                  <Image src={akto} alt="opco akto" />
-                  <Image src={diagoriente} alt="Diagoriente" />
-                  <Image src={tbd} alt="Tableau de bord de l'apprentissage" />
-                  <Image src={catalogue} alt="Catalogue intercarif oref" />
+                  <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
+                  <Image src={parcoursup} alt="Parcoursup" style={{ width: "100%", height: "auto" }} />
+                  <Image src={onisep} alt="Onisep" style={{ width: "100%", height: "auto" }} />
+                  <Image src={portailAlternance} alt="Portail de l'alternance" style={{ width: "100%", height: "auto" }} />
+                  <Image src={j1s} alt="un jeune une solution" style={{ width: "100%", height: "auto" }} />
+                  <Image src={affelnet} alt="affelnet" style={{ width: "100%", height: "auto" }} />
+                  <Image src={ocapiat} alt="opco ocapiat" style={{ width: "100%", height: "auto" }} />
+                  <Image src={opco2i} alt="opco 2i" style={{ width: "100%", height: "auto" }} />
+                  <Image src={sante} alt="opco santé" style={{ width: "100%", height: "auto" }} />
+                  <Image src={atlas} alt="opco atlas" style={{ width: "100%", height: "auto" }} />
+                  <Image src={afdas} alt="opco afdas" style={{ width: "100%", height: "auto" }} />
+                  <Image src={ep} alt="opco ep" style={{ width: "100%", height: "auto" }} />
+                  <Image src={commerce} alt="opco commerce" style={{ width: "100%", height: "auto" }} />
+                  <Image src={constructys} alt="opco constructys" style={{ width: "100%", height: "auto" }} />
+                  <Image src={uniformation} alt="opco uniformation" style={{ width: "100%", height: "auto" }} />
+                  <Image src={akto} alt="opco akto" style={{ width: "100%", height: "auto" }} />
+                  <Image src={diagoriente} alt="Diagoriente" style={{ width: "100%", height: "auto" }} />
+                  <Image src={tbd} alt="Tableau de bord de l'apprentissage" style={{ width: "100%", height: "auto" }} />
+                  <Image src={catalogue} alt="Catalogue intercarif oref" style={{ width: "100%", height: "auto" }} />
                 </Box>
 
                 <Typography variant="h4" mb={fr.spacing("2w")}>
