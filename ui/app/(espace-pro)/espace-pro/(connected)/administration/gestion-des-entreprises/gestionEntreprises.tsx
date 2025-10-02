@@ -45,7 +45,7 @@ function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newS
             <CustomDSFRInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
             <Box sx={{ display: "flex", mt: fr.spacing("1w"), justifyContent: "flex-start" }}>
               <Button type="submit" data-testid="search_for_algo_company" disabled={!isValid || !dirty}>
-                <SearchLine sx={{ mr: 2, width: 5 }} /> Chercher
+                <SearchLine sx={{ mr: fr.spacing("1w") }} /> Chercher
               </Button>
             </Box>
           </Form>

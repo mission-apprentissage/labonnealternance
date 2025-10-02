@@ -7,6 +7,7 @@ import { useToast } from "@/app/hooks/useToast"
 
 export default function useUserHistoryUpdate() {
   const client = useQueryClient()
+  // toast not working, check is useToast() can match chakraUI implementation
   const { toast } = useToast()
 
   return useCallback(

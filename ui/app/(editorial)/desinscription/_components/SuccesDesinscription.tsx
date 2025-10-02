@@ -8,7 +8,7 @@ import { baseUrl } from "@/config/config"
 const SuccesDesinscription = () => (
   <div>
     <Box sx={{ border: "1px solid #000091", p: fr.spacing("4w"), mb: fr.spacing("3w") }}>
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, alignItems: "center", gap: fr.spacing("2w") }}>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: fr.spacing("2w") }}>
         <Image width={250} height={50} src="/images/home_pics/mail-in-clouds.svg" alt="" />
         <Box>
           <Typography variant="h1" sx={{ mb: fr.spacing("2w") }}>
@@ -18,7 +18,7 @@ const SuccesDesinscription = () => (
         </Box>
       </Box>
     </Box>
-    <Stack direction={{ xs: "column", sm: "column", md: "row" }} spacing={2}>
+    <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
       <Box>
         <Typography sx={{ fontWeight: 700, pb: fr.spacing("3w") }}>En complément, permettez-nous de vous expliquer notre fonctionnement.</Typography>
         <Typography sx={{ pb: fr.spacing("3w") }}>
@@ -61,7 +61,7 @@ const SuccesDesinscription = () => (
           Pour cette raison, il était affiché sur La bonne alternance et vous receviez des candidatures spontanées en conséquence. L'email ainsi que le numéro de téléphone
           référencés sur votre entreprise sont issus de votre espace recruteur France Travail.
         </Typography>
-        <Typography mt={4}>
+        <Typography sx={{ mt: fr.spacing("3w") }}>
           Nous restons à votre disposition si vous souhaitez de nouveau être référencé sur La bonne alternance.
           <br />
           <br />

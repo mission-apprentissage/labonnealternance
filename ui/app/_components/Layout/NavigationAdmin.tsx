@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Tab, Tabs } from "@mui/material"
 import { useRouter } from "next/navigation"
 
@@ -30,7 +31,7 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
   }
 
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box sx={{ mt: fr.spacing("3w") }}>
       <Tabs value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
         <Tab label="Gestion des recruteurs" wrapped data-testid="recruiter_management_tab" />
         <Tab label="Entreprises de l'algorithme" wrapped data-testid="algo_company_tab" />

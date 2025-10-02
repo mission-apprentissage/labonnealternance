@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, LinearProgress, Skeleton, Paper } from "@mui/material"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import "./ItemDetailLoading.css"
@@ -42,7 +43,7 @@ const ItemDetailLoading = ({ type }: Props) => {
     color: "#666666",
     fontWeight: 500,
     fontSize: "18px",
-    marginTop: { xs: 0, sm: 0, md: 2 },
+    marginTop: { xs: 0, md: fr.spacing("2w") },
   }
 
   return (
@@ -67,7 +68,7 @@ const ItemDetailLoading = ({ type }: Props) => {
               </div>
             </Box>
 
-            <Box maxWidth="400px" mx="auto" my={4}>
+            <Box sx={{ maxWidth: "400pw", mx: "auto", my: fr.spacing("3w") }}>
               <LinearProgress
                 color={type === LBA_ITEM_TYPE.FORMATION ? "secondary" : "warning"}
                 sx={{
@@ -81,7 +82,7 @@ const ItemDetailLoading = ({ type }: Props) => {
             </Box>
 
             <Skeleton variant="circular" width={40} height={40} />
-            <Box mt={4} sx={{ "& > *": { mb: 1 } }}>
+            <Box sx={{ mt: fr.spacing("3w"), "& > *": { mb: fr.spacing("1w") } }}>
               <Skeleton variant="text" height={16} />
               <Skeleton variant="text" height={16} />
               <Skeleton variant="text" height={16} />

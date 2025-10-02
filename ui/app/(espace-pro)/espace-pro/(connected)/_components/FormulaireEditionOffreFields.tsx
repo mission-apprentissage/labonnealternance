@@ -81,7 +81,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         <Checkbox
           orientation="horizontal"
           state={values.job_type.length === 0 ? "error" : "default"}
-          stateRelatedMessage="Information requise"
           small={true}
           options={Object.values(TRAINING_CONTRACT_TYPE).map((label) => {
             return {

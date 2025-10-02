@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -31,10 +32,7 @@ export default function PrintableJobPage() {
     if (isLoading || !jobId) {
       return
     }
-    const timeout = setTimeout(() => {
-      window.print()
-    }, 2000)
-    return () => clearTimeout(timeout)
+    // window.print()
   }, [isLoading, jobId])
 
   if (isLoading || !jobId) {
@@ -42,11 +40,9 @@ export default function PrintableJobPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: "21cm", textAlign: "center", py: 4, px: 4 }}>
+    <Box sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("3w"), px: fr.spacing("3w") }}>
       <Image style={{ margin: "auto" }} src="/images/espace_pro/images/illustration-impression.svg" width="209" height="95" alt="" aria-hidden={true} />
-      <Typography mx="auto" fontSize="24px" mt={6}>
-        {offre.company.name}
-      </Typography>
+      <Typography sx={{ mx: "auto", fontSize: "24px", mt: fr.spacing("4w") }}>{offre.company.name}</Typography>
       <Typography mx="auto" fontSize="28px" fontWeight={700}>
         recrute en alternance !
       </Typography>
