@@ -68,7 +68,7 @@ export const PopoverMenu = ({
         iconId="fr-icon-settings-5-line"
         title={title}
       />
-      <Popper sx={{ zIndex: 1 }} open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
+      <Popper sx={{ zIndex: 1000 }} open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
