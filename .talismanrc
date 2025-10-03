@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 14e5d716121676cda57b08498a94a9c28a720f20d5a9e75103234730ce1c900d
 - filename: .infra/vault/vault.yml
-  checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
+  checksum: 5c33c635b0527df8b89b7f32aaa013b68fffbf887b0a28bf63e4dc026c8f464a
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
