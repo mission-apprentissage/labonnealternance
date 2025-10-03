@@ -1,6 +1,6 @@
 import { importJobteaserRaw, importJobteaserToComputed } from "./importJobteaser"
 
-export const processJobTeaser = async () => {
+export const processJobteaser = async () => {
   await importJobteaserRaw()
   await importJobteaserToComputed()
 }

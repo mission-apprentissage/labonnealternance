@@ -13,7 +13,7 @@ import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offreParte
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
-import { processJobTeaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
+import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
@@ -226,7 +226,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres La Poste dans la collection raw & computed",
   },
   {
-    fct: processJobTeaser,
+    fct: processJobteaser,
     description: "Importe les offres Jobteaser dans la collection raw & computed",
   },
   {
