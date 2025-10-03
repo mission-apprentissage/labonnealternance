@@ -74,6 +74,7 @@ const config = {
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
     password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),
+    // nomFlux: "HACOFILE", A ACTIVER LE 24 NOVEMBRE 2025 - RAPPEL ENVOYE PAR PATRICIA UNE SEMAINE AVANT
     nomFlux: "LABONATA",
   },
   franceTravailIO: {

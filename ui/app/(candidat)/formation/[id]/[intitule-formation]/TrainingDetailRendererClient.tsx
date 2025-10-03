@@ -8,7 +8,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { CSSProperties, Fragment, useEffect, useState } from "react"
 import { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
-import { LBA_ITEM_TYPE, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
 import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -139,7 +139,7 @@ function TrainingDetailPage({
       >
         <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <LbaItemTags item={selectedItem} />
+            <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
             <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
           </Box>
 
