@@ -52,14 +52,21 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
     <Box>
       <Breadcrumb pages={[PAGES.static.politiqueConfidentialite]} />
       <DefaultContainer>
-        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box
+          sx={{
+            p: { xs: fr.spacing("2w"), md: fr.spacing("5w") },
+            marginBottom: fr.spacing("5w"),
+            borderRadius: "10px",
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: 2 }}>
+              <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("1w") }}>
                 Politique
-                <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
-                  de confidentialité
-                </Typography>
+              </Typography>
+              <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default, mb: fr.spacing("1w") }}>
+                de confidentialité
               </Typography>
               <Box
                 component="hr"
@@ -80,7 +87,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                     nextLink: Link,
                   }}
                 />
-                <Box sx={{ mt: 3 }}>
+                <Box sx={{ mt: fr.spacing("3w"), px: fr.spacing("2w") }}>
                   <Typography sx={{ mb: 2 }}>
                     La bonne alternance utilise la solution de mesure d'audience <DsfrLink href="https://matomo.org/">Matomo</DsfrLink> en l'ayant configuré en mode « exempté »,
                     conformément aux <DsfrLink href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience">recommandations de la CNIL</DsfrLink>. Elle ne nécessite donc pas le

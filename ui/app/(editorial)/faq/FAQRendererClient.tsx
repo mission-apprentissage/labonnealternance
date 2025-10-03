@@ -101,16 +101,15 @@ function FAQRendererClientGeneric({
   return (
     <Box ref={pageRef} mb={fr.spacing("3w")}>
       <Breadcrumb pages={[PAGES.static.faq]} />
-
       <DefaultContainer>
-        <Box mb={fr.spacing("3w")}>
+        <Box mb={fr.spacing("1w")}>
           <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
             Questions fréquement posées
           </Typography>
         </Box>
         <Grid container>
           <Grid size={{ xs: 12, md: 3 }}>
-            <nav className="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
+            <nav className="fr-sidemenu fr-mt-4w" aria-labelledby="fr-sidemenu-title">
               <div className="fr-sidemenu__inner">
                 <button className="fr-sidemenu__btn" aria-controls="fr-sidemenu-wrapper" aria-expanded="false">
                   Dans cette rubrique
@@ -133,9 +132,6 @@ function FAQRendererClientGeneric({
             <NotionRenderer recordMap={displayedTab.recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} />
           </Grid>
         </Grid>
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(7, 1fr)" } }}>
-          <Box sx={{ gridColumn: { xs: "span 5", lg: "span 1" }, pb: { xs: fr.spacing("2w"), lg: 0 } }}></Box>
-        </Box>
       </DefaultContainer>
     </Box>
   )

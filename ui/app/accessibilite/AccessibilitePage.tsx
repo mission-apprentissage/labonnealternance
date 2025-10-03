@@ -19,13 +19,20 @@ export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap 
     <Box component="main">
       <Breadcrumb pages={[PAGES.static.accessibilite]} />
       <DefaultContainer>
-        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box
+          sx={{
+            p: { xs: fr.spacing("2w"), md: fr.spacing("5w") },
+            marginBottom: fr.spacing("5w"),
+            borderRadius: "10px",
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography sx={{ mb: 1 }} variant="h1" component={"h1"}>
+              <Typography sx={{ mb: fr.spacing("1w") }} variant="h1" component={"h1"}>
                 Déclaration
               </Typography>
-              <Typography sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }} variant="h1" component={"h1"}>
+              <Typography sx={{ mb: fr.spacing("1w"), color: fr.colors.decisions.text.default.info.default }} variant="h1" component={"h1"}>
                 d'accessibilité
               </Typography>
               <Box
