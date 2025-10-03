@@ -134,14 +134,72 @@ export const fillAlgoliaCollection = async () => {
           },
         },
         {
+          $lookup: {
+            from: "raw_recruteurslba",
+            localField: "workplace_siret",
+            foreignField: "siret",
+            as: "rawR",
+          },
+        },
+        {
           $addFields: {
-            application_count: { $size: "$applications" },
+            rome_codes: {
+              $slice: [
+                {
+                  $map: {
+                    input: {
+                      $ifNull: [{ $first: "$rawR.rome_codes" }, []],
+                    },
+                    as: "rc",
+                    in: "$$rc.rome_code",
+                  },
+                },
+                6,
+              ],
+            },
+            application_count: {
+              $size: "$applications",
+            },
+          },
+        },
+        {
+          $lookup: {
+            from: "referentielromes",
+            let: { romes: "$rome_codes" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $in: ["$rome.code_rome", "$$romes"],
+                  },
+                },
+              },
+              {
+                $project: {
+                  _id: 0,
+                  intitule: "$rome.intitule",
+                },
+              },
+            ],
+            as: "romes",
+          },
+        },
+        {
+          $addFields: {
+            intitule_romes: {
+              $map: {
+                input: "$romes",
+                as: "r",
+                in: "$$r.intitule",
+              },
+            },
           },
         },
         {
           $project: {
             ...jobsProjection,
             application_count: 1,
+            intitule_romes: 1,
           },
         },
       ])
@@ -203,6 +261,7 @@ export const fillAlgoliaCollection = async () => {
     })
   })
   // Format jobs and push to payload
+
   recruteur.forEach((job) => {
     payload.push({
       _id: job._id,
@@ -215,8 +274,8 @@ export const fillAlgoliaCollection = async () => {
       publication_date: job.offer_creation?.getTime() || null,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
-      title: job.offer_title || "",
-      description: job.offer_description || "",
+      title: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
+      description: job.intitule_romes.join(", ") || "",
       address: job.workplace_address_label || "",
       _geoloc: {
         lat: job.workplace_geopoint.coordinates[1],

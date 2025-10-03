@@ -19,7 +19,7 @@ export const ZAlgolia = z
     smart_apply: z.boolean().nullable(),
     application_count: z.number().nullable(),
     title: z.string(), // formation -> intitule_rco | offre: offer_title
-    description: z.string(), // formation -> contenue | offer: offer_description
+    description: z.string(), // formation -> contenue | offer: offer_description | recruteurs_lba : intitule romes des 6 premiers code_romes
     address: z.string(),
     _geoloc: z.object({
       lat: extensions.latitude({ coerce: false }),
