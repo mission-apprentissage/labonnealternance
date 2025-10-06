@@ -15,7 +15,7 @@ import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 
-export function LbaItemTags({ item, displayTooltips = false }: { item: ILbaItem; displayTooltips?: boolean }) {
+export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILbaItem, "ideaType" | "company" | "id">; displayTooltips?: boolean }) {
   const { ideaType, company } = item
   const tags: React.ReactNode[] = []
 
