@@ -178,11 +178,6 @@ export async function setupJobProcessor() {
             handler: updateParcoursupAndAffelnetInfoOnFormationCatalogue,
             tag: "main",
           },
-          "Historisation des formations éligibles à la prise de rendez-vous": {
-            cron_string: "55 2 * * *",
-            handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
-            tag: "main",
-          },
           "Synchronise les formations eligibles à la prise de rendez-vous": {
             cron_string: "45 2 * * *",
             handler: syncEtablissementsAndFormations,
@@ -191,6 +186,11 @@ export async function setupJobProcessor() {
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
             cron_string: "30 3 * * *",
             handler: removeDuplicateEtablissements,
+            tag: "main",
+          },
+          "Historisation des formations éligibles à la prise de rendez-vous": {
+            cron_string: "00 4 * * *",
+            handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
             tag: "main",
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
