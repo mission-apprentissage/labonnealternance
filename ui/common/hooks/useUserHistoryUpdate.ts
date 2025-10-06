@@ -1,12 +1,14 @@
-import { useToast } from "@chakra-ui/react"
 import { useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
 import { assertUnreachable } from "shared"
 import { AccessStatus } from "shared/models/roleManagement.model"
 
+import { useToast } from "@/app/hooks/useToast"
+
 export default function useUserHistoryUpdate() {
   const client = useQueryClient()
-  const toast = useToast()
+  // toast not working, check is useToast() can match chakraUI implementation
+  const { toast } = useToast()
 
   return useCallback(
     async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
@@ -21,10 +23,8 @@ export default function useUserHistoryUpdate() {
         .then(() => {
           toast({
             description: `Utilisateur ${getDescription(status)}`,
-            position: "top-right",
             status: "success",
             duration: 4000,
-            isClosable: true,
           })
         })
     },

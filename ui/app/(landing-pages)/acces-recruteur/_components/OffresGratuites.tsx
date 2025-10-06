@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Typography } from "@mui/material"
+import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -38,7 +38,7 @@ export const OffresGratuites = () => {
         </Typography>
       </Grid>
       <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 1, md: 2 } }}>
-        <Image src="/images/home_pics/illu-plateformesjeunes.svg" alt="" aria-hidden={true} width={504} height={292} />
+        <Image src="/images/home_pics/illu-plateformesjeunes.svg" alt="" aria-hidden={true} width={504} height={292} style={{ width: "100%", height: "auto" }} />
       </Grid>
     </Grid>
   )

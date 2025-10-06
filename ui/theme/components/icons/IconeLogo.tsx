@@ -1,9 +1,8 @@
-import { Icon, IconProps } from "@chakra-ui/react"
-import React from "react"
+import { SvgIcon, SvgIconProps } from "@mui/material"
 
-export function IconeLogo(props: IconProps) {
+export function IconeLogo(props: SvgIconProps) {
   return (
-    <Icon viewBox="0 0 263 186" fill="none" {...props}>
+    <SvgIcon viewBox="0 0 263 186" fill="none" {...props}>
       <mask id="mask0_1376:10522" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="0" y="0" width="263" height="186">
         <rect width="263" height="186" transform="matrix(1 0 0 -1 0 186)" fill="#C4C4C4" />
       </mask>
@@ -291,6 +290,6 @@ export function IconeLogo(props: IconProps) {
           fill="white"
         />
       </g>
-    </Icon>
+    </SvgIcon>
   )
 }
