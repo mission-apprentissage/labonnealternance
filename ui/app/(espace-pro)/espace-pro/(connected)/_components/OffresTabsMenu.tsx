@@ -45,7 +45,7 @@ export const OffresTabsMenu = ({
           type: "externalLink",
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
-  const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
+  const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue"
 
   const actions: PopoverMenuAction[] = [
     {
