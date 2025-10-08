@@ -1,8 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 8fb59abdca1b3afc415b065eb5c2112a9f89edc9a0ee20493d0fed488920afc6
+  checksum: 14e5d716121676cda57b08498a94a9c28a720f20d5a9e75103234730ce1c900d
 - filename: .infra/vault/vault.yml
-  checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
+  checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
   checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
 - filename: cypress/pages/FlowAdminPage.ts
@@ -284,7 +284,7 @@ fileignoreconfig:
 - filename: ui/components/ItemDetail/PartnerJobComponents/PartnerJobDetail.tsx
   checksum: c1ace8f1692bbeec4534c6378b7be72b971462182df401d2c22b92a25b659875
 - filename: ui/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail.tsx
-  checksum: 9fdf1481f25bc9c997e50069009c354c35c6a123805c20c163648e19d355a0b3
+  checksum: 67bbb036037f6e12b0e63c746ad37c8f80ebd0a627aebe2eab2f6b9a969ed0cf
 - filename: ui/components/ItemDetail/TrainingDetail.tsx
   checksum: a681f3f410db93db9fc2640636b70df05fe2d9e3d0879f8afc19f9cd451bae59
 - filename: ui/components/ItemDetail/loadedItemDetail.tsx
@@ -309,6 +309,8 @@ fileignoreconfig:
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
+- filename: ui/public/assets/logo-republique-francaise-short.svg
+  checksum: bc174b3196566a2242eb58c76cfbf51d16422d75d0db7b28b6299c06b5917384
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
@@ -323,6 +325,8 @@ fileignoreconfig:
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 - filename: ui/config.public.ts
   checksum: 1a1dd44691d54b97200fd47de72801c7abd07b8f248f01cb67122704fe1f65a4
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 scopeconfig:
 - scope: node
 custom_patterns:

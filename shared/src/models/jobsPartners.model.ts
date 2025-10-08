@@ -32,6 +32,7 @@ export enum JOBPARTNERS_LABEL {
   NOS_TALENTS_NOS_EMPLOIS = "Nos Talents Nos Emplois",
   VITE_UN_EMPLOI = "Vite un emploi",
   TOULOUSE_METROPOLE = "Toulouse metropole",
+  JOOBLE = "Jooble",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
@@ -73,23 +74,23 @@ export const ZJobsPartnersRecruiterApi = z.object({
 export const NIVEAUX_DIPLOMES_EUROPEENS = [
   {
     value: "3",
-    label: "Cap, autres formations niveau 3",
+    label: "Cap, autres formations (Infrabac)",
   },
   {
     value: "4",
-    label: "Bac, autres formations niveau 4",
+    label: "BP, Bac, autres formations (Bac)",
   },
   {
     value: "5",
-    label: "BTS, DEUST, autres formations niveaux 5 (Bac+2)",
+    label: "BTS, DEUST, autres formations (Bac+2)",
   },
   {
     value: "6",
-    label: "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+    label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
   },
   {
     value: "7",
-    label: "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)",
+    label: "Master, titre ingénieur, autres formations (Bac+5)",
   },
 ] as const
 

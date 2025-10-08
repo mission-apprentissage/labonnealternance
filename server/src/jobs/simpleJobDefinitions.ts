@@ -4,16 +4,17 @@ import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetier
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import {
-  processMeteojob,
   processAtlas,
-  processViteUnEmploi,
+  processMeteojob,
   processNosTalentsNosEmplois,
   processToulouseMetropole,
+  processViteUnEmploi,
 } from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
 import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
@@ -223,6 +224,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processLaposte,
     description: "Importe les offres La Poste dans la collection raw & computed",
+  },
+  {
+    fct: processJooble,
+    description: "Importe les offres Jooble dans la collection raw & computed",
   },
   {
     fct: processPass,

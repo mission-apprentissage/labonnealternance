@@ -32,7 +32,7 @@ import {
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getPartnerJobs } from "@/services/partnerJob.service"
-import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 
 import { logger } from "../../../common/logger"
 import { IApiError } from "../../../common/utils/errorManager"
@@ -784,7 +784,7 @@ async function upsertJobOfferPrivate({
   let contract_is_disabled_elligible = false
 
   if (current === null) {
-    contract_is_disabled_elligible = await getEntrepriseEngagement(data.workplace.siret)
+    contract_is_disabled_elligible = await getEntrepriseEngagementFranceTravail(data.workplace.siret)
   }
 
   const invariantData: Pick<IJobsPartnersOfferPrivate, InvariantFields> = {
@@ -1014,6 +1014,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
   [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
   [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
+  [JOB_PARTNER_BUSINESS_ERROR.FULL_TIME]: "The offer is considered a full-time position",
   [JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA]: "The offer contains bad data",
   [JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND]: "We were unable to geolocate the offer's address",
 }

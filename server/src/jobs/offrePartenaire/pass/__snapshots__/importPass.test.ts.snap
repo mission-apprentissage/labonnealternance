@@ -29,7 +29,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
     },
     "offer_title": "Chargé(e) de projet - Formation/Communication",
     "offer_to_be_acquired_knowledge": [],
@@ -82,7 +82,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
     },
     "offer_title": "Chargé(e) de projet - Formation/Communication",
     "offer_to_be_acquired_knowledge": [],
@@ -135,7 +135,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "7",
-      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+      "label": "Master, titre ingénieur, autres formations (Bac+5)",
     },
     "offer_title": "Contrat d'apprentissage - éducation aux images H/F",
     "offer_to_be_acquired_knowledge": [],
@@ -188,7 +188,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
     },
     "offer_title": "APPRENTI(E) - Rédacteur en matière domanial - équivalent attaché (cat. A) Division des Domaine – Service Gestion des patrimoines privés",
     "offer_to_be_acquired_knowledge": [],
@@ -241,7 +241,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
     },
     "offer_title": "APPRENTI(E) - Rédacteur en matière domanial - équivalent attaché (cat. A) Division du Domaine – Service Local du Domaine",
     "offer_to_be_acquired_knowledge": [],
@@ -294,7 +294,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations niveau (Bac+3 à Bac+4)",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
     },
     "offer_title": "APPRENTI(E) - Rédacteur en matière juridique et fiscal -  équivalent attaché (cat. A) Pôle de contrôle revenus patrimoine de Cannes",
     "offer_to_be_acquired_knowledge": [],
@@ -347,7 +347,7 @@ exports[`importPass > should test the import of pass data into computed_job_part
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "7",
-      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+      "label": "Master, titre ingénieur, autres formations (Bac+5)",
     },
     "offer_title": "Contrat d'Apprentissage - financements H/F",
     "offer_to_be_acquired_knowledge": [],

@@ -39,6 +39,9 @@ export const AUTHTYPE = {
   ADMIN,
 } as const
 
+const authTypeValues = Object.values(AUTHTYPE)
+export type AUTHTYPE = (typeof authTypeValues)[0]
+
 export const REGEX = {
   SIRET: /^([0-9]{9}|[0-9]{14})$/,
   GEO: /^(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)$/,
@@ -63,11 +66,11 @@ export enum OPCOS_LABEL {
 
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
-  "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
-  "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
-  "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
-  "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
-  "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+  "3 (CAP...)": "Cap, autres formations (Infrabac)",
+  "4 (BAC...)": "BP, Bac, autres formations (Bac)",
+  "5 (BTS, DEUST...)": "BTS, DEUST, autres formations (Bac+2)",
+  "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+  "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations (Bac+5)",
 } as const
 
 export type INiveauPourLbaKey = keyof typeof NIVEAUX_POUR_LBA
@@ -75,11 +78,11 @@ export type INiveauPourLbaKey = keyof typeof NIVEAUX_POUR_LBA
 export type INiveauPourLbaLabel = (typeof NIVEAUX_POUR_LBA)[INiveauPourLbaKey]
 
 export const NIVEAU_DIPLOME_LABEL = {
-  "3": "Cap, autres formations niveau (Infrabac)",
-  "4": "BP, Bac, autres formations niveau (Bac)",
-  "5": "BTS, DEUST, autres formations niveau (Bac+2)",
-  "6": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
-  "7": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+  "3": "Cap, autres formations (Infrabac)",
+  "4": "BP, Bac, autres formations (Bac)",
+  "5": "BTS, DEUST, autres formations (Bac+2)",
+  "6": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+  "7": "Master, titre ingénieur, autres formations (Bac+5)",
 } as const
 
 // Note: notre moteur de recherche demande le niveau visé ce qui matche avec les offres lba.

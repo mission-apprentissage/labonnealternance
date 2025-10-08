@@ -1,9 +1,9 @@
 const diplomaMap = {
-  "3 (CAP...)": "Cap, autres formations niveau 3",
-  "4 (BAC...)": "Bac, autres formations niveau 4",
-  "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveaux 5 (Bac+2)",
-  "6 (Licence...)": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
-  "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveaux 7 ou 8 (Bac+5)",
+  "3 (CAP...)": "Cap, autres formations (Infrabac)",
+  "4 (BAC...)": "BP, Bac, autres formations (Bac)",
+  "5 (BTS, DEUST...)": "BTS, DEUST, autres formations (Bac+2)",
+  "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+  "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations (Bac+5)",
 }
 
 type Diploma = keyof typeof diplomaMap

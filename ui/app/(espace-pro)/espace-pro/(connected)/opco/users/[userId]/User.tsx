@@ -1,6 +1,7 @@
 "use client"
 
-import { Container } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
 
@@ -42,7 +43,7 @@ export default function User() {
 
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
   return (
-    <Container maxW="container.xl" mt={5}>
+    <Box maxWidth={1200} marginX="auto" mt={fr.spacing("4v")}>
       <Breadcrumb pages={[PAGES.static.backOpcoHome, PAGES.dynamic.backOpcoInformationEntreprise({ user_id: userId, user_label: establishmentLabel })]} />
       <DetailEntreprise
         userRecruteur={userRecruteur}
@@ -58,6 +59,6 @@ export default function User() {
           }
         }}
       />
-    </Container>
+    </Box>
   )
 }

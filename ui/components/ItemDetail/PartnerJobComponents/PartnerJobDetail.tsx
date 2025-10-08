@@ -29,7 +29,7 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
 export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
-    notifyJobDetailViewV3(job?.id)
+    notifyJobDetailViewV3(job)
   }, [job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
@@ -99,9 +99,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           </Stack>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("2w") }}>
-          <LbaJobEngagement />
-        </Box>
+        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
         <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} />

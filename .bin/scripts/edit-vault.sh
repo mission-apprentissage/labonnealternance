@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"

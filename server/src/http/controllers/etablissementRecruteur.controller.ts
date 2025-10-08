@@ -3,6 +3,7 @@ import { assertUnreachable, IEntreprise, toPublicUser, TrafficType, zRoutes } fr
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -22,7 +23,9 @@ import {
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
+import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
 import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
+import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
 import {
@@ -65,12 +68,9 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissement/entreprise/:siret"],
     },
     async (req, res) => {
-      const siret: string | undefined = req.params.siret
+      const { siret } = req.params
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       const skipUpdate: boolean = req.query.skipUpdate === "true"
-      if (!siret) {
-        throw badRequest("Le numéro siret est obligatoire.")
-      }
 
       let entrepriseOpt: IEntreprise | null = null
       if (skipUpdate) {
@@ -89,7 +89,14 @@ export default (server: Server) => {
         throw badRequest(cfaVerification.message)
       }
 
-      return res.status(200).send(entrepriseOpt)
+      const engagementHandicap = await getEntrepriseHandiEngagement(siret)
+
+      return res.status(200).send({
+        ...entrepriseOpt,
+        engagementHandicapOrigin: engagementHandicap?.sources?.includes(EntrepriseEngagementSources.FRANCE_TRAVAIL)
+          ? EntrepriseEngagementSources.FRANCE_TRAVAIL
+          : engagementHandicap?.sources?.[0],
+      })
     }
   )
 
@@ -222,7 +229,7 @@ export default (server: Server) => {
           } = await validateEligibiliteCfa(establishment_siret, origin)
 
           const organization: Organization = { type: CFA, cfa }
-          const userCfa = await createOrganizationUser({
+          const { user: userCfa } = await createOrganizationUser({
             userFields: {
               first_name,
               last_name,
@@ -317,6 +324,7 @@ export default (server: Server) => {
         const mainRole = await getMainRoleManagement(user._id, true)
         if (mainRole && isGrantedAndAutoValidatedRole(mainRole)) {
           await sendWelcomeEmailToUserRecruteur(user)
+          await sendEngagementHandicapEmailIfNeeded(user, mainRole)
         }
       }
 

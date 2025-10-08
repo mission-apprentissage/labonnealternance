@@ -40,7 +40,7 @@ Afin d'être éligible pour cette formation, vous devez : Vous êtes titulaire (
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "6",
-      "label": "Licence, Maîtrise, autres formations niveaux 6 (Bac+3 à Bac+4)",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
     },
     "offer_title": "Alternance Commercial B to B F/H",
     "offer_to_be_acquired_knowledge": [],
@@ -112,7 +112,7 @@ Afin d'être éligible pour cette formation, vous devez :  Être éligible au co
     "offer_status_history": [],
     "offer_target_diploma": {
       "european": "7",
-      "label": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+      "label": "Master, titre ingénieur, autres formations (Bac+5)",
     },
     "offer_title": "Alternance Responsable production F/H",
     "offer_to_be_acquired_knowledge": [],

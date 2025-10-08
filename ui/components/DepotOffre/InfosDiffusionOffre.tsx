@@ -1,4 +1,6 @@
-import { Box, Flex, Grid, Heading, Image, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Typography, Box } from "@mui/material"
+import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoCircle } from "@/theme/components/icons"
@@ -8,15 +10,15 @@ import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
 export const InfosDiffusionOffre = () => {
   return (
     <BorderedBox>
-      <Heading mb={3}>Profitez d'une visibilité accrue</Heading>
-      <Flex alignItems="flex-start" gap={1}>
-        <Box as="span" fontSize="15px">
-          <InfoCircle color="#000091" w="20px" h="20px" />
-        </Box>
-        <Text mb={6}>Cela permettra à votre offre d’être visible des candidats intéressés.</Text>
-      </Flex>
+      <Typography variant="h4" sx={{ mb: fr.spacing("3w") }}>
+        Profitez d'une visibilité accrue
+      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <InfoCircle sx={{ color: "#000091", width: "20px", height: "20px" }} />
+        <Typography sx={{ mb: fr.spacing("3w") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
+      </Box>
       <br />
-      <Text>
+      <Typography>
         Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants,&nbsp;
         <DsfrLink
           aria-label="Liste des partenaires - nouvelle fenêtre"
@@ -25,12 +27,13 @@ export const InfosDiffusionOffre = () => {
           et bien d’autres
         </DsfrLink>
         &nbsp;!
-      </Text>
-      <Grid
-        templateColumns={["repeat(2, 1fr)", "repeat(2, 1fr)", "repeat(3, 1fr)", "repeat(3, 1fr)"]}
-        gap={4}
-        mt={6}
+      </Typography>
+      <Box
         sx={{
+          display: "grid",
+          gridTemplateColumns: ["repeat(2, 1fr)", "repeat(2, 1fr)", "repeat(3, 1fr)", "repeat(3, 1fr)"],
+          gap: 2,
+          mt: fr.spacing("3w"),
           "& > *": {
             border: "solid 1px #DDDDDD",
             borderRadius: "3px",
@@ -40,15 +43,13 @@ export const InfosDiffusionOffre = () => {
           },
         }}
       >
-        <Image src="/images/logosPartenaires/minimal/1j1s.svg" alt="" />
-        <Image src="/images/logosPartenaires/minimal/portail-alternance.svg" alt="" />
-        <Flex align="center">
-          <Image src="/images/logosPartenaires/minimal/affelnet.png" alt="" />
-        </Flex>
-        <Image src="/images/logosPartenaires/minimal/mon-master.svg" alt="" padding="22px !important" />
-        <Image src="/images/logosPartenaires/minimal/parcoursup.svg" alt="" />
-        <Image src="/images/logosPartenaires/minimal/france-travail.svg" alt="" padding="14px !important" />
-      </Grid>
+        <Image src="/images/logosPartenaires/minimal/1j1s.svg" height={80} width={100} alt="" />
+        <Image src="/images/logosPartenaires/minimal/portail-alternance.svg" height={80} width={100} alt="" />
+        <Image src="/images/logosPartenaires/minimal/affelnet.svg" height={80} width={200} alt="" />
+        <Image src="/images/logosPartenaires/minimal/mon-master.svg" height={80} width={100} alt="" />
+        <Image src="/images/logosPartenaires/minimal/parcoursup.svg" height={80} width={100} alt="" />
+        <Image src="/images/logosPartenaires/minimal/france-travail.svg" height={80} width={100} alt="" />
+      </Box>
     </BorderedBox>
   )
 }

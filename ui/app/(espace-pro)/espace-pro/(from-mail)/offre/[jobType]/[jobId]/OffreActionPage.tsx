@@ -1,10 +1,12 @@
 "use client"
 
-import { Box, Flex, Image, Spinner, Text } from "@chakra-ui/react"
-import { Link } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Link, Typography } from "@mui/material"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { cancelOffre, cancelPartnerJob, fillOffre, providedPartnerJob } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -17,6 +19,19 @@ const jobActions = {
     cancel: cancelPartnerJob,
     provided: providedPartnerJob,
   },
+}
+
+const homeEditorialH1 = {
+  color: "#000091",
+  fontSize: "32px",
+  lineHeight: "40px",
+  fontWeight: 700,
+}
+const homeEditorialH2 = {
+  color: "#3A3A3A",
+  fontSize: "28px",
+  lineHeight: "36px",
+  fontWeight: 700,
 }
 
 export function OffreActionPage({
@@ -61,31 +76,30 @@ export function OffreActionPage({
   return (
     <Box margin="auto">
       {actionName === "cancel" && (
-        <Text as="h1" variant="homeEditorialH1">
+        <Typography component="h1" sx={homeEditorialH1}>
           Annulation de l'offre déposée sur La bonne alternance
-        </Text>
+        </Typography>
       )}
       {actionName === "provided" && (
-        <Text as="h1" variant="homeEditorialH1">
+        <Typography component="h1" sx={homeEditorialH1}>
           Modification de l'offre déposée sur La bonne alternance
-        </Text>
+        </Typography>
       )}
 
-      {!result && (
-        <Box my={8}>
-          <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-          <Text>Chargement en cours...</Text>
+      {!result && <LoadingEmptySpace label="Chargement en cours..." />}
+      {result && result !== "ok" && (
+        <Box sx={{ display: "flex", alignItems: "center", color: "#4a4a4a", ...cssParameters }}>
+          <Image width="32" style={{ marginRight: fr.spacing("1w") }} src="/images/icons/errorAlert.svg" alt="" />
+          {result}
         </Box>
       )}
-      {result && result !== "ok" && (
-        <Flex alignItems="center" {...cssParameters} color="grey.650">
-          <Image width="32px" mr={2} src="/images/icons/errorAlert.svg" alt="" />
-          {result}
-        </Flex>
+      {result && result === "ok" && (
+        <Typography component="h2" sx={homeEditorialH2}>
+          Votre offre a été modifiée
+        </Typography>
       )}
-      {result && result === "ok" && <Text variant="homeEditorialH2">Votre offre a été modifiée</Text>}
 
-      <Box mt={8}>
+      <Box sx={{ mt: fr.spacing("4w") }}>
         Aller sur le site{" "}
         <Link href={PAGES.static.home.getPath()} aria-label="Accès au site La bonne alternace" fontWeight={700}>
           La bonne alternance

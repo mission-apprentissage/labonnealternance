@@ -74,6 +74,7 @@ const config = {
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
     password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),
+    // nomFlux: "HACOFILE", A ACTIVER LE 24 NOVEMBRE 2025 - RAPPEL ENVOYE PAR PATRICIA UNE SEMAINE AVANT
     nomFlux: "LABONATA",
   },
   franceTravailIO: {
@@ -153,6 +154,7 @@ const config = {
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
+  joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   openai: {

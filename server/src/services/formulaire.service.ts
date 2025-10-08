@@ -32,7 +32,7 @@ import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
-import { getEntrepriseEngagement } from "@/services/referentielEngagementEntreprise.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -178,7 +178,7 @@ export const createJob = async ({
   if (!recruiter) {
     throw internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
-  const is_disabled_elligible = await getEntrepriseEngagement(recruiter.establishment_siret)
+  const is_disabled_elligible = await getEntrepriseEngagementFranceTravail(recruiter.establishment_siret)
   const { is_delegated, cfa_delegated_siret } = recruiter
   const organization = await (cfa_delegated_siret
     ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
@@ -938,17 +938,22 @@ function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STAT
   }
 }
 
-function getSkillsFromRome(skills) {
-  if (!skills) return []
-  return skills.flatMap((skill) => skill.items.map((subSkill) => `${skill.libelle}\t${subSkill.libelle}`))
+function getSkillsFromRome(skills, romeDetailsSkills): string[] {
+  const usedSkills = skills ?? romeDetailsSkills
+
+  if (!usedSkills) return []
+  return usedSkills.flatMap((skill) => skill.items.map((subSkill) => `${skill.libelle}\t${subSkill.libelle}`))
 }
 
 const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
   const now = new Date()
 
-  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
+  const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
+    getRomeDetailsFromDB(job.rome_code[0]),
+    recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
+    getEntrepriseEngagementFranceTravail(recruiter.establishment_siret),
+  ])
 
-  const lbaJobContactInfo = recruiter.is_delegated ? await getLbaJobContactInfo(recruiter) : null
   const { definition, acces_metier } = romeDetails ?? {}
 
   const delegatedFields = recruiter.is_delegated
@@ -981,7 +986,9 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     contract_start: job.job_start_date ?? null,
     contract_duration: job.job_duration ?? null,
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    contract_is_disabled_elligible: job.is_disabled_elligible ?? false,
+
+    contract_is_disabled_elligible: disabledEngagement,
+
     contract_rythm: job.job_rythm ?? null,
 
     workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
@@ -1002,9 +1009,12 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_size: recruiter.establishment_size ?? null,
     offer_origin: recruiter.origin ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label),
-    offer_desired_skills: job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ?? [],
-    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire),
-    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs),
+    offer_desired_skills:
+      job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+      romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+      [],
+    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
+    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
     offer_access_conditions: acces_metier ? [acces_metier] : [],
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre",
     offer_rome_codes: job.rome_code ?? null,

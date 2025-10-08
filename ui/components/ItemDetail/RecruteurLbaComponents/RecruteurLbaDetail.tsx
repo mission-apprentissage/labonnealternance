@@ -37,22 +37,25 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Qu’est ce qu’une candidature spontanée ?
+          Comment fonctionne les candidatures spontanées La bonne alternance ?
         </Typography>
-        <Stack direction="row">
-          <Box maxWidth="760px">
-            <Typography fontWeight={700}>Cette entreprise n’a pas déposé d’offre mais est susceptible de recruter des alternants.</Typography>
-            <Typography mb={2}>Intéressé.e ? Transmettez-lui votre CV en soulignant votre intérêt pour intégrer son équipe dans le cadre de votre alternance.</Typography>
-            <Typography fontWeight={700}>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</Typography>
-          </Box>
-          <Box ml={4} display={{ xs: "none", md: "block" }}>
-            <Image src="/images/lba_recruteur_advice.svg" width={194} height={131} alt="" aria-hidden={true} />
+        <Stack direction={{ xs: "column", md: "row" }} display="flex" alignItems="center">
+          <Typography>
+            Nous sélectionnons pour vous des entreprises dont nous jugeons qu’il est possible qu’elles recrutent des alternants.
+            <br />
+            <strong>L’entreprise {recruteurLba?.company?.name} n’a pas déposé d’offre mais serait susceptible de recruter.</strong> Renseignez-vous sur ses activités et les métiers
+            qu’elle exerce avant de soumettre votre candidature spontanée.
+            <br />
+            <br />
+            <strong>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</strong>
+          </Typography>
+          <Box px={fr.spacing("2w")} paddingTop={fr.spacing("2w")} paddingBottom={fr.spacing("1w")}>
+            <Image style={{ minWidth: 194 }} src="/images/lba_recruteur_advice.svg" width={194} height={131} alt="" aria-hidden={true} />
           </Box>
         </Stack>
       </Box>
-      <Box sx={{ mt: fr.spacing("2w") }}>
-        <LbaJobEngagement />
-      </Box>
+
+      <Box sx={{ mb: fr.spacing("2w") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>

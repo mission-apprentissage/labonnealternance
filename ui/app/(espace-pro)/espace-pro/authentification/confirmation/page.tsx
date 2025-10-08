@@ -1,23 +1,22 @@
-import { Box, Flex, Heading, Text } from "@chakra-ui/react"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Link } from "@mui/material"
+import { Box, Link, Typography } from "@mui/material"
 import { IoMail } from "react-icons/io5"
 
 export default function ConfirmationCreationCompte() {
   return (
-    <Box px={["6", "8"]} py={6}>
-      <Heading fontSize={["32px", "40px"]} as="h1" data-testid="validation-email-title">
+    <Box sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
+      <Typography component="h1" sx={{ fontSize: { sx: "32px", sm: "40px" }, lineHeight: { sx: "40px", sm: "48px" }, fontWeight: "bold" }} data-testid="validation-email-title">
         Vérifiez votre messagerie
-      </Heading>
-      <Box fontSize={["16px", "22px"]}>
-        <Text>Nous vous avons envoyé un email renseigné précédement avec un lien de confirmation. Celui-ci sera valide pour les 60 prochaines minutes.</Text>
+      </Typography>
+      <Box mt={4}>
+        <Typography>Nous vous avons envoyé un email renseigné précédement avec un lien de confirmation. Celui-ci sera valide pour les 60 prochaines minutes.</Typography>
       </Box>
 
-      <Box>
-        <Heading fontSize={["18px", "32px"]} as="h2" pb={3}>
+      <Box sx={{ mt: 4 }}>
+        <Typography component="h2" sx={{ fontSize: { sx: "18px", sm: "32px" }, mb: 3, lineHeight: { sx: "24px", sm: "32px" }, fontWeight: "bold" }}>
           Vous n'avez rien reçu ?
-        </Heading>
-        <Flex alignItems="center">
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <IoMail />
           <Link
             sx={{ marginLeft: fr.spacing("1w") }}
@@ -26,7 +25,7 @@ export default function ConfirmationCreationCompte() {
           >
             Contacter l'équipe La bonne alternance
           </Link>
-        </Flex>
+        </Box>
       </Box>
     </Box>
   )

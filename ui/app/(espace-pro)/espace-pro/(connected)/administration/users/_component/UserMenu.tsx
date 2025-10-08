@@ -1,0 +1,50 @@
+import { getLastStatusEvent, IUserRecruteurForAdminJSON, IUserStatusValidationJson } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+
+import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+
+export const UserMenu = ({
+  row,
+  setCurrentEntreprise,
+  confirmationActivationUtilisateur,
+  confirmationDesactivationUtilisateur,
+}: {
+  row: any
+  setCurrentEntreprise: (entreprise: IUserRecruteurForAdminJSON | null) => void
+  confirmationActivationUtilisateur: any
+  confirmationDesactivationUtilisateur: any
+}) => {
+  const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
+  const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
+  const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
+
+  const actions: PopoverMenuAction[] = [
+    {
+      label: "Voir les informations",
+      type: "link",
+      link: `/espace-pro/administration/users/${row._id}`,
+    },
+    canActivate
+      ? {
+          label: "Activer le compte",
+          type: "button",
+          onClick: () => {
+            confirmationActivationUtilisateur.onOpen()
+            setCurrentEntreprise(row)
+          },
+        }
+      : null,
+    canDeactivate
+      ? {
+          label: "Désactiver le compte",
+          type: "button",
+          onClick: () => {
+            confirmationDesactivationUtilisateur.onOpen()
+            setCurrentEntreprise(row)
+          },
+        }
+      : null,
+  ]
+
+  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={"Actions sur le compte de l'entreprise"} />
+}

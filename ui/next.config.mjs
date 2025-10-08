@@ -64,7 +64,7 @@ const contentSecurityPolicy = `
   object-src 'self' data:;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
-  frame-src ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:3000" : ""}
+  frame-src ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:3000 https://labonnealternance.apprentissage.beta.gouv.fr" : ""}
             'self'
             https://plausible.io;
   child-src 'self' blob:;
@@ -75,10 +75,6 @@ const contentSecurityPolicy = `
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["shared"],
-  i18n: {
-    locales: ["fr"],
-    defaultLocale: "fr",
-  },
   productionBrowserSourceMaps: true,
   bundlePagesRouterDependencies: true,
   serverExternalPackages: ["react-pdf"],

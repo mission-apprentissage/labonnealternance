@@ -2,8 +2,8 @@ import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { useSwipeable } from "react-swipeable"
 
-import { IUseRechercheResults } from "@/app/(candidat)/recherche/_hooks/useRechercheResults"
-import { getItemReference, getResultItemUrl, type WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { getItemReference, getResultItemUrl, type WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export function useBuildNavigation({ items, currentItemId, rechercheParams }: WithRecherchePageParams<{ items: IUseRechercheResults["displayedItems"]; currentItemId?: string }>) {
   const router = useRouter()
