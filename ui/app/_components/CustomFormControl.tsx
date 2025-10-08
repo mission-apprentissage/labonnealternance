@@ -15,7 +15,7 @@ export const CustomFormControl = (props) => {
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
         {meta.error && (
           <Box pb={3} sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <Warning m={0} />
+            <Warning sx={{ m: 0 }} />
             <Box sx={{ display: "flex" }} ml={1}>
               {meta.error}
             </Box>

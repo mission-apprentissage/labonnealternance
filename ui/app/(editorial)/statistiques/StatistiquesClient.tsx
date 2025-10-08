@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Divider, Grid2 as Grid, Tab, Tabs, Typography } from "@mui/material"
+import { Box, Grid, Tab, Tabs, Typography } from "@mui/material"
 import { useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -25,6 +25,18 @@ function TabPanel(props: TabPanelProps) {
   )
 }
 
+function TabContent({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Box sx={{ mb: fr.spacing("3w"), p: fr.spacing("3w"), border: "2px solid #E5E5E5", borderRadius: "5px" }}>
+      <Typography sx={{ mb: fr.spacing("3w"), fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
+        {title}
+      </Typography>
+      <hr />
+      {children}
+    </Box>
+  )
+}
+
 const tabSx = {
   color: "#161616",
   backgroundColor: "#E3E3FD",
@@ -33,7 +45,6 @@ const tabSx = {
     color: "#000091",
     backgroundColor: "white",
     borderBottom: "none",
-    borderTop: "2px solid #000091",
     borderLeft: "1px solid #ddd",
     borderRight: "1px solid #ddd",
   },
@@ -80,134 +91,81 @@ export default function StatistiquesClient() {
           </Box>
 
           <TabPanel value={value} index={0}>
-            <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-              <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les visites
-              </Typography>
-              <Divider sx={{ mt: 6, mb: 2 }} />
+            <TabContent title="Les visites">
               <iframe
                 width="100%"
-                // @ts-expect-error: ?
-                border="none"
                 height="2100px"
                 title="stats_plausible"
                 plausible-embed="true"
                 src="https://plausible.io/share/labonnealternance.apprentissage.beta.gouv.fr?auth=Ck7r5NwNNf9IveZVA5U0O&embed=true&theme=light&background=transparent"
                 loading="lazy"
               ></iframe>
-            </Box>
-
-            <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-              <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les opportunités d’emploi
-              </Typography>
-              <Divider sx={{ mt: 6, mb: 2 }} />
+            </TabContent>
+            <TabContent title="Les opportunités d’emploi">
               <iframe
                 width="100%"
-                // @ts-expect-error: ?
-                border="none"
                 height="1100px"
-                // onLoad={metabaseIframeOnLoad}
                 title="stats_offres_lba"
                 src={`${publicConfig.baseUrl}/metabase/public/dashboard/882fcfcc-8020-4387-9ab1-0180f5dd38b4`}
                 loading="lazy"
               ></iframe>
-            </Box>
-
-            <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-              <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les formations
-              </Typography>
-              <Divider sx={{ mt: 6, mb: 2 }} />
+            </TabContent>
+            <TabContent title="Les formations">
               <iframe
                 width="100%"
-                // @ts-expect-error: ?
-                border="none"
                 height="600px"
-                // onLoad={metabaseIframeOnLoad}
                 title="stats_formations_lba"
                 src={`${publicConfig.baseUrl}/metabase/public/dashboard/d871dd8b-4021-493b-9081-0ad4ac4b066a`}
                 loading="lazy"
               ></iframe>
-            </Box>
+            </TabContent>
           </TabPanel>
 
           <TabPanel value={value} index={1}>
-            <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-              <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les candidatures aux opportunités d’emploi
-              </Typography>
-              <Divider sx={{ mt: 6, mb: 2 }} />
+            <TabContent title="Les candidatures aux opportunités d’emploi">
               <iframe
                 width="100%"
-                // @ts-expect-error: ?
-                border="none"
                 height="1200px"
-                // onLoad={metabaseIframeOnLoad}
                 title="stats_candidatures_lba"
                 src={`${publicConfig.baseUrl}/metabase/public/dashboard/08660119-0ec8-4311-a9a3-694a6b5504ee`}
                 loading="lazy"
               ></iframe>
-            </Box>
-
-            <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-              <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                Les demandes d’informations aux CFA
-              </Typography>
-              <Divider sx={{ mt: 6, mb: 2 }} />
+            </TabContent>
+            <TabContent title="Les demandes d’informations aux CFA">
               <iframe
                 width="100%"
-                // @ts-expect-error: ?
-                border="none"
                 height="1300px"
                 title="stats_count_prdv"
-                // onLoad={metabaseIframeOnLoad}
                 src={`${publicConfig.baseUrl}/metabase/public/dashboard/da0e20fb-3fbf-4cf8-971c-ac06dadf75c9`}
                 loading="lazy"
               ></iframe>
-            </Box>
+            </TabContent>
 
             <Grid container spacing={6}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-                  <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                    Les réponses des
-                    <br />
-                    recruteurs
-                  </Typography>
-                  <Divider sx={{ mt: 6, mb: 2 }} />
+                <TabContent title="Les réponses des recruteurs">
                   <iframe
                     width="100%"
                     max-width="300px"
-                    // @ts-expect-error: ?
-                    border="none"
                     height="550px"
                     title="stats_reponses_recruteurs"
-                    // onLoad={metabaseIframeOnLoad}
                     src={`${publicConfig.baseUrl}/metabase/public/dashboard/17a7b8f6-160c-4510-b723-fdedf961913c`}
                     loading="lazy"
                   ></iframe>
-                </Box>
+                </TabContent>
               </Grid>
 
               <Grid size={{ xs: 12, md: 6 }}>
-                <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-                  <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                    Les réponses des organismes de formation
-                  </Typography>
-                  <Divider sx={{ mt: 6, mb: 2 }} />
+                <TabContent title="Les réponses des organismes de formation">
                   <iframe
                     width="100%"
                     max-width="300px"
-                    // @ts-expect-error: ?
-                    border="none"
                     height="550px"
                     title="stats_reponses_cfa"
-                    // onLoad={metabaseIframeOnLoad}
                     src={`${publicConfig.baseUrl}/metabase/public/dashboard/74000a35-edfa-4b6f-b28a-64a3c54a0f22`}
                     loading="lazy"
                   ></iframe>
-                </Box>
+                </TabContent>
               </Grid>
             </Grid>
           </TabPanel>
@@ -215,43 +173,29 @@ export default function StatistiquesClient() {
           <TabPanel value={value} index={2}>
             <Grid container spacing={6}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-                  <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                    Les signatures de contrat
-                  </Typography>
-                  <Divider sx={{ mt: 6, mb: 2 }} />
+                <TabContent title="Les signatures de contrat">
                   <iframe
                     width="100%"
                     max-width="300px"
-                    // @ts-expect-error: ?
-                    border="none"
                     height="1000px"
                     title="stats_signatures_contrat"
-                    // onLoad={metabaseIframeOnLoad}
                     src={`${publicConfig.baseUrl}/metabase/public/dashboard/19e1b709-f955-415b-8212-4e085569810c`}
                     loading="lazy"
                   ></iframe>
-                </Box>
+                </TabContent>
               </Grid>
 
               <Grid size={{ xs: 12, md: 6 }}>
-                <Box sx={{ mb: 8, px: { xs: 1, sm: 2, md: 4 }, py: 4, border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-                  <Typography sx={{ mb: 8, fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
-                    Les inscriptions en formation
-                  </Typography>
-                  <Divider sx={{ mt: 6, mb: 2 }} />
+                <TabContent title="les inscriptions en formation">
                   <iframe
                     width="100%"
                     max-width="300px"
-                    // @ts-expect-error: ?
-                    border="none"
                     height="1000px"
                     title="stats_inscriptions_formations"
-                    // onLoad={metabaseIframeOnLoad}
                     src={`${publicConfig.baseUrl}/metabase/public/dashboard/c570909c-044a-4906-b0a3-61b6c47c9d6e`}
                     loading="lazy"
                   ></iframe>
-                </Box>
+                </TabContent>
               </Grid>
             </Grid>
           </TabPanel>

@@ -52,7 +52,7 @@ export const AlgoHome = () => (
         </Box>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
-        <Image src="/images/icons/algo_home.png" alt="" width={324} height={387} />
+        <Image src="/images/icons/algo_home.png" alt="" width={324} height={387} style={{ width: "100%", height: "auto" }} />
       </Box>
     </Box>
   </Container>

@@ -1,7 +1,7 @@
 "use client"
 
-import { Box, Container } from "@chakra-ui/react"
-import { Tab, Tabs } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Tab, Tabs } from "@mui/material"
 import { useRouter } from "next/navigation"
 
 import { PAGES } from "@/utils/routes.utils"
@@ -31,16 +31,14 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
   }
 
   return (
-    <Box mt={4}>
-      <Container as="header" maxW="container.xl" flexGrow="1">
-        <Tabs value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-          <Tab label="Gestion des recruteurs" wrapped data-testid="recruiter_management_tab" />
-          <Tab label="Entreprises de l'algorithme" wrapped data-testid="algo_company_tab" />
-          <Tab label="Rendez-vous apprentissage" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
-          <Tab label="Gestion des administrateurs" wrapped data-testid="administrator_management_tab" />
-          <Tab label="Gestion des processeurs" wrapped data-testid="administrator_processeur_tab" />
-        </Tabs>
-      </Container>
+    <Box sx={{ mt: fr.spacing("3w") }}>
+      <Tabs value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+        <Tab label="Gestion des recruteurs" wrapped data-testid="recruiter_management_tab" />
+        <Tab label="Entreprises de l'algorithme" wrapped data-testid="algo_company_tab" />
+        <Tab label="Rendez-vous apprentissage" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
+        <Tab label="Gestion des administrateurs" wrapped data-testid="administrator_management_tab" />
+        <Tab label="Gestion des processeurs" wrapped data-testid="administrator_processeur_tab" />
+      </Tabs>
     </Box>
   )
 }

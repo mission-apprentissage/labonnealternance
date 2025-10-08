@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography, CircularProgress, Input, FormControl, FormLabel, FormHelperText, Grid2 as Grid } from "@mui/material"
+import { Box, Typography, CircularProgress, Input, FormControl, FormLabel, FormHelperText, Grid } from "@mui/material"
 import emailMisspelled, { Result, top100 } from "email-misspelled"
 import { useFormik } from "formik"
 import { ChangeEvent, useState } from "react"
