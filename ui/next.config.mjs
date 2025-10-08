@@ -80,6 +80,9 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     fallbackNodePolyfills: false,
+    staleTimes: {
+      static: 180,
+    },
   },
   output: "standalone",
   eslint: {

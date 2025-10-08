@@ -2,7 +2,6 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
-import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
@@ -328,9 +327,6 @@ export async function setupJobProcessor() {
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
-      },
-      "domaines-metiers:update": {
-        handler: async () => updateDomainesMetiers(),
       },
       "domaines-metiers:file:update": {
         handler: async (job) => {
