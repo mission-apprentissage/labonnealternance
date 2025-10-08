@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import algoliaModel from "./algolia.model.js"
 import anonymizedApplicantModel from "./anonymizedApplicant.model.js"
 import anonymizedApplicationsModel from "./anonymizedApplications.model.js"
 import anonymizedAppointmentsModel from "./anonymizedAppointments.model.js"
@@ -68,6 +69,7 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 
 const modelDescriptorMap = {
+  [algoliaModel.collectionName]: algoliaModel,
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
   [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
   [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,

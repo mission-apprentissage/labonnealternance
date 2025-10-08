@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 14e5d716121676cda57b08498a94a9c28a720f20d5a9e75103234730ce1c900d
+  checksum: 941de1dfbca366aa84335018f10341cef511e8d4a68fd70a82a80af23aaa0ed9
 - filename: .infra/vault/vault.yml
   checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: cypress/e2e/manual/create-many-applications.cy.ts
@@ -323,6 +323,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/config.public.ts
+  checksum: 1a1dd44691d54b97200fd47de72801c7abd07b8f248f01cb67122704fe1f65a4
 - filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
   checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 scopeconfig:

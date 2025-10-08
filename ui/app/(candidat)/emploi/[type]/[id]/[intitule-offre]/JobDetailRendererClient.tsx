@@ -27,7 +27,6 @@ import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents
 import { RecruteurLbaCandidater } from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaCandidater"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
-import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
@@ -66,7 +65,7 @@ function JobDetail({
 
   const kind = selectedItem.ideaType
   const isMandataire = selectedItem?.company?.mandataire
-  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
+  const handleClose = () => router.back()
 
   const [firstNaf] = selectedItem?.nafs as ILbaItemNaf[]
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title
