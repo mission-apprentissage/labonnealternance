@@ -138,7 +138,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 8c4747be47fcb6facb9ca3b5597653ba01684949483e22f88ff7ebd7ec866e06
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
+  checksum: 1b52190fb8a1a5b5a0f4248f64760218448e128417e228c91b9a4472e217169d
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
