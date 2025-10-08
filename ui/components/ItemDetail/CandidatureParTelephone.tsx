@@ -1,48 +1,40 @@
-import { Box, Container, Flex, Heading, Link, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Typography } from "@mui/material"
 
 import { useDisclosure } from "@/common/hooks/useDisclosure"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-import { focusWithin } from "../../theme/theme-lba-tools"
 import { ModalReadOnly } from "../ModalReadOnly"
 
-export default function CandidatureParTelephone({
-  companyName,
-  contactPhone,
-  contactName,
-  urlPostulation,
-}: {
-  companyName: string
-  contactPhone: string
-  contactName: string
-  urlPostulation?: string
-}) {
+export default function CandidatureParTelephone({ companyName, contactPhone, contactName }: { companyName: string; contactPhone: string; contactName: string }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
   return (
     <>
-      <Box my={4}>
-        <Link data-tracking-id="postuler-offre-partenaire" {...focusWithin} variant="postuler" href={urlPostulation} target="_blank" onClick={onOpen}>
+      <Box sx={{ my: fr.spacing("2w") }}>
+        <Button data-tracking-id="postuler-offre-partenaire" onClick={onOpen}>
           Contacter le recruteur
-        </Link>
+        </Button>
       </Box>
-      <ModalReadOnly isOpen={isOpen} onClose={onClose}>
-        <Container size={{ base: "full", md: "container.md" }}>
-          <Heading as="h2" fontSize="xl" mb={4}>
+      <ModalReadOnly isOpen={isOpen} onClose={onClose} size="md">
+        <Box sx={{ p: fr.spacing("3w") }}>
+          <Typography variant="h2" sx={{ mb: fr.spacing("2w") }}>
             Postuler à l'offre de {companyName}
-          </Heading>
-          <Text>L'entreprise préfère être contactée par téléphone. Pour proposer votre candidature, appelez directement le numéro suivant :</Text>
-          <Flex direction="column" align="center" my={4}>
-            <Text fontWeight="bold" fontSize="lg" my={4}>
-              {contactName}
-            </Text>
-            <Box borderRadius="md" backgroundColor="#ECECFE" p={3}>
-              <Link href={`tel:${contactPhone}`}>
-                <Text color="#000091" fontSize="2xl" fontWeight="bold">
+          </Typography>
+          <Typography>L'entreprise préfère être contactée par téléphone. Pour proposer votre candidature, appelez directement le numéro suivant :</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700, textAlign: "center" }}>
+            {contactName}
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", my: fr.spacing("3w") }}>
+            <Box sx={{ backgroundColor: "#ECECFE", p: fr.spacing("3w") }}>
+              <DsfrLink href={`tel:${contactPhone}`}>
+                <Typography variant="h6" sx={{ color: "#000091", fontWeight: 700 }}>
                   {contactPhone}
-                </Text>
-              </Link>
+                </Typography>
+              </DsfrLink>
             </Box>
-          </Flex>
-        </Container>
+          </Box>
+        </Box>
       </ModalReadOnly>
     </>
   )

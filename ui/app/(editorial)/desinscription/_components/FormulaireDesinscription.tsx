@@ -1,6 +1,7 @@
-import { Box, Checkbox, Flex, Heading, Image, Link, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Select from "@codegouvfr/react-dsfr/Select"
+import { Box, Stack, Typography, Checkbox, FormControlLabel, CircularProgress } from "@mui/material"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { Form, FormikContext, useFormik } from "formik"
@@ -9,7 +10,8 @@ import { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
-import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
@@ -28,9 +30,9 @@ const unsubscribeReasons = [
 const SupportLink = ({ subject }: { subject: string }) => {
   const fullSubject = `Candidature spontanée - Déréférencement - ${subject}`
   return (
-    <Link textDecoration="underline" href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent(fullSubject)}`}>
+    <DsfrLink external href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent(fullSubject)}`}>
       support
-    </Link>
+    </DsfrLink>
   )
 }
 
@@ -93,52 +95,48 @@ const ConfirmationDesinscription = ({
   }
 
   return (
-    <Modal closeOnOverlayClick={false} blockScrollOnMount={true} size="3xl" isOpen={true} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent mt={["0", "3.75rem"]} h={["100%", "auto"]} borderRadius={0}>
-        <ModalCloseButton onClose={onClose} />
-        <ModalHeader paddingTop="10px" paddingBottom="0" sx={{ textAlign: "right" }}>
-          <Heading as="h2" fontSize="24px">
-            <Flex>
-              <Image mt={1} src="/images/icons/arrow_right.svg" alt="" width="16px" mr={1} /> Plusieurs établissements correspondent à cet email
-            </Flex>
-          </Heading>
-        </ModalHeader>
-        <ModalBody>
-          <Text mb={4}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Text>
-          <Box maxHeight={400} overflow="auto">
-            {companies.map((company) => (
-              <Flex key={company.siret} alignItems="center" border="1px solid #E5E5E5" mb={2} px={4} py={2}>
-                <Checkbox onChange={() => toggleSiretSelection(company.siret)} isChecked={isSiretSelected(company.siret)} value={company.siret} />
-                <Box ml={4}>
-                  <Text mb={1}>SIRET: {company.siret}</Text>
-                  <Text mb={0} color="grey.425" fontSize={12}>
-                    {company.enseigne}
-                    <br />
-                    {company.address}
-                  </Text>
-                </Box>
-              </Flex>
-            ))}
+    <ModalReadOnly isOpen={true} onClose={onClose}>
+      <Box sx={{ p: fr.spacing("3w") }}>
+        <Typography variant="h3" sx={{ mb: fr.spacing("3w") }}>
+          Plusieurs établissements correspondent à cet email
+        </Typography>
+        <Box>
+          <Typography sx={{ mb: fr.spacing("3w") }}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Typography>
+
+          {companies.map((company) => (
+            <Box sx={{ display: "flex", alignItems: "center", border: "1px solid #E5E5E5", mb: fr.spacing("2w"), px: fr.spacing("2w"), py: fr.spacing("2v") }} key={company.siret}>
+              <Checkbox onChange={() => toggleSiretSelection(company.siret)} checked={isSiretSelected(company.siret)} value={company.siret} />
+              <Stack spacing={fr.spacing("1w")} sx={{ ml: fr.spacing("3w") }}>
+                <Typography>SIRET: {company.siret}</Typography>
+                <Typography>
+                  {company.enseigne}
+                  <br />
+                  {company.address}
+                </Typography>
+              </Stack>
+            </Box>
+          ))}
+
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <FormControlLabel control={<Checkbox defaultChecked onChange={toggleSelectAll} checked={areAllSelected} />} label="Tout sélectionner" />
+            {!isSubmitting ? (
+              <Button
+                disabled={isSubmitting || !selectedSirets.length}
+                onClick={() => {
+                  if (selectedSirets.length) {
+                    mutation.mutate({ sirets: selectedSirets })
+                  }
+                }}
+              >
+                Déréférencer
+              </Button>
+            ) : (
+              <CircularProgress />
+            )}
           </Box>
-          <Flex justifyContent="space-between" my={8}>
-            <Checkbox onChange={toggleSelectAll} isChecked={areAllSelected} defaultChecked>
-              Tout sélectionner
-            </Checkbox>
-            <Button
-              disabled={isSubmitting || !selectedSirets.length}
-              onClick={() => {
-                if (selectedSirets.length) {
-                  mutation.mutate({ sirets: selectedSirets })
-                }
-              }}
-            >
-              {isSubmitting && <Spinner mr={4} />}Déréférencer
-            </Button>
-          </Flex>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+        </Box>
+      </Box>
+    </ModalReadOnly>
   )
 }
 
@@ -192,17 +190,17 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
   const { isSubmitting, setFieldValue, isValid, dirty } = formik
 
   return (
-    <Box as="section" p={3} mb={{ base: "2", md: "0" }} backgroundColor="white">
+    <Box>
       {possibleCompanies && <ConfirmationDesinscription onClose={() => setPossibleCompanies(null)} companies={possibleCompanies} onSubmit={onUnsubscribeSiretsSubmit} />}
-      <SimpleGrid columns={{ md: 1, lg: 2 }} spacing="40px" mb={12}>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, gap: fr.spacing("3w"), mb: fr.spacing("3w") }}>
         <Box>
-          <Text as="h1" variant="homeEditorialH1" mb={3}>
+          <Typography variant="h1" sx={{ mb: fr.spacing("3w"), color: fr.colors.decisions.text.active.blueFrance.default }}>
             Vous êtes une entreprise
-          </Text>
-          <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
+          </Typography>
+          <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
             Vous souhaitez ne plus recevoir de candidatures spontanées de La bonne alternance
-          </Text>
-          <Box fontWeight={"500"}>Veuillez remplir le formulaire ci-contre.</Box>
+          </Typography>
+          <Typography variant="h2">Veuillez remplir le formulaire ci-contre.</Typography>
         </Box>
         <Box>
           <FormikContext value={formik}>
@@ -219,7 +217,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                 }}
               />
 
-              <Box sx={{ mt: 4 }}>
+              <Box sx={{ mt: fr.spacing("3w") }}>
                 <Select
                   label="Motif *"
                   hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
@@ -241,25 +239,27 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
               </Box>
 
               {errorMessage && (
-                <Flex direction="row" alignItems="center" color="red.500">
-                  <Warning m={0} />
+                <Box sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("1w") }}>
+                  <Warning sx={{ m: 0 }} />
                   <Box ml={1}>{errorMessage}</Box>
-                </Flex>
+                </Box>
               )}
 
-              <Flex mt={5} justifyContent="space-between">
-                <Text mt={1} fontSize="12px">
-                  Tous les champs sont obligatoires
-                </Text>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: fr.spacing("3w") }}>
+                <Typography>Tous les champs sont obligatoires</Typography>
 
-                <Button disabled={isSubmitting || !isValid || !dirty} type="submit">
-                  {isSubmitting && <Spinner mr={4} />}Confirmer
-                </Button>
-              </Flex>
+                {!isSubmitting ? (
+                  <Button disabled={isSubmitting || !isValid || !dirty} type="submit">
+                    Confirmer
+                  </Button>
+                ) : (
+                  <CircularProgress />
+                )}
+              </Box>
             </Form>
           </FormikContext>
         </Box>
-      </SimpleGrid>
+      </Box>
     </Box>
   )
 }

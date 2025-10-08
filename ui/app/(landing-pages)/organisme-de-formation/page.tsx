@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react"
 import type { Metadata } from "next"
 
 import { HeroCFA } from "@/app/(landing-pages)/organisme-de-formation/_components/HeroCFA"
@@ -13,11 +12,11 @@ export const metadata: Metadata = {
 
 export default function OrganismeDeFormation() {
   return (
-    <Box>
+    <div>
       <Breadcrumb pages={[PAGES.static.organismeDeFormation]} />
       <DefaultContainer>
         <HeroCFA />
       </DefaultContainer>
-    </Box>
+    </div>
   )
 }

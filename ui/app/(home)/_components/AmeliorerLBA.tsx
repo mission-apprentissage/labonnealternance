@@ -17,7 +17,7 @@ export const AmeliorerLBA = () => (
     }}
   >
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <Image src="/images/home_pics/illu-support.svg" alt="" unoptimized width={422} height={244} />
+      <Image src="/images/home_pics/illu-support.svg" alt="" unoptimized width={422} height={244} style={{ width: "100%", height: "auto" }} />
     </Box>
     <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3w") }}>
       <Typography variant="h2">
