@@ -1,4 +1,4 @@
-import { createReadStream, createWriteStream, existsSync, mkdirSync, unlinkSync } from "node:fs"
+import { createReadStream, createWriteStream, unlinkSync } from "node:fs"
 import { createRequire } from "node:module"
 import path from "node:path"
 import Stream, { Transform } from "node:stream"
@@ -12,9 +12,9 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
-import __dirname from "@/common/dirname"
 import { logger } from "@/common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
+import { createAssetsFolder, CURRENT_DIR_PATH } from "@/common/utils/fileUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -29,18 +29,10 @@ const require = createRequire(import.meta.url)
 const { parser } = require("stream-json")
 const { streamArray } = require("stream-json/streamers/StreamArray")
 
-const CURRENT_DIR_PATH = __dirname(import.meta.url)
 const PREDICTION_FILE_PATH = path.join(CURRENT_DIR_PATH, "./assets/recruteurslba.json")
 const S3_FILE = config.algoRecuteursLba.s3File
 
 type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
-
-export const createAssetsFolder = async () => {
-  const assetsPath = path.join(CURRENT_DIR_PATH, "./assets")
-  if (!(await existsSync(assetsPath))) {
-    await mkdirSync(assetsPath)
-  }
-}
 
 const removePredictionFile = async () => {
   try {

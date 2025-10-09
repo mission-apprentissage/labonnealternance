@@ -5,20 +5,17 @@ import { pipeline } from "stream/promises"
 import { ObjectId } from "mongodb"
 import { IDomainesMetiers, ZDomainesMetiers } from "shared/models/index"
 import { removeAccents } from "shared/utils/index"
-import XLSX from "xlsx"
 
+import { createAssetsFolder, CURRENT_DIR_PATH } from "@/common/utils/fileUtils"
 import { initializeCacheMetiers } from "@/services/metiers.service"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { s3ReadAsStream } from "../../common/utils/awsUtils"
-import { readXLSXFile } from "../../common/utils/fileUtils"
 import { getDbCollection } from "../../common/utils/mongodbUtils"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { createAssetsFolder } from "../offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 
-const currentDirname = __dirname(import.meta.url)
-const FILEPATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
+const FILEPATH = path.join(CURRENT_DIR_PATH, "./assets/domainesMetiers_S3.xlsx")
 
 const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   logger.info(`Downloading and save file ${from} from S3 Bucket...`)
@@ -27,7 +24,13 @@ const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
   await pipeline(await s3ReadAsStream("storage", from), fs.createWriteStream(FILEPATH))
 }
 
-export default async function (optionalFileName?: string) {
+// TODO refactor using csv ?
+// mock
+function readXLSXFile(_path: string): any {
+  return {} as any
+}
+
+export async function updateDomainesMetiers(optionalFileName?: string) {
   let step = 0
 
   logger.info(" -- Start of DomainesMetiers initializer -- ")
@@ -71,7 +74,7 @@ export default async function (optionalFileName?: string) {
 
   logger.info(`Début traitement`)
 
-  const onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
+  const onglet = ({} as any).utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
 
   reset()
 
