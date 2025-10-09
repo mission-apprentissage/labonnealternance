@@ -152,7 +152,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs
   checksum: ad25d72b5287060499c4e44bfe93eacd8dbfb7b40122b912eb9c3cf657f6aed7
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
-  checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
+  checksum: 3bc64c3329e8979bad6cc6e2597d2c1212b9772fae1ee0e0400324f46351062d
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts
@@ -317,14 +317,14 @@ fileignoreconfig:
   checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
 - filename: ui/public/images/home_pics/illu-votrebesoin.svg
   checksum: ca9aa90b45043f8164d96e76e3f42906bcf597186394b1f81cf14c47814ebb33
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
-  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 scopeconfig:
 - scope: node
 custom_patterns:
