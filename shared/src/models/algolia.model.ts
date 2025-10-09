@@ -28,6 +28,7 @@ export const ZAlgolia = z
     organization_name: z.string(),
     level: z.string(),
     activity_sector: z.string().nullable(),
+    keywords: z.array(z.string()).nullable(),
   })
   .strict()
 export type IAlgolia = z.output<typeof ZAlgolia>

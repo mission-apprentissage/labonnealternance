@@ -3,7 +3,9 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IAlgolia } from "shared/models/algolia.model"
 import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> = {
   intitule_rco: 1,
@@ -78,10 +80,38 @@ const getJobType = (partner_label: string) => {
   }
 }
 
+const getKeywords = async (description: string): Promise<string[] | null> => {
+  if (!description) return null
+  try {
+    const response = await sendMistralMessages({
+      messages: [
+        {
+          role: "system",
+          content: `Tu es un extracteur de mots-clés pour des offres d'emploi en alternance.
+Règles strictes :
+- Extrais 5-15 mots-clés maximum suivant la pertinence
+- Ignore les balises HTML et le formatage
+- Privilégie : compétences, secteurs d'activité, tâches 
+- Retourne UNIQUEMENT un tableau JSON de strings : ["mot1", "mot2", ...]
+- Pas de commentaire, pas de texte additionnel`,
+        },
+        { role: "user", content: `Description : ${description.substring(0, 2000)}` },
+      ],
+      maxTokens: 100,
+      responseFormat: { type: "json_object" },
+    })
+
+    if (!response) return []
+    return JSON.parse(response)
+  } catch {
+    return []
+  }
+}
+
 export const fillAlgoliaCollection = async () => {
   await getDbCollection("algolia").deleteMany({})
   const [formations, jobs, recruteur] = await Promise.all([
-    getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).toArray(),
+    getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).limit(1).toArray(),
     getDbCollection("jobs_partners")
       .aggregate([
         {
@@ -116,7 +146,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(100_000)
+      .limit(100)
       .toArray(),
     getDbCollection("jobs_partners")
       .aggregate([
@@ -203,7 +233,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(80_000)
+      .limit(100)
       .toArray(),
   ])
 
@@ -232,11 +262,13 @@ export const fillAlgoliaCollection = async () => {
       organization_name: formation.etablissement_formateur_entreprise_raison_sociale || "",
       level: convertFormationNiveauDiplome(formation.niveau || ""),
       activity_sector: null,
+      keywords: null,
     })
   })
 
   // Format jobs and push to payload
-  jobs.forEach((job) => {
+  await asyncForEach(jobs, async (job) => {
+    const keywords = await getKeywords(job.offer_description)
     payload.push({
       _id: job._id,
       objectID: job._id.toString(),
@@ -258,11 +290,13 @@ export const fillAlgoliaCollection = async () => {
       organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
+      keywords,
     })
   })
-  // Format jobs and push to payload
 
-  recruteur.forEach((job) => {
+  // Format recruteurs and push to payload
+  await asyncForEach(recruteur, async (job) => {
+    const keywords = await getKeywords(job.intitule_romes.join(", ") || null)
     payload.push({
       _id: job._id,
       objectID: job._id.toString(),
@@ -284,6 +318,7 @@ export const fillAlgoliaCollection = async () => {
       organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
+      keywords: keywords,
     })
   })
 
