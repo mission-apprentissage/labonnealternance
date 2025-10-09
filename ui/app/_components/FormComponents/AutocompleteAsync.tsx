@@ -216,9 +216,6 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
       onBlur={onBlur}
       groupBy={props.groupBy}
       isOptionEqualToValue={(option, value) => getOptionKey(option) === getOptionKey(value)}
-      classes={{
-        noOptions: fr.cx("fr-text--sm"),
-      }}
       slotProps={{
         popper: {
           placement: "bottom",
@@ -226,16 +223,14 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
             { name: "flip", enabled: false },
             { name: "offset", options: { offset: [0, 12] } },
           ],
-          sx: {
-            backgroundColor: "red",
-          },
         },
         paper: {
           sx: {
             minWidth: {
               lg: "450px",
             },
-            boxShadow: "rgba(0, 0, 0, 0.2) 1px 1p 10px 0px",
+            boxShadow: "rgba(0, 0, 0, 0.2) 1px 1px 10px 0px",
+            fontSize: "0.875rem",
           },
           elevation: 6,
         },
