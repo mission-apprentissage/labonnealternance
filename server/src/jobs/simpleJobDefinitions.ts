@@ -22,6 +22,7 @@ import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/proce
 import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
+import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
@@ -370,5 +371,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
+  },
+  {
+    fct: exportFileForAlgo,
+    description: "Export des données pour l'algorithme des recruteurs",
   },
 ]
