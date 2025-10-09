@@ -88,12 +88,18 @@ const getKeywords = async (description: string): Promise<string[] | null> => {
         {
           role: "system",
           content: `Tu es un extracteur de mots-clés pour des offres d'emploi en alternance.
-Règles strictes :
-- Extrais 5-15 mots-clés maximum suivant la pertinence
+
+**Contexte** : Les mots-clés extraits seront indexés dans un moteur de recherche sémantique. En indexant toute la description brute, le moteur analyse du bruit et perd en qualité. Ton rôle est de filtrer et extraire uniquement les termes pertinents.
+
+**Critères de sélection** :
+- Compétences techniques et humaines (ex: JavaScript, Excel, gestion de projet)
+- Secteurs d'activité (ex: commerce, santé, informatique)
+
+**Contraintes** :
+- Extrais 5-15 mots-clés maximum
 - Ignore les balises HTML et le formatage
-- Privilégie : compétences, secteurs d'activité, tâches 
-- Retourne UNIQUEMENT un tableau JSON de strings : ["mot1", "mot2", ...]
-- Pas de commentaire, pas de texte additionnel`,
+- Retourne UNIQUEMENT un tableau JSON : ["mot1", "mot2", ...]
+- Pas de commentaire ni texte additionnel`,
         },
         { role: "user", content: `Description : ${description.substring(0, 2000)}` },
       ],
