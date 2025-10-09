@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId } from "bson"
 import { Jsonify } from "type-fest"
 
 import { OPCOS_LABEL, RECRUITER_STATUS } from "../constants/recruteur.js"
