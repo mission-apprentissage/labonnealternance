@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
+import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
@@ -9,44 +9,28 @@ import { blankComputedJobPartner } from "../fillComputedJobsPartners"
 
 export const ZJobteaserJob = z
   .object({
-    html_description: z.string(),
-    last_activation_at: z.string(),
-    html_profile: z.string(),
-    contract_duration: z.string().nullable(),
-    education_level: z.string().nullable(),
-    job_start_date: z.string().nullable(),
-    working_time: z.string(),
-    remote_level: z.string().nullable(),
-    description: z.string(),
-    video_host: z.string().nullable(),
-    created_at: z.string(),
-    cover_url: z.string(),
-    video_id: z.string().nullable(),
-    job_type: z.string(),
-    profile: z.string(),
-    company: z.object({
-      name: z.string(),
-      slug: z.string(),
-      company_description: z.string(),
-    }),
-    address: z.object({
-      city: z.string().nullable(),
-      street: z.string().nullable(),
-      country: z.string(),
-      latitude: z.string(),
-      longitude: z.string(),
-      postal_code: z.string(),
-      street_number: z.string().nullable(),
-    }),
     id: z.string(),
-    url: z.string(),
-    name: z.string(),
-    slug: z.string(),
-    tags: z.string().nullable(),
-    salary: z.object({
-      max: z.string().nullable(),
-      min: z.string().nullable(),
-      currency: z.string(),
+    job_details: z.object({
+      title: z.string(),
+      description: z.string(),
+      url: z.string(),
+      contract_type: z.string(),
+      remote_type: z.string(),
+    }),
+    job_dates: z.object({
+      start_date: z.string().nullable(),
+      first_activated_at: z.string(),
+    }),
+    job_locations: z.object({
+      location_country_name: z.string(),
+      location_city: z.string(),
+      location_country_code: z.string(),
+      location_state: z.string(),
+      location_sub_state: z.string().nullable(),
+    }),
+    company: z.object({
+      company_name: z.string(),
+      company_siren: z.string().nullable(),
     }),
   })
   .passthrough()
@@ -54,69 +38,41 @@ export const ZJobteaserJob = z
 export type IJobteaserJob = z.output<typeof ZJobteaserJob>
 
 export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPartners => {
-  const { id, name, html_description, html_profile, address, url, company, created_at, last_activation_at, job_type, contract_duration, job_start_date, education_level } = job
+  const { id, job_details, job_dates, job_locations, company } = job
 
-  const workplace_geopoint: {
-    type: "Point"
-    coordinates: [number, number]
-  } = {
-    type: "Point",
-    coordinates: [parseFloat(address.longitude), parseFloat(address.latitude)],
-  }
+  const { title, description, url, contract_type: job_type, remote_type } = job_details
+  const { start_date, first_activated_at } = job_dates
+  const { location_city, location_sub_state } = job_locations
+  const { company_name } = company
 
   let business_error: string | null = null
 
   let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
-  if (job_type === "Alternating") {
+  if (job_type === "Apprenticeship") {
     contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-  } else if (job_type.toUpperCase() === "Professional Contract".toUpperCase()) {
-    contract_type = [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-  } else if (job_type === "Internship") {
+  } else {
     business_error = JOB_PARTNER_BUSINESS_ERROR.STAGE
   }
 
   let contract_remote: TRAINING_REMOTE_TYPE | null = null
-  switch (job.remote_level) {
-    case "unauthorized":
-    case "fulltime":
+  switch (remote_type) {
+    case "Remote not allowed":
       contract_remote = TRAINING_REMOTE_TYPE.onsite
       break
-    case "punctual":
-    case "partial":
+    case "Remote partial allowed":
       contract_remote = TRAINING_REMOTE_TYPE.hybrid
+      break
+    case "Remote full allowed":
+    case "Remote only":
+      contract_remote = TRAINING_REMOTE_TYPE.remote
       break
     default:
       contract_remote = null
   }
 
-  let offer_target_diploma: { european: "3" | "4" | "5" | "6" | "7"; label: string } | null = null
-  switch (education_level) {
-    case "CAP/BEP":
-      offer_target_diploma = { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] }
-      break
-    case "BAC":
-      offer_target_diploma = { european: "4", label: NIVEAU_DIPLOME_LABEL["4"] }
-      break
-    case "BAC +2":
-      offer_target_diploma = { european: "5", label: NIVEAU_DIPLOME_LABEL["5"] }
-      break
-    case "BAC +3":
-      offer_target_diploma = { european: "6", label: NIVEAU_DIPLOME_LABEL["6"] }
-      break
-    case "BAC +5":
-    case ">BAC +5":
-      offer_target_diploma = { european: "7", label: NIVEAU_DIPLOME_LABEL["7"] }
-      break
-    default:
-      offer_target_diploma = null
-  }
-
   const urlParsing = z.string().url().safeParse(url)
 
-  const descriptionComputed = html_description + html_profile.trim()
-
-  const publicationDate = new Date(created_at)
-  const updatedDate = last_activation_at ? new Date(last_activation_at) : null
+  const publicationDate = new Date(first_activated_at)
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -125,28 +81,20 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
     partner_label: JOBPARTNERS_LABEL.JOBTEASER,
     partner_job_id: id,
 
-    offer_title: name,
-    offer_description: descriptionComputed,
+    offer_title: title,
+    offer_description: description,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs
-      .tz(updatedDate ?? publicationDate)
-      .add(2, "months")
-      .toDate(),
+    offer_expiration: dayjs.tz(publicationDate).add(2, "months").toDate(),
 
-    workplace_name: company.name,
-    workplace_description: company.company_description,
-    workplace_address_zipcode: address.postal_code || null,
-    workplace_address_city: address.city,
-    workplace_address_label: [address.street_number, address.street, address.postal_code, address.city].join(" ").trim(),
-    workplace_geopoint,
-    apply_url: urlParsing.success ? urlParsing.data : null,
+    workplace_name: company_name,
+    workplace_address_city: location_city,
+    workplace_address_label: [location_city, location_sub_state].join(" ").trim(),
+    apply_url: urlParsing.data ?? null,
     offer_multicast: true,
     contract_type,
-    contract_start: new Date(job_start_date!),
+    contract_start: start_date ? new Date(start_date) : null,
     contract_remote,
-    offer_target_diploma,
-    contract_duration: contract_duration ? parseInt(contract_duration) : null,
     business_error,
   }
   return partnerJob
