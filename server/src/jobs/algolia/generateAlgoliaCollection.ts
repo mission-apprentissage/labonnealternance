@@ -89,7 +89,7 @@ const getKeywords = async (description: string): Promise<string[] | null> => {
           role: "system",
           content: `Tu es un extracteur de mots-clés pour des offres d'emploi en alternance.
 
-**Contexte** : Les mots-clés extraits seront indexés dans un moteur de recherche sémantique. En indexant toute la description brute, le moteur analyse du bruit et perd en qualité. Ton rôle est de filtrer et extraire uniquement les termes pertinents.
+**Contexte** : Les mots-clés extraits seront indexés dans un moteur de recherche sémantique. En indexant toute la description brute, le moteur analyse du bruit et perd en qualité. Ton rôle est de filtrer et extraire uniquement les termes pertinents. Tu ne dois en aucun cas inventer ou déduire des mots qui te sembleraient pertinents, mais bien te cantonner à extraire des mots du texte qui t'es fournis en entrée.
 
 **Critères de sélection** :
 - Compétences techniques et humaines (ex: JavaScript, Excel, gestion de projet)
