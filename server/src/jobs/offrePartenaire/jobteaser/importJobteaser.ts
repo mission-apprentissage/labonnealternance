@@ -11,7 +11,7 @@ import config from "../../../config"
 import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 const rawCollectionName = rawJobteaserModel.collectionName
-const offerXmlTag = "????"
+const offerXmlTag = "job"
 
 type ListType = { last_modified: string; mode: number; name: string; size: number }
 export const importJobteaserRaw = async () => {
