@@ -1,4 +1,5 @@
-import { Box, Image, Progress, SkeletonCircle, SkeletonText, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography, LinearProgress, Skeleton, Paper } from "@mui/material"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import "./ItemDetailLoading.css"
 
@@ -39,37 +40,55 @@ const ItemDetailLoading = ({ type }: Props) => {
         ]
 
   const resultListProperties = {
-    color: "grey.425",
+    color: "#666666",
     fontWeight: 500,
     fontSize: "18px",
-    mt: [0, 0, 2],
+    marginTop: { xs: 0, md: fr.spacing("2w") },
   }
 
   return (
-    <Box pt="0">
-      <Box {...resultListProperties}>
+    <Box pt={0}>
+      <Box sx={resultListProperties}>
         <Box textAlign="center">
-          <Box className="loading-animation">
-            {loadingIllustrations.map((item, index) => (
-              <div key={index} className="loading-item">
-                <Image margin="auto" src={item.src} aria-hidden={true} alt="" />
-                <Text mt={1}>{item.text}</Text>
+          <Paper elevation={1} sx={{ padding: 6, backgroundColor: "white" }}>
+            <Box className="loading-animation">
+              {loadingIllustrations.map((item, index) => (
+                <div key={index} className="loading-item">
+                  <Box component="img" src={item.src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
+                  <Typography variant="body1" mt={1}>
+                    {item.text}
+                  </Typography>
+                </div>
+              ))}
+              <div className="loading-item">
+                <Box component="img" src="/images/loading/hourglass.svg" aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
+                <Typography variant="body1" mt={1}>
+                  Hum... Ce chargement semble plus long que prévu
+                </Typography>
               </div>
-            ))}
-            <div className="loading-item">
-              <Image margin="auto" src="/images/loading/hourglass.svg" aria-hidden={true} alt="" />
-              <Text mt={1}>Hum... Ce chargement semble plus long que prévu</Text>
-            </div>
-          </Box>
+            </Box>
 
-          <Box maxWidth="400px" mx="auto" my={4}>
-            <Progress colorScheme={type === LBA_ITEM_TYPE.FORMATION ? "teal" : "orange"} isIndeterminate size="sm" borderRadius="20px" />
-          </Box>
+            <Box sx={{ maxWidth: "400pw", mx: "auto", my: fr.spacing("3w") }}>
+              <LinearProgress
+                color={type === LBA_ITEM_TYPE.FORMATION ? "secondary" : "warning"}
+                sx={{
+                  height: 8,
+                  borderRadius: "20px",
+                  "& .MuiLinearProgress-bar": {
+                    borderRadius: "20px",
+                  },
+                }}
+              />
+            </Box>
 
-          <Box padding="6" boxShadow="lg" bg="white">
-            <SkeletonCircle size="10" />
-            <SkeletonText mt="4" noOfLines={4} spacing="4" skeletonHeight="2" />
-          </Box>
+            <Skeleton variant="circular" width={40} height={40} />
+            <Box sx={{ mt: fr.spacing("3w"), "& > *": { mb: fr.spacing("1w") } }}>
+              <Skeleton variant="text" height={16} />
+              <Skeleton variant="text" height={16} />
+              <Skeleton variant="text" height={16} />
+              <Skeleton variant="text" height={16} width="60%" />
+            </Box>
+          </Paper>
         </Box>
       </Box>
     </Box>

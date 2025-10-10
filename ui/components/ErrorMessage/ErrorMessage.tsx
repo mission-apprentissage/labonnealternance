@@ -1,13 +1,7 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
+import Image from "next/image"
 import React from "react"
-
-const cssParameters = {
-  background: "#fff1e5",
-  borderRadius: "10px",
-  fontWeight: 700,
-  margin: "10px",
-  padding: "5px",
-}
 
 interface Props {
   type?: "column" | undefined
@@ -16,24 +10,21 @@ interface Props {
 
 const ErrorMessage = ({ type = undefined, message }: Props) => {
   return (
-    <>
-      {type === "column" && <Image width="256px" margin="auto" src="/images/icons/searchingPeople.svg" alt="" />}
-      <Flex alignItems="center" {...cssParameters} color="grey.650">
-        <Image width="32px" mr={2} src="/images/icons/errorAlert.svg" alt="" />
+    <Box sx={{ alignItems: "center", display: "flex", flexDirection: "column" }}>
+      {type === "column" && <Image width={256} height={256} src="/images/icons/searchingPeople.svg" alt="" />}
+      <Box sx={{ display: "flex", alignItems: "center", background: "#fff1e5", borderRadius: "10px", fontWeight: 700, margin: "10px", padding: "5px" }} color="grey.650">
+        <Image width={32} height={32} src="/images/icons/errorAlert.svg" alt="" />
         {message}
-      </Flex>
+      </Box>
       {type === "column" && (
-        <Box fontSize="18px" fontWeight={700} textAlign="center" margin="auto" maxWidth="75%">
-          <Text as="h3" fontSize="22px" mt="30px" mb="20px">
-            Pas de panique{" "}
-            <Text as="span" color="#f49979">
-              !
-            </Text>
-          </Text>
-          Il y a forcément un résultat qui vous attend, veuillez revenir ultérieurement
+        <Box sx={{ margin: "auto", maxWidth: "75%", textAlign: "center" }}>
+          <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
+            Pas de panique !
+          </Typography>
+          <Typography sx={{ fontWeight: 700 }}>Il y a forcément un résultat qui vous attend, veuillez revenir ultérieurement</Typography>
         </Box>
       )}
-    </>
+    </Box>
   )
 }
 

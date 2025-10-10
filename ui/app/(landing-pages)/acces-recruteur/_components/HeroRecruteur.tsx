@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid2 as Grid } from "@mui/material"
+import { Grid, Box } from "@mui/material"
 
 import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"

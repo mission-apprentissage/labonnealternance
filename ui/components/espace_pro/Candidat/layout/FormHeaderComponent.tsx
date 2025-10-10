@@ -41,7 +41,7 @@ export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
           </Box>
         </Box>
         <Box sx={{ mr: fr.spacing("4w") }}>
-          <IconeLogo w={["0px", "0px", "300px"]} h={["0px", "0px", "174px"]} />
+          <IconeLogo sx={{ width: { xs: "0px", md: "300px" }, height: { xs: "0px", md: "174px" } }} />
         </Box>
       </Box>
     </Box>

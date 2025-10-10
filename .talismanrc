@@ -323,6 +323,10 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
+- filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
+  checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
 scopeconfig:
 - scope: node
 custom_patterns:

@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, Stack, List, ListItem } from "@mui/material"
 import Image from "next/image" // Ou <img> classique si tu ne veux pas NextImage
 
@@ -14,7 +15,7 @@ const RessourcesCandidat = () => {
         La bonne alternance vous propose un ensemble d’outils et de liens pour vous aider dans vos démarches de recherche de formation et d’emploi en alternance.
       </Typography>
 
-      <Typography component="h2" variant="h4" fontWeight={700} mt={6} mb={2}>
+      <Typography component="h2" variant="h4" sx={{ my: fr.spacing("3w") }}>
         Testez vos connaissances
       </Typography>
 
@@ -22,8 +23,8 @@ const RessourcesCandidat = () => {
 
       <MisesEnSituation target="candidat" />
 
-      <Stack direction="row" alignItems="center" mt={8} mb={2}>
-        <Image src="/images/pages_ressources/conseils et astuces.svg" width={32} height={32} alt="" aria-hidden="true" style={{ marginRight: 16 }} />
+      <Stack direction="row" sx={{ alignItems: "center", my: fr.spacing("3w") }}>
+        <Image src="/images/pages_ressources/conseils et astuces.svg" width={32} height={32} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("2w") }} />
         <Typography component="h2" variant="h4" fontWeight={700}>
           Conseils et astuces
         </Typography>
@@ -31,19 +32,21 @@ const RessourcesCandidat = () => {
 
       <ConseilsEtAstuces />
 
-      <Box mt={10} mb={6}>
+      <Box sx={{ my: fr.spacing("5w") }}>
         <Box
-          display="flex"
-          p={3}
           sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "center", md: "flex-start" },
+            p: fr.spacing("3w"),
             boxShadow: "0px 0px 12px 6px #79797966",
           }}
         >
-          <Image src="/images/pages_ressources/tableau de suivi.svg" width={64} height={64} alt="" aria-hidden="true" style={{ marginRight: 24 }} />
+          <Image src="/images/pages_ressources/tableau de suivi.svg" width={64} height={64} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("3w") }} />
 
-          <Box display="flex" alignItems="center">
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
-              <Typography fontSize={20} fontWeight={700} mb={2}>
+              <Typography variant="h6" sx={{ mb: fr.spacing("3w") }}>
                 Suivre ses candidatures est essentiel pour penser à relancer à temps les recruteurs et savoir quelles entreprises ont déjà été contactées.
               </Typography>
 

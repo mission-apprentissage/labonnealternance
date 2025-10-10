@@ -1,17 +1,14 @@
-"use server"
-import { Container, Flex } from "@chakra-ui/react"
+import { Box } from "@mui/material"
 
 import { Footer } from "@/app/_components/Footer"
 
 export default async function WidgetLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Container maxW="full" p="0">
-      <Flex direction="column" h="100vh">
-        <Container as="main" p={0} maxW="container.xl" flexGrow="1">
-          {children}
-        </Container>
+    <Box sx={{ height: "100vh" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "100%" }}>
+        {children}
         <Footer isWidget={true} />
-      </Flex>
-    </Container>
+      </Box>
+    </Box>
   )
 }
