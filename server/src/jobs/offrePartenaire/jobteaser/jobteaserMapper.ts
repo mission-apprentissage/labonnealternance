@@ -42,7 +42,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
 
   const { title, description, url, contract_type: job_type, remote_type } = job_details
   const { start_date, first_activated_at } = job_dates
-  const { location_city, location_sub_state } = job_locations
+  const { location_city } = job_locations
   const { company_name } = company
 
   let business_error: string | null = null
@@ -89,7 +89,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
 
     workplace_name: company_name,
     workplace_address_city: location_city,
-    workplace_address_label: [location_city, location_sub_state].join(" ").trim(),
+    workplace_address_label: location_city,
     apply_url: urlParsing.data ?? null,
     offer_multicast: true,
     contract_type,
