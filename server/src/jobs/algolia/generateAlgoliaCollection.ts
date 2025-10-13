@@ -1,3 +1,4 @@
+import { ObjectId } from "bson"
 import { IFormationCatalogue, JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { IAlgolia } from "shared/models/algolia.model"
@@ -115,9 +116,14 @@ const getKeywords = async (description: string): Promise<string[] | null> => {
 }
 
 export const fillAlgoliaCollection = async () => {
-  await getDbCollection("algolia").deleteMany({})
+  // Récupérer les documents existants pour conserver les mots-clés et identifier les suppressions
+  const existingDocs = await getDbCollection("algolia")
+    .find({}, { projection: { _id: 1, keywords: 1 } })
+    .toArray()
+  const keywordsMap = new Map(existingDocs.map((doc) => [doc._id.toString(), doc.keywords]))
+  const existingIds = new Set(existingDocs.map((doc) => doc._id.toString()))
   const [formations, jobs, recruteur] = await Promise.all([
-    getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).limit(1).toArray(),
+    getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).toArray(),
     getDbCollection("jobs_partners")
       .aggregate([
         {
@@ -152,7 +158,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(100)
+      .limit(100_000)
       .toArray(),
     getDbCollection("jobs_partners")
       .aggregate([
@@ -239,7 +245,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(100)
+      .limit(80_000)
       .toArray(),
   ])
 
@@ -274,7 +280,9 @@ export const fillAlgoliaCollection = async () => {
 
   // Format jobs and push to payload
   await asyncForEach(jobs, async (job) => {
-    const keywords = await getKeywords(job.offer_description)
+    const jobId = job._id.toString()
+    const existingKeywordsForJob = keywordsMap.get(jobId)
+    const keywords = existingKeywordsForJob || (await getKeywords(job.offer_description))
     payload.push({
       _id: job._id,
       objectID: job._id.toString(),
@@ -302,7 +310,9 @@ export const fillAlgoliaCollection = async () => {
 
   // Format recruteurs and push to payload
   await asyncForEach(recruteur, async (job) => {
-    const keywords = await getKeywords(job.intitule_romes.join(", ") || null)
+    const jobId = job._id.toString()
+    const existingKeywordsForJob = keywordsMap.get(jobId)
+    const keywords = existingKeywordsForJob || (await getKeywords(job.intitule_romes.join(", ") || null))
     payload.push({
       _id: job._id,
       objectID: job._id.toString(),
@@ -328,5 +338,27 @@ export const fillAlgoliaCollection = async () => {
     })
   })
 
-  await getDbCollection("algolia").insertMany(payload)
+  // Calculer les IDs à conserver
+  const newIds = new Set(payload.map((doc) => doc._id.toString()))
+  const idsToDelete = [...existingIds].filter((id) => !newIds.has(id))
+
+  // Supprimer uniquement les documents qui ne sont plus dans les sources
+  if (idsToDelete.length > 0) {
+    await getDbCollection("algolia").deleteMany({
+      _id: { $in: idsToDelete.map((id) => new ObjectId(id)) },
+    })
+  }
+
+  // Upsert tous les documents (met à jour ou insère)
+  const bulkOps = payload.map((doc) => ({
+    replaceOne: {
+      filter: { _id: doc._id },
+      replacement: doc,
+      upsert: true,
+    },
+  }))
+
+  if (bulkOps.length > 0) {
+    await getDbCollection("algolia").bulkWrite(bulkOps)
+  }
 }
