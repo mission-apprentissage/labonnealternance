@@ -8,7 +8,7 @@ export const exportRecruteursToBrevo = async () => {
     .aggregate([
       {
         $match: {
-          created_at: { $gte: new Date("2025-10-01") }, // demandé par le métier @aurélie
+          created_at: { $gte: new Date("2025-09-15") }, // demandé par le métier @aurélie
           job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
           company_recruitment_intention: { $ne: null },
           company_feedback_date: { $ne: null },
