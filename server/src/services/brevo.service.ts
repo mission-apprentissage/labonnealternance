@@ -1,4 +1,7 @@
 import brevo, { CreateWebhook } from "@getbrevo/brevo"
+import { ColumnOption } from "csv-stringify"
+import { stringify } from "csv-stringify/sync"
+import dayjs from "dayjs"
 
 import { logger } from "../common/logger"
 import config from "../config"
@@ -74,4 +77,29 @@ export const initBrevoWebhooks = () => {
         logger.error("Brevo webhook API Error for campaign hardbounce detection. Returned data: " + error.response.res.text)
       }
     )
+}
+
+export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKETING", contacts: any[], contactMapper: ColumnOption[], listId: string) => {
+  const fileBody = stringify(contacts, {
+    delimiter: ";",
+    header: true,
+    columns: contactMapper,
+    cast: {
+      date: (value) => dayjs(value).format("YYYY-MM-DD"),
+      number: (value) => "" + value || "0",
+      string: (value) => value ?? "",
+    },
+  })
+
+  const clientBrevo = new brevo.ContactsApi()
+  clientBrevo.setApiKey(brevo.ContactsApiApiKeys.apiKey, account === "TRANSACTIONAL" ? config.smtp.brevoApiKey : config.smtp.brevoMarketingApiKey)
+
+  const requestContactImport = new brevo.RequestContactImport()
+
+  requestContactImport.fileBody = fileBody
+  requestContactImport.updateExistingContacts = true
+  requestContactImport.emptyContactsAttributes = true
+
+  requestContactImport.listIds = [parseInt(listId)]
+  await clientBrevo.importContacts(requestContactImport)
 }

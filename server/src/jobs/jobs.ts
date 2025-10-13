@@ -8,6 +8,7 @@ import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
+import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -197,6 +198,10 @@ export async function setupJobProcessor() {
             cron_string: "00 4 * * *",
             handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
             tag: "main",
+          },
+          "Export contact recruteurs vers Brevo": {
+            cron_string: "10 4 * * *",
+            handler: exportRecruteursToBrevo,
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",

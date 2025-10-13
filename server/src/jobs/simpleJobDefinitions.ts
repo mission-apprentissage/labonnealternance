@@ -24,6 +24,7 @@ import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
+import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -375,5 +376,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: exportFileForAlgo,
     description: "Export des données pour l'algorithme des recruteurs",
+  },
+  {
+    fct: exportRecruteursToBrevo,
+    description: "Export des données recruteurs sur Brevo",
   },
 ]
