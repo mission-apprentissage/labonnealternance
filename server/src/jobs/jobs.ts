@@ -5,6 +5,7 @@ import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
+import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -182,6 +183,10 @@ export async function setupJobProcessor() {
             handler: syncEtablissementsAndFormations,
             tag: "main",
           },
+          "Export des offres sur S3 v2": {
+            cron_string: "0 3 * * *",
+            handler: () => exportJobsToS3V2(),
+          },
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
             cron_string: "30 3 * * *",
             handler: removeDuplicateEtablissements,
@@ -272,19 +277,18 @@ export async function setupJobProcessor() {
             handler: resetInvitationDates,
             tag: "main",
           },
+          "Export des données pour l'algorithme": {
+            cron_string: "0 10 * * FRI",
+            handler: exportFileForAlgo,
+          },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",
             handler: () => processRecruteursLba(),
             tag: "main",
           },
-          "Export des offres sur S3 v2": {
-            cron_string: "0 3 * * *",
-            handler: () => exportJobsToS3V2(),
-          },
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
             handler: removeBrevoContacts,
-            tag: "main",
           },
         },
     jobs: {
