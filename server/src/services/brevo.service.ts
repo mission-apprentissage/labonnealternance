@@ -101,5 +101,42 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
   requestContactImport.emptyContactsAttributes = true
 
   requestContactImport.listIds = [parseInt(listId)]
-  await clientBrevo.importContacts(requestContactImport)
+
+  const maxRetries = 5
+  let attempt = 0
+  let lastError: Error | null = null
+
+  while (attempt < maxRetries) {
+    try {
+      await clientBrevo.importContacts(requestContactImport)
+      return
+    } catch (error: any) {
+      lastError = error
+      const statusCode = error?.response?.statusCode || error?.response?.status
+
+      if (statusCode === 429) {
+        attempt++
+        if (attempt < maxRetries) {
+          const headers = error?.response?.headers || {}
+          const rateLimitReset = headers["x-sib-ratelimit-reset"]
+          const rateLimitRemaining = headers["x-sib-ratelimit-remaining"]
+
+          // Use Brevo's x-sib-ratelimit-reset header (time in ms until reset) or fallback to exponential backoff
+          // Brevo rate limit: 10 RPS, so wait at least 100ms between retries
+          // Exponential backoff: 100ms, 200ms, 500ms, 1s, 2s
+          const delayMs = rateLimitReset ? parseInt(rateLimitReset) : Math.min(100 * Math.pow(2, attempt - 1), 2000)
+
+          logger.warn(`Brevo API rate limit reached (429). Remaining: ${rateLimitRemaining || "unknown"}. Retrying in ${delayMs}ms (attempt ${attempt}/${maxRetries})`)
+          await new Promise((resolve) => setTimeout(resolve, delayMs))
+        } else {
+          logger.error(`Brevo API rate limit reached. Max retries (${maxRetries}) exceeded`)
+          throw error
+        }
+      } else {
+        throw error
+      }
+    }
+  }
+
+  throw lastError
 }
