@@ -249,11 +249,12 @@ export const fillAlgoliaCollection = async () => {
       .toArray(),
   ])
 
-  const payload: IAlgolia[] = []
+  const processedIds = new Set<string>()
+  const algoliaCollection = getDbCollection("algolia")
 
-  // Format formations and push to payload
-  formations.forEach((formation) => {
-    payload.push({
+  // Process formations and insert immediately
+  await asyncForEach(formations, async (formation) => {
+    const formationDoc: IAlgolia = {
       _id: formation._id,
       objectID: formation._id.toString(),
       url_id: formation.cle_ministere_educatif,
@@ -275,15 +276,19 @@ export const fillAlgoliaCollection = async () => {
       level: convertFormationNiveauDiplome(formation.niveau || ""),
       activity_sector: null,
       keywords: null,
-    })
+    }
+
+    await algoliaCollection.replaceOne({ _id: formationDoc._id }, formationDoc, { upsert: true })
+    processedIds.add(formationDoc._id.toString())
   })
 
-  // Format jobs and push to payload
+  // Process jobs and insert immediately
   await asyncForEach(jobs, async (job) => {
     const jobId = job._id.toString()
     const existingKeywordsForJob = keywordsMap.get(jobId)
     const keywords = existingKeywordsForJob || (await getKeywords(job.offer_description))
-    payload.push({
+
+    const jobDoc: IAlgolia = {
       _id: job._id,
       objectID: job._id.toString(),
       url_id: job._id.toString(),
@@ -305,15 +310,19 @@ export const fillAlgoliaCollection = async () => {
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
       keywords,
-    })
+    }
+
+    await algoliaCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
+    processedIds.add(jobDoc._id.toString())
   })
 
-  // Format recruteurs and push to payload
+  // Process recruteurs and insert immediately
   await asyncForEach(recruteur, async (job) => {
     const jobId = job._id.toString()
     const existingKeywordsForJob = keywordsMap.get(jobId)
     const keywords = existingKeywordsForJob || (await getKeywords(job.intitule_romes.join(", ") || null))
-    payload.push({
+
+    const recruteurDoc: IAlgolia = {
       _id: job._id,
       objectID: job._id.toString(),
       url_id: job.workplace_siret,
@@ -335,30 +344,17 @@ export const fillAlgoliaCollection = async () => {
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
       keywords: keywords,
-    })
+    }
+
+    await algoliaCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
+    processedIds.add(recruteurDoc._id.toString())
   })
 
-  // Calculer les IDs à conserver
-  const newIds = new Set(payload.map((doc) => doc._id.toString()))
-  const idsToDelete = [...existingIds].filter((id) => !newIds.has(id))
-
-  // Supprimer uniquement les documents qui ne sont plus dans les sources
+  // Delete documents that are no longer in the sources
+  const idsToDelete = [...existingIds].filter((id) => !processedIds.has(id))
   if (idsToDelete.length > 0) {
-    await getDbCollection("algolia").deleteMany({
+    await algoliaCollection.deleteMany({
       _id: { $in: idsToDelete.map((id) => new ObjectId(id)) },
     })
-  }
-
-  // Upsert tous les documents (met à jour ou insère)
-  const bulkOps = payload.map((doc) => ({
-    replaceOne: {
-      filter: { _id: doc._id },
-      replacement: doc,
-      upsert: true,
-    },
-  }))
-
-  if (bulkOps.length > 0) {
-    await getDbCollection("algolia").bulkWrite(bulkOps)
   }
 }
