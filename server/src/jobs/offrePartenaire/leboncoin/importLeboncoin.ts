@@ -1,32 +1,32 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawLeboncoinModel from "shared/models/rawLeboncoin.model"
 
-// import config from "../../../config"
+import config from "@/config"
+import { importFromStreamInCsv } from "@/jobs/offrePartenaire/importFromStreamInCsv"
+import { importFromUrlInCsv } from "@/jobs/offrePartenaire/importFromUrlInCsv"
+
 import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 import { leboncoinJobToJobsPartners, ZLeboncoinJob } from "./leboncoinMapper"
 
 const rawCollectionName = rawLeboncoinModel.collectionName
-const offerXmlTag = "offre"
+const documentJobRoot = "job"
 
 export const importLeboncoin = async (sourceStream?: NodeJS.ReadableStream) => {
-  // TODO : ici csv
   if (sourceStream) {
-    //   await importFromStreamInXml({
-    //     destinationCollection: rawCollectionName,
-    //     offerXmlTag,
-    //     stream: sourceStream,
-    //     partnerLabel: JOBPARTNERS_LABEL.LAPOSTE,
-    //     conflictingOpeningTagWithoutAttributes: true,
-    //   })
+    await importFromStreamInCsv({
+      destinationCollection: rawCollectionName,
+      stream: sourceStream,
+      partnerLabel: JOBPARTNERS_LABEL.LEBONCOIN,
+      parseOptions: { delimiter: "," },
+    })
   } else {
-    //   await importFromUrlInXml({
-    //     destinationCollection: rawCollectionName,
-    //     url: config.laposteUrl,
-    //     offerXmlTag,
-    //     partnerLabel: JOBPARTNERS_LABEL.LAPOSTE,
-    //     conflictingOpeningTagWithoutAttributes: true,
-    //   })
+    await importFromUrlInCsv({
+      destinationCollection: rawCollectionName,
+      url: config.leboncoinUrl,
+      partnerLabel: JOBPARTNERS_LABEL.LEBONCOIN,
+      parseOptions: { delimiter: "," },
+    })
   }
 }
 
@@ -36,6 +36,6 @@ export const importLeboncoinToComputed = async () => {
     partnerLabel: JOBPARTNERS_LABEL.LEBONCOIN,
     zodInput: ZLeboncoinJob,
     mapper: leboncoinJobToJobsPartners,
-    documentJobRoot: offerXmlTag,
+    documentJobRoot,
   })
 }
