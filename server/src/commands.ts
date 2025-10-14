@@ -372,12 +372,6 @@ program
   .action(createJobAction("opcos:update"))
 
 program
-  .command("update-domaines-metiers")
-  .description("Procède à l'import du fichier domaines metiers")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("domaines-metiers:update"))
-
-program
   .command("update-domaines-metiers-file")
   .description("Enregistre le fichier spécifié présent dans /assets sur le repository distant. Si key n'est pas précisé il remplacera le fichier par défaut.")
   .requiredOption("--filename <string>", "filename")
