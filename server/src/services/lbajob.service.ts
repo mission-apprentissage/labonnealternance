@@ -165,7 +165,7 @@ export const getLbaJobs = async ({
 
     const jobs = await getJobs(params)
 
-    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
+    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -223,7 +223,7 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
       trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
+    const applicationCountByJob = await getApplicationByJobCount([id])
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
       applicationCountByJob,
