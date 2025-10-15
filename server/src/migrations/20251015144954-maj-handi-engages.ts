@@ -5982,7 +5982,7 @@ export const up = async () => {
   logger.info(`Inserting ${siretsHandiEngages.length} new sirets in referentiel_engagement_entreprise collection...`)
 
   const now = new Date()
-  await getDbCollection("referentiel_engagement_entreprise").updateMany({}, { $set: { createdAt: now, updatedAt: now } }, { bypassDocumentValidation: true })
+  await getDbCollection("referentiel_engagement_entreprise").updateMany({}, { $set: { created_at: now, updatedAt: now } }, { bypassDocumentValidation: true })
 
   const batchSize = 1000
 
@@ -6002,8 +6002,8 @@ export const up = async () => {
               siret,
               engagement: "handicap",
               sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL],
-              createdAt: now,
-              updatedAt: now,
+              created_at: now,
+              updated_at: now,
             },
           ]
     )
