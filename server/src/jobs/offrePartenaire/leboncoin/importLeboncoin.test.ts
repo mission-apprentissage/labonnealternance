@@ -24,7 +24,7 @@ describe("importLeboncoin", () => {
     }
   })
 
-  it("should test the import of Le Bon Coin data into computed_job_partners", async () => {
+  it("should test the import of Le bon coin emploi data into computed_job_partners", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/leboncoin/importLeboncoin.test.input.csv")
     await importLeboncoin(fileStream)
     expect.soft(await getDbCollection("raw_leboncoin").countDocuments({})).toBe(2)

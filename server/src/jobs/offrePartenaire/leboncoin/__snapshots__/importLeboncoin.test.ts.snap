@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`importLeboncoin > should test the import of Le Bon Coin data into computed_job_partners 1`] = `
+exports[`importLeboncoin > should test the import of Le bon coin emploi data into computed_job_partners 1`] = `
 [
   {
     "apply_phone": null,
@@ -63,7 +63,7 @@ Nous nous mobilisons au quotidien autour de 4 piliers de responsabilité sociét
     "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "2999583187",
-    "partner_label": "Le Bon Coin",
+    "partner_label": "Le bon coin emploi",
     "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
     "workplace_address_city": "Saint-Cyr-sur-Loire",
@@ -137,7 +137,7 @@ Intégrez un Groupe en pleine croissance, ou l'esprit d'équipe et la satisfacti
     "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
     "partner_job_id": "3071721792",
-    "partner_label": "Le Bon Coin",
+    "partner_label": "Le bon coin emploi",
     "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
     "workplace_address_city": "Charleville-Mézières",

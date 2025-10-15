@@ -73,7 +73,7 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  "Import Le Bon Coin": {
+  "Import Le bon coin emploi": {
     cron_string: timings.import_source,
     handler: processLeboncoin,
     checkinMargin: 350,
