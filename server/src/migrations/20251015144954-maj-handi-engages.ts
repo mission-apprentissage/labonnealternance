@@ -5988,15 +5988,29 @@ export const up = async () => {
 
   for (let i = 0; i < siretsHandiEngages.length; i += batchSize) {
     const batch = siretsHandiEngages.slice(i, i + batchSize)
-    const documents: IReferentielEngagementEntreprise[] = batch.map((siret) => ({
-      _id: new ObjectId(),
-      siret,
-      engagement: "handicap",
-      sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL],
-      createdAt: now,
-      updatedAt: now,
-    }))
 
+    const duplicates: { siret: string }[] = await getDbCollection("referentiel_engagement_entreprise")
+      .find({ siret: { $in: batch } }, { projection: { _id: 0, siret: 1 } })
+      .toArray()
+
+    const documents: IReferentielEngagementEntreprise[] = batch.flatMap((siret) =>
+      duplicates.some((d) => d.siret === siret)
+        ? []
+        : [
+            {
+              _id: new ObjectId(),
+              siret,
+              engagement: "handicap",
+              sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL],
+              createdAt: now,
+              updatedAt: now,
+            },
+          ]
+    )
+
+    if (documents.length === 0) {
+      continue
+    }
     await getDbCollection("referentiel_engagement_entreprise").insertMany(documents, { bypassDocumentValidation: true })
     console.log(`Inserted batch ${i / batchSize + 1}`)
   }
