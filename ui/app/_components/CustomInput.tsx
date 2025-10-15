@@ -25,8 +25,8 @@ const CustomInput = (props) => {
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box ml={1}>
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Warning sx={{ mr: 1 }} />
-                Les informations de votre entreprise sont non diffusibles.
+                <Warning sx={{ mr: fr.spacing("1w") }} />
+                <Typography sx={{ color: fr.colors.decisions.text.actionHigh.redMarianne.default }}>Les informations de votre entreprise sont non diffusibles.</Typography>
               </Box>
               <DsfrLink href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" external={true}>
                 Contacter le support pour en savoir plus
@@ -34,7 +34,7 @@ const CustomInput = (props) => {
             </Box>
           ) : (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ display: "flex" }} ml={1}>
+              <Box sx={{ display: "flex", ml: fr.spacing("1w") }}>
                 <Typography className={fr.cx("fr-message--error")}>{parse(meta.error || "")}</Typography>
                 {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
               </Box>
