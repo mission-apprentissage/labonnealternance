@@ -6,12 +6,6 @@ OS_NAME=$(uname -s)
 
 ansible_extra_opts+=("--vault-password-file" "${SCRIPT_DIR}/get-vault-password-client.sh")
 readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
-CYPRESS_ENV_FILE="./cypress.env"
-
-echo "Creating $CYPRESS_ENV_FILE"
-echo "" > $CYPRESS_ENV_FILE
-ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -o=shell '.vault' | grep -E "^CYPRESS_" >> $CYPRESS_ENV_FILE
-ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -o=shell ".vault.local" | grep -E "^CYPRESS_" >> $CYPRESS_ENV_FILE
 
 echo "Updating local server/.env & ui/.env"
 ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible all \

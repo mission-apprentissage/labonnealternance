@@ -1,9 +1,9 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Typography } from "@mui/material"
-import { ILbaItemLbaJobJson } from "shared"
+import { ILbaItemPartnerJobJson } from "shared"
 
-const LbaJobAcces = ({ job }: { job: ILbaItemLbaJobJson }) => {
-  const accesEmploi = job?.job?.romeDetails?.acces_metier ?? null
+const LbaJobAcces = ({ job }: { job: ILbaItemPartnerJobJson }) => {
+  const accesEmploi = job?.job.offer_access_conditions ?? null
   if (!accesEmploi) return null
   return (
     <Accordion label="À qui ce métier est-il accessible ?">
