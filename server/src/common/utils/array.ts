@@ -16,7 +16,7 @@ export const deduplicate = <T extends string | number>(array: T[]): T[] => {
 }
 
 export const deduplicateBy = <T>(array: T[], valueFct: (item: T) => string | number): T[] => {
-  const valuesArray = array.map((item) => [item, valueFct(item)] as const)
-  const uniqueValues = deduplicate(valuesArray.map(([, value]) => value))
-  return valuesArray.flatMap(([item, value], index) => (uniqueValues.indexOf(value) === index ? [item] : []))
+  const itemsWithValues = array.map((item) => [item, valueFct(item)] as const)
+  const values = itemsWithValues.map(([, value]) => value)
+  return itemsWithValues.flatMap(([item, value], index) => (values.indexOf(value) === index ? [item] : []))
 }
