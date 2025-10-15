@@ -16,7 +16,7 @@ interface ConfirmationSuppressionEntrepriseProps {
 
 export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppressionEntrepriseProps) {
   const { isOpen, onClose, establishment_raison_sociale, establishment_id } = props
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
 
   const SupprimerFormulaire = () => {
     archiveFormulaire(establishment_id)
@@ -24,8 +24,7 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
         toast({
           title: "Suppression réussie",
           description: "L'entreprise et ses offres ont bien été supprimée.",
-          status: "success",
-          duration: 4000,
+          autoHideDuration: 4000,
         })
       })
       .finally(() => {
@@ -37,30 +36,27 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
   }
 
   return (
-    <>
-      {ToastComponent}
-      <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
-        <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-          <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
-            Supprimer {establishment_raison_sociale ?? ""}
+    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
+      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+          Supprimer {establishment_raison_sociale ?? ""}
+        </Typography>
+
+        <Box pb={2}>
+          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+            En supprimant cette entreprise, l’ensemble des offres créées pour celle-ci ne seront plus visibles.
           </Typography>
-
-          <Box pb={2}>
-            <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
-              En supprimant cette entreprise, l’ensemble des offres créées pour celle-ci ne seront plus visibles.
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
-            <Box mr={fr.spacing("3v")}>
-              <Button priority="secondary" onClick={() => onClose()}>
-                Annuler
-              </Button>
-            </Box>
-            <Button onClick={() => SupprimerFormulaire()}>Supprimer</Button>
-          </Box>
         </Box>
-      </ModalReadOnly>
-    </>
+
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
+          <Box mr={fr.spacing("3v")}>
+            <Button priority="secondary" onClick={() => onClose()}>
+              Annuler
+            </Button>
+          </Box>
+          <Button onClick={() => SupprimerFormulaire()}>Supprimer</Button>
+        </Box>
+      </Box>
+    </ModalReadOnly>
   )
 }

@@ -45,7 +45,7 @@ export function DepotRapideFin() {
 }
 
 function FinComponent(props: ComponentProps) {
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
 
   const { jobId, email, withDelegation, fromDashboard, userId, token } = props
 
@@ -55,8 +55,7 @@ function FinComponent(props: ComponentProps) {
         toast({
           title: "Email envoyé.",
           description: "Un nouveau email vient d'être envoyé.",
-          status: "success",
-          duration: 4000,
+          autoHideDuration: 4000,
         })
       })
       .catch((error) => {
@@ -66,16 +65,16 @@ function FinComponent(props: ComponentProps) {
               toast({
                 title: "Un problème est survenu.",
                 description: "L'email n'a pas pu être vérfié, merci de contacter le support.",
-                status: "success",
-                duration: 4000,
+                variant: "error",
+                autoHideDuration: 4000,
               })
               break
             case "VERIFIED":
               toast({
                 title: "L'email est déjà vérifié.",
                 description: "Vous pouvez vous connecter.",
-                status: "success",
-                duration: 4000,
+                variant: "info",
+                autoHideDuration: 4000,
               })
               break
             default:
@@ -108,7 +107,6 @@ function FinComponent(props: ComponentProps) {
 
   return (
     <>
-      {ToastComponent}
       <BorderedBox
         sx={{
           display: "flex",

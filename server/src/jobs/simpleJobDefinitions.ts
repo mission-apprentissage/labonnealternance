@@ -25,6 +25,7 @@ import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies
 import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
 import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
+import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -35,7 +36,6 @@ import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecrute
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
-import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze } from "./domainesMetiers/classifyRomesForDomainesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
@@ -52,6 +52,7 @@ import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -380,5 +381,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: exportFileForAlgo,
     description: "Export des données pour l'algorithme des recruteurs",
+  },
+  {
+    fct: exportRecruteursToBrevo,
+    description: "Export des données recruteurs sur Brevo",
   },
 ]

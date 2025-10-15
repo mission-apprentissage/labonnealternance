@@ -1,12 +1,20 @@
+import { existsSync, mkdirSync } from "node:fs"
+import path from "node:path"
+
 import { Options as CsvParseOptions, parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
-import XLSX from "xlsx"
+
+import __dirname from "@/common/dirname"
 
 import { FTPClient } from "./ftpUtils"
 
-export const readXLSXFile = (localPath) => {
-  const workbook = XLSX.readFile(localPath, { codepage: 65001 })
-  return { sheet_name_list: workbook.SheetNames, workbook }
+export const CURRENT_DIR_PATH = __dirname(import.meta.url)
+
+export const createAssetsFolder = async () => {
+  const assetsPath = path.join(CURRENT_DIR_PATH, "./assets")
+  if (!(await existsSync(assetsPath))) {
+    await mkdirSync(assetsPath)
+  }
 }
 
 export const parseCsv = (options: CsvParseOptions = {}) => {
