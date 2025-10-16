@@ -2,6 +2,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
+import Image from "next/image"
 import Link from "next/link"
 import type { ExtendedRecordMap } from "notion-types"
 
