@@ -12,16 +12,26 @@ name: lba_preview_system
 services:
   reverse_proxy:
     <<: *default
-    image: "nginxproxy/nginx-proxy"
+    image: ghcr.io/mission-apprentissage/mna_reverse_proxy:1.7.2
     container_name: lba_reverse_proxy
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:8080/tcp"
+      - "443:8443/tcp"
+    environment:
+      - SERVER_NAME={{dns_name}}
+      - MODSEC_REQ_BODY_LIMIT=5243904
+      - MODSEC_REQ_BODY_NOFILES_LIMIT=5243904
+      - MODSEC_RULE_ENGINE=On
     volumes:
       - conf:/etc/nginx/conf.d
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
+      - /opt/app/configs/reverse_proxy/locations/:/etc/nginx/templates/locations/:ro
+      - /opt/app/configs/reverse_proxy/system/:/etc/nginx/system/:ro
+      - /opt/app/configs/reverse_proxy/extra-conf.d/:/etc/nginx/templates/extra-conf.d/:ro
+      - /opt/app/configs/reverse_proxy/owasp-crs/:/etc/modsecurity.d/owasp-crs/rules/:ro
+      - /opt/app/configs/reverse_proxy/extra-includes/:/etc/nginx/templates/extra-includes/:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
     labels:
       - autoheal=true
