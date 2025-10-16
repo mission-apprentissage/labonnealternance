@@ -23,10 +23,9 @@ services:
       - MODSEC_REQ_BODY_NOFILES_LIMIT=5243904
       - MODSEC_RULE_ENGINE=On
     volumes:
-      - conf:/etc/nginx/
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
-      - certs:/etc/nginx/certs:ro
+      - certs:/etc/nginx/ssl:ro
       - /opt/app/configs/reverse_proxy/locations/:/etc/nginx/templates/locations/:ro
       - /opt/app/configs/reverse_proxy/system/:/etc/nginx/system/:ro
       - /opt/app/configs/reverse_proxy/extra-conf.d/:/etc/nginx/templates/extra-conf.d/:ro
@@ -41,7 +40,7 @@ services:
     image: nginxproxy/acme-companion
     container_name: nginx-proxy-acme
     volumes:
-      - certs:/etc/nginx/certs:rw
+      - certs:/etc/nginx/ssl:rw
       - acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
