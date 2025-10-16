@@ -93,6 +93,6 @@
 
 - name: creation du fichier docker compose preview system
   ansible.builtin.template:
-    src: "{{inventory_dir}}/docker-compose.preview-system.yml"
+    src: "{{inventory_dir}}/docker-compose.preview-system.yml.jinja2"
     dest: "/opt/app/docker-compose.preview-system.yml"
   when: env_type == 'preview'
