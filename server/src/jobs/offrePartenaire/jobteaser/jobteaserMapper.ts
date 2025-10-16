@@ -91,7 +91,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
     workplace_address_city: location_city,
     workplace_address_label: location_city,
     apply_url: urlParsing.data ?? null,
-    offer_multicast: true,
+    offer_multicast: false,
     contract_type,
     contract_start: start_date ? new Date(start_date) : null,
     contract_remote,
