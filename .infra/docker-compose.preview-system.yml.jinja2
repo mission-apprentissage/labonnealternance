@@ -12,7 +12,7 @@ name: lba_preview_system
 services:
   reverse_proxy:
     <<: *default
-    image: ghcr.io/mission-apprentissage/mna_reverse_proxy:1.7.2
+    image: ghcr.io/mission-apprentissage/mna_reverse_proxy:1.7.3
     container_name: lba_reverse_proxy
     ports:
       - "80:8080/tcp"
@@ -42,10 +42,12 @@ services:
     volumes:
       - certs:/etc/nginx/certs:rw
       - acme:/etc/acme.sh
+      - /opt/app/configs/acme-companion/post-hook.sh:/post-hook.sh:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - NGINX_DOCKER_GEN_CONTAINER=nginx-proxy-acme
       - DEFAULT_EMAIL=misson.apprentissage.devops@gmail.com
+      - ACME_POST_HOOK=/post-hook.sh
     volumes_from:
       - reverse_proxy
 
