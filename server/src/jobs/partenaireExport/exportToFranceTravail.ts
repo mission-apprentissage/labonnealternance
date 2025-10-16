@@ -50,10 +50,10 @@ const formatData = (offre) => {
   }
 
   return {
-    Par_ref_offre: `${ntcCle}-${offre.jobId}`,
+    Par_ref_offre: `${ntcCle}-${offre.jobId.toString()}`,
     Par_cle: "LABONNEALTERNANCE",
     Par_nom: "LABONNEALTERNANCE",
-    Par_URL_offre: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, offre.jobId, offre.rome_detail.rome.intitule)}`,
+    Par_URL_offre: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, offre.jobId.toString(), offre.rome_detail.rome.intitule)}`,
     Code_rome: offre.rome_code[0],
     Code_OGR: appellation.code_ogr,
     Libelle_metier_OGR: appellation.libelle,

@@ -118,7 +118,7 @@ const applicantFixture = generateApplicantFixture({})
 
 const applicationFixture = generateApplicationFixture({
   _id: new ObjectId("6081289803569600282e0001"),
-  job_id: "64a43d28eeeb7c3b210faf59",
+  job_id: new ObjectId("64a43d28eeeb7c3b210faf59"),
   job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   applicant_id: applicantFixture._id,
 })
@@ -203,7 +203,7 @@ describe("POST /v2/application", () => {
       company_siret: recruteur.workplace_siret,
       company_recruitment_intention_date: null,
       created_at: expect.any(Date),
-      job_id: recruteur._id.toString(),
+      job_id: recruteur._id,
       job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
       job_searched_by_user: null,
       job_title: "Une super offre d'alternance",
@@ -237,7 +237,7 @@ describe("POST /v2/application", () => {
       headers: { authorization: `Bearer ${token}` },
     })
 
-    const application = await getDbCollection("applications").findOne({ job_id: job._id.toString() })
+    const application = await getDbCollection("applications").findOne({ job_id: job._id })
     const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
@@ -269,7 +269,7 @@ describe("POST /v2/application", () => {
       company_siret: recruiter.establishment_siret,
       company_recruitment_intention_date: null,
       created_at: expect.any(Date),
-      job_id: job._id.toString(),
+      job_id: job._id,
       job_searched_by_user: null,
       job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       job_title: "Opérations administratives",
