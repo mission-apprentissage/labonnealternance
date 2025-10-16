@@ -1,0 +1,5 @@
+/screenshots/*
+/videos/*
+/e2e/generated
+
+.yarn

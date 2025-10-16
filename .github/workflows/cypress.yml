@@ -1,0 +1,159 @@
+name: Tests Cypress e2e
+
+on:
+  workflow_dispatch:
+    inputs:
+      cypress_host:
+        description: host name
+        type: string
+        required: true
+      smtp_host:
+        description: host name of the mailpit
+        type: string
+        required: true
+      environment:
+        description: platform type. Values are 'recette'|'preview'
+        type: string
+        required: true
+      pr_no:
+        description: pull request number
+        type: string
+        required: true
+  workflow_call:
+    inputs:
+      cypress_host:
+        description: host name
+        type: string
+        required: true
+      smtp_host:
+        description: host name of the mailpit
+        type: string
+        required: true
+      environment:
+        description: platform type. Values are 'recette'|'preview'
+        type: string
+        required: true
+    secrets:
+      CODECOV_TOKEN:
+        description: Code coverrage token
+        required: true
+      SLACK_WEBHOOK:
+        description: Webhook slack
+        required: true
+      VAULT_PWD:
+        description: vault password
+        required: true
+
+jobs:
+  cypress:
+    if: false
+    concurrency:
+      group: "cypress-${{ github.workflow }}-${{ github.ref }}"
+    runs-on: ubuntu-latest
+    steps:
+      - id: "get-pr-no"
+        run: echo "PR_NO=${{ github.event.issue.number || inputs.pr_no }}" >> $GITHUB_OUTPUT
+
+      - id: "get-branch"
+        run: echo "branch=$(gh pr view $PR_NO --repo $REPO --json headRefName --jq '.headRefName' || echo 'main')" >> $GITHUB_OUTPUT
+        env:
+          REPO: ${{ github.repository }}
+          PR_NO: ${{ steps.get-pr-no.outputs.PR_NO }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.get-branch.outputs.branch }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+            .yarn/install-state.gz
+            .yarn/cache
+            ~/.cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
+      - name: Run end to end tests
+        run: .bin/mna-lba e2e:run ${{ inputs.environment }}
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          CYPRESS_ui: ${{ inputs.cypress_host }}
+          CYPRESS_server: ${{ inputs.cypress_host }}
+          CYPRESS_smtp: ${{ inputs.smtp_host }}
+
+      - name: Encrypt Error log on failure
+        run: .bin/mna-lba log:encrypt /tmp/cypressRun.log
+        if: failure()
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload failure logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-on-error
+          path: /tmp/cypressRun.log.gpg
+
+      - name: Encrypt screenshots
+        run: |
+          zip -r /tmp/screenshots.zip cypress/screenshots
+          .bin/mna-lba log:encrypt /tmp/screenshots.zip
+        if: failure()
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-on-error
+          path: /tmp/screenshots.zip.gpg
+
+      - name: Decrypt log command when failed
+        if: failure()
+        run: echo 'You can get error files using `.bin/mna-lba log:decrypt ${{ github.run_id }} cypress-on-error`' >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment PR Preview failure
+        if: steps.get-pr-no.outputs.PR_NO && !failure()
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            Cypress tests : OK
+          comment-tag: cypress-tests
+          mode: recreate
+          pr-number: ${{ steps.get-pr-no.outputs.PR_NO }}
+
+      - name: Comment PR Preview failure
+        if: steps.get-pr-no.outputs.PR_NO && failure()
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            Cypress tests : FAILURE
+          comment-tag: cypress-tests
+          mode: recreate
+          pr-number: ${{ steps.get-pr-no.outputs.PR_NO }}
+
+      - name: Notify failure on Slack
+        uses: ravsamhq/notify-slack-action@v2
+        if: ${{ failure() }} && ${{ inputs.environment }} == 'recette'
+        with:
+          status: ${{ job.status }}
+          notification_title: "Les tests e2e ne sont pas passés : ${{ inputs.app_version }} en ${{ inputs.environment }}"
+          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`"
+          notify_when: "failure"
+          mention_groups: "S0693U59FCK"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}

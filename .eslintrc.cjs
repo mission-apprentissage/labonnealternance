@@ -71,6 +71,7 @@ module.exports = {
           "**/jest.config.js",
           "**/dev.ts",
           "**/tsup.config.ts",
+          "**/cypress.config.ts",
           "*.ts",
         ],
         optionalDependencies: false,

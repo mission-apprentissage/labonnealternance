@@ -198,3 +198,16 @@ jobs:
           ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
+
+  cypress:
+    if: false
+    needs: ["deploy"]
+    uses: "./.github/workflows/cypress.yml"
+    with:
+      cypress_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
+      smtp_host: "https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp"
+      environment: recette
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}

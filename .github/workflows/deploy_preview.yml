@@ -160,3 +160,18 @@ jobs:
           comment-tag: deployment
           mode: recreate
           pr-number: ${{ github.event.issue.number }}
+
+  cypress:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.issue.id }}-cypress
+      cancel-in-progress: true
+    needs: ["deploy_preview"]
+    uses: "./.github/workflows/cypress.yml"
+    with:
+      cypress_host: "https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr"
+      smtp_host: "https://smtp.labonnealternance-preview.apprentissage.beta.gouv.fr"
+      environment: preview
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}
