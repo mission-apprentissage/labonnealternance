@@ -1,19 +1,17 @@
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
-import brevo from "@getbrevo/brevo"
-import { ColumnOption, stringify } from "csv-stringify/sync"
-import dayjs from "dayjs"
+import { ColumnOption } from "csv-stringify/sync"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { logger } from "@/common/logger"
-import { sleep } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
+import { uploadContactListToBrevo } from "@/services/brevo.service"
 
 type IBrevoContact = {
   user_origin: string
@@ -34,102 +32,64 @@ type IBrevoContact = {
 
 let contactCount = 0
 
+const contactMapper: ColumnOption[] = [
+  {
+    key: "user_email",
+    header: "EMAIL",
+  },
+  { key: "user_first_name", header: "PRENOM" },
+  { key: "user_last_name", header: "NOM" },
+  {
+    key: "user_origin",
+    header: "USER_ORIGIN",
+  },
+  {
+    key: "role_authorized_type",
+    header: "ROLE_AUTHORIZED_TYPE",
+  },
+  {
+    key: "role_createdAt",
+    header: "ROLE_CREATEDAT",
+  },
+  {
+    key: "entreprise_enseigne",
+    header: "ENTREPRISE_ENSEIGNE",
+  },
+  {
+    key: "entreprise_raison_sociale",
+    header: "ENTREPRISE_RAISON_SOCIALE",
+  },
+  {
+    key: "entreprise_siret",
+    header: "ENTREPRISE_SIRET",
+  },
+  {
+    key: "cfa_enseigne",
+    header: "CFA_ENSEIGNE",
+  },
+  {
+    key: "cfa_raison_sociale",
+    header: "CFA_RAISON_SOCIALE",
+  },
+  {
+    key: "cfa_siret",
+    header: "CFA_SIRET",
+  },
+  {
+    key: "job_count",
+    header: "JOB_COUNT",
+  },
+  {
+    key: "recruiter_establishment_size",
+    header: "EFFECTIFS",
+  },
+]
+
 const postToBrevo = async (contacts: IBrevoContact[]) => {
   contactCount += contacts.length
 
-  const fileBody = stringify(contacts, {
-    delimiter: ";",
-    header: true,
-    columns: [
-      {
-        key: "user_email",
-        header: "EMAIL",
-      },
-      { key: "user_first_name", header: "PRENOM" },
-      { key: "user_last_name", header: "NOM" },
-      {
-        key: "user_origin",
-        header: "USER_ORIGIN",
-      },
-      {
-        key: "role_authorized_type",
-        header: "ROLE_AUTHORIZED_TYPE",
-      },
-      {
-        key: "role_createdAt",
-        header: "ROLE_CREATEDAT",
-      },
-      {
-        key: "entreprise_enseigne",
-        header: "ENTREPRISE_ENSEIGNE",
-      },
-      {
-        key: "entreprise_raison_sociale",
-        header: "ENTREPRISE_RAISON_SOCIALE",
-      },
-      {
-        key: "entreprise_siret",
-        header: "ENTREPRISE_SIRET",
-      },
-      {
-        key: "cfa_enseigne",
-        header: "CFA_ENSEIGNE",
-      },
-      {
-        key: "cfa_raison_sociale",
-        header: "CFA_RAISON_SOCIALE",
-      },
-      {
-        key: "cfa_siret",
-        header: "CFA_SIRET",
-      },
-      {
-        key: "job_count",
-        header: "JOB_COUNT",
-      },
-      {
-        key: "recruiter_establishment_size",
-        header: "EFFECTIFS",
-      },
-    ] as ColumnOption[],
-    cast: {
-      date: (value) => dayjs(value).format("YYYY-MM-DD"),
-      number: (value) => "" + value || "0",
-      string: (value) => value ?? "",
-    },
-  })
-
-  let trys = 0
-  let sent = false
-  while (!sent && trys < 3) {
-    try {
-      trys++
-
-      const clientBrevo = new brevo.ContactsApi()
-      clientBrevo.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoApiKey)
-
-      const requestContactImport = new brevo.RequestContactImport()
-
-      requestContactImport.fileBody = fileBody
-      requestContactImport.updateExistingContacts = true
-      requestContactImport.emptyContactsAttributes = true
-
-      requestContactImport.listIds = [parseInt(config.smtp.brevoContactListId!)]
-      await clientBrevo.importContacts(requestContactImport)
-
-      requestContactImport.listIds = [parseInt(config.smtp.brevoMarketingContactListId!)]
-      clientBrevo.setApiKey(brevo.ContactsApiApiKeys.apiKey, config.smtp.brevoMarketingApiKey)
-      await clientBrevo.importContacts(requestContactImport)
-
-      sent = true
-    } catch (error: any) {
-      if (error.status == 429) {
-        await sleep(1000)
-      } else {
-        throw error
-      }
-    }
-  }
+  await uploadContactListToBrevo("TRANSACTIONAL", contacts, contactMapper, config.smtp.brevoContactListId!)
+  await uploadContactListToBrevo("MARKETING", contacts, contactMapper, config.smtp.brevoMarketingContactListId!)
 }
 
 const getRoleManagement360Stream = async (type: AccessEntityType) => {
@@ -265,7 +225,6 @@ export const sendContactsToBrevo = async () => {
 
   try {
     await sendContacts(AccessEntityType.CFA)
-
     await sendContacts(AccessEntityType.ENTREPRISE)
 
     await notifyToSlack({

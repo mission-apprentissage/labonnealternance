@@ -37,12 +37,7 @@ export default function PriseDeRendezVous() {
 }
 
 const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif: string; referrer: string }) => {
-  const {
-    data,
-    isLoading,
-    error: fetchError,
-    isError,
-  } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["getPrdvForm", cleMinistereEducatif],
     queryFn: () => getPrdvContext(cleMinistereEducatif, referrer),
     enabled: !!cleMinistereEducatif,
@@ -53,32 +48,21 @@ const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif:
   const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
 
   if (isLoading) return <LoadingEmptySpace />
-  let error: string | null = null
-  if (fetchError) {
-    error = fetchError + ""
-  } else if (isError) {
-    error = "Une erreur inattendue est survenue. Veuillez réessayer plus tard."
-  } else if (data && "error" in data) {
-    error = data.error + ""
-  }
-  if (error) {
-    return <Box sx={{ my: "5rem", textAlign: "center" }}>{error}</Box>
+
+  if (isError || !data) {
+    return <Box sx={{ my: "5rem", textAlign: "center" }}>La prise de rendez-vous n'est pas disponible pour cette formation.</Box>
   }
 
-  if (confirmation) {
-    return <DemandeDeContactConfirmation {...confirmation} />
-  }
-  if (!data) return null
-
-  const { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale } = data
-  const context = { cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale }
+  const context = { cle_ministere_educatif: data.cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale: data.etablissement_formateur_entreprise_raison_sociale }
 
   const localOnSuccess = (props: { appointmentId: string; token: string }) => {
     setPrdvDone()
     setConfirmation(props)
   }
 
-  return (
+  return confirmation ? (
+    <DemandeDeContactConfirmation {...confirmation} />
+  ) : (
     <Box sx={{ my: fr.spacing("3w") }}>
       <ContactCfaSummary
         entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
