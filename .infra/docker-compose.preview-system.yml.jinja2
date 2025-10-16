@@ -23,7 +23,7 @@ services:
       - MODSEC_REQ_BODY_NOFILES_LIMIT=5243904
       - MODSEC_RULE_ENGINE=On
     volumes:
-      - conf:/etc/nginx/conf.d
+      - conf:/etc/nginx/
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
