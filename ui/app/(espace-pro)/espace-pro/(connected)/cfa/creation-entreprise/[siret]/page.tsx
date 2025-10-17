@@ -21,7 +21,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   const router = useRouter()
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
   const { user } = useConnectedSessionClient()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
@@ -30,8 +30,6 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         setSubmitting(false)
         toast({
           title: "Entreprise créée avec succès.",
-          status: "success",
-          duration: 4000,
         })
         router.push(PAGES.dynamic.backCfaEntrepriseCreationOffre(data.establishment_id).getPath())
       })
@@ -42,51 +40,48 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
   }
 
   return (
-    <>
-      {ToastComponent}
-      <Formik
-        validateOnMount={true}
-        initialValues={{
-          last_name: undefined,
-          first_name: undefined,
-          phone: undefined,
-          email: undefined,
-        }}
-        validationSchema={Yup.object().shape({
-          email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-          last_name: Yup.string().required("champ obligatoire"),
-          first_name: Yup.string().required("champ obligatoire"),
-          phone: phoneValidation().required("champ obligatoire"),
-        })}
-        onSubmit={submitForm}
-      >
-        {(informationForm) => {
-          return (
-            <Form>
-              <CustomInput required={false} name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
-              <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
-              <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
-              <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
-              <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
-                <Box sx={{ mr: fr.spacing("5v") }}>
-                  <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                    Annuler
-                  </Button>
-                </Box>
-                <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
-                  {informationForm.isSubmitting ? (
-                    <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
-                  ) : (
-                    <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
-                  )}
-                  Suivant
+    <Formik
+      validateOnMount={true}
+      initialValues={{
+        last_name: undefined,
+        first_name: undefined,
+        phone: undefined,
+        email: undefined,
+      }}
+      validationSchema={Yup.object().shape({
+        email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+        last_name: Yup.string().required("champ obligatoire"),
+        first_name: Yup.string().required("champ obligatoire"),
+        phone: phoneValidation().required("champ obligatoire"),
+      })}
+      onSubmit={submitForm}
+    >
+      {(informationForm) => {
+        return (
+          <Form>
+            <CustomInput required={false} name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
+            <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
+            <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
+            <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
+            <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
+              <Box sx={{ mr: fr.spacing("5v") }}>
+                <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                  Annuler
                 </Button>
               </Box>
-            </Form>
-          )
-        }}
-      </Formik>
-    </>
+              <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
+                {informationForm.isSubmitting ? (
+                  <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                ) : (
+                  <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                )}
+                Suivant
+              </Button>
+            </Box>
+          </Form>
+        )
+      }}
+    </Formik>
   )
 }
 

@@ -7,6 +7,7 @@ import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { notifyJobDetailViewV3 } from "@/utils/api"
@@ -19,7 +20,7 @@ import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
 import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
 import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
-import { JobDescription, JobDescriptionAccordion } from "../ItemDetailServices/JobDescription"
+import { JobDescription } from "../ItemDetailServices/JobDescription"
 import { ReportJobLink } from "../ReportJobLink"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
@@ -102,7 +103,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
         <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
-        <JobDescriptionAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} />
+        <JobAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} />
 
         <Box sx={{ mt: fr.spacing("2w") }}>
           <ReportJobLink
@@ -148,10 +149,10 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           <Box data-testid="lbb-component">
             <Box sx={{ mb: 4 }}>
               {job?.job?.offer_to_be_acquired_skills?.length ? (
-                <JobDescriptionAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} defaultExpanded={false} />
+                <JobAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} defaultExpanded={false} />
               ) : null}
               {job?.job?.offer_access_conditions?.length ? (
-                <JobDescriptionAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} defaultExpanded={false} />
+                <JobAccordion title="À qui ce métier est-il accessible ?" items={job?.job?.offer_access_conditions} defaultExpanded={false} />
               ) : null}
             </Box>
           </Box>

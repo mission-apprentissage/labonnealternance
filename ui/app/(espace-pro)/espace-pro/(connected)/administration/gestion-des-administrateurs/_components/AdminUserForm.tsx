@@ -33,7 +33,7 @@ export const AdminUserForm = ({
   onDelete?: () => void
   onUpdate?: () => void
 }) => {
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
   const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString())
 
   const errorHandler = (error: any) => {
@@ -42,7 +42,7 @@ export const AdminUserForm = ({
     }
     toast({
       title: error + "",
-      status: "error",
+      variant: "error",
     })
   }
 
@@ -53,7 +53,6 @@ export const AdminUserForm = ({
         .then(() => {
           toast({
             title: "Utilisateur mis à jour",
-            status: "success",
           })
           onUpdate?.()
         })
@@ -67,7 +66,6 @@ export const AdminUserForm = ({
         .then((user) => {
           toast({
             title: "Utilisateur créé",
-            status: "success",
           })
           onCreate?.(user._id.toString())
         })
@@ -82,12 +80,11 @@ export const AdminUserForm = ({
       if (result?.ok) {
         toast({
           title: "Utilisateur supprimé",
-          status: "success",
         })
       } else {
         toast({
           title: "Erreur lors de la suppression de l'utilisateur.",
-          status: "error",
+          variant: "error",
           description: " Merci de réessayer plus tard",
         })
       }
@@ -101,7 +98,6 @@ export const AdminUserForm = ({
 
   return (
     <>
-      {ToastComponent}
       {user && (
         <>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", my: fr.spacing("2v") }}>

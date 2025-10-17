@@ -66,7 +66,7 @@ function ListeEntreprise() {
   const router = useRouter()
   const { access } = useConnectedSessionClient()
 
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
   const { newUser: isNewUser } = useSearchParamsRecord()
 
   useEffect(() => {
@@ -74,8 +74,7 @@ function ListeEntreprise() {
       toast({
         title: "Vérification réussie",
         description: "Votre adresse mail a été validée avec succès.",
-        status: "success",
-        duration: 7000,
+        autoHideDuration: 7000,
       })
     }
   }, [isNewUser, toast])
@@ -162,7 +161,6 @@ function ListeEntreprise() {
   ]
   return (
     <>
-      {ToastComponent}
       <AnimationContainer>
         {currentEntreprise && (
           <ConfirmationSuppressionEntreprise
