@@ -130,11 +130,11 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
-  checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
+  checksum: 8c4747be47fcb6facb9ca3b5597653ba01684949483e22f88ff7ebd7ec866e06
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
+  checksum: 1b52190fb8a1a5b5a0f4248f64760218448e128417e228c91b9a4472e217169d
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
-  checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
+  checksum: 12a469e0fbb0a05cecdc155db325e141e5a27b06b4eb4643914d4b4b988babf2
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
 - filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
@@ -311,6 +311,8 @@ fileignoreconfig:
   checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
 - filename: ui/public/images/home_pics/illu-votrebesoin.svg
   checksum: ca9aa90b45043f8164d96e76e3f42906bcf597186394b1f81cf14c47814ebb33
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
