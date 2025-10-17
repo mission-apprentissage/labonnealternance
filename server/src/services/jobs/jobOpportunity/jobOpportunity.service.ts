@@ -663,6 +663,9 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
 }
 
 export const findFranceTravailOpportunitiesFromDB = async (resolvedQuery: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+  if (resolvedQuery.partners_to_exclude?.includes(JOBPARTNERS_LABEL.FRANCE_TRAVAIL)) {
+    return []
+  }
   const jobsPartners = await getJobsPartnersFromDB({ ...resolvedQuery, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL })
 
   return jobsPartners.map((j) =>
@@ -673,7 +676,11 @@ export const findFranceTravailOpportunitiesFromDB = async (resolvedQuery: IJobSe
   )
 }
 
-async function findLbaJobOpportunities({ romes, geo, target_diploma_level, departements, opco }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
+async function findLbaJobOpportunities({ romes, geo, target_diploma_level, departements, opco, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
+  if (partners_to_exclude?.includes(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)) {
+    return []
+  }
+
   const jobsPartners = await getJobsPartnersFromDB({
     romes,
     geo,
