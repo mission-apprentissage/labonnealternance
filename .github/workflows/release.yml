@@ -10,6 +10,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   release:
+    needs: [tests]
     concurrency:
       group: "release-${{ github.workflow }}-${{ github.ref }}"
     permissions: write-all
@@ -35,11 +36,11 @@ jobs:
             .yarn/install-state.gz
             .yarn/cache
             ~/.cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -72,10 +73,8 @@ jobs:
         id: get-version
         run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
 
-  docker-scout:
+  docker-scout-server:
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
-    concurrency:
-      group: "scout-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]
     runs-on: ubuntu-latest
     steps:
@@ -100,6 +99,17 @@ jobs:
         with:
           sarif_file: sarif-server.output.json
           category: Docker Server
+
+  docker-scout-ui:
+    if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
+    needs: ["release"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to Docker
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PAT }}
 
       - name: UI Docker Scout
         uses: docker/scout-action@v1
@@ -167,14 +177,11 @@ jobs:
             **/node_modules
             .yarn/install-state.gz
             .yarn/cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install
-
-      - name: typecheck
-        run: yarn typecheck
+        run: yarn install --immutable
 
       - name: Build sourcemaps
         run: yarn build

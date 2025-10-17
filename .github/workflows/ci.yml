@@ -27,11 +27,11 @@ jobs:
             .yarn/install-state.gz
             .yarn/cache
             ~/.cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check
