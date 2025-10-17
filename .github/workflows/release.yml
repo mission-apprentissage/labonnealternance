@@ -20,24 +20,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-            ~/.cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
+          node-version: 24
+          cache: "yarn"
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -162,23 +153,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-yarn-
+          node-version: 24
+          cache: "yarn"
 
       - name: Install dependencies
         run: yarn install --immutable
