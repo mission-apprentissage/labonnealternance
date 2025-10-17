@@ -3,7 +3,6 @@ import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
 import { AnyBulkWriteOperation, Filter } from "mongodb"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger as globalLogger } from "@/common/logger"
@@ -24,7 +23,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
  * Les valeurs retournées seront modifiées et écraseront les anciennes données.
  */
-export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IJobsPartnersOfferPrivate, FilledFields extends keyof IJobsPartnersOfferPrivate | "business_error">({
+export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IComputedJobsPartners, FilledFields extends keyof IComputedJobsPartners | "business_error">({
   job,
   sourceFields,
   filledFields,
