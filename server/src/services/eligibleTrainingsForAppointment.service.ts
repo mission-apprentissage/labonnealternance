@@ -69,7 +69,7 @@ const findEligibleTrainingByActionFormation = async (idActionFormation: string) 
   const referentielOnisepIdActionFormation = await getDbCollection("referentieloniseps").findOne({ id_action_ideo2: idActionFormation })
 
   if (!referentielOnisepIdActionFormation) {
-    throw notFound("Training not found")
+    return null
   }
 
   return await getDbCollection("eligible_trainings_for_appointments").findOne({
@@ -117,7 +117,7 @@ const getAppointmentContext = async (
   referrerName: string
 ): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   if (!eligibleTrainingsForAppointment) {
-    throw notFound(BusinessErrorCodes.TRAINING_NOT_FOUND)
+    return { error: "Prise de rendez-vous non disponible." }
   }
   if (!isOpenForAppointments(eligibleTrainingsForAppointment, referrerName)) {
     return {
