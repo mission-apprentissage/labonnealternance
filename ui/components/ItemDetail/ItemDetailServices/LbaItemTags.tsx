@@ -57,5 +57,17 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
     tags.push(<LbaJobEngagementTag key="job engagement" />)
   }
 
-  return <Box sx={{ display: "flex", gap: "4px" }}>{tags}</Box>
+  return (
+    <Box
+      sx={{
+        display: "block",
+        "& > *": {
+          marginRight: "4px",
+          minWidth: "fit-content",
+        },
+      }}
+    >
+      {tags}
+    </Box>
+  )
 }
