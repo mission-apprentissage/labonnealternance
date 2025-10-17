@@ -7,10 +7,10 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 export type TJobClassification = {
   partner_label: string
   partner_job_id: string
-  workplace_name: string
-  workplace_description: string
-  offer_title: string
-  offer_description: string
+  workplace_name?: string
+  workplace_description?: string
+  offer_title?: string
+  offer_description?: string
 }
 
 const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(IClassificationJobsPartners | null)[]> => {
