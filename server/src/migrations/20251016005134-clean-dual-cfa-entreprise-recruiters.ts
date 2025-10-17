@@ -1,4 +1,3 @@
-import { JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { logger } from "@/common/logger"
@@ -12,7 +11,7 @@ export const up = async () => {
     {
       $expr: { $eq: ["$establishment_siret", "$cfa_delegated_siret"] },
     },
-    { $set: { "jobs.job_status": JOB_STATUS.ANNULEE, updatedAt: now, status: RECRUITER_STATUS.ARCHIVE } }
+    { $set: { updatedAt: now, status: RECRUITER_STATUS.ARCHIVE } }
   )
 
   logger.info("Migration completed: clean dual cfa entreprise recruiters")
