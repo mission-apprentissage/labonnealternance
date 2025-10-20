@@ -112,7 +112,7 @@ describe("helloWorkJobToJobsPartners", () => {
       validated: false,
       business_error: null,
       jobs_in_success: [],
-      lba_url: "",
+      lba_url: null,
     })
   })
 })
