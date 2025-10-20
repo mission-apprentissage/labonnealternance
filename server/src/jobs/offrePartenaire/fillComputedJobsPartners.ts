@@ -95,5 +95,5 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   workplace_size: null,
   workplace_website: null,
   jobs_in_success: [],
-  lba_url: null,
+  lba_url: "",
 })
