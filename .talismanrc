@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 5307c49adcf09e3812e2a6223d150d4c86e7ff1fdf7b77a5db1bf75afda4887b
+  checksum: 7f8d8c682fb48c32e626b45f5e9099f41eb9cc8746e3bf3999033e885af697f1
 - filename: .infra/vault/vault.yml
   checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: docker-compose.yml
