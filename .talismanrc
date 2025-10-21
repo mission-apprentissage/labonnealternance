@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 14e5d716121676cda57b08498a94a9c28a720f20d5a9e75103234730ce1c900d
+  checksum: 5816d754aca1441d27dc9519c4402ef6374158ead6dda0667182180de559b131
 - filename: .infra/vault/vault.yml
   checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: docker-compose.yml
@@ -87,6 +87,8 @@ fileignoreconfig:
   checksum: 4afb3d979ea0f354bae2f04d36a0b885564a24e3e9742603a64eb044d7301128
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
+- filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
+  checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
 - filename: server/src/security/accessApiApprentissageService.ts
   checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
@@ -311,16 +313,14 @@ fileignoreconfig:
   checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
 - filename: ui/public/images/home_pics/illu-votrebesoin.svg
   checksum: ca9aa90b45043f8164d96e76e3f42906bcf597186394b1f81cf14c47814ebb33
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
-  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
-- filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
-  checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
 scopeconfig:
 - scope: node
 custom_patterns:

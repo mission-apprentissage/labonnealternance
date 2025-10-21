@@ -63,6 +63,6 @@ proj4.defs(lambert93, "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 " + "+
 const getWorkplaceGeolocation = (x: number | null, y: number | null): IComputedJobsPartners["workplace_geopoint"] => {
   if (x === 0 || y === 0 || x === null || y === null) return null
   // proj4 returns latitude first
-  const [latitude, longitude] = proj4(lambert93, wgs84, [x, y])
+  const [longitude, latitude] = proj4(lambert93, wgs84, [x, y])
   return { type: "Point", coordinates: [longitude, latitude] }
 }
