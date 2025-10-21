@@ -18,11 +18,7 @@ export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => 
   // KBA fix enum shared/models/lbaItem.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
   if (job.contact?.email) {
-    return (
-      <Box my={4}>
-        <CandidaterButton item={job} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} />
-      </Box>
-    )
+    return <CandidaterButton item={job} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} />
   }
 
   if (job.contact?.url) {
