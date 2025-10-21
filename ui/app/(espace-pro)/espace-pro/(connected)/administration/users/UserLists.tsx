@@ -25,14 +25,14 @@ function Users() {
   const [tabIndex, setTabIndex] = useState("0")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
 
   useEffect(() => {
     if (newUser) {
       toast({
         title: "Vérification réussie",
         description: "Votre adresse mail a été validée avec succès.",
-        duration: 7000,
+        autoHideDuration: 7000,
       })
     }
   }, [newUser, toast])
@@ -145,7 +145,6 @@ function Users() {
 
   return (
     <>
-      {ToastComponent}
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
       <ConfirmationActivationUtilisateur
         onClose={confirmationActivationUtilisateur.onClose}

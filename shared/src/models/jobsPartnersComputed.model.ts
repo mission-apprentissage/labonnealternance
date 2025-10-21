@@ -21,6 +21,7 @@ export enum COMPUTED_ERROR_SOURCE {
   SANITIZE_TEXT_FIELDS = "SANITIZE_TEXT_FIELDS",
   CLASSIFICATION = "CLASSIFICATION",
   ENGAGEMENT_ENTREPRISE = "ENGAGEMENT_ENTREPRISE",
+  FILL_LBA_URL = "FILL_LBA_URL",
 }
 
 export enum JOB_PARTNER_BUSINESS_ERROR {
@@ -42,12 +43,14 @@ export const ZComputedJobsPartnersBase = extensions
     partner_job_id: true,
     partner_label: true,
     created_at: true,
+    lba_url: true,
   })
   .extend({
     _id: zObjectId,
     partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
     partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
+    lba_url: z.string().url().nullable().default(null),
   })
 
 export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({

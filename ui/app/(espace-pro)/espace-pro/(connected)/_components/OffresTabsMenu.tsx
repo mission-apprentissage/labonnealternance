@@ -26,7 +26,7 @@ export const OffresTabsMenu = ({
   buildOfferEditionUrl: (offerId: string) => string
 }) => {
   const router = useRouter()
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
   const client = useQueryClient()
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
@@ -60,7 +60,6 @@ export const OffresTabsMenu = ({
           .then((job) =>
             toast({
               title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
-              status: "success",
             })
           )
           .finally(() =>
@@ -124,12 +123,5 @@ export const OffresTabsMenu = ({
     },
   ]
 
-  return (
-    !isDisabled && (
-      <>
-        {ToastComponent}
-        <PopoverMenu actions={actions} title="Actions sur l'offre" resetFlagsOnClose={[setCopied]} />
-      </>
-    )
-  )
+  return !isDisabled && <PopoverMenu actions={actions} title="Actions sur l'offre" resetFlagsOnClose={[setCopied]} />
 }
