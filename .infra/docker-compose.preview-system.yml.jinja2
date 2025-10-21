@@ -26,6 +26,7 @@ services:
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
       - certs:/etc/nginx/ssl:ro
+      - certs:/etc/nginx/certs:ro
       - /opt/app/configs/reverse_proxy/locations/:/etc/nginx/templates/locations/:ro
       - /opt/app/configs/reverse_proxy/system/:/etc/nginx/system/:ro
       - /opt/app/configs/reverse_proxy/extra-conf.d/:/etc/nginx/templates/extra-conf.d/:ro
