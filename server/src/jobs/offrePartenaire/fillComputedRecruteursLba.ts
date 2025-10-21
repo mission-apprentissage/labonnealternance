@@ -5,6 +5,7 @@ import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
+import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
 import { fillLocationInfosForPartners } from "@/jobs/offrePartenaire/fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
 import {
@@ -26,5 +27,6 @@ export const fillComputedRecruteursLba = async () => {
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
   await fillLocationInfosForPartners(context)
+  await fillLbaUrl(context)
   await validateComputedJobPartners(context)
 }
