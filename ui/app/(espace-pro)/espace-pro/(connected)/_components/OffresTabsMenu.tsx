@@ -26,7 +26,7 @@ export const OffresTabsMenu = ({
   buildOfferEditionUrl: (offerId: string) => string
 }) => {
   const router = useRouter()
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
   const client = useQueryClient()
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
@@ -45,7 +45,7 @@ export const OffresTabsMenu = ({
           type: "externalLink",
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
-  const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue" || row.job_status === "En attente"
+  const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue"
 
   const actions: PopoverMenuAction[] = [
     {
@@ -60,7 +60,6 @@ export const OffresTabsMenu = ({
           .then((job) =>
             toast({
               title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
-              status: "success",
             })
           )
           .finally(() =>
@@ -124,12 +123,5 @@ export const OffresTabsMenu = ({
     },
   ]
 
-  return (
-    !isDisabled && (
-      <>
-        {ToastComponent}
-        <PopoverMenu actions={actions} title="Actions sur l'offre" resetFlagsOnClose={[setCopied]} />
-      </>
-    )
-  )
+  return !isDisabled && <PopoverMenu actions={actions} title="Actions sur l'offre" resetFlagsOnClose={[setCopied]} />
 }

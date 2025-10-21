@@ -1,10 +1,13 @@
+import { ObjectId } from "bson"
+import { IEligibleTrainingsForAppointment } from "shared"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 import { logger } from "../../common/logger"
 
 /**
- * @description Check if a training is still available for appointments again its presence in the training catalogue
+ * @description remove ETFA training that are not in formationcatalogues
  * @return {Promise<{ AncientElligibleTrainingCount: number, NewElligibleTrainingCount: number }>}
  */
 export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => {
@@ -17,7 +20,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
   const eligibleTrainingsCollection = getDbCollection("eligible_trainings_for_appointments")
   const historyCollection = getDbCollection("eligible_trainings_for_appointments_histories")
 
-  const toHistorize = await eligibleTrainingsCollection
+  const result = await eligibleTrainingsCollection
     .aggregate([
       {
         $lookup: {
@@ -31,34 +34,29 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
         $match: { match: { $eq: [] } }, // Ceux qui n'ont pas de correspondance
       },
       { $unset: "match" },
-      {
-        $project: {
-          _id: 0,
-          allFields: "$$ROOT",
-        },
-      },
     ])
     .toArray()
 
-  if (toHistorize.length > 0) {
-    await historyCollection.insertMany(
-      toHistorize.map(({ allFields }) => ({
-        ...allFields,
-        lieu_formation_email: null,
-        historization_date: now,
-      }))
-    )
+  if (!result.length) return
 
-    const deleteOps = toHistorize.map(({ allFields }) => ({
-      deleteOne: {
-        filter: { cle_ministere_educatif: allFields.cle_ministere_educatif },
-      },
-    }))
+  const insertOps = result.map((etfa) => ({
+    ...(etfa as IEligibleTrainingsForAppointment),
+    _id: new ObjectId(),
+    lieu_formation_email: null,
+    historization_date: now,
+  }))
 
-    await eligibleTrainingsCollection.bulkWrite(deleteOps)
-  }
+  await historyCollection.insertMany(insertOps)
 
-  await notifyToSlack({ subject: "Historisation des formations éligibles", message: `Formations historisées : ${toHistorize.length}` })
+  const deleteOps = result.map((etfa) => ({
+    deleteOne: {
+      filter: { cle_ministere_educatif: etfa.cle_ministere_educatif },
+    },
+  }))
+
+  await eligibleTrainingsCollection.bulkWrite(deleteOps)
+
+  await notifyToSlack({ subject: "Historisation des formations éligibles", message: `Formations historisées : ${result.length}` })
 
   logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue done.")
 }

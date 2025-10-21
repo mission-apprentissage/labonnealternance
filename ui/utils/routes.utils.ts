@@ -4,7 +4,7 @@ import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
-import { buildRecherchePageParams, buildSearchTitle, IRechercheMode, IRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { buildRecherchePageParams, buildSearchTitle, IRechercheMode, IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export interface IPage {
   getPath: (args?: any) => string

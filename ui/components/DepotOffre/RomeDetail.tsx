@@ -1,5 +1,7 @@
-import { Accordion, Box, Checkbox, Heading, Text } from "@chakra-ui/react"
+import { fr } from "@codegouvfr/react-dsfr"
+import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import styled from "@emotion/styled"
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
 import { useState } from "react"
 import { IReferentielRomeForJobJson } from "shared"
 
@@ -7,19 +9,6 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import { classNames } from "@/utils/classNames"
 
 import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
-
-import { CustomAccordion } from "./CustomAccordion"
-
-const AccordionHeader = styled.p`
-  font-weight: 700;
-
-  .subtitle {
-    color: #666666;
-    font-style: italic;
-    font-weight: 400;
-    margin-left: 4px;
-  }
-`
 
 const CompetenceSelectionDiv = styled.div`
   .competences-group-title {
@@ -32,7 +21,6 @@ const CompetenceSelectionDiv = styled.div`
     }
   }
   .competence-checkbox-line {
-    margin-bottom: 16px;
     display: block;
 
     .competence-checkbox {
@@ -64,8 +52,10 @@ export const RomeDetail = ({
 
   return (
     <BorderedBox>
-      <Heading mb={4}>{title}</Heading>
-      <Text backgroundColor="#F5F5FE" padding={3} color="#000091" my={3}>
+      <Typography component="h2" fontWeight={700} mb={4}>
+        {title}
+      </Typography>
+      <Box sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("3w") }}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
         <b>
@@ -73,57 +63,57 @@ export const RomeDetail = ({
           <br />
           Veuillez conserver au minimum 3 items.
         </b>
-      </Text>
+      </Box>
 
-      <Accordion defaultIndex={[0, 1]} allowMultiple>
-        <CustomAccordion
-          id="metier"
-          header={
-            <AccordionHeader>
-              Descriptif du métier
-              <Text as="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
-                Non modifiable
-              </Text>
-            </AccordionHeader>
-          }
-        >
-          <Text>{definition}</Text>
-        </CustomAccordion>
-        {competences?.savoir_etre_professionnel && (
-          <RequiredCompetenceAccordion
-            id="qualites"
-            title="Qualités souhaitées pour ce métier"
-            competences={[{ labels: competences.savoir_etre_professionnel.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }]}
-            onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
-            isSelected={(competence) => isSelected("savoir_etre_professionnel", competence)}
-          />
-        )}
-        {competences?.savoir_faire && (
-          <RequiredCompetenceAccordion
-            id="competences"
-            title="Compétences qui seront acquises durant l’alternance"
-            competences={competences.savoir_faire.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
-            onChange={(competence, newValue) => onChange("savoir_faire", competence, newValue)}
-            isSelected={(competence) => isSelected("savoir_faire", competence)}
-          />
-        )}
-        {competences?.savoirs && (
-          <RequiredCompetenceAccordion
-            id="techniques"
-            title="Domaines et techniques de travail"
-            competences={competences.savoirs.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
-            onChange={(competence, newValue) => onChange("savoirs", competence, newValue)}
-            isSelected={(competence) => isSelected("savoirs", competence)}
-          />
-        )}
-
-        <CustomAccordion id="accessibilite" header={<AccordionHeader>À qui ce métier est-il accessible ?</AccordionHeader>}>
-          <Text>{acces_metier}</Text>
-        </CustomAccordion>
+      <Accordion
+        id="metier"
+        defaultExpanded={true}
+        label={
+          <Box>
+            Descriptif du métier{" "}
+            <Typography component="span" className="subtitle" fontSize={["10px", "10px", "10px", "12px"]} lineHeight={["18px", "18px", "18px", "20px"]}>
+              Non modifiable
+            </Typography>
+          </Box>
+        }
+      >
+        <Typography>{definition}</Typography>
       </Accordion>
-      <Text fontSize="14px" color="#3A3A3A" lineHeight="24px">
-        La fiche métier se base sur la classification ROME de France Travail
-      </Text>
+
+      {competences?.savoir_etre_professionnel && (
+        <RequiredCompetenceAccordion
+          id="qualites"
+          title="Qualités souhaitées pour ce métier"
+          competences={[{ labels: competences.savoir_etre_professionnel.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }]}
+          onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
+          isSelected={(competence) => isSelected("savoir_etre_professionnel", competence)}
+          defaultExpanded={true}
+        />
+      )}
+      {competences?.savoir_faire && (
+        <RequiredCompetenceAccordion
+          id="competences"
+          title="Compétences qui seront acquises durant l’alternance"
+          competences={competences.savoir_faire.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
+          onChange={(competence, newValue) => onChange("savoir_faire", competence, newValue)}
+          isSelected={(competence) => isSelected("savoir_faire", competence)}
+        />
+      )}
+      {competences?.savoirs && (
+        <RequiredCompetenceAccordion
+          id="techniques"
+          title="Domaines et techniques de travail"
+          competences={competences.savoirs.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
+          onChange={(competence, newValue) => onChange("savoirs", competence, newValue)}
+          isSelected={(competence) => isSelected("savoirs", competence)}
+        />
+      )}
+
+      <Accordion style={{ marginBottom: fr.spacing("2w") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
+        <Typography>{acces_metier}</Typography>
+      </Accordion>
+
+      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
     </BorderedBox>
   )
 }
@@ -140,19 +130,15 @@ const CompetenceSelection = ({
   const areAllUnselected = competences.every((competence) => !competence.selected)
   return (
     <CompetenceSelectionDiv>
-      {groupTitle && <Text className={classNames({ "competences-group-title": true, unselected: areAllUnselected })}>{groupTitle}</Text>}
+      {groupTitle && <Typography className={classNames({ "competences-group-title": true, unselected: areAllUnselected })}>{groupTitle}</Typography>}
       {competences.map((competence) => {
         return (
           <Box key={competence.label} className="competence-checkbox-line">
-            <Checkbox
-              className={classNames({ "competence-checkbox": true, unselected: !competence.selected })}
-              isChecked={competence.selected}
-              defaultChecked={competence.selected}
-              onChange={() => onChange(competence.label, !competence.selected)}
-            >
-              <Text>{competence.label}</Text>
-            </Checkbox>
-            {competence.error && <Text className="error-text">{competence.error}</Text>}
+            <FormControlLabel
+              label={competence.label}
+              control={<Checkbox defaultChecked={competence.selected} onChange={() => onChange(competence.label, !competence.selected)} />}
+            />
+            {competence.error && <Typography className="error-text">{competence.error}</Typography>}
           </Box>
         )
       })}
@@ -166,12 +152,14 @@ const RequiredCompetenceAccordion = ({
   isSelected,
   id,
   title,
+  defaultExpanded = false,
 }: {
   competences: { category?: string; labels: string[] }[]
   onChange: (competence: string, newValue: boolean) => void
   isSelected: (competence: string) => boolean
   id: string
   title: React.ReactNode
+  defaultExpanded?: boolean
 }) => {
   const [error, setError] = useState<{ competence: string; error: string } | null>(null)
   const competenceLabels = competences.flatMap(({ labels }) => labels)
@@ -179,13 +167,17 @@ const RequiredCompetenceAccordion = ({
   const totalSelected = competenceLabels.filter(isSelected).length
   const minRequired = Math.min(3, totalCompetences)
   return (
-    <CustomAccordion
+    <Accordion
       id={id}
-      header={
-        <AccordionHeader>
-          {title} <Badge className="count-badge">{totalSelected}</Badge>
-        </AccordionHeader>
+      label={
+        <>
+          <Typography component="span" sx={{ mr: fr.spacing("1w") }}>
+            {title}
+          </Typography>
+          <Badge className="count-badge">{totalSelected}</Badge>
+        </>
       }
+      defaultExpanded={defaultExpanded}
     >
       {competences.map(({ category, labels }) => (
         <CompetenceSelection
@@ -208,6 +200,6 @@ const RequiredCompetenceAccordion = ({
           }
         />
       ))}
-    </CustomAccordion>
+    </Accordion>
   )
 }

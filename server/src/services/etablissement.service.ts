@@ -569,7 +569,7 @@ export const entrepriseOnboardingWorkflow = {
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
 
     let validated = false
-    const managingUser = await createOrganizationUser({
+    const { user: managingUser } = await createOrganizationUser({
       userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
@@ -604,7 +604,6 @@ export const entrepriseOnboardingWorkflow = {
       },
       managingUser._id.toString()
     )
-
     return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({
@@ -659,6 +658,7 @@ export const entrepriseOnboardingWorkflow = {
       naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
       naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
     }
+
     if (existingFormulaire) {
       const result = await getDbCollection("recruiters").findOneAndUpdate(
         { cfa_delegated_siret, establishment_siret: siret },
@@ -669,22 +669,48 @@ export const entrepriseOnboardingWorkflow = {
           },
         }
       )
+
       if (!result) {
-        throw new Error(`inattendu: recruiter introuvable`)
+        const err = new Error("inattendu: recruiter introuvable lors de l'édition du compte par un CFA")
+        sentryCaptureException(err)
+        return {
+          error: true,
+          message: "Une erreur est survenue lors de l'édition du compte. Merci de contacter le support.",
+          errorCode: BusinessErrorCodes.UNKNOWN,
+        }
       }
       return result
     } else {
-      const formulaireInfo = await createFormulaire(
-        {
-          ...entrepriseToRecruiter(entreprise),
-          ...updatedFields,
-          jobs: [],
-          cfa_delegated_siret,
-          origin,
-        },
-        managedBy
-      )
-      return formulaireInfo
+      try {
+        const formulaireInfo = await createFormulaire(
+          {
+            ...entrepriseToRecruiter(entreprise),
+            ...updatedFields,
+            jobs: [],
+            cfa_delegated_siret,
+            origin,
+          },
+          managedBy
+        )
+
+        return formulaireInfo
+      } catch (err: any) {
+        sentryCaptureException(err)
+
+        if (err.message?.includes("duplicate key error")) {
+          return {
+            error: true,
+            message: "Un compte est déjà associé à ce couple email/siret.",
+            errorCode: BusinessErrorCodes.EMAIL_ALREADY_EXISTS,
+          }
+        }
+
+        return {
+          error: true,
+          message: "Une erreur est survenue lors de la création du compte. Merci de contacter le support.",
+          errorCode: BusinessErrorCodes.UNKNOWN,
+        }
+      }
     }
   },
 }

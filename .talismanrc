@@ -1,14 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 80f0c66744ac1a618a25e66bcc12d594c198492aa17059a5dd7903b556e7428f
+  checksum: 14e5d716121676cda57b08498a94a9c28a720f20d5a9e75103234730ce1c900d
 - filename: .infra/vault/vault.yml
-  checksum: 7852781310ed91ecef26e555e15d265fcf4825c64a26beaca37f48998c23d4df
-- filename: cypress/e2e/manual/create-many-applications.cy.ts
-  checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
-- filename: cypress/pages/FlowAdminPage.ts
-  checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
-- filename: cypress/pages/LoginPage.ts
-  checksum: b7f7dceff16e342a7fd4bfe2d017d33edd2ec5da256571ca5ef81a0e058b954e
+  checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -309,6 +303,8 @@ fileignoreconfig:
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
+- filename: ui/public/assets/logo-republique-francaise-short.svg
+  checksum: bc174b3196566a2242eb58c76cfbf51d16422d75d0db7b28b6299c06b5917384
 - filename: ui/public/images/home_pics/illu-offreformation.svg
   checksum: 7ad0f32e8c39866d9f4a76dde67f66a90c022f98e9f1a4932c9013e264c35b86
 - filename: ui/public/images/home_pics/illu-plateformesjeunes.svg
@@ -321,6 +317,10 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
+- filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
+  checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
 scopeconfig:
 - scope: node
 custom_patterns:

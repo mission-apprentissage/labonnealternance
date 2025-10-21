@@ -1,9 +1,8 @@
-import { Icon, IconProps } from "@chakra-ui/react"
-import React from "react"
+import { SvgIcon, SvgIconProps } from "@mui/material"
 
-export const BarberGuy = (props: IconProps) => {
+export const BarberGuy = (props: SvgIconProps) => {
   return (
-    <Icon viewBox="0 0 34 39" {...props}>
+    <SvgIcon viewBox="0 0 34 39" {...props}>
       <svg fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           fillRule="evenodd"
@@ -78,6 +77,6 @@ export const BarberGuy = (props: IconProps) => {
           fill="#000091"
         />
       </svg>
-    </Icon>
+    </SvgIcon>
   )
 }

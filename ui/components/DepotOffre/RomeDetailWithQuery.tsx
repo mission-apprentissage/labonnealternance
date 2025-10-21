@@ -1,10 +1,10 @@
-import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Flex, Heading, Link, Progress, Text } from "@chakra-ui/react"
-import styled from "@emotion/styled"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Typography, Box, CircularProgress } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
 
@@ -65,49 +65,35 @@ export const RomeDetailWithQuery = ({
   return isLoading || fakeLoading.isLoading ? (
     <LoadingBox />
   ) : error ? (
-    <Box border="1px solid #000091" p={5}>
-      <Heading mb={3}>{title}</Heading>
-      <Text fontSize="14px">
+    <Box sx={{ border: "1px solid #000091", p: fr.spacing("3w") }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("3w") }}>
+        {title}
+      </Typography>
+      <Typography>
         La fiche métier n'a pas pu être trouvée, merci de le{" "}
-        <Link
+        <DsfrLink
           aria-label="Envoi d'un email à l'équipe La bonne alternance - nouvelle fenêtre"
-          href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Dépôt%20offre%20-%20ROME%20manquant"
-          variant="basicUnderlinedBlue"
-          isExternal
+          href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Dépôt%20offre%20-%20ROME%20manquant-${title}"
+          external
         >
-          signaler à notre équipe support <ExternalLinkIcon mx="2px" />
-        </Link>{" "}
+          signaler à notre équipe support
+        </DsfrLink>{" "}
         en précisant le métier cherché
-      </Text>
+      </Typography>
     </Box>
   ) : (
     <RomeDetail title={title} romeReferentiel={romeReferentiel} onChange={setCompetenceSelection} selectedCompetences={selectedCompetences} />
   )
 }
 
-const LoadingBoxDiv = styled.div`
-  border: solid 1px #000091;
-  height: 430px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .title {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 24px 0px;
-  }
-`
-
 const LoadingBox = () => {
   return (
-    <LoadingBoxDiv>
-      <Flex alignItems="center" flexDirection="column" width="100%">
+    <Box sx={{ border: "solid 1px #000091", height: "430px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", width: "100%" }}>
         <Image src={image} width={80} alt="" />
-        <Text className="title">Génération du descriptif de l’offre</Text>
-        <Progress width="80%" isIndeterminate size="sm" borderRadius="20px" />
-      </Flex>
-    </LoadingBoxDiv>
+        <Typography sx={{ fontWeight: 700, my: fr.spacing("3w") }}>Génération du descriptif de l’offre</Typography>
+        <CircularProgress sx={{ mt: fr.spacing("3w") }} />
+      </Box>
+    </Box>
   )
 }

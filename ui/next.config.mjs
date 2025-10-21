@@ -70,16 +70,15 @@ const contentSecurityPolicy = `
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["shared"],
-  i18n: {
-    locales: ["fr"],
-    defaultLocale: "fr",
-  },
   productionBrowserSourceMaps: true,
   bundlePagesRouterDependencies: true,
   serverExternalPackages: ["react-pdf"],
   poweredByHeader: false,
   experimental: {
     fallbackNodePolyfills: false,
+    staleTimes: {
+      static: 180,
+    },
   },
   output: "standalone",
   eslint: {

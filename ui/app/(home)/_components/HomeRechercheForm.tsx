@@ -4,16 +4,15 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { Suspense } from "react"
 
-import { RechercheInputsLayout } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheInputsLayout"
-import { RechercheLieuAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
-import { RechercheMetierAutocomplete } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
-import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
-import { RechercheSubmitButton } from "@/app/(candidat)/recherche/_components/RechercheInputs/RechercheSubmitButton"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/recherche/_hooks/useNavigateToRecherchePage"
-import type { WithRecherchePageParams } from "@/app/(candidat)/recherche/_utils/recherche.route.utils"
+import { RechercheInputsLayout } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheInputsLayout"
+import { RechercheLieuAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
+import { RechercheMetierAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
+import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
+import { RechercheSubmitButton } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheSubmitButton"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { IRechercheForm, RechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
-import { SendPlausibleEvent } from "@/utils/plausible"
 
 function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void }) {
   return (
@@ -58,9 +57,6 @@ function HomeRechercheFormComponent(props: WithRecherchePageParams) {
   return (
     <HomeRechercheFormUI
       onSubmit={(rechercheForm) => {
-        const { displayedItemTypes } = rechercheForm
-        const plausibleLabel = `Recherche - Page d'accueil - ${displayedItemTypes.join(" et ")}`
-        SendPlausibleEvent(plausibleLabel)
         onSubmit(rechercheFormToRechercheParams(rechercheForm))
       }}
     />

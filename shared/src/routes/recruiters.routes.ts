@@ -8,6 +8,7 @@ import { ZPointGeometry } from "../models/address.model.js"
 import { zCFA } from "../models/cfa.model.js"
 import { ZEntreprise } from "../models/entreprise.model.js"
 import { ZRecruiter } from "../models/recruiter.model.js"
+import { EntrepriseEngagementSources } from "../models/referentielEngagementEntreprise.model.js"
 import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccount } from "../models/userWithAccount.model.js"
 
@@ -67,7 +68,9 @@ export const zRecruiterRoutes = {
         })
         .strict(),
       response: {
-        "200": ZEntreprise,
+        "200": ZEntreprise.extend({
+          engagementHandicapOrigin: extensions.buildEnum(EntrepriseEngagementSources).nullish(),
+        }),
       },
       securityScheme: null,
     },

@@ -91,11 +91,13 @@ export async function status(): Promise<{ count: number; requireShutdown: boolea
   }
 
   for (const migrationFile of migrationFiles) {
-    if (!appliedMigrationsFiles.has(migrationFile)) {
+    const isPending = !appliedMigrationsFiles.has(migrationFile)
+
+    if (isPending) {
       result.count++
+      const { requireShutdown = false } = await import(path.join(myConfig.migrationsDir, migrationFile))
+      result.requireShutdown = result.requireShutdown || requireShutdown
     }
-    const { requireShutdown = false } = await import(path.join(myConfig.migrationsDir, migrationFile))
-    result.requireShutdown = result.requireShutdown || requireShutdown
 
     const appliedAt = appliedMigrationsFiles.get(migrationFile) ?? "PENDING"
     console.info(`${migrationFile} : ${appliedAt}`)

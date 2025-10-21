@@ -25,7 +25,7 @@ export default function CompteRenderer() {
   const { user } = useConnectedSessionClient()
 
   const client = useQueryClient()
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
   const ModificationEmailPopup = useDisclosure()
 
   const { data, isLoading } = useQuery({
@@ -46,7 +46,6 @@ export default function CompteRenderer() {
 
       toast({
         title: "Mise à jour enregistrée avec succès",
-        status: "info",
       })
 
       if (variables.isChangingEmail) {
@@ -67,7 +66,6 @@ export default function CompteRenderer() {
 
   return (
     <>
-      {ToastComponent}
       <Formik
         validateOnMount={true}
         enableReinitialize={true}
@@ -131,7 +129,7 @@ export default function CompteRenderer() {
                   </Box>
                 </Box>
                 <Box>
-                  <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} />
+                  <InformationLegaleEntreprise siret={data.establishment_siret} type={data.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
                 </Box>
               </Box>
             </>
