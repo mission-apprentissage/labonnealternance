@@ -1,14 +1,12 @@
+import { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { jobPartnersByFlux } from "./processJobPartners"
-
-export const cancelRemovedJobsPartners = async () => {
+export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners>) => {
   const matchStage = {
-    $match: {
-      partner_label: { $in: jobPartnersByFlux },
-    },
+    $match: matchFilter,
   }
   const setStage = {
     $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE },

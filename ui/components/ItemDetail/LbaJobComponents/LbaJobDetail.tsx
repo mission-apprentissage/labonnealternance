@@ -3,7 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography, Link } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
-import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import { IJobJson, ILbaItemLbaJobJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -11,7 +11,7 @@ import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { notifyLbaJobDetailView } from "../../../utils/api"
+import { notifyJobDetailViewV3, notifyLbaJobDetailView } from "../../../utils/api"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { formatDate } from "../../../utils/strutils"
 import { getCompanySize } from "../ItemDetailServices/getCompanySize"
@@ -30,10 +30,11 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
+export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
     notifyLbaJobDetailView(job?.job?.id)
+    notifyJobDetailViewV3(job)
   }, [job?.job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
