@@ -13,7 +13,7 @@ import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hoo
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { IRechercheForm, RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 import { apiGet } from "@/utils/api.utils"
-import { SendPlausibleEvent } from "@/utils/plausible"
+// import { SendPlausibleEvent } from "@/utils/plausible"
 
 export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const rechercheResults = useRechercheResults(rechercheParams)
@@ -32,8 +32,10 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
   const onSubmit = useCallback(
     (rechercheForm: IRechercheForm) => {
       const { displayedItemTypes } = rechercheForm
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const plausibleLabel = `Recherche - Page de résultats - ${displayedItemTypes.join(" et ")}`
-      SendPlausibleEvent(plausibleLabel)
+      // SendPlausibleEvent(plausibleLabel)
       navigateToRecherchePage(rechercheFormToRechercheParams(rechercheForm))
     },
     [navigateToRecherchePage]

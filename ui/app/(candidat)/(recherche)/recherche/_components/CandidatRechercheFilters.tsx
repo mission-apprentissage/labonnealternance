@@ -24,11 +24,13 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
     [navigateToRecherchePage]
   )
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const sendPlausibleEvent = () => {
     const rechercheForm = rechercheParamsToRechercheForm(rechercheParams)
     const { displayedItemTypes } = rechercheForm
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const plausibleLabel = `Recherche - Page de résultats - ${displayedItemTypes.join(" et ")}`
-    SendPlausibleEvent(plausibleLabel)
+    // SendPlausibleEvent(plausibleLabel)
   }
 
   return (
@@ -55,14 +57,14 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
         <RechercheRayonSelect
           value={radius}
           onChange={(newRadius) => {
-            sendPlausibleEvent()
+            // sendPlausibleEvent()
             navigateToRecherchePage({ radius: newRadius })
           }}
         />
         <RechercheNiveauSelect
           value={diploma}
           onChange={(newDiploma) => {
-            sendPlausibleEvent()
+            // sendPlausibleEvent()
             navigateToRecherchePage({ diploma: newDiploma })
           }}
         />

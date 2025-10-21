@@ -27,7 +27,7 @@ async function fetchRomeSearchOptions(query: string): Promise<IRomeSearchOption[
 
   if (query.length > 2) {
     if (res.length > 0) {
-      SendPlausibleEvent("Mots clefs les plus recherchés", { terme: `${query.toLowerCase()} - ${res.length}` })
+      // SendPlausibleEvent("Mots clefs les plus recherchés", { terme: `${query.toLowerCase()} - ${res.length}` })
     } else {
       SendPlausibleEvent("Mots clefs ne retournant aucun résultat", { terme: query.toLowerCase() })
     }

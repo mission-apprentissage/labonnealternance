@@ -12,7 +12,7 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherc
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { RechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
-import { SendPlausibleEvent } from "@/utils/plausible"
+// import { SendPlausibleEvent } from "@/utils/plausible"
 
 export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
@@ -22,8 +22,9 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
     <RechercheForm
       onSubmit={(formValues) => {
         const { displayedItemTypes } = formValues
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const plausibleLabel = `Recherche - Page de résultats - ${displayedItemTypes.join(" et ")}`
-        SendPlausibleEvent(plausibleLabel)
+        // SendPlausibleEvent(plausibleLabel)
         navigateToRecherchePage({ ...rechercheFormToRechercheParams(formValues), displayMobileForm: false })
       }}
       rechercheParams={rechercheParams}
