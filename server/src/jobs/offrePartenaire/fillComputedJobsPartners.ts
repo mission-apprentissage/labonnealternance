@@ -6,6 +6,7 @@ import { logger } from "@/common/logger"
 import { blockJobsPartnersFromCfaList } from "@/jobs/offrePartenaire/blockJobsPartnersFromCfaList"
 import { detectClassificationJobsPartners } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
+import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
 import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
@@ -45,6 +46,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   await rankJobPartners(context)
   await detectDuplicateJobPartners(context)
 
+  await fillLbaUrl(context)
   await validateComputedJobPartners(context)
   logger.info("fin de fillComputedJobsPartners")
 }
@@ -93,4 +95,5 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   workplace_size: null,
   workplace_website: null,
   jobs_in_success: [],
+  lba_url: null,
 })

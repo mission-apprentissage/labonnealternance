@@ -10,7 +10,6 @@ import { RechercheRayonSelect } from "@/app/(candidat)/(recherche)/recherche/_co
 import { RechercheToggleMap } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheToggleMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { rechercheParamsToRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
@@ -23,13 +22,6 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
     },
     [navigateToRecherchePage]
   )
-
-  const sendPlausibleEvent = () => {
-    const rechercheForm = rechercheParamsToRechercheForm(rechercheParams)
-    const { displayedItemTypes } = rechercheForm
-    const plausibleLabel = `Recherche - Page de résultats - ${displayedItemTypes.join(" et ")}`
-    SendPlausibleEvent(plausibleLabel)
-  }
 
   return (
     <Box
@@ -55,14 +47,12 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
         <RechercheRayonSelect
           value={radius}
           onChange={(newRadius) => {
-            sendPlausibleEvent()
             navigateToRecherchePage({ radius: newRadius })
           }}
         />
         <RechercheNiveauSelect
           value={diploma}
           onChange={(newDiploma) => {
-            sendPlausibleEvent()
             navigateToRecherchePage({ diploma: newDiploma })
           }}
         />

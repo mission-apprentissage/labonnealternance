@@ -91,7 +91,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           cfa_address_label: null,
           cfa_legal_name: null,
           cfa_apply_phone: null,
-          lba_url: buildUrlLba(computedJobPartner.partner_label, computedJobPartner._id.toString(), computedJobPartner.workplace_siret, computedJobPartner.offer_title),
+          lba_url: computedJobPartner.lba_url ?? "",
         }
 
         await getDbCollection("jobs_partners").updateOne(
