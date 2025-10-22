@@ -2,12 +2,12 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
-import updateDomainesMetiers from "@/jobs/domainesMetiers/updateDomainesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
+import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -23,10 +23,8 @@ import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecrute
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
-import { sendContactsToBrevo } from "./brevoContacts/sendContactsToBrevo"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
-import { updateDomainesMetiersFile } from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -35,6 +33,7 @@ import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -198,6 +197,10 @@ export async function setupJobProcessor() {
             handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
             tag: "main",
           },
+          "Export contact recruteurs vers Brevo": {
+            cron_string: "10 4 * * *",
+            handler: exportRecruteursToBrevo,
+          },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",
             handler: syncEtablissementDates,
@@ -332,16 +335,6 @@ export async function setupJobProcessor() {
       },
       "brevo:blocked:sync": {
         handler: async (job) => updateBrevoBlockedEmails(job.payload as any),
-      },
-      "domaines-metiers:update": {
-        handler: async () => updateDomainesMetiers(),
-      },
-      "domaines-metiers:file:update": {
-        handler: async (job) => {
-          const { filename, key } = job.payload as any
-          await updateDomainesMetiersFile({ filename, key })
-          return
-        },
       },
       "anonymize-individual": {
         handler: async (job) => {

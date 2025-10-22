@@ -95,7 +95,7 @@ function JobDetail({
       <Box
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-          padding: "10px 20px 0px 10px",
+          padding: "10px 20px 0px 20px",
           backgroundColor: "white",
           zIndex: 2, // DSFR Accordion gets zIndex 1 when manipulated for some reason.
         }}
@@ -110,7 +110,7 @@ function JobDetail({
             }
           : {})}
       >
-        <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
+        <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("1w") }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <LbaItemTags item={selectedItem} />
             <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
@@ -138,7 +138,7 @@ function JobDetail({
       </Box>
 
       <Box id="detail-content-container" />
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemLbaJobJson} />}
+      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
 

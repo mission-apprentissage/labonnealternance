@@ -74,6 +74,7 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     job_delegation_count: null,
     delegations: null,
     is_delegated: false,
+    lba_url: "",
 
     ...data,
   }
@@ -149,6 +150,7 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     job_delegation_count: null,
     delegations: null,
     is_delegated: false,
+    lba_url: "",
 
     ...data,
   }
@@ -208,6 +210,7 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     apply_email: null,
     offer_multicast: true,
     offer_origin: null,
+    lba_url: null,
 
     created_at: new Date("2021-01-28T15:00:00.000Z"),
     updated_at: new Date("2021-01-28T15:00:00.000Z"),

@@ -16,6 +16,8 @@ export const ZReferentielEngagementEntreprise = z
     siret: z.string(),
     engagement: z.enum(["handicap"]),
     sources: z.array(z.enum([EntrepriseEngagementSources.FRANCE_TRAVAIL, EntrepriseEngagementSources.LBA, EntrepriseEngagementSources.LES_ENTREPRISE_S_ENGAGENT])),
+    created_at: z.date(),
+    updated_at: z.date(),
   })
   .strict()
 

@@ -12,6 +12,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "contract_start": null,
     "contract_type": [],
     "created_at": 2024-07-21T02:49:06.000Z,
+    "lba_url": "http://localhost:3000/emploi/recruteurs_lba/80841382700011/recruteurs-lba",
     "offer_access_conditions": [],
     "offer_creation": 2024-07-21T02:49:06.000Z,
     "offer_description": "recruteurs_lba",
@@ -41,8 +42,8 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "workplace_description": null,
     "workplace_geopoint": {
       "coordinates": [
-        49.90490699998852,
         1.105230000000001,
+        49.90490699998852,
       ],
       "type": "Point",
     },
@@ -66,6 +67,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "contract_start": null,
     "contract_type": [],
     "created_at": 2024-07-21T02:49:06.000Z,
+    "lba_url": "http://localhost:3000/emploi/recruteurs_lba/13002526500013/recruteurs-lba",
     "offer_access_conditions": [],
     "offer_creation": 2024-07-21T02:49:06.000Z,
     "offer_description": "recruteurs_lba",
@@ -95,8 +97,8 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "workplace_description": null,
     "workplace_geopoint": {
       "coordinates": [
-        49.90490699998852,
         1.105230000000001,
+        49.90490699998852,
       ],
       "type": "Point",
     },

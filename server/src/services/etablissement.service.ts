@@ -755,7 +755,7 @@ export const sendEmailConfirmationEntreprise = async (
 ) => {
   if (
     entrepriseStatus !== EntrepriseStatus.VALIDE ||
-    isUserEmailChecked(user) ||
+    !isUserEmailChecked(user) ||
     !accessStatus ||
     ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)
   ) {

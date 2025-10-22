@@ -1,39 +1,24 @@
-import MuiAlert, { AlertColor } from "@mui/material/Alert"
-import Snackbar from "@mui/material/Snackbar"
-import { useState, useCallback } from "react"
+import { enqueueSnackbar, SharedProps } from "notistack"
+import { useCallback } from "react"
 
-type ToastOptions = {
+interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration"> {
   title?: string
   description?: string
-  status?: AlertColor
-  duration?: number
 }
 
 export function useToast() {
-  const [open, setOpen] = useState(false)
-  const [options, setOptions] = useState<ToastOptions>({
-    status: "info",
-    duration: 3000,
-  })
+  return useCallback((opts: ToastOptions) => {
+    const message = (
+      <div>
+        {opts.title && <strong>{opts.title}</strong>}
+        {opts.description && <div>{opts.description}</div>}
+      </div>
+    )
 
-  const toast = useCallback((opts: ToastOptions) => {
-    setOptions({
-      status: opts.status || "info",
-      title: opts.title,
-      description: opts.description,
-      duration: opts.duration || 3000,
+    enqueueSnackbar(message, {
+      variant: opts.variant ?? "success",
+      autoHideDuration: opts.autoHideDuration ?? 3000,
+      anchorOrigin: { horizontal: "right", vertical: "top" },
     })
-    setOpen(true)
   }, [])
-
-  const ToastComponent = (
-    <Snackbar open={open} autoHideDuration={options.duration} onClose={() => setOpen(false)} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
-      <MuiAlert elevation={6} variant="filled" severity={options.status} onClose={() => setOpen(false)}>
-        <strong>{options.title}</strong>
-        {options.description ? <> — {options.description}</> : null}
-      </MuiAlert>
-    </Snackbar>
-  )
-
-  return { toast, ToastComponent }
 }

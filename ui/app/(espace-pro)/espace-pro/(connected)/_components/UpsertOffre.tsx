@@ -9,7 +9,7 @@ import { createOffre, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
 
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
 
   const { data: offre, isLoading } = useQuery({
     queryKey: ["offre"],
@@ -24,7 +24,6 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
       await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: { ...values, job_update_date: new Date() } }).then(() => {
         toast({
           title: "Offre mise à jour avec succès.",
-          status: "success",
         })
         onSuccess()
       })
@@ -32,7 +31,6 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
       await createOffre(establishment_id, values)
       toast({
         title: "Offre enregistrée avec succès.",
-        status: "success",
       })
       onSuccess()
     }
@@ -40,10 +38,5 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
 
   if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
-  return (
-    <>
-      {ToastComponent}
-      <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
-    </>
-  )
+  return <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
 }
