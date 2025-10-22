@@ -46,11 +46,11 @@ export const exportRecruteursToBrevo = async () => {
       },
       {
         key: "firstname",
-        header: "PRENOM",
+        header: "PRENOM_CANDIDAT",
       },
       {
         key: "lastname",
-        header: "NOM",
+        header: "NOM_CANDIDAT",
       },
       {
         key: "company_feedback",
