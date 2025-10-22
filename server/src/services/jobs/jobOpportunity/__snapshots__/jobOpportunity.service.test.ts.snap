@@ -228,3 +228,45 @@ exports[`findJobsOpportunities > should execute query 2`] = `
   },
 ]
 `;
+
+exports[`updateJobOffer > should update a job offer with the minimal data 1`] = `
+{
+  "_id": Any<ObjectId>,
+  "apply_email": null,
+  "apply_phone": "0600000000",
+  "apply_url": null,
+  "business_error": null,
+  "contract_duration": null,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_start": 2024-09-01T00:00:00.000Z,
+  "contract_type": [
+    "Apprentissage",
+    "Professionnalisation",
+  ],
+  "created_at": 2023-09-05T22:00:00.000Z,
+  "errors": [],
+  "jobs_in_success": [],
+  "offer_access_conditions": [],
+  "offer_creation": 2023-09-05T22:00:00.000Z,
+  "offer_description": "Envie de devenir développeur web ? Rejoignez-nous !",
+  "offer_desired_skills": [],
+  "offer_expiration": 2023-11-05T23:00:00.000Z,
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": null,
+  "offer_status": "Active",
+  "offer_status_history": [],
+  "offer_target_diploma": null,
+  "offer_title": "Apprentis en développement web",
+  "offer_to_be_acquired_skills": [],
+  "partner_label": "Some organisation",
+  "updated_at": 2024-06-18T00:00:00.000Z,
+  "validated": false,
+  "workplace_address_label": null,
+  "workplace_description": null,
+  "workplace_name": null,
+  "workplace_siret": "13002526500013",
+  "workplace_website": null,
+}
+`;

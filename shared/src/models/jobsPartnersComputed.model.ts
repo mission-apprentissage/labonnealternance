@@ -89,6 +89,7 @@ export const ZComputedJobsPartners = ZComputedJobsPartnersBase.extend({
     .string()
     .nullish()
     .describe("Si le champ est rempli, l'offre est en train d'être traitée. Les offres ayant le même id sont traitées dans le même batch"),
+  lba_url: z.string().url().nullable().default(null), // why extend while it is already in  the base?
 })
 export type IComputedJobsPartners = z.output<typeof ZComputedJobsPartners>
 
