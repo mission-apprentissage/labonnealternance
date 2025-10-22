@@ -43,14 +43,12 @@ export const ZComputedJobsPartnersBase = extensions
     partner_job_id: true,
     partner_label: true,
     created_at: true,
-    lba_url: true,
   })
   .extend({
     _id: zObjectId,
     partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
     partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
     created_at: ZJobsPartnersOfferPrivate.shape.created_at,
-    lba_url: z.string().url().nullable().default(null),
   })
 
 export const ZComputedJobsPartnersWrite = ZComputedJobsPartnersBase.omit({
