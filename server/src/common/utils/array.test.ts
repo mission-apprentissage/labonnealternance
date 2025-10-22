@@ -21,10 +21,15 @@ describe("array", () => {
     it("should remove duplicate values for complex objects", () => {
       expect(
         deduplicateBy(
-          [3, 4, 5, 6, 6, 5, 4, 3].map((x) => ({ value: x })),
+          [3, 4, 3, 4, 6, 5, 4, 6].map((x, index) => ({ value: x, index })),
           (x) => x.value
         )
-      ).toEqual([3, 4, 5, 6].map((x) => ({ value: x })))
+      ).toEqual([
+        { value: 3, index: 0 },
+        { value: 4, index: 1 },
+        { value: 6, index: 4 },
+        { value: 5, index: 5 },
+      ])
     })
   })
 })

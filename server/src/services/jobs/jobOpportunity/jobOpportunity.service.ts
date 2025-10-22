@@ -31,6 +31,7 @@ import {
 
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 
@@ -842,6 +843,8 @@ async function upsertJobOfferPrivate({
     apply_email: data.apply.email,
     apply_url: data.apply.url,
     apply_phone: data.apply.phone,
+
+    lba_url: buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), data.workplace.siret ?? "", data.offer.title),
 
     updated_at: now,
     business_error: null,
