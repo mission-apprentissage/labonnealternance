@@ -145,7 +145,7 @@ export const importRecruteurLbaToComputed = async () => {
     objectMode: true,
     async transform(documents, _encoding, callback) {
       counters.total += documents.length
-      if (counters.total % 1000 === 0) logger.info(`processing document ${counters.total}`)
+      if (counters.total % 10_000 === 0) logger.info(`processing document ${counters.total}`)
 
       const operations: BulkOperation[] = []
 

@@ -20,7 +20,7 @@ export const fillLbaUrl = async ({ addedMatchFilter }: FillComputedJobsPartnersC
         const { _id, partner_label, workplace_siret, offer_title } = document
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
-          lba_url: buildUrlLba(partner_label, _id.toString(), workplace_siret ?? null, offer_title ?? ""),
+          lba_url: buildUrlLba(partner_label, _id.toString(), workplace_siret ?? null, offer_title ?? undefined),
         }
         return result
       })

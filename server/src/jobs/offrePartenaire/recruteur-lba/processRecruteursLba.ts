@@ -6,8 +6,14 @@
 
 import Stream from "node:stream"
 
+import { Filter } from "mongodb"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+
 import { logger } from "@/common/logger"
-import { fillComputedRecruteursLba, importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
+import { cancelRemovedJobsPartners } from "@/jobs/offrePartenaire/cancelRemovedJobsPartners"
+import { fillComputedRecruteursLba } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
+import { importFromComputedToJobsPartners } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
 
 import { checkIfAlgoFileAlreadyProcessed, importRecruteurLbaToComputed, importRecruteursLbaRaw } from "./importRecruteursLbaRaw"
 
@@ -24,6 +30,11 @@ export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFile
   await importRecruteursLbaRaw(sourceFileReadStream)
   await importRecruteurLbaToComputed()
   await fillComputedRecruteursLba()
-  await importRecruteursLbaFromComputedToJobsPartners()
+
+  const filter: Filter<IComputedJobsPartners> = {
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+  }
+  await importFromComputedToJobsPartners(filter)
+  await cancelRemovedJobsPartners(filter)
   logger.info("fin de processRecruteursLba")
 }
