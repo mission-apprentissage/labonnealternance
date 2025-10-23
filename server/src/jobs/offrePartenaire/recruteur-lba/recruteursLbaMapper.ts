@@ -54,7 +54,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
 }
 
 // Définition des systèmes de coordonnées
-const lambert93 = "EPSG:2154"
+const franceMetropolitaine = "EPSG:2154"
 const laReunion = "EPSG:2975"
 const guyane = "EPSG:2972"
 const guadeloupeEtMartinique = "EPSG:5490"
@@ -63,14 +63,14 @@ const mayotte = "EPSG:4471"
 const wgs84 = "EPSG:4326"
 
 // Définition de Lambert 93 (au cas où proj4 ne l'aurait pas déjà en base)
-proj4.defs(lambert93, "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 " + "+x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs")
+proj4.defs(franceMetropolitaine, "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 " + "+x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs")
 proj4.defs(laReunion, "+proj=utm +zone=40 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs(guyane, "+proj=utm +zone=22 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs(guadeloupeEtMartinique, "+proj=utm +zone=20 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs(mayotte, "+proj=utm +zone=38 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 
 const getRegionFromZipCode = (zip_code: string | null): string => {
-  if (!zip_code) return lambert93
+  if (!zip_code) return franceMetropolitaine
   const prefix = zip_code.substring(0, 3)
   switch (prefix) {
     case "974":
@@ -85,7 +85,7 @@ const getRegionFromZipCode = (zip_code: string | null): string => {
     case "976":
       return mayotte
     default:
-      return lambert93
+      return franceMetropolitaine
   }
 }
 
