@@ -1,0 +1,246 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importDecathlon > should test the import of hellowork data into computed_job_partners 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://joinus.decathlon.fr/fr/annonce/3975237-assistant-e-responsable-securite-exploitation-hse-hf-niveau-master-64700-hendaye?s_o=la-bonne-alternance#declareStep1",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-09-23T12:07:38.000Z,
+    "offer_description": "<div><p>TES FUTURES MISSIONS : </p><p>Aux côtés de notre responsable d'exploitation, tu garantis la sécurité du bâtiment, des biens et des personnes. En relation avec les prestataires, tu garantis la maintenance des installations des bâtiments à travers la gestion du planning des interventions. </p><br><p>Pour mettre en œuvre tes projets, tu assures le développement et le pilotage de groupes de travail. Ta mission sera d'intégrer le maximum de collaborateurs avec toi, dans les décisions et la mise en œuvre des plans d’actions. Tu accompagnes également les équipes en préparant les différents audits internes. </p><br><p>Garant-e de ton périmètre, tu t’assures du respect des réglementations sur le site. Tu travailles l’évolution des indicateurs de performance et recherche l'amélioration continue des procédures. Tu as aussi pour responsabilité le respect du budget attribué. </p><br><p>En bref, tu assures la sécurité de tes coéquipiers. Pour t’accompagner dans cette mission, tu pourras bien sûr toujours compter sur ton/ta tuteur/tutrice !</p></div>",
+    "offer_desired_skills": [
+      "curieu(se)",
+      "autonome",
+      "rigoureu(se)",
+    ],
+    "offer_expiration": 2025-11-23T11:07:38.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "6",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    },
+    "offer_title": "Assistant.e Responsable Sécurité Exploitation HSE H/F - Niveau Master",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "APEKPPZCVVXREV449",
+    "partner_label": "Décathlon",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Hendaye",
+    "workplace_address_label": "8 Rue des Orangers,  64700 Hendaye, France",
+    "workplace_address_street_label": "8 Rue des Orangers",
+    "workplace_address_zipcode": "64700",
+    "workplace_brand": null,
+    "workplace_description": "DECATHLON Real Estate",
+    "workplace_geopoint": {
+      "coordinates": [
+        -1.7799301,
+        43.3689738,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "DECATHLON Real Estate",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://joinus.decathlon.fr/fr/annonce/3977401-alternance-manager-commerce-hf-78140-velizy-villacoublay?s_o=la-bonne-alternance#declareStep1",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-09-24T10:18:17.000Z,
+    "offer_description": "<p>Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b></p>
+
+<p style="text-align:center;"><b>#CHOISIS TA TEAM# </b></p>
+
+<p>Une stratégie qui contribue au parcours de milliers de jeunes en France et qui nous permettra de recruter nos talents sportifs de demain. Une politique qui fera de Decathlon un acteur majeur dans l'insertion professionnelle et sociale des jeunes en France<br><b>DECATHLON = une opportunité vers mon 1er emploi</b></p>
+
+<p><b>Une ambition forte : 100% de nos alternants satisfaits de leur expérience chez Decathlon.</b><br>Decathlon considère ses alternants comme des coéquipiers CDI.<br></p>
+
+<p><b>Nous portons un sens fort : Être utile aux gens et à leur planète. </b></p>
+
+<p>Le sport n'a de sens que dans un environnement préservé. Nous développons nos activités sans dégrader nos terrains de jeux en proposant des services liés à l'économie circulaire (Occasion / location /réparation / recyclage) en proposant des produits éco-conçus en sourçant des énergies renouvelables...<br></p>
+
+<p>Decathlon est engagé dans l'inclusion et la non-discrimination, et agit ainsi quotidiennement en faveur du handicap, des séniors, de la mixité sociale, de l'égalité entre les femmes et les hommes. <b>Chez Decathlon, nous recrutons avant tout des personnalités. </b><br></p>
+
+<p><b>Rejoins DECATHLON et intègre une entreprise où il fait bon vivre<br></b>Viens partager une passion collective pour le sport avec une équipe unie et motivée. Marque des points en prenant des responsabilités, exprime ton sens de l’initiative et contribue à <b>rendre durablement le sport au plus grand nombre</b>. Une diversité de parcours s’offre à toi dans un environnement dynamique et challengeant. Dès ton arrivée, tu prends la responsabilité d’une équipe au sein d’un magasin.</p>
+
+<p><b>Ta mission met en valeur ton leadership<br></b>Entre dans le jeu avec la responsabilité d’un <b>projet Humain et Commercial</b>.<br>Tu définis et mets en œuvre ce projet avec l’équipe que tu animes. Ensemble, vous relevez les défis que vous vous êtes fixés.</p>
+
+<p><b>Ton terrain de jeu te permet de mettre tes compétences au service du sport<br></b>Tu es le·a coach·e/Leader de l’équipe, tu as la responsabilité  managériale de celle-ci : le recrutement, la gestion des parcours, la formation et le développement des compétences, la planification.</p>
+
+<p>Plus important encore, tu assures le bien-être de chaque co-équipier-e.</p>
+
+<p>Tu définis et tu animes le projet commercial de ton rayon : gestion de la gamme de tes produits, du  linéaire, des stocks, et du dynamisme de vente. Tu joues collectif : toute l’équipe est ambassadrice de nos produits !</p>
+
+<p>Responsable de ton compte d'exploitation et véritable pilote de ton activité, tu développes et gères tes ressources en toute autonomie pour atteindre les objectifs. Tu fais équipe avec le Leader du magasin qui te manage, et tu bénéficies d’un plan de formation pour t’accompagner dans la réussite de l’ensemble de tes missions.</p>",
+    "offer_desired_skills": [
+      "entrepreneur",
+      "Esprit d'équipe",
+      "Management",
+      "Accueil",
+      "Produit",
+      "Relation Sportif",
+    ],
+    "offer_expiration": 2025-11-24T09:18:17.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "6",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    },
+    "offer_title": "ALTERNANCE Manager Commerce (H/F)",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "KWYLVLYSRRKVGO513",
+    "partner_label": "Décathlon",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Vélizy-Villacoublay",
+    "workplace_address_label": "2 Avenue de l'Europe,  78140 Vélizy-Villacoublay, France",
+    "workplace_address_street_label": "2 Avenue de l'Europe",
+    "workplace_address_zipcode": "78140",
+    "workplace_brand": null,
+    "workplace_description": "DECATHLON Retail Omnichannel",
+    "workplace_geopoint": {
+      "coordinates": [
+        2.2201465,
+        48.7812805,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "DECATHLON Retail Omnichannel",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://joinus.decathlon.fr/fr/annonce/3973345-alternance-manager-commerce-hf-19100-brive-la-gaillarde?s_o=la-bonne-alternance#declareStep1",
+    "business_error": null,
+    "contract_duration": 12,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2025-09-22T15:32:41.000Z,
+    "offer_description": "<p>Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b></p>
+
+<p style="text-align:center;"><b>#CHOISIS TA TEAM# </b></p>
+
+<p>Une stratégie qui contribue au parcours de milliers de jeunes en France et qui nous permettra de recruter nos talents sportifs de demain. Une politique qui fera de Decathlon un acteur majeur dans l'insertion professionnelle et sociale des jeunes en France<br><b>DECATHLON = une opportunité vers mon 1er emploi</b></p>
+
+<p><b>Une ambition forte : 100% de nos alternants satisfaits de leur expérience chez Decathlon.</b><br>Decathlon considère ses alternants comme des coéquipiers CDI.<br></p>
+
+<p><b>Nous portons un sens fort : Être utile aux gens et à leur planète. </b></p>
+
+<p>Le sport n'a de sens que dans un environnement préservé. Nous développons nos activités sans dégrader nos terrains de jeux en proposant des services liés à l'économie circulaire (Occasion / location /réparation / recyclage) en proposant des produits éco-conçus en sourçant des énergies renouvelables...<br></p>
+
+<p>Decathlon est engagé dans l'inclusion et la non-discrimination, et agit ainsi quotidiennement en faveur du handicap, des séniors, de la mixité sociale, de l'égalité entre les femmes et les hommes. <b>Chez Decathlon, nous recrutons avant tout des personnalités. </b><br></p>
+
+<p><b>Rejoins DECATHLON et intègre une entreprise où il fait bon vivre<br></b>Viens partager une passion collective pour le sport avec une équipe unie et motivée. Marque des points en prenant des responsabilités, exprime ton sens de l’initiative et contribue à <b>rendre durablement le sport au plus grand nombre</b>. Une diversité de parcours s’offre à toi dans un environnement dynamique et challengeant. Dès ton arrivée, tu prends la responsabilité d’une équipe au sein d’un magasin.</p>
+
+<p><b>Ta mission met en valeur ton leadership<br></b>Entre dans le jeu avec la responsabilité d’un <b>projet Humain et Commercial</b>.<br>Tu définis et mets en œuvre ce projet avec l’équipe que tu animes. Ensemble, vous relevez les défis que vous vous êtes fixés.</p>
+
+<p><b>Ton terrain de jeu te permet de mettre tes compétences au service du sport<br></b>Tu es le·a coach·e/Leader de l’équipe, tu as la responsabilité  managériale de celle-ci : le recrutement, la gestion des parcours, la formation et le développement des compétences, la planification.</p>
+
+<p>Plus important encore, tu assures le bien-être de chaque co-équipier-e.</p>
+
+<p>Tu définis et tu animes le projet commercial de ton rayon : gestion de la gamme de tes produits, du  linéaire, des stocks, et du dynamisme de vente. Tu joues collectif : toute l’équipe est ambassadrice de nos produits !</p>
+
+<p>Responsable de ton compte d'exploitation et véritable pilote de ton activité, tu développes et gères tes ressources en toute autonomie pour atteindre les objectifs. Tu fais équipe avec le Leader du magasin qui te manage, et tu bénéficies d’un plan de formation pour t’accompagner dans la réussite de l’ensemble de tes missions.</p>",
+    "offer_desired_skills": [
+      "entrepreneur",
+      "Esprit d'équipe",
+      "Management",
+      "Accueil",
+      "Produit",
+      "Relation Sportif",
+    ],
+    "offer_expiration": 2025-11-22T14:32:41.000Z,
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "6",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    },
+    "offer_title": "ALTERNANCE Manager Commerce (H/F)",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "MAZEYQGIWWPKWM534",
+    "partner_label": "Décathlon",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Brive-la-Gaillarde",
+    "workplace_address_label": "Le Mazaud,  19100 Brive-la-Gaillarde, France",
+    "workplace_address_street_label": "Le Mazaud",
+    "workplace_address_zipcode": "19100",
+    "workplace_brand": null,
+    "workplace_description": "DECATHLON Retail Omnichannel",
+    "workplace_geopoint": {
+      "coordinates": [
+        1.477267,
+        45.143855,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "DECATHLON Retail Omnichannel",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;
