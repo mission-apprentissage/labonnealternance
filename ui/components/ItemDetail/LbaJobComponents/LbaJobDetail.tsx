@@ -1,9 +1,9 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Stack, Typography, Link } from "@mui/material"
+import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
-import { IJobJson, ILbaItemLbaJobJson, ILbaItemNaf } from "shared"
+import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -30,7 +30,7 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemLbaJobJson; title: string }) => {
+export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
     notifyLbaJobDetailView(job?.job?.id)
