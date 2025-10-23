@@ -62,14 +62,13 @@ const mayotte = "EPSG:4471"
 
 const wgs84 = "EPSG:4326"
 
-// Définition de Lambert 93 (au cas où proj4 ne l'aurait pas déjà en base)
 proj4.defs(franceMetropolitaine, "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 " + "+x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs")
 proj4.defs(laReunion, "+proj=utm +zone=40 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs(guyane, "+proj=utm +zone=22 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs(guadeloupeEtMartinique, "+proj=utm +zone=20 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 proj4.defs(mayotte, "+proj=utm +zone=38 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 
-const getRegionFromZipCode = (zip_code: string | null): string => {
+const getRegionalSetupForProj4 = (zip_code: string | null): string => {
   if (!zip_code) return franceMetropolitaine
   const prefix = zip_code.substring(0, 3)
   switch (prefix) {
@@ -92,6 +91,6 @@ const getRegionFromZipCode = (zip_code: string | null): string => {
 export const getWorkplaceGeolocation = (x: number | null, y: number | null, zipCode: string | null): IComputedJobsPartners["workplace_geopoint"] => {
   if (x === 0 || y === 0 || x === null || y === null) return null
 
-  const [longitude, latitude] = proj4(getRegionFromZipCode(zipCode), wgs84, [x, y])
+  const [longitude, latitude] = proj4(getRegionalSetupForProj4(zipCode), wgs84, [x, y])
   return { type: "Point", coordinates: [longitude, latitude] }
 }
