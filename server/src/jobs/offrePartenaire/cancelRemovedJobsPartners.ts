@@ -2,14 +2,21 @@ import { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners>) => {
+export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners> = {}) => {
+  logger.info("début de cancelRemovedJobsPartners")
+
   const matchStage = {
-    $match: matchFilter,
+    $match: {
+      $and: [matchFilter, { offer_status: JOB_STATUS_ENGLISH.ACTIVE }],
+    },
   }
-  const setStage = {
-    $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE },
+  const setStages = {
+    $set: {
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+    },
   }
   const unsetStage = {
     $unset: "matched",
@@ -46,11 +53,29 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
         matched: { $size: 0 },
       },
     },
-    setStage,
+    setStages,
+    {
+      $set: {
+        offer_status_history: {
+          $concatArrays: [
+            "$offer_status_history",
+            [
+              {
+                date: new Date(),
+                status: JOB_STATUS_ENGLISH.ANNULEE,
+                reason: `supprimée du flux source`,
+                granted_by: "cancelRemovedJobsPartners",
+              },
+            ],
+          ],
+        },
+      },
+    },
     unsetStage,
     mergeStage,
   ]
 
+  logger.info("suppression des offres absentes du flux")
   await getDbCollection("jobs_partners").aggregate(pipeline).toArray()
 
   const pipeline_expired = [
@@ -86,10 +111,30 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
         },
       },
     },
-    setStage,
+    setStages,
+    {
+      $set: {
+        offer_status_history: {
+          $concatArrays: [
+            "$offer_status_history",
+            [
+              {
+                date: new Date(),
+                status: JOB_STATUS_ENGLISH.ANNULEE,
+                reason: `offre expirée`,
+                granted_by: "cancelRemovedJobsPartners",
+              },
+            ],
+          ],
+        },
+      },
+    },
     unsetStage,
     mergeStage,
   ]
 
+  logger.info("suppression des offres expirées")
   await getDbCollection("jobs_partners").aggregate(pipeline_expired).toArray()
+
+  logger.info("fin de cancelRemovedJobsPartners")
 }

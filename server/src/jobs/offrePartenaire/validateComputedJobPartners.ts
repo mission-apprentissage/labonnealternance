@@ -27,6 +27,8 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(finalFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
 
+  await getDbCollection("computed_jobs_partners").updateMany(finalFilter, { $set: { validated: false } })
+
   const counters = { total: 0, success: 0, error: 0 }
   const job = COMPUTED_ERROR_SOURCE.VALIDATION
   const cursor = getDbCollection("computed_jobs_partners").find(finalFilter).stream()

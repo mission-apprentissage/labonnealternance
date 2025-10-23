@@ -2,6 +2,7 @@ import { Filter } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
@@ -23,10 +24,12 @@ export const fillComputedRecruteursLba = async () => {
 
   await removeMissingRecruteursLbaFromComputedJobPartners()
   await removeUnsubscribedRecruteursLbaFromComputedJobPartners()
+  // reset checks
+  await getDbCollection("computed_jobs_partners").updateMany(computedJobFilter, { $set: { business_error: null, jobs_in_success: [], errors: [] } })
   await fillEntrepriseEngagementJobsPartners(context)
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
-  await fillLocationInfosForPartners(context)
+  await fillLocationInfosForPartners({ ...context, addedMatchFilter: { $and: [computedJobFilter, { workplace_geopoint: null }] } })
   await fillLbaUrl(context)
   await validateComputedJobPartners(context)
 }
