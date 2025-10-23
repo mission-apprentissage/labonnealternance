@@ -7,58 +7,56 @@
     </mj-attributes>
     <mj-style>
       @media only screen and (max-width: 799px) {
-        .text > div {
-            text-align: inherit !important;
-        }
-    
-        .wrapper > table > tbody > tr > td {
-            padding-left: 0px !important;
-            padding-right: 0px !important;
-        }
+      .text > div {
+      text-align: inherit !important;
+      }
 
-        .section > table > tbody > tr > td {
-            padding-left: 20px !important;
-            padding-right: 20px !important;
-        }
+      .wrapper > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
 
-        .column > table > tbody > tr > td {
-            padding-left: 0px !important;
-            padding-right: 0px !important;
-        }
+      .section > table > tbody > tr > td {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      }
 
-        .padB40 {
-            padding-bottom: 40px !important;
-        }
+      .column > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
 
-        .image {
-            padding-left: 0px !important;
-            padding-right: 0px !important;
-        }
+      .padB40 {
+      padding-bottom: 40px !important;
+      }
 
-        .image > table {
-            text-align: center !important;
-            margin: 0 auto !important;
-        }
+      .image {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
 
-        .divider {
-            padding-left: 0px !important;
-            padding-right: 0px !important;
-        }
+      .image > table {
+      text-align: center !important;
+      margin: 0 auto !important;
+      }
 
-        .button > table {
-            width: 100% !important;
-        }
+      .divider {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
 
-        .button > table > tbody > tr > td > a {
-            width: 80% !important;
-        }
-    }
+      .button > table {
+      width: 100% !important;
+      }
+
+      .button > table > tbody > tr > td > a {
+      width: 80% !important;
+      }
+      }
     </mj-style>
     <mj-style inline="inline">
       .column > table { border-collapse: separate; }
     </mj-style>
-    <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
-    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
   </mj-head>
   <mj-body background-color="#f5f5fe" name="Candidat - Réponse du cfa" width="800px">
     <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
@@ -76,26 +74,23 @@
       <mj-spacer height="24px"></mj-spacer>
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="99.64%">
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="18px" font-weight="700" line-height="20px" padding="0px 0px 16px 0px">
               Le centre de formation vous répond
-              <br/>
+              <br />
             </mj-text>
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="25px" padding="0px 0px 16px 0px">
               Bonjour <%= data.prenom %> <%= data.nom %>,
-              <br/>
-            </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="DM Sans, Times, Georgia, serif" font-size="16px" font-weight="400" line-height="25px" padding="0px 0px 16px 0px">
-              <span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; color: #161616;">Voici la réponse du centre de formation (CFA)</span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700; color: #161616;"> <%= data.nom_cfa %> </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; color: #161616;">à propos de la formation</span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 700; color: #161616;"> <%= data.nom_formation %> </span><span style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; color: #161616;">:</span>
-              <br/>
-            </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="25px" padding="0px 0px 16px 0px">
-              <%- data.message %>
-              <br/>
+              <br />
+              <br />
+              Voici la réponse du centre de formation (CFA)<span style="font-weight: 700;"> <%= data.nom_cfa %> </span>à propos de la formation<span style="font-weight: 700;"> <%= data.nom_formation %> </span>:
+              <br /><br />
+              <span style="font-weight: 700;"><%- data.message %></span>
+              <br />
             </mj-text>
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
               Ce courriel est généré automatiquement, vous ne pouvez pas y répondre. Pour répondre au CFA, veuillez utiliser les coordonnées de contact ci-dessous.
-              <br/>
+              <br />
             </mj-text>
           </mj-column>
         </mj-group>
@@ -103,40 +98,27 @@
       <mj-spacer height="24px"></mj-spacer>
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="-198.92000000000002%">
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="18px" font-weight="700" line-height="20px" padding="6px 0px 16px 0px">
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="18px" font-weight="700" line-height="20px" padding="0px 0px 16px 0px">
               Vous souhaitez répondre ?
-              <br/>
+              <br />
             </mj-text>
-            <mj-text align="left" color="#242424" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 6px 0px">
-              Voici les coordonnées de l’organisme de formation : 
-              <br/>
-            </mj-text>
-          </mj-column>
-          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
-            <mj-text align="left" color="#242424" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="6px 0px 0px 0px">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="25px" padding="0px">
+              Voici les coordonnées de l’organisme de formation :
+              <br /><br />
+
               Email
-              <br/>
-            </mj-text>
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 6px 0px" text-decoration="underline">
-              <span style="text-decoration: none;"><%= data.cfa_email %></span>
-              <br/>
-            </mj-text>
-          </mj-column>
-          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
-            <mj-text align="left" color="#242424" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="6px 0px 0px 0px">
+              <br />
+              <span style="font-weight: 700;"><%= data.cfa_email %></span>
+              <br />
+              <br />
+
               Téléphone
-              <br/>
-            </mj-text>
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 6px 0px" text-decoration="underline">
-              <span style="text-decoration: underline;"><%= data.cfa_phone %></span>
-              <br/>
-            </mj-text>
-          </mj-column>
-          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="99.64%">
-            <mj-text align="left" color="#242424" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="6px 0px 6px 0px">
+              <br />
+              <span style="font-weight: 700;"><%= data.cfa_phone %></span>
+              <br />
+              <br />
               Pensez à vous présenter et à redonner le contexte de vos échanges dans votre message afin que le destinataire puisse vous répondre au mieux.
-              <br/>
             </mj-text>
           </mj-column>
         </mj-group>
@@ -146,13 +128,13 @@
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
-              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail, du Plein emploi et de l’Insertion.
-              <br/>
-              <br/>Nous vous contactons car vous avez contacté un centre de formation.
-              <br/>Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
-              <br/>
-              <br/>Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_candidat-reponse-rdva_politique-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
-              <br/>
+              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+              <br />
+              <br />Nous vous contactons car vous avez contacté un centre de formation.
+              <br />Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+              <br />
+              <br />Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_candidat-reponse-rdva_politique-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
+              <br />
             </mj-text>
           </mj-column>
         </mj-group>
