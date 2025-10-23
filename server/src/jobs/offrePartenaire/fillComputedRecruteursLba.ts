@@ -8,6 +8,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
+import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
 import {
   removeMissingRecruteursLbaFromComputedJobPartners,
@@ -27,6 +28,7 @@ export const fillComputedRecruteursLba = async () => {
   await fillEntrepriseEngagementJobsPartners(context)
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
+  await fillLbaUrl(context)
   await validateComputedJobPartners(context)
 }
 
