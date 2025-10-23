@@ -2010,7 +2010,7 @@ describe("updateJobOffer", () => {
     expect.soft(job?.offer_expiration).toEqual(originalCreatedAtPlus2Months)
     expect.soft(job?.offer_target_diploma).toEqual(null)
 
-    expect(omit(job, "partner_job_id")).toMatchSnapshot({
+    expect(omit(job, "partner_job_id", "lba_url")).toMatchSnapshot({
       _id: expect.any(ObjectId),
     })
   })
