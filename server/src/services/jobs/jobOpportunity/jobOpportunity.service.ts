@@ -765,7 +765,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   }
 }
 
-type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
+type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id" | "lba_url"
 
 async function upsertJobOfferPrivate({
   data,
@@ -793,6 +793,7 @@ async function upsertJobOfferPrivate({
     created_at: current?.created_at ?? now,
     partner_label,
     partner_job_id: current?.partner_job_id ?? partnerJobIdIfNew ?? _id.toString(),
+    lba_url: current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, current?.offer_title ?? data.offer.title),
   }
 
   const defaultOfferExpiration = current?.offer_expiration
@@ -836,8 +837,6 @@ async function upsertJobOfferPrivate({
     apply_email: data.apply.email,
     apply_url: data.apply.url,
     apply_phone: data.apply.phone,
-
-    lba_url: buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), data.workplace.siret ?? "", data.offer.title),
 
     updated_at: now,
     business_error: null,
@@ -1122,6 +1121,8 @@ export async function upsertJobsPartnersMulti({
   const offerCreation = current?.offer_creation ?? new Date(data.offer_creation)
   const offerExpiration = current?.offer_expiration ?? DateTime.fromJSDate(created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
   const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
+  const offerTitle = current?.offer_title ?? data.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
+  const lbaUrl = current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)
 
   const userWrittenFields = {
     ...data,
@@ -1148,7 +1149,7 @@ export async function upsertJobsPartnersMulti({
     }
   } else {
     modified = true
-    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id })
+    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id, lba_url: lbaUrl })
   }
   if (current && current.offer_status !== offerStatus) {
     await getDbCollection("computed_jobs_partners").updateOne(
