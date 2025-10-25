@@ -26,7 +26,7 @@ export const createJobsCollectionForMetabase = async () => {
       {
         $project: {
           // Champs générés ou supprimés
-          jobId: { $toString: "$jobs._id" },
+          jobId: "$jobs._id",
           recruiterId: "$_id",
           recruiterStatus: "$status",
           _id: 0,

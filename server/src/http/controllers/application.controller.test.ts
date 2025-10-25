@@ -109,7 +109,7 @@ describe("POST /v1/application", () => {
         company_siret: recruteur.workplace_siret,
         company_recruitment_intention_date: null,
         created_at: expect.any(Date),
-        job_id: recruteur._id.toString(),
+        job_id: recruteur._id,
         job_origin: "recruteurs_lba",
         job_title: "Une super offre d'alternance",
         last_update_at: expect.any(Date),

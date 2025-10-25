@@ -232,7 +232,7 @@ export const getPartnerJobs = async ({
     let applicationCountByJob: null | IApplicationCount[] = null
 
     if (force_partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-      const ids = rawPartnerJobs.map(({ _id }) => _id.toString())
+      const ids = rawPartnerJobs.map(({ _id }) => _id)
       applicationCountByJob = await getApplicationByJobCount(ids)
     }
     let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData, applicationCountByJob })
@@ -275,7 +275,8 @@ export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?:
 }
 
 export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
-  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
+  const jobId = new ObjectId(id)
+  const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
 
   if (!rawPartnerJob) {
     throw badRequest("Job not found")
@@ -283,7 +284,7 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
 
   let applicationCountByJob: null | IApplicationCount[] = null
   if (rawPartnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-    applicationCountByJob = await getApplicationByJobCount([id])
+    applicationCountByJob = await getApplicationByJobCount([jobId])
   }
 
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
