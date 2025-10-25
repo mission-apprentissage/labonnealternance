@@ -39,6 +39,7 @@ import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawJoobleModel from "./rawJooble.model.js"
 import rawKelioModel from "./rawKelio.model.js"
 import rawLaposteModel from "./rawLaposte.model.js"
+import rawLeboncoinModel from "./rawLeboncoin.model.js"
 import rawMeteojobModel from "./rawMeteojob.model.js"
 import rawMonsterModel from "./rawMonster.model.js"
 import rawNosTalentsNosEmploisModel from "./rawNosTalentsNosEmplois.model.js"
@@ -127,6 +128,7 @@ const modelDescriptorMap = {
   [rawAtlasModel.collectionName]: rawAtlasModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawLaposteModel.collectionName]: rawLaposteModel,
+  [rawLeboncoinModel.collectionName]: rawLeboncoinModel,
   [rawJoobleModel.collectionName]: rawJoobleModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
