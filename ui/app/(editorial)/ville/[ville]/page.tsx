@@ -4,6 +4,7 @@ import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { villeData } from "@/app/(editorial)/ville/_components/ville_data"
+import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 
 // export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
@@ -47,19 +48,38 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
   return (
     <Box>
       <DefaultContainer>
-        <Box sx={{ p: fr.spacing("4w"), marginY: fr.spacing("4w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
-            Trouver une alternance
-            <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
-              <span style={{ color: "#161616" }}>à </span>
-              {data.ville}
-            </Typography>
-          </Typography>
-          <Typography>
-            <span style={{ color: fr.colors.decisions.text.default.info.default }}>{offerCount + recruiterCount}</span> offres en alternance sont disponibles:
-            <br />
-            <Button style={{ marginTop: fr.spacing("2w"), marginBottom: fr.spacing("2w") }}>Démarrer mes recherches</Button>
-          </Typography>
+        <Box
+          sx={{ position: "relative", p: fr.spacing("4w"), marginY: fr.spacing("4w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}
+        >
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block",
+              },
+            }}
+          >
+            <HomeCircleImageDecoration height={100} />
+          </Box>
+          <Box sx={{ position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between" }}>
+            <Box>
+              <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
+                Trouver une alternance
+                <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
+                  <span style={{ color: "#161616" }}>à </span>
+                  {data.ville}
+                </Typography>
+              </Typography>
+              <Typography>
+                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{offerCount + recruiterCount}</span> offres en alternance sont disponibles:
+                <br />
+                <Button style={{ marginTop: fr.spacing("2w"), marginBottom: fr.spacing("2w") }}>Démarrer mes recherches</Button>
+              </Typography>
+            </Box>
+            <Box sx={{ marginLeft: "auto", mt: fr.spacing("4w") }}>
+              <Image src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
+            </Box>
+          </Box>
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
