@@ -76,22 +76,38 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 <Button style={{ marginTop: fr.spacing("2w"), marginBottom: fr.spacing("2w") }}>Démarrer mes recherches</Button>
               </Typography>
             </Box>
-            <Box sx={{ marginLeft: "auto", mt: fr.spacing("4w") }}>
+            <Box sx={{ display: { xs: "none", md: "block" }, marginLeft: "auto", mt: fr.spacing("4w") }}>
               <Image src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
             </Box>
           </Box>
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
-          <Typography component={"h2"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
-            <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
+          <Box sx={{ position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between" }}>
+            <Box sx={{ mb: fr.spacing("4w") }}>
+              <Typography component={"h2"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+                <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
+              </Typography>
+              <Box
+                component="hr"
+                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+              />
 
-          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
+            </Box>
+            <Box
+              sx={{
+                marginLeft: { xs: "unset", md: "auto" },
+                margin: { xs: "auto", md: "unset" },
+                width: { xs: "100%", md: "250px", lg: "385px" },
+                minWidth: { xs: "unset", md: "250px", lg: "385px" },
+                maxWidth: "385px",
+                mb: fr.spacing("4w"),
+              }}
+            >
+              <Image src={`/images/seo/ville/${data.content.description_ville.image}`} alt="" width={385} height={385} style={{ width: "100%", height: "auto" }} />
+            </Box>
+          </Box>
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
