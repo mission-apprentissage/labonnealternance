@@ -140,34 +140,6 @@ export default function StatistiquesClient() {
                 loading="lazy"
               ></iframe>
             </TabContent>
-
-            <Grid container spacing={6}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TabContent title="Les réponses des recruteurs">
-                  <iframe
-                    width="100%"
-                    max-width="300px"
-                    height="550px"
-                    title="stats_reponses_recruteurs"
-                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/17a7b8f6-160c-4510-b723-fdedf961913c`}
-                    loading="lazy"
-                  ></iframe>
-                </TabContent>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TabContent title="Les réponses des organismes de formation">
-                  <iframe
-                    width="100%"
-                    max-width="300px"
-                    height="550px"
-                    title="stats_reponses_cfa"
-                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/74000a35-edfa-4b6f-b28a-64a3c54a0f22`}
-                    loading="lazy"
-                  ></iframe>
-                </TabContent>
-              </Grid>
-            </Grid>
           </TabPanel>
 
           <TabPanel value={value} index={2}>
