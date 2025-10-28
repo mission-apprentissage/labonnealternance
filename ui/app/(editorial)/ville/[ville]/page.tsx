@@ -8,16 +8,14 @@ import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleIm
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { ArrowRightLine } from "@/theme/components/icons"
 
-// export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
-//   const _params = await params
-
-//   return PAGES.dynamic.metierJobById(metier.name).getMetadata()
-// }
-
-// const loisirs = {
-//   Exposition: "expo.svg",
-//   Promenade: "promenade.svg",
-// }
+const loisirs = {
+  Expositions: "musees.svg",
+  Promenade: "promenade.svg",
+  "Vie nocturne": "vie_nocturne.svg",
+  "Culture alternative": "culture_alternative.svg",
+  "Concerts et théâtre": "theatre.svg",
+  Sports: "sports.svg",
+}
 
 const transports = {
   Bus: "bus.svg",
@@ -221,7 +219,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
             </Box>
 
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 1, verticalAlign: "middle" }}>
               {data.content.logement.loyers.map((appartement) => (
                 <Box key={appartement.type}>
                   <Typography>{appartement.type} à louer</Typography>
@@ -241,11 +239,42 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisir.text }} />
-          <Box>
-            {data.content.vie.activites.map((activite) => (
-              <Typography key={activite.naf_label}>{activite.naf_label}</Typography>
-            ))}
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+            <Box
+              sx={{
+                flex: 1,
+                display: "grid",
+                justifyContent: "start",
+                gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                gridAutoRows: "auto",
+                gap: fr.spacing("1v"),
+              }}
+            >
+              {data.content.loisirs.types.map((loisir) => (
+                <Box
+                  key={loisir}
+                  sx={{
+                    textAlign: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "146px",
+                    height: "146px",
+                    padding: fr.spacing("3v"),
+                    backgroundColor: "white",
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                  }}
+                >
+                  <Image alt="" src={`/images/seo/loisirs/${loisirs[loisir]}`} width="50" height={50} />
+                  <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{loisir}</Typography>
+                </Box>
+              ))}
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
+            </Box>
           </Box>
         </Box>
 

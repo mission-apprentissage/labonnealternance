@@ -34,7 +34,7 @@ export const villeData = [
           { type: "T2", price_range: "650 - 900 euros" },
         ],
       },
-      loisir: {
+      loisirs: {
         text: 'Bordeaux offre une vie culturelle et festive particulièrement riche qui ravira les alternants en quête d\'équilibre entre vie professionnelle et détente.<ul><li><span style="font-weight: bold;color:#0063cb">Les quais de la Garonne</span>, entièrement réaménagés, constituent le lieu de promenade et de rassemblement privilégié des Bordelais, idéal pour courir ou se retrouver entre amis.</li><li><span style="font-weight: bold;color:#0063cb">La Cité du Vin, monument architectural</span> dédié aux cultures du vin, propose des expositions permanentes et des dégustations.</li><li><span style="font-weight: bold;color:#0063cb">Les nombreux bars et restaurants</span> du quartier Saint-Pierre, Saint-Michel et des Chartrons animent les soirées, avec une ambiance étudiante particulièrement présente place de la Victoire et rue Saint-Rémi.</li><li><span style="font-weight: bold;color:#0063cb">Darwin, l\'écosystème alternatif</span> installé dans une ancienne caserne, accueille un skatepark, des food-trucks, des concerts et des événements éco-responsables.</li><li>La ville compte plusieurs <span style="font-weight: bold;color:#0063cb">salles de concert (Rock School Barbey, I.Boat, Krakatoa) et théâtres</span> pour tous les goûts musicaux. Les amateurs de culture peuvent profiter de nombreux musées (CAPC, Musée d\'Aquitaine) et cinémas, dont plusieurs cinémas d\'art et essai.</li><li><span style="font-weight: bold;color:#0063cb">Le sport</span> est également accessible avec des infrastructures municipales nombreuses, des clubs associatifs et la proximité des plages du bassin d\'Arcachon et des spots de surf de la côte atlantique.</li><li><span style="font-weight: bold;color:#0063cb">Les festivals rythment l\'année</span>, notamment Bordeaux Fête le Vin et Bordeaux Métropole.</li></ul>',
         types: ["Promenade", "Expositions", "Vie nocturne", "Culture alternative", "Concerts et théâtre", "Sports"],
       },
@@ -70,4 +70,28 @@ export const villeData = [
       },
     },
   },
+  {
+    ville: "Marseille",
+    slug: "marseille",
+    geopoint: {
+      lat: 43.296482,
+      long: 5.36978,
+    },
+    content: {},
+  },
+  {
+    ville: "Toulouse",
+    slug: "toulouse",
+    geopoint: {
+      lat: 43.604652,
+      long: 1.444209,
+    },
+    content: {},
+  },
+  { ville: "Strasbourg", slug: "strasbourg", geopoint: { lat: 48.573405, long: 7.752111 }, content: {} },
+  { ville: "Nantes", slug: "nantes", geopoint: { lat: 47.218371, long: -1.553621 }, content: {} },
+  { ville: "Rennes", slug: "rennes", geopoint: { lat: 48.117266, long: -1.677793 }, content: {} },
+  { ville: "Montpellier", slug: "montpellier", geopoint: { lat: 43.611667, long: 3.877222 }, content: {} },
+  { ville: "Lille", slug: "lille", geopoint: { lat: 50.62925, long: 3.057256 }, content: {} },
+  { ville: "Grenoble", slug: "grenoble", geopoint: { lat: 45.188529, long: 5.724524 }, content: {} },
 ]
