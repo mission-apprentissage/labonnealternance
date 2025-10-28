@@ -8201,6 +8201,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^1.1.0":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1"
+  checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
+  languageName: node
+  linkType: hard
+
 "clsx@npm:^2.0.0, clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
@@ -11559,6 +11566,15 @@ __metadata:
   version: 0.1.2
   resolution: "globrex@npm:0.1.2"
   checksum: adca162494a176ce9ecf4dd232f7b802956bb1966b37f60c15e49d2e7d961b66c60826366dc2649093cad5a0d69970cfa8875bd1695b5a1a2f33dcd2aa88da3c
+  languageName: node
+  linkType: hard
+
+"goober@npm:^2.0.33":
+  version: 2.1.18
+  resolution: "goober@npm:2.1.18"
+  peerDependencies:
+    csstype: ^3.0.10
+  checksum: 9c3129c3cdc1fabb4e16eeb133747b5c0f35c8e174a5c6768292cb66d6adf27fd3b7ee211d0024af21c674a245403465e4d1ec0fa45bd46655f32170b6e51952
   languageName: node
   linkType: hard
 
@@ -15869,6 +15885,19 @@ __metadata:
     notion-types: 7.6.0
     p-queue: ^8.1.0
   checksum: 3ec398117b34ce8990d6b93ba86327acf82fadbbd6b0aaa4274d8ec2c9b17a5957b29dec89cdcaebf6ef4da9d032fa2f86139b2c9c455ff0f10a6e4c409fd812
+  languageName: node
+  linkType: hard
+
+"notistack@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "notistack@npm:3.0.2"
+  dependencies:
+    clsx: ^1.1.0
+    goober: ^2.0.33
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: f7d6d2edb43496a1132b9dd10d1f3b962567c92edf4d577b28ff4e6c9877cf0a50cc0a16f6d7834e3772093051597192a620dd36d4108597b118e8a2ad47d048
   languageName: node
   linkType: hard
 
@@ -20818,6 +20847,7 @@ __metadata:
     next-plausible: ^3.12.4
     next-recompose-plugins: ^3.0.1
     notion-client: 7.3.0
+    notistack: ^3.0.2
     react: 19.2.0
     react-csv: ^2.2.2
     react-dates: ^21.8.0

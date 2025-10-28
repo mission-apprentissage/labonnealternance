@@ -132,12 +132,12 @@ function TrainingDetailPage({
       <Box
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-          padding: "10px 20px 0px 10px",
+          padding: "10px 20px 0px 20px",
           background: "white",
           ...stickyHeaderProperties,
         }}
       >
-        <Box sx={{ width: "100%", pl: { xs: 0, md: 4, pb: isCollapsedHeader ? 0 : 2 } }}>
+        <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("1w") }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
             <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />

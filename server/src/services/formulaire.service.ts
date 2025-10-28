@@ -31,6 +31,7 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
 import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
@@ -220,6 +221,9 @@ export const createJob = async ({
   if (!createdJob) {
     throw internal("unexpected: no job found after job creation")
   }
+
+  console.log("ICICIICIICIC : ", jobs.length, is_delegated, entrepriseStatus)
+
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
     if (!entrepriseStatus) {
@@ -227,6 +231,9 @@ export const createJob = async ({
     }
     const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
+
+    console.log("ENTERPRISE MAIL : ", roleStatus)
+
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
 
     if (source) {
@@ -971,6 +978,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
         cfa_address_label: null,
       }
 
+  const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
     _id: job._id,
     updated_at: job.job_update_date ?? now,
@@ -1015,7 +1023,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
     offer_access_conditions: acces_metier ? [acces_metier] : [],
-    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre",
+    offer_title,
     offer_rome_codes: job.rome_code ?? null,
     offer_description: job.job_description ?? definition ?? "",
     offer_creation: job.job_creation_date,
@@ -1030,6 +1038,8 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_description: null,
     workplace_name: null,
     workplace_website: null,
+
+    lba_url: buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString(), recruiter.establishment_siret, offer_title),
 
     ...delegatedFields,
   }

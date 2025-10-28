@@ -28,7 +28,7 @@ const valueWithEllipsis = {
 }
 
 export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token }: { idFormulaire: string; jobId: string; siretFormateur: string; token: string }) {
-  const { toast, ToastComponent } = useToast()
+  const toast = useToast()
 
   const { isError, data: formulaire } = useQuery({
     queryKey: ["getFormulaire", idFormulaire, token],
@@ -57,8 +57,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
     navigator.clipboard.writeText(`${publicConfig.baseUrl}${jobUrl}`)
     toast({
       title: "Lien copié.",
-      status: "success",
-      duration: 5000,
+      autoHideDuration: 5000,
     })
   }
 
@@ -70,7 +69,6 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
 
   return (
     <DepotSimplifieStyling>
-      {ToastComponent}
       <Box>
         <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, mt: fr.spacing("4w"), mb: fr.spacing("3w") }}>
           Détails de la demande

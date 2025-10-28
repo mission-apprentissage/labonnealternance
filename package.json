@@ -51,13 +51,6 @@
     "foreach:seq": "yarn workspaces foreach -Av --exclude mna-lba",
     "foreach:parallel": "yarn foreach:seq -pi",
     "foreach:ci": "yarn foreach:seq -p",
-    "e2e": "cypress open",
-    "e2e:headless": "cypress run",
-    "e2e:production": "cypress run --env host=https://labonnealternance.apprentissage.beta.gouv.fr",
-    "e2e:recette": "cypress run --env ui=https://labonnealternance-recette.apprentissage.beta.gouv.fr,server=https://labonnealternance-recette.apprentissage.beta.gouv.fr,smtp=https://labonnealternance-recette.apprentissage.beta.gouv.fr/smtp",
-    "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
-    "e2e:convert2": "node cypress/convertRecords.mjs",
-    "e2e:specific": "cypress run --spec=./cypress/e2e/create-cfa-account-autovalidated.cy.ts",
     "knip": "knip"
   },
   "dependencies": {

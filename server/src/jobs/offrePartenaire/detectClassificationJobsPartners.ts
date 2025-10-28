@@ -10,9 +10,6 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
   const filters: Filter<IComputedJobsPartners>[] = [
     {
-      workplace_description: { $ne: null },
-      workplace_name: { $ne: null },
-      offer_description: { $ne: null },
       business_error: null,
     },
   ]
@@ -29,10 +26,10 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
       const payload = documents.map((document) => {
         const { workplace_description, offer_description, offer_title, workplace_name, partner_job_id, partner_label } = document
         return {
-          workplace_name: workplace_name!,
-          workplace_description: workplace_description!,
-          offer_title: offer_title!,
-          offer_description: offer_description!,
+          workplace_name: workplace_name ?? undefined,
+          workplace_description: workplace_description ?? undefined,
+          offer_title: offer_title ?? undefined,
+          offer_description: offer_description ?? undefined,
           partner_job_id,
           partner_label,
         }

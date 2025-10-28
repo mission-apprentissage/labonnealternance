@@ -1,14 +1,8 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 14e5d716121676cda57b08498a94a9c28a720f20d5a9e75103234730ce1c900d
+  checksum: 5816d754aca1441d27dc9519c4402ef6374158ead6dda0667182180de559b131
 - filename: .infra/vault/vault.yml
   checksum: d3459d3a8f5f0a023775b2b2328da658bffcc5614714a63eaa50ed2d20b638d9
-- filename: cypress/e2e/manual/create-many-applications.cy.ts
-  checksum: 752e2ab70ab367400bc0e831904b09e3bb131fdfaafb8c38aff89393414f62c5
-- filename: cypress/pages/FlowAdminPage.ts
-  checksum: cbb0a8651ca4c5d807f03eeeba6204c7d6d3a5f17ffb0734921f18d54f99f6b0
-- filename: cypress/pages/LoginPage.ts
-  checksum: b7f7dceff16e342a7fd4bfe2d017d33edd2ec5da256571ca5ef81a0e058b954e
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -93,6 +87,8 @@ fileignoreconfig:
   checksum: 4afb3d979ea0f354bae2f04d36a0b885564a24e3e9742603a64eb044d7301128
 - filename: server/src/migrations/20241022093834-remove-multi-published.ts
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
+- filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
+  checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
 - filename: server/src/security/accessApiApprentissageService.ts
   checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
@@ -116,7 +112,7 @@ fileignoreconfig:
 - filename: server/src/services/formulaire.service.ts
   checksum: e93ff7ce146d35e70eedcbe9b66097750e7754650468a5ada6b0ed72f0fdbc49
 - filename: server/src/services/jobs/jobOpportunity/__snapshots__/jobOpportunity.service.test.ts.snap
-  checksum: d3426e707a1bbdea2143fc146d435c02882b5335d4ca9073a09663ef5ce4df7e
+  checksum: 3c389747a17de7a8562faab68c2639a54e0a1f7f10bd85ea0fc5f6e392418b09
 - filename: server/src/services/jobs/jobOpportunity/jobOpportunity.service.test.ts
   checksum: 6192b627272883a4090c0ec5758bf77373821e427585ce3ca1f4dfef4330c3cd
 - filename: server/src/services/partnerJob.service.test.ts
@@ -136,11 +132,11 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-entretien.mjml.ejs
   checksum: 53067858567e2878f5f65da06be9efc6902a691b36299167d54343ab30162e49
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
-  checksum: 3188f43c847d071acfb7a366748647ab88d821abb3e022830b82fd092db90f83
+  checksum: 8c4747be47fcb6facb9ca3b5597653ba01684949483e22f88ff7ebd7ec866e06
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 092f871d48fc0602f5f90bb239defbf809aedab35f347f83fd0fdc97a6359abf
+  checksum: 1b52190fb8a1a5b5a0f4248f64760218448e128417e228c91b9a4472e217169d
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
-  checksum: 0b806bca197dba97415902339e84f924cb45dae766cf8d3cfc47d80d2bdd203c
+  checksum: 12a469e0fbb0a05cecdc155db325e141e5a27b06b4eb4643914d4b4b988babf2
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
 - filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
@@ -152,7 +148,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs
   checksum: ad25d72b5287060499c4e44bfe93eacd8dbfb7b40122b912eb9c3cf657f6aed7
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
-  checksum: 9055c5495ced85a674770e7fb8a81b3bd84949f9ff8f6e6450989aa3b7cda326
+  checksum: 3bc64c3329e8979bad6cc6e2597d2c1212b9772fae1ee0e0400324f46351062d
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts
@@ -317,16 +313,14 @@ fileignoreconfig:
   checksum: f281c48b5b3d7d0bd92c49262174f6683686161ad9401ee7cf76cba75d54268b
 - filename: ui/public/images/home_pics/illu-votrebesoin.svg
   checksum: ca9aa90b45043f8164d96e76e3f42906bcf597186394b1f81cf14c47814ebb33
+- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
+  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
 - filename: ui/utils/api.utils.test.ts
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/public/images/logosPartenaires/minimal/affelnet.svg
-  checksum: 4c266b3914e199bddb3d1c57c16cfac44e0dd1a8a672f74c09d0a2795631485b
-- filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
-  checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
 scopeconfig:
 - scope: node
 custom_patterns:
