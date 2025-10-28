@@ -154,6 +154,12 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   </Link>
                 </Box>
               ))}
+              <Box sx={{ mt: fr.spacing("2w"), textAlign: "right" }}>
+                <Link sx={{ textDecoration: "underline" }} href={`/recherche?lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville}+${data.cp}`}>
+                  Voir toutes les opportunités à Bordeaux
+                  <ArrowRightLine sx={{ ml: fr.spacing("2w"), width: 12, height: 12 }} />
+                </Link>
+              </Box>
             </Box>
           </Box>
         </Box>
