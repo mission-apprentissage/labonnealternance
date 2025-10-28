@@ -74,7 +74,16 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography>
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{offerCount + recruiterCount}</span> offres en alternance sont disponibles:
                 <br />
-                <Button style={{ marginTop: fr.spacing("2w"), marginBottom: fr.spacing("2w") }}>Démarrer mes recherches</Button>
+                <Button
+                  priority="primary"
+                  style={{ marginTop: fr.spacing("2w"), marginBottom: fr.spacing("2w") }}
+                  aria-label={`Démarrer mes recherches d'alternance à ${data.ville}`}
+                  size="large"
+                >
+                  <Link sx={{ color: "white", textDecoration: "none" }} href={`/recherche?lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville}+${data.cp}`}>
+                    Démarrer mes recherches
+                  </Link>
+                </Button>
               </Typography>
             </Box>
             <Box sx={{ display: { xs: "none", md: "block" }, marginLeft: "auto", mt: fr.spacing("4w") }}>
