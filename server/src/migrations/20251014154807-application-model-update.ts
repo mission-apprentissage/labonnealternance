@@ -11,7 +11,8 @@ export const up = async () => {
           job_id: { $toObjectId: "$job_id" },
         },
       },
-    ]
+    ],
+    { bypassDocumentValidation: true }
   )
 
   await getDbCollection("anonymized_applications").updateMany(
@@ -24,7 +25,8 @@ export const up = async () => {
           job_id: { $toObjectId: "$job_id" },
         },
       },
-    ]
+    ],
+    { bypassDocumentValidation: true }
   )
 }
 
