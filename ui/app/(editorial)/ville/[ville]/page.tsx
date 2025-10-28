@@ -95,7 +95,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
         <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
           <Box sx={{ position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between" }}>
             <Box sx={{ mb: fr.spacing("4w") }}>
-              <Typography component={"h2"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+              <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
                 <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
               </Typography>
               <Box
@@ -121,7 +121,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
-          <Typography component={"h2"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
             La vie d'alternant <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
@@ -165,7 +165,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
-          <Typography component={"h2"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
             Stats nombre d'opportunite_emploi
           </Typography>
           <Box
@@ -178,47 +178,70 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <Typography component={"h2"} variant="h1" sx={{ mb: 2 }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
             La mobilité et le logement
           </Typography>
           <Box
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography>La mobilite</Typography>
-          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
-          <Box>
-            {data.content.mobilite.transports.map((transport) => (
-              <Box key={transport}>
-                <Typography>{transport}</Typography>
-                <Image alt="" src={transports[transport]} width="50" height={50} />
-              </Box>
-            ))}
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+            <Box sx={{ flex: 1 }}></Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+                La mobilite
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+            <Box sx={{ flex: 1 }}>
+              {data.content.mobilite.transports.map((transport) => (
+                <Box key={transport}>
+                  <Typography>{transport}</Typography>
+                  <Image alt="" src={transports[transport]} width="50" height={50} />
+                </Box>
+              ))}
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
+            </Box>
           </Box>
 
-          <Typography>Le logement</Typography>
-          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
-          <Box>
-            {data.content.logement.loyers.map((appartement) => (
-              <Box key={appartement.type}>
-                <Typography>{appartement.type} à louer</Typography>
-                <Typography>{appartement.price_range}</Typography>
-                <Image alt="" src={appartements[appartement.type]} width="50" height={50} />
-              </Box>
-            ))}
+          <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+                Le logement
+              </Typography>
+            </Box>
+            <Box sx={{ flex: 1 }}></Box>
+          </Box>
+
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              {data.content.logement.loyers.map((appartement) => (
+                <Box key={appartement.type}>
+                  <Typography>{appartement.type} à louer</Typography>
+                  <Typography>{appartement.price_range}</Typography>
+                  <Image alt="" src={appartements[appartement.type]} width="50" height={50} />
+                </Box>
+              ))}
+            </Box>
           </Box>
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
-          <Typography component={"h2"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
             Les loisirs <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography>Le bassin socio économique</Typography>
-          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
+          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisir.text }} />
           <Box>
             {data.content.vie.activites.map((activite) => (
               <Typography key={activite.naf_label}>{activite.naf_label}</Typography>
@@ -227,20 +250,24 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
         </Box>
 
         <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <Typography component={"h2"} variant="h1" sx={{ mb: 2 }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
             Découvrez également
           </Typography>
           <Box
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          {villeData.map((autre_ville) =>
-            autre_ville.slug !== ville ? (
-              <Link key={autre_ville.slug} href={`/ville/${autre_ville.slug}`}>
-                Trouver une alternance à {autre_ville.ville}
-              </Link>
-            ) : null
-          )}
+          <ul>
+            {villeData.map((autre_ville) =>
+              autre_ville.slug !== ville ? (
+                <li key={autre_ville.slug}>
+                  <Link key={autre_ville.slug} href={`/ville/${autre_ville.slug}`}>
+                    Trouver une alternance à {autre_ville.ville}
+                  </Link>
+                </li>
+              ) : null
+            )}
+          </ul>
         </Box>
       </DefaultContainer>
     </Box>
