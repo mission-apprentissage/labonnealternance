@@ -6,6 +6,7 @@ import Image from "next/image"
 import { villeData } from "@/app/(editorial)/ville/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { ArrowRightLine } from "@/theme/components/icons"
 
 // export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }): Promise<Metadata> {
 //   const _params = await params
@@ -118,12 +119,33 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography>Le bassin socio économique</Typography>
-          <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
-          <Box>
-            {data.content.vie.activites.map((activite) => (
-              <Typography key={activite.naf_label}>{activite.naf_label}</Typography>
-            ))}
+          <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+            Le bassin socio économique
+          </Typography>
+          <Box sx={{ mt: fr.spacing("4w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+            <Box sx={{ flex: 1 }}>
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
+                Activités porteuses :
+              </Typography>
+              {data.content.vie.activites.map((activite) => (
+                <Box
+                  key={activite.naf_label}
+                  sx={{ display: "flex", width: "100%", mb: fr.spacing("1w"), backgroundColor: "white", padding: fr.spacing("2w"), borderRadius: "5px" }}
+                >
+                  <Link
+                    underline="none"
+                    href={`/recherche?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})`}
+                    sx={{ display: "flex", width: "100%" }}
+                  >
+                    {activite.naf_label}
+                    <ArrowRightLine sx={{ ml: "auto", width: 16, height: 16 }} />
+                  </Link>
+                </Box>
+              ))}
+            </Box>
           </Box>
         </Box>
 
