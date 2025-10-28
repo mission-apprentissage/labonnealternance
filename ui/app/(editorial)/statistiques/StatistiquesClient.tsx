@@ -6,6 +6,7 @@ import { useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { tabSx } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -35,19 +36,6 @@ function TabContent({ title, children }: { title: string; children: React.ReactN
       {children}
     </Box>
   )
-}
-
-const tabSx = {
-  color: "#161616",
-  backgroundColor: "#E3E3FD",
-  marginRight: 2,
-  "&.Mui-selected": {
-    color: "#000091",
-    backgroundColor: "white",
-    borderBottom: "none",
-    borderLeft: "1px solid #ddd",
-    borderRight: "1px solid #ddd",
-  },
 }
 
 export default function StatistiquesClient() {
