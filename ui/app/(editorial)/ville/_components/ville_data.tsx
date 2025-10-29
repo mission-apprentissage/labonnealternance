@@ -30,8 +30,8 @@ export const villeData = [
       logement: {
         text: 'Trouver un logement à Bordeaux <span style="font-weight: bold;color:#0063cb">nécessite une recherche active</span> mais reste accessible pour les alternants avec un budget adapté. Pour un studio, comptez entre 450 et 650 euros charges comprises selon le quartier et l\'état du bien, tandis qu\'un T2 se situe généralement entre 600 et 850 euros.<ul><li>Les quartiers les plus prisés par les étudiants et alternants sont <span style="font-weight: bold;color:#0063cb">la Victoire, Saint-Michel et Capucins</span>, offrant un bon rapport qualité-prix et une ambiance jeune et dynamique.</li><li><span style="font-weight: bold;color:#0063cb">Les Chartrons et Bacalan</span> attirent ceux qui recherchent un cadre plus moderne et rénové, avec des loyers légèrement supérieurs.</li><li><span style="font-weight: bold;color:#0063cb">Bastide</span>, sur la rive droite, propose des logements plus abordables avec un accès direct au centre-ville par le tram.</li></ul><span style="font-weight: bold;color:#0063cb">Il est recommandé de commencer ses recherches au moins deux mois avant la rentrée</span> sur les plateformes classiques (Leboncoin, PAP) et les groupes Facebook dédiés. Les résidences étudiantes privées constituent une alternative pratique mais souvent plus onéreuse (650-800 euros pour un studio meublé). <span style="font-weight: bold;color:#0063cb">N\'oubliez pas que vous pouvez bénéficier des APL pour réduire votre loyer mensuel</span>. Certains employeurs proposent également une aide au logement dans le cadre du contrat d\'alternance, pensez à vous renseigner. La forte demande locative nécessite de constituer un dossier solide avec garants.',
         loyers: [
-          { type: "Studio", price_range: "450 - 650 euros" },
-          { type: "T2", price_range: "650 - 900 euros" },
+          { type: "Studio", price_range: "450 - 650€" },
+          { type: "T2", price_range: "650 - 900€" },
         ],
       },
       loisirs: {

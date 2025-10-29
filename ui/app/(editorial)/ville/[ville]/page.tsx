@@ -19,7 +19,11 @@ const loisirs = {
 
 const transports = {
   Bus: "bus.svg",
-  TGV: "tgv.svg",
+  Tramway: "tramway.svg",
+  "Pistes cyclables": "trottinette.svg",
+  "Trains régionaux et TGV": "tgv.svg",
+  "Vélos en libre-service": "velo.svg",
+  Aéroport: "avion.svg",
 }
 
 const appartements = {
@@ -46,9 +50,17 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
 
   return (
     <Box>
-      <DefaultContainer>
+      <DefaultContainer sx={{ px: 0 }}>
         <Box
-          sx={{ position: "relative", p: fr.spacing("4w"), marginY: fr.spacing("4w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}
+          sx={{
+            position: "relative",
+            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
+            py: fr.spacing("4w"),
+            marginTop: { xs: 0, sm: fr.spacing("4w") },
+            marginBottom: fr.spacing("4w"),
+            borderRadius: "10px",
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
         >
           <Box
             sx={{
@@ -60,7 +72,15 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           >
             <HomeCircleImageDecoration height={100} />
           </Box>
-          <Box sx={{ position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between" }}>
+          <Box
+            sx={{
+              position: "relative",
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") },
+              justifyContent: "space-between",
+            }}
+          >
             <Box>
               <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
                 Trouver une alternance
@@ -90,8 +110,19 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           </Box>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
-          <Box sx={{ position: "relative", display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between" }}>
+        {/**
+         * BLOC DESCRIPTION DE LA VILLE
+         */}
+        <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
+          <Box
+            sx={{
+              position: "relative",
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") },
+              justifyContent: "space-between",
+            }}
+          >
             <Box sx={{ mb: fr.spacing("4w") }}>
               <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
                 <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
@@ -118,7 +149,17 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           </Box>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
+        {/**
+         * BLOC VIE D'ALTERNANT
+         */}
+        <Box
+          sx={{
+            mb: fr.spacing("4w"),
+            py: fr.spacing("4w"),
+            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
+            backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+          }}
+        >
           <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
             La vie d'alternant <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
@@ -162,7 +203,10 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           </Box>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
+        {/**
+         * BLOC STATISTIQUES
+         */}
+        <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
           <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
             Stats nombre d'opportunite_emploi
           </Typography>
@@ -175,7 +219,17 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           stats offres d'emploi
         </Box>
 
-        <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        {/**
+         * BLOC MOBILITE
+         */}
+        <Box
+          sx={{
+            mb: fr.spacing("4w"),
+            py: fr.spacing("4w"),
+            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
           <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
             La mobilité et le logement
           </Typography>
@@ -183,7 +237,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}></Box>
             <Box sx={{ flex: 1 }}>
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
@@ -191,21 +245,47 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}>
-              {data.content.mobilite.transports.map((transport) => (
-                <Box key={transport}>
-                  <Typography>{transport}</Typography>
-                  <Image alt="" src={transports[transport]} width="50" height={50} />
-                </Box>
-              ))}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                  gap: fr.spacing("2w"),
+                }}
+              >
+                {data.content.mobilite.transports.map((transport) => (
+                  <Box
+                    key={transport}
+                    sx={{
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "146px",
+                      height: "146px",
+                      padding: fr.spacing("3v"),
+                      backgroundColor: "white",
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                    }}
+                  >
+                    <Image alt="" src={`/images/seo/transports/${transports[transport]}`} width="50" height={50} />
+                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{transport}</Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
             </Box>
           </Box>
 
-          <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+          {/**
+           * BLOC LOGEMENT
+           */}
+          <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}>
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
                 Le logement
@@ -214,24 +294,58 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             <Box sx={{ flex: 1 }}></Box>
           </Box>
 
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}>
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
             </Box>
 
-            <Box sx={{ flex: 1, verticalAlign: "middle" }}>
-              {data.content.logement.loyers.map((appartement) => (
-                <Box key={appartement.type}>
-                  <Typography>{appartement.type} à louer</Typography>
-                  <Typography>{appartement.price_range}</Typography>
-                  <Image alt="" src={appartements[appartement.type]} width="50" height={50} />
-                </Box>
-              ))}
+            <Box sx={{ flex: 1, alignItems: "center", justifyContent: "center", alignContent: "center" }}>
+              <Box
+                sx={{
+                  display: "grid",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+                  gap: fr.spacing("2w"),
+                }}
+              >
+                {data.content.logement.loyers.map((appartement) => (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      textAlign: "center",
+                      width: "100%",
+                      maxWidth: "250px",
+                      p: fr.spacing("3w"),
+                    }}
+                    key={appartement.type}
+                  >
+                    <Image alt="" style={{ margin: "auto" }} src={`/images/seo/logement/${appartements[appartement.type]}`} width="90" height={90} />
+                    <Typography sx={{ fontWeight: "bold", fontSize: "20px", mt: fr.spacing("1w") }}>{appartement.type} à louer</Typography>
+                    <Typography
+                      sx={{
+                        lineHeight: "2.5rem",
+                        fontWeight: "bold",
+                        fontSize: "2rem",
+                        mt: fr.spacing("3v"),
+                        color: fr.colors.decisions.text.default.info.default,
+                      }}
+                    >
+                      {appartement.price_range}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </Box>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("4w"), paddingX: fr.spacing("4w") }}>
+        {/**
+         * BLOC LOISIRS
+         */}
+        <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
           <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
             Les loisirs <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
@@ -243,34 +357,37 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             <Box
               sx={{
                 flex: 1,
-                display: "grid",
-                justifyContent: "start",
-                gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-                gridAutoRows: "auto",
-                gap: fr.spacing("1v"),
               }}
             >
-              {data.content.loisirs.types.map((loisir) => (
-                <Box
-                  key={loisir}
-                  sx={{
-                    textAlign: "center",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "146px",
-                    height: "146px",
-                    padding: fr.spacing("3v"),
-                    backgroundColor: "white",
-                    borderRadius: "5px",
-                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                  }}
-                >
-                  <Image alt="" src={`/images/seo/loisirs/${loisirs[loisir]}`} width="50" height={50} />
-                  <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{loisir}</Typography>
-                </Box>
-              ))}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                  gap: fr.spacing("2w"),
+                }}
+              >
+                {data.content.loisirs.types.map((loisir) => (
+                  <Box
+                    key={loisir}
+                    sx={{
+                      textAlign: "center",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "146px",
+                      height: "146px",
+                      padding: fr.spacing("3v"),
+                      backgroundColor: "white",
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                    }}
+                  >
+                    <Image alt="" src={`/images/seo/loisirs/${loisirs[loisir]}`} width="50" height={50} />
+                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{loisir}</Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
@@ -278,7 +395,17 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           </Box>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("4w"), p: fr.spacing("4w"), backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        {/**
+         * BLOC DECOUVREZ EGALEMENT
+         */}
+        <Box
+          sx={{
+            mb: fr.spacing("4w"),
+            py: fr.spacing("4w"),
+            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
           <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
             Découvrez également
           </Typography>
