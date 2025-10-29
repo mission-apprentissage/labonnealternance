@@ -276,7 +276,7 @@ const ReasonsField = ({ formik }: { formik: any }) => {
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
         <Box sx={{ mt: fr.spacing("2w") }}>
           <FormControl data-testid="fieldset-applicantMessageToCfa" fullWidth>
-            <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
+            <FormLabel htmlFor="reasons">Autre(s) sujet(s) à aborder :</FormLabel>
             <Input
               id="applicantMessageToCfa"
               data-testid="applicantMessageToCfa"

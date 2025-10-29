@@ -237,7 +237,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!recruiter) {
           return { application }
         }
-        const job = recruiter.jobs.find((job) => job._id.toString() === job_id)
+        const job = recruiter.jobs.find((job) => job._id === job_id)
         if (!job) {
           return { application }
         }

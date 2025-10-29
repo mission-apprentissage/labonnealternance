@@ -6,6 +6,7 @@ import { useState } from "react"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { tabSx } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -35,19 +36,6 @@ function TabContent({ title, children }: { title: string; children: React.ReactN
       {children}
     </Box>
   )
-}
-
-const tabSx = {
-  color: "#161616",
-  backgroundColor: "#E3E3FD",
-  marginRight: 2,
-  "&.Mui-selected": {
-    color: "#000091",
-    backgroundColor: "white",
-    borderBottom: "none",
-    borderLeft: "1px solid #ddd",
-    borderRight: "1px solid #ddd",
-  },
 }
 
 export default function StatistiquesClient() {
@@ -140,34 +128,6 @@ export default function StatistiquesClient() {
                 loading="lazy"
               ></iframe>
             </TabContent>
-
-            <Grid container spacing={6}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TabContent title="Les réponses des recruteurs">
-                  <iframe
-                    width="100%"
-                    max-width="300px"
-                    height="550px"
-                    title="stats_reponses_recruteurs"
-                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/17a7b8f6-160c-4510-b723-fdedf961913c`}
-                    loading="lazy"
-                  ></iframe>
-                </TabContent>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TabContent title="Les réponses des organismes de formation">
-                  <iframe
-                    width="100%"
-                    max-width="300px"
-                    height="550px"
-                    title="stats_reponses_cfa"
-                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/74000a35-edfa-4b6f-b28a-64a3c54a0f22`}
-                    loading="lazy"
-                  ></iframe>
-                </TabContent>
-              </Grid>
-            </Grid>
           </TabPanel>
 
           <TabPanel value={value} index={2}>

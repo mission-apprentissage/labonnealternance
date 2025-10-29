@@ -3,7 +3,7 @@ import { LbaItemTag } from "@/components/SearchForTrainingsAndJobs/components/Lb
 export function LbaJobEngagementTag() {
   return (
     <LbaItemTag color="pink" iconClassName="fr-icon-accessibility-line">
-      HANDI-ENGAGÉ
+      EMPLOYEUR HANDI-ENGAGÉ
     </LbaItemTag>
   )
 }
