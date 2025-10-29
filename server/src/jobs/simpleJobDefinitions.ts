@@ -17,6 +17,7 @@ import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobtea
 import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
+import { processLeboncoin } from "@/jobs/offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
 import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
@@ -226,6 +227,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processLaposte,
     description: "Importe les offres La Poste dans la collection raw & computed",
+  },
+  {
+    fct: processLeboncoin,
+    description: "Importe les offres Le Bon Coin dans la collection raw & computed",
   },
   {
     fct: processJobteaser,
