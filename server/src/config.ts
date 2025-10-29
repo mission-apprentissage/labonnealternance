@@ -156,6 +156,8 @@ const config = {
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
   leboncoinUrl: env.get("LEBONCOIN_FLUX_URL").required().asString(),
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
+  jobteaserUserName: env.get("JOBTEASER_FLUX_USERNAME").required().asString(),
+  jobteaserPassword: env.get("JOBTEASER_FLUX_PASSWORD").required().asString(),
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   openai: {

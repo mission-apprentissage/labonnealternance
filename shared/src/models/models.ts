@@ -36,6 +36,7 @@ import opcoModel from "./opco.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
+import rawJobteaserModel from "./rawJobteaser.model.js"
 import rawJoobleModel from "./rawJooble.model.js"
 import rawKelioModel from "./rawKelio.model.js"
 import rawLaposteModel from "./rawLaposte.model.js"
@@ -130,6 +131,7 @@ const modelDescriptorMap = {
   [rawLaposteModel.collectionName]: rawLaposteModel,
   [rawLeboncoinModel.collectionName]: rawLeboncoinModel,
   [rawJoobleModel.collectionName]: rawJoobleModel,
+  [rawJobteaserModel.collectionName]: rawJobteaserModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
   [rawFranceTravail.collectionName]: rawFranceTravail,

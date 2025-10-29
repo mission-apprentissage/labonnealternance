@@ -700,7 +700,7 @@ export const entrepriseOnboardingWorkflow = {
         if (err.message?.includes("duplicate key error")) {
           return {
             error: true,
-            message: "Un compte est déjà associé à ce couple email/siret.",
+            message: "Un compte recruteur existe déjà pour ce couple email/siret. Merci de contacter le support.",
             errorCode: BusinessErrorCodes.EMAIL_ALREADY_EXISTS,
           }
         }
