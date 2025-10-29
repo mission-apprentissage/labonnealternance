@@ -6,6 +6,8 @@ import Image from "next/image"
 import { villeData } from "@/app/(editorial)/ville/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
+import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 
 const loisirs = {
@@ -208,15 +210,53 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
          */}
         <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
           <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
-            Stats nombre d'opportunite_emploi
+            Opportunités d'emploi
+            <br />
+            en alternance <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          stats recruteurs spontanées
-          <br />
-          stats offres d'emploi
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("2w") }}>
+            <Box sx={{ flex: 1, boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)", padding: fr.spacing("2w") }}>
+              <TagOffreEmploi />
+              <Box sx={{ display: "flex" }}>
+                <Box sx={{ flex: 2 }}>
+                  <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: fr.colors.decisions.text.default.info.default, mt: fr.spacing("2w") }}>
+                    {offerCount}
+                  </Typography>
+                  <Typography sx={{ fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
+                    offres d'emploi{" "}
+                    <Typography component="span" sx={{ fontWeight: "bold", color: "#161616" }}>
+                      auprès desquelles postuler
+                    </Typography>
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1, textAlign: "right", pt: fr.spacing("2w") }}>
+                  <Image src="/images/seo/offre-emploi.svg" alt="" width={80} height={80} />
+                </Box>
+              </Box>
+            </Box>
+
+            <Box sx={{ flex: 1, boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)", padding: fr.spacing("2w") }}>
+              <TagCandidatureSpontanee />
+              <Box sx={{ display: "flex" }}>
+                <Box sx={{ flex: 2 }}>
+                  <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: "#716043", mt: fr.spacing("2w") }}>{recruiterCount}</Typography>
+                  <Typography sx={{ fontWeight: "bold", color: "#716043" }}>
+                    entreprises{" "}
+                    <Typography component="span" sx={{ fontWeight: "bold", color: "#161616" }}>
+                      auprès desquelles adresser des candidatures spontanées
+                    </Typography>{" "}
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1, textAlign: "right", pt: fr.spacing("2w") }}>
+                  <Image src="/images/seo/candidature-spontanee.svg" alt="" width={80} height={80} />
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         </Box>
 
         {/**
@@ -240,8 +280,8 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}></Box>
             <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
-                La mobilite
+              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: { xs: fr.spacing("3v"), md: 0 } }}>
+                La mobilité
               </Typography>
             </Box>
           </Box>
@@ -278,7 +318,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap", mt: { xs: fr.spacing("5v"), md: 0 } }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
             </Box>
           </Box>
 
@@ -287,7 +327,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
            */}
           <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", my: { xs: fr.spacing("3v"), md: 0 } }}>
                 Le logement
               </Typography>
             </Box>
