@@ -15710,10 +15710,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodemailer@npm:^6.10.1":
-  version: 6.10.1
-  resolution: "nodemailer@npm:6.10.1"
-  checksum: 39e9208e13c40b58c59242205bce855e74def25d953070ab6a5b1c23b0bf37df0725b3c6dea52d4220e2e60dd1fffcd486a697dece79afdf98842aae6395d393
+"nodemailer@npm:^7.0.7":
+  version: 7.0.10
+  resolution: "nodemailer@npm:7.0.10"
+  checksum: 1a577e6d4b8855f136f556ff2de6e37c79a5bf2a80e8269449c88df16b7f4034937c15d9027c6a95af73d179aa78886f5ddb451aede4c14019756aa61f3baa20
   languageName: node
   linkType: hard
 
@@ -18867,7 +18867,7 @@ __metadata:
     mongodb: ^6.15.0
     netmask: ^2.0.2
     nock: 14.0.4
-    nodemailer: ^6.10.1
+    nodemailer: ^7.0.7
     nodemailer-html-to-text: ^3.2.0
     openai: ^4.95.1
     openapi-types: ^12.1.3
