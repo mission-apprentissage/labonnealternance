@@ -2,6 +2,7 @@ import fs from "node:fs"
 
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
@@ -79,8 +80,15 @@ describe("importRecruteursLbaRaw", () => {
     // when
     await processRecruteursLbaFromFile(`${testDir}/processRecruteursLba.test.1.json`)
     // then
-    const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
-    expect.soft(publishedJobPartners.length).toBe(2)
+    const jobs = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
+
+    const activeJobs = jobs.filter((x) => x.offer_status === JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(activeJobs.length).toBe(2)
+
+    const canceledJobs = jobs.filter((x) => x.offer_status === JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(canceledJobs.length).toBe(1)
+    const [canceledJob] = canceledJobs
+    expect.soft(canceledJob.offer_status_history.map(({ status }) => ({ status }))).toEqual([{ status: JOB_STATUS_ENGLISH.ANNULEE }])
   })
   it("should remove email contact when it is blacklisted", async () => {
     // given

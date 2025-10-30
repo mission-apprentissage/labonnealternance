@@ -29,22 +29,24 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNot
     addedMatchFilter,
     getData: async (documents) => {
       const [document] = documents
-      const { workplace_address_label } = document
+      const { workplace_address_label, workplace_geopoint, workplace_address_zipcode, workplace_address_city } = document
       if (!workplace_address_label) {
         return []
       }
 
-      let geolocation = await getGeolocation(workplace_address_label)
-      const score = geolocation?.properties.score
-      if (score && score <= API_ADRESSE_MIN_SCORE) {
-        geolocation = null
-      }
+      let geolocation = await getGeolocationWithMinScore(workplace_address_label)
 
       if (!geolocation) {
-        if (document.workplace_geopoint) {
+        if (workplace_geopoint) {
           // on est capable de geolocaliser l'offre => non bloquant
           return []
-        } else {
+        }
+        // on essaie de géolocaliser avec le code postal et la ville
+        if (workplace_address_zipcode && workplace_address_city) {
+          geolocation = await getGeolocationWithMinScore(`${workplace_address_zipcode} ${workplace_address_city}`)
+        }
+
+        if (!geolocation) {
           // pas de geolocalisation => l'offre ne doit pas être publiée
           const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
             _id: document._id,
@@ -82,4 +84,13 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNot
     },
     shouldNotifySlack,
   })
+}
+
+async function getGeolocationWithMinScore(text: string) {
+  const geolocation = await getGeolocation(text)
+  const score = geolocation?.properties.score
+  if (score && score <= API_ADRESSE_MIN_SCORE) {
+    return null
+  }
+  return geolocation
 }

@@ -16,7 +16,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 
-export const buildUrlLba = (type: string, id: string, siret: string | null, title: string) => {
+export const buildUrlLba = (type: string, id: string, siret: string | null, title?: string) => {
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
       return `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, id, title)}`
