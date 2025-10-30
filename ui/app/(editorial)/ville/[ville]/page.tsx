@@ -11,21 +11,21 @@ import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 
 const loisirs = {
-  Expositions: "musees.svg",
-  Promenade: "promenade.svg",
-  "Vie nocturne": "vie_nocturne.svg",
-  "Culture alternative": "culture_alternative.svg",
-  "Concerts et théâtre": "theatre.svg",
-  Sports: "sports.svg",
+  musee: "musees.svg",
+  promenade: "promenade.svg",
+  bar: "vie_nocturne.svg",
+  alternatif: "culture_alternative.svg",
+  concert: "theatre.svg",
+  sport: "sports.svg",
 }
 
 const transports = {
-  Bus: "bus.svg",
-  Tramway: "tramway.svg",
-  "Pistes cyclables": "trottinette.svg",
-  "Trains régionaux et TGV": "tgv.svg",
-  "Vélos en libre-service": "velo.svg",
-  Aéroport: "avion.svg",
+  bus: "bus.svg",
+  tramway: "tramway.svg",
+  trottinette: "trottinette.svg",
+  train: "tgv.svg",
+  velo: "velo.svg",
+  aeroport: "avion.svg",
 }
 
 const appartements = {
@@ -134,7 +134,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
               />
 
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
             </Box>
             <Box
               sx={{
@@ -146,7 +146,13 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 mb: fr.spacing("4w"),
               }}
             >
-              <Image src={`/images/seo/ville/${data.content.description_ville.image}`} alt="" width={385} height={385} style={{ width: "100%", height: "auto" }} />
+              <Image
+                src={`/images/seo/ville/${data.content.description_ville.image}`}
+                alt=""
+                width={385}
+                height={385}
+                style={{ width: "100%", height: "auto", borderRadius: "5px", boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)" }}
+              />
             </Box>
           </Box>
         </Box>
@@ -174,7 +180,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           </Typography>
           <Box sx={{ mt: fr.spacing("4w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
             </Box>
             <Box sx={{ flex: 1 }}>
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
@@ -183,7 +189,15 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               {data.content.vie.activites.map((activite) => (
                 <Box
                   key={activite.naf_label}
-                  sx={{ display: "flex", width: "100%", mb: fr.spacing("1w"), backgroundColor: "white", padding: fr.spacing("2w"), borderRadius: "5px" }}
+                  sx={{
+                    display: "flex",
+                    width: "100%",
+                    mb: fr.spacing("1w"),
+                    backgroundColor: "white",
+                    padding: fr.spacing("2w"),
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                  }}
                 >
                   <Link
                     underline="none"
@@ -197,7 +211,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               ))}
               <Box sx={{ mt: fr.spacing("2w"), textAlign: "right" }}>
                 <Link sx={{ textDecoration: "underline" }} href={`/recherche?lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville}+${data.cp}`}>
-                  Voir toutes les opportunités à Bordeaux
+                  Voir toutes les opportunités à {data.ville}
                   <ArrowRightLine sx={{ ml: fr.spacing("2w"), width: 12, height: 12 }} />
                 </Link>
               </Box>
@@ -296,7 +310,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               >
                 {data.content.mobilite.transports.map((transport) => (
                   <Box
-                    key={transport}
+                    key={transport.type}
                     sx={{
                       textAlign: "center",
                       display: "flex",
@@ -311,14 +325,17 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                       boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                     }}
                   >
-                    <Image alt="" src={`/images/seo/transports/${transports[transport]}`} width="50" height={50} />
-                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{transport}</Typography>
+                    <Image alt="" src={`/images/seo/transports/${transports[transport.type]}`} width="50" height={50} />
+                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{transport.label}</Typography>
                   </Box>
                 ))}
               </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap", mt: { xs: fr.spacing("5v"), md: 0 } }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
+              <Typography
+                sx={{ whiteSpace: "pre-wrap", textAlign: "justify", mt: { xs: fr.spacing("5v"), md: 0 } }}
+                dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }}
+              />
             </Box>
           </Box>
 
@@ -336,7 +353,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
 
           <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
             </Box>
 
             <Box sx={{ flex: 1, alignItems: "center", justifyContent: "center", alignContent: "center" }}>
@@ -359,10 +376,13 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                       width: "100%",
                       maxWidth: "250px",
                       p: fr.spacing("3w"),
+                      backgroundColor: "white",
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                     }}
                     key={appartement.type}
                   >
-                    <Image alt="" style={{ margin: "auto" }} src={`/images/seo/logement/${appartements[appartement.type]}`} width="90" height={90} />
+                    <Image alt="" style={{ margin: "auto" }} src={`/images/seo/logement/${appartements[appartement.type]}`} width="90" height="90" />
                     <Typography sx={{ fontWeight: "bold", fontSize: "20px", mt: fr.spacing("1w") }}>{appartement.type} à louer</Typography>
                     <Typography
                       sx={{
@@ -408,7 +428,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               >
                 {data.content.loisirs.types.map((loisir) => (
                   <Box
-                    key={loisir}
+                    key={loisir.type}
                     sx={{
                       textAlign: "center",
                       display: "flex",
@@ -423,14 +443,14 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                       boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                     }}
                   >
-                    <Image alt="" src={`/images/seo/loisirs/${loisirs[loisir]}`} width="50" height={50} />
-                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{loisir}</Typography>
+                    <Image alt="" src={`/images/seo/loisirs/${loisirs[loisir.type]}`} width="50" height={50} />
+                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{loisir.label}</Typography>
                   </Box>
                 ))}
               </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
             </Box>
           </Box>
         </Box>
