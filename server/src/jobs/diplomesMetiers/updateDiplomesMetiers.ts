@@ -4,7 +4,6 @@ import { IDiplomesMetiers, ZDiplomesMetiers } from "shared/models/index"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { filterWrongRomes } from "@/services/formation.service"
-import { initializeCacheDiplomas } from "@/services/metiers.service"
 
 import { logger } from "../../common/logger"
 
@@ -147,9 +146,6 @@ export const updateDiplomeMetier = async (): Promise<void> => {
       logger.warn(`${invalidDiplomes.length} diplomes were invalid and skipped`)
     }
 
-    logger.info("Reloading diplomesMetiers cache")
-
-    await initializeCacheDiplomas()
     await notifyToSlack({
       subject: "Mise à jour Diplome Metier",
       message: `${diplomesToInsert.length} diplomes ont été insérés. ${invalidDiplomes.length} diplomes ont été ignorés`,
