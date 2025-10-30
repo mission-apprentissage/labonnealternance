@@ -17,15 +17,23 @@ const loisirs = {
   alternatif: "culture_alternative.svg",
   concert: "theatre.svg",
   sport: "sports.svg",
+  cinema: "cinema.svg",
+  musique: "music.svg",
+  montagne: "mountain.svg",
+  quai: "quai.svg",
+  gastronomie: "gastronomie.svg",
 }
 
 const transports = {
   bus: "bus.svg",
   tramway: "tramway.svg",
   trottinette: "trottinette.svg",
-  train: "tgv.svg",
+  tgv: "tgv.svg",
   velo: "velo.svg",
   aeroport: "avion.svg",
+  metro: "metro.svg",
+  train: "train.svg",
+  funiculaire: "funiculaire.svg",
 }
 
 const appartements = {
