@@ -315,9 +315,106 @@ export const villeData = [
       },
     },
   },
-  { ville: "Nantes", slug: "nantes", geopoint: { lat: 47.218371, long: -1.553621 }, content: {} },
-  { ville: "Rennes", slug: "rennes", geopoint: { lat: 48.117266, long: -1.677793 }, content: {} },
+  {
+    ville: "Nantes",
+    slug: "nantes",
+    geopoint: { lat: 47.218371, long: -1.553621 },
+    content: {
+      description_ville: {
+        title: "direction les Pays de la Loire",
+        text: "Nantes, sixième ville de France avec ses 320 000 habitants (plus de 650 000 dans la métropole), est une destination de choix pour les alternants. Capitale des Pays de la Loire, cette ville dynamique bénéficie d'une situation géographique idéale, à seulement 50 minutes de l'océan Atlantique et 2h de Paris en TGV. Son climat océanique doux et son cadre de vie agréable en font une ville particulièrement attractive pour les jeunes. Nantes a su se réinventer après son passé industriel pour devenir une métropole innovante, régulièrement classée parmi les villes les plus agréables à vivre en France. Avec plus de 55 000 étudiants, dont une part importante d'alternants, la ville offre un écosystème jeune et dynamique. L'ambiance y est conviviale, moins stressante qu'à Paris, tout en proposant les opportunités d'une grande métropole. Pour un alternant, Nantes représente le compromis idéal entre qualité de vie, opportunités professionnelles et vie étudiante animée.",
+        image: "nantes.png",
+      },
+      vie: {
+        text: 'Nantes dispose d\'un tissu économique particulièrement diversifié et propice aux alternants. La métropole compte <span style="font-weight: bold;color:#0063cb">plus de 26 000 entreprises</span> et se distingue dans plusieurs secteurs clés : <span style="font-weight: bold;color:#0063cb">le numérique et les technologies</span> (avec des entreprises comme Webhelp, Voyage Privé ou Dataiku), <span style="font-weight: bold;color:#0063cb">l\'agroalimentaire</span> (présence de grands groupes comme LU, Fleury Michon, Inter Bio), <span style="font-weight: bold;color:#0063cb">la construction navale avec les Chantiers de l\'Atlantique à Saint-Nazaire, et le secteur créatif et culturel</span>.<br /><br />Le quartier Euronantes et l\'Île de Nantes concentrent <span style="font-weight: bold;color:#0063cb">de nombreux sièges sociaux et startups innovantes</span>. La French Tech Nantes est très active et favorise l\'entrepreneuriat et l\'innovation, créant de nombreuses opportunités pour les alternants dans les métiers du digital.<br /><br />On trouve également un fort <span style="font-weight: bold;color:#0063cb">secteur tertiaire avec des cabinets de conseil, des banques et des assurances</span>. La proximité de pôles de compétitivité comme EMC2 (métiers avancés de production) facilite l\'accès à des alternances dans l\'industrie.<br /><br />Les opportunités sont nombreuses aussi bien dans les grands groupes que dans les PME et startups, permettant aux alternants de tous secteurs (commerce, ingénierie, digital, RH, communication) de trouver leur place.',
+        activites: [
+          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
+          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
+          { naf_label: "Aéronautique et spatial", rome_codes: [] },
+          { naf_label: "Commerce et distribution", rome_codes: [] },
+          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
+        ],
+      },
+      mobilite: {
+        text: "Se déplacer à Nantes est particulièrement facile et économique pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La TAN</span> (Transports de l'Agglomération Nantaise) propose un réseau complet avec 3 lignes de tramway, 1 ligne de busway, et plus de 70 lignes de bus qui desservent l'ensemble de la métropole.<br /><br />L'abonnement mensuel jeune (-26 ans) coûte environ 40€, et de nombreuses entreprises prennent en charge 50% du titre de transport dans le cadre de l'alternance.<br /><br />La ville est également très cyclable, <span style=\"font-weight: bold;color:#0063cb\">classée parmi les meilleures villes françaises pour le vélo, avec plus de 560 km de pistes cyclables</span>. Le service Bicloo propose 880 vélos en libre-service avec un abonnement annuel à seulement 30€.<br /><br />Pour les trajets occasionnels vers d'autres villes, <span style=\"font-weight: bold;color:#0063cb\">la gare SNCF de Nantes offre d'excellentes connexions</span> : Paris en 2h, Bordeaux en 3h, et Rennes en 1h30. La ville est aussi accessible en voiture via plusieurs axes autoroutiers, bien que posséder une voiture ne soit pas indispensable pour un alternant vivant dans la métropole.",
+        transports: [
+          { label: "Tramway (3 lignes)", type: "tramway" },
+          { label: "1 ligne Busway", type: "bus" },
+          { label: "Bus (70 lignes)", type: "bus" },
+          { label: "Bicloo", type: "velo" },
+          { label: "Gare SNCF", type: "tgv" },
+        ],
+      },
+      logement: {
+        text: 'Trouver un logement à Nantes nécessite de l\'anticipation, mais reste plus abordable que dans d\'autres grandes métropoles.<br /><br />Pour un studio, comptez entre 400€ et 550€ par mois charges comprises, tandis qu\'un T2 se situe généralement entre 550€ et 750€.<br /><br /><span style="font-weight: bold;color:#0063cb">Les quartiers les plus prisés par les alternants sont le centre-ville (Bouffay, Commerce), mais aussi Doulon, Chantenay, et surtout le secteur de l\'Île de Nantes</span> qui s\'est beaucoup développé avec le quartier de la Création et ses logements récents.<br /><br />Les quartiers <span style="font-weight: bold;color:#0063cb">Bottière-Chénaie et Bellevue</span> offrent des loyers plus accessibles tout en étant bien desservis par les transports. <span style="font-weight: bold;color:#0063cb">La Manufacture et Malakoff</span> sont également populaires auprès des jeunes.<br /><br />Pour votre recherche, utilisez les plateformes classiques <span style="font-weight: bold;color:#0063cb">mais pensez aussi aux résidences étudiantes comme Studéa, Campusea ou les CROUS qui proposent des places aux alternants</span>. Les aides au logement (APL) sont accessibles et peuvent couvrir 100€ à 200€ du loyer.<br /><br /><span style="font-weight: bold;color:#0063cb">Commencez vos recherches au moins 2-3 mois avant votre arrivée</span>, et n\'hésitez pas à solliciter Action Logement pour le dispositif Visale (garantie locative gratuite pour les moins de 30 ans) et l\'avance Loca-Pass.',
+        loyers: [
+          { type: "Studio", price_range: "400 - 550€" },
+          { type: "T2", price_range: "550 - 750€" },
+        ],
+      },
+      loisirs: {
+        text: 'Nantes offre une <span style="font-weight: bold;color:#0063cb">vie culturelle et festive particulièrement riche</span> pour les alternants. La ville est célèbre pour son projet artistique permanent "Le Voyage à Nantes" et les Machines de l\'Île, où <span style="font-weight: bold;color:#0063cb">le Grand Éléphant est devenu l\'emblème de la ville</span>.<br /><br />Le quartier Bouffay, cœur historique, regorge de bars et restaurants parfaits pour les soirées étudiantes, tout comme <span style="font-weight: bold;color:#0063cb">le quartier Graslin et ses terrasses animées</span>.<br /><br /><span style="font-weight: bold;color:#0063cb">Les bords de l\'Erdre et de la Loire sont idéaux pour se détendre</span> entre deux périodes de cours ou de travail. <span style="font-weight: bold;color:#0063cb">La ville accueille des festivals majeurs</span> comme les Rendez-vous de l\'Erdre (jazz), le festival Scopitone (cultures électroniques), ou encore le Hellfest à Clisson à 30 minutes.<br /><br />Les alternants bénéficient de nombreux cinémas dont le Katorza (art et essai), de salles de concert comme le Stereolux et le Lieu Unique (LU).<br /><br />Pour les sportifs, <span style="font-weight: bold;color:#0063cb">la ville propose de nombreuses infrastructures et associations, sans oublier la possibilité de rejoindre rapidement les plages de La Baule ou de Pornic le week-end</span>. La vie associative étudiante est très développée avec des BDE actifs qui organisent régulièrement des événements accessibles aux alternants.',
+        types: [
+          { label: "Les Machines de l'Ile", type: "machine" },
+          { label: "Nombreux bars et restaurants", type: "bar" },
+          { label: "Bords de l'Erdre et de la Loire", type: "quai" },
+          { label: "Festivals", type: "musique" },
+          { label: "Sport", type: "sport" },
+          { label: "Plages", type: "beach" },
+        ],
+      },
+    },
+  },
+  {
+    ville: "Rennes",
+    slug: "rennes",
+    geopoint: { lat: 48.117266, long: -1.677793 },
+    content: {
+      description_ville: {
+        title: "capitale de la Bretagne",
+        text: "Rennes, capitale de la Bretagne et préfecture d'Ille-et-Vilaine, est une ville dynamique qui compte environ 220 000 habitants, et plus de 450 000 dans sa métropole. Classée régulièrement parmi les villes les plus agréables de France, Rennes séduit par son parfait équilibre entre modernité et patrimoine historique. Son centre-ville médiéval avec ses maisons à colombages côtoie des quartiers résolument contemporains comme Eurorennes. Pour les alternants, Rennes représente un terrain idéal : la ville accueille plus de 70 000 étudiants, créant une ambiance jeune et conviviale, tout en offrant un bassin d'emploi diversifié et en pleine expansion. Le coût de la vie y reste raisonnable comparé à Paris ou Lyon, et la qualité de vie est exceptionnelle avec ses nombreux espaces verts, sa scène culturelle bouillonnante et sa proximité avec la mer (à seulement 1h). L'accueil chaleureux des Bretons et l'effervescence étudiante font de Rennes une ville où il fait bon vivre et construire son avenir professionnel.",
+        image: "rennes.png",
+      },
+      vie: {
+        text: 'Rennes dispose d\'<span style="font-weight: bold;color:#0063cb">un écosystème économique particulièrement dynamique et diversifié</span>, idéal pour trouver une alternance dans de nombreux secteurs. <ul><li>La métropole rennaise est un <span style="font-weight: bold;color:#0063cb">pôle majeur dans les technologies de l\'information et la cybersécurité</span>, abritant plus de 8 000 entreprises du numérique et des centres de recherche de renommée internationale. Des grands groupes comme Orange, Thales, Capgemini, Sopra Steria ou encore Harmonie Mutuelle ont établi des sites importants à Rennes et recrutent régulièrement des alternants.</li><li><span style="font-weight: bold;color:#0063cb">Le secteur automobile</span> est également présent avec le centre de production PSA de La Janais.</li><li>La ville excelle aussi dans <span style="font-weight: bold;color:#0063cb">les biotechnologies, la santé et l\'agroalimentaire</span>, avec des entreprises comme Lactalis ou Yoplait à proximité.</li><li>Les alternants en <span style="font-weight: bold;color:#0063cb">commerce, marketing et communication</span> trouveront de nombreuses opportunités dans les PME innovantes, les start-ups (la ville compte plusieurs incubateurs et pépinières), ainsi que dans les secteurs de la banque et de l\'assurance fortement représentés.</li></ul>Le quartier d\'affaires Rennes Atalante et la technopole concentrent de nombreuses entreprises high-tech. Avec un taux de chômage inférieur à la moyenne nationale et une économie en croissance constante, Rennes offre d\'excellentes perspectives d\'insertion professionnelle pour les jeunes en formation.',
+        activites: [
+          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
+          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
+          { naf_label: "Aéronautique et spatial", rome_codes: [] },
+          { naf_label: "Commerce et distribution", rome_codes: [] },
+          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
+        ],
+      },
+      mobilite: {
+        text: "Se déplacer à Rennes est particulièrement simple et économique, un atout majeur pour les alternants qui doivent jongler entre l'entreprise et l'école.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le réseau de transport en commun STAR</span> propose un métro automatique (ligne A depuis 2002, et ligne B inaugurée en 2022), complété par 80 lignes de bus couvrant toute la métropole. L'abonnement mensuel jeune (moins de 26 ans) coûte environ 30€, avec des réductions possibles selon les revenus. Le métro fonctionne jusqu'à minuit en semaine et 2h le week-end, pratique pour profiter de la vie rennaise.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Rennes est également l'une des villes les plus cyclables de France</span> : 460 km de pistes cyclables sillonnent la ville, et le service de vélos en libre-service LE vélo STAR permet de se déplacer facilement pour 30€ par an.<br /><br />La gare SNCF, en plein centre-ville, permet de rejoindre Paris en 1h30 par TGV, idéal pour les week-ends en famille.<br /><br />Pour ceux qui privilégient la voiture, le stationnement peut être compliqué en centre-ville, mais des parkings relais (P+R) permettent de combiner voiture et métro. La ville est compacte, et tout est accessible rapidement, un vrai gain de temps au quotidien.",
+        transports: [
+          { label: "Métro", type: "metro" },
+          { label: "Bus", type: "bus" },
+          { label: "Vélo STAR", type: "velo" },
+          { label: "Centre ville piétonnier", type: "pieton" },
+          { label: "Gare SNCF", type: "tgv" },
+        ],
+      },
+      logement: {
+        text: '<span style="font-weight: bold;color:#0063cb">Trouver un logement à Rennes demande de l\'anticipation, surtout pour les rentrées de septembre</span>, mais l\'offre reste plus accessible que dans d\'autres grandes villes françaises.<br /><br /><span style="font-weight: bold;color:#0063cb">Pour un studio, comptez entre 400€ et 550€</span> charges comprises selon le quartier et l\'état du bien, tandis qu\'<span style="font-weight: bold;color:#0063cb">un T2 se situe généralement entre 550€ et 750€</span>.<br /><br />Les quartiers prisés par les alternants sont Sainte-Thérèse et Saint-Hélier (proches du centre et bien desservis), Villejean (quartier universitaire avec de nombreuses résidences étudiantes et le campus de Beaulieu), Beauregard, et le centre-ville pour ceux qui peuvent investir davantage.<br /><br /><span style="font-weight: bold;color:#0063cb">Les résidences CROUS proposent des logements entre 200€ et 450€</span>, mais les places sont limitées et la demande forte. De nombreuses résidences étudiantes privées (Studéa, Cardinal Campus, Nexity Studéa) offrent des studios meublés avec services, plus chers mais pratiques. Les aides au logement (APL) permettent de réduire significativement le loyer. Il est recommandé de commencer ses recherches dès avril-mai sur les plateformes Lokaviz, Leboncoin, PAP, ou Facebook Marketplace.<br /><br /><span style="font-weight: bold;color:#0063cb">Attention aux arnaques</span> : ne versez jamais d\'argent avant d\'avoir visité et signé un contrat. Les agences immobilières demandent généralement un garant, pensez à solliciter la garantie Visale (gratuite) proposée par Action Logement, spécialement conçue pour les alternants et jeunes salariés de moins de 30 ans.',
+        loyers: [
+          { type: "Studio", price_range: "400 - 550€" },
+          { type: "T2", price_range: "550 - 750€" },
+        ],
+      },
+      loisirs: {
+        text: "Rennes bouillonne d'activités culturelles et festives qui raviront les alternants en quête d'équilibre entre travail et détente.<br /><br />La ville accueille des festivals majeurs comme les Transmusicales en décembre (rendez-vous incontournable des musiques actuelles), le festival Yaouank (culture bretonne), et Travelling (cinéma).<br /><br />Le quartier Saint-Anne, cœur historique avec ses ruelles pavées, regorge de bars et pubs animés où les étudiants se retrouvent, notamment le jeudi soir, soir de sortie traditionnel à Rennes. Les Champs Libres, équipement culturel moderne, abritent une bibliothèque, un musée de Bretagne et l'Espace des Sciences.<br /><br />Côté sport, l'université propose plus de 50 activités via le SUAPS, et la ville compte de nombreuses salles de sport et clubs associatifs abordables. Le parc du Thabor, véritable havre de paix de 10 hectares, est parfait pour décompresser entre deux cours.<br /><br />Les quais de la Vilaine réaménagés offrent des espaces de détente et d'événements en plein air.<br /><br />Rennes possède aussi plusieurs cinémas dont le Gaumont et l'Arvor (cinéma d'art et essai), une Opéra, et de nombreuses salles de concert. L'ambiance jeune et conviviale de la ville permet de tisser facilement des liens et de profiter pleinement de son expérience d'alternant.",
+        types: [
+          { label: "Festivals", type: "musique" },
+          { label: "Bars et restaurants", type: "bar" },
+          { label: "Cinémas, théâtres", type: "concert" },
+          { label: "Quais de la Vilaine", type: "quai" },
+          { label: "Sport", type: "sport" },
+          { label: "Parc du Thabor", type: "promenade" },
+        ],
+      },
+    },
+  },
   { ville: "Montpellier", slug: "montpellier", geopoint: { lat: 43.611667, long: 3.877222 }, content: {} },
-  { ville: "Lille", slug: "lille", geopoint: { lat: 50.62925, long: 3.057256 }, content: {} },
   { ville: "Grenoble", slug: "grenoble", geopoint: { lat: 45.188529, long: 5.724524 }, content: {} },
 ]
