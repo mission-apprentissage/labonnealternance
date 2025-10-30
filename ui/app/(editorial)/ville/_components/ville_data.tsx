@@ -29,7 +29,7 @@ export const villeData = [
           { label: "Bus", type: "bus" },
           { label: "Tramway", type: "tramway" },
           { label: "Pistes cyclables", type: "trottinette" },
-          { label: "Trains régionaux et TGV", type: "train" },
+          { label: "Trains régionaux et TGV", type: "tgv" },
           { label: "Vélos en libre-service", type: "velo" },
           { label: "Aéroport", type: "aeroport" },
         ],
@@ -79,7 +79,7 @@ export const villeData = [
         transports: [
           { label: "Bus", type: "bus" },
           { label: "Métro", type: "metro" },
-          { label: "RER", type: "rer" },
+          { label: "RER", type: "train" },
           { label: "5 gares", type: "tgv" },
           { label: "Vélib'", type: "velo" },
           { label: "Aéroport", type: "aeroport" },
@@ -166,7 +166,51 @@ export const villeData = [
       lat: 43.296482,
       long: 5.36978,
     },
-    content: {},
+    content: {
+      description_ville: {
+        title: "métropole méditerranéenne",
+        text: "Marseille, deuxième ville de France avec ses 870 000 habitants, est une métropole méditerranéenne vibrante qui offre un cadre de vie exceptionnel pour les alternants. Située entre mer et collines, la cité phocéenne bénéficie d'un ensoleillement généreux (300 jours par an) et d'un art de vivre typiquement provençal. Son caractère multiculturel, forgé par 2600 ans d'histoire et son statut de premier port français, en fait une ville cosmopolite et dynamique. Pour les jeunes en formation, Marseille représente un terrain idéal combinant opportunités professionnelles variées et qualité de vie méditerranéenne. La ville a connu une véritable renaissance ces dernières années, notamment depuis son année de Capitale européenne de la culture en 2013, avec la rénovation du Vieux-Port, l'ouverture du MUCEM et le développement de nombreux quartiers. Le coût de la vie y reste plus abordable qu'à Paris, tout en offrant les avantages d'une grande métropole. L'ambiance décontractée et l'accent chantant des Marseillais créent une atmosphère accueillante pour les nouveaux arrivants.",
+        image: "marseille.png",
+      },
+      vie: {
+        text: 'Marseille et sa métropole constituent <span style="font-weight: bold;color:#0063cb">le deuxième bassin économique de France</span> avec plus de 50 000 entreprises implantées sur le territoire.<ul><li>Le port de Marseille-Fos, premier port français et parmi les plus importants de Méditerranée, génère <span style="font-weight: bold;color:#0063cb">une activité considérable dans la logistique, le transport maritime et le commerce international</span>.</li><li>La ville accueille également <span style="font-weight: bold;color:#0063cb">un écosystème dynamique dans le numérique avec la French Tech</span> Aix-Marseille et des espaces comme La Belle de Mai ou Euroméditerranée qui hébergent de nombreuses startups.</li><li>Les secteurs traditionnellement forts incluent <span style="font-weight: bold;color:#0063cb">l\'aéronautique (Airbus Helicopters), la chimie, l\'énergie et la santé</span> avec de nombreux hôpitaux et laboratoires de recherche.</li><li><span style="font-weight: bold;color:#0063cb">Le tourisme</span> représente un pan majeur de l\'économie locale, créant des opportunités dans l\'hôtellerie, la restauration et l\'événementiel.</li><li><span style="font-weight: bold;color:#0063cb">Les services aux entreprises, le BTP, et les activités liées à l\'environnement et aux énergies renouvelables</span> se développent fortement. </li></ul>Pour les alternants, les opportunités sont diversifiées : grands groupes internationaux, PME familiales, associations et structures publiques recrutent régulièrement. Les chambres consulaires (CCI, CMA) proposent d\'ailleurs des bourses d\'alternance pour faciliter la mise en relation.',
+        activites: [
+          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
+          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
+          { naf_label: "Aéronautique et spatial", rome_codes: [] },
+          { naf_label: "Commerce et distribution", rome_codes: [] },
+          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
+        ],
+      },
+      mobilite: {
+        text: 'Se déplacer à Marseille en tant qu\'alternant est relativement accessible grâce au réseau RTM (Régie des Transports Métropolitains) qui propose un abonnement jeune à tarif réduit (environ 35€/mois pour les moins de 26 ans).<br /><br />Le réseau comprend :<ul><li><span style="font-weight: bold;color:#0063cb">2 lignes de métro</span></li><li><span style="font-weight: bold;color:#0063cb">3 lignes de tramway</span></li><li>et <span style="font-weight: bold;color:#0063cb">plus de 80 lignes de bus</span> qui desservent l\'ensemble de la métropole.</li></ul>Le métro, bien que limité à deux lignes, permet de relier rapidement le centre aux quartiers périphériques et fonctionne jusqu\'à 0h30 en semaine.<br /><br /><span style="font-weight: bold;color:#0063cb">Le vélo se développe avec le système Le Vélo</span>, proposant vélos classiques et électriques en libre-service, même si le relief vallonné de certains quartiers peut être un défi. De nombreuses pistes cyclables ont été aménagées ces dernières années, notamment le long du littoral.<br /><br /><span style="font-weight: bold;color:#0063cb">La voiture reste pratique</span> pour accéder aux zones d\'activités périphériques comme les Pennes-Mirabeau ou Vitrolles, et le covoiturage est bien développé.<br /><br /><span style="font-weight: bold;color:#0063cb">Les trains TER permettent de rejoindre facilement Aix-en-Provence, Aubagne ou l\'étang de Berre</span> où se trouvent de nombreuses entreprises. Attention toutefois aux heures de pointe où la circulation peut être dense, notamment sur l\'autoroute urbaine.',
+        transports: [
+          { label: "2 lignes de métro", type: "metro" },
+          { label: "3 lignes de tramway", type: "tramway" },
+          { label: "Le Vélo", type: "velo" },
+          { label: "La voiture", type: "voiture" },
+          { label: "Bus", type: "bus" },
+          { label: "TER", type: "train" },
+        ],
+      },
+      logement: {
+        text: 'Trouver un logement à Marseille demande de l\'anticipation mais reste plus accessible financièrement qu\'à Paris ou Lyon.<br /><br /><span style="font-weight: bold;color:#0063cb">Pour un studio, comptez entre 400€ et 600€ par mois</span> selon le quartier et l\'état du bien, tandis qu\'un T2 <span style="font-weight: bold;color:#0063cb">se situe généralement entre 550€ et 800€</span>.<br /><br />Les quartiers prisés par les alternants et étudiants incluent le 5ème arrondissement (Baille, Saint-Pierre), le 6ème (Castellane, Vauban, Notre-Dame du Mont) et certains secteurs du 1er et 7ème arrondissements, proches du centre et bien desservis. Le 4ème arrondissement, notamment autour de la Joliette et Euroméditerranée, se développe rapidement avec des logements neufs mais à des prix plus élevés.<br /><br /><span style="font-weight: bold;color:#0063cb">Les résidences étudiantes du CROUS proposent des chambres entre 300€ et 450€</span>, mais les places sont limitées et la demande forte. Plusieurs résidences privées pour étudiants et jeunes actifs (Studéa, Cardinal Campus) offrent des alternatives avec services inclus, à partir de 500€. Il est conseillé de commencer ses recherches dès avril-mai pour une rentrée en septembre, via les plateformes classiques (Leboncoin, SeLoger) et les groupes Facebook dédiés.<br /><br /><span style="font-weight: bold;color:#0063cb">Attention aux arnaques</span> : visitez toujours le logement avant de verser un quelconque acompte. Les aides au logement (APL) peuvent réduire significativement votre loyer, pensez à faire votre demande sur le site de la CAF dès votre installation.',
+        loyers: [
+          { type: "Studio", price_range: "400 - 600€" },
+          { type: "T2", price_range: "550 - 800€" },
+        ],
+      },
+      loisirs: {
+        text: 'Marseille offre une richesse culturelle et des loisirs incomparables pour les alternants en quête d\'équilibre entre vie professionnelle et détente.<ul><li><span style="font-weight: bold;color:#0063cb">Les 57 kilomètres de littoral permettent de profiter des calanques</span>, véritables joyaux naturels accessibles en bus ou en bateau, parfaits pour la randonnée, l\'escalade ou la baignade.</li><li><span style="font-weight: bold;color:#0063cb">La vie culturelle est intense</span> avec le MUCEM, la Friche la Belle de Mai (tiers-lieu culturel incontournable), le Théâtre Silvain, et de nombreuses salles de concert comme Le Dome ou La Mesón.</li><li><span style="font-weight: bold;color:#0063cb">Les jeudis du port, les marchés de quartier et les événements comme la Fiesta des Suds ou le Festival de Marseille rythment l\'année</span>. Le Vieux-Port, le cours Julien (quartier alternatif et street-art) et la Plaine sont des lieux de rencontre privilégiés pour les étudiants et jeunes actifs.</li><li><span style="font-weight: bold;color:#0063cb">Les activités sportives sont nombreuses</span> : clubs de voile, plongée, football (avec l\'OM, véritable religion locale), escalade à Sormiou ou Luminy. </li><li><span style="font-weight: bold;color:#0063cb">La vie nocturne est animée avec des bars abordables</span> dans le centre-ville et des clubs en bord de mer. L\'ambiance marseillaise, authentique et chaleureuse, favorise les rencontres et l\'intégration rapide des nouveaux arrivants.</li></ul>',
+        types: [
+          { label: "57 km de littoral", type: "boat" },
+          { label: "Vie culturelle", type: "concert" },
+          { label: "Vie du port", type: "port" },
+          { label: "Activités sportives", type: "sport" },
+          { label: "Vie nocturne", type: "bar" },
+        ],
+      },
+    },
   },
   {
     ville: "Toulouse",

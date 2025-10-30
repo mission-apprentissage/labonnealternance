@@ -22,6 +22,8 @@ const loisirs = {
   montagne: "mountain.svg",
   quai: "quai.svg",
   gastronomie: "gastronomie.svg",
+  boat: "boat.svg",
+  port: "port.svg",
 }
 
 const transports = {
@@ -34,6 +36,7 @@ const transports = {
   metro: "metro.svg",
   train: "train.svg",
   funiculaire: "funiculaire.svg",
+  voiture: "voiture.svg",
 }
 
 const appartements = {
