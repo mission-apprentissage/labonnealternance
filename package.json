@@ -96,7 +96,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.1.2"
+    "vitest": "^4.0.5"
   },
   "commitlint": {
     "extends": [
