@@ -265,7 +265,56 @@ export const villeData = [
       },
     },
   },
-  { ville: "Strasbourg", slug: "strasbourg", geopoint: { lat: 48.573405, long: 7.752111 }, content: {} },
+  {
+    ville: "Strasbourg",
+    slug: "strasbourg",
+    geopoint: { lat: 48.573405, long: 7.752111 },
+    content: {
+      description_ville: {
+        title: "capitale européenne",
+        text: "Strasbourg, capitale européenne et préfecture du Grand Est, offre un cadre de vie exceptionnel pour les alternants. Située à la frontière franco-allemande, cette ville de près de 280 000 habitants combine patrimoine historique et dynamisme économique. Son statut de capitale européenne, abritant le Parlement européen et le Conseil de l'Europe, lui confère une dimension internationale particulièrement attractive. La ville bénéficie d'un centre historique classé au patrimoine mondial de l'UNESCO, avec ses maisons à colombages et la majestueuse cathédrale. Strasbourg se distingue par son excellente qualité de vie, ses infrastructures modernes et son écosystème étudiant développé avec plus de 60 000 étudiants. Pour les alternants, c'est l'opportunité de vivre dans une ville à taille humaine, parfaitement connectée, où se mêlent cultures française et allemande. L'ambiance cosmopolite et la présence de nombreuses institutions européennes créent un environnement professionnel stimulant pour débuter sa carrière.",
+        image: "strasbourg.png",
+      },
+      vie: {
+        text: "Le tissu économique strasbourgeois est particulièrement diversifié et porteur d'opportunités pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La ville s'impose comme un hub européen majeur</span> avec une forte présence d'institutions internationales, d'organisations européennes et d'ONG qui recrutent régulièrement des alternants dans <span style=\"font-weight: bold;color:#0063cb\">les domaines juridique, diplomatique et administratif</span>.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le secteur tertiaire</span> domine largement avec de nombreuses entreprises dans la banque, l'assurance et les services (Caisse d'Épargne, Crédit Mutuel, Groupama).<br /><br />Strasbourg excelle également dans <span style=\"font-weight: bold;color:#0063cb\">les sciences de la vie et la santé, avec des laboratoires pharmaceutiques et des centres de recherche biomédicale</span> reconnus. Le numérique et l'IT connaissent une croissance importante, notamment dans la cybersécurité et le développement web.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La proximité de l'Allemagne favorise les échanges commerciaux et multiplie les opportunités</span> dans les entreprises franco-allemandes. Le tourisme, l'hôtellerie-restauration et le secteur culturel offrent aussi de nombreux contrats d'alternance. Les pôles de compétitivité comme Alsace BioValley ou le pôle Véhicule du Futur dynamisent l'innovation locale.",
+        activites: [
+          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
+          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
+          { naf_label: "Aéronautique et spatial", rome_codes: [] },
+          { naf_label: "Commerce et distribution", rome_codes: [] },
+          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
+        ],
+      },
+      mobilite: {
+        text: '<span style="font-weight: bold;color:#0063cb">Se déplacer à Strasbourg est remarquablement facile</span>, ce qui représente un atout majeur pour les alternants jonglant entre entreprise et école. La ville dispose d\'un excellent réseau de tramway (6 lignes) géré par la CTS, qui dessert efficacement tous les quartiers et zones d\'activité, avec des passages fréquents de 5h à minuit. Le réseau de bus complète parfaitement le tram avec plus de 30 lignes, dont certaines nocturnes le week-end.<br /><br /><span style="font-weight: bold;color:#0063cb">Strasbourg est la capitale française du vélo avec plus de 600 km de pistes cyclables</span> et le service Vélhop qui propose vélos classiques et électriques en location. La ville est relativement compacte, permettant de traverser le centre en 20 minutes à vélo.<br /><br />L\'abonnement mensuel CTS coûte environ 30€ pour les moins de 28 ans, un tarif très avantageux.<br /><br /><span style="font-weight: bold;color:#0063cb">Pour rejoindre d\'autres villes, la gare centrale offre des connexions TGV</span> vers Paris (1h45), Lyon, Marseille et des trains régionaux vers l\'Allemagne. Le stationnement automobile est coûteux en centre-ville, rendant la voiture peu nécessaire au quotidien.',
+        transports: [
+          { label: "Tramway (6 lignes)", type: "tramway" },
+          { label: "Bus (30 lignes)", type: "bus" },
+          { label: "Capitale du vélo", type: "velo" },
+          { label: "600 km de pistes cyclables", type: "trottinette" },
+          { label: "Gare SNCF", type: "tgv" },
+        ],
+      },
+      logement: {
+        text: 'Trouver un logement à Strasbourg demande de l\'anticipation, mais reste plus accessible que dans les grandes métropoles françaises.<br /><br /><span style="font-weight: bold;color:#0063cb">Le loyer moyen pour un studio se situe entre 400€ et 550€</span> charges comprises, tandis qu\'un T2 coûte généralement entre 600€ et 800€ selon le quartier et l\'état du bien.<br /><br /><span style="font-weight: bold;color:#0063cb">Les quartiers les plus prisés</span> par les alternants sont la Krutenau (ambiance étudiante, proximité du centre), le Neudorf (bien desservi, plus calme), l\'Esplanade (campus universitaire, résidences étudiantes), et Meinau (prix plus abordables). Le quartier de la gare et celui de l\'Étoile offrent un bon compromis entre accessibilité et budget.<br /><br /><span style="font-weight: bold;color:#0063cb">Les résidences CROUS proposent des logements de 250€ à 400€</span>, mais sont difficiles à obtenir pour les alternants. Les plateformes comme Studapart, LeBonCoin ou les agences immobilières locales sont les principaux canaux de recherche.<br /><br />Il est recommandé de <span style="font-weight: bold;color:#0063cb">constituer un dossier solide avec garant et de commencer ses recherches 2 à 3 mois avant la rentrée</span>. Les aides au logement (APL) permettent généralement de réduire le loyer de 100€ à 200€ selon les ressources.',
+        loyers: [
+          { type: "Studio", price_range: "400 - 550€" },
+          { type: "T2", price_range: "600 - 800€" },
+        ],
+      },
+      loisirs: {
+        text: "Strasbourg propose une offre culturelle et de loisirs exceptionnelle qui permet aux alternants de profiter pleinement de leur temps libre.<br /><br />La ville vibre au rythme de nombreux festivals comme le célèbre Marché de Noël (le plus ancien de France), les Artefact ou encore le festival de musique électronique Ososphère.<br /><br />Les amateurs de culture peuvent profiter de l'Opéra national du Rhin, du Théâtre national de Strasbourg, et de nombreux cinémas dont le mythique Odyssée.<br /><br />La vie étudiante est très animée dans le quartier de la Krutenau et autour de la place Saint-Étienne, avec bars, pubs et clubs pour tous les goûts.<br /><br />Le parc de l'Orangerie, le jardin des Deux Rives et les bords de l'Ill offrent des espaces verts parfaits pour se détendre.<br /><br />Les sportifs apprécieront les installations universitaires, les salles d'escalade, les piscines et la possibilité de faire du kayak sur l'Ill. La proximité de l'Allemagne permet des sorties à Kehl ou Baden-Baden, tandis que les Vosges, à 30 minutes, offrent randonnée l'été et ski l'hiver.",
+        types: [
+          { label: "Marché de Noël", type: "shopping" },
+          { label: "Festivals", type: "musique" },
+          { label: "Vie étudiante animée", type: "bar" },
+          { label: "Randonnée et ski", type: "ski" },
+          { label: "Sport", type: "sport" },
+          { label: "Parcs et jardins", type: "promenade" },
+        ],
+      },
+    },
+  },
   { ville: "Nantes", slug: "nantes", geopoint: { lat: 47.218371, long: -1.553621 }, content: {} },
   { ville: "Rennes", slug: "rennes", geopoint: { lat: 48.117266, long: -1.677793 }, content: {} },
   { ville: "Montpellier", slug: "montpellier", geopoint: { lat: 43.611667, long: 3.877222 }, content: {} },

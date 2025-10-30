@@ -25,6 +25,8 @@ const loisirs = {
   boat: "boat.svg",
   port: "port.svg",
   rugby: "rugby.svg",
+  shopping: "shopping.svg",
+  ski: "ski.svg",
 }
 
 const transports = {
