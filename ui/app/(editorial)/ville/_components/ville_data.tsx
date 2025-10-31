@@ -415,6 +415,56 @@ export const villeData = [
       },
     },
   },
-  { ville: "Montpellier", slug: "montpellier", geopoint: { lat: 43.611667, long: 3.877222 }, content: {} },
+  {
+    ville: "Montpellier",
+    slug: "montpellier",
+    geopoint: { lat: 43.611667, long: 3.877222 },
+    content: {
+      description_ville: {
+        title: "capitale de l’Hérault",
+        text: "Montpellier, capitale de l'Hérault et huitième ville de France, est une destination de choix pour les alternants. Située à seulement 10 kilomètres de la Méditerranée, cette ville dynamique bénéficie d'un climat ensoleillé avec plus de 300 jours de soleil par an. Avec ses 70 000 étudiants, Montpellier possède une atmosphère jeune et vibrante qui facilite l'intégration des nouveaux arrivants. Son centre-ville historique, l'Écusson, avec ses ruelles piétonnes et ses hôtels particuliers, côtoie des quartiers modernes comme Antigone ou Port Marianne. La ville combine parfaitement qualité de vie méditerranéenne et opportunités professionnelles, avec un coût de la vie légèrement inférieur à Paris ou Lyon. Son université, fondée en 1289, et ses nombreuses écoles supérieures en font un pôle d'excellence académique reconnu. Pour un alternant, Montpellier offre le cadre idéal pour développer sa carrière tout en profitant d'un environnement agréable et stimulant.",
+        image: "montpellier.png",
+      },
+      vie: {
+        text: "L'économie montpelliéraine est particulièrement diversifiée et en pleine expansion, offrant de nombreuses opportunités aux alternants. Le secteur du numérique et des technologies de l'information est très développé, avec plus de 2 000 entreprises dans la French Tech Montpellier, incluant des startups innovantes et des entreprises établies comme Synchroteam ou Kiamo. La santé représente un pilier majeur avec le CHU de Montpellier, l'un des plus importants de France, ainsi que de nombreuses entreprises de biotechnologies et de dispositifs médicaux. Le commerce et la grande distribution sont bien représentés avec les sièges régionaux de plusieurs enseignes nationales. Le secteur de l'agroalimentaire, notamment viticole, est également présent grâce à la proximité des vignobles languedociens. Les services aux entreprises, le marketing digital, et le conseil connaissent une forte croissance dans les quartiers d'affaires comme Odysseum ou Eurêka. Les alternants trouveront des opportunités dans des PME dynamiques, des ETI en développement, mais aussi dans de grands groupes implantés localement. La métropole compte également plusieurs pépinières d'entreprises et espaces de coworking qui accueillent régulièrement des alternants.",
+        activites: [
+          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
+          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
+          { naf_label: "Aéronautique et spatial", rome_codes: [] },
+          { naf_label: "Commerce et distribution", rome_codes: [] },
+          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
+        ],
+      },
+      mobilite: {
+        text: '<span style="font-weight: bold;color:#0063cb">Se déplacer à Montpellier est particulièrement facile et adapté</span> au budget des alternants. Le réseau de tramway, géré par la TaM (Transports de l\'Agglomération de Montpellier), compte 5 lignes qui desservent efficacement toute la métropole, avec des rames circulant toutes les 4 à 8 minutes aux heures de pointe. Un abonnement mensuel étudiant/alternant coûte environ 20 euros, ce qui est très avantageux.<br /><br />Le réseau est complété par <span style="font-weight: bold;color:#0063cb">de nombreuses lignes de bus</span> qui permettent d\'atteindre les zones d\'activités périphériques comme Garosud ou le Millénaire.<br /><br />Montpellier est également une ville très cyclable avec plus de <span style="font-weight: bold;color:#0063cb">160 kilomètres de pistes cyclables et le service VéloMagg</span> proposant 3 500 vélos en libre-service.<br /><br /><span style="font-weight: bold;color:#0063cb">Le centre-ville étant largement piétonnier</span>, on peut facilement s\'y déplacer à pied. Pour rejoindre la plage ou les villes voisines, le réseau TER Occitanie est efficace et propose des tarifs réduits pour les jeunes.<br /><br /><span style="font-weight: bold;color:#0063cb">La gare Saint-Roch, en plein centre, permet aussi de rejoindre facilement Paris en TGV</span> en environ 3h30. Enfin, l\'aéroport Montpellier-Méditerranée est accessible en navette depuis le centre-ville pour une dizaine d\'euros.',
+        transports: [
+          { label: "TaM, réseau de tramway", type: "tramway" },
+          { label: "Bus", type: "bus" },
+          { label: "VéloMagg", type: "velo" },
+          { label: "Centre ville piétonnier", type: "pieton" },
+          { label: "Réseau TER", type: "train" },
+          { label: "Gare Saint-Roch", type: "tgv" },
+        ],
+      },
+      logement: {
+        text: "<span style=\"font-weight: bold;color:#0063cb\">Trouver un logement à Montpellier demande de l'anticipation</span>, car la demande est forte en période de rentrée.<br /><br />Pour un studio, comptez entre 450 et 600 euros par mois selon le quartier et l'état du bien, tandis qu'un T2 se situe généralement entre 600 et 800 euros.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les quartiers prisés par les alternants</span> incluent les Beaux-Arts et Boutonnet, proches du centre et bien desservis, mais aussi Antigone pour son architecture moderne et sa proximité du tram. Le quartier Près d'Arènes et Gambetta offrent un bon compromis qualité-prix avec une ambiance estudiantine. Port Marianne et Richter sont plus récents et légèrement plus chers, mais très bien connectés aux zones d'activités.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Pour les budgets serrés</span>, regardez du côté de Celleneuve, Mosson ou même les villes voisines comme Castelnau-le-Lez ou Lattes, bien reliées en tramway. Pensez aux résidences étudiantes du CROUS, aux résidences privées spécialisées, et aux plateformes comme Studapart ou Lokaviz. Les aides au logement (APL) peuvent couvrir une partie importante du loyer.<br /><br />Il est recommandé de commencer ses recherches au moins deux mois avant la date d'emménagement et de se méfier des arnaques en ligne, malheureusement fréquentes dans cette ville très demandée.",
+        loyers: [
+          { type: "Studio", price_range: "400 - 600€" },
+          { type: "T2", price_range: "600 - 800€" },
+        ],
+      },
+      loisirs: {
+        text: "Montpellier offre une vie culturelle et festive exceptionnelle, parfaite pour équilibrer rythme professionnel et détente. La place de la Comédie, surnommée &quot;l'Œuf&quot;, est le cœur battant de la ville où étudiants et alternants se retrouvent en terrasse.<br /><br />Les nombreux bars du centre-ville, notamment dans les quartiers Beaux-Arts et Plan Cabanes, proposent des soirées étudiantes avec des tarifs attractifs.<br /><br />Le quartier Odysseum regroupe cinémas multiplexes, patinoire, bowling et l'aquarium Mare Nostrum. Les festivals rythment l'année : le Festival de Radio France en juillet, le FISE (sports extrêmes) en mai, et l'Électro Alternativ pour les amateurs de musique électronique.<br /><br />Les plages de Palavas-les-Flots, Carnon ou La Grande-Motte sont accessibles en 20-30 minutes en tramway ou bus.<br /><br />Le Musée Fabre, gratuit pour les moins de 26 ans le premier dimanche du mois, et le Corum proposent une offre culturelle riche. Les sportifs apprécieront le stade de la Mosson pour suivre le MHSC, les nombreuses salles d'escalade, et les espaces verts comme le parc Montcalm ou le Domaine de Grammont. La proximité des Cévennes permet également des escapades nature en week-end.",
+        types: [
+          { label: "Bars et restaurants", type: "bar" },
+          { label: "Cinémas", type: "cinema" },
+          { label: "Festivals", type: "musique" },
+          { label: "Plages", type: "beach" },
+          { label: "Musées", type: "musee" },
+          { label: "Nature", type: "promenade" },
+        ],
+      },
+    },
+  },
   { ville: "Grenoble", slug: "grenoble", geopoint: { lat: 45.188529, long: 5.724524 }, content: {} },
 ]
