@@ -16,6 +16,7 @@ import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 import { processorAdminRoutes } from "@/http/controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "@/http/controllers/_private/geo.private.controller"
+import { seoRouteController } from "@/http/controllers/_private/seo.private.controller"
 import { classificationRoutes } from "@/http/controllers/classification.controller"
 
 import { initSentryFastify } from "../common/sentry/sentry.fastify"
@@ -137,6 +138,7 @@ export async function bind(app: Server) {
       jobsEtFormationsV1Route(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
+      seoRouteController(typedSubApp)
 
       /**
        * Admin / Auth

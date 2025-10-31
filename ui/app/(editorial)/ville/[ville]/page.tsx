@@ -2,7 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
-import { ISeoVille } from "shared"
 
 import { villeData } from "@/app/(editorial)/ville/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
@@ -55,9 +54,7 @@ const appartements = {
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
 
-  console.log("oooooo", ville)
-
-  const data = (await apiGet("/_private/seo/ville/:ville", { params: { ville } })) as ISeoVille
+  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
 
   if (!data) {
     throw new Error("Ville not found")
@@ -199,7 +196,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
                 Activités porteuses :
               </Typography>
-              {data.content.vie.activites.map((activite) => (
+              {data.content.vie.activites.map((activite: { naf_label: string; rome_codes: string[] }) => (
                 <Box
                   key={activite.naf_label}
                   sx={{
@@ -321,7 +318,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.mobilite.transports.map((transport) => (
+                {data.content.mobilite.transports.map((transport: { type: string; label: string }) => (
                   <Box
                     key={transport.type}
                     sx={{
@@ -380,7 +377,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.logement.loyers.map((appartement) => (
+                {data.content.logement.loyers.map((appartement: { type: string; price_range: string }) => (
                   <Box
                     sx={{
                       display: "flex",
@@ -439,7 +436,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.loisirs.types.map((loisir) => (
+                {data.content.loisirs.types.map((loisir: { type: string; label: string }) => (
                   <Box
                     key={loisir.type}
                     sx={{

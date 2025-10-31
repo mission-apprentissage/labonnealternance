@@ -13,7 +13,7 @@ export const zPrivateSeoRoutes = {
         })
         .strict(),
       response: {
-        "200": ZSeoVille,
+        "200": ZSeoVille.nullable(),
       },
       securityScheme: null,
     },
