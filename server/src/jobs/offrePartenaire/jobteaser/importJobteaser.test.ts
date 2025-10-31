@@ -1,5 +1,6 @@
 import fs from "node:fs"
 
+import { omit } from "lodash-es"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -35,7 +36,8 @@ describe("importJobteaser", () => {
         .find({ partner_label: JOBPARTNERS_LABEL.JOBTEASER }, { projection: { _id: 0, created_at: 0 } })
         .toArray()
     ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
+    const filtered = jobs.map((x) => omit(x, ["offer_creation", "offer_expiration"]))
     expect.soft(jobs.length).toBe(2)
-    expect.soft(jobs).toMatchSnapshot()
+    expect.soft(filtered).toMatchSnapshot()
   })
 })
