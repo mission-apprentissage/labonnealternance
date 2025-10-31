@@ -63,6 +63,48 @@ jobs:
         id: get-version
         run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
 
+  build-ui-envs:
+    needs: ["release"]
+    if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: [recette, pentest]
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+          install: true
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
+
+      - name: Build UI ${{ matrix.env }}
+        run: .bin/scripts/build-images.sh ${{ needs.release.outputs.VERSION }} push $(git rev-parse HEAD) ${{ matrix.env }}
+        env:
+          CI: true
+
   docker-scout-server:
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
@@ -120,7 +162,7 @@ jobs:
   deploy-recette:
     concurrency:
       group: "deploy-${{ github.workflow }}-${{ github.ref }}"
-    needs: ["release"]
+    needs: ["release", "build-ui-envs"]
     name: Deploy ${{ needs.release.outputs.VERSION }} on recette
     uses: "./.github/workflows/_deploy.yml"
     with:
@@ -135,7 +177,7 @@ jobs:
   deploy-pentest:
     concurrency:
       group: "deploy-pentest-${{ github.workflow }}-${{ github.ref }}"
-    needs: ["release"]
+    needs: ["release", "build-ui-envs"]
     name: Deploy ${{ needs.release.outputs.VERSION }} on pentest
     uses: "./.github/workflows/_deploy.yml"
     with:
@@ -157,26 +199,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: "yarn"
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Build sourcemaps
-        run: yarn build
-        env:
-          NEXT_PUBLIC_ENV: production
-          NEXT_PUBLIC_VERSION: ${{ needs.release.outputs.VERSION }}
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull UI production image
+        run: docker pull ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
+
+      - name: Extract sourcemaps from Docker image
+        run: |
+          docker create --name temp-ui ghcr.io/mission-apprentissage/mna_lba_ui:${{ needs.release.outputs.VERSION }}-production
+          mkdir -p ui/.next
+          docker cp temp-ui:/app/ui/.next/static ./ui/.next/static
+          docker rm temp-ui
 
       - name: Create vault pwd file
         run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
