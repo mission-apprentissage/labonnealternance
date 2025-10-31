@@ -3,6 +3,7 @@ import z, { ZodType } from "zod"
 
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
+import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
 import { zClassificationRoute } from "./classification.routes.js"
@@ -37,6 +38,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersRoutes.get,
   ...zPrivateGeoRoutes.get,
+  ...zPrivateSeoRoutes.get,
   ...zProcessorAdminRoutes.get,
 } as const
 

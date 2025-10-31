@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
+import { ISeoVille } from "shared"
 
 import { villeData } from "@/app/(editorial)/ville/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
@@ -9,6 +10,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
+import { apiGet } from "@/utils/api.utils"
 
 const loisirs = {
   musee: "musees.svg",
@@ -53,7 +55,10 @@ const appartements = {
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
 
-  const data = villeData.find((town) => town.slug === ville)
+  console.log("oooooo", ville)
+
+  const data = (await apiGet("/_private/seo/ville/:ville", { params: { ville } })) as ISeoVille
+
   if (!data) {
     throw new Error("Ville not found")
   }
