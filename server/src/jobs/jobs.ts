@@ -8,6 +8,7 @@ import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
 import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
 import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
+import { updateSEO } from "@/jobs/seo/updateSEO"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -293,6 +294,10 @@ export async function setupJobProcessor() {
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
             handler: removeBrevoContacts,
+          },
+          "Mise à jour des données calculées pour les pages SEO": {
+            cron_string: "0 4 * * SAT",
+            handler: updateSEO,
           },
         },
     jobs: {
