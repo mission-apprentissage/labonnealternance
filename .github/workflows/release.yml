@@ -10,7 +10,6 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   release:
-    needs: [tests]
     concurrency:
       group: "release-${{ github.workflow }}-${{ github.ref }}"
     permissions: write-all
@@ -118,7 +117,7 @@ jobs:
           sarif_file: sarif-ui.output.json
           category: Docker UI
 
-  deploy:
+  deploy-recette:
     concurrency:
       group: "deploy-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]
