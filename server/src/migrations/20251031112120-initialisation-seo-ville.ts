@@ -1,4 +1,9 @@
-export const villeData = [
+import { ObjectId } from "mongodb"
+
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+const villeData = [
   {
     ville: "Bordeaux",
     cp: "33000",
@@ -17,13 +22,7 @@ export const villeData = [
       },
       vie: {
         text: 'Le tissu économique bordelais est <span style="font-weight: bold;color:#0063cb">diversifié et en pleine expansion</span>, offrant de nombreuses opportunités pour les alternants. <ul><li><span style="font-weight: bold;color:#0063cb">Le secteur du numérique et des nouvelles technologies</span> est particulièrement dynamique, avec plus de 15 000 emplois dans l\'IT et de nombreuses start-ups installées à Darwin, La Mêlée ou dans le quartier Euratlantique.</li><li><span style="font-weight: bold;color:#0063cb">L\'aéronautique et le spatial</span> constituent un pilier majeur avec des entreprises comme Dassault Aviation, Thalès et Safran qui recrutent régulièrement des alternants.</li><li><span style="font-weight: bold;color:#0063cb">Le secteur du vin et des spiritueux</span>, emblématique de la région, propose des postes en marketing, commerce international et œnotourisme.</li><li>La métropole accueille également de grandes entreprises dans le secteur bancaire (Crédit Agricole, CIC) et des assurances, ainsi qu\'<span style="font-weight: bold;color:#0063cb">un pôle santé en développement avec le CHU et de nombreux laboratoires pharmaceutiques</span>.</li><li>Le commerce et le tourisme représentent aussi des viviers d\'alternance importants. Les institutions publiques et les cabinets de conseil sont nombreux dans cette capitale régionale.</li></ul><span style="font-weight: bold;color:#0063cb">Avec un taux de chômage inférieur à la moyenne nationale et une croissance démographique soutenue</span>, Bordeaux attire de plus en plus d\'entreprises nationales et internationales, créant ainsi un marché de l\'alternance particulièrement favorable.',
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: '<span style="font-weight: bold;color:#0063cb">Se déplacer à Bordeaux est facile et accessible</span> grâce à un réseau de transports en commun performant géré par TBM (Transports Bordeaux Métropole). Le réseau compte quatre lignes de tramway (A, B, C et D) qui desservent l\'ensemble de l\'agglomération et constituent l\'épine dorsale des déplacements urbains, avec une fréquence de passage élevée jusqu\'à tard le soir. Les bus complètent efficacement ce réseau avec plus de 70 lignes régulières et des navettes électriques gratuites dans le centre-ville.<br /><br /><span style="font-weight: bold;color:#0063cb">L\'abonnement mensuel TBM coûte environ 37 euros pour les moins de 26 ans</span>, un tarif très avantageux pour les alternants. La ville est également très cyclable avec plus de <span style="font-weight: bold;color:#0063cb">200 km de pistes cyclables</span>, et le service V³ (Vcub) propose des vélos en libre-service <span style="font-weight: bold;color:#0063cb">à partir de 10 euros par mois</span>. De nombreux alternants optent pour le vélo, particulièrement adapté au relief plat de la ville.<br /><br />Pour rejoindre les entreprises situées en périphérie, <span style="font-weight: bold;color:#0063cb">le réseau TransGironde assure des liaisons départementales</span>. La gare Saint-Jean, desservie par TGV, permet de rejoindre Paris en 2h et les principales villes françaises. Enfin, Bordeaux dispose d\'un aéroport international à Mérignac, accessible en 30 minutes en navette.</span>',
@@ -71,13 +70,7 @@ export const villeData = [
       },
       vie: {
         text: "Paris constitue le premier bassin d'emploi français avec une concentration exceptionnelle d'entreprises de toutes tailles.<ul><li><span style=\"font-weight: bold;color:#0063cb\">Les sièges sociaux des groupes du CAC 40</span> sont majoritairement implantés à Paris et La Défense, premier quartier d'affaires européen, offrant des milliers de postes en alternance dans la finance, le conseil, l'assurance et les services.</li><li><span style=\"font-weight: bold;color:#0063cb\">Le dynamisme des start-ups</span> est particulièrement remarquable dans des quartiers comme le Sentier (surnommé &quot;Silicon Sentier&quot;), Station F (le plus grand incubateur du monde), et les arrondissements du nord-est parisien. Les secteurs du luxe (LVMH, Kering, L'Oréal), de la mode, du digital, de la communication et du marketing sont omniprésents et recrutent massivement des alternants.</li><li><span style=\"font-weight: bold;color:#0063cb\">Les PME innovantes</span> foisonnent dans les 11e, 18e et 19e arrondissements, tandis que les institutions publiques et organisations internationales proposent également des contrats d'apprentissage.</li></ul>La diversité sectorielle parisienne permet à chaque profil de trouver une entreprise correspondant à son projet professionnel, que vous visiez une multinationale structurée ou une structure plus agile et entrepreneuriale.",
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: "Se déplacer à Paris en alternance est facilité par un réseau de transports en commun parmi les plus développés au monde.<br /><br />Le métro avec ses 16 lignes, le RER, les bus et tramways permettent de rejoindre quasiment n'importe quel point de la capitale en moins d'une heure. Le pass Navigo mensuel coûte 86,40€ (zones 1-5) mais votre entreprise d'accueil prendra en charge 50% de ce montant, soit environ 43€ à votre charge.<br /><br />Les services Vélib' (vélos en libre-service) et les trottinettes électriques complètent l'offre de mobilité douce, particulièrement pratiques pour les derniers kilomètres. Paris développe constamment ses pistes cyclables, rendant le vélo personnel de plus en plus attractif pour les trajets domicile-travail-école. <br /><br />Attention toutefois aux heures de pointe (8h-9h30 et 17h30-19h30) où le métro peut être très chargé, notamment sur les lignes 1, 4, 13 et le RER A. L'application Citymapper deviendra rapidement votre meilleure alliée pour optimiser vos déplacements et anticiper les perturbations.",
@@ -128,13 +121,7 @@ export const villeData = [
       },
       vie: {
         text: 'Lyon dispose d\'un écosystème économique particulièrement riche et diversifié, offrant d\'excellentes perspectives pour les alternants de tous horizons.<ul><li>La ville est historiquement reconnue comme <span style="font-weight: bold;color:#0063cb">un pôle majeur de l\'industrie chimique et pharmaceutique</span>, abritant les sièges de Sanofi, Boiringer Ingelheim et de nombreux laboratoires dans la vallée de la chimie au sud de l\'agglomération.</li><li><span style="font-weight: bold;color:#0063cb">Le secteur des biotechnologies et des sciences de la vie</span> connaît un développement fulgurant, notamment dans le quartier de Gerland qui héberge des dizaines de startups et PME innovantes.</li><li>Lyon est également un hub digital important avec plus de 1 500 entreprises du numérique, concentrées notamment dans les quartiers de la Part-Dieu et de Vaise, offrant de nombreuses opportunités en <span style="font-weight: bold;color:#0063cb">développement web, data science et cybersécurité</span>.</li><li><span style="font-weight: bold;color:#0063cb">Le secteur bancaire et assurantiel</span> est très présent avec April, Apicil et de nombreuses banques régionales, tandis que l\'industrie traditionnelle reste solide avec des acteurs comme Renault Trucks.</li></ul>Les services aux entreprises, le commerce, la logistique (grâce à la proximité de grands axes autoroutiers) et le tourisme complètent ce tableau économique diversifié, permettant aux alternants de trouver des opportunités dans pratiquement tous les domaines de formation.',
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: 'Se déplacer à Lyon est particulièrement aisé grâce à un réseau de transports en commun dense et efficace géré par les TCL (Transports en Commun Lyonnais).<br /><br />Le réseau comprend : <ul><li><span style="font-weight: bold;color:#0063cb">4 lignes de métro automatique</span>,</li><li><span style="font-weight: bold;color:#0063cb">7 lignes de tramway</span>,</li><li><span style="font-weight: bold;color:#0063cb">2 funiculaires historiques</span> montant à Fourvière</li><li>et de nombreuses lignes de bus qui desservent l\'ensemble de l\'agglomération, avec des fréquences élevées notamment aux heures de pointe.</li></ul>L\'abonnement mensuel jeune (moins de 26 ans) coûte environ 36 euros, ce qui représente un investissement raisonnable pour une mobilité illimitée dans toute l\'agglomération.<br /><br />Lyon est également <span style="font-weight: bold;color:#0063cb">une ville très cyclable</span>, avec plus de 1 000 km de pistes et bandes cyclables, et le système de vélos en libre-service Vélo\'v qui compte près de 5 000 vélos disponibles dans 430 stations.<br /><br />Pour les trajets plus longs, <span style="font-weight: bold;color:#0063cb">la gare de Lyon Part-Dieu</span> est un hub national majeur avec des TGV vers toutes les grandes villes françaises, pratique pour rentrer voir sa famille.<br /><br />La ville est aussi très accessible à pied, notamment dans les quartiers centraux comme la Presqu\'île, le Vieux-Lyon ou les pentes de la Croix-Rousse, permettant souvent de limiter les frais de transport pour les courts trajets quotidiens.',
@@ -185,13 +172,7 @@ export const villeData = [
       },
       vie: {
         text: 'Marseille et sa métropole constituent <span style="font-weight: bold;color:#0063cb">le deuxième bassin économique de France</span> avec plus de 50 000 entreprises implantées sur le territoire.<ul><li>Le port de Marseille-Fos, premier port français et parmi les plus importants de Méditerranée, génère <span style="font-weight: bold;color:#0063cb">une activité considérable dans la logistique, le transport maritime et le commerce international</span>.</li><li>La ville accueille également <span style="font-weight: bold;color:#0063cb">un écosystème dynamique dans le numérique avec la French Tech</span> Aix-Marseille et des espaces comme La Belle de Mai ou Euroméditerranée qui hébergent de nombreuses startups.</li><li>Les secteurs traditionnellement forts incluent <span style="font-weight: bold;color:#0063cb">l\'aéronautique (Airbus Helicopters), la chimie, l\'énergie et la santé</span> avec de nombreux hôpitaux et laboratoires de recherche.</li><li><span style="font-weight: bold;color:#0063cb">Le tourisme</span> représente un pan majeur de l\'économie locale, créant des opportunités dans l\'hôtellerie, la restauration et l\'événementiel.</li><li><span style="font-weight: bold;color:#0063cb">Les services aux entreprises, le BTP, et les activités liées à l\'environnement et aux énergies renouvelables</span> se développent fortement. </li></ul>Pour les alternants, les opportunités sont diversifiées : grands groupes internationaux, PME familiales, associations et structures publiques recrutent régulièrement. Les chambres consulaires (CCI, CMA) proposent d\'ailleurs des bourses d\'alternance pour faciliter la mise en relation.',
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: 'Se déplacer à Marseille en tant qu\'alternant est relativement accessible grâce au réseau RTM (Régie des Transports Métropolitains) qui propose un abonnement jeune à tarif réduit (environ 35€/mois pour les moins de 26 ans).<br /><br />Le réseau comprend :<ul><li><span style="font-weight: bold;color:#0063cb">2 lignes de métro</span></li><li><span style="font-weight: bold;color:#0063cb">3 lignes de tramway</span></li><li>et <span style="font-weight: bold;color:#0063cb">plus de 80 lignes de bus</span> qui desservent l\'ensemble de la métropole.</li></ul>Le métro, bien que limité à deux lignes, permet de relier rapidement le centre aux quartiers périphériques et fonctionne jusqu\'à 0h30 en semaine.<br /><br /><span style="font-weight: bold;color:#0063cb">Le vélo se développe avec le système Le Vélo</span>, proposant vélos classiques et électriques en libre-service, même si le relief vallonné de certains quartiers peut être un défi. De nombreuses pistes cyclables ont été aménagées ces dernières années, notamment le long du littoral.<br /><br /><span style="font-weight: bold;color:#0063cb">La voiture reste pratique</span> pour accéder aux zones d\'activités périphériques comme les Pennes-Mirabeau ou Vitrolles, et le covoiturage est bien développé.<br /><br /><span style="font-weight: bold;color:#0063cb">Les trains TER permettent de rejoindre facilement Aix-en-Provence, Aubagne ou l\'étang de Berre</span> où se trouvent de nombreuses entreprises. Attention toutefois aux heures de pointe où la circulation peut être dense, notamment sur l\'autoroute urbaine.',
@@ -241,13 +222,7 @@ export const villeData = [
       },
       vie: {
         text: "<span style=\"font-weight: bold;color:#0063cb\">Toulouse est mondialement connue comme la capitale européenne de l'aéronautique et du spatial</span>, avec Airbus comme fleuron industriel employant des milliers de personnes. Le secteur aéronautique et spatial représente plus de 100 000 emplois directs et indirects dans la région, offrant d'innombrables opportunités d'alternance dans l'ingénierie, la production, la logistique ou encore le commerce.<br /><br />Au-delà de l'aérospatiale, <span style=\"font-weight: bold;color:#0063cb\">la ville s'est diversifiée avec un écosystème tech très dynamique</span> : les entreprises du numérique, de la cybersécurité, de l'intelligence artificielle et des biotechnologies sont en plein essor. Le quartier de Labège Innovation et la zone de Blagnac concentrent de nombreuses PME et start-ups innovantes.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les grands groupes comme Thales, Continental, Pierre Fabre ou Capgemini sont également présents et recrutent régulièrement des alternants</span>. La French Tech Toulouse soutient activement l'entrepreneuriat et l'innovation, créant un terreau fertile pour les jeunes talents.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les secteurs du conseil, de la banque-assurance</span> (Banque Populaire Occitane, Caisse d'Épargne) et du retail offrent aussi de belles perspectives. Les CCI, pôles de compétitivité et incubateurs facilitent les rencontres entre étudiants et entreprises lors de forums dédiés à l'alternance.",
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: "Se déplacer à Toulouse est relativement simple grâce au réseau Tisséo qui comprend deux lignes de métro automatique (A et B), deux lignes de tramway (T1 et T2), et un dense réseau de bus.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le métro est particulièrement pratique</span> pour relier rapidement le nord au sud et l'est à l'ouest de la ville, avec des stations comme Jean-Jaurès, Capitole ou Jeanne d'Arc qui desservent les principaux pôles d'activité. Un abonnement mensuel Pastel Étudiant coûte environ 10 euros pour les moins de 26 ans, ce qui est très avantageux pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le vélo est une option très prisée</span> : le service VélôToulouse propose des vélos en libre-service, et la ville a développé plus de 700 km de pistes cyclables. De nombreux alternants optent pour le vélo personnel ou électrique pour leurs trajets quotidiens, le climat toulousain s'y prêtant bien la majorité de l'année.<br /><br />Pour rejoindre les zones d'activité périphériques comme Labège, Blagnac ou Colomiers, <span style=\"font-weight: bold;color:#0063cb\">les lignes de bus Linéo et le réseau Arc-en-Ciel desservent efficacement la métropole</span>.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La voiture reste utile pour certaines zones industrielles moins bien desservies</span>, et le covoiturage se développe activement. Toulouse dispose aussi d'un système d'autopartage (Citiz) pour les besoins occasionnels.",
@@ -294,13 +269,7 @@ export const villeData = [
       },
       vie: {
         text: "Le tissu économique strasbourgeois est particulièrement diversifié et porteur d'opportunités pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La ville s'impose comme un hub européen majeur</span> avec une forte présence d'institutions internationales, d'organisations européennes et d'ONG qui recrutent régulièrement des alternants dans <span style=\"font-weight: bold;color:#0063cb\">les domaines juridique, diplomatique et administratif</span>.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le secteur tertiaire</span> domine largement avec de nombreuses entreprises dans la banque, l'assurance et les services (Caisse d'Épargne, Crédit Mutuel, Groupama).<br /><br />Strasbourg excelle également dans <span style=\"font-weight: bold;color:#0063cb\">les sciences de la vie et la santé, avec des laboratoires pharmaceutiques et des centres de recherche biomédicale</span> reconnus. Le numérique et l'IT connaissent une croissance importante, notamment dans la cybersécurité et le développement web.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La proximité de l'Allemagne favorise les échanges commerciaux et multiplie les opportunités</span> dans les entreprises franco-allemandes. Le tourisme, l'hôtellerie-restauration et le secteur culturel offrent aussi de nombreux contrats d'alternance. Les pôles de compétitivité comme Alsace BioValley ou le pôle Véhicule du Futur dynamisent l'innovation locale.",
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: '<span style="font-weight: bold;color:#0063cb">Se déplacer à Strasbourg est remarquablement facile</span>, ce qui représente un atout majeur pour les alternants jonglant entre entreprise et école. La ville dispose d\'un excellent réseau de tramway (6 lignes) géré par la CTS, qui dessert efficacement tous les quartiers et zones d\'activité, avec des passages fréquents de 5h à minuit. Le réseau de bus complète parfaitement le tram avec plus de 30 lignes, dont certaines nocturnes le week-end.<br /><br /><span style="font-weight: bold;color:#0063cb">Strasbourg est la capitale française du vélo avec plus de 600 km de pistes cyclables</span> et le service Vélhop qui propose vélos classiques et électriques en location. La ville est relativement compacte, permettant de traverser le centre en 20 minutes à vélo.<br /><br />L\'abonnement mensuel CTS coûte environ 30€ pour les moins de 28 ans, un tarif très avantageux.<br /><br /><span style="font-weight: bold;color:#0063cb">Pour rejoindre d\'autres villes, la gare centrale offre des connexions TGV</span> vers Paris (1h45), Lyon, Marseille et des trains régionaux vers l\'Allemagne. Le stationnement automobile est coûteux en centre-ville, rendant la voiture peu nécessaire au quotidien.',
@@ -347,13 +316,7 @@ export const villeData = [
       },
       vie: {
         text: 'Nantes dispose d\'un tissu économique particulièrement diversifié et propice aux alternants. La métropole compte <span style="font-weight: bold;color:#0063cb">plus de 26 000 entreprises</span> et se distingue dans plusieurs secteurs clés : <span style="font-weight: bold;color:#0063cb">le numérique et les technologies</span> (avec des entreprises comme Webhelp, Voyage Privé ou Dataiku), <span style="font-weight: bold;color:#0063cb">l\'agroalimentaire</span> (présence de grands groupes comme LU, Fleury Michon, Inter Bio), <span style="font-weight: bold;color:#0063cb">la construction navale avec les Chantiers de l\'Atlantique à Saint-Nazaire, et le secteur créatif et culturel</span>.<br /><br />Le quartier Euronantes et l\'Île de Nantes concentrent <span style="font-weight: bold;color:#0063cb">de nombreux sièges sociaux et startups innovantes</span>. La French Tech Nantes est très active et favorise l\'entrepreneuriat et l\'innovation, créant de nombreuses opportunités pour les alternants dans les métiers du digital.<br /><br />On trouve également un fort <span style="font-weight: bold;color:#0063cb">secteur tertiaire avec des cabinets de conseil, des banques et des assurances</span>. La proximité de pôles de compétitivité comme EMC2 (métiers avancés de production) facilite l\'accès à des alternances dans l\'industrie.<br /><br />Les opportunités sont nombreuses aussi bien dans les grands groupes que dans les PME et startups, permettant aux alternants de tous secteurs (commerce, ingénierie, digital, RH, communication) de trouver leur place.',
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: "Se déplacer à Nantes est particulièrement facile et économique pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La TAN</span> (Transports de l'Agglomération Nantaise) propose un réseau complet avec 3 lignes de tramway, 1 ligne de busway, et plus de 70 lignes de bus qui desservent l'ensemble de la métropole.<br /><br />L'abonnement mensuel jeune (-26 ans) coûte environ 40€, et de nombreuses entreprises prennent en charge 50% du titre de transport dans le cadre de l'alternance.<br /><br />La ville est également très cyclable, <span style=\"font-weight: bold;color:#0063cb\">classée parmi les meilleures villes françaises pour le vélo, avec plus de 560 km de pistes cyclables</span>. Le service Bicloo propose 880 vélos en libre-service avec un abonnement annuel à seulement 30€.<br /><br />Pour les trajets occasionnels vers d'autres villes, <span style=\"font-weight: bold;color:#0063cb\">la gare SNCF de Nantes offre d'excellentes connexions</span> : Paris en 2h, Bordeaux en 3h, et Rennes en 1h30. La ville est aussi accessible en voiture via plusieurs axes autoroutiers, bien que posséder une voiture ne soit pas indispensable pour un alternant vivant dans la métropole.",
@@ -400,13 +363,7 @@ export const villeData = [
       },
       vie: {
         text: 'Rennes dispose d\'<span style="font-weight: bold;color:#0063cb">un écosystème économique particulièrement dynamique et diversifié</span>, idéal pour trouver une alternance dans de nombreux secteurs. <ul><li>La métropole rennaise est un <span style="font-weight: bold;color:#0063cb">pôle majeur dans les technologies de l\'information et la cybersécurité</span>, abritant plus de 8 000 entreprises du numérique et des centres de recherche de renommée internationale. Des grands groupes comme Orange, Thales, Capgemini, Sopra Steria ou encore Harmonie Mutuelle ont établi des sites importants à Rennes et recrutent régulièrement des alternants.</li><li><span style="font-weight: bold;color:#0063cb">Le secteur automobile</span> est également présent avec le centre de production PSA de La Janais.</li><li>La ville excelle aussi dans <span style="font-weight: bold;color:#0063cb">les biotechnologies, la santé et l\'agroalimentaire</span>, avec des entreprises comme Lactalis ou Yoplait à proximité.</li><li>Les alternants en <span style="font-weight: bold;color:#0063cb">commerce, marketing et communication</span> trouveront de nombreuses opportunités dans les PME innovantes, les start-ups (la ville compte plusieurs incubateurs et pépinières), ainsi que dans les secteurs de la banque et de l\'assurance fortement représentés.</li></ul>Le quartier d\'affaires Rennes Atalante et la technopole concentrent de nombreuses entreprises high-tech. Avec un taux de chômage inférieur à la moyenne nationale et une économie en croissance constante, Rennes offre d\'excellentes perspectives d\'insertion professionnelle pour les jeunes en formation.',
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: "Se déplacer à Rennes est particulièrement simple et économique, un atout majeur pour les alternants qui doivent jongler entre l'entreprise et l'école.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le réseau de transport en commun STAR</span> propose un métro automatique (ligne A depuis 2002, et ligne B inaugurée en 2022), complété par 80 lignes de bus couvrant toute la métropole. L'abonnement mensuel jeune (moins de 26 ans) coûte environ 30€, avec des réductions possibles selon les revenus. Le métro fonctionne jusqu'à minuit en semaine et 2h le week-end, pratique pour profiter de la vie rennaise.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Rennes est également l'une des villes les plus cyclables de France</span> : 460 km de pistes cyclables sillonnent la ville, et le service de vélos en libre-service LE vélo STAR permet de se déplacer facilement pour 30€ par an.<br /><br />La gare SNCF, en plein centre-ville, permet de rejoindre Paris en 1h30 par TGV, idéal pour les week-ends en famille.<br /><br />Pour ceux qui privilégient la voiture, le stationnement peut être compliqué en centre-ville, mais des parkings relais (P+R) permettent de combiner voiture et métro. La ville est compacte, et tout est accessible rapidement, un vrai gain de temps au quotidien.",
@@ -453,13 +410,7 @@ export const villeData = [
       },
       vie: {
         text: "L'économie montpelliéraine est particulièrement diversifiée et en pleine expansion, offrant de nombreuses opportunités aux alternants. Le secteur du numérique et des technologies de l'information est très développé, avec plus de 2 000 entreprises dans la French Tech Montpellier, incluant des startups innovantes et des entreprises établies comme Synchroteam ou Kiamo. La santé représente un pilier majeur avec le CHU de Montpellier, l'un des plus importants de France, ainsi que de nombreuses entreprises de biotechnologies et de dispositifs médicaux. Le commerce et la grande distribution sont bien représentés avec les sièges régionaux de plusieurs enseignes nationales. Le secteur de l'agroalimentaire, notamment viticole, est également présent grâce à la proximité des vignobles languedociens. Les services aux entreprises, le marketing digital, et le conseil connaissent une forte croissance dans les quartiers d'affaires comme Odysseum ou Eurêka. Les alternants trouveront des opportunités dans des PME dynamiques, des ETI en développement, mais aussi dans de grands groupes implantés localement. La métropole compte également plusieurs pépinières d'entreprises et espaces de coworking qui accueillent régulièrement des alternants.",
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: '<span style="font-weight: bold;color:#0063cb">Se déplacer à Montpellier est particulièrement facile et adapté</span> au budget des alternants. Le réseau de tramway, géré par la TaM (Transports de l\'Agglomération de Montpellier), compte 5 lignes qui desservent efficacement toute la métropole, avec des rames circulant toutes les 4 à 8 minutes aux heures de pointe. Un abonnement mensuel étudiant/alternant coûte environ 20 euros, ce qui est très avantageux.<br /><br />Le réseau est complété par <span style="font-weight: bold;color:#0063cb">de nombreuses lignes de bus</span> qui permettent d\'atteindre les zones d\'activités périphériques comme Garosud ou le Millénaire.<br /><br />Montpellier est également une ville très cyclable avec plus de <span style="font-weight: bold;color:#0063cb">160 kilomètres de pistes cyclables et le service VéloMagg</span> proposant 3 500 vélos en libre-service.<br /><br /><span style="font-weight: bold;color:#0063cb">Le centre-ville étant largement piétonnier</span>, on peut facilement s\'y déplacer à pied. Pour rejoindre la plage ou les villes voisines, le réseau TER Occitanie est efficace et propose des tarifs réduits pour les jeunes.<br /><br /><span style="font-weight: bold;color:#0063cb">La gare Saint-Roch, en plein centre, permet aussi de rejoindre facilement Paris en TGV</span> en environ 3h30. Enfin, l\'aéroport Montpellier-Méditerranée est accessible en navette depuis le centre-ville pour une dizaine d\'euros.',
@@ -507,13 +458,7 @@ export const villeData = [
       },
       vie: {
         text: "<span style=\"font-weight: bold;color:#0063cb\">Grenoble est un pôle d'excellence scientifique et technologique de renommée internationale</span>, particulièrement dans les secteurs des micro et nanotechnologies, de l'énergie, du numérique et de la santé. La ville abrite le célèbre CEA (Commissariat à l'énergie atomique), le synchrotron européen, ainsi que de nombreux laboratoires de recherche et centres d'innovation comme Minatec, le plus grand centre européen de micro et nanotechnologies.<br /><br />Les alternants trouvent des opportunités dans des entreprises variées : grands groupes comme STMicroelectronics, Schneider Electric, Hewlett Packard Enterprise, mais aussi des PME innovantes et une multitude de startups issues de l'écosystème local.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le secteur du sport outdoor et de l'équipement de montagne</span> est également très présent avec des entreprises comme Salomon, Rossignol ou Lafuma. Les pôles de compétitivité Minalogic (numérique) et Tenerrdis (énergies nouvelles) structurent l'économie locale et facilitent les collaborations entre entreprises et établissements de formation.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La French Tech locale, très active, offre de belles perspectives aux alternants intéressés par l'entrepreneuriat et l'innovation</span>. Que vous cherchiez une alternance en ingénierie, commerce, digital, ou gestion, Grenoble propose un marché de l'emploi diversifié et porteur pour les jeunes talents.",
-        activites: [
-          { naf_label: "Activités culturelles et festives", rome_codes: ["R1203", "R1204"] },
-          { naf_label: "Numérique et nouvelles technologies", rome_codes: [] },
-          { naf_label: "Aéronautique et spatial", rome_codes: [] },
-          { naf_label: "Commerce et distribution", rome_codes: [] },
-          { naf_label: "Tourisme et hôtellerie", rome_codes: [] },
-        ],
+        activites: [],
       },
       mobilite: {
         text: 'Se déplacer à Grenoble est particulièrement facile et économique pour les alternants, grâce à <span style="font-weight: bold;color:#0063cb">un réseau de transports en commun développé et une culture forte du vélo</span>. Le réseau TAG (Transports de l\'Agglomération Grenobloise) comprend 5 lignes de tramway qui desservent efficacement toute l\'agglomération, ainsi que de nombreuses lignes de bus, avec un tarif étudiant avantageux à environ 30€ par mois.<br /><br />La ville est <span style="font-weight: bold;color:#0063cb">pionnière en matière de mobilité douce</span> : elle dispose de plus de 320 km de pistes cyclables et le système Métrovélo propose des locations de vélos longue durée à partir de 25€ par an pour les étudiants.<br /><br /><span style="font-weight: bold;color:#0063cb">Le centre-ville est compact et se parcourt facilement à pied en 20 minutes</span> d\'un bout à l\'autre, ce qui est très pratique pour jongler entre cours et entreprise. Pour les déplacements vers les campus universitaires (Saint-Martin-d\'Hères, Gières) ou les zones d\'activités comme Inovallée ou Alpespace, le tram est la solution idéale.<br /><br />La gare SNCF de Grenoble, bien connectée, permet de rejoindre Lyon en 1h20, Paris en 3h ou Genève en 2h30, pratique pour les week-ends ou visites familiales.<br /><br />En hiver, <span style="font-weight: bold;color:#0063cb">des navettes spéciales desservent les stations de ski, permettant aux alternants de profiter des montagnes</span> sans voiture personnelle, ce qui représente une économie substantielle.',
@@ -547,3 +492,19 @@ export const villeData = [
     },
   },
 ]
+
+export const up = async () => {
+  logger.info("Initialisation de la collection seo_villes")
+
+  const now = new Date()
+
+  await getDbCollection("seo_villes").insertMany(
+    villeData.map((ville) => ({ ...ville, _id: new ObjectId(), created_at: now, updated_at: now })),
+    { ordered: false }
+  )
+
+  logger.info("Initialisation de la collection seo_villes terminée")
+}
+
+// set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
+export const requireShutdown: boolean = true

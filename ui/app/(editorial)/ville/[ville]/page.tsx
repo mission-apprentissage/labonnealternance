@@ -58,15 +58,6 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
     throw new Error("Ville not found")
   }
 
-  // Data à fetch :
-  // - nombre d'offres en alternance pour cette ville
-  // - nombre de recruteurs lba dans cette ville
-
-  const offerCount = 234
-  const recruiterCount = 1000
-
-  console.log("Ville data:", data)
-
   return (
     <Box>
       <DefaultContainer sx={{ px: 0 }}>
@@ -109,7 +100,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 </Typography>
               </Typography>
               <Typography>
-                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{offerCount + recruiterCount}</span> offres en alternance sont disponibles:
+                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.job_count + data.recruteur_count}</span> offres en alternance sont disponibles:
                 <br />
                 <Button
                   priority="primary"
@@ -255,7 +246,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Box sx={{ display: "flex" }}>
                 <Box sx={{ flex: 2 }}>
                   <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: fr.colors.decisions.text.default.info.default, mt: fr.spacing("2w") }}>
-                    {offerCount}
+                    {data.job_count}
                   </Typography>
                   <Typography sx={{ fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                     offres d'emploi{" "}
@@ -274,7 +265,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <TagCandidatureSpontanee />
               <Box sx={{ display: "flex" }}>
                 <Box sx={{ flex: 2 }}>
-                  <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: "#716043", mt: fr.spacing("2w") }}>{recruiterCount}</Typography>
+                  <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: "#716043", mt: fr.spacing("2w") }}>{data.recruteur_count}</Typography>
                   <Typography sx={{ fontWeight: "bold", color: "#716043" }}>
                     entreprises{" "}
                     <Typography component="span" sx={{ fontWeight: "bold", color: "#161616" }}>
