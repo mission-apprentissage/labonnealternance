@@ -1169,3 +1169,39 @@ export async function upsertJobsPartnersMulti({
 
   return { id: _id, modified }
 }
+
+export async function getPartnerJobsCount({
+  latitude,
+  longitude,
+  radius,
+  partnerLabel,
+  includePartnerLabel,
+}: {
+  latitude: number
+  longitude: number
+  radius: number
+  partnerLabel: string
+  includePartnerLabel: boolean
+}): Promise<number> {
+  const result = await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [longitude, latitude] },
+          distanceField: "distance",
+          maxDistance: radius * 1000,
+          spherical: true,
+          query: {
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            partner_label: includePartnerLabel ? { $in: [partnerLabel] } : { $nin: [partnerLabel] },
+          },
+        },
+      },
+      {
+        $count: "total",
+      },
+    ])
+    .toArray()
+
+  return result[0].total || 0
+}

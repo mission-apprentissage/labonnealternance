@@ -28,6 +28,7 @@ import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
 import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
+import { updateSEO } from "@/jobs/seo/updateSEO"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -386,4 +387,5 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
   },
+  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
 ]

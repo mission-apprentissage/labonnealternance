@@ -2,7 +2,7 @@ import NextImage from "next/image"
 
 import motif from "./home_form_decoration.svg"
 
-export const HomeCircleImageDecoration = () => (
+export const HomeCircleImageDecoration = ({ height }: { height?: number }) => (
   <NextImage
     fetchPriority="low"
     src={motif.src}
@@ -12,7 +12,7 @@ export const HomeCircleImageDecoration = () => (
     width={motif.width}
     style={{
       overflow: "visible",
-      height: "calc(100% - 10px)",
+      height: height ? `${height}px` : "calc(100% - 10px)",
       width: "100%",
       top: "20px",
       position: "absolute",
