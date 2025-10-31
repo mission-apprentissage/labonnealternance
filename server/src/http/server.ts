@@ -39,7 +39,6 @@ import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
-import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
 import sitemapController from "./controllers/sitemap.controller"
@@ -154,7 +153,6 @@ export async function bind(app: Server) {
       eligibleTrainingsForAppointmentRoute(typedSubApp)
       etablissementRoute(typedSubApp)
       appointmentRequestRoute(typedSubApp)
-      partnersRoute(typedSubApp)
       emailsRoute(typedSubApp)
 
       /**

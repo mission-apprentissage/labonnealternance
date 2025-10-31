@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Tab, Tabs } from "@mui/material"
 import { useRouter } from "next/navigation"
 
+import { tabSx } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { PAGES } from "@/utils/routes.utils"
 
 const AdminPages = {
@@ -32,12 +33,12 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
 
   return (
     <Box sx={{ mt: fr.spacing("3w") }}>
-      <Tabs value={selectedIndex} onChange={handleTabsChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-        <Tab label="Gestion des recruteurs" wrapped data-testid="recruiter_management_tab" />
-        <Tab label="Entreprises de l'algorithme" wrapped data-testid="algo_company_tab" />
-        <Tab label="Rendez-vous apprentissage" wrapped data-testid="recherche_rendez_vous_apprentissage_tab" />
-        <Tab label="Gestion des administrateurs" wrapped data-testid="administrator_management_tab" />
-        <Tab label="Gestion des processeurs" wrapped data-testid="administrator_processeur_tab" />
+      <Tabs value={selectedIndex} onChange={handleTabsChange}>
+        <Tab sx={tabSx} label="Gestion des recruteurs" data-testid="recruiter_management_tab" />
+        <Tab sx={tabSx} label="Entreprises de l'algorithme" data-testid="algo_company_tab" />
+        <Tab sx={tabSx} label="Rendez-vous apprentissage" data-testid="recherche_rendez_vous_apprentissage_tab" />
+        <Tab sx={tabSx} label="Gestion des administrateurs" data-testid="administrator_management_tab" />
+        <Tab sx={tabSx} label="Gestion des jobs" data-testid="administrator_processeur_tab" />
       </Tabs>
     </Box>
   )

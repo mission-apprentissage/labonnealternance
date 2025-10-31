@@ -19,7 +19,6 @@ import { zV1JobsRoutes } from "./jobs.routes.js"
 import { zV1JobsEtFormationsRoutes } from "./jobsEtFormations.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
 import { zMetiersRoutes } from "./metiers.routes.js"
-import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reportedCompany.routes.js"
 import { zRomeRoutes } from "./rome.routes.js"
@@ -59,7 +58,6 @@ const zRoutesGetP4 = {
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
-  ...zPartnersRoutes.get,
   ...zLoginRoutes.get,
 } as const
 

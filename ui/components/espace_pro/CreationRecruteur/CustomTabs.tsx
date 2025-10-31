@@ -1,6 +1,32 @@
-import { fr } from "@codegouvfr/react-dsfr"
-import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Box, Tab } from "@mui/material"
+import { Box, Tab, Tabs } from "@mui/material"
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+
+  return (
+    <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    </div>
+  )
+}
+
+export const tabSx = {
+  color: "#161616",
+  backgroundColor: "#E3E3FD",
+  "&.Mui-selected": {
+    color: "#000091",
+    backgroundColor: "white",
+    borderBottom: "none",
+    borderLeft: "1px solid #ddd",
+    borderRight: "1px solid #ddd",
+  },
+}
 
 export const CustomTabs = <Name extends string>({
   panels,
@@ -11,39 +37,29 @@ export const CustomTabs = <Name extends string>({
   currentTab: Name
   onChange: (newTab: Name) => void
 }) => {
-  let currentPanel = panels.find(({ id }) => id === currentTab)
-  if (!currentPanel) {
-    currentPanel = panels[0]
-  }
+  const currentIndex = panels.findIndex(({ id }) => id === currentTab)
+  const value = currentIndex !== -1 ? currentIndex : 0
 
-  const setTabIndex = (tab) => {
-    const panel = panels.find(({ id }) => id === tab)
-    onChange(panel.id)
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+    onChange(panels[newValue].id)
   }
 
   return (
-    <TabContext value={currentPanel.id}>
-      <Box sx={{ xs: 0, sm: fr.spacing("1v"), md: fr.spacing("4w") }} className="fr-tabs">
-        <TabList
-          sx={{ maxWidth: "90%", px: { xs: 0, sm: "inherit" } }}
-          className="fr-tabs__list"
-          onChange={(_, index) => setTabIndex(index)}
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
-        >
+    <>
+      <Box>
+        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
           {panels.map(({ title, id }) => (
-            <Tab key={id} label={title} value={id} className="fr-tabs__tab" wrapped />
+            <Tab sx={tabSx} key={id} label={title} />
           ))}
-        </TabList>
+        </Tabs>
       </Box>
-      <Box mt={fr.spacing("4w")}>
-        {panels.map(({ id, content }) => (
-          <TabPanel value={id} key={id} sx={{ padding: 0 }}>
+      <Box>
+        {panels.map(({ id, content }, index) => (
+          <TabPanel value={value} index={index} key={id}>
             {content}
           </TabPanel>
         ))}
       </Box>
-    </TabContext>
+    </>
   )
 }
