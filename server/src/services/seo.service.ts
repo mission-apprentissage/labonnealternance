@@ -5,9 +5,10 @@ import seoVilleModel from "shared/models/seoVille.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
 import { getPartnerJobsCount } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
+const DEFAULT_RADIUS_KM = 30
+
 export const getSeoVille = async ({ ville }: { ville: string }) => {
   const seoVille = await getDbCollection(seoVilleModel.collectionName).findOne({ slug: ville })
-  console.log("seoVille", ville, seoVille)
   return seoVille
 }
 
@@ -15,11 +16,10 @@ export const updateSeoVilleJobCounts = async () => {
   const villes = await getDbCollection(seoVilleModel.collectionName).find({}).toArray()
 
   for (const ville of villes) {
-    //const jobCounts = await getDbCollection("jobs_partners").find()
     const jobCount = await getPartnerJobsCount({
       latitude: ville.geopoint.lat,
       longitude: ville.geopoint.long,
-      radius: 30,
+      radius: DEFAULT_RADIUS_KM,
       partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
       includePartnerLabel: false,
     })
@@ -27,7 +27,7 @@ export const updateSeoVilleJobCounts = async () => {
     const recruteurCount = await getPartnerJobsCount({
       latitude: ville.geopoint.lat,
       longitude: ville.geopoint.long,
-      radius: 30,
+      radius: DEFAULT_RADIUS_KM,
       partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
       includePartnerLabel: true,
     })
@@ -56,7 +56,7 @@ export const updateSeoVilleActivities = async () => {
           $geoNear: {
             near: { type: "Point", coordinates: [ville.geopoint.long, ville.geopoint.lat] },
             distanceField: "distance",
-            maxDistance: 30 * 1000,
+            maxDistance: DEFAULT_RADIUS_KM * 1000,
             spherical: true,
             query: {
               offer_status: JOB_STATUS_ENGLISH.ACTIVE,
