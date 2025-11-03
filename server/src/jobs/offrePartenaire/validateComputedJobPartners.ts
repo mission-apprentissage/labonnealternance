@@ -12,7 +12,7 @@ import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComp
 
 import { notifyToSlack } from "../../common/utils/slackUtils"
 
-const groupSize = 100
+const groupSize = 500
 const zodModel = jobsPartnersModel.zod
 
 type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
@@ -27,6 +27,8 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
   const toUpdateCount = await getDbCollection("computed_jobs_partners").countDocuments(finalFilter)
   logger.info(`${toUpdateCount} documents à traiter`)
 
+  await getDbCollection("computed_jobs_partners").updateMany(finalFilter, { $set: { validated: false } })
+
   const counters = { total: 0, success: 0, error: 0 }
   const job = COMPUTED_ERROR_SOURCE.VALIDATION
   const cursor = getDbCollection("computed_jobs_partners").find(finalFilter).stream()
@@ -35,7 +37,7 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
     objectMode: true,
     async write(documents: IComputedJobsPartners[], _encoding, callback) {
       counters.total += documents.length
-      if (counters.total % 1000 === 0) logger.info(`processing document ${counters.total}`)
+      if (counters.total % 10_000 === 0) logger.info(`processing document ${counters.total}`)
 
       const operations: BulkOperation[] = []
 
