@@ -75,7 +75,6 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="" hidden>
               Sélectionnez un motif
             </option>
-            <option value="Tentative de fraude">Tentative de fraude</option>
             <option value="Siret ou information non conforme à l'identité déclarée ">Siret ou information non conforme à l'identité déclarée </option>
             <option value="Compte créé par un étudiant">Compte créé par un étudiant</option>
             <option value="Compte entreprise créé par un CFA">Compte entreprise créé par un CFA</option>
