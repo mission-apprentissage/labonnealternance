@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Checkout project
         if: ${{ inputs.app_version == 'latest' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -85,7 +85,15 @@ jobs:
         run: curl -4 ifconfig.me
 
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -145,22 +153,6 @@ jobs:
           notify_when: "success"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
-
-      - name: Install dependencies
-        run: yarn install
 
       - name: notify sentry that a new version has been deployed
         run: .bin/mna-lba sentry:deploy ${{ inputs.environment }} ${{ needs.version.outputs.VERSION }}

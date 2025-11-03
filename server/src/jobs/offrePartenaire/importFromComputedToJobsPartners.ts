@@ -16,7 +16,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 
-export const buildUrlLba = (type: string, id: string, siret: string | null, title: string) => {
+export const buildUrlLba = (type: string, id: string, siret: string | null, title?: string) => {
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
       return `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, id, title)}`
@@ -34,7 +34,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     filters.push(addedMatchFilter)
   }
 
-  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).project({ _id: 1, validated: 0, business_error: 0, errors: 0 }).stream()
+  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()

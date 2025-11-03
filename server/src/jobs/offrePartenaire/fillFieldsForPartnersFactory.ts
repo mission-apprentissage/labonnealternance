@@ -99,7 +99,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IC
       if (!documents.length) return callback()
 
       counters.total += documents.length
-      if (counters.total % 1000 === 0) logger.info(`processing document ${counters.total}`)
+      if (counters.total % 10_000 === 0) logger.info(`processing document ${counters.total}`)
 
       try {
         const responses = await getData(documents)
