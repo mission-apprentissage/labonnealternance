@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
+import { redirect } from "next/navigation"
 
 import { villeData, transports, loisirs, appartements } from "@/app/(editorial)/ville/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
@@ -15,13 +16,17 @@ export async function generateStaticParams() {
   return villeData.map((ville) => ({ ville: ville.slug }))
 }
 
+export const dynamic = "force-static"
+export const dynamicParams = false
+
+// export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
+//   const { ville } = await params
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-
   const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
 
   if (!data) {
-    throw new Error("Ville not found")
+    redirect("/404")
   }
 
   return (
