@@ -3,53 +3,13 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
 
-import { villeData } from "@/app/(editorial)/ville/_components/ville_data"
+import { villeData, transports, loisirs, appartements } from "@/app/(editorial)/ville/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
-
-const loisirs = {
-  musee: "musees.svg",
-  promenade: "promenade.svg",
-  bar: "vie_nocturne.svg",
-  alternatif: "culture_alternative.svg",
-  concert: "theatre.svg",
-  sport: "sports.svg",
-  cinema: "cinema.svg",
-  musique: "music.svg",
-  montagne: "mountain.svg",
-  quai: "quai.svg",
-  gastronomie: "gastronomie.svg",
-  boat: "boat.svg",
-  port: "port.svg",
-  rugby: "rugby.svg",
-  shopping: "shopping.svg",
-  ski: "ski.svg",
-  machine: "machine.svg",
-  beach: "beach.svg",
-}
-
-const transports = {
-  bus: "bus.svg",
-  tramway: "tramway.svg",
-  trottinette: "trottinette.svg",
-  tgv: "tgv.svg",
-  velo: "velo.svg",
-  aeroport: "avion.svg",
-  metro: "metro.svg",
-  train: "train.svg",
-  funiculaire: "funiculaire.svg",
-  voiture: "voiture.svg",
-  pieton: "walk.svg",
-}
-
-const appartements = {
-  Studio: "studio.svg",
-  T2: "t2.svg",
-}
 
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params

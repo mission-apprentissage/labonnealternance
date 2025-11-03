@@ -50,3 +50,43 @@ export const villeData = [
     cp: "38000",
   },
 ]
+
+export const loisirs = {
+  musee: "musees.svg",
+  promenade: "promenade.svg",
+  bar: "vie_nocturne.svg",
+  alternatif: "culture_alternative.svg",
+  concert: "theatre.svg",
+  sport: "sports.svg",
+  cinema: "cinema.svg",
+  musique: "music.svg",
+  montagne: "mountain.svg",
+  quai: "quai.svg",
+  gastronomie: "gastronomie.svg",
+  boat: "boat.svg",
+  port: "port.svg",
+  rugby: "rugby.svg",
+  shopping: "shopping.svg",
+  ski: "ski.svg",
+  machine: "machine.svg",
+  beach: "beach.svg",
+}
+
+export const transports = {
+  bus: "bus.svg",
+  tramway: "tramway.svg",
+  trottinette: "trottinette.svg",
+  tgv: "tgv.svg",
+  velo: "velo.svg",
+  aeroport: "avion.svg",
+  metro: "metro.svg",
+  train: "train.svg",
+  funiculaire: "funiculaire.svg",
+  voiture: "voiture.svg",
+  pieton: "walk.svg",
+}
+
+export const appartements = {
+  Studio: "studio.svg",
+  T2: "t2.svg",
+}
