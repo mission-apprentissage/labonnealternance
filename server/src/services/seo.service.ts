@@ -1,4 +1,5 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOB_STATUS_ENGLISH } from "shared"
+import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoVilleModel from "shared/models/seoVille.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
@@ -40,5 +41,60 @@ export const updateSeoVilleJobCounts = async () => {
         },
       }
     )
+  }
+}
+
+export const updateSeoVilleActivities = async () => {
+  const villes = await getDbCollection(seoVilleModel.collectionName)
+    .find({}, { projection: { _id: 1, slug: 1, geopoint: 1 } })
+    .toArray()
+
+  for (const ville of villes) {
+    const activities = await getDbCollection(jobsPartnersModel.collectionName)
+      .aggregate([
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [ville.geopoint.long, ville.geopoint.lat] },
+            distanceField: "distance",
+            maxDistance: 30 * 1000,
+            spherical: true,
+            query: {
+              offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+              workplace_naf_label: {
+                $ne: null,
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              workplace_naf_label: "$workplace_naf_label",
+              offer_rome_codes: "$offer_rome_codes",
+            },
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $sort: {
+            count: -1,
+          },
+        },
+        {
+          $limit: 5,
+        },
+        {
+          $project: {
+            naf_label: "$_id.workplace_naf_label",
+            rome_codes: "$_id.offer_rome_codes",
+            count: "$count",
+          },
+        },
+      ])
+      .toArray()
+
+    console.log("activities", ville.slug, activities)
   }
 }
