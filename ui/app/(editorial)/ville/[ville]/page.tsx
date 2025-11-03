@@ -11,6 +11,10 @@ import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
+export async function generateStaticParams() {
+  return villeData.map((ville) => ({ ville: ville.slug }))
+}
+
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
 
