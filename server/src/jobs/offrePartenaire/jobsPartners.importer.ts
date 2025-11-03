@@ -9,6 +9,7 @@ import {
 } from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
@@ -68,6 +69,13 @@ export const importers: Record<string, CronDef> = {
   "Import La Poste": {
     cron_string: timings.import_source,
     handler: processLaposte,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+    tag: "slave",
+  },
+  "Import Jobteaser": {
+    cron_string: timings.import_source,
+    handler: processJobteaser,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
