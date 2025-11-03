@@ -1,14 +1,13 @@
 import { Filter } from "mongodb"
-import jobsPartnersModel, { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
-import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
 import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
+import { fillLocationInfosForPartners } from "@/jobs/offrePartenaire/fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
 import {
   removeMissingRecruteursLbaFromComputedJobPartners,
@@ -16,40 +15,21 @@ import {
 } from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
 
-const filter: Filter<IComputedJobsPartners | IJobsPartnersOfferPrivate> = {
+const computedJobFilter: Filter<IComputedJobsPartners> = {
   partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
 }
 
 export const fillComputedRecruteursLba = async () => {
-  const context: FillComputedJobsPartnersContext = { addedMatchFilter: filter, shouldNotifySlack: false }
+  const context: FillComputedJobsPartnersContext = { addedMatchFilter: computedJobFilter, shouldNotifySlack: false }
 
   await removeMissingRecruteursLbaFromComputedJobPartners()
   await removeUnsubscribedRecruteursLbaFromComputedJobPartners()
+  // reset checks
+  await getDbCollection("computed_jobs_partners").updateMany(computedJobFilter, { $set: { business_error: null, jobs_in_success: [], errors: [] } })
   await fillEntrepriseEngagementJobsPartners(context)
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
+  await fillLocationInfosForPartners({ ...context, addedMatchFilter: { $and: [computedJobFilter, { workplace_geopoint: null }] } })
   await fillLbaUrl(context)
   await validateComputedJobPartners(context)
-}
-
-export const importRecruteursLbaFromComputedToJobsPartners = async () => {
-  logger.info("suppression des recruteurs_lba de jobs_partners")
-  await getDbCollection("jobs_partners").deleteMany(filter as IJobsPartnersOfferPrivate)
-  logger.info("import des recruteurs_lba dans jobs_partners")
-  await getDbCollection("computed_jobs_partners")
-    .aggregate([
-      { $match: { ...filter, business_error: null, validated: true } },
-      {
-        $unset: ["validated", "business_error", "errors", "currently_processed_id", "jobs_in_success"],
-      },
-      { $merge: jobsPartnersModel.collectionName },
-    ])
-    .toArray()
-  const verifyCount = await getDbCollection("jobs_partners").countDocuments(filter as IJobsPartnersOfferPrivate)
-  const message = `import des recruteurs_lba dans jobs_partners terminé. total=${verifyCount}`
-  logger.info(message)
-  await notifyToSlack({
-    subject: `jobsPartners: import de données`,
-    message,
-  })
 }
