@@ -196,7 +196,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
                 Activités porteuses :
               </Typography>
-              {data.content.vie.activites.map((activite: { naf_label: string; rome_codes: string[] }) => (
+              {data.content.vie.activites.map((activite: { naf_label?: string; rome_codes?: string[] }) => (
                 <Box
                   key={activite.naf_label}
                   sx={{
@@ -318,7 +318,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.mobilite.transports.map((transport: { type: string; label: string }) => (
+                {data.content.mobilite.transports.map((transport: { type?: string; label?: string }) => (
                   <Box
                     key={transport.type}
                     sx={{
@@ -377,7 +377,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.logement.loyers.map((appartement: { type: string; price_range: string }) => (
+                {data.content.logement.loyers.map((appartement: { type?: string; price_range?: string }) => (
                   <Box
                     sx={{
                       display: "flex",
@@ -436,7 +436,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.loisirs.types.map((loisir: { type: string; label: string }) => (
+                {data.content.loisirs.types.map((loisir: { type?: string; label?: string }) => (
                   <Box
                     key={loisir.type}
                     sx={{
