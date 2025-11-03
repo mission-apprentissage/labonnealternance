@@ -2,6 +2,7 @@ import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
+import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
@@ -293,6 +294,10 @@ export async function setupJobProcessor() {
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
             handler: removeBrevoContacts,
+          },
+          "maj-diplome-metier": {
+            cron_string: "0 8 * * SUN",
+            handler: updateDiplomeMetier,
           },
         },
     jobs: {

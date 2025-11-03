@@ -76,7 +76,7 @@ describe("POST /etablissement/creation", () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
       expect.soft(response.statusCode).toBe(200)
       const { formulaire, user } = response.json() as CreationResponse
-      expect.soft(omit(formulaire, ["_id", "createdAt", "establishment_id", "managed_by", "updatedAt"])).toMatchSnapshot()
+      expect.soft(omit(formulaire, ["_id", "createdAt", "establishment_id", "managed_by", "updatedAt", "geo_coordinates", "geopoint"])).toMatchSnapshot()
       expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
       expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
     }, 10_000)

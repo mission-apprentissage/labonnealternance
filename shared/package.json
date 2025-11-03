@@ -25,6 +25,7 @@
     "npm": "please-use-yarn"
   },
   "scripts": {
+    "build": "tsc -b",
     "typecheck": "tsc -b",
     "dev": "tsc -b -w"
   },

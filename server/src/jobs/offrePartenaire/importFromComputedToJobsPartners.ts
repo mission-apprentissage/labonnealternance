@@ -34,7 +34,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     filters.push(addedMatchFilter)
   }
 
-  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).project({ _id: 1, validated: 0, business_error: 0, errors: 0 }).stream()
+  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
