@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { updateSEO } from "@/jobs/seo/updateSEO"
 
 const villeData = [
   {
@@ -502,6 +503,8 @@ export const up = async () => {
     villeData.map((ville) => ({ ...ville, _id: new ObjectId(), created_at: now, updated_at: now })),
     { ordered: false }
   )
+
+  await updateSEO()
 
   logger.info("Initialisation de la collection seo_villes terminée")
 }
