@@ -89,12 +89,19 @@ export const updateSeoVilleActivities = async () => {
           $project: {
             naf_label: "$_id.workplace_naf_label",
             rome_codes: "$_id.offer_rome_codes",
-            count: "$count",
+            _id: 0,
           },
         },
       ])
       .toArray()
 
-    console.log("activities", ville.slug, activities)
+    await getDbCollection(seoVilleModel.collectionName).updateOne(
+      { _id: ville._id },
+      {
+        $set: {
+          "content.vie.activites": activities,
+        },
+      }
+    )
   }
 }
