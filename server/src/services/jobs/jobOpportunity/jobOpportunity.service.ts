@@ -1203,5 +1203,5 @@ export async function getPartnerJobsCount({
     ])
     .toArray()
 
-  return result[0].total || 0
+  return result[0]?.total || 0
 }
