@@ -511,7 +511,7 @@ export const up = async () => {
 
   await getDbCollection("seo_villes").insertMany(
     villeData.map((ville) => ({ ...ville, _id: new ObjectId(), created_at: now, updated_at: now })),
-    { ordered: false }
+    { ordered: false, bypassDocumentValidation: true }
   )
 
   await updateSEO()
