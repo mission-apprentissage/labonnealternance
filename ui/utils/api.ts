@@ -9,11 +9,10 @@ import type {
   IRecruiterJson,
   IResponse,
   IRoutes,
-  IUserWithAccountFields,IBody} from "shared";
-import {
-  removeUndefinedFields
-  
+  IUserWithAccountFields,
+  IBody,
 } from "shared"
+import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -42,7 +41,8 @@ export const archiveFormulaire = async (establishment_id: string) => apiDelete("
  * Offre API
  */
 export const getOffre = async (jobId: string) => apiGet("/formulaire/offre/f/:jobId", { params: { jobId } })
-export const createOffre = async (establishment_id: string, newOffre: IJobCreate) => apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
+export const createOffre = async (establishment_id: string, newOffre: IJobCreate) =>
+  apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: newOffre })
 export const createOffreByToken = async (establishment_id: string, newOffre: IJobCreate, token: string) =>
   apiPost("/formulaire/:establishment_id/offre/by-token", { params: { establishment_id }, body: newOffre, headers: { authorization: `Bearer ${token}` } })
 export const viewOffreDelegation = async (jobId: string, siret: string, token: string) =>

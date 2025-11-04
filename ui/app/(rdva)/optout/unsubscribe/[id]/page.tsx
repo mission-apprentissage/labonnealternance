@@ -9,7 +9,6 @@ import type { IEtablissementJson } from "shared"
 import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-
 type IEtablissementPartial = Pick<
   IEtablissementJson,
   | "_id"

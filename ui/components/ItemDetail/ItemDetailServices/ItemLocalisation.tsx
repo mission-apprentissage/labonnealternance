@@ -5,7 +5,6 @@ import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getPathLink } from "@/utils/tools"
 
-
 export default function ItemLocalisation({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemCompany | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (
     <Typography sx={{ my: 2 }}>

@@ -11,7 +11,7 @@ import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/(recherche)/
 import { RechercheSubmitButton } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheSubmitButton"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import type { IRechercheForm} from "@/app/_components/RechercheForm/RechercheForm";
+import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
 

@@ -11,7 +11,7 @@ import { RechercheSubmitButton } from "./RechercheInputs/RechercheSubmitButton"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import type { IRechercheForm} from "@/app/_components/RechercheForm/RechercheForm";
+import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 import { apiGet } from "@/utils/api.utils"
 

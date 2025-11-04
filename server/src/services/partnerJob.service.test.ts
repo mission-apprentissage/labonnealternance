@@ -8,7 +8,6 @@ import { getPartnerJobById, getPartnerJobs } from "./partnerJob.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 describe("partnerJob.service", () => {

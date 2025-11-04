@@ -1,7 +1,7 @@
 "use client"
 
 import { Box } from "@mui/material"
-import type { FormikErrors } from "formik";
+import type { FormikErrors } from "formik"
 import { Formik } from "formik"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { zDiplomaParam } from "shared/routes/_params"

@@ -1,15 +1,14 @@
 import memoize from "memoizee"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import type { IReferentielOpco} from "shared/models/index";
+import type { IReferentielOpco } from "shared/models/index"
 import { ZReferentielOpcoInsert } from "shared/models/index"
 import type { IOpco } from "shared/models/opco.model"
 import { parseEnum } from "shared/utils/index"
 
-import type { ICfaDockOpcoItem} from "./cfadock.service";
+import type { ICfaDockOpcoItem } from "./cfadock.service"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 
 /**
  * @description get opco from database collection OPCOS

@@ -3,7 +3,6 @@ import { Readable } from "stream"
 import { internal } from "@hapi/boom"
 import NodeClam from "clamscan"
 
-
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"

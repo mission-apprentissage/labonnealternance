@@ -7,7 +7,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { ComputedUserAccess, IApplication, IJob, IRecruiter, IUserWithAccount } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import type { IRoleManagement } from "shared/models/roleManagement.model";
+import type { IRoleManagement } from "shared/models/roleManagement.model"
 import { AccessEntityType } from "shared/models/roleManagement.model"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { AccessPermission, AccessResourcePath } from "shared/security/permissions"
@@ -19,7 +19,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getApplicantFromDB } from "@/services/applicant.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
-
 
 type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }

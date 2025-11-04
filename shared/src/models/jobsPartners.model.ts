@@ -6,7 +6,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import type { IDiplomaParam } from "../routes/_params.js"
 
 import { ZPointGeometry } from "./address.model.js"
-import type { IModelDescriptor} from "./common.js";
+import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 import { JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"

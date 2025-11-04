@@ -3,7 +3,6 @@ import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import type { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import type { IApiError } from "@/common/utils/errorManager"
 
-
 export type TJobSearchQuery = {
   romes?: string
   romeDomain?: string

@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 
 import { VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
-import type { IEntreprise, IEntrepriseStatusEvent } from "../models/entreprise.model.js";
+import type { IEntreprise, IEntrepriseStatusEvent } from "../models/entreprise.model.js"
 import { EntrepriseStatus } from "../models/entreprise.model.js"
 
 export function generateEntrepriseFixture(data: Partial<IEntreprise> = {}): IEntreprise {

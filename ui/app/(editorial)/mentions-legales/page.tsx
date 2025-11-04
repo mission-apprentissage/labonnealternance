@@ -4,7 +4,6 @@ import MentionLegalesRendererClient from "./MentionLegalesRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
 
-
 export const metadata: Metadata = {
   title: PAGES.static.mentionsLegales.getMetadata().title,
   description: PAGES.static.mentionsLegales.getMetadata().description,

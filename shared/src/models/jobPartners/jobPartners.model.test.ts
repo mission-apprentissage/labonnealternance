@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { JOB_STATUS_ENGLISH } from "../job.model.js"
-import type { IJobsPartnersWritableApiInput} from "../jobsPartners.model.js";
+import type { IJobsPartnersWritableApiInput } from "../jobsPartners.model.js"
 import { ZJobsPartnersWritableApi } from "../jobsPartners.model.js"
 
 describe("ZJobsPartnersWritableApi", () => {

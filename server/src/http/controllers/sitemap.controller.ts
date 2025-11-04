@@ -4,7 +4,6 @@ import type { Server } from "@/http/server"
 import dayjs from "@/services/dayjs.service"
 import { getSitemap } from "@/services/sitemap.service"
 
-
 export default function (server: Server) {
   server.get(
     "/sitemap-offers.xml",

@@ -1,4 +1,4 @@
-import type { IFormationCatalogue} from "shared/models/index";
+import type { IFormationCatalogue } from "shared/models/index"
 import { zFormationCatalogueSchema } from "shared/models/index"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 

@@ -5,8 +5,6 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
 import type { IAppointmentContextAPI, IAppointMentResponseAvailable, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
 
-
-
 import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
 import { getReferrerByKeyName } from "./referrers.service"

@@ -2,7 +2,6 @@ import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
-
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"

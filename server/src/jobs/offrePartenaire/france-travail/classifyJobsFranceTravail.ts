@@ -4,7 +4,7 @@ import { pipeline } from "node:stream/promises"
 import type { AnyBulkWriteOperation } from "mongodb"
 import type { IFTJobRaw } from "shared"
 
-import type { Message} from "@/services/mistralai/mistralai.service";
+import type { Message } from "@/services/mistralai/mistralai.service"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 // import config from "@/config"

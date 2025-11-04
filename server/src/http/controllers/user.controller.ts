@@ -3,13 +3,12 @@ import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ENTREPRISE } from "shared/constants/index"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
-import type { IJob, IRecruiter} from "shared/index";
+import type { IJob, IRecruiter } from "shared/index"
 import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "@/services/formulaire.service"

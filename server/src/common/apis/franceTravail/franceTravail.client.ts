@@ -7,7 +7,6 @@ import FormData from "form-data"
 import type { IFTJobRaw } from "shared"
 import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
-
 import { logger } from "@/common/logger"
 import { apiRateLimiter } from "@/common/utils/apiUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

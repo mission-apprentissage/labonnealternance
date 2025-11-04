@@ -1,11 +1,10 @@
 import { ApiClient } from "api-alternance-sdk"
 import { ObjectId } from "bson"
 import type { AnyBulkWriteOperation } from "mongodb"
-import { ZFTJobRaw  } from "shared/models/index"
-import type {IFTJobRaw} from "shared/models/index";
+import { ZFTJobRaw } from "shared/models/index"
+import type { IFTJobRaw } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawFranceTravailModel from "shared/models/rawFranceTravail.model"
-
 
 import { franceTravailJobsToJobsPartners } from "./franceTravailMapper"
 import { logger } from "@/common/logger"

@@ -2,22 +2,20 @@
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
-import type { FastifyStaticSwaggerOptions } from "@fastify/swagger";
+import type { FastifyStaticSwaggerOptions } from "@fastify/swagger"
 import fastifySwagger from "@fastify/swagger"
-import type { FastifySwaggerUiOptions } from "@fastify/swagger-ui";
+import type { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
 import fastifySwaggerUI from "@fastify/swagger-ui"
 import { notFound } from "@hapi/boom"
-import type { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify";
+import type { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
 import fastify from "fastify"
-import type { ZodTypeProvider} from "fastify-type-provider-zod";
+import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { Netmask } from "netmask"
 import type { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-
-
 
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"

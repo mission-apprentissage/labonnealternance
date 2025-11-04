@@ -4,7 +4,6 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
-
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { createRdvaShortRecapToken } from "@/services/appLinks.service"

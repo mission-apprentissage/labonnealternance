@@ -2,7 +2,6 @@ import { forbidden, unauthorized } from "@hapi/boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
-
 import { startSession, stopSession } from "@/common/utils/session.service"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"

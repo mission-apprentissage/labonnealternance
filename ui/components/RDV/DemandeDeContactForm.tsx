@@ -1,22 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import type {
-  SelectChangeEvent} from "@mui/material";
-import {
-  Box,
-  Input,
-  Typography,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Select,
-  MenuItem,
-  ListItemText,
-  Checkbox,
-} from "@mui/material"
+import type { SelectChangeEvent } from "@mui/material"
+import { Box, Input, Typography, FormControl, FormLabel, FormHelperText, RadioGroup, FormControlLabel, Radio, Select, MenuItem, ListItemText, Checkbox } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
 import { useState } from "react"
@@ -29,7 +14,6 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
-
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 

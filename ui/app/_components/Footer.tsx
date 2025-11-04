@@ -1,7 +1,6 @@
-import type { FooterProps } from "@codegouvfr/react-dsfr/Footer";
+import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
 import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
-
 
 import { DsfrHeaderProps } from "./Header"
 import { PAGES } from "@/utils/routes.utils"

@@ -1,9 +1,9 @@
 import { promisify } from "util"
 
-import type { Data } from "ejs";
+import type { Data } from "ejs"
 import ejs from "ejs"
 import mjml from "mjml"
-import type { Transporter } from "nodemailer";
+import type { Transporter } from "nodemailer"
 import nodemailer from "nodemailer"
 import type { Address } from "nodemailer/lib/mailer"
 import type SMTPTransport from "nodemailer/lib/smtp-transport"
@@ -11,7 +11,6 @@ import nodemailerHtmlToText from "nodemailer-html-to-text"
 
 import config from "@/config"
 import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
-
 
 const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)

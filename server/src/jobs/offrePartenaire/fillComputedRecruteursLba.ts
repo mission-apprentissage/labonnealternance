@@ -8,10 +8,7 @@ import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagement
 import { fillLbaUrl } from "./fillLbaUrl"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
-import {
-  removeMissingRecruteursLbaFromComputedJobPartners,
-  removeUnsubscribedRecruteursLbaFromComputedJobPartners,
-} from "./recruteur-lba/importRecruteursLbaRaw"
+import { removeMissingRecruteursLbaFromComputedJobPartners, removeUnsubscribedRecruteursLbaFromComputedJobPartners } from "./recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

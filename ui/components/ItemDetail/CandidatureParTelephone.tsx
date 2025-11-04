@@ -6,7 +6,6 @@ import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-
 export default function CandidatureParTelephone({ companyName, contactPhone, contactName }: { companyName: string; contactPhone: string; contactName: string }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
   return (

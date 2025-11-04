@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import type { IModelDescriptor} from "./common.js";
+import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
 export const ZRecruteursLbaRaw = z.object({

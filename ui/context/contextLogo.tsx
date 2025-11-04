@@ -1,4 +1,4 @@
-import type { FC, PropsWithChildren} from "react";
+import type { FC, PropsWithChildren } from "react"
 import { createContext, useState } from "react"
 
 interface ItLogoContext {

@@ -6,8 +6,8 @@ import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../../../constants/recruteur.
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
 import type { IJobsPartnersOfferApi } from "../../../models/jobsPartners.model.js"
 
-import { jobsRouteApiv3Converters, zJobOfferApiWriteV3    } from "./jobs.routes.v3.model.js"
-import type {IJobOfferApiReadV3, zJobOfferApiReadV3, zJobRecruiterApiReadV3} from "./jobs.routes.v3.model.js";
+import { jobsRouteApiv3Converters, zJobOfferApiWriteV3 } from "./jobs.routes.v3.model.js"
+import type { IJobOfferApiReadV3, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "./jobs.routes.v3.model.js"
 
 type IJobRecruiterExpected = {
   identifier: {

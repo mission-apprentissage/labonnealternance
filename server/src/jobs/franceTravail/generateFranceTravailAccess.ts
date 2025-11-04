@@ -1,4 +1,4 @@
-import type { IAccessParams} from "@/common/apis/franceTravail/franceTravail.client";
+import type { IAccessParams } from "@/common/apis/franceTravail/franceTravail.client"
 import { ACCESS_PARAMS, getFranceTravailTokenFromAPI } from "@/common/apis/franceTravail/franceTravail.client"
 
 export const generateFranceTravailAccess = async () => {

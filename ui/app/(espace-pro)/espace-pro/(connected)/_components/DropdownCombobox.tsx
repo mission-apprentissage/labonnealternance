@@ -1,7 +1,7 @@
 "use client"
 
 import { Box, Typography } from "@mui/material"
-import type { UseComboboxState } from "downshift";
+import type { UseComboboxState } from "downshift"
 import { useCombobox } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"

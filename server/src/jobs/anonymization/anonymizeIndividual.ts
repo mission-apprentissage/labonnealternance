@@ -4,7 +4,6 @@ import anonymizedApplicationsModel from "shared/models/anonymizedApplications.mo
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 
-
 import { anonymizeAppointments } from "./anonymizeAppointments"
 import { logger } from "@/common/logger"
 

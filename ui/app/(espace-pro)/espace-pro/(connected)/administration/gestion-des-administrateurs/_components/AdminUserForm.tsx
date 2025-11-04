@@ -5,11 +5,11 @@ import Select from "@codegouvfr/react-dsfr/Select"
 import { Box } from "@mui/material"
 import { FormikProvider, useFormik } from "formik"
 import type { SyntheticEvent } from "react"
-import type { IRoleManagementEvent, IRoleManagementJson} from "shared";
+import type { IRoleManagementEvent, IRoleManagementJson } from "shared"
 import { AccessStatus, getLastStatusEvent, parseEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
-import type { INewSuperUser, IUserWithAccountJson} from "shared/models/userWithAccount.model";
+import type { INewSuperUser, IUserWithAccountJson } from "shared/models/userWithAccount.model"
 import { ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
 import type { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"

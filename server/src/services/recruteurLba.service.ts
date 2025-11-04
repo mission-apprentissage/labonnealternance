@@ -1,17 +1,15 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import type { Document, Filter} from "mongodb";
+import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IApplication, IRecruteurLbaUpdateEvent} from "shared";
+import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
 import { ERecruteurLbaUpdateEventType, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate} from "shared/models/jobsPartners.model";
+import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
-
-
-import type { IApplicationCount } from "./application.service";
+import type { IApplicationCount } from "./application.service"
 import { getApplicationByCompanyCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
 import type { TLbaItemResult } from "./jobOpportunity.service.types"
@@ -21,7 +19,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { isAllowedSource } from "@/common/utils/isAllowedSource"
-import type { IApiError} from "@/common/utils/errorManager";
+import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { encryptMailWithIV } from "@/common/utils/encryptString"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"

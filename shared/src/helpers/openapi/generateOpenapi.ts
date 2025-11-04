@@ -1,4 +1,4 @@
-import type { ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi";
+import type { ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi"
 import { OpenApiGeneratorV31, OpenAPIRegistry } from "@asteasolutions/zod-to-openapi"
 import { formatParamUrl } from "@fastify/swagger"
 import type { SecurityRequirementObject } from "openapi3-ts/oas30"

@@ -2,7 +2,6 @@ import * as v8 from "v8"
 
 import { modelDescriptors } from "shared/models/models"
 
-
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"
 import config from "./config"

@@ -16,7 +16,6 @@ import { cancelRemovedJobsPartners } from "@/jobs/offrePartenaire/cancelRemovedJ
 import { fillComputedRecruteursLba } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { importFromComputedToJobsPartners } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
 
-
 export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFileDate = false }: { sourceFileReadStream?: Stream.Readable; skipCheckFileDate?: boolean } = {}) => {
   logger.info("début de processRecruteursLba")
   if (!skipCheckFileDate) {

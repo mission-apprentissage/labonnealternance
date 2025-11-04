@@ -1,17 +1,15 @@
 import { internal } from "@hapi/boom"
 import dayjs from "dayjs"
-import type { Document, Filter} from "mongodb";
+import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob} from "shared";
+import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"
 import { JOB_STATUS } from "shared"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-
-
-import type { IApplicationCount} from "./application.service";
+import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
@@ -20,7 +18,7 @@ import { filterJobsByOpco } from "./opco.service"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { roundDistance } from "@/common/utils/geolib"
-import type { IApiError} from "@/common/utils/errorManager";
+import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { encryptMailWithIV } from "@/common/utils/encryptString"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

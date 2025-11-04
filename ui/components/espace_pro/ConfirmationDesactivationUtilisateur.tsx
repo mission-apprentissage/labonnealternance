@@ -13,7 +13,6 @@ import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
-
 const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
   onClose,

@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import type { IUnsubscribedLbaCompany } from "shared"
-import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 

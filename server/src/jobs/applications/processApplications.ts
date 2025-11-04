@@ -1,5 +1,5 @@
 import type { Filter } from "mongodb"
-import type { IApplication } from "shared/models/index";
+import type { IApplication } from "shared/models/index"
 import { ApplicationScanStatus } from "shared/models/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"

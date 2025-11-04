@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { JOB_STATUS_ENGLISH } from "../models/job.model.js"
-import type { IJobsPartnersOfferPrivate} from "../models/jobsPartners.model.js";
+import type { IJobsPartnersOfferPrivate } from "../models/jobsPartners.model.js"
 import { JOBPARTNERS_LABEL } from "../models/jobsPartners.model.js"
 import type { IComputedJobsPartners } from "../models/jobsPartnersComputed.model.js"
 

@@ -1,4 +1,4 @@
-import type { IPointGeometry} from "shared";
+import type { IPointGeometry } from "shared"
 import { ZPointGeometry } from "shared"
 import { z } from "zod"
 

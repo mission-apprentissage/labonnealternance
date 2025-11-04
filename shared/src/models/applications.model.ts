@@ -9,7 +9,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { zCallerParam } from "../routes/_params.js"
 import { validateSIRET } from "../validators/siretValidator.js"
 
-import type { IModelDescriptor} from "./common.js";
+import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
 const collectionName = "applications" as const

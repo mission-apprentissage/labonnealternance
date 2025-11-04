@@ -9,7 +9,6 @@ import { BorderedBox } from "@/components/espace_pro/common/components/BorderedB
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { classNames } from "@/utils/classNames"
 
-
 const CompetenceSelectionDiv = styled.div`
   .competences-group-title {
     font-weight: 700;

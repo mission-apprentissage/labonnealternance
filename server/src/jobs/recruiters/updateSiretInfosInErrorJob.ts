@@ -1,6 +1,6 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import type { IBusinessError, IRecruiter} from "shared";
+import type { IBusinessError, IRecruiter } from "shared"
 import { JOB_STATUS } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -8,8 +8,7 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-
-import type { EntrepriseData} from "@/services/etablissement.service";
+import type { EntrepriseData } from "@/services/etablissement.service"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"

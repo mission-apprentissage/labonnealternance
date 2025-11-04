@@ -1,6 +1,5 @@
 import { zRoutes } from "shared/index"
 
-
 import { getUserFromRequest } from "@/security/authenticationService"
 import { sendApplicationV2 } from "@/services/application.service"
 import type { Server } from "@/http/server"

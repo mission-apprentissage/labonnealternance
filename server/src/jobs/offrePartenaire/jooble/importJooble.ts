@@ -7,7 +7,6 @@ import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamIn
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 
-
 const rawCollectionName = rawJoobleModel.collectionName
 const offerXmlTag = "job"
 

@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import type { IModelDescriptor} from "./common.js";
+import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
 export const ZSitemap = z

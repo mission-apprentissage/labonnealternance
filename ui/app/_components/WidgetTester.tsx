@@ -3,13 +3,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography, Stack, FormLabel, Input } from "@mui/material"
-import type { FormikProps } from "formik";
+import type { FormikProps } from "formik"
 import { Formik } from "formik"
 import { useState } from "react"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 
 import { SelectFormField } from "./FormComponents/SelectFormField"
-import type { IRechercheForm} from "./RechercheForm/RechercheForm";
+import type { IRechercheForm } from "./RechercheForm/RechercheForm"
 import { rechercheFormToRechercheParams } from "./RechercheForm/RechercheForm"
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"

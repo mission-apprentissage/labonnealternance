@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import Image from "next/image"
 import { useState } from "react"
-import type { IJobJson, IRecruiterJson} from "shared";
+import type { IJobJson, IRecruiterJson } from "shared"
 import { JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
 

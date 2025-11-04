@@ -2,11 +2,10 @@ import { badRequest, Boom, internal, isBoom } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import type { FastifyError } from "fastify"
 import { hasZodFastifySchemaValidationErrors, isResponseSerializationError } from "fastify-type-provider-zod"
-import type { ValidationError } from "joi";
+import type { ValidationError } from "joi"
 import joi from "joi"
 import type { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
-
 
 import { stopSession } from "@/common/utils/session.service"
 import type { Server } from "@/http/server"

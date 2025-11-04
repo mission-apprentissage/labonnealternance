@@ -6,36 +6,20 @@ import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import type {
-  IApplicant,
-  IApplication,
-  IApplicationApiPrivateOutput,
-  IApplicationApiPublicOutput,
-  IJob,
-  INewApplicationV1,
-  IRecruiter} from "shared";
-import {
-  ApplicationScanStatus,
-  CompanyFeebackSendStatus,
-  EMAIL_LOG_TYPE,
-  JOB_STATUS,
-  JobCollectionName,
-  assertUnreachable,
-  parseEnum,
-} from "shared"
-import type { RefusalReasons } from "shared/constants/application";
+import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
+import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { RefusalReasons } from "shared/constants/application"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
-
 
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -53,7 +37,7 @@ import { validateUserWithAccountEmail } from "./userWithAccount.service"
 import { manageApiError } from "@/common/utils/errorManager"
 import { logger } from "@/common/logger"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import type { UserForAccessToken} from "@/security/accessTokenService";
+import type { UserForAccessToken } from "@/security/accessTokenService"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createToken, getTokenValue } from "@/common/utils/jwtUtils"

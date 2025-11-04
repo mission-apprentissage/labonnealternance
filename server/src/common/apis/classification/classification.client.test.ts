@@ -4,7 +4,7 @@ import type { IClassificationLabBatchResponse } from "shared/models/cacheClassif
 import { describe, expect, it, vi } from "vitest"
 
 import { nockLabClassification } from "./classification.client.fixture"
-import type { TJobClassification } from "@/services/cacheClassification.service";
+import type { TJobClassification } from "@/services/cacheClassification.service"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 

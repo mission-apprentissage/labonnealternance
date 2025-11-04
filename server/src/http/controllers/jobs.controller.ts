@@ -1,10 +1,9 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import type { IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob} from "shared";
+import type { IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, JOB_STATUS, zRoutes } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-
 
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import dayjs from "@/services/dayjs.service"

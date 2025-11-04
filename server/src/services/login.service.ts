@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb"
 import { assertUnreachable } from "shared"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import type { IUserWithAccount} from "shared/models/userWithAccount.model";
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 

@@ -6,7 +6,6 @@ import { hashEmail, saveApplicationTrafficSourceIfAny, saveJobTrafficSourceIfAny
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 describe("Recording traffic source", () => {

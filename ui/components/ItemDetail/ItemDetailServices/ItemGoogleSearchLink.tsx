@@ -6,7 +6,6 @@ import { UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { getCompanyGoogleSearchLink } from "./getCompanyGoogleSearchLink"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-
 export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (
     item.company.name !== UNKNOWN_COMPANY && (

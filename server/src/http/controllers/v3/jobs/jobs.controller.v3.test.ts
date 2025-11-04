@@ -8,11 +8,11 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import type { IGeoPoint, IRecruiter, IReferentielRome} from "shared/models/index";
+import type { IGeoPoint, IRecruiter, IReferentielRome } from "shared/models/index"
 import { JOB_STATUS } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { zJobOfferApiReadV3  } from "shared/routes/v3/jobs/jobs.routes.v3.model"
-import type {IJobOfferApiWriteV3Input} from "shared/routes/v3/jobs/jobs.routes.v3.model";
+import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import type { IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"

@@ -8,10 +8,9 @@ import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
-
 import { SiretAutocomplete } from "./SiretAutocomplete"
 import { AnimationContainer } from ".."
-import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau";
+import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { AUTHTYPE } from "@/common/contants"
 import { LogoContext } from "@/context/contextLogo"

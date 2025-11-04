@@ -6,7 +6,7 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import { useState } from "react"
 import type { IReferentielRomeForJobJson } from "shared"
-import type { IJobJson} from "shared/models/job.model";
+import type { IJobJson } from "shared/models/job.model"
 import { JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"

@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-import type { Map} from "mapbox-gl";
+import type { Map } from "mapbox-gl"
 import { Popup } from "mapbox-gl"
 import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"

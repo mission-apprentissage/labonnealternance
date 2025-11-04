@@ -3,7 +3,6 @@ import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
 import config from "@/config"
 
-
 export default (server: Server) => {
   server.get(
     "/version",

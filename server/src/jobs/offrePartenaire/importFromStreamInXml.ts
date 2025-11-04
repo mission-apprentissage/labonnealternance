@@ -8,7 +8,6 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 
 const xmlToJson = async (offerXml: string, index: number) => {

@@ -5,7 +5,6 @@ import type { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.se
 import { isOriginLocal } from "@/common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
 
-
 /**
  * Contrôle le format d'un code RNCP
  * @param {string} rncp le code RNCP dont on souhaite valider le format

@@ -6,7 +6,6 @@ import type { IUserStatusValidationJson } from "shared"
 import LoadingEmptySpace from "./LoadingEmptySpace"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 
-
 const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
   if (histories.length === 0) {
     return <LoadingEmptySpace />

@@ -7,7 +7,6 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
-
 export default function AdminProcessorPage() {
   return (
     <Box>

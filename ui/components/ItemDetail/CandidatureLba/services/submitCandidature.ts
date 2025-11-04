@@ -10,8 +10,6 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { sessionStorageSet } from "@/utils/localStorage"
 
-
-
 export const useStoredApplicationDate = (item: ILbaItem) => {
   return useLocalStorage<number>(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)
 }

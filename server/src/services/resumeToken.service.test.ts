@@ -7,7 +7,6 @@ import { getResumeToken, storeResumeToken } from "./resumeToken.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 describe("Resume Token Service", () => {

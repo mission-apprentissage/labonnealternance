@@ -1,21 +1,20 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography, CircularProgress, Input, FormControl, FormLabel, FormHelperText, Grid } from "@mui/material"
-import type { Result} from "email-misspelled";
+import type { Result } from "email-misspelled"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import type { ChangeEvent} from "react";
+import type { ChangeEvent } from "react"
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
 import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
 import CandidatureLbaMessage from "./CandidatureLbaMessage"
 import { CandidatureTasksChecklist } from "./CandidatureTasksChecklist"
-import type { IApplicationSchemaInitValues } from "./services/getSchema";
+import type { IApplicationSchemaInitValues } from "./services/getSchema"
 import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/getSchema"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"

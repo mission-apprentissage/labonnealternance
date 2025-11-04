@@ -5,7 +5,6 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
-
 /**
  * @description remove ETFA training that are not in formationcatalogues
  * @return {Promise<{ AncientElligibleTrainingCount: number, NewElligibleTrainingCount: number }>}

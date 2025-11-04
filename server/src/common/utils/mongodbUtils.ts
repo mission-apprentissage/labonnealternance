@@ -1,16 +1,15 @@
 import { captureException } from "@sentry/node"
 import { isEqual } from "lodash-es"
-import type { ChangeStream, Collection, CollectionInfo, Db, IndexDescriptionInfo, MongoServerError } from "mongodb";
+import type { ChangeStream, Collection, CollectionInfo, Db, IndexDescriptionInfo, MongoServerError } from "mongodb"
 import { MongoClient } from "mongodb"
 import type { IModelDescriptor } from "shared/models/common"
-import type { CollectionName, IDocument} from "shared/models/models";
+import type { CollectionName, IDocument } from "shared/models/models"
 import { modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
 
 import { sleep } from "./asyncUtils"
 import config from "@/config"
 import { logger } from "@/common/logger"
-
 
 let mongodbClient: MongoClient | null = null
 let mongodbClientState: string | null = null

@@ -1,7 +1,6 @@
 import { Typography, Box, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
-
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"

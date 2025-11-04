@@ -1,13 +1,12 @@
 import querystring from "node:querystring"
 
 import { notFound } from "@hapi/boom"
-import type { AxiosInstance } from "axios";
+import type { AxiosInstance } from "axios"
 import axios from "axios"
 import { got } from "got"
 import { sortBy } from "lodash-es"
 import { ObjectId } from "mongodb"
 import type { IEtablissementCatalogue, IEtablissementCatalogueProche, IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
-
 
 import { logger } from "@/common/logger"
 import { getDistanceInKm } from "@/common/utils/geolib"

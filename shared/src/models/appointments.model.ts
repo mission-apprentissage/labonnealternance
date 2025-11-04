@@ -4,7 +4,7 @@ import { AppointmentUserType } from "../constants/appointment.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import type { IModelDescriptor} from "./common.js";
+import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 import { ZEtablissement } from "./etablissement.model.js"
 

@@ -1,5 +1,5 @@
 import { unauthorized } from "@hapi/boom"
-import type { ReferrerApiEnum } from "shared/constants/referers";
+import type { ReferrerApiEnum } from "shared/constants/referers"
 import { isValidReferrerApi } from "shared/constants/referers"
 import { zRoutes } from "shared/index"
 

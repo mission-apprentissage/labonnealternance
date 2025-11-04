@@ -4,7 +4,6 @@ import { Box, Typography } from "@mui/material"
 import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-
 const DidYouKnow = () => {
   return (
     <Box

@@ -1,7 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Input  } from "@codegouvfr/react-dsfr/Input"
-import type {InputProps} from "@codegouvfr/react-dsfr/Input";
+import { Input } from "@codegouvfr/react-dsfr/Input"
+import type { InputProps } from "@codegouvfr/react-dsfr/Input"
 import type { PropsWithRef } from "react"
 import { useStyles } from "tss-react/dsfr"
 

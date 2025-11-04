@@ -3,9 +3,8 @@ import { zRoutes } from "shared/index"
 
 import type { Server } from "@/http/server"
 import config from "@/config"
-import type { IBrevoWebhookEvent} from "@/services/emails.service";
+import type { IBrevoWebhookEvent } from "@/services/emails.service"
 import { processHardBounceWebhookEvent, processWebhookEvent } from "@/services/emails.service"
-
 
 /**
  * Email controllers.

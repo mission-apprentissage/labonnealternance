@@ -1,13 +1,12 @@
 import { existsSync, mkdirSync } from "node:fs"
 import path from "node:path"
 
-import type { Options as CsvParseOptions} from "csv-parse";
+import type { Options as CsvParseOptions } from "csv-parse"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 
 import { FTPClient } from "./ftpUtils"
 import __dirname from "@/common/dirname"
-
 
 export const CURRENT_DIR_PATH = __dirname(import.meta.url)
 

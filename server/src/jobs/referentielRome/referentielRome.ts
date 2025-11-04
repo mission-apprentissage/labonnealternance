@@ -8,7 +8,6 @@ import { asyncForEach } from "@/common/utils/asyncUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
   const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item
   return tempsItems.map((x) => x)

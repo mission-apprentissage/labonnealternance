@@ -4,8 +4,6 @@ import { URL } from "url"
 import { getDistance } from "geolib"
 import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 
-
-
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"

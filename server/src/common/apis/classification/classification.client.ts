@@ -1,13 +1,6 @@
 import { internal } from "@hapi/boom"
-import type {
-  IClassificationLabBatchResponse,
-  IClassificationLabResponse,
-  IClassificationLabVersionResponse} from "shared/models/cacheClassification.model";
-import {
-  ZClassificationLabBatchResponse,
-  ZClassificationLabResponse,
-  ZClassificationLabVersionResponse,
-} from "shared/models/cacheClassification.model"
+import type { IClassificationLabBatchResponse, IClassificationLabResponse, IClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
+import { ZClassificationLabBatchResponse, ZClassificationLabResponse, ZClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
 
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"

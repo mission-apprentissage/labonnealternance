@@ -1,8 +1,8 @@
-import type { IUserRecruteurForAdminJSON, IUserStatusValidationJson } from "shared";
+import type { IUserRecruteurForAdminJSON, IUserStatusValidationJson } from "shared"
 import { getLastStatusEvent } from "shared"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu";
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 
 export const UserMenu = ({

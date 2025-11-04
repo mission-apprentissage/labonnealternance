@@ -6,7 +6,7 @@ import { z } from "../../helpers/zodWithOpenApi.js"
 import { ZLbarError } from "../../models/lbacError.model.js"
 import { ZRecruiter } from "../../models/recruiter.model.js"
 import { rateLimitDescription } from "../../utils/rateLimitDescription.js"
-import type { IRoutesDef} from "../common.routes.js";
+import type { IRoutesDef } from "../common.routes.js"
 import { ZResError } from "../common.routes.js"
 
 export const zJobsRoutesV2 = {

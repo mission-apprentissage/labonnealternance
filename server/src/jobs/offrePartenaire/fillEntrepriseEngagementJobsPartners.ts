@@ -1,12 +1,11 @@
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model";
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners";
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 
 export const fillEntrepriseEngagementJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["contract_is_disabled_elligible"] as const satisfies (keyof IComputedJobsPartners)[]

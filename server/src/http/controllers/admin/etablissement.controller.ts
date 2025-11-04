@@ -5,7 +5,6 @@ import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-
 /**
  * @description Etablissement server.
  */

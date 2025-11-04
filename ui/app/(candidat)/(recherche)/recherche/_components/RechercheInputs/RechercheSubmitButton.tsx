@@ -3,7 +3,7 @@
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useFormikContext } from "formik"
-import type { CSSProperties } from "react";
+import type { CSSProperties } from "react"
 import React from "react"
 
 export function RechercheSubmitButton({ children, style, forceMobileStyle = false }: { children?: React.ReactNode; style?: CSSProperties; forceMobileStyle?: boolean }) {

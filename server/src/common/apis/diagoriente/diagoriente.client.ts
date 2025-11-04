@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import type { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema} from "shared";
+import type { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema } from "shared"
 import { ZDiagorienteClassificationResponseSchema } from "shared"
 import { z } from "zod"
 

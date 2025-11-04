@@ -10,7 +10,7 @@ import { AUTHTYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrl } from "shared/metier/lbaitemutils"
 
-import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu";
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { useToast } from "@/app/hooks/useToast"
 import { publicConfig } from "@/config.public"

@@ -4,7 +4,6 @@ import PolitiqueDeConfidentialiteRendererClient from "./PDCRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
 
-
 export const metadata: Metadata = {
   title: PAGES.static.politiqueConfidentialite.getMetadata().title,
   description: PAGES.static.politiqueConfidentialite.getMetadata().description,

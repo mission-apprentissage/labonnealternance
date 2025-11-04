@@ -1,10 +1,10 @@
 import { createReadStream, createWriteStream } from "fs"
-import type Stream from "stream";
+import type Stream from "stream"
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { JOB_STATUS_ENGLISH } from "shared"
-import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { logger } from "@/common/logger"

@@ -73,7 +73,6 @@ export const ReportJobLink = ({
   const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
 
-   
   const onReport = async ({ reason, reason_details }: IFormValues) => {
     if (storedValue) {
       return
@@ -107,7 +106,11 @@ export const ReportJobLink = ({
               {content.title}
             </Typography>
             <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
-            <Formik initialValues={{ reason: "", reason_details: "" }} validationSchema={toFormikValidationSchema(ZFormValues)} onSubmit={async (formikValues) => onReport(formikValues)}>
+            <Formik
+              initialValues={{ reason: "", reason_details: "" }}
+              validationSchema={toFormikValidationSchema(ZFormValues)}
+              onSubmit={async (formikValues) => onReport(formikValues)}
+            >
               {({ values, handleChange, handleBlur, submitForm, dirty, isValid, isSubmitting, setFieldValue }) => {
                 return (
                   <Stack direction="column" spacing={2}>

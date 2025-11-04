@@ -60,13 +60,7 @@ import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
-import {
-  processAtlas,
-  processMeteojob,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-  processViteUnEmploi,
-} from "./offrePartenaire/clever-connect/processCleverConnect"
+import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
 import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"

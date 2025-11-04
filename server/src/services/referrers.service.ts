@@ -1,5 +1,5 @@
 import { badRequest } from "@hapi/boom"
-import type { ReferrerObject} from "shared/constants/referers";
+import type { ReferrerObject } from "shared/constants/referers"
 import { referrers } from "shared/constants/referers"
 
 function isReferrer(name: string): name is keyof typeof referrers {

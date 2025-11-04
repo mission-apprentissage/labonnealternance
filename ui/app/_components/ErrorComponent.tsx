@@ -5,8 +5,8 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
-import { useEffect  } from "react"
-import type {PropsWithChildren} from "react";
+import { useEffect } from "react"
+import type { PropsWithChildren } from "react"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"

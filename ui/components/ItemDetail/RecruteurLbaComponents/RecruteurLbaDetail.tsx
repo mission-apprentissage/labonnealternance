@@ -6,7 +6,6 @@ import { useContext, useEffect } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/getCompanyGoogleSearchLink"

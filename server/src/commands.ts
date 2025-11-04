@@ -3,7 +3,6 @@ import { program } from "commander"
 import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
-
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
 import { closeSentry } from "./common/sentry/sentry"

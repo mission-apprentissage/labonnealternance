@@ -3,9 +3,9 @@ import axios from "axios"
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners} from "shared/models/jobsPartnersComputed.model";
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import type { IRawRHAlternance } from "shared/models/rawRHAlternance.model";
+import type { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
 import rawRHAlternanceModel from "shared/models/rawRHAlternance.model"
 import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"

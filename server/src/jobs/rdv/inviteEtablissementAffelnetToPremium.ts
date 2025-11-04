@@ -1,4 +1,3 @@
-
 import { logger } from "@/common/logger"
 import { isValidEmail } from "@/common/utils/isValidEmail"
 import { notifyToSlack } from "@/common/utils/slackUtils"

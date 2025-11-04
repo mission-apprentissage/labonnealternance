@@ -1,9 +1,9 @@
 "use client"
 
-import type { SxProps, Theme } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material"
 import { Box } from "@mui/material"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import type { RefObject} from "react";
+import type { RefObject } from "react"
 import { useEffect, useMemo, useRef } from "react"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }

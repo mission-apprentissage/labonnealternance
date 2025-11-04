@@ -7,7 +7,6 @@ import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLinkToken } from "@/services/appLinks.service"
 
-
 export const createAndLogUser = async (httpClient: () => Server, username: string, { type }: { type: "CFA" | "ADMIN" | "OPCO" }) => {
   const email = `${username.toLowerCase()}@mail.com`
   let user: IUserWithAccount

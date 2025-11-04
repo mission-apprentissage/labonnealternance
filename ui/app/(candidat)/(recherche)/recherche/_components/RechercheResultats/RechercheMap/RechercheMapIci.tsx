@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
-import type { Map as Mapbox } from "mapbox-gl";
+import type { Map as Mapbox } from "mapbox-gl"
 import { LngLat } from "mapbox-gl"
 import { useCallback, useEffect, useState } from "react"
 

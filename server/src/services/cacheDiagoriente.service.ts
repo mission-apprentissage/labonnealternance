@@ -4,7 +4,6 @@ import type { IDiagorienteClassificationSchema } from "shared"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiagorienteRomeClassification } from "@/common/apis/diagoriente/diagoriente.client"
 
-
 const getRomesFromCacheDiagoriente = async (queries: IDiagorienteClassificationSchema[]): Promise<(string | null)[]> => {
   const filteredQueries = queries.flatMap(({ title, sector }) => ({ title, sector }))
   const results = await getDbCollection("cache_diagoriente").find({ $or: filteredQueries }).toArray()

@@ -4,7 +4,6 @@ import { getEmailForRdv } from "./eligibleTrainingsForAppointment.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { createEmailBlacklistTest } from "@tests/utils/user.test.utils"
 
-
 describe("getEmailForRdv", () => {
   const blacklistedEmail = "blacklisted@email.com"
 

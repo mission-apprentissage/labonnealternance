@@ -2,8 +2,8 @@
 
 import MuiDsfrThemeProvider from "@codegouvfr/react-dsfr/mui"
 import { SnackbarProvider } from "notistack"
-import { Suspense, useEffect  } from "react"
-import type {PropsWithChildren} from "react";
+import { Suspense, useEffect } from "react"
+import type { PropsWithChildren } from "react"
 
 import Providers from "@/context/Providers"
 import { setIsTrackingEnabled, setTrackingCookies } from "@/tracking/trackingCookieUtils"

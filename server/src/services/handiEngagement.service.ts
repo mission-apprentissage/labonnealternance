@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import type { IEntreprise, IRoleManagement, IUserWithAccount } from "shared";
+import type { IEntreprise, IRoleManagement, IUserWithAccount } from "shared"
 import { AccessEntityType } from "shared"
 
 import mailer from "./mailer.service"

@@ -2,7 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, Stack, List, ListItem } from "@mui/material"
 import Image from "next/image" // Ou <img> classique si tu ne veux pas NextImage
 
-
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"

@@ -3,7 +3,7 @@ import type { Jsonify } from "type-fest"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 import { ZGlobalAddress } from "./address.model.js"
-import type { IModelDescriptor} from "./common.js";
+import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
 const collectionName = "cfas" as const

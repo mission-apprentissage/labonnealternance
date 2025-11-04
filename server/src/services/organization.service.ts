@@ -1,16 +1,15 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import type { CFA} from "shared/constants/index";
+import type { CFA } from "shared/constants/index"
 import { ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import type { ICFA } from "shared/models/cfa.model"
-import type { IEntreprise } from "shared/models/entreprise.model";
+import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
 
-
-import type { getEntrepriseDataFromSiret} from "./etablissement.service";
+import type { getEntrepriseDataFromSiret } from "./etablissement.service"
 import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { checkForJobActivations } from "./formulaire.service"
 import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"

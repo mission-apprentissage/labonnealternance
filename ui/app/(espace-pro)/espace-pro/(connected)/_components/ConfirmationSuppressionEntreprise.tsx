@@ -6,7 +6,6 @@ import { archiveFormulaire } from "@/utils/api"
 import { useToast } from "@/app/hooks/useToast"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
-
 interface ConfirmationSuppressionEntrepriseProps {
   isOpen: boolean
   onClose: () => void

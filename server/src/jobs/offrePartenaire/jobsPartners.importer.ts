@@ -1,12 +1,6 @@
 import type { CronDef } from "job-processor"
 
-import {
-  processMeteojob,
-  processAtlas,
-  processViteUnEmploi,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-} from "./clever-connect/processCleverConnect"
+import { processMeteojob, processAtlas, processViteUnEmploi, processNosTalentsNosEmplois, processToulouseMetropole } from "./clever-connect/processCleverConnect"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
 import { processHellowork } from "./hellowork/processHellowork"
 import { processJobteaser } from "./jobteaser/processJobteaser"

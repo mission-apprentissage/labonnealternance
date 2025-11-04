@@ -10,7 +10,6 @@ import type { IEtablissementJson } from "shared"
 import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-
 type IAffelnetEtablissement = {
   raison_sociale: string
   gestionnaire_siret: string

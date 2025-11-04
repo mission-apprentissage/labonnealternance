@@ -12,7 +12,6 @@ import { streamToString } from "@/common/utils/streamUtils"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 const exportJobsToS3V2ForTests = async () => {

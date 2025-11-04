@@ -1,4 +1,4 @@
-import type { SharedProps } from "notistack";
+import type { SharedProps } from "notistack"
 import { enqueueSnackbar } from "notistack"
 import { useCallback } from "react"
 

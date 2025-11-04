@@ -9,7 +9,6 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS } from "shared/models/index"
 
-
 import { sendCsvToFranceTravail } from "@/common/apis/franceTravail/franceTravail.client"
 import { logger } from "@/common/logger"
 import { getDepartmentByZipCode } from "@/common/territoires"

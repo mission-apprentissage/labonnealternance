@@ -1,6 +1,6 @@
 import type { IRecruiterJson } from "shared"
 
-import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu";
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 

@@ -1,6 +1,5 @@
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
 
-
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"

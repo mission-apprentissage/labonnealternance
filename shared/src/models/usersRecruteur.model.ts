@@ -7,7 +7,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model.js"
 import { zObjectId } from "./common.js"
-import type { IUserWithAccount} from "./userWithAccount.model.js";
+import type { IUserWithAccount } from "./userWithAccount.model.js"
 import { ZValidationUtilisateur } from "./userWithAccount.model.js"
 
 export const ZEtatUtilisateur = extensions.buildEnum(ETAT_UTILISATEUR).describe("Statut de l'utilisateur")

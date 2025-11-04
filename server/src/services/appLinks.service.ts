@@ -5,16 +5,8 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes/index"
 
 import config from "@/config"
-import type {
-  IApplicationTForUserToken,
-  IUserWithAccountForAccessToken,
-  UserForAccessToken} from "@/security/accessTokenService";
-import {
-  applicationToUserForToken,
-  generateAccessToken,
-  generateScope,
-  userWithAccountToUserForToken,
-} from "@/security/accessTokenService"
+import type { IApplicationTForUserToken, IUserWithAccountForAccessToken, UserForAccessToken } from "@/security/accessTokenService"
+import { applicationToUserForToken, generateAccessToken, generateScope, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(

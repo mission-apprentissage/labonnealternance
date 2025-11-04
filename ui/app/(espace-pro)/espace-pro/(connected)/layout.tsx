@@ -8,7 +8,6 @@ import { AuthWatcher } from "@/app/_components/AuthWatcher"
 import { Footer } from "@/app/_components/Footer"
 import { getSession } from "@/utils/getSession"
 
-
 export default async function EspaceProConnecteLayout({ children }: PropsWithChildren) {
   const { user, access } = await getSession()
 

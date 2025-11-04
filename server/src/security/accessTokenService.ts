@@ -1,5 +1,5 @@
 import { forbidden, internal } from "@hapi/boom"
-import type { SignOptions } from "jsonwebtoken";
+import type { SignOptions } from "jsonwebtoken"
 import jwt from "jsonwebtoken"
 import { ObjectId } from "mongodb"
 import type { PathParam, QueryString } from "shared/helpers/generateUri"
@@ -13,7 +13,6 @@ import { controlUserState } from "@/services/login.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-
 
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083

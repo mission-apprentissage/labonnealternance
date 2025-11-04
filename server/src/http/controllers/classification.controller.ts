@@ -3,7 +3,6 @@ import { zRoutes } from "shared"
 import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-
 type IModelTraining = {
   label: string
   workplace_name: string

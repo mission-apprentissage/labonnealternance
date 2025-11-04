@@ -1,6 +1,6 @@
 import assert from "assert"
 
-import type { RouteOptions } from "fastify";
+import type { RouteOptions } from "fastify"
 import fastify from "fastify"
 import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { zRoutes } from "shared/index"

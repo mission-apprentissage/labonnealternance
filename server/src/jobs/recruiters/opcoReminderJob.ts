@@ -3,7 +3,6 @@ import { isEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
-
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import config from "@/config"
 import mailer from "@/services/mailer.service"

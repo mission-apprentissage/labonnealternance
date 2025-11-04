@@ -1,12 +1,11 @@
 import { ObjectId } from "mongodb"
-import type { IDiplomesMetiers} from "shared/models/index";
+import type { IDiplomesMetiers } from "shared/models/index"
 import { ZDiplomesMetiers } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { filterWrongRomes } from "@/services/formation.service"
-
 
 const MOTS_IGNORES = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 

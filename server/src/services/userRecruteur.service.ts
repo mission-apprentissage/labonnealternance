@@ -1,18 +1,16 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import type { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation} from "shared";
+import type { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation } from "shared"
 import { assertUnreachable, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { ICFA } from "shared/models/cfa.model"
-import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model";
+import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
-import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model";
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-
 
 import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"

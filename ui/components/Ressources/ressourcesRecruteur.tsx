@@ -1,7 +1,6 @@
 import { Box, Stack, Typography, Grid, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
-
 import { CardForLink } from "./CardForLink"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"

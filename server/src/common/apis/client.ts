@@ -1,6 +1,6 @@
-import type { AxiosInstance, AxiosRequestConfig } from "axios";
+import type { AxiosInstance, AxiosRequestConfig } from "axios"
 import axios from "axios"
-import type { AxiosCacheInstance, MemoryStorage} from "axios-cache-interceptor";
+import type { AxiosCacheInstance, MemoryStorage } from "axios-cache-interceptor"
 import { buildMemoryStorage, setupCache } from "axios-cache-interceptor"
 
 const CLEANUP_INTERVAL = 10_000 // 10 seconds

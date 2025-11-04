@@ -2,7 +2,6 @@ import dayjs from "dayjs"
 import { getProcessorHealthcheck } from "job-processor"
 import { zRoutes } from "shared"
 
-
 import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
 import config from "@/config"

@@ -7,7 +7,6 @@ import { importJoobleRaw, importJoobleToComputed } from "./importJooble"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
 describe("importJooble", () => {

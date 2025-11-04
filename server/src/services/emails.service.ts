@@ -1,6 +1,5 @@
 import type { IApplication } from "shared/models/index"
 
-
 import { BrevoEventStatus } from "./brevo.service"
 import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
 import { isHardbounceEventFromEtablissement } from "./etablissement.service"

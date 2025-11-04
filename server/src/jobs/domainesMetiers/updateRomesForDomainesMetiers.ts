@@ -1,6 +1,6 @@
 import fs from "node:fs/promises"
 
-import type { IDomainesMetiers} from "shared";
+import type { IDomainesMetiers } from "shared"
 import { removeAccents } from "shared"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"

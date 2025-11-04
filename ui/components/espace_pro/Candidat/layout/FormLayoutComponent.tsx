@@ -5,7 +5,6 @@ import type { PropsWithChildren, ReactNode } from "react"
 import { FormHeaderComponent } from "./FormHeaderComponent"
 import { Footer } from "@/app/_components/Footer"
 
-
 export const FormLayoutComponent = ({ children, headerText }: PropsWithChildren<{ headerText: ReactNode }>) => {
   return (
     <Container sx={{ boxShadow: "0px 0px 24px rgba(30, 30, 30, 0.24)" }} disableGutters>

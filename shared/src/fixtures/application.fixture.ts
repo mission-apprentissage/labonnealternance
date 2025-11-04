@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import type { IApplicant } from "../models/applicant.model.js"
-import type { IApplication } from "../models/applications.model.js";
+import type { IApplication } from "../models/applications.model.js"
 import { ApplicationScanStatus } from "../models/applications.model.js"
 
 export function generateApplicationFixture(data: Partial<IApplication>): IApplication {

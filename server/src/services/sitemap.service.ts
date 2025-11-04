@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrl } from "shared/metier/lbaitemutils"
-import type { IJob, IRecruiter} from "shared/models/index";
+import type { IJob, IRecruiter } from "shared/models/index"
 import { JOB_STATUS } from "shared/models/index"
 import type { ISitemap } from "shared/models/sitemap.model"
 import { hashcode } from "shared/utils/index"

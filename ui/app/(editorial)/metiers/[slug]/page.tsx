@@ -8,7 +8,7 @@ import Link from "next/link"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import type { IStaticMetiers, IStaticVilles } from "@/utils/getStaticData";
+import type { IStaticMetiers, IStaticVilles } from "@/utils/getStaticData"
 import { getStaticMetiers, getStaticVilles } from "@/utils/getStaticData"
 import { PAGES } from "@/utils/routes.utils"
 

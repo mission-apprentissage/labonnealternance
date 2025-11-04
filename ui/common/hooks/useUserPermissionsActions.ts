@@ -3,7 +3,6 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import useUserHistoryUpdate from "./useUserHistoryUpdate"
 import { activateUserRole, deactivateUserRole, notifyNotMyOpcoUserRole } from "@/utils/api"
 
-
 export const useUserPermissionsActions = (
   userId: string,
   organizationId: string = userId, // TODO not passed and not processed by API. It should be a valid ObjectId since it is still validated by zod.

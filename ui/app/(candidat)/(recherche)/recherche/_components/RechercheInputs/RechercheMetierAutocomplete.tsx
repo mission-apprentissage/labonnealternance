@@ -1,7 +1,7 @@
 "use client"
 
 import { Box } from "@mui/material"
-import type {IMetierEnrichi} from "shared";
+import type { IMetierEnrichi } from "shared"
 
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
 import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"

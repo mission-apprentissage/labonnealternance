@@ -2,28 +2,15 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, UpdateFilter } from "mongodb";
+import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, UpdateFilter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type {
-  IDelegation,
-  IJob,
-  IJobCreate,
-  IJobWithRomeDetail,
-  IRecruiter,
-  IRecruiterWithApplicationCount,
-  ITrackingCookies,
-  IUserRecruteur} from "shared";
-import {
-  assertUnreachable,
-  JOB_STATUS,
-  JOB_STATUS_ENGLISH,
-  removeAccents,
-} from "shared"
+import type { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur } from "shared"
+import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import type { OPCOS_LABEL} from "shared/constants/recruteur";
+import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import type { IEntreprise } from "shared/models/entreprise.model";
+import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -31,7 +18,6 @@ import type { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
 
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"

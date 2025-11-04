@@ -4,7 +4,6 @@ import { pipeline } from "node:stream/promises"
 import { ObjectId } from "mongodb"
 import { referrers } from "shared/constants/referers"
 
-
 import { logger } from "@/common/logger"
 import { getEmailForRdv } from "@/services/eligibleTrainingsForAppointment.service"
 import { findFirstNonBlacklistedEmail } from "@/services/formation.service"

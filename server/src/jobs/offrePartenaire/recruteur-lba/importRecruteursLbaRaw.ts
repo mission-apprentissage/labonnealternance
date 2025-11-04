@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream, unlinkSync } from "node:fs"
 import { createRequire } from "node:module"
 import path from "node:path"
-import type Stream from "node:stream";
+import type Stream from "node:stream"
 import { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
@@ -23,7 +23,6 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
 import { isEmailBlacklisted } from "@/services/application.service"
-
 
 const require = createRequire(import.meta.url)
 

@@ -1,12 +1,11 @@
 import { badRequest } from "@hapi/boom"
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
-import { assertUnreachable   } from "shared"
-import type {IFormationCatalogue, ILbaItemFormation2} from "shared";
+import { assertUnreachable } from "shared"
+import type { IFormationCatalogue, ILbaItemFormation2 } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { referrers } from "shared/constants/referers"
 import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-
 
 import { isEmailBlacklisted } from "./application.service"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"

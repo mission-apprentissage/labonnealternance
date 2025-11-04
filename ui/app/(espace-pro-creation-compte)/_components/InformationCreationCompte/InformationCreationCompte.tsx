@@ -8,10 +8,9 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext } from "react"
 import { assertUnreachable, parseEnum } from "shared"
-import type { CFA, ENTREPRISE} from "shared/constants/recruteur";
+import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
-
 
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import { AUTHTYPE } from "@/common/contants"

@@ -1,7 +1,6 @@
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
-
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import { CandidatureLbaModalBody } from "./CandidatureLbaModalBody"
 import CandidatureLbaWorked from "./CandidatureLbaWorked"

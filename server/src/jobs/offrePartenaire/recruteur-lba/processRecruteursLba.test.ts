@@ -15,7 +15,6 @@ import { stringToStream } from "@/common/utils/streamUtils"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

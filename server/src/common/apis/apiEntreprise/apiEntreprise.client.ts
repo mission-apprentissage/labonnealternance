@@ -7,7 +7,6 @@ import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
-
 const client = getApiClient({ timeout: 5000 })
 
 const apiParams = {

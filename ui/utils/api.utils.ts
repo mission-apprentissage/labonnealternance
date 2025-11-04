@@ -1,9 +1,9 @@
 import type { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
-import type { PathParam, QueryString, WithQueryStringAndPathParam} from "shared/helpers/generateUri";
+import type { PathParam, QueryString, WithQueryStringAndPathParam } from "shared/helpers/generateUri"
 import { generateUri } from "shared/helpers/generateUri"
 import type { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import type { EmptyObject } from "type-fest"
-import type { ZodType } from "zod";
+import type { ZodType } from "zod"
 import type z from "zod"
 
 import { publicConfig } from "@/config.public"

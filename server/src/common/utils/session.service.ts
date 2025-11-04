@@ -1,10 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify"
-import type { SignOptions } from "jsonwebtoken";
+import type { SignOptions } from "jsonwebtoken"
 import jwt from "jsonwebtoken"
 
 import config from "@/config"
 import { createSession, deleteSession } from "@/services/sessions.service"
-
 
 export const createSessionToken = (email: string) => {
   return jwt.sign({ email }, config.auth.user.jwtSecret, {

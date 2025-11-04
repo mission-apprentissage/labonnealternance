@@ -1,7 +1,7 @@
 import { Readable, Transform, Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
-import type { GetContactDetails } from "@getbrevo/brevo";
+import type { GetContactDetails } from "@getbrevo/brevo"
 import brevo from "@getbrevo/brevo"
 
 import { logger } from "@/common/logger"

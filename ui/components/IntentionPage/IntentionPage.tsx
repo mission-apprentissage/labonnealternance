@@ -8,14 +8,12 @@ import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/co
 import { IntensionPageNavigation } from "./IntensionPageNavigation"
 import { IntentionPageForm } from "./IntentionPageForm"
 import { IntensionPageResult } from "./IntensionPageResult"
-import type { IntentionPageFormValues } from "./IntentionPageForm";
+import type { IntentionPageFormValues } from "./IntentionPageForm"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { MailCard } from "@/components/MailCard"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
-
-
 
 export type IntentionPageProps = {
   company_recruitment_intention: ApplicationIntention

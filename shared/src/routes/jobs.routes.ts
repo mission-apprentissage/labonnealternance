@@ -33,7 +33,7 @@ import {
   zRomesParams,
   zSourcesParams,
 } from "./_params.js"
-import type { IRoutesDef} from "./common.routes.js";
+import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 
 export const zV1JobsRoutes = {

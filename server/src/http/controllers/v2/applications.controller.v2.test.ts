@@ -1,6 +1,6 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import type { IApplicationApiPublic} from "shared";
+import type { IApplicationApiPublic } from "shared"
 import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
@@ -22,7 +22,6 @@ import { generateApplicationReplyToken } from "@/services/appLinks.service"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {

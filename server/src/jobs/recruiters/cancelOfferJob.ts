@@ -1,6 +1,5 @@
 import { JOB_STATUS } from "shared/models/index"
 
-
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"

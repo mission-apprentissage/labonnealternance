@@ -6,7 +6,6 @@ import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 
-
 import { CustomTabs } from "./CustomTabs"
 import { InfoCircle } from "@/theme/components/icons"
 

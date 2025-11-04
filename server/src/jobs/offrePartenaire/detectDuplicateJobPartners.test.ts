@@ -6,7 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import type { OfferRef } from "./detectDuplicateJobPartners";
+import type { OfferRef } from "./detectDuplicateJobPartners"
 import { checkSimilarity, detectDuplicateJobPartners, FAKE_RECRUITERS_JOB_PARTNER, isCanonicalForDuplicate } from "./detectDuplicateJobPartners"
 import { getPairs } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -14,7 +14,6 @@ import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJo
 import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
-
 
 const siret = "42476141900045"
 

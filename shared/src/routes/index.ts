@@ -1,5 +1,5 @@
 import type { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
-import type { ZodType } from "zod";
+import type { ZodType } from "zod"
 import type z from "zod"
 
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"

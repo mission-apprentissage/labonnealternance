@@ -11,19 +11,12 @@ import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import type { IRecruiter, IReferentielRome} from "shared/models/index";
+import type { IRecruiter, IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
-import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import {
-  jobsRouteApiv3Converters,
-  zJobOfferApiReadV3,
-  zJobOfferApiWriteV3,
-  zJobSearchApiV3Response
-  
-  
-} from "shared/routes/v3/jobs/jobs.routes.v3.model"
-import type {IJobOfferApiWriteV3, IJobOfferApiWriteV3Input} from "shared/routes/v3/jobs/jobs.routes.v3.model";
+import { jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Response } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import type { IJobOfferApiWriteV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
@@ -34,8 +27,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { startRecruiterChangeStream } from "@/services/formulaire.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-
 
 useMongo()
 

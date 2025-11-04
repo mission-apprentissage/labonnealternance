@@ -3,7 +3,6 @@ import Ftp from "basic-ftp"
 import { sentryCaptureException } from "./sentryUtils"
 import { logger } from "@/common/logger"
 
-
 class FTPClient {
   client = new Ftp.Client()
 

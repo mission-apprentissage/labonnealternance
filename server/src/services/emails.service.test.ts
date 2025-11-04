@@ -6,13 +6,12 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { BrevoEventStatus } from "./brevo.service"
-import type { IBrevoWebhookEvent} from "./emails.service";
+import type { IBrevoWebhookEvent } from "./emails.service"
 import { processHardBounceWebhookEvent } from "./emails.service"
 import { BlackListOrigins } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
 
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})

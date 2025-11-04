@@ -8,12 +8,11 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import type { ILbaItemPartnerJob } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
-
 import type { FTJob, FTResponse } from "./ftjob.service.types"
 import type { TLbaItemResult } from "./jobOpportunity.service.types"
 import type { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import type { IApiError} from "@/common/utils/errorManager";
+import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"

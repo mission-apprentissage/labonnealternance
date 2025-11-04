@@ -1,9 +1,8 @@
 import { notFound } from "@hapi/boom"
 import fastify from "fastify"
-import type { ZodTypeProvider} from "fastify-type-provider-zod";
+import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { zRoutes } from "shared"
-
 
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"

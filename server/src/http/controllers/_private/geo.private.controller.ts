@@ -3,7 +3,6 @@ import { zRoutes } from "shared/index"
 import type { Server } from "@/http/server"
 import { getNearestCommuneByGeoPoint } from "@/services/referentiel/commune/commune.referentiel.service"
 
-
 export function geoRouteController(server: Server) {
   server.get(
     "/_private/geo/commune/reverse",

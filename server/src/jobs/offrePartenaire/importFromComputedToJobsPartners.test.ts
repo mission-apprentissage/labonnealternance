@@ -6,7 +6,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 describe("Importing computed_jobs_partners into jobs_partners", () => {

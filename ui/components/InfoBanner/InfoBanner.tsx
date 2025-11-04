@@ -4,7 +4,7 @@ import { Box, Link, Typography } from "@mui/material"
 import React, { useContext } from "react"
 
 import { publicConfig } from "@/config.public"
-import type { IDisplayState } from "@/context/DisplayContextProvider";
+import type { IDisplayState } from "@/context/DisplayContextProvider"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (

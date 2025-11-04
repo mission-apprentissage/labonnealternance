@@ -1,13 +1,12 @@
 import type { Filter } from "mongodb"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model";
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners";
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { MAX_DIAGORIENTE_PAYLOAD_SIZE } from "@/common/apis/diagoriente/diagoriente.client"
 import { getRomesInfosFromDiagoriente } from "@/services/cacheDiagoriente.service"
-
 
 export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]

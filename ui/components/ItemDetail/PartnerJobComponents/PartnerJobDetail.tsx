@@ -6,7 +6,6 @@ import React, { useEffect } from "react"
 import type { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { formatDate } from "@/utils/strutils"

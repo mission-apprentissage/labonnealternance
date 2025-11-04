@@ -1,7 +1,7 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import type { SyntheticEvent} from "react";
+import type { SyntheticEvent } from "react"
 import { useEffect, useState } from "react"
 import type { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 

@@ -8,7 +8,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 vi.mock("@/common/utils/sentryUtils")

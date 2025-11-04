@@ -1,6 +1,5 @@
 import type { IFormationCatalogue } from "shared"
 
-
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"

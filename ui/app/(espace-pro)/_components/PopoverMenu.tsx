@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper } from "@mui/material"
-import type { Dispatch} from "react";
+import type { Dispatch } from "react"
 import { useEffect, useRef, useState } from "react"
 
 export type PopoverMenuAction = {

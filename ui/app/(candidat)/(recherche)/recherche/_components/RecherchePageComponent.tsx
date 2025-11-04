@@ -14,7 +14,7 @@ import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsList"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import type { IRecherchePageParams} from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils";
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {

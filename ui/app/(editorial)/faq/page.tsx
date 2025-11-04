@@ -4,7 +4,6 @@ import FAQRendererClient from "./FAQRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
 
-
 export const metadata: Metadata = {
   title: PAGES.static.faq.getMetadata().title,
   description: PAGES.static.faq.getMetadata().description,

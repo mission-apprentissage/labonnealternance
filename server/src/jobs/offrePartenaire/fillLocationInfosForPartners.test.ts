@@ -9,7 +9,6 @@ import { saveGeolocationInCache } from "@/services/cacheGeolocation.service"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 describe("fillLocationInfosForPartners", () => {
   useMongo()
 

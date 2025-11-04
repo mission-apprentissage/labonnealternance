@@ -1,27 +1,16 @@
 import { badRequest, internal } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import type { Filter as MongoDBFilter} from "mongodb";
+import type { Filter as MongoDBFilter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type {
-  IBusinessError,
-  ICfaReferentielData,
-  IEtablissement,
-  IGeoPoint,
-  ILbaCompanyLegacy,
-  IRecruiter,
-  ITrackingCookies} from "shared";
-import {
-  parseEnum,
-  TrafficType,
-  ZCfaReferentielData,
-} from "shared"
+import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, ILbaCompanyLegacy, IRecruiter, ITrackingCookies } from "shared"
+import { parseEnum, TrafficType, ZCfaReferentielData } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/index"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
-import type { IEntreprise } from "shared/models/entreprise.model";
+import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
-import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IOpco } from "shared/models/opco.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -44,7 +33,7 @@ import { createFormulaire, getFormulaire } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
-import type { UserAndOrganization } from "./organization.service";
+import type { UserAndOrganization } from "./organization.service"
 import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"

@@ -1,5 +1,5 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
-import type { IEntreprise} from "shared";
+import type { IEntreprise } from "shared"
 import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
@@ -26,7 +26,7 @@ import {
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
 import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
-import type { Organization, UserAndOrganization } from "@/services/organization.service";
+import type { Organization, UserAndOrganization } from "@/services/organization.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
 import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"

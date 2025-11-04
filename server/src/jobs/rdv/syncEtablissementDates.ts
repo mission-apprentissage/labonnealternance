@@ -4,7 +4,6 @@ import type { IEtablissement } from "shared"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-
 function findEarliestDates(objectsArray) {
   const earliestDates = {}
 

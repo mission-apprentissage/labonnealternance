@@ -14,7 +14,6 @@ import { createJob, startRecruiterChangeStream } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-
 useMongo()
 
 describe("createJob", () => {

@@ -5,7 +5,6 @@ import { assertUnreachable } from "shared/utils/index"
 import type { IAccessLog } from "./accessLog.types"
 import { logger } from "@/common/logger"
 
-
 const loggerAccess = logger.child({ module: "accessLog" })
 
 export const createAccessLog = async <S extends IRouteSchema & WithSecurityScheme>(schema: S, req: FastifyRequest, authorized: boolean) => {

@@ -6,7 +6,6 @@ import { BorderedBox } from "@/components/espace_pro/common/components/BorderedB
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoCircle } from "@/theme/components/icons"
 
-
 export const InfosDiffusionOffre = () => {
   return (
     <BorderedBox>

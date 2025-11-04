@@ -5,7 +5,7 @@ import { ZNewApplication } from "../models/applications.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
 import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
-import type { IRoutesDef} from "./common.routes.js";
+import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 
 export const zApplicationRoutes = {

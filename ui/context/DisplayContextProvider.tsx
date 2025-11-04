@@ -1,4 +1,4 @@
-import type { PropsWithChildren} from "react";
+import type { PropsWithChildren } from "react"
 import React, { createContext, useReducer } from "react"
 
 import { defaultFilters } from "@/components/SearchForTrainingsAndJobs/services/utils"

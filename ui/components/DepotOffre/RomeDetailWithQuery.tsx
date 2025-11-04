@@ -9,7 +9,6 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
 
-
 const fakeLoadingDuration = 1000
 
 export const RomeDetailWithQuery = ({

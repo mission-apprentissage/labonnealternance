@@ -4,11 +4,10 @@ import type { IGeoPoint } from "shared/models/index"
 import { expect, describe, it, vi, beforeEach } from "vitest"
 
 import { updateReferentielCommune, getNearestCommuneByGeoPoint } from "./commune.referentiel.service"
-import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv";
+import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
 
 vi.mock("@/common/apis/geoApiGouv/geoApiGouv")
 

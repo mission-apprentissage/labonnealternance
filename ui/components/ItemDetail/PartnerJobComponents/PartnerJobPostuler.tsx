@@ -11,7 +11,6 @@ import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/Cand
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-
 const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE"]
 
 export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => {

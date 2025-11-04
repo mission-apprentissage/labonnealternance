@@ -72,7 +72,12 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           <Input
             label="Intitulé de l'offre"
             hintText="Personnalisez le titre du poste (Facultatif)"
-            nativeInputProps={{ value: values.offer_title_custom, type: "text", name: "offer_title_custom", onChange: async (e) => setFieldValue("offer_title_custom", e.target.value) }}
+            nativeInputProps={{
+              value: values.offer_title_custom,
+              type: "text",
+              name: "offer_title_custom",
+              onChange: async (e) => setFieldValue("offer_title_custom", e.target.value),
+            }}
           />
         </Box>
       )}

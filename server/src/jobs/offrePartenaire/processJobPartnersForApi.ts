@@ -6,7 +6,6 @@ import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPart
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 
 export const processJobPartnersForApi = async () => {

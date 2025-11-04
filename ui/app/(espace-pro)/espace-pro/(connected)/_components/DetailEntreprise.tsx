@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import type { INewSuperUser, IUserStatusValidationJson } from "shared"
-import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur";
+import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 

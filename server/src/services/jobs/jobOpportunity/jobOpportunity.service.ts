@@ -2,38 +2,27 @@ import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import dayjs from "dayjs"
 import { DateTime } from "luxon"
-import type { Document, Filter} from "mongodb";
+import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob} from "shared";
+import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
 import { JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import type {
-  IJobsPartnersOfferApi,
-  IJobsPartnersOfferPrivate,
-  IJobsPartnersOfferPrivateWithDistance,
-  INiveauDiplomeEuropeen} from "shared/models/jobsPartners.model";
-import {
-  JOBPARTNERS_LABEL,
-} from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners, IComputedJobsPartnersWrite} from "shared/models/jobsPartnersComputed.model";
+import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type {
   IJobOfferApiReadV3,
-  IJobOfferPublishingV3,IJobOfferApiWriteV3, IJobRecruiterApiReadV3, IJobSearchApiV3Query, IJobSearchApiV3QueryResolved, IJobSearchApiV3Response} from "shared/routes/v3/jobs/jobs.routes.v3.model";
-import {
-  JOB_PUBLISHING_STATUS,
-  jobsRouteApiv3Converters,
-  zJobOfferApiReadV3,
-  zJobRecruiterApiReadV3
-  
-  
-  
-  
-  
+  IJobOfferPublishingV3,
+  IJobOfferApiWriteV3,
+  IJobRecruiterApiReadV3,
+  IJobSearchApiV3Query,
+  IJobSearchApiV3QueryResolved,
+  IJobSearchApiV3Response,
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
-
+import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
 import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 import { logger } from "@/common/logger"

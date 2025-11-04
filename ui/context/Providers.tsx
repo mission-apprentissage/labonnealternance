@@ -1,8 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import PlausibleProvider from "next-plausible"
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react"
 import React from "react"
-
 
 import LogoProvider from "./contextLogo"
 import WidgetProvider from "./contextWidget"

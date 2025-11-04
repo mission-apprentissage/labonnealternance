@@ -4,18 +4,18 @@ import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import type { ICFA} from "shared/models/cfa.model";
+import type { ICFA } from "shared/models/cfa.model"
 import { zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
-import type { IEntreprise, IEntrepriseStatusEvent} from "shared/models/entreprise.model";
+import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { EntrepriseStatus, ZEntreprise } from "shared/models/entreprise.model"
-import type { IApplication, ICredential, IEmailBlacklist, IRecruiter} from "shared/models/index";
+import type { IApplication, ICredential, IEmailBlacklist, IRecruiter } from "shared/models/index"
 import { ZApplication, ZCredential, ZEmailBlacklist, ZPointGeometry } from "shared/models/index"
-import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model";
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import type { IUserWithAccount} from "shared/models/userWithAccount.model";
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType, ZUserWithAccount } from "shared/models/userWithAccount.model"
-import type { ZodTypeAny, z } from "zod";
+import type { ZodTypeAny, z } from "zod"
 import { ZodArray, ZodObject, ZodString } from "zod"
 import { Fixture, Generator } from "zod-fixture"
 
