@@ -7,7 +7,7 @@ import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2024-12-04T14:06:47.696Z")
+export const mainSitemapLastModificationDate = new Date("2025-11-04T14:06:47.696Z")
 
 export function generateMainSitemap(request: Request) {
   const txtDirectory = path.join(process.cwd(), "config")
