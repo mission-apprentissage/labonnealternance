@@ -66,8 +66,8 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     offer_description: JobBody,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs
-      .tz(publicationDate || created_at)
+    offer_expiration: dayjs(publicationDate || created_at)
+      .utc()
       .add(2, "months")
       .toDate(),
 

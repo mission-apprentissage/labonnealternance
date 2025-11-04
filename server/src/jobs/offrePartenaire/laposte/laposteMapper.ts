@@ -143,8 +143,8 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
     workplace_description: `Service : ${job.company}${job.contexte ? `\r\n\r\n${job.contexte}` : ""}`,
     offer_description: descriptionComputed,
     offer_creation: updatedDate ?? publicationDate,
-    offer_expiration: dayjs
-      .tz(updatedDate ?? publicationDate)
+    offer_expiration: dayjs(updatedDate ?? publicationDate)
+      .utc()
       .add(2, "months")
       .toDate(),
     apply_url: job["url-de-l-offre"],

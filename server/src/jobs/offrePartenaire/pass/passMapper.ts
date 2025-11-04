@@ -68,7 +68,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const creationDate = parseDate(pubDate)
   const contractDuration = parseDuration(dcFormat)
   const contractStart = parseDate(dcDate)
-  const offerExpiration = dayjs.tz(contractStart).add(2, "months").toDate()
+  const offerExpiration = dayjs(contractStart).utc().add(2, "months").toDate()
   let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
 
   if (contractDuration === 0) {
@@ -112,7 +112,7 @@ function parseDate(dateStr: string | null | undefined) {
   if (!dateStr) {
     return null
   }
-  return dayjs.tz(dateStr).toDate()
+  return dayjs(dateStr).utc().toDate()
 }
 
 function parseDuration(field) {

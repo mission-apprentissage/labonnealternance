@@ -130,8 +130,8 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     offer_description: descriptionComputed,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs
-      .tz(updatedDate ?? publicationDate)
+    offer_expiration: dayjs(updatedDate ?? publicationDate)
+      .utc()
       .add(2, "months")
       .toDate(),
 
