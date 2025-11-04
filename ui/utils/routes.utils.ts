@@ -539,6 +539,10 @@ export const PAGES = {
       index: false,
       title: `Tâche CRON ${props.id}`,
     }),
+    seoVille: (villeSlug: string): IPage => ({
+      getPath: () => `/alternance/ville/${villeSlug}`,
+      title: `Trouver une alternance à ${villeSlug}`,
+    }),
   },
   notion: {},
 } as const satisfies IPages

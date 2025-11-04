@@ -1,6 +1,7 @@
 import { Footer as DsfrFooter, FooterProps } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
+import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { publicConfig } from "@/config.public"
 
 import { PAGES } from "../../utils/routes.utils"
@@ -10,6 +11,7 @@ import { DsfrHeaderProps } from "./Header"
 const linkListContent: FooterProps["linkList"] = [
   {
     categoryName: "Liens utiles",
+    // @ts-ignore advised limit of links is 8
     links: [
       {
         linkProps: {
@@ -29,11 +31,24 @@ const linkListContent: FooterProps["linkList"] = [
         },
         text: "Ressources",
       },
-    ],
-  },
-  {
-    categoryName: "Développement",
-    links: [
+      {
+        linkProps: {
+          href: PAGES.static.aPropos.getPath(),
+        },
+        text: "A propos",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.statistiques.getPath(),
+        },
+        text: "Statistiques",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.contact.getPath(),
+        },
+        text: "Contact",
+      },
       {
         linkProps: {
           href: PAGES.static.codeSources.getPath(),
@@ -55,50 +70,14 @@ const linkListContent: FooterProps["linkList"] = [
     ],
   },
   {
-    categoryName: "L'organisation",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.aPropos.getPath(),
-        },
-        text: "A propos",
+    categoryName: "Alternance par ville",
+    // @ts-ignore min 1 link but here we have 10
+    links: villeData.map((ville) => ({
+      linkProps: {
+        href: PAGES.dynamic.seoVille(ville.slug).getPath(),
       },
-      {
-        linkProps: {
-          href: PAGES.static.statistiques.getPath(),
-        },
-        text: "Statistiques",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.contact.getPath(),
-        },
-        text: "Contact",
-      },
-    ],
-  },
-  {
-    categoryName: "Règlement générales des données",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.mentionsLegales.getPath(),
-        },
-        text: "Mentions légales",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.politiqueConfidentialite.getPath(),
-        },
-        text: "Politique de confidentialité",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.cgu.getPath(),
-        },
-        text: "Conditions générales d'utilisation",
-      },
-    ],
+      text: `Alternance à ${ville.ville}`,
+    })),
   },
 ]
 
@@ -129,6 +108,26 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
       brandTop={DsfrHeaderProps.brandTop}
       homeLinkProps={DsfrHeaderProps.homeLinkProps}
       linkList={isWidget ? undefined : hideLinkList ? undefined : linkListContent}
+      bottomItems={[
+        {
+          linkProps: {
+            href: PAGES.static.politiqueConfidentialite.getPath(),
+          },
+          text: "Politique de confidentialité",
+        },
+        {
+          linkProps: {
+            href: PAGES.static.mentionsLegales.getPath(),
+          },
+          text: "Mentions légales",
+        },
+        {
+          linkProps: {
+            href: PAGES.static.cgu.getPath(),
+          },
+          text: "Conditions générales d'utilisation",
+        },
+      ]}
     />
   )
 }

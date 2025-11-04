@@ -4,7 +4,7 @@ import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 
-import { villeData, transports, loisirs, appartements } from "@/app/(editorial)/ville/_components/ville_data"
+import { villeData, transports, loisirs, appartements } from "@/app/(editorial)/alternance/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
@@ -456,7 +456,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             {villeData.map((autre_ville) =>
               autre_ville.slug !== ville ? (
                 <li key={autre_ville.slug}>
-                  <Link key={autre_ville.slug} href={`/ville/${autre_ville.slug}`}>
+                  <Link key={autre_ville.slug} href={`/alternance/ville/${autre_ville.slug}`}>
                     Trouver une alternance à {autre_ville.ville}
                   </Link>
                 </li>
