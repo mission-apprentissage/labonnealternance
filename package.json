@@ -54,7 +54,6 @@
     "knip": "knip"
   },
   "dependencies": {
-    "@uidotdev/usehooks": "^2.4.1",
     "husky": "^9.1.7",
     "stream-json": "^1.9.1",
     "type-fest": "^4.40.0"
