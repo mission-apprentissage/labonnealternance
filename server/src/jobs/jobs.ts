@@ -287,6 +287,10 @@ export async function setupJobProcessor() {
             cron_string: "0 10 * * FRI",
             handler: exportFileForAlgo,
           },
+          "Mise à jour des données calculées pour les pages SEO": {
+            cron_string: "0 4 * * SAT",
+            handler: updateSEO,
+          },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",
             handler: () => processRecruteursLba(),
@@ -295,10 +299,6 @@ export async function setupJobProcessor() {
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
             handler: removeBrevoContacts,
-          },
-          "Mise à jour des données calculées pour les pages SEO": {
-            cron_string: "0 4 * * SAT",
-            handler: updateSEO,
           },
           "maj-diplome-metier": {
             cron_string: "0 8 * * SUN",
