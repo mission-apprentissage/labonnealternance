@@ -27,7 +27,7 @@ export function CandidaterButton({
     submitControls: ReturnType<typeof useSubmitCandidature>
   }) => React.ReactNode
 }) {
-  const [modalId, setModalId] = useState<number>(Math.random())
+  const [modalId, setModalId] = useState<number>(() => Math.random())
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { applicationDate } = submitControls

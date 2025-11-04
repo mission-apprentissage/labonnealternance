@@ -43,6 +43,10 @@ export const saveBlacklistEmails = async (contacts) => {
           reason = BrevoEventStatus.SPAM
           break
         }
+        case BrevoBlockedReasons.ADMIN_BLOCKED: {
+          reason = BrevoEventStatus.BLOCKED
+          break
+        }
         default: {
           reason = BrevoEventStatus.BLOCKED
           break

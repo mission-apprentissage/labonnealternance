@@ -578,7 +578,9 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    fieldUpdates.length && (await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates))
+    if (fieldUpdates.length) {
+      await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates)
+    }
 
     return { enseigne: application?.company_name || recruteurLba?.workplace_brand || recruteurLba?.workplace_legal_name, phone, email, siret, active: recruteurLba ? true : false }
   } catch (err) {

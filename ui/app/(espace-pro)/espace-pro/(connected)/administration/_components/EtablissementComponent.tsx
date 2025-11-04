@@ -24,7 +24,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
     try {
       const response = await apiGet("/admin/etablissements/:id", { params: { id } })
       setEtablissement(response ?? null)
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Une erreur est survenue durant la récupération des informations.",
         variant: "error",
@@ -53,7 +53,6 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
 
   useEffect(() => {
     fetchData()
-    /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
   /**
@@ -66,7 +65,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
       const response = await apiPatch("/admin/etablissements/:id", { params: { id: etablissement?._id }, body: { gestionnaire_email: email } })
       setEtablissement(response)
       putSuccess()
-    } catch (error) {
+    } catch (_error) {
       putError()
     }
   }

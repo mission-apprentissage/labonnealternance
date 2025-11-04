@@ -64,5 +64,9 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     }
   }
 
-  authorized ? loggerAccess.info(acl) : loggerAccess.warn(acl)
+  if (authorized) {
+    loggerAccess.info(acl)
+  } else {
+    loggerAccess.warn(acl)
+  }
 }

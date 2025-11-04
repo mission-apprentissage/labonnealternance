@@ -4,7 +4,7 @@ import { pipeline } from "node:stream/promises"
 import { ObjectId } from "mongodb"
 import { zFormationCatalogueSchemaNew } from "shared/models/index"
 import streamJson from "stream-json"
-// eslint-disable-next-line import/extensions
+
 import streamers from "stream-json/streamers/StreamArray.js"
 
 import { logger } from "@/common/logger"

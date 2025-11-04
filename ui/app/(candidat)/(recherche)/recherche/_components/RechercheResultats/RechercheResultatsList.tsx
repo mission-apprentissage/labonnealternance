@@ -47,17 +47,14 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   const { formationQuery, jobQuery } = result
 
   if (result.status === "disabled") {
-    // eslint-disable-next-line react/jsx-key
     return [<RechercheResultatsPlaceholder {...props} />]
   }
 
   if (result.status === "error") {
-    // eslint-disable-next-line react/jsx-key
     return [<ErrorMessage message="Erreur technique momentanée" type="column" />]
   }
 
   if (formationQuery.status === "loading") {
-    // eslint-disable-next-line react/jsx-key
     return [<ResultListsLoading isJobSearchLoading={jobQuery.status === "loading"} isTrainingSearchLoading />]
   }
 

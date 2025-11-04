@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { generateJobsPartnersFull } from "shared/src/fixtures/jobPartners.fixture"
+import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "./exportJobsToS3V2"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamToString } from "@/common/utils/streamUtils"
@@ -16,7 +16,7 @@ useMongo()
 
 const exportJobsToS3V2ForTests = async () => {
   let content = ""
-  const handleStream = async (filepath: string, stream: Stream.Readable) => {
+  const handleStream = async (_filepath: string, stream: Stream.Readable) => {
     content = await streamToString(stream)
   }
   await exportJobsToS3V2(handleStream)
@@ -34,7 +34,7 @@ describe("exportJobsToS3V2", () => {
       const filepath = new URL(`./${EXPORT_JOBS_TO_S3_V2_FILENAME}`, import.meta.url).pathname
       try {
         await fs.unlink(filepath)
-      } catch (err) {
+      } catch (_err) {
         console.warn(`could not delete ${filepath}`)
       }
     }

@@ -38,7 +38,7 @@ export default function RendezVousApprentissage() {
       } else {
         router.push(PAGES.dynamic.rendezVousApprentissageDetail({ siret: formations[0].etablissement_formateur_siret }).getPath())
       }
-    } catch (e) {
+    } catch (_e) {
       toast({ title: "Une erreur est survenue pendant la recherche.", variant: "error" })
     } finally {
       setLoading(false)

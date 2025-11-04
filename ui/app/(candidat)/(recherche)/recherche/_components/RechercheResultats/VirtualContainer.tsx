@@ -30,6 +30,7 @@ export function VirtualContainer({
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: async () => value } as VirtualElement)))
   }, [rawElements])
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const columnVirtualizer = useVirtualizer({
     count: elements.length + 1,
     getScrollElement: () => parentRef.current,

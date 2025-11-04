@@ -46,8 +46,8 @@ export const CandidatureLbaModalBody = ({
   })
 
   const setFileValue = (fileValue) => {
-    formik.values.applicant_attachment_name = fileValue?.applicant_attachment_name || null
-    formik.values.applicant_attachment_content = fileValue?.applicant_attachment_content || null
+    formik.setFieldValue("applicant_attachment_name", fileValue?.applicant_attachment_name || null)
+    formik.setFieldValue("applicant_attachment_content", fileValue?.applicant_attachment_content || null)
   }
 
   const isOffre =

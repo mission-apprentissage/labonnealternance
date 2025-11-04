@@ -31,7 +31,6 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
   useEffect(() => {
     const removedCookie = getCookie(CONSENT_REMOVED_COOKIE_NAME)
     if (removedCookie) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasConsent(false)
     }
   }, [])

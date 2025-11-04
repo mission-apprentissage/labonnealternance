@@ -7,10 +7,14 @@ export function debounce<T, R>(callback: (param: T) => Promise<R>, delay: number
       const localTimer = setTimeout(() => {
         try {
           callback(args)
-            .then((output) => localTimer === timer && resolve(output))
-            .catch((err) => localTimer === timer && reject(err))
+            .then((output) => {
+              if (localTimer === timer) resolve(output)
+            })
+            .catch((err) => {
+              if (localTimer === timer) reject(err)
+            })
         } catch (err) {
-          localTimer === timer && reject(err)
+          if (localTimer === timer) reject(err)
         }
       }, delay)
       timer = localTimer

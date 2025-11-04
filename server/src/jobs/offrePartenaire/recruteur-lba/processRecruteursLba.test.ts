@@ -8,7 +8,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { generateRecruiterRawFixture } from "shared/src/fixtures/recruiterRaw.fixture"
+import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixture"
 import { processRecruteursLba } from "./processRecruteursLba"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { stringToStream } from "@/common/utils/streamUtils"

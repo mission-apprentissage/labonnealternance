@@ -107,7 +107,7 @@ export function RechercheMapPopup(props: WithRecherchePageParams<RechercheMapPop
       }).setDOMContent(popupElement)
     )
     // popupElement instance will change on dev mode reload
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [props.map, popupElement])
 
   const onClose = useCallback(() => {

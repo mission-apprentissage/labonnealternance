@@ -1,6 +1,5 @@
 import { URL } from "url"
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { getDistance } from "geolib"
 import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 

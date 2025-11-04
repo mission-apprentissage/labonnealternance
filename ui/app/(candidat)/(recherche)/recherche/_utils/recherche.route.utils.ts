@@ -33,7 +33,7 @@ function deserializeItemReference(item: string): ItemReference | null {
   try {
     const [ideaType, ...rest] = item.split(":")
     return { ideaType: newItemTypeToOldItemType(zIdeaType.parse(ideaType)), id: rest.join(",") }
-  } catch (e) {
+  } catch (_e) {
     return null
   }
 }

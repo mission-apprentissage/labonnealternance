@@ -63,7 +63,11 @@ export default function OptOutUnsubscribe() {
 
     window.scrollTo(0, 0)
 
-    opt_out_question ? setIsQuestionSent(true) : setHasBeenUnsubscribed(true)
+    if (opt_out_question) {
+      setIsQuestionSent(true)
+    } else {
+      setHasBeenUnsubscribed(true)
+    }
   }
 
   useEffect(() => {
