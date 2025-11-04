@@ -16,6 +16,16 @@ export async function generateStaticParams() {
   return villeData.map((ville) => ({ ville: ville.slug }))
 }
 
+export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }) {
+  const { ville } = await params
+  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
+
+  return {
+    title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations 2025`,
+    description: `${data.job_count + data.recruteur_count} offres d'alternance à ${data.ville}. Salaire moyen 1050€. BTS, Licence Pro, Master. Trouvez votre contrat d'apprentissage dans le .`,
+  }
+}
+
 export const dynamic = "force-static"
 export const dynamicParams = false
 

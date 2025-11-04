@@ -64,6 +64,7 @@ export const ZSeoVille = z
     ville: z.string(),
     cp: z.string().min(5).max(5),
     slug: z.string(),
+    region: z.string(),
     geopoint: z.object({ lat: z.number(), long: z.number() }),
     job_count: z.number(),
     recruteur_count: z.number(),
