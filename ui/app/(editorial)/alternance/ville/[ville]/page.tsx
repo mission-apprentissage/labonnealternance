@@ -11,6 +11,7 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export async function generateStaticParams() {
   return villeData.map((ville) => ({ ville: ville.slug }))
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
 
   return {
     title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations 2025`,
-    description: `${data.job_count + data.recruteur_count} offres d'alternance à ${data.ville}. Salaire moyen 1050€. BTS, Licence Pro, Master. Trouvez votre contrat d'apprentissage dans le .`,
+    description: `${data.job_count + data.recruteur_count} offres d'alternance à ${data.ville}. Salaire moyen 1050€. BTS, Licence Pro, Master. Trouvez votre contrat d'apprentissage en ${data.region}.`,
   }
 }
 
@@ -466,7 +467,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             {villeData.map((autre_ville) =>
               autre_ville.slug !== ville ? (
                 <li key={autre_ville.slug}>
-                  <Link key={autre_ville.slug} href={`/alternance/ville/${autre_ville.slug}`}>
+                  <Link key={autre_ville.slug} href={PAGES.dynamic.seoVille(autre_ville.slug).getPath()}>
                     Trouver une alternance à {autre_ville.ville}
                   </Link>
                 </li>
