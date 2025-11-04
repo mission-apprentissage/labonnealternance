@@ -2,6 +2,7 @@ import path from "path"
 
 import { generateSitemapFromUrlEntries, SitemapUrlEntry } from "shared/utils/sitemapUtils"
 
+import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
@@ -29,11 +30,13 @@ export function generateMainSitemap(request: Request) {
     `/cgu`,
     `/politique-de-confidentialite`,
   ]
+  const villePaths = villeData.map((ville) => `/alternance/ville/${ville.slug}`)
   const jobPaths = dataJobs.map((job) => `/metiers/${job.slug}`)
 
   const sitemapEntries: SitemapUrlEntry[] = [
     { loc: host, priority: 1 },
     ...paths.map((path) => ({ loc: host + path, priority: 0.9 })),
+    ...villePaths.map((path) => ({ loc: host + path, priority: 0.95 })),
     ...jobPaths.map((path) => ({ loc: host + path, priority: 0.8 })),
   ]
 
