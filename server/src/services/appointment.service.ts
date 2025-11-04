@@ -108,7 +108,7 @@ export const sendFormateurAppointmentEmail = async (
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
       ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)),
-      link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
+      link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, appointment._id.toString()),
     },
   })
   await findOneAndUpdate(

@@ -77,7 +77,7 @@ function getJsonArrayTransform() {
   let isFirst = true
   const transform = new Transform({
     objectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       if (!chunk) {
         callback()
         return
@@ -107,7 +107,7 @@ const getCusorTransform = <T>(mapper: (obj: T) => string | null) => {
   return new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
-    transform(chunk: T, encoding, callback) {
+    transform(chunk: T, _, callback) {
       const result = mapper(chunk)
       if (result !== null) {
         this.push(result)

@@ -285,7 +285,7 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
 /**
  * Forge a link for reading appointment
  */
-export function createRdvaAppointmentIdPageLink(email: string, siret: string, etablissementId: string, appointmentId: string): string {
+export function createRdvaAppointmentIdPageLink(email: string, siret: string, appointmentId: string): string {
   const token = generateAccessToken(
     { type: "cfa", email, siret },
     [

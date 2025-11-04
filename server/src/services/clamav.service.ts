@@ -74,7 +74,7 @@ export async function isClamavAvailable(): Promise<boolean> {
   try {
     await getVersion()
     return true
-  } catch (err) {
+  } catch (_) {
     return false
   }
 }

@@ -1156,7 +1156,7 @@ describe("findJobsOpportunities", () => {
     })
 
     it("should limit jobs to 150", async () => {
-      const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (e, idx) =>
+      const extraOffers: IJobsPartnersOfferPrivate[] = Array.from({ length: 300 }, (_, idx) =>
         generateJobsPartnersOfferPrivate({
           workplace_geopoint: parisFixture.centre,
           offer_rome_codes: ["M1602"],

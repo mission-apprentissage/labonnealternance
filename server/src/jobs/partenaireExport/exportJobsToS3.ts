@@ -39,7 +39,7 @@ async function generateJsonExport({ collection, query, projection, fileName }: I
   const transform = new Transform({
     writableObjectMode: true,
     readableObjectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       if (isFirst) {
         this.push("[")
         this.push(JSON.stringify(chunk, null, 4))

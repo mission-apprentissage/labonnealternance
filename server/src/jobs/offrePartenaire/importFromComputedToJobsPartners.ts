@@ -40,7 +40,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   const importDate = new Date()
   const transform = new Transform({
     objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
+    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, _, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {

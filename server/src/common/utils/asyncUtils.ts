@@ -15,7 +15,7 @@ export const delay = async (ms: number) => new Promise((resolve) => setTimeout(r
 
 export async function timeout(promise, millis) {
   let timeout: NodeJS.Timeout | null = null
-  const timeoutPromise = new Promise((resolve, reject) => (timeout = setTimeout(() => reject(`Timed out after ${millis} ms.`), millis)))
+  const timeoutPromise = new Promise((_, reject) => (timeout = setTimeout(() => reject(`Timed out after ${millis} ms.`), millis)))
   return Promise.race([promise, timeoutPromise]).finally(() => timeout !== null && clearTimeout(timeout))
 }
 

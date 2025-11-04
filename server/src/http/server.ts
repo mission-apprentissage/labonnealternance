@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
@@ -56,8 +55,13 @@ import config from "@/config"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 
-export interface Server
-  extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}
+export type Server = FastifyInstance<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  FastifyBaseLogger,
+  ZodTypeProvider
+>
 
 export async function bind(app: Server) {
   initSentryFastify(app)
@@ -178,7 +182,7 @@ export async function bind(app: Server) {
 
   initBrevoWebhooks()
 
-  app.setNotFoundHandler((req, res) => {
+  app.setNotFoundHandler((_, res) => {
     res.status(404).send(notFound().output)
   })
 

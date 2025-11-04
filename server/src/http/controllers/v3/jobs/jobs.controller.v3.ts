@@ -198,7 +198,7 @@ export const jobsApiV3Routes = (server: Server) => {
         },
       },
     },
-    async (req, res) => {
+    async (_, res) => {
       const url = await s3SignedUrl("storage", EXPORT_JOBS_TO_S3_V2_FILENAME, { expiresIn: 120 })
       const lastUpdate = await getS3FileLastUpdate("storage", EXPORT_JOBS_TO_S3_V2_FILENAME)
       if (!lastUpdate) {

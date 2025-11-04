@@ -36,6 +36,7 @@ const ZAppointmentContextApi = z.union([
   ZAppointmentContextCleMinistereEducatif,
 ])
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ZAppointmentContextApiWithReferrer = z.intersection(ZAppointmentContextApi, z.object({ referrer: extensions.buildEnum(ReferrerApiEnum) }))
 export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApiWithReferrer>
 

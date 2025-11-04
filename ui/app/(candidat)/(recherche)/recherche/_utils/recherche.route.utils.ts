@@ -58,6 +58,7 @@ export enum RechercheViewType {
   FORMATION = "FORMATION",
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const zRecherchePageParams = z.object({
   romes: z.array(z.string()),
   geo: z

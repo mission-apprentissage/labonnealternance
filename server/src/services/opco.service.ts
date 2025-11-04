@@ -145,7 +145,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
           // enregistrement des retours opcos dans notre base pour réduire les recours à CFADOCK
           await saveOpco(cfaDockOpcoItemToIOpco(sirenOpco))
         })
-      } catch (err) {
+      } catch (_) {
         // ne rien faire. 429 probable de l'api CFADOCK dont le rate limiter est trop limitant
         // les éventuelles sociétés qui auraient pu matcher sont ignorées
       }

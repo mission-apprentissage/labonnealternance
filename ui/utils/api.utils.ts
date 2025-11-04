@@ -126,7 +126,7 @@ export class ApiError extends Error {
           message = data.message
           errorData = data.data
         }
-      } catch (error) {
+      } catch (_) {
         // ignore
       }
     }

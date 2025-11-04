@@ -282,7 +282,7 @@ const doesFileExist = async (filename: string): Promise<boolean> => {
   try {
     const stat = await fs.stat(filename)
     return stat.isFile()
-  } catch (err) {
+  } catch (_) {
     return false
   }
 }

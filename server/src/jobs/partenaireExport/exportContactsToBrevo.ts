@@ -211,8 +211,8 @@ const sendContacts = async (type: AccessEntityType) => {
 
   const postingTransform = new Transform({
     objectMode: true,
-    transform(contacts, _, callback) {
-      postToBrevo(contacts as IBrevoContact[])
+    async transform(contacts, _, callback) {
+      await postToBrevo(contacts as IBrevoContact[])
       callback()
     },
   })

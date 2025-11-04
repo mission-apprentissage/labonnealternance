@@ -19,7 +19,6 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 //import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 
-import config from "@/config"
 
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
@@ -39,6 +38,7 @@ import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
+import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"

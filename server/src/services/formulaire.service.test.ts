@@ -105,7 +105,7 @@ describe("createJob", () => {
         coeur_metier: "test",
       },
     ]
-    expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoir_faire do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -121,7 +121,7 @@ describe("createJob", () => {
         ],
       },
     ]
-    expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoirs do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -137,12 +137,12 @@ describe("createJob", () => {
         ],
       },
     ]
-    expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when rome_label do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.rome_label = "test"
-    expect
+    await expect
       .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
       .rejects.toThrow(
         `L'intitulé du code ROME ne correspond pas au référentiel : ${removeAccents(referentielRome.rome.intitule.toLowerCase())}, reçu ${removeAccents(job.rome_label.toLowerCase())}`
@@ -151,7 +151,7 @@ describe("createJob", () => {
   it("should raise a bad request when rome_appellation_label do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.rome_appellation_label = "test"
-    expect
+    await expect
       .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
   })

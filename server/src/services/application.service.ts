@@ -21,10 +21,6 @@ import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import config from "@/config"
-
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -34,6 +30,9 @@ import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
+import config from "@/config"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { manageApiError } from "@/common/utils/errorManager"
 import { logger } from "@/common/logger"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -216,7 +215,7 @@ export const sendApplication = async ({
       logger.error("Error sending application", err)
       sentryCaptureException(err)
       if (newApplication?.caller) {
-        manageApiError({
+        await manageApiError({
           error: err,
           api_path: "applicationV1",
           caller: newApplication.caller,
@@ -237,7 +236,7 @@ async function identifyFileType(base64String: string) {
     // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
     return type
-  } catch (err) {
+  } catch (_) {
     return undefined
   }
 }
@@ -338,7 +337,7 @@ export const sendApplicationV2 = async ({
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
-      manageApiError({
+      await manageApiError({
         error: err,
         api_path: "applicationV2",
         caller: caller,
@@ -397,7 +396,7 @@ export const buildUserForToken = (application: IApplication, user?: IUserWithAcc
 }
 
 // get data from applicant
-const buildReplyLink = (application: IApplication, applicant: IApplicant, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
+const buildReplyLink = (application: IApplication, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
   const { job_origin, _id } = application
   const applicationId = _id.toString()
   const searchParams = new URLSearchParams()
@@ -430,7 +429,7 @@ export const getUserManagingOffer = async (recruiter: IRecruiter): Promise<IUser
  * Build urls to add in email messages sent to the recruiter
  * email recruteur uniquement
  */
-const buildRecruiterEmailUrlsAndParameters = async (application: IApplication, applicant: IApplicant) => {
+const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
 
   let user: IUserWithAccount | undefined
@@ -449,8 +448,8 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication, a
   const userForToken = buildUserForToken(application, user)
   const urls = {
     jobUrl: "",
-    meetCandidateUrl: buildReplyLink(application, applicant, ApplicationIntention.ENTRETIEN, userForToken),
-    refuseCandidateUrl: buildReplyLink(application, applicant, ApplicationIntention.REFUS, userForToken),
+    meetCandidateUrl: buildReplyLink(application, ApplicationIntention.ENTRETIEN, userForToken),
+    refuseCandidateUrl: buildReplyLink(application, ApplicationIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
@@ -1074,7 +1073,7 @@ export const processApplicationEmails = {
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
-    const recruiterEmailUrls = await buildRecruiterEmailUrlsAndParameters(application, applicant)
+    const recruiterEmailUrls = await buildRecruiterEmailUrlsAndParameters(application)
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
@@ -1442,7 +1441,7 @@ export const processScheduledRecruiterIntentions = async () => {
 
     const transform = new Transform({
       objectMode: true,
-      async transform(application: IApplication, encoding, callback: (error?: Error | null, data?: any) => void) {
+      async transform(application: IApplication, _, callback: (error?: Error | null, data?: any) => void) {
         counters.total++
         try {
           await processRecruiterIntention({ application })

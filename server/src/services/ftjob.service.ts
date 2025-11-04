@@ -452,7 +452,7 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
   } catch (error: any) {
     if (!error.isBoom) {
       sentryCaptureException(error)
-      manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
+      await manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
     throw error
   }

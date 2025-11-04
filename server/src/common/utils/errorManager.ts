@@ -9,12 +9,22 @@ export type IApiError = z.input<typeof ZApiError>
 /**
  * Process une erreur lors d'un appel vers une API LBAC
  */
-export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string | null; errorTitle: string }): IApiError => {
+export const manageApiError = async ({
+  error,
+  api_path,
+  caller,
+  errorTitle,
+}: {
+  error: any
+  api_path?: string
+  caller?: string | null
+  errorTitle: string
+}): Promise<IApiError> => {
   const errorObj: IApiError = { result: "error", error: "error", message: error.message }
   const status = error?.response?.status || error?.status || ""
 
   if (caller && api_path) {
-    trackApiCall({ caller, api_path, response: "Error" })
+    await trackApiCall({ caller, api_path, response: "Error" })
   }
 
   if (error.response) {

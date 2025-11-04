@@ -16,6 +16,7 @@ type AddressFeature = {
 
 type Coordinates = [number, number]
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const zAddressItem = z.object({
   value: ZPointGeometry,
   insee: z.string(),

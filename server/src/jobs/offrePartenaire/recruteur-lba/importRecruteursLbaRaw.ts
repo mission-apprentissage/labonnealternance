@@ -85,7 +85,7 @@ const importRecruteursLbaToRawCollection = async () => {
 
   const validationStream = new Transform({
     objectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       const recruteur = { ...chunk.value, createdAt: now, _id: new ObjectId() }
       const parseResult = ZRecruteursLbaRaw.safeParse(recruteur)
       if (!parseResult.success) {
@@ -97,7 +97,7 @@ const importRecruteursLbaToRawCollection = async () => {
 
   const insertionStream = new Transform({
     objectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       const filtered = chunk.filter((item) => item)
       if (!filtered.length) {
         callback()

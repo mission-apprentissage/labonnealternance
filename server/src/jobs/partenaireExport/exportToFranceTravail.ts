@@ -207,7 +207,7 @@ const generateCsvFile = async (csvPath, jobs) => {
   const destination = createWriteStream(csvPath)
   const transform = new Transform({
     objectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       try {
         const transformedChunk = formatData(chunk)
         callback(null, transformedChunk)

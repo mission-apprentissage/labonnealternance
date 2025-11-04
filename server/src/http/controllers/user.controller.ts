@@ -51,7 +51,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/user"],
       onRequest: [server.auth(zRoutes.get["/user"])],
     },
-    async (req, res) => {
+    async (_, res) => {
       const groupedUsers = await getUsersForAdmin()
       return res.status(200).send(groupedUsers)
     }

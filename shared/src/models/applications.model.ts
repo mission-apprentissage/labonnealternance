@@ -149,6 +149,7 @@ export const ZNewApplication = ZApplicationOld.extend({
   .openapi("ApplicationUi")
 
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
   message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,

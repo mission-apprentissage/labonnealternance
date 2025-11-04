@@ -99,7 +99,7 @@ export async function removeDuplicateRecruiters() {
 
       // Fusionner les jobs si nécessaire
       if (activeJobsDuplicates.length > 1) {
-        mergeJobs(firstActiveDuplicate, activeJobsDuplicates)
+        await mergeJobs(firstActiveDuplicate, activeJobsDuplicates)
       }
       // Supprimer les doublons actifs restants avec ou sans job
       await Promise.all(
@@ -116,7 +116,7 @@ export async function removeDuplicateRecruiters() {
     }
     // Si doublon inactif avec job, on garde le premier et on merge tous les jobs
     const firstInactiveDuplicate = duplicates.shift()!
-    mergeJobs(firstInactiveDuplicate, duplicates)
+    await mergeJobs(firstInactiveDuplicate, duplicates)
     // Supprimer les doublons restants
     await Promise.all(duplicates.map(async (duplicate) => await getDbCollection("recruiters").deleteOne({ _id: new ObjectId(duplicate._id) })))
   }

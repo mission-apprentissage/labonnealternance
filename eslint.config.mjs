@@ -52,9 +52,10 @@ export default defineConfig([
       "n/no-extraneous-import": "off",
 
       "import-x/no-named-as-default-member": "off",
+      "import-x/no-named-as-default": "off",
       "import-x/default": "off",
       "import-x/order": "error",
-      "import-x/no-cycle": ["error", { ignoreExternal: true }],
+      "import-x/no-cycle": "off",
       "import-x/no-relative-packages": "error",
       "import-x/no-useless-path-segments": ["error"],
       "import-x/consistent-type-specifier-style": ["error", "prefer-top-level"],
@@ -71,6 +72,7 @@ export default defineConfig([
             "**/vitest.config.ts",
             "**/eslint.config.mjs",
           ],
+          packageDir: [__dirname, `${__dirname}/server`, `${__dirname}/ui`, `${__dirname}/shared`],
         },
       ],
     },
@@ -101,6 +103,7 @@ export default defineConfig([
       ],
 
       "@typescript-eslint/ban-ts-comment": ["off"],
+      "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-import-type-side-effects": "error",
       "@typescript-eslint/promise-function-async": "error",
@@ -153,7 +156,10 @@ export default defineConfig([
     plugins: {
       "react-hooks": reactHooks,
     },
-    rules: reactHooks.configs.recommended.rules,
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      "react-hooks/exhaustive-deps": "off",
+    },
   },
   {
     name: "ui-files",
@@ -161,6 +167,8 @@ export default defineConfig([
     files: ["ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"],
     rules: {
       "n/no-unpublished-import": "off",
+      "n/no-unsupported-features/node-builtins": "off",
+      "@typescript-eslint/no-floating-promises": "off",
       "react/no-unescaped-entities": "off",
       "@dword-design/import-alias/prefer-alias": [
         "error",

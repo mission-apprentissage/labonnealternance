@@ -190,7 +190,7 @@ export const InformationCreationCompte = ({
         }
 
         switch (type) {
-          case AUTHTYPE.ENTREPRISE: {
+          case "ENTREPRISE": {
             router.push(
               PAGES.dynamic
                 .espaceProCreationOffre({
@@ -206,7 +206,7 @@ export const InformationCreationCompte = ({
             )
             break
           }
-          case AUTHTYPE.CFA: {
+          case "CFA": {
             if (validated) {
               router.push(PAGES.dynamic.backCreateCFAConfirmation({ email: user.email }).getPath())
             } else {

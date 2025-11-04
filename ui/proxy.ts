@@ -36,7 +36,7 @@ async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurP
     }
 
     return { user: await sessionRequest.json(), access: await accessRequest.json() }
-  } catch (error) {
+  } catch (_) {
     return null
   }
 }
@@ -52,7 +52,7 @@ const verifyAuthentication = async (token: string, request: NextRequest) => {
     response.cookies.set("lba_session", sessionToken)
 
     return response
-  } catch (error) {
+  } catch (_) {
     return NextResponse.redirect(new URL("/espace-pro/authentification?error=true", request.url))
   }
 }

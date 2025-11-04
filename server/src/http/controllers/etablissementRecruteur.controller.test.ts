@@ -3,7 +3,7 @@ import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
-import { zRoutes } from "shared/routes/index"
+import type { zRoutes } from "shared/routes/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
@@ -36,10 +36,8 @@ describe("POST /etablissement/creation", () => {
     }
   })
 
-  const bodySchema = zRoutes.post["/etablissement/creation"].body
-  type CreationBody = z.output<typeof bodySchema>
-  const responseSchema = zRoutes.post["/etablissement/creation"].response["200"]
-  type CreationResponse = z.output<typeof responseSchema>
+  type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
+  type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
 
   const defaultCreationEntreprisePayload = {
     email: "email@email.com",

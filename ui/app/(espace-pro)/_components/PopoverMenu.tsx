@@ -22,10 +22,12 @@ export const PopoverMenu = ({
   resetFlagsOnClose?: Dispatch<React.SetStateAction<boolean>>[]
 }) => {
   const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const anchorRef = useRef<HTMLButtonElement>(null)
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen)
+    setAnchorEl(anchorRef.current)
   }
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
@@ -69,7 +71,7 @@ export const PopoverMenu = ({
         iconId="fr-icon-settings-5-line"
         title={title}
       />
-      <Popper sx={{ zIndex: 1000 }} open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
+      <Popper sx={{ zIndex: 1000 }} open={open} anchorEl={anchorEl} role={undefined} placement="bottom-start" transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}

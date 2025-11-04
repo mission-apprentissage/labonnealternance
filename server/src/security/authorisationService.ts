@@ -272,7 +272,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
         const id = getAccessResourcePathValue(entrepriseDef._id, req)
         try {
           new ObjectId(id)
-        } catch (e) {
+        } catch (_) {
           return null
         }
         const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(id.toString()) })

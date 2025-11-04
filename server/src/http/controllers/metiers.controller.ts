@@ -30,7 +30,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/v1/metiers/all"],
       config,
     },
-    async (req, res) => {
+    async (_, res) => {
       const result = await getTousLesMetiers()
       return res.send(result)
     }

@@ -61,6 +61,7 @@ function useThrottle(value: string, delay: number) {
 
     if (lastUpdateRef.current === null || now - lastUpdateRef.current >= delay) {
       lastUpdateRef.current = now
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDebouncedValue(value)
       return
     }

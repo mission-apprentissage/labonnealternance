@@ -11,7 +11,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 
 const xmlToJson = async (offerXml: string, index: number) => {
-  index % 1000 === 0 && logger.info("parsing offer", index)
+  if (index % 1000 === 0) logger.info("parsing offer", index)
   const json = await xmlParser.parseStringPromise(offerXml)
   return json
 }
@@ -60,8 +60,8 @@ export const importFromStreamInXml = async ({
   }
 
   const xmlToJsonTransform = new PassThrough({
-    transform(chunk, _encoding, callback) {
-      readChunk(chunk.toString()).then(() => callback(null, null))
+    async transform(chunk, _encoding, callback) {
+      await readChunk(chunk.toString()).then(() => callback(null, null))
     },
   })
   return new Promise((resolve, reject) => {
