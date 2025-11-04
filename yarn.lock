@@ -16111,7 +16111,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.4.0, openapi3-ts@npm:^4.5.0":
+"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.5.0":
   version: 4.5.0
   resolution: "openapi3-ts@npm:4.5.0"
   dependencies:
@@ -18726,8 +18726,8 @@ __metadata:
     lodash-es: ^4.17.21
     luhn: ^2.4.1
     mongodb: ^6.20.0
-    openapi3-ts: ^4.4.0
-    type-fest: ^4.40.0
+    openapi3-ts: ^4.5.0
+    type-fest: ^5.2.0
     typescript: ^5.9.3
     zod: ^3.24.3
     zod-i18n-map: ^2.27.0
