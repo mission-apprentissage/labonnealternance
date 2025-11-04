@@ -1,13 +1,13 @@
 import { PassThrough, pipeline } from "node:stream"
 
 import { ObjectId } from "mongodb"
-import { CollectionName } from "shared/models/models"
+import type { CollectionName } from "shared/models/models"
 import * as xml2j from "xml2js"
 
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 

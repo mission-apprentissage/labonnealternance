@@ -1,5 +1,6 @@
 import { ObjectId } from "bson"
-import { IApplicant, ZApplicant } from "shared"
+import type { IApplicant} from "shared";
+import { ZApplicant } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

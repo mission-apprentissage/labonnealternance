@@ -1,17 +1,17 @@
 import fs from "node:fs/promises"
-import Stream from "stream"
+import type Stream from "stream"
 
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { generateJobsPartnersFull } from "shared/src/fixtures/jobPartners.fixture"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "./exportJobsToS3V2"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { streamToString } from "@/common/utils/streamUtils"
-import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { generateJobsPartnersFull } from "../../../../shared/src/fixtures/jobPartners.fixture"
 
 useMongo()
 

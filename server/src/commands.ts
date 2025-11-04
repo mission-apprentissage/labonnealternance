@@ -3,8 +3,6 @@ import { program } from "commander"
 import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
-import { bindStreamProcessorServer } from "@/http/StreamProcessorServer"
-import { startRecruiterChangeStream } from "@/services/formulaire.service"
 
 import { closeMemoryCache } from "./common/apis/client"
 import { logger } from "./common/logger"
@@ -16,6 +14,8 @@ import { bindProcessorServer } from "./http/jobProcessorServer"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simpleJobDefinitions"
+import { bindStreamProcessorServer } from "./http/StreamProcessorServer"
+import { startRecruiterChangeStream } from "./services/formulaire.service"
 
 async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")

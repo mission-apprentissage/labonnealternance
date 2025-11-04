@@ -1,7 +1,7 @@
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
-import { ColumnOption } from "csv-stringify/sync"
+import type { ColumnOption } from "csv-stringify/sync"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/userWithAccount.model"
 

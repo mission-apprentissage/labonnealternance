@@ -41,7 +41,7 @@ const ConfirmationActivationUtilisateur = (props: ConfirmationActivationUtilisat
               Annuler
             </Button>
           </Box>
-          <Button onClick={() => activateUser()}>Activer le compte</Button>
+          <Button onClick={async () => activateUser()}>Activer le compte</Button>
         </Box>
       </Box>
     </ModalReadOnly>

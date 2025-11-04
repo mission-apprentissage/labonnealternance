@@ -1,6 +1,6 @@
+import { logger } from "@/common/logger"
 import { createIndexes, dropIndexes } from "@/common/utils/mongodbUtils"
 
-import { logger } from "../../common/logger"
 
 logger
 

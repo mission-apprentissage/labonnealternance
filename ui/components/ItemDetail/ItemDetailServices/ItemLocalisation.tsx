@@ -1,10 +1,10 @@
 import { Typography } from "@mui/material"
-import { ILbaItemCompany, ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
+import type { ILbaItemCompany, ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
+import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getPathLink } from "@/utils/tools"
 
-import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
 export default function ItemLocalisation({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemCompany | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (

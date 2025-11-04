@@ -1,8 +1,8 @@
-import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
-import { IApiError } from "../common/utils/errorManager"
+import type { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
+import type { IApiError } from "@/common/utils/errorManager"
 
-import { ILbaItemCompany, ILbaItemFormation, ILbaItemJob, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 
 export type TJobSearchQuery = {
   romes?: string

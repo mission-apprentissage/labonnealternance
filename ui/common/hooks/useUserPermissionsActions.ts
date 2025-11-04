@@ -1,8 +1,8 @@
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
+import useUserHistoryUpdate from "./useUserHistoryUpdate"
 import { activateUserRole, deactivateUserRole, notifyNotMyOpcoUserRole } from "@/utils/api"
 
-import useUserHistoryUpdate from "./useUserHistoryUpdate"
 
 export const useUserPermissionsActions = (
   userId: string,
@@ -15,8 +15,8 @@ export const useUserPermissionsActions = (
     throw new Error(`organizationType doit être dans ${acceptedTypes.join(", ")}`)
   }
   return {
-    activate: () => update(AccessStatus.GRANTED, () => activateUserRole(userId, organizationId)),
-    deactivate: (reason: string) => update(AccessStatus.DENIED, () => deactivateUserRole(userId, organizationId, reason)),
-    waitsForValidation: (reason: string) => update(AccessStatus.AWAITING_VALIDATION, () => notifyNotMyOpcoUserRole(userId, organizationId, reason)),
+    activate: async () => update(AccessStatus.GRANTED, () => activateUserRole(userId, organizationId)),
+    deactivate: async (reason: string) => update(AccessStatus.DENIED, () => deactivateUserRole(userId, organizationId, reason)),
+    waitsForValidation: async (reason: string) => update(AccessStatus.AWAITING_VALIDATION, () => notifyNotMyOpcoUserRole(userId, organizationId, reason)),
   }
 }

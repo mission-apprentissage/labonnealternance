@@ -1,7 +1,7 @@
 export function debounce<T, R>(callback: (param: T) => Promise<R>, delay: number): (param: T) => Promise<R> {
   let timer: NodeJS.Timeout
 
-  return (args: T) => {
+  return async (args: T) => {
     return new Promise((resolve, reject) => {
       clearTimeout(timer)
       const localTimer = setTimeout(() => {

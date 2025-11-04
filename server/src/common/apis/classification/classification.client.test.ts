@@ -1,10 +1,11 @@
 import nock from "nock"
 import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
-import { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
+import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { describe, expect, it, vi } from "vitest"
 
-import { nockLabClassification } from "@/common/apis/classification/classification.client.fixture"
-import { getClassificationFromLab, TJobClassification } from "@/services/cacheClassification.service"
+import { nockLabClassification } from "./classification.client.fixture"
+import type { TJobClassification } from "@/services/cacheClassification.service";
+import { getClassificationFromLab } from "@/services/cacheClassification.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 useMongo()

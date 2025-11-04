@@ -3,12 +3,12 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
+import { jobPartnersByFlux } from "./processJobPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { jobPartnersByFlux } from "@/jobs/offrePartenaire/processJobPartners"
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 
 useMongo()
 

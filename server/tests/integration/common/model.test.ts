@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 
+import { createIndexes } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { createIndexes } from "../../../src/common/utils/mongodbUtils"
 
 describe("createMongoDBIndexes", () => {
   useMongo()

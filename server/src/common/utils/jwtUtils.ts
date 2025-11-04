@@ -1,7 +1,8 @@
 import { unauthorized, internal } from "@hapi/boom"
-import jwt, { SignOptions } from "jsonwebtoken"
+import type { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 
-import config from "../../config"
+import config from "@/config"
 
 export const createToken = (payload: object, expiresIn: string, subject: string) =>
   jwt.sign(payload, config.auth.user.jwtSecret, {

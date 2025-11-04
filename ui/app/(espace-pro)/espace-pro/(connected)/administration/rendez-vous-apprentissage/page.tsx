@@ -6,7 +6,7 @@ import { Box, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { IFormationCatalogueJson } from "shared"
+import type { IFormationCatalogueJson } from "shared"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"

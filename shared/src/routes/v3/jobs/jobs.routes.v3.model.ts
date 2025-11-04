@@ -3,9 +3,10 @@ import { z } from "zod"
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
-import {
+import type {
   IJobsPartnersOfferApi,
-  IJobsPartnersRecruiterApi,
+  IJobsPartnersRecruiterApi} from "../../../models/jobsPartners.model.js";
+import {
   JOBPARTNERS_LABEL,
   ZJobsPartnersOfferApi,
   ZJobsPartnersOfferPrivate,

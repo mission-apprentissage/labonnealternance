@@ -3,12 +3,12 @@ import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixt
 import { clichyFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { saveGeolocationInCache } from "@/services/cacheGeolocation.service"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 
 describe("fillLocationInfosForPartners", () => {
   useMongo()

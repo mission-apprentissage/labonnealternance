@@ -3,8 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 
-import { RechercheMobileForm } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMobileForm"
-import { IRecherchePageParams, RechercheViewType } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheMobileForm } from "./RechercheMobileForm"
+import type { IRecherchePageParams} from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils";
+import { RechercheViewType } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 const titles = {
   default: "Trouvez emploi et formation",

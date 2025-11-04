@@ -1,15 +1,15 @@
 import { badRequest } from "@hapi/boom"
 import { matchSorter } from "match-sorter"
-import { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "shared"
+import type { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils/index"
 
+import { getRomesFromCatalogue } from "./catalogue.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 
-import { getDbCollection } from "../common/utils/mongodbUtils"
 
-import { getRomesFromCatalogue } from "./catalogue.service"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheMetierLoading = false

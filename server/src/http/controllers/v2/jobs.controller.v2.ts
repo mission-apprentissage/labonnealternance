@@ -2,15 +2,15 @@ import { badRequest, internal } from "@hapi/boom"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getUserFromRequest } from "@/security/authenticationService"
 
-import { s3SignedUrl } from "../../../common/utils/awsUtils"
-import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../../../common/utils/sentryUtils"
-import dayjs from "../../../services/dayjs.service"
-import { addExpirationPeriod, getFormulaires } from "../../../services/formulaire.service"
-import { Server } from "../../server"
+import { s3SignedUrl } from "@/common/utils/awsUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import dayjs from "@/services/dayjs.service"
+import { addExpirationPeriod, getFormulaires } from "@/services/formulaire.service"
+import type { Server } from "@/http/server"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const config = {
   rateLimit: {

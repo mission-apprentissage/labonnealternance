@@ -1,10 +1,12 @@
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners} from "shared/models/jobsPartnersComputed.model";
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { joinNonNullStrings } from "shared/utils/index"
 
-import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners";
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 const API_ADRESSE_MIN_SCORE = 0.7 // entre 0 et 1, 1 signifiant que l'api est certaine de sa réponse
 // j'ai pu constater des adresses à strasbourg alors que la vraie adresse est à Caen avec un score à 0.52 : https://api-adresse.data.gouv.fr/search?q=General%20Eisenhower%2014000%20CAEN

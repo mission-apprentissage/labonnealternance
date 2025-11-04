@@ -1,4 +1,4 @@
-import { StaticImageData } from "next/image"
+import type { StaticImageData } from "next/image"
 
 import opco2i from "@/public/images/logosPartenaires/partenaire-opco-2i.webp"
 import opcoafdas from "@/public/images/logosPartenaires/partenaire-opco-afdas.webp"

@@ -1,19 +1,20 @@
 import { ApiClient } from "api-alternance-sdk"
 import { ObjectId } from "bson"
 import type { AnyBulkWriteOperation } from "mongodb"
-import { ZFTJobRaw, type IFTJobRaw } from "shared/models/index"
+import { ZFTJobRaw  } from "shared/models/index"
+import type {IFTJobRaw} from "shared/models/index";
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawFranceTravailModel from "shared/models/rawFranceTravail.model"
 
-import { getAllFTJobsByDepartments } from "@/common/apis/franceTravail/franceTravail.client"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
-
-import { logger } from "../../../common/logger"
-import { notifyToSlack } from "../../../common/utils/slackUtils"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
 
 import { franceTravailJobsToJobsPartners } from "./franceTravailMapper"
+import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+
+import config from "@/config"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getAllFTJobsByDepartments } from "@/common/apis/franceTravail/franceTravail.client"
 
 export const importFranceTravailRaw = async () => {
   const now = new Date()

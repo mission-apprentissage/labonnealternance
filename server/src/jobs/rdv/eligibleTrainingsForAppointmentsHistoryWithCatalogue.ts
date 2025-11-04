@@ -1,10 +1,10 @@
 import { ObjectId } from "bson"
-import { IEligibleTrainingsForAppointment } from "shared"
+import type { IEligibleTrainingsForAppointment } from "shared"
 
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
-import { logger } from "../../common/logger"
 
 /**
  * @description remove ETFA training that are not in formationcatalogues

@@ -1,10 +1,10 @@
 import brevo, { CreateWebhook } from "@getbrevo/brevo"
-import { ColumnOption } from "csv-stringify"
+import type { ColumnOption } from "csv-stringify"
 import { stringify } from "csv-stringify/sync"
 import dayjs from "dayjs"
 
-import { logger } from "../common/logger"
-import config from "../config"
+import { logger } from "@/common/logger"
+import config from "@/config"
 
 const clientBrevo = new brevo.WebhooksApi()
 clientBrevo.setApiKey(brevo.WebhooksApiApiKeys.apiKey, config.smtp.brevoApiKey)

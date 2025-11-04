@@ -1,14 +1,14 @@
 import nock from "nock"
-import { IDiagorienteClassificationResponseSchema } from "shared"
+import type { IDiagorienteClassificationResponseSchema } from "shared"
 import { cacheDiagorienteFixture } from "shared/fixtures/cacheDiagoriente.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { fillRomeForPartners } from "./fillRomeForPartners"
 import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "@/common/apis/diagoriente/diagoriente.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { fillRomeForPartners } from "./fillRomeForPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 

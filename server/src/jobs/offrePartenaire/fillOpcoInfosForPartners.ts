@@ -1,10 +1,12 @@
 import { OPCOS_LABEL } from "shared/constants/index"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model";
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
-import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners";
 import { getOpcosData } from "@/services/etablissement.service"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillOpcoInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["workplace_idcc", "workplace_opco"] as const satisfies (keyof IComputedJobsPartners)[]

@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-import { Map, Popup } from "mapbox-gl"
+import type { Map} from "mapbox-gl";
+import { Popup } from "mapbox-gl"
 import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 import { createPortal } from "react-dom"

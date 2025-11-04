@@ -4,7 +4,7 @@ import { assertUnreachable, zRoutes } from "shared"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
-import { Server } from "@/http/server"
+import type { Server } from "@/http/server"
 import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { getUserFromRequest } from "@/security/authenticationService"
 import {

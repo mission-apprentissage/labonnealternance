@@ -2,10 +2,10 @@ import { ObjectId } from "mongodb"
 import { TrafficType } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { hashEmail, saveApplicationTrafficSourceIfAny, saveJobTrafficSourceIfAny, saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { hashEmail, saveApplicationTrafficSourceIfAny, saveJobTrafficSourceIfAny, saveUserTrafficSourceIfAny } from "./trafficSource.service"
 
 useMongo()
 

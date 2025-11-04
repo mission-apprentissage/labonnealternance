@@ -3,14 +3,15 @@ import { pipeline } from "node:stream/promises"
 
 import type { AnyBulkWriteOperation, Filter } from "mongodb"
 import jobsPartnersModel from "shared/models/jobsPartners.model"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model";
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const groupSize = 500
 const zodModel = jobsPartnersModel.zod

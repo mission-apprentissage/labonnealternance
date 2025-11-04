@@ -7,13 +7,13 @@ import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/re
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models/index"
+import type { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { createJob, startRecruiterChangeStream } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { createJob, startRecruiterChangeStream } from "./formulaire.service"
 
 useMongo()
 
@@ -106,7 +106,7 @@ describe("createJob", () => {
         coeur_metier: "test",
       },
     ]
-    expect.soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoir_faire do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -122,7 +122,7 @@ describe("createJob", () => {
         ],
       },
     ]
-    expect.soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoirs do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -138,13 +138,13 @@ describe("createJob", () => {
         ],
       },
     ]
-    expect.soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when rome_label do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.rome_label = "test"
     expect
-      .soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
       .rejects.toThrow(
         `L'intitulé du code ROME ne correspond pas au référentiel : ${removeAccents(referentielRome.rome.intitule.toLowerCase())}, reçu ${removeAccents(job.rome_label.toLowerCase())}`
       )
@@ -153,7 +153,7 @@ describe("createJob", () => {
     const job = generateValidJobWritable()
     job.rome_appellation_label = "test"
     expect
-      .soft(() => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
   })
 })

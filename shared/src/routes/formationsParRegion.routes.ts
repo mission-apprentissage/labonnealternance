@@ -4,7 +4,8 @@ import { ZLbaItemFormationResult } from "../models/lbaItem.model.js"
 import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params.js"
-import { IRoutesDef, ZResError } from "./common.routes.js"
+import type { IRoutesDef} from "./common.routes.js";
+import { ZResError } from "./common.routes.js"
 
 export const zV1FormationsParRegion = {
   get: {

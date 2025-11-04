@@ -1,12 +1,12 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 
-import { logger } from "../../common/logger"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import mailer from "../../services/mailer.service"
+import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
+import dayjs from "@/services/dayjs.service"
+import mailer from "@/services/mailer.service"
+import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 interface IEtablissementsWithouOptMode {
   _id: {

@@ -1,15 +1,16 @@
 import { badRequest, Boom, internal, isBoom } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import { FastifyError } from "fastify"
+import type { FastifyError } from "fastify"
 import { hasZodFastifySchemaValidationErrors, isResponseSerializationError } from "fastify-type-provider-zod"
-import joi, { ValidationError } from "joi"
-import { IResError } from "shared/routes/common.routes"
+import type { ValidationError } from "joi";
+import joi from "joi"
+import type { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
 
-import config from "@/config"
 
-import { stopSession } from "../../common/utils/session.service"
-import { Server } from "../server"
+import { stopSession } from "@/common/utils/session.service"
+import type { Server } from "@/http/server"
+import config from "@/config"
 
 function getZodMessageError(error: ZodError, context: string): string {
   const normalizedContext = context ? `${context}.` : ""

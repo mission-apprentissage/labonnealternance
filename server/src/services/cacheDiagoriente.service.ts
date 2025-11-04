@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb"
-import { IDiagorienteClassificationSchema } from "shared"
+import type { IDiagorienteClassificationSchema } from "shared"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiagorienteRomeClassification } from "@/common/apis/diagoriente/diagoriente.client"
 
-import { getDbCollection } from "../common/utils/mongodbUtils"
 
 const getRomesFromCacheDiagoriente = async (queries: IDiagorienteClassificationSchema[]): Promise<(string | null)[]> => {
   const filteredQueries = queries.flatMap(({ title, sector }) => ({ title, sector }))

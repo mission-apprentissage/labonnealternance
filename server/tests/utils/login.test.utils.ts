@@ -1,12 +1,12 @@
 import { OPCOS_LABEL } from "shared/constants/index"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 
+import { saveAdminUserTest, saveCfaUserTest, saveOpcoUserTest, validatedUserStatus } from "./user.test.utils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { Server } from "@/http/server"
+import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLinkToken } from "@/services/appLinks.service"
 
-import { saveAdminUserTest, saveCfaUserTest, saveOpcoUserTest, validatedUserStatus } from "./user.test.utils"
 
 export const createAndLogUser = async (httpClient: () => Server, username: string, { type }: { type: "CFA" | "ADMIN" | "OPCO" }) => {
   const email = `${username.toLowerCase()}@mail.com`

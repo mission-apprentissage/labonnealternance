@@ -1,10 +1,11 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 import { ZPointGeometry } from "./address.model.js"
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor} from "./common.js";
+import { zObjectId } from "./common.js"
 
 // Define schemas for nested objects
 const geoCoordSchema = z.string()

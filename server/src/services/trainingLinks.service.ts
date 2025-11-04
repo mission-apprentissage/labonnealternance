@@ -2,16 +2,16 @@ import { URL } from "url"
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { getDistance } from "geolib"
-import { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
+import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getCommuneByCodeInsee, getCommuneByCodePostal } from "@/services/referentiel/commune/commune.referentiel.service"
 
-import { asyncForEach } from "../common/utils/asyncUtils"
-import config from "../config.js"
 
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
+import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
+import config from "@/config.js"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 interface IWish {
   id: string

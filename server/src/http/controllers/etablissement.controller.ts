@@ -4,16 +4,16 @@ import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
 
-import { sanitizeTextField } from "../../common/utils/stringUtils"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
-import { Server } from "../server"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import dayjs from "@/services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
+import type { Server } from "@/http/server"
+import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Etablissement server.
@@ -101,7 +101,7 @@ export default (server: Server) => {
       emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
       await Promise.all(
-        emailsAffelnet.map((email) =>
+        emailsAffelnet.map(async (email) =>
           mailer.sendEmail({
             // TODO string | null
             to: email as string,
@@ -193,7 +193,7 @@ export default (server: Server) => {
       emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
       await Promise.all(
-        emailsParcoursup.map((email) =>
+        emailsParcoursup.map(async (email) =>
           mailer.sendEmail({
             // TODO string | null
             to: email as string,

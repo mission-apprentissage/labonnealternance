@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 
-import { getItemReference, getResultItemUrl, ItemReferenceLike, type IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { ItemReferenceLike, getItemReference, getResultItemUrl, type IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils";
 
 export function useResultItemUrl(item: ItemReferenceLike, rechercheParams: IRecherchePageParams): string {
   const url = useMemo(() => {

@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb"
-import { IJob } from "shared"
+import type { IJob } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
 
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 type IDuplicate = {
   _id: string

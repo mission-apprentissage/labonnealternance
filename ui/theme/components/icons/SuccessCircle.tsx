@@ -1,4 +1,5 @@
-import { SvgIcon, SvgIconProps } from "@mui/material"
+import type { SvgIconProps } from "@mui/material";
+import { SvgIcon } from "@mui/material"
 
 const SuccessCircle = ({ width = undefined, fillHexaColor, ...props }: SvgIconProps & { fillHexaColor: string }) => (
   <SvgIcon viewBox="0 0 34 34" sx={{ width: width }} {...props}>

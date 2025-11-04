@@ -1,20 +1,21 @@
 import dayjs from "dayjs"
-import { Filter, ObjectId } from "mongodb"
-import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
+import type { Filter} from "mongodb";
+import { ObjectId } from "mongodb"
+import type { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 import { mailType } from "shared/constants/appointment"
-import { ReferrerObject } from "shared/constants/referers"
+import type { ReferrerObject } from "shared/constants/referers"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import config from "@/config"
 
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer from "./mailer.service"
 import { getReferrerByKeyName } from "./referrers.service"
 import { getLBALink } from "./trainingLinks.service"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
@@ -26,9 +27,9 @@ const findById = async (id: ObjectId | string): Promise<IAppointment | null> => 
 
 const find = (conditions: Filter<IAppointment>) => getDbCollection("appointments").find(conditions)
 
-const findOne = (conditions: Filter<IAppointment>) => getDbCollection("appointments").findOne(conditions)
+const findOne = async (conditions: Filter<IAppointment>) => getDbCollection("appointments").findOne(conditions)
 
-const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { returnDocument: "after" })
+const findOneAndUpdate = async (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { returnDocument: "after" })
 
 export { createAppointment, find, findById, findOne, findOneAndUpdate }
 

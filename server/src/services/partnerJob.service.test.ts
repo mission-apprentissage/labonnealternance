@@ -1,13 +1,13 @@
 import { ObjectId } from "mongodb"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { getPartnerJobById, getPartnerJobs } from "./partnerJob.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { getPartnerJobById, getPartnerJobs } from "./partnerJob.service"
 
 useMongo()
 

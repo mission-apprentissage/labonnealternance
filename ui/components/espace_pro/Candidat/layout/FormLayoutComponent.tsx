@@ -1,10 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
-import { PropsWithChildren, ReactNode } from "react"
-
-import { Footer } from "@/app/_components/Footer"
+import type { PropsWithChildren, ReactNode } from "react"
 
 import { FormHeaderComponent } from "./FormHeaderComponent"
+import { Footer } from "@/app/_components/Footer"
+
 
 export const FormLayoutComponent = ({ children, headerText }: PropsWithChildren<{ headerText: ReactNode }>) => {
   return (

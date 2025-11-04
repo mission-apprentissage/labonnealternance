@@ -1,8 +1,9 @@
 import { internal } from "@hapi/boom"
-import {
+import type {
   IClassificationLabBatchResponse,
   IClassificationLabResponse,
-  IClassificationLabVersionResponse,
+  IClassificationLabVersionResponse} from "shared/models/cacheClassification.model";
+import {
   ZClassificationLabBatchResponse,
   ZClassificationLabResponse,
   ZClassificationLabVersionResponse,

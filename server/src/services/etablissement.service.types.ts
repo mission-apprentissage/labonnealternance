@@ -1,5 +1,5 @@
-import { IAdresseCFA, IRecruiter, IUserRecruteur } from "shared"
-import { Jsonify } from "type-fest"
+import type { IAdresseCFA, IRecruiter, IUserRecruteur } from "shared"
+import type { Jsonify } from "type-fest"
 
 export interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {

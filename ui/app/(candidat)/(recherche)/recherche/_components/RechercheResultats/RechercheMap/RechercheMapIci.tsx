@@ -3,11 +3,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
-import { LngLat, Map as Mapbox } from "mapbox-gl"
+import type { Map as Mapbox } from "mapbox-gl";
+import { LngLat } from "mapbox-gl"
 import { useCallback, useEffect, useState } from "react"
 
+import { earthCircumferenceKm, mapboxTileSize } from "."
 import { RADIUS_OPTIONS_VALUES } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheRayonSelect"
-import { earthCircumferenceKm, mapboxTileSize } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 

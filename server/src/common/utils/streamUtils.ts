@@ -1,4 +1,6 @@
-import Stream, { Transform, TransformCallback, TransformOptions } from "node:stream"
+import type { TransformCallback, TransformOptions } from "node:stream";
+import type Stream from "node:stream";
+import { Transform } from "node:stream"
 import { Readable } from "stream"
 
 type AccumulateDataOptions<TAcc> = TransformOptions & { accumulator?: TAcc }

@@ -9,15 +9,15 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS } from "shared/models/index"
 
-import config from "@/config"
 
-import { sendCsvToFranceTravail } from "../../common/apis/franceTravail/franceTravail.client"
-import { logger } from "../../common/logger"
-import { getDepartmentByZipCode } from "../../common/territoires"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import dayjs from "../../services/dayjs.service"
+import { sendCsvToFranceTravail } from "@/common/apis/franceTravail/franceTravail.client"
+import { logger } from "@/common/logger"
+import { getDepartmentByZipCode } from "@/common/territoires"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import dayjs from "@/services/dayjs.service"
+import config from "@/config"
 
 const pipelineAsync = promisify(pipeline)
 

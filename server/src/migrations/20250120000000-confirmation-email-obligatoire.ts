@@ -1,5 +1,6 @@
 import { VALIDATION_UTILISATEUR } from "shared/constants/index"
-import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/index"
+import type { IUserStatusEvent, IUserWithAccount} from "shared/models/index";
+import { UserEventType } from "shared/models/index"
 
 import { deduplicateBy } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

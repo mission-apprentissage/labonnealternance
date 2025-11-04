@@ -1,11 +1,11 @@
 import { Typography, Box, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
-import { DsfrLink } from "../dsfr/DsfrLink"
 
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const RessourcesCFA = () => {
   return (

@@ -1,5 +1,5 @@
 import { ObjectId } from "bson"
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
@@ -9,7 +9,8 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { zCallerParam } from "../routes/_params.js"
 import { validateSIRET } from "../validators/siretValidator.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor} from "./common.js";
+import { zObjectId } from "./common.js"
 
 const collectionName = "applications" as const
 

@@ -1,4 +1,4 @@
-import { ZodEnum } from "zod"
+import type { ZodEnum } from "zod"
 
 import { CODE_INSEE_REGEX, CODE_NAF_REGEX, CODE_POSTAL_REGEX, CODE_ROME_REGEX, RNCP_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex.js"
 import { validatePhone } from "../../validators/phoneValidator.js"

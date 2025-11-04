@@ -1,10 +1,10 @@
 import { Box } from "@mui/material"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
-import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 import { CandidatureLbaModal } from "./CandidatureLbaModal"
 import { useSubmitCandidature } from "./services/submitCandidature"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 const WidgetCandidatureLba = ({ item, caller }: { item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson; caller: string }) => {
   const modalControls = useDisclosure()

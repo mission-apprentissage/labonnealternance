@@ -1,8 +1,10 @@
 "use client"
 
-import { Box, SxProps, Theme } from "@mui/material"
+import type { SxProps, Theme } from "@mui/material";
+import { Box } from "@mui/material"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { RefObject, useEffect, useMemo, useRef } from "react"
+import type { RefObject} from "react";
+import { useEffect, useMemo, useRef } from "react"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }
 
@@ -25,7 +27,7 @@ export function VirtualContainer({
   ref.current = parentRef.current
 
   const elements: VirtualElement[] = useMemo(() => {
-    return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
+    return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: async () => value } as VirtualElement)))
   }, [rawElements])
 
   const columnVirtualizer = useVirtualizer({

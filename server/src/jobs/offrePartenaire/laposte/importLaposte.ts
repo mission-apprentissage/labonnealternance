@@ -1,12 +1,12 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawLaposteModel from "shared/models/rawLaposte.model"
 
-import config from "../../../config"
-import { importFromStreamInXml } from "../importFromStreamInXml"
-import { importFromUrlInXml } from "../importFromUrlInXml"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
-
 import { laposteJobToJobsPartners, ZLaposteJob } from "./laposteMapper"
+import config from "@/config"
+import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
+import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+
 
 const rawCollectionName = rawLaposteModel.collectionName
 const offerXmlTag = "offre"

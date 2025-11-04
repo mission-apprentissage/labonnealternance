@@ -1,9 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 
+import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
 const DidYouKnow = () => {
   return (

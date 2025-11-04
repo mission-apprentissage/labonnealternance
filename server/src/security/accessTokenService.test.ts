@@ -4,18 +4,19 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { describe, expect, it } from "vitest"
 
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.test.utils"
-
-import {
+import type {
   IUserWithAccountForAccessToken,
   SchemaWithSecurity,
-  UserForAccessToken,
+  UserForAccessToken} from "./accessTokenService";
+import {
   generateAccessToken,
   generateScope,
   parseAccessToken,
   userWithAccountToUserForToken,
 } from "./accessTokenService"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { entrepriseStatusEventFactory, roleManagementEventFactory, saveEntrepriseUserTest } from "@tests/utils/user.test.utils"
+
 
 describe("accessTokenService", () => {
   let userACTIVE: IUserWithAccountForAccessToken
@@ -86,8 +87,8 @@ describe("accessTokenService", () => {
       skip: "3",
     },
   } as const
-  const expectTokenValid = (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).resolves.toBeTruthy()
-  const expectTokenInvalid = (token: string) => expect(() => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow()
+  const expectTokenValid = async (token: string) => expect(parseAccessToken(token, schema, options.params, options.querystring)).resolves.toBeTruthy()
+  const expectTokenInvalid = async (token: string) => expect(async () => parseAccessToken(token, schema, options.params, options.querystring)).rejects.toThrow()
 
   describe("valid tokens", () => {
     describe.each<[string, () => UserForAccessToken]>([

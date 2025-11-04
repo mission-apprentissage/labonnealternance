@@ -1,18 +1,19 @@
 import { forbidden, internal } from "@hapi/boom"
-import jwt, { SignOptions } from "jsonwebtoken"
+import type { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 import { ObjectId } from "mongodb"
-import { PathParam, QueryString } from "shared/helpers/generateUri"
-import { IUserRecruteur } from "shared/models/index"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { Jsonify } from "type-fest"
-import { AnyZodObject, z } from "zod"
+import type { PathParam, QueryString } from "shared/helpers/generateUri"
+import type { IUserRecruteur } from "shared/models/index"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import type { Jsonify } from "type-fest"
+import type { AnyZodObject, z } from "zod"
 
+import { controlUserState } from "@/services/login.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
-import { controlUserState } from "../services/login.service"
 
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083

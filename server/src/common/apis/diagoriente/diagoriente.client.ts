@@ -1,5 +1,6 @@
 import { internal } from "@hapi/boom"
-import { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema, ZDiagorienteClassificationResponseSchema } from "shared"
+import type { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema} from "shared";
+import { ZDiagorienteClassificationResponseSchema } from "shared"
 import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"

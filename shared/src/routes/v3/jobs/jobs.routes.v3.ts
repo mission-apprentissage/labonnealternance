@@ -2,7 +2,7 @@ import { zObjectId } from "zod-mongodb-schema"
 
 import { z } from "../../../helpers/zodWithOpenApi.js"
 import { ZComputedJobsPartnersWrite } from "../../../models/jobsPartnersComputed.model.js"
-import { IRoutesDef } from "../../common.routes.js"
+import type { IRoutesDef } from "../../common.routes.js"
 
 import { zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobOfferPublishingV3, zJobSearchApiV3Query, zJobSearchApiV3Response } from "./jobs.routes.v3.model.js"
 

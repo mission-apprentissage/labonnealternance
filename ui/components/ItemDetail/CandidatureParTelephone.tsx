@@ -2,10 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 
+import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
-import { ModalReadOnly } from "../ModalReadOnly"
 
 export default function CandidatureParTelephone({ companyName, contactPhone, contactName }: { companyName: string; contactPhone: string; contactName: string }) {
   const { isOpen, onClose, onOpen } = useDisclosure()

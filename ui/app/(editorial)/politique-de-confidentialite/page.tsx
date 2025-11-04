@@ -1,9 +1,9 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
+import PolitiqueDeConfidentialiteRendererClient from "./PDCRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
 
-import PolitiqueDeConfidentialiteRendererClient from "./PDCRendererClient"
 
 export const metadata: Metadata = {
   title: PAGES.static.politiqueConfidentialite.getMetadata().title,

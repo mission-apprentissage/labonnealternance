@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
+import { RomeDetail } from "./RomeDetail"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
 
-import { RomeDetail } from "./RomeDetail"
 
 const fakeLoadingDuration = 1000
 

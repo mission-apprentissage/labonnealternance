@@ -1,13 +1,13 @@
 import admzip from "adm-zip"
 import iconv from "iconv-lite"
 import { ObjectId } from "mongodb"
-import { IReferentielRome } from "shared/index"
+import type { IReferentielRome } from "shared/index"
 import * as xml2js from "xml2js"
 
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { asyncForEach } from "../../common/utils/asyncUtils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {
   const tempsItems = !(genericItem.items.item instanceof Array) ? [genericItem.items.item] : genericItem.items.item

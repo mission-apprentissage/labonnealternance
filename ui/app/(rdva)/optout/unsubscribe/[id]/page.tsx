@@ -4,11 +4,11 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Container, Typography, Box, Stack, TextareaAutosize, Radio, RadioGroup, FormControlLabel, FormControl } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { IEtablissementJson } from "shared"
+import type { IEtablissementJson } from "shared"
 
+import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
 
-import { SuccessCircle } from "../../../../../theme/components/icons"
 
 type IEtablissementPartial = Pick<
   IEtablissementJson,

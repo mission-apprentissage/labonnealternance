@@ -2,12 +2,12 @@ import { ObjectId } from "mongodb"
 import nock from "nock"
 import { describe, expect, it, vi } from "vitest"
 
+import { searchForFtJobs } from "./franceTravail.client"
+import { generateFtJobFixture, nockFranceTravailOffreSearch, nockFranceTravailTokenAccessOffre } from "./franceTravail.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { searchForFtJobs } from "./franceTravail.client"
-import { generateFtJobFixture, nockFranceTravailOffreSearch, nockFranceTravailTokenAccessOffre } from "./franceTravail.client.fixture"
 
 useMongo()
 

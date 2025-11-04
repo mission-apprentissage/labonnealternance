@@ -1,13 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { AlgoHome } from "./_components/AlgoHome"
+import { AmeliorerLBA } from "./_components/AmeliorerLBA"
+import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
+import { HomeRechercheForm } from "./_components/HomeRechercheForm"
+import { HowTo } from "./_components/HowTo"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { AlgoHome } from "@/app/(home)/_components/AlgoHome"
-import { AmeliorerLBA } from "@/app/(home)/_components/AmeliorerLBA"
-import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
-import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
-import { HowTo } from "@/app/(home)/_components/HowTo"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)

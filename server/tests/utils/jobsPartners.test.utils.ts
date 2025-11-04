@@ -1,10 +1,11 @@
 import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { IJobsPartnersOfferPrivate, ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import { ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { saveDbEntity } from "./user.test.utils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+
 
 export async function createComputedJobPartner(data: Partial<IComputedJobsPartners> = {}) {
   const computedJobPartner = {

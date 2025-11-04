@@ -1,6 +1,6 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Box, Typography } from "@mui/material"
-import { ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemPartnerJobJson } from "shared"
 
 const LbaJobCompetences = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   let currentSkillGroup = null

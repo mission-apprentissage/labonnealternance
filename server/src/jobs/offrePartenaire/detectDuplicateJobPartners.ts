@@ -1,20 +1,25 @@
 import { groupBy } from "lodash-es"
-import { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
+import type { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
-import { IJob, JOB_STATUS, JOB_STATUS_ENGLISH, ZGlobalAddress } from "shared/models/index"
-import { IComputedJobPartnersDuplicateRef } from "shared/models/jobPartnersDuplicateRef"
-import jobsPartnersModel, { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import jobsPartnersComputedModel, { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import recruiterModel, { IRecruiter } from "shared/models/recruiter.model"
+import type { IJob} from "shared/models/index";
+import { JOB_STATUS, JOB_STATUS_ENGLISH, ZGlobalAddress } from "shared/models/index"
+import type { IComputedJobPartnersDuplicateRef } from "shared/models/jobPartnersDuplicateRef"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model";
+import jobsPartnersModel from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners} from "shared/models/jobsPartnersComputed.model";
+import jobsPartnersComputedModel, { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IRecruiter } from "shared/models/recruiter.model";
+import recruiterModel from "shared/models/recruiter.model"
 import { removeAccents } from "shared/utils/index"
 import * as stringSimilarity from "string-similarity"
 
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners";
 import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 // champs utilisés pour les projections
 const fieldsRead = [

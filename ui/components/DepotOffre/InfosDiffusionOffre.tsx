@@ -2,10 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Typography, Box } from "@mui/material"
 import Image from "next/image"
 
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoCircle } from "@/theme/components/icons"
 
-import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
 
 export const InfosDiffusionOffre = () => {
   return (

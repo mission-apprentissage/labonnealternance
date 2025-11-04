@@ -1,19 +1,3 @@
-import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
-import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
-import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
-import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
-import {
-  processAtlas,
-  processMeteojob,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-  processViteUnEmploi,
-} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
-import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
-import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
-import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
-import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
-import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
@@ -71,6 +55,22 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
+import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
+import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
+import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
+import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
+import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
+import {
+  processAtlas,
+  processMeteojob,
+  processNosTalentsNosEmplois,
+  processToulouseMetropole,
+  processViteUnEmploi,
+} from "./offrePartenaire/clever-connect/processCleverConnect"
+import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
+import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
+import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 
 type SimpleJobDefinition = {
   fct: () => Promise<unknown>

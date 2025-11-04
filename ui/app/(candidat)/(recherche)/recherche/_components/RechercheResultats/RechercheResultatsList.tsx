@@ -5,14 +5,17 @@ import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { RechercheResultatsFooter } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheResultatsFooter"
-import { ResultCard } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/ResultatListCard"
-import { Whisper } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/Whisper"
+import { RechercheResultatsFooter } from "./RechercheResultatsFooter"
+import { ResultCard } from "./ResultatListCard"
+import { Whisper } from "./Whisper"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
-import { ILbaItem, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem} from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults";
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useSearchViewNotifier } from "@/app/(candidat)/(recherche)/recherche/_hooks/useSearchViewNotifier"
-import { IWhisper, useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
-import { IRecherchePageParams, isItemReferenceInList, type WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IWhisper} from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers";
+import { useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
+import type { IRecherchePageParams,WithRecherchePageParams} from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils";
+import { isItemReferenceInList  } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"

@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 
-import { MapPin2Fill } from "../../../../theme/components/icons"
+import { MapPin2Fill } from "@/theme/components/icons"
 
 type Props = {
   entrepriseRaisonSociale: string

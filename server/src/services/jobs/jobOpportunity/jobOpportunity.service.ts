@@ -1,55 +1,60 @@
 import Boom, { badRequest, internal, notFound } from "@hapi/boom"
-import { IApiAlternanceTokenData } from "api-alternance-sdk"
+import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import dayjs from "dayjs"
 import { DateTime } from "luxon"
-import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { Document, Filter} from "mongodb";
+import { ObjectId } from "mongodb"
+import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob} from "shared";
+import { JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import {
+import type {
   IJobsPartnersOfferApi,
   IJobsPartnersOfferPrivate,
   IJobsPartnersOfferPrivateWithDistance,
-  INiveauDiplomeEuropeen,
+  INiveauDiplomeEuropeen} from "shared/models/jobsPartners.model";
+import {
   JOBPARTNERS_LABEL,
 } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, IComputedJobsPartnersWrite, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import {
+import type { IComputedJobsPartners, IComputedJobsPartnersWrite} from "shared/models/jobsPartnersComputed.model";
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type {
   IJobOfferApiReadV3,
-  IJobOfferPublishingV3,
+  IJobOfferPublishingV3,IJobOfferApiWriteV3, IJobRecruiterApiReadV3, IJobSearchApiV3Query, IJobSearchApiV3QueryResolved, IJobSearchApiV3Response} from "shared/routes/v3/jobs/jobs.routes.v3.model";
+import {
   JOB_PUBLISHING_STATUS,
   jobsRouteApiv3Converters,
   zJobOfferApiReadV3,
-  zJobRecruiterApiReadV3,
-  type IJobOfferApiWriteV3,
-  type IJobRecruiterApiReadV3,
-  type IJobSearchApiV3Query,
-  type IJobSearchApiV3QueryResolved,
-  type IJobSearchApiV3Response,
+  zJobRecruiterApiReadV3
+  
+  
+  
+  
+  
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
-import { normalizeDepartementToRegex } from "@/common/utils/geolib"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
-import { getPartnerJobs } from "@/services/partnerJob.service"
+
+import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import { logger } from "@/common/logger"
+import type { IApiError } from "@/common/utils/errorManager"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import config from "@/config"
+import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
+import { getSomeFtJobs } from "@/services/ftjob.service"
+import type { FTJob } from "@/services/ftjob.service.types"
+import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
+import type { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/services/lbaitem.shared.service.types"
+import { getLbaJobs, incrementLbaJobsViewCount } from "@/services/lbajob.service"
+import { jobsQueryValidator, jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
+import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
+
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
-
-import { logger } from "../../../common/logger"
-import { IApiError } from "../../../common/utils/errorManager"
-import { getDbCollection } from "../../../common/utils/mongodbUtils"
-import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
-import config from "../../../config"
-import { getRomesFromRncp } from "../../external/api-alternance/certification.service"
-import { getSomeFtJobs } from "../../ftjob.service"
-import { FTJob } from "../../ftjob.service.types"
-import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
-import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { getLbaJobs, incrementLbaJobsViewCount } from "../../lbajob.service"
-import { jobsQueryValidator, jobsQueryValidatorPrivate } from "../../queryValidator.service"
-import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
-
-import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import { getPartnerJobs } from "@/services/partnerJob.service"
+import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 
 // TODO : QUICK FIX & TO REFACTO WITH JOBS PARTNER RETURN MODEL
 export const getJobsFromApiPrivate = async ({
@@ -1095,8 +1100,8 @@ const incrementJobCounter = (fieldName: keyof IJobsPartnersOfferPrivate) => asyn
 }
 
 export const incrementSearchViewCount = incrementJobCounter("stats_search_view")
-export const incrementDetailViewCount = (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
-export const incrementPostulerClickCount = (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
+export const incrementDetailViewCount = async (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
+export const incrementPostulerClickCount = async (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
 
 export async function upsertJobsPartnersMulti({
   data,

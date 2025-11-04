@@ -3,11 +3,11 @@ import { Readable } from "stream"
 import { internal } from "@hapi/boom"
 import NodeClam from "clamscan"
 
-import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
 
-import { logger } from "../common/logger"
-import { notifyToSlack } from "../common/utils/slackUtils"
-import config from "../config"
+import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
+import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
 
 let clamavCache: Promise<NodeClam> | null = null
 let watcher: NodeJS.Timeout | null = null
@@ -23,7 +23,7 @@ async function createClamav() {
 
 async function getClamav(): Promise<NodeClam> {
   if (clamavCache === null) {
-    const retry = (error) => {
+    const retry = async (error) => {
       const err = internal("Error initializing ClamAV")
       err.cause = error
       logger.error(err)

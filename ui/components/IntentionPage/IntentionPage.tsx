@@ -5,16 +5,17 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import React, { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 
+import { IntensionPageNavigation } from "./IntensionPageNavigation"
+import { IntentionPageForm } from "./IntentionPageForm"
+import { IntensionPageResult } from "./IntensionPageResult"
+import type { IntentionPageFormValues } from "./IntentionPageForm";
+import { LoadingEmptySpace } from "@/components/espace_pro"
 import { DsfrIcon } from "@/components/DsfrIcon"
-import { IntentionPageForm, IntentionPageFormValues } from "@/components/IntentionPage/IntentionPageForm"
 import { MailCard } from "@/components/MailCard"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
 
-import { LoadingEmptySpace } from "../espace_pro"
 
-import { IntensionPageNavigation } from "./IntensionPageNavigation"
-import { IntensionPageResult } from "./IntensionPageResult"
 
 export type IntentionPageProps = {
   company_recruitment_intention: ApplicationIntention

@@ -6,55 +6,59 @@ import { isEmailBurner } from "burner-email-providers"
 import dayjs from "dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import {
-  ApplicationScanStatus,
-  CompanyFeebackSendStatus,
-  EMAIL_LOG_TYPE,
+import type {
   IApplicant,
   IApplication,
   IApplicationApiPrivateOutput,
   IApplicationApiPublicOutput,
   IJob,
   INewApplicationV1,
-  IRecruiter,
+  IRecruiter} from "shared";
+import {
+  ApplicationScanStatus,
+  CompanyFeebackSendStatus,
+  EMAIL_LOG_TYPE,
   JOB_STATUS,
   JobCollectionName,
   assertUnreachable,
   parseEnum,
 } from "shared"
-import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
+import type { RefusalReasons } from "shared/constants/application";
+import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { ITrackingCookies } from "shared/models/trafficSources.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IJobsPartnersOfferPrivate} from "shared/models/jobsPartners.model";
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { ITrackingCookies } from "shared/models/trafficSources.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
-import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
-import { logger } from "../common/logger"
-import { manageApiError } from "../common/utils/errorManager"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
-import config from "../config"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
 
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
-import { BrevoEventStatus } from "./brevo.service"
+import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
+import { manageApiError } from "@/common/utils/errorManager"
+import { logger } from "@/common/logger"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import type { UserForAccessToken} from "@/security/accessTokenService";
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20

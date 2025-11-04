@@ -1,5 +1,5 @@
-import { asyncForEach } from "../common/utils/asyncUtils"
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const up = async () => {
   const referentielRome = await getDbCollection("referentielromes").find({}).toArray()

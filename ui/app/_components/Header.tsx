@@ -1,6 +1,7 @@
-import { HeaderQuickAccessItem, type HeaderProps } from "@codegouvfr/react-dsfr/Header"
+import { HeaderQuickAccessItem  } from "@codegouvfr/react-dsfr/Header"
+import type {HeaderProps} from "@codegouvfr/react-dsfr/Header";
 
-import { PAGES } from "../../utils/routes.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export const DsfrHeaderProps: HeaderProps = {
   brandTop: (

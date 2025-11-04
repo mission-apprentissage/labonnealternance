@@ -1,4 +1,5 @@
-import { SvgIcon, SvgIconProps } from "@mui/material"
+import type { SvgIconProps } from "@mui/material";
+import { SvgIcon } from "@mui/material"
 
 export function Edit2Fill(props: SvgIconProps) {
   return (

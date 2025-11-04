@@ -2,7 +2,8 @@ import { OPCOS_LABEL } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor} from "./common.js";
+import { zObjectId } from "./common.js"
 
 const collectionName = "opcos" as const
 

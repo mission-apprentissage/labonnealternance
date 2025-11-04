@@ -2,22 +2,25 @@
 
 import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
-import { Map as Mapbox, type GeoJSONSource, type MapMouseEvent } from "mapbox-gl"
+import { Map as Mapbox   } from "mapbox-gl"
+import type {GeoJSONSource, MapMouseEvent} from "mapbox-gl";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
-import { RechercheMapIci } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapIci"
-import { RechercheMapPopup } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap/RechercheMapPopup"
+import { RechercheMapIci } from "./RechercheMap/RechercheMapIci"
+import { RechercheMapPopup } from "./RechercheMap/RechercheMapPopup"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useNavigateToResultItemDetail } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToResultItemDetail"
-import { useRechercheResults, type ILbaItem, type IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { useRechercheResults   } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type {ILbaItem, IUseRechercheResults} from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults";
+import type {
+  ItemReferenceLike,IRecherchePageParams, WithRecherchePageParams} from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils";
 import {
   deserializeItemReferences,
   isItemReferenceInList,
-  ItemReferenceLike,
-  serializeItemReferences,
-  type IRecherchePageParams,
-  type WithRecherchePageParams,
+  serializeItemReferences
+  
+  
 } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { ErrorBoundary } from "@/app/_components/ErrorComponent"
 import "mapbox-gl/dist/mapbox-gl.css"

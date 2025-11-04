@@ -1,14 +1,14 @@
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import anonymizedApplicantsModel from "shared/models/anonymizedApplicant.model"
 import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
 
 import { anonymizeAppointments } from "./anonymizeAppointments"
+import { logger } from "@/common/logger"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts")

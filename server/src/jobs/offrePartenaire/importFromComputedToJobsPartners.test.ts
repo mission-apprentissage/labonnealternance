@@ -1,11 +1,11 @@
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 
 useMongo()
 

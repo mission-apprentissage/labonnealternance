@@ -1,12 +1,12 @@
 //@copilot generate test for resumeToken.service.ts
-import { CollectionName } from "shared/models/models"
-import { IResumeTokenData } from "shared/models/resumeTokens.model"
+import type { CollectionName } from "shared/models/models"
+import type { IResumeTokenData } from "shared/models/resumeTokens.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { getResumeToken, storeResumeToken } from "./resumeToken.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-import { getResumeToken, storeResumeToken } from "./resumeToken.service"
 
 useMongo()
 

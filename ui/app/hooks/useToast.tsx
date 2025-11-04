@@ -1,4 +1,5 @@
-import { enqueueSnackbar, SharedProps } from "notistack"
+import type { SharedProps } from "notistack";
+import { enqueueSnackbar } from "notistack"
 import { useCallback } from "react"
 
 interface ToastOptions extends Pick<SharedProps, "variant" | "autoHideDuration"> {

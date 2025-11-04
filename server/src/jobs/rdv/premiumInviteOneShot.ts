@@ -1,13 +1,13 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
 
-import { logger } from "../../common/logger"
-import { isValidEmail } from "../../common/utils/isValidEmail"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
+import { logger } from "@/common/logger"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import config from "@/config"
+import dayjs from "@/services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
+import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Send a "Premium" reminder mail.

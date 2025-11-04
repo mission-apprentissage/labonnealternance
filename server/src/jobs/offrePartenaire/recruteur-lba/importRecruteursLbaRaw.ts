@@ -1,17 +1,19 @@
 import { createReadStream, createWriteStream, unlinkSync } from "node:fs"
 import { createRequire } from "node:module"
 import path from "node:path"
-import Stream, { Transform } from "node:stream"
+import type Stream from "node:stream";
+import { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
-import { AnyBulkWriteOperation } from "mongodb"
+import type { AnyBulkWriteOperation } from "mongodb"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
+import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 import { logger } from "@/common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
 import { createAssetsFolder, CURRENT_DIR_PATH } from "@/common/utils/fileUtils"
@@ -22,7 +24,6 @@ import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
 import { isEmailBlacklisted } from "@/services/application.service"
 
-import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
 const require = createRequire(import.meta.url)
 

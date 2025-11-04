@@ -6,14 +6,15 @@ import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile } from "shared/fixtures/application.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import { IReferentielRome, JOB_STATUS } from "shared/models/index"
+import type { IReferentielRome} from "shared/models/index";
+import { JOB_STATUS } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
 
-import { sendApplicationV2 } from "./application.service"
 
 useMongo()
 

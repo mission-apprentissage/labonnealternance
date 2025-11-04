@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
-import { detectModeFromParams, IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils";
+import { detectModeFromParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
 export function useNavigateToRecherchePage(searchParams: IRecherchePageParams): (newParams: Partial<IRecherchePageParams>, replace?: boolean) => void {

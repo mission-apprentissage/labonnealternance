@@ -1,10 +1,10 @@
 "use client"
 
 import { Box } from "@mui/material"
-import { type IMetierEnrichi } from "shared"
+import type {IMetierEnrichi} from "shared";
 
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
-import { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { apiGet } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 

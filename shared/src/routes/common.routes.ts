@@ -1,9 +1,9 @@
-import { oas31 } from "openapi3-ts"
-import { Jsonify } from "type-fest"
-import { AnyZodObject, ZodEffects, ZodType } from "zod"
+import type { oas31 } from "openapi3-ts"
+import type { Jsonify } from "type-fest"
+import type { AnyZodObject, ZodEffects, ZodType } from "zod"
 
 import { z } from "../helpers/zodWithOpenApi.js"
-import { AccessPermission, AccessRessouces } from "../security/permissions.js"
+import type { AccessPermission, AccessRessouces } from "../security/permissions.js"
 
 export const ZResError = z
   .object({

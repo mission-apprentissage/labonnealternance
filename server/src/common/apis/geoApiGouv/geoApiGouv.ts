@@ -1,10 +1,11 @@
 import { internal } from "@hapi/boom"
-import { IReferentielCommune, zReferentielCommune } from "shared/models/index"
+import type { IReferentielCommune} from "shared/models/index";
+import { zReferentielCommune } from "shared/models/index"
 import { z } from "zod"
 
+import getApiClient from "@/common/apis/client"
 import { apiRateLimiter } from "@/common/utils/apiUtils"
 
-import getApiClient from "../client"
 
 const zGeoApiCommune = zReferentielCommune.omit({ _id: true })
 

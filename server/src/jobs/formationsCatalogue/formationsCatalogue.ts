@@ -7,13 +7,13 @@ import streamJson from "stream-json"
 // eslint-disable-next-line import/extensions
 import streamers from "stream-json/streamers/StreamArray.js"
 
-import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { logger } from "../../common/logger"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service"
+import { logger } from "@/common/logger"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { countFormations, getAllFormationsFromCatalogue } from "@/services/catalogue.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 
 export const importCatalogueFormationJob = async () => {
   logger.info(" -- Import formations catalogue -- ")

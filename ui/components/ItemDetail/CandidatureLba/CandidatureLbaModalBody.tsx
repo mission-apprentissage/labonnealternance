@@ -1,22 +1,25 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography, CircularProgress, Input, FormControl, FormLabel, FormHelperText, Grid } from "@mui/material"
-import emailMisspelled, { Result, top100 } from "email-misspelled"
+import type { Result} from "email-misspelled";
+import emailMisspelled, { top100 } from "email-misspelled"
 import { useFormik } from "formik"
-import { ChangeEvent, useState } from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ChangeEvent} from "react";
+import { useState } from "react"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
-import ModalCloseButton from "@/app/_components/ModalCloseButton"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import InfoBanner from "@/components/InfoBanner/InfoBanner"
 
 import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
 import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
 import CandidatureLbaMessage from "./CandidatureLbaMessage"
 import { CandidatureTasksChecklist } from "./CandidatureTasksChecklist"
-import { ApplicationFormikSchema, getInitialSchemaValues, IApplicationSchemaInitValues } from "./services/getSchema"
+import type { IApplicationSchemaInitValues } from "./services/getSchema";
+import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/getSchema"
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 

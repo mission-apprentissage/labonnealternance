@@ -1,6 +1,7 @@
-import { IRecruiterJson } from "shared"
+import type { IRecruiterJson } from "shared"
 
-import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu";
+import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 
 export const CfaHomeEntrepriseMenu = ({

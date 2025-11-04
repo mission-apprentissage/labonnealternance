@@ -1,6 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IRoutesDef, ZResError } from "./common.routes.js"
+import type { IRoutesDef} from "./common.routes.js";
+import { ZResError } from "./common.routes.js"
 
 const zResponse = z
   .object({

@@ -1,11 +1,11 @@
-import { ReadonlyURLSearchParams } from "next/navigation"
+import type { ReadonlyURLSearchParams } from "next/navigation"
 import { typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
 import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
-import { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { PAGES } from "@/utils/routes.utils"
 
 const zIdeaType = z.nativeEnum(LBA_ITEM_TYPE_OLD)

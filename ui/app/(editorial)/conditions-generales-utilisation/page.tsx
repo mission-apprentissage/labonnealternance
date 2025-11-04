@@ -1,9 +1,9 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
+import CGURendererClient from "./CGURendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
 
-import CGURendererClient from "./CGURendererClient"
 
 export const metadata: Metadata = {
   title: PAGES.static.cgu.getMetadata().title,

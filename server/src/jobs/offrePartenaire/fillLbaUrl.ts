@@ -1,9 +1,10 @@
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model";
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { buildUrlLba } from "./importFromComputedToJobsPartners"
+
 
 const sourceFields = ["workplace_siret", "_id", "partner_label", "offer_title"] as const satisfies (keyof IComputedJobsPartners)[]
 

@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 
-import { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { localStorageGet } from "@/utils/localStorage"
 
 export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem }) {

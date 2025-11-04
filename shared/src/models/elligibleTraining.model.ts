@@ -1,9 +1,10 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor} from "./common.js";
+import { zObjectId } from "./common.js"
 import { ZEtablissement } from "./etablissement.model.js"
 
 const collectionName = "eligible_trainings_for_appointments" as const

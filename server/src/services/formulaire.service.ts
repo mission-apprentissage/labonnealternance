@@ -2,9 +2,9 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
-import {
-  assertUnreachable,
+import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, UpdateFilter } from "mongodb";
+import { ObjectId } from "mongodb"
+import type {
   IDelegation,
   IJob,
   IJobCreate,
@@ -12,34 +12,29 @@ import {
   IRecruiter,
   IRecruiterWithApplicationCount,
   ITrackingCookies,
-  IUserRecruteur,
+  IUserRecruteur} from "shared";
+import {
+  assertUnreachable,
   JOB_STATUS,
   JOB_STATUS_ENGLISH,
   removeAccents,
 } from "shared"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import type { OPCOS_LABEL} from "shared/constants/recruteur";
+import { NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
+import type { IEntreprise } from "shared/models/entreprise.model";
+import { EntrepriseStatus } from "shared/models/entreprise.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { logger } from "@/common/logger"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
-import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
-import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
-import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
 
-import { asyncForEach } from "../common/utils/asyncUtils"
-import { changeStreams, getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
-import config from "../config"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
 
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
@@ -52,6 +47,15 @@ import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
+import { anonymizeLbaJobsPartners } from "./partnerJob.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
+import { getResumeToken, storeResumeToken } from "./resumeToken.service"
+import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { logger } from "@/common/logger"
 
 type ISentDelegation = {
   raison_sociale: string

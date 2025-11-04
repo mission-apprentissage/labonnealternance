@@ -1,5 +1,6 @@
 import { Box } from "@mui/material"
-import React, { CSSProperties, useEffect, useRef, useState } from "react"
+import type { CSSProperties} from "react";
+import React, { useEffect, useRef, useState } from "react"
 
 export const CustomTooltip = ({
   children,

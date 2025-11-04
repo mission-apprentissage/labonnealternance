@@ -1,14 +1,15 @@
-import { ApplicationIntention } from "shared/constants/application"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJob } from "shared/models/index"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { ApplicationIntention } from "shared/constants/application"
+import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { IJob } from "shared/models/index"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes/index"
 
 import config from "@/config"
-import {
+import type {
   IApplicationTForUserToken,
   IUserWithAccountForAccessToken,
-  UserForAccessToken,
+  UserForAccessToken} from "@/security/accessTokenService";
+import {
   applicationToUserForToken,
   generateAccessToken,
   generateScope,

@@ -6,12 +6,12 @@ import { createRef, useEffect, useState } from "react"
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
+import { dayjs } from "@/common/dayjs"
 import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { useToast } from "@/app/hooks/useToast"
 import { apiGet, apiPatch } from "@/utils/api.utils"
 
-import { dayjs } from "../../../../../../common/dayjs"
-import { Disquette } from "../../../../../../theme/components/icons"
+import { Disquette } from "@/theme/components/icons"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
   const emailGestionnaireFocusRef = createRef()
@@ -180,7 +180,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
             />
             <Box sx={{ ml: 1 }}>
               {/*  @ts-expect-error: TODO */}
-              <Button onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
+              <Button onClick={async () => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
                 <Disquette sx={{ width: "16px", height: "16px" }} />
               </Button>
             </Box>

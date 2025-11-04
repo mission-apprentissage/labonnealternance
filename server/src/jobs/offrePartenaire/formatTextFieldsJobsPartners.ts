@@ -1,10 +1,11 @@
-import { Filter } from "mongodb"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import type { Filter } from "mongodb"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model";
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+
 
 const fields = ["workplace_description", "workplace_name", "offer_description", "offer_title"] as const satisfies (keyof IComputedJobsPartners)[]
 

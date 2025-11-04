@@ -1,23 +1,25 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { IBusinessError, IRecruiter, JOB_STATUS } from "shared"
+import type { IBusinessError, IRecruiter} from "shared";
+import { JOB_STATUS } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { upsertEntrepriseData } from "@/services/organization.service"
-import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
-import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
-import { logger } from "../../common/logger"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { EntrepriseData, getEntrepriseDataFromSiret } from "../../services/etablissement.service"
-import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../services/formulaire.service"
+import type { EntrepriseData} from "@/services/etablissement.service";
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
+import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "@/services/formulaire.service"
+import { setEntrepriseInError } from "@/services/userRecruteur.service"
+import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
+import { upsertEntrepriseData } from "@/services/organization.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")

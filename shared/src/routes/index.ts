@@ -1,12 +1,13 @@
-import { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
-import z, { ZodType } from "zod"
+import type { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
+import type { ZodType } from "zod";
+import type z from "zod"
 
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
 import { zClassificationRoute } from "./classification.routes.js"
-import { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
+import type { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
 import { zCoreRoutes } from "./core.routes.js"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes.js"
 import { zEmailsRoutes } from "./emails.routes.js"

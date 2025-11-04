@@ -1,4 +1,5 @@
-import { IPointGeometry, ZPointGeometry } from "shared"
+import type { IPointGeometry} from "shared";
+import { ZPointGeometry } from "shared"
 import { z } from "zod"
 
 import { simplifiedItems } from "./arrondissements"
