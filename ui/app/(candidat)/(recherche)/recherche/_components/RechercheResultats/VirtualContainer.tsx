@@ -45,7 +45,10 @@ export function VirtualContainer({
   })
 
   const virtualizerRef = useRef(columnVirtualizer)
-  virtualizerRef.current = columnVirtualizer
+
+  useEffect(() => {
+    virtualizerRef.current = columnVirtualizer
+  })
 
   useEffect(() => {
     virtualizerRef.current.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
