@@ -24,13 +24,17 @@ export function VirtualContainer({
   ref?: RefObject<HTMLElement>
 }) {
   const parentRef = useRef(null)
-  ref.current = parentRef.current
+
+  useEffect(() => {
+    if (ref) {
+      ref.current = parentRef.current
+    }
+  }, [ref])
 
   const elements: VirtualElement[] = useMemo(() => {
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: async () => value } as VirtualElement)))
   }, [rawElements])
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const columnVirtualizer = useVirtualizer({
     count: elements.length + 1,
     getScrollElement: () => parentRef.current,
@@ -40,9 +44,12 @@ export function VirtualContainer({
     overscan: 10,
   })
 
+  const virtualizerRef = useRef(columnVirtualizer)
+  virtualizerRef.current = columnVirtualizer
+
   useEffect(() => {
-    columnVirtualizer.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
-  }, [scrollToElementIndex, columnVirtualizer])
+    virtualizerRef.current.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
+  }, [scrollToElementIndex])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
   return (
