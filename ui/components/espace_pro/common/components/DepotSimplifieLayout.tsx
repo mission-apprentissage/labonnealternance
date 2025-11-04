@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import React from "react"
 
-import WidgetLayout from "../../../../app/_components/Layout"
+import WidgetLayout from "@/app/_components/Layout"
 
 export const DepotSimplifieLayout = ({ children }: { children: React.ReactNode }) => {
   return (

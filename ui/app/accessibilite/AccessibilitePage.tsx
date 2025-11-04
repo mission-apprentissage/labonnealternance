@@ -5,14 +5,14 @@ import { Box, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
-import { ExtendedRecordMap } from "notion-types"
+import type { ExtendedRecordMap } from "notion-types"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
-const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
+const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
 export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap }) => {
   return (

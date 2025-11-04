@@ -1,12 +1,11 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { logger } from "@/common/logger"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import config from "@/config"
+import dayjs from "@/services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { isValidEmail } from "../../common/utils/isValidEmail"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Send a "Premium" reminder mail.

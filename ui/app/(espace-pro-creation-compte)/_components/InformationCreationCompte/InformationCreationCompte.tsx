@@ -8,23 +8,23 @@ import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext } from "react"
 import { assertUnreachable, parseEnum } from "shared"
-import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
+import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
-import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
-import CustomInput from "@/app/_components/CustomInput"
-import { infosOpcos } from "@/theme/components/logos/infosOpcos"
-import { ApiError, apiPost } from "@/utils/api.utils"
+import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
+import { AUTHTYPE } from "@/common/contants"
+import { phoneValidation } from "@/common/validation/fieldValidations"
+import { AnimationContainer } from "@/components/espace_pro/index"
+import { WidgetContext } from "@/context/contextWidget"
+import { ArrowRightLine } from "@/theme/components/icons"
+import { getEntrepriseOpco } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
-
-import { OpcoSelect } from "../../../(espace-pro)/_components/OpcoSelect"
-import { AUTHTYPE } from "../../../../common/contants"
-import { phoneValidation } from "../../../../common/validation/fieldValidations"
-import { AnimationContainer } from "../../../../components/espace_pro/index"
-import { WidgetContext } from "../../../../context/contextWidget"
-import { ArrowRightLine } from "../../../../theme/components/icons"
-import { getEntrepriseOpco } from "../../../../utils/api"
+import { ApiError, apiPost } from "@/utils/api.utils"
+import { infosOpcos } from "@/theme/components/logos/infosOpcos"
+import CustomInput from "@/app/_components/CustomInput"
+import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/InformationOpco"
+import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 
 const Formulaire = ({
   onSubmit,
@@ -46,7 +46,7 @@ const Formulaire = ({
 
   const { data: opcoData } = useQuery({
     queryKey: ["getEntrepriseOpco", establishment_siret],
-    queryFn: () => getEntrepriseOpco(establishment_siret),
+    queryFn: async () => getEntrepriseOpco(establishment_siret),
   })
 
   const parsedOpco = parseEnum(OPCOS_LABEL, opcoData?.opco)
@@ -99,7 +99,7 @@ const Formulaire = ({
                     }
                   />
                   {shouldSelectOpco && (
-                    <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
+                    <OpcoSelect name="opco" onChange={async (newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
                   )}
                   <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
                     {!widget?.isWidget && (
@@ -123,7 +123,7 @@ const Formulaire = ({
               right={
                 <>
                   <InformationLegaleEntreprise siret={establishment_siret} type={type as typeof CFA | typeof ENTREPRISE} opco={opco} viewerType={viewerType} />
-                  {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={() => setFieldValue("opco", "")} />}
+                  {infosOpco && <InformationOpco isUpdatable={shouldSelectOpco} infosOpco={infosOpco} resetOpcoChoice={async () => setFieldValue("opco", "")} />}
                 </>
               }
             />
@@ -190,7 +190,7 @@ export const InformationCreationCompte = ({
         }
 
         switch (type) {
-          case AUTHTYPE.ENTREPRISE: {
+          case "ENTREPRISE": {
             router.push(
               PAGES.dynamic
                 .espaceProCreationOffre({
@@ -206,7 +206,7 @@ export const InformationCreationCompte = ({
             )
             break
           }
-          case AUTHTYPE.CFA: {
+          case "CFA": {
             if (validated) {
               router.push(PAGES.dynamic.backCreateCFAConfirmation({ email: user.email }).getPath())
             } else {

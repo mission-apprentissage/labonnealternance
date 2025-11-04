@@ -1,4 +1,4 @@
-import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { useLocalStorage } from "./useLocalStorage"
 
 export const useFormationPrdvTracker = (id: string) => {
   const { storedValue, setLocalStorage } = useLocalStorage<number>(`application-formation-${id}`)

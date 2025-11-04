@@ -1,24 +1,23 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { ICFA } from "shared/models/cfa.model"
-import { IEntreprise } from "shared/models/entreprise.model"
-import { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models/index"
-import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import type { ICFA } from "shared/models/cfa.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
+import type { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models/index"
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
-
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import config from "@/config"
-import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
 
 import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
+import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,

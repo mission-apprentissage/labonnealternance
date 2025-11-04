@@ -1,24 +1,24 @@
 import { badRequest } from "@hapi/boom"
 import dayjs from "dayjs"
 import { chain } from "lodash-es"
-import { assertUnreachable, type IFormationCatalogue, type ILbaItemFormation2 } from "shared"
+import { assertUnreachable } from "shared"
+import type { IFormationCatalogue, ILbaItemFormation2 } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { referrers } from "shared/constants/referers"
-import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { IApiError } from "../common/utils/errorManager"
-import { roundDistance } from "../common/utils/geolib"
-import { isValidEmail } from "../common/utils/isValidEmail"
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
-import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-import { notifyToSlack } from "../common/utils/slackUtils"
+import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { isEmailBlacklisted } from "./application.service"
 import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
+import type { IApiError } from "@/common/utils/errorManager"
+import { roundDistance } from "@/common/utils/geolib"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const formationResultLimit = 500
 const worldRadius = 21000

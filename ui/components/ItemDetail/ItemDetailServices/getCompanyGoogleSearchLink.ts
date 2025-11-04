@@ -1,4 +1,4 @@
-import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
+import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 export const getCompanyGoogleSearchLink = (item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemFtJobJson | ILbaItemFormation2Json) => {
   let placePart = ""

@@ -4,12 +4,14 @@ import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box } from "@mui/material"
 import { FormikProvider, useFormik } from "formik"
-import { SyntheticEvent } from "react"
-import { AccessStatus, IRoleManagementEvent, IRoleManagementJson, getLastStatusEvent, parseEnum } from "shared"
+import type { SyntheticEvent } from "react"
+import type { IRoleManagementEvent, IRoleManagementJson } from "shared"
+import { AccessStatus, getLastStatusEvent, parseEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { AUTHTYPE } from "shared/constants/recruteur"
-import { INewSuperUser, IUserWithAccountJson, ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
-import { Jsonify } from "type-fest"
+import type { INewSuperUser, IUserWithAccountJson } from "shared/models/userWithAccount.model"
+import { ZNewSuperUser, ZUserWithAccountFields } from "shared/models/userWithAccount.model"
+import type { Jsonify } from "type-fest"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
@@ -181,7 +183,7 @@ const UserFieldsForm = ({
           <Select
             label="Type de compte"
             nativeSelectProps={{
-              onChange: (event) => formik?.setFieldValue("type", event.target.value, true),
+              onChange: async (event) => formik?.setFieldValue("type", event.target.value, true),
               name: "type",
               disabled: Boolean(user),
             }}
@@ -195,7 +197,7 @@ const UserFieldsForm = ({
             <Select
               label="OPCO"
               nativeSelectProps={{
-                onChange: (event) => formik?.setFieldValue("opco", event.target.value, true),
+                onChange: async (event) => formik?.setFieldValue("opco", event.target.value, true),
                 name: "opco",
                 disabled: Boolean(user),
                 value: values.opco,

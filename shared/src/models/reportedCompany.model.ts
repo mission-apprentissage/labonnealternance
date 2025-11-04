@@ -2,7 +2,8 @@ import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 export const ZReportedCompany = z
   .object({

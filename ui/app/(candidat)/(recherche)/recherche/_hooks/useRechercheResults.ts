@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import {
+import type {
   IGetRoutes,
   ILbaItemFormation,
   ILbaItemFormationJson,
@@ -12,9 +12,9 @@ import {
   IQuery,
   IResponse,
 } from "shared"
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
-import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
 export type QueryStatus = "success" | "error" | "disabled" | "loading"

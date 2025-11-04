@@ -1,19 +1,13 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import { assertUnreachable, IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob, JOB_STATUS, zRoutes } from "shared"
+import type { IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import { assertUnreachable, JOB_STATUS, zRoutes } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
-import { getSourceFromCookies } from "@/common/utils/httpUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { getPartnerJobById, getPartnerJobByIdV2 } from "@/services/partnerJob.service"
-import { Appellation } from "@/services/rome.service.types"
-import { getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
-
-import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import dayjs from "../../services/dayjs.service"
-import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
+import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
+import dayjs from "@/services/dayjs.service"
+import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import {
   addExpirationPeriod,
   cancelOffre,
@@ -26,13 +20,19 @@ import {
   getOffre,
   patchOffre,
   provideOffre,
-} from "../../services/formulaire.service"
-import { getFtJobFromId } from "../../services/ftjob.service"
-import { getJobsQuery, getJobsQueryPrivate } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { addOffreDetailView, getLbaJobById } from "../../services/lbajob.service"
-import { getCompanyFromSiret, getRecruteurLbaFromDB } from "../../services/recruteurLba.service"
-import { getFicheMetierFromDB } from "../../services/rome.service"
-import { Server } from "../server"
+} from "@/services/formulaire.service"
+import { getFtJobFromId } from "@/services/ftjob.service"
+import { getJobsQuery, getJobsQueryPrivate } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { addOffreDetailView, getLbaJobById } from "@/services/lbajob.service"
+import { getCompanyFromSiret, getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
+import { getFicheMetierFromDB } from "@/services/rome.service"
+import type { Server } from "@/http/server"
+import { getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import type { Appellation } from "@/services/rome.service.types"
+import { getPartnerJobById, getPartnerJobByIdV2 } from "@/services/partnerJob.service"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
 
 const config = {
   rateLimit: {

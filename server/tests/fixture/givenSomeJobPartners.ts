@@ -1,5 +1,5 @@
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

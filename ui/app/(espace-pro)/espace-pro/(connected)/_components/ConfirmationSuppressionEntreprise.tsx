@@ -2,10 +2,9 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 
+import { archiveFormulaire } from "@/utils/api"
 import { useToast } from "@/app/hooks/useToast"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
-
-import { archiveFormulaire } from "../../../../../utils/api"
 
 interface ConfirmationSuppressionEntrepriseProps {
   isOpen: boolean

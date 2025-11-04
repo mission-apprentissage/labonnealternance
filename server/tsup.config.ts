@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import fs from "node:fs"
 import path, { basename } from "node:path"
 import { fileURLToPath } from "node:url"

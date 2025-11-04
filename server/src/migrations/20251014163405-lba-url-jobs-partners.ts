@@ -1,8 +1,8 @@
 import { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
-import { AnyBulkWriteOperation } from "mongodb"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { AnyBulkWriteOperation } from "mongodb"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"

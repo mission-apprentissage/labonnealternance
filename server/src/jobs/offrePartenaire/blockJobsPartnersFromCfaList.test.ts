@@ -2,8 +2,8 @@ import nock from "nock"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { blockJobsPartnersFromCfaList } from "@/jobs/offrePartenaire/blockJobsPartnersFromCfaList"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 

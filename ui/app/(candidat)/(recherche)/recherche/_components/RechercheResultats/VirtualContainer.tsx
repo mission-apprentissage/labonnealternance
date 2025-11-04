@@ -1,8 +1,10 @@
 "use client"
 
-import { Box, SxProps, Theme } from "@mui/material"
+import type { SxProps, Theme } from "@mui/material"
+import { Box } from "@mui/material"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { RefObject, useEffect, useMemo, useRef } from "react"
+import type { RefObject } from "react"
+import { useEffect, useMemo, useRef } from "react"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }
 
@@ -22,12 +24,19 @@ export function VirtualContainer({
   ref?: RefObject<HTMLElement>
 }) {
   const parentRef = useRef(null)
-  ref.current = parentRef.current
+
+  useEffect(() => {
+    if (ref) {
+      ref.current = parentRef.current
+    }
+  }, [ref])
 
   const elements: VirtualElement[] = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
   }, [rawElements])
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const columnVirtualizer = useVirtualizer({
     count: elements.length + 1,
     getScrollElement: () => parentRef.current,
@@ -37,9 +46,15 @@ export function VirtualContainer({
     overscan: 10,
   })
 
+  const virtualizerRef = useRef(columnVirtualizer)
+
   useEffect(() => {
-    columnVirtualizer.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
-  }, [scrollToElementIndex, columnVirtualizer])
+    virtualizerRef.current = columnVirtualizer
+  })
+
+  useEffect(() => {
+    virtualizerRef.current.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
+  }, [scrollToElementIndex])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
   return (

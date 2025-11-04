@@ -1,13 +1,6 @@
-import { Filter } from "mongodb"
+import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
-import { logger } from "@/common/logger"
-import { blockJobsPartnersFromCfaList } from "@/jobs/offrePartenaire/blockJobsPartnersFromCfaList"
-import { detectClassificationJobsPartners } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
-import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
-import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
-import { formatTextFieldsJobsPartners } from "@/jobs/offrePartenaire/formatTextFieldsJobsPartners"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
@@ -18,6 +11,12 @@ import { fillRomeForPartners } from "./fillRomeForPartners"
 import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
+import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
+import { fillLbaUrl } from "./fillLbaUrl"
+import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
+import { formatTextFieldsJobsPartners } from "./formatTextFieldsJobsPartners"
+import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
+import { logger } from "@/common/logger"
 
 export type FillComputedJobsPartnersContext = {
   addedMatchFilter?: Filter<IComputedJobsPartners>

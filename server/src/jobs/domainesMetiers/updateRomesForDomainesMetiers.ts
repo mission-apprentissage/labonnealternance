@@ -1,6 +1,7 @@
 import fs from "node:fs/promises"
 
-import { IDomainesMetiers, removeAccents } from "shared"
+import type { IDomainesMetiers } from "shared"
+import { removeAccents } from "shared"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

@@ -1,4 +1,4 @@
-import { IPointProperties } from "../models/address.model.js"
+import type { IPointProperties } from "../models/address.model.js"
 
 export function generateFeaturePropertyFixture(data: Partial<IPointProperties> = {}): IPointProperties {
   return {

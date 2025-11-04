@@ -4,11 +4,11 @@ import { createGunzip } from "zlib"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawJobteaserModel from "shared/models/rawJobteaser.model"
 
+import { jobteaserJobToJobsPartners, ZJobteaserJob } from "./jobteaserMapper"
+import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
-import { jobteaserJobToJobsPartners, ZJobteaserJob } from "@/jobs/offrePartenaire/jobteaser/jobteaserMapper"
 
-import config from "../../../config"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 
 const rawCollectionName = rawJobteaserModel.collectionName
 const offerXmlTag = "job"

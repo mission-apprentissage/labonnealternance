@@ -1,6 +1,6 @@
-import { logger } from "../../common/logger"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 const anonymize = async () => {
   const period = new Date()

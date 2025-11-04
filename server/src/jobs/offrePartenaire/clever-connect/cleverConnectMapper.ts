@@ -3,11 +3,11 @@ import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 const ZCleverConnectjobJobLocation = z.object({
   $: z.object({

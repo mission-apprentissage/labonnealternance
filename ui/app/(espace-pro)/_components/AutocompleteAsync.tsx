@@ -47,7 +47,7 @@ export default function AutocompleteAsync<T>({
   const [inputItems, setInputJobItems] = useState([])
   const debouncedSearch = useMemo(() => {
     return debounce(handleSearch, debounceDelayInMs)
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+     
   }, [])
 
   const { isOpen, getMenuProps, getInputProps, getComboboxProps, getItemProps, highlightedIndex } = useCombobox<T>({

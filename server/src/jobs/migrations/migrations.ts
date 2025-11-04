@@ -4,11 +4,11 @@ import path from "path"
 import { internal } from "@hapi/boom"
 import { format } from "date-fns"
 
+import { withCause } from "@/common/utils/errorManager"
 import { __dirname } from "@/common/utils/esmUtils"
 import config from "@/config"
 
-import { withCause } from "../../common/utils/errorManager"
-import { getDatabase, getMongodbClient } from "../../common/utils/mongodbUtils"
+import { getDatabase, getMongodbClient } from "@/common/utils/mongodbUtils"
 
 const myConfig = {
   mongodb: {

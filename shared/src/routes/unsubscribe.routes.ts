@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const ZUnsubscribePossibleCompany = z.object({
   enseigne: z.string().nullish(),

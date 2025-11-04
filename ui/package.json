@@ -74,8 +74,6 @@
     "@types/react": "19.2.0",
     "@types/react-csv": "^1.1.10",
     "dotenv": "^16.5.0",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "15.5.4",
     "sass": "^1.86.3",
     "type-fest": "^4.40.0",
     "typescript": "^5.8.3"

@@ -1,4 +1,4 @@
-import { IRawRHAlternanceJob } from "../models/rawRHAlternance.model.js"
+import type { IRawRHAlternanceJob } from "../models/rawRHAlternance.model.js"
 
 export const generateRawRHAlternanceJobFixture = (props: Partial<IRawRHAlternanceJob> = {}): IRawRHAlternanceJob => {
   return {

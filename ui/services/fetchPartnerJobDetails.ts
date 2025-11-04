@@ -1,4 +1,4 @@
-import { ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { apiGet } from "@/utils/api.utils"

@@ -3,9 +3,9 @@ import { ApplicationIntention } from "shared/constants/application"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "../../services/application.service"
-import { Server } from "../server"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "@/services/application.service"
+import type { Server } from "@/http/server"
 
 const rateLimitConfig = {
   rateLimit: {

@@ -1,15 +1,14 @@
 import * as _ from "lodash-es"
 import { referrers } from "shared/constants/referers"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { logger } from "@/common/logger"
+import config from "@/config"
+import dayjs from "@/services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
-
-import { logger } from "../../common/logger"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
@@ -94,7 +93,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
       emails = [...new Set(emails)]
 
       await Promise.all(
-        emails.map((email) =>
+        emails.map(async (email) =>
           mailer.sendEmail({
             to: email,
             subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,

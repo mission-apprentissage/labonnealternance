@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"

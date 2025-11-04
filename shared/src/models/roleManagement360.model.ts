@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 
 const collectionName = "rolemanagement360" as const
 

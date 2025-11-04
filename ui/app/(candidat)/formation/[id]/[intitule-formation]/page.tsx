@@ -1,9 +1,9 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
+import TrainingDetailRendererClient from "./TrainingDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import TrainingDetailRendererClient from "@/app/(candidat)/formation/[id]/[intitule-formation]/TrainingDetailRendererClient"
 import { apiGet } from "@/utils/api.utils"
 
 export async function generateMetadata({ params }): Promise<Metadata> {

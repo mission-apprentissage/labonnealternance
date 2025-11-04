@@ -4,11 +4,10 @@ import { pipeline } from "node:stream/promises"
 import { ObjectId } from "mongodb"
 import { referrers } from "shared/constants/referers"
 
+import { logger } from "@/common/logger"
+import { getEmailForRdv } from "@/services/eligibleTrainingsForAppointment.service"
+import { findFirstNonBlacklistedEmail } from "@/services/formation.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
-import { findFirstNonBlacklistedEmail } from "../../services/formation.service"
 
 const hasDateProperty = (etablissements, propertyName) => {
   return etablissements.some((etab) => etab[propertyName] !== null && etab[propertyName] !== undefined)

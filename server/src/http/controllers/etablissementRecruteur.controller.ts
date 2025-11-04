@@ -1,10 +1,12 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
-import { assertUnreachable, IEntreprise, toPublicUser, TrafficType, zRoutes } from "shared"
+import type { IEntreprise } from "shared"
+import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
@@ -24,7 +26,8 @@ import {
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
 import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
-import { Organization, upsertEntrepriseData, UserAndOrganization } from "@/services/organization.service"
+import type { Organization, UserAndOrganization } from "@/services/organization.service"
+import { upsertEntrepriseData } from "@/services/organization.service"
 import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
 import { getMainRoleManagement, getPublicUserRecruteurPropsOrError, isGrantedAndAutoValidatedRole } from "@/services/roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "@/services/trafficSource.service"
@@ -37,10 +40,9 @@ import {
 } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
-import { Server } from "../server"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
+import type { Server } from "@/http/server"
 
 export default (server: Server) => {
   /**

@@ -1,6 +1,8 @@
-import { Filter } from "mongodb"
-import { ApplicationScanStatus, IApplication } from "shared/models/index"
+import type { Filter } from "mongodb"
+import type { IApplication } from "shared/models/index"
+import { ApplicationScanStatus } from "shared/models/index"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -8,8 +10,7 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { deleteApplicationCvFile, processApplicationEmails, processApplicationScanForVirus } from "@/services/application.service"
 import { isClamavAvailable } from "@/services/clamav.service"
 
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { getApplicantFromDB } from "../../services/applicant.service"
+import { getApplicantFromDB } from "@/services/applicant.service"
 
 const maxDuration = 1000 * 60 * 8 // 8 minutes
 

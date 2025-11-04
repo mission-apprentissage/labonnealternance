@@ -1,11 +1,12 @@
 import { ObjectId } from "bson"
-import { IFTJobRaw } from "shared"
+import type { IFTJobRaw } from "shared"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
   const now = new Date()

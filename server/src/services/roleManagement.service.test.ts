@@ -1,11 +1,11 @@
 import dayjs from "dayjs"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
-import { AccessStatus, IRoleManagement } from "shared/models/index"
+import type { IRoleManagement } from "shared/models/index"
+import { AccessStatus } from "shared/models/index"
 import { describe, expect, it } from "vitest"
 
-import { roleManagementEventFactory } from "@tests/utils/user.test.utils"
-
 import { isGrantedAndAutoValidatedRole } from "./roleManagement.service"
+import { roleManagementEventFactory } from "@tests/utils/user.test.utils"
 
 const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
   return generateRoleManagementFixture({

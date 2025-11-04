@@ -1,4 +1,5 @@
-import { createApiAlternanceToken, type IApiAlternanceTokenData } from "api-alternance-sdk"
+import { createApiAlternanceToken } from "api-alternance-sdk"
+import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import env from "env-var"
 
 const jwtTestingPrivateKey = env.get("LBA_API_APPRENTISSAGE_TEST_PRIVATE_KEY").required().asString()

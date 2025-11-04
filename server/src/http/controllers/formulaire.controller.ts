@@ -2,6 +2,7 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
+import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -9,7 +10,6 @@ import { generateOffreToken } from "@/services/appLinks.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
-import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
   archiveFormulaireByEstablishmentId,
   cancelOffre,
@@ -28,8 +28,8 @@ import {
   provideOffre,
   validateUserEmailFromJobId,
   updateCfaManagedRecruiter,
-} from "../../services/formulaire.service"
-import { Server } from "../server"
+} from "@/services/formulaire.service"
+import type { Server } from "@/http/server"
 
 export default (server: Server) => {
   /**

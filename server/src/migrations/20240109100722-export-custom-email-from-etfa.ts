@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { ICustomEmailETFA } from "shared/models/index"
+import type { ICustomEmailETFA } from "shared/models/index"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

@@ -2,7 +2,7 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { cleverConnectJobToJobsPartners } from "@/jobs/offrePartenaire/clever-connect/cleverConnectMapper"
+import { cleverConnectJobToJobsPartners } from "./cleverConnectMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 

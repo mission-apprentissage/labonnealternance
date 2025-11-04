@@ -2,13 +2,13 @@ import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
-import { Filter } from "mongodb"
+import type { Filter } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -40,7 +40,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   const importDate = new Date()
   const transform = new Transform({
     objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
+    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, _, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
