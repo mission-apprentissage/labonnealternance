@@ -32,7 +32,8 @@ export function VirtualContainer({
   }, [ref])
 
   const elements: VirtualElement[] = useMemo(() => {
-    return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: async () => value } as VirtualElement)))
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
   }, [rawElements])
 
   const columnVirtualizer = useVirtualizer({
