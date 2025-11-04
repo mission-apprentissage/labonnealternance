@@ -22,7 +22,14 @@ export default defineConfig([
 
   globalIgnores([".yarn"]),
 
-  nodePlugin.configs["flat/recommended"],
+  {
+    ...nodePlugin.configs["flat/recommended"],
+    settings: {
+      node: {
+        version: ">=24.0.0",
+      },
+    },
+  },
   js.configs.recommended,
   importX.flatConfigs.recommended,
   importX.flatConfigs.typescript,
