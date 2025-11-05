@@ -13,7 +13,6 @@ import {
   IApplicant,
   IApplication,
   IApplicationApiPrivateOutput,
-  IApplicationApiPublicOutput,
   IJob,
   INewApplicationV1,
   IRecruiter,
@@ -275,7 +274,7 @@ export const sendApplicationV2 = async ({
   caller,
   source,
 }: {
-  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput
+  newApplication: IApplicationApiPrivateOutput
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
@@ -558,12 +557,7 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
  * @description Initialize application object from query parameters
  */
 // get data from applicant
-const newApplicationToApplicationDocumentV2 = async (
-  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput,
-  applicant: IApplicant,
-  LbaJob: IJobOrCompanyV2,
-  caller?: string
-) => {
+const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPrivateOutput, applicant: IApplicant, LbaJob: IJobOrCompanyV2, caller?: string) => {
   const now = new Date()
   const application: IApplication = {
     _id: new ObjectId(),
@@ -1135,6 +1129,7 @@ export const processApplicationEmails = {
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
         sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, job_origin ?? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+        recruitingCompaniesUrl: buildRecruitingCompaniesUrl(application),
       },
     })
     if (emailCandidat?.accepted?.length) {
@@ -1144,6 +1139,27 @@ export const processApplicationEmails = {
       throw internal("Email candidat destinataire rejeté.")
     }
   },
+}
+
+function buildRecruitingCompaniesUrl(application: IApplication) {
+  const { application_url } = application
+  if (!application_url) {
+    console.log("no application_url")
+    return
+  }
+  const searchParams = new URL(application_url).searchParams
+  searchParams.delete("utm_source")
+  searchParams.delete("utm_medium")
+  searchParams.delete("utm_campaign")
+  searchParams.delete("activeItems")
+  searchParams.delete("scrollToRecruteursLba")
+  searchParams.append("scrollToRecruteursLba", "true")
+  searchParams.append("utm_source", "lba-brevo")
+  searchParams.append("utm_medium", "email")
+  searchParams.append("utm_campaign", "confirmation-envoi-candidature-offre_promo-candidature-spontanee")
+  const result = `${config.publicUrl}/recherche?${searchParams}`
+  console.log("result url", result)
+  return result
 }
 
 const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {

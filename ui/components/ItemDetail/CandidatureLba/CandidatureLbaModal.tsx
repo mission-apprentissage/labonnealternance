@@ -36,7 +36,7 @@ export const CandidatureLbaModal = ({
       {!isDone && (
         <CandidatureLbaModalBody fromWidget={fromWidget} isLoading={isLoading} company={item.company?.name} item={item} kind={kind} onSubmit={onSubmit} onClose={onModalClose} />
       )}
-      {isSuccess && <CandidatureLbaWorked email={applicantEmail} company={item.company?.name} />}
+      {isSuccess && <CandidatureLbaWorked email={applicantEmail} item={item} />}
       {isError && <CandidatureLbaFailed error={error + ""} />}
     </>
   )

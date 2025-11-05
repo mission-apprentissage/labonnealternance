@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useRef } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
 import { CandidatRechercheFilters } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheFilters"
 import { RechercheBackToTopButton } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheBackToTopButton"
@@ -17,7 +18,7 @@ import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hoo
 import { IRecherchePageParams, isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, displayMobileForm, activeItems = [] } = props.rechercheParams
+  const { displayMap, displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
   const rechercheResult = useRechercheResults(props.rechercheParams)
 
@@ -33,7 +34,17 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
     return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
   }
 
-  const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item.ideaType !== "whisper" && isItemReferenceInList(element.item, activeItems))
+  const scolledElementIndex = elements.findIndex((element) => {
+    if (!("item" in element)) return
+    const { item } = element
+    const { type } = item
+    if (activeItems.length) {
+      return type === "lba_item" && isItemReferenceInList(item.value, activeItems)
+    }
+    if (scrollToRecruteursLba) {
+      return type === "lba_item" && item.value.ideaType === LBA_ITEM_TYPE_OLD.LBA
+    }
+  })
 
   return (
     <Box

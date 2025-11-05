@@ -108,7 +108,7 @@ const activeStyle = {
   },
 }
 
-export function ResultCard({ item, active, rechercheParams }: ResultCardProps) {
+export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) {
   const itemUrl = useResultItemUrl(item, rechercheParams)
 
   return (

@@ -111,7 +111,7 @@ export class ApiError extends Error {
     return this.context.statusCode === 404
   }
 
-  static async build(path: string, requestHeaders: Headers, options: WithQueryStringAndPathParam, res: Response): Promise<ApiError> {
+  static async build(path: string, requestHeaders: Headers, options: WithQueryStringAndPathParam, res: Response, finalUrl?: string): Promise<ApiError> {
     let message = res.status === 0 ? "Network Error" : res.statusText
     let name = "Api Error"
     let errorData: IResErrorJson["data"] | null = null
@@ -129,6 +129,7 @@ export class ApiError extends Error {
       }
     }
 
+    console.error("error calling", finalUrl)
     return new ApiError({
       path,
       params: "params" in options ? options.params : {},
@@ -162,9 +163,10 @@ export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P]
   fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("GET", options, fetchOptions)
-  const res = await fetch(generateUrl(path, options), requestInit)
+  const url = generateUrl(path, options)
+  const res = await fetch(url, requestInit)
   if (!res.ok) {
-    throw await ApiError.build(path, headers, options, res)
+    throw await ApiError.build(path, headers, options, res, url)
   }
   return res.json()
 }

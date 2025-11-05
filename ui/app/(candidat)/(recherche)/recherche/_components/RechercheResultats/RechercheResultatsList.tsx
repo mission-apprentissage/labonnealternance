@@ -4,9 +4,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+// import { assertUnreachable } from "shared/utils/assertUnreachable"
 
+import { LbaItemCard } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/LbaItemCard"
 import { RechercheResultatsFooter } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheResultatsFooter"
-import { ResultCard } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/ResultatListCard"
 import { Whisper } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/Whisper"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import { ILbaItem, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -15,29 +16,64 @@ import { IWhisper, useWhispers } from "@/app/(candidat)/(recherche)/recherche/_h
 import { IRecherchePageParams, isItemReferenceInList, type WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
+import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 import { getObjectId } from "@/utils/api"
+
+type ResultCardILba = {
+  type: "lba_item"
+  value: ILbaItem
+}
+
+type ResultCardData =
+  | ResultCardILba
+  | {
+      type: "whisper"
+      value: IWhisper
+    }
+  | {
+      type: "ValorisationCandidatureSpontanee"
+    }
 
 export function RechercheResultatsList(props: WithRecherchePageParams) {
   const { displayMap } = props.rechercheParams
   const result = useRechercheResults(props.rechercheParams)
   const whispers = useWhispers(props.rechercheParams)
 
-  const items = useMemo((): Array<ILbaItem | IWhisper> => {
+  const shouldDisplayCandidatureSpontaneBoost = result.jobQuery.lbaJobs.length + result.jobQuery.partnerJobs.length >= 10
+
+  const items = useMemo(() => {
     const itemsCount = result.displayedItems.length
     if (!itemsCount) {
       return []
     }
-    const data = []
+    const data: ResultCardData[] = []
+    let jobCounter = 0
     for (let i = 0; i < itemsCount; i++) {
-      if (whispers.has(i)) {
-        data.push(whispers.get(i))
+      const lbaItem = result.displayedItems[i]
+      if (shouldDisplayCandidatureSpontaneBoost) {
+        if (jobCounter === 5) {
+          data.push({ type: "ValorisationCandidatureSpontanee" })
+        }
+        if (lbaItem.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION) {
+          jobCounter++
+        }
       }
-      data.push(result.displayedItems[i])
+      const whisperOpt = whispers.get(i)
+      if (whisperOpt) {
+        data.push({
+          type: "whisper",
+          value: whisperOpt,
+        })
+      }
+      data.push({
+        type: "lba_item",
+        value: lbaItem,
+      })
     }
 
     return data
-  }, [result, whispers])
+  }, [result, whispers, shouldDisplayCandidatureSpontaneBoost])
 
   const { addSearchView } = useSearchViewNotifier()
 
@@ -61,6 +97,14 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   const [firstFormation] = formationQuery.formations
   const jobsCount = result.displayedJobs.length
 
+  const onRenderLbaItem = (item: ILbaItem) => {
+    if (item?.ideaType === LBA_ITEM_TYPE_OLD.FORMATION) return
+    const jobId = getObjectId(item)
+    if (jobId) {
+      addSearchView(jobId)
+    }
+  }
+
   return [
     <Box id="search-content-container" key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
@@ -77,19 +121,11 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
         </Box>
       )}
     </Box>,
-    ...items.map((item, index) => ({
-      height: item?.ideaType === "whisper" ? 112 : 270,
-      render: () => <WhisperOrCard key={index} rechercheParams={props.rechercheParams} item={item} displayMap={displayMap} />,
-      onRender:
-        item?.ideaType !== "whisper" && item?.ideaType !== LBA_ITEM_TYPE_OLD.FORMATION
-          ? () => {
-              const jobId = getObjectId(item)
-              if (jobId) {
-                addSearchView(jobId)
-              }
-            }
-          : undefined,
-      item,
+    ...items.map((data, index) => ({
+      height: heightEstimation(data.type),
+      render: () => <ResultCardWithContainer key={index} rechercheParams={props.rechercheParams} data={data} displayMap={displayMap} />,
+      onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
+      item: data,
     })),
     <Box
       key="footer"
@@ -108,7 +144,7 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   ]
 }
 
-function WhisperOrCard({ item, rechercheParams, displayMap }: { item: IWhisper | ILbaItem; rechercheParams: IRecherchePageParams; displayMap: boolean }) {
+function ResultCardWithContainer({ data, rechercheParams, displayMap }: { data: ResultCardData; rechercheParams: IRecherchePageParams; displayMap: boolean }) {
   return (
     <Box
       sx={{
@@ -116,11 +152,47 @@ function WhisperOrCard({ item, rechercheParams, displayMap }: { item: IWhisper |
         px: { md: displayMap ? fr.spacing("1w") : 0, lg: fr.spacing("2w") },
       }}
     >
-      {item.ideaType === "whisper" ? (
-        <Whisper whisper={item} />
-      ) : (
-        <ResultCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} />
-      )}
+      <ResultCard data={data} rechercheParams={rechercheParams} />
     </Box>
   )
+}
+
+function ResultCard({ data, rechercheParams }: { data: ResultCardData; rechercheParams: IRecherchePageParams }) {
+  const { type } = data
+  switch (type) {
+    case "whisper": {
+      return <Whisper whisper={data.value} />
+    }
+    case "lba_item": {
+      const item = data.value
+      return <LbaItemCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} />
+    }
+    case "ValorisationCandidatureSpontanee": {
+      return <ValorisationCandidatureSpontanee />
+    }
+    default: {
+      assertUnreachable(type)
+    }
+  }
+}
+
+function heightEstimation(type: ResultCardData["type"]): number {
+  switch (type) {
+    case "whisper": {
+      return 112
+    }
+    case "lba_item": {
+      return 270
+    }
+    case "ValorisationCandidatureSpontanee": {
+      return 270
+    }
+    default: {
+      assertUnreachable(type)
+    }
+  }
+}
+
+function assertUnreachable(x: never): never {
+  throw new Error(`Didn't expect to get here, got type ${typeof x} with value ${x}`)
 }
