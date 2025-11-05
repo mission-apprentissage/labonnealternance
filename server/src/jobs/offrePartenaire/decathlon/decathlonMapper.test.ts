@@ -9,7 +9,7 @@ const now = new Date("2024-07-21T04:49:06.000+02:00")
 const decathlonJob = {
   locale: "fr_FR",
   reference: "KWYLVLYSRRKVGO513",
-  published_at: "2025-09-24T10:18:17+00:00",
+  published_at: "2025-11-24T10:18:17+00:00",
   catch_phrase: "",
   contract_type: "Contrat d'alternance (pro, apprentissage)",
   contract_duration: {
@@ -156,10 +156,10 @@ describe("decathlonMapper", () => {
       errors: [],
       jobs_in_success: [],
       offer_access_conditions: [],
-      offer_creation: new Date("2025-09-24T10:18:17.000Z"),
+      offer_creation: new Date("2025-11-24T10:18:17.000Z"),
       offer_description: "description",
       offer_desired_skills: ["entrepreneur", "Esprit d'équipe", "Management", "Accueil", "Produit", "Relation Sportif"],
-      offer_expiration: new Date("2025-11-24T09:18:17.000Z"),
+      offer_expiration: new Date("2026-01-24T09:18:17.000Z"),
       offer_multicast: true,
       offer_opening_count: 1,
       offer_origin: null,
@@ -195,6 +195,7 @@ describe("decathlonMapper", () => {
       workplace_siret: null,
       workplace_size: null,
       workplace_website: null,
+      lba_url: null,
     })
   })
   it("should format apply_url correctly", () => {
