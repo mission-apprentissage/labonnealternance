@@ -1400,7 +1400,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.22.15, @babel/runtime@npm:^7.23.8, @babel/runtime@npm:^7.27.6, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.23.8, @babel/runtime@npm:^7.24.5, @babel/runtime@npm:^7.27.6, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
   version: 7.28.4
   resolution: "@babel/runtime@npm:7.28.4"
   checksum: 934b0a0460f7d06637d93fcd1a44ac49adc33518d17253b5a0b55ff4cb90a45d8fe78bf034b448911dbec7aff2a90b918697559f78d21c99ff8dbadae9565b55
@@ -8754,7 +8754,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compute-scroll-into-view@npm:^3.0.3":
+"compute-scroll-into-view@npm:^3.1.0":
   version: 3.1.1
   resolution: "compute-scroll-into-view@npm:3.1.1"
   checksum: c56345199e746f93a515b3190d1bf0940944d5b7e1b06e33f16b430a93c9ada1c6b9fe89674d3f3a6078642523c49edcddc1cd639bbe78797fffd072b0231930
@@ -9593,18 +9593,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"downshift@npm:8.5.0":
-  version: 8.5.0
-  resolution: "downshift@npm:8.5.0"
+"downshift@npm:9.0.10":
+  version: 9.0.10
+  resolution: "downshift@npm:9.0.10"
   dependencies:
-    "@babel/runtime": ^7.22.15
-    compute-scroll-into-view: ^3.0.3
+    "@babel/runtime": ^7.24.5
+    compute-scroll-into-view: ^3.1.0
     prop-types: ^15.8.1
-    react-is: ^18.2.0
+    react-is: 18.2.0
     tslib: ^2.6.2
   peerDependencies:
     react: ">=16.12.0"
-  checksum: f96f8db8145892bcbccfb4636af6ae3dc84c9b9354db75cb8c61d1f9ee90359c67fedc2dccf4c68e907806ab0bb99431f623211d587ec80aa8164661517a70c5
+  checksum: ba9db1e8aa5c3e5418471e94ce030bf929e361689581d0a0032d95712edf27c695eac110fa087b4fa5dbef98aa65fbeef2a48d5c6c60520322f652fee607cfb7
   languageName: node
   linkType: hard
 
@@ -17747,6 +17747,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-is@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react-is@npm:18.2.0"
+  checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -17758,13 +17765,6 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
-  languageName: node
-  linkType: hard
-
-"react-is@npm:^18.2.0":
-  version: 18.3.1
-  resolution: "react-is@npm:18.3.1"
-  checksum: e20fe84c86ff172fc8d898251b7cc2c43645d108bf96d0b8edf39b98f9a2cae97b40520ee7ed8ee0085ccc94736c4886294456033304151c3f94978cec03df21
   languageName: node
   linkType: hard
 
@@ -20725,7 +20725,7 @@ __metadata:
     csv-stringify: ^6.5.2
     dayjs: ^1.11.13
     dotenv: ^17.2.3
-    downshift: 8.5.0
+    downshift: 9.0.10
     email-misspelled: ^4.3.1
     formik: ^2.4.6
     html-react-parser: ^5.2.5
