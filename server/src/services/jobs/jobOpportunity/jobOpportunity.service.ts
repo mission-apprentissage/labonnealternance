@@ -1099,10 +1099,9 @@ export async function upsertJobsPartnersMulti({
   const now = new Date()
   const { partner_label, partner_job_id } = data
 
-  let current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
-  if (!current) {
-    current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
-  }
+  const currentJobsPartners = await getDbCollection("jobs_partners").findOne({ partner_label, partner_job_id })
+  const currentComputedJobsPartners = await getDbCollection("computed_jobs_partners").findOne({ partner_label, partner_job_id, currently_processed_id: null })
+  const current = currentJobsPartners ?? currentComputedJobsPartners ?? null
 
   const { created_at, _id } = {
     _id: current?._id ?? new ObjectId(),
@@ -1112,15 +1111,15 @@ export async function upsertJobsPartnersMulti({
   const offerCreation = current?.offer_creation ?? new Date(data.offer_creation)
   const offerExpiration = current?.offer_expiration ?? dayjs.tz(created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
   const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
-  const offerTitle = current?.offer_title ?? data.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
-  const lbaUrl = current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)
+  const offerTitle = data.offer_title ?? current?.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
+  const lbaUrl = buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)
 
   const userWrittenFields = {
     ...data,
     offer_creation: offerCreation,
     offer_expiration: offerExpiration,
     offer_status: offerStatus,
-  }
+  } satisfies Partial<IComputedJobsPartners>
 
   const technicalFields = {
     updated_at: now,
@@ -1129,10 +1128,11 @@ export async function upsertJobsPartnersMulti({
     validated: false,
     jobs_in_success: [],
     currently_processed_id: null,
-  }
+    lba_url: lbaUrl,
+  } satisfies Partial<IComputedJobsPartners>
   const writtenFields: Omit<IComputedJobsPartners, InvariantFields> = { ...userWrittenFields, ...technicalFields }
   let modified: boolean
-  if (current) {
+  if (currentComputedJobsPartners) {
     const updateResult = await getDbCollection("computed_jobs_partners").updateOne({ _id }, { $set: userWrittenFields })
     modified = Boolean(updateResult.modifiedCount)
     if (modified) {
@@ -1140,7 +1140,7 @@ export async function upsertJobsPartnersMulti({
     }
   } else {
     modified = true
-    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id, lba_url: lbaUrl })
+    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id })
   }
   if (current && current.offer_status !== offerStatus) {
     await getDbCollection("computed_jobs_partners").updateOne(
