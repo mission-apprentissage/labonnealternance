@@ -43,7 +43,7 @@ export default function DropdownCombobox(props) {
     }
   }
 
-  const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, reset } = useCombobox({
+  const { isOpen, getMenuProps, getInputProps, highlightedIndex, getItemProps, reset } = useCombobox({
     itemToString,
     onInputValueChange: ({ inputValue }) => onInputValueChange({ inputValue }),
     onSelectedItemChange,
@@ -54,9 +54,7 @@ export default function DropdownCombobox(props) {
 
   return (
     <div data-testid={props.dataTestId}>
-      <div {...getComboboxProps()}>
-        <CustomInput label={label} pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
-      </div>
+      <CustomInput label={label} pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
       <Box
         sx={{
           width: "100%",
