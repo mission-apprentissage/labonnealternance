@@ -15,6 +15,7 @@ exports[`importDecathlon > should test the import of hellowork data into compute
     ],
     "errors": [],
     "jobs_in_success": [],
+    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-09-23T12:07:38.000Z,
     "offer_description": "<div><p>TES FUTURES MISSIONS : </p><p>Aux côtés de notre responsable d'exploitation, tu garantis la sécurité du bâtiment, des biens et des personnes. En relation avec les prestataires, tu garantis la maintenance des installations des bâtiments à travers la gestion du planning des interventions. </p><br><p>Pour mettre en œuvre tes projets, tu assures le développement et le pilotage de groupes de travail. Ta mission sera d'intégrer le maximum de collaborateurs avec toi, dans les décisions et la mise en œuvre des plans d’actions. Tu accompagnes également les équipes en préparant les différents audits internes. </p><br><p>Garant-e de ton périmètre, tu t’assures du respect des réglementations sur le site. Tu travailles l’évolution des indicateurs de performance et recherche l'amélioration continue des procédures. Tu as aussi pour responsabilité le respect du budget attribué. </p><br><p>En bref, tu assures la sécurité de tes coéquipiers. Pour t’accompagner dans cette mission, tu pourras bien sûr toujours compter sur ton/ta tuteur/tutrice !</p></div>",
@@ -77,6 +78,7 @@ exports[`importDecathlon > should test the import of hellowork data into compute
     ],
     "errors": [],
     "jobs_in_success": [],
+    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-09-24T10:18:17.000Z,
     "offer_description": "<p>Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b></p>
@@ -166,6 +168,7 @@ exports[`importDecathlon > should test the import of hellowork data into compute
     ],
     "errors": [],
     "jobs_in_success": [],
+    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-09-22T15:32:41.000Z,
     "offer_description": "<p>Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b></p>
