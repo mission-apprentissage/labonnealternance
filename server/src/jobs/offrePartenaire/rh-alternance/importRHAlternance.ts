@@ -118,7 +118,7 @@ export const rawRhAlternanceToComputedMapper =
         .join("\n")
         .trim(),
       offer_creation,
-      offer_expiration: dayjs(offer_creation).tz().add(60, "days").toDate(),
+      offer_expiration: dayjs.tz(offer_creation).add(60, "days").toDate(),
       offer_opening_count: 1,
       offer_multicast: true,
       workplace_siret: companySiret,

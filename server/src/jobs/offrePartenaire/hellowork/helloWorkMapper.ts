@@ -115,8 +115,8 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_to_be_acquired_skills: [],
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: creationDate,
-    offer_expiration: dayjs(creationDate || created_at)
-      .tz()
+    offer_expiration: dayjs
+      .tz(creationDate || created_at)
       .add(2, "months")
       .toDate(),
     workplace_siret: siretParsing.success ? siretParsing.data : null,
@@ -177,5 +177,5 @@ const parseDate = (dateStr: string | null | undefined) => {
   if (!dateStr) {
     return null
   }
-  return dayjs(dateStr).tz().toDate()
+  return dayjs.tz(dateStr).toDate()
 }
