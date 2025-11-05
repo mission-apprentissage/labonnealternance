@@ -86,7 +86,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
     offer_description: description,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs(publicationDate).utc().add(2, "months").toDate(),
+    offer_expiration: dayjs(publicationDate).tz().add(2, "months").toDate(),
 
     workplace_name: company_name,
     workplace_address_city: location_city,

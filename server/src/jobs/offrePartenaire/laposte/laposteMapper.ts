@@ -144,7 +144,7 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
     offer_description: descriptionComputed,
     offer_creation: updatedDate ?? publicationDate,
     offer_expiration: dayjs(updatedDate ?? publicationDate)
-      .utc()
+      .tz()
       .add(2, "months")
       .toDate(),
     apply_url: job["url-de-l-offre"],

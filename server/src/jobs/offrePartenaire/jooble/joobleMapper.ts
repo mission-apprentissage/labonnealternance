@@ -57,7 +57,7 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
     offer_description: job.description,
     offer_creation: updatedDate ?? publicationDate,
     offer_expiration: dayjs(updatedDate ?? publicationDate)
-      .utc()
+      .tz()
       .add(2, "months")
       .toDate(),
     apply_url: job.url,

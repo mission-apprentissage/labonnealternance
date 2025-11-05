@@ -160,7 +160,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     offer_description: getOfferDescription(job),
     offer_creation: creationDate,
     offer_expiration: dayjs(creationDate || created_at)
-      .utc()
+      .tz()
       .add(2, "months")
       .toDate(),
     offer_multicast: true,
