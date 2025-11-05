@@ -101,7 +101,7 @@ export const rawRhAlternanceToComputedMapper =
     jobCity,
     jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
-    const offer_creation = jobSubmitDateTime ? dayjs(jobSubmitDateTime).tz().toDate() : now
+    const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
 
     const business_error = jobType === "Alternance" ? null : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
 
