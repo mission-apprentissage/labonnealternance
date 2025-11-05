@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import { getProcessorHealthcheck } from "job-processor"
 import { zRoutes } from "shared"
 

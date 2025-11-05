@@ -1,5 +1,5 @@
 import { internal } from "@hapi/boom"
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"

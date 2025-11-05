@@ -1,6 +1,6 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "bson"
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile } from "shared/fixtures/application.fixture"

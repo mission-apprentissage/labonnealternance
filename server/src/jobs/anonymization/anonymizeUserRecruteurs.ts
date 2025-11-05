@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import type { IRecruiter } from "shared"
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"

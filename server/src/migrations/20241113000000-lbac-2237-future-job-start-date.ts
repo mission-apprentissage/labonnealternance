@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import type { Db } from "mongodb"
 
 import { logger } from "@/common/logger"

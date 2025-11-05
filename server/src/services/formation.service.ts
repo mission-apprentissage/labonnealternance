@@ -1,5 +1,5 @@
 import { badRequest } from "@hapi/boom"
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import { chain } from "lodash-es"
 import { assertUnreachable } from "shared"
 import type { IFormationCatalogue, ILbaItemFormation2 } from "shared"

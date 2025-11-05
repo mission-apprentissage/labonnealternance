@@ -1,7 +1,6 @@
 import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
-import dayjs from "dayjs"
-import { DateTime } from "luxon"
+import dayjs from "shared/helpers/dayjs"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
@@ -790,9 +789,7 @@ async function upsertJobOfferPrivate({
     lba_url: current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, current?.offer_title ?? data.offer.title),
   }
 
-  const defaultOfferExpiration = current?.offer_expiration
-    ? current.offer_expiration
-    : DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
+  const defaultOfferExpiration = current?.offer_expiration ? current.offer_expiration : dayjs.tz(invariantData.created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
 
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
@@ -1113,7 +1110,7 @@ export async function upsertJobsPartnersMulti({
   } satisfies Partial<IJobsPartnersOfferPrivate>
 
   const offerCreation = current?.offer_creation ?? new Date(data.offer_creation)
-  const offerExpiration = current?.offer_expiration ?? DateTime.fromJSDate(created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
+  const offerExpiration = current?.offer_expiration ?? dayjs.tz(created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
   const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
   const offerTitle = current?.offer_title ?? data.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
   const lbaUrl = current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)

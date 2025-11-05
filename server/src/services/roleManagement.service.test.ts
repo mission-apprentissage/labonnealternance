@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import type { IRoleManagement } from "shared/models/index"
 import { AccessStatus } from "shared/models/index"
