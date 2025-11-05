@@ -1,6 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -98,6 +99,18 @@ const Formulaire = ({
                         : "Privilégiez votre adresse professionnelle"
                     }
                   />
+                  <Box mb={fr.spacing("2w")}>
+                    <Alert
+                      severity="info"
+                      title="Pourquoi ces informations ?"
+                      description={
+                        <>
+                          Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
+                          email comportant <strong>le nom de domaine de votre entreprise.</strong>
+                        </>
+                      }
+                    />
+                  </Box>
                   {shouldSelectOpco && (
                     <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
                   )}
