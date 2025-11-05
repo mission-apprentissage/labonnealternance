@@ -107,7 +107,6 @@ export function RechercheMapPopup(props: WithRecherchePageParams<RechercheMapPop
       }).setDOMContent(popupElement)
     )
     // popupElement instance will change on dev mode reload
-     
   }, [props.map, popupElement])
 
   const onClose = useCallback(() => {
