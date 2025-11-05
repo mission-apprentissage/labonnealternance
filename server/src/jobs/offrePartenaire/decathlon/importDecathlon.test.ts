@@ -23,7 +23,7 @@ describe("importDecathlon", () => {
     }
   })
 
-  it("should test the import of hellowork data into computed_job_partners", async () => {
+  it("should test the import of data into computed_job_partners", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/decathlon/decathlon.test.input.json")
     await importDecathlonRaw(fileStream)
     expect.soft(await getDbCollection("raw_decathlon").countDocuments({})).toBe(3)

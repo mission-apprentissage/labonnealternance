@@ -67,7 +67,7 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
   const { position } = address ?? {}
   const { lat, lon } = position ?? {}
 
-  const created_at = new Date()
+  const created_at = dayjs.tz().toDate()
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
