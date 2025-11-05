@@ -55,7 +55,11 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: ".docx,.pdf",
+    accept: {
+      "application/pdf": [".pdf"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+      "application/msword": [".doc"],
+    },
     maxSize: 3145728,
     maxFiles: 1,
     onDropRejected(fileRejections) {
