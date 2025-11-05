@@ -8,7 +8,7 @@ import type { ISitemap } from "shared/models/sitemap.model"
 import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
-import dayjs from "./dayjs.service"
+import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"

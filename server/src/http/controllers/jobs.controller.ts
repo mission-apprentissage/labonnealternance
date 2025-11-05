@@ -5,8 +5,8 @@ import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
+import dayjs from "shared/helpers/dayjs"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
-import dayjs from "@/services/dayjs.service"
 import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import {
   addExpirationPeriod,

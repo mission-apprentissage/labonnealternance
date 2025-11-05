@@ -10,12 +10,12 @@ import rawRHAlternanceModel from "shared/models/rawRHAlternance.model"
 import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"
 
+import dayjs from "shared/helpers/dayjs"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import dayjs from "@/services/dayjs.service"
 
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 

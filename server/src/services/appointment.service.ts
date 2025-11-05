@@ -1,6 +1,6 @@
-import dayjs from "dayjs"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
+import dayjs from "shared/helpers/dayjs"
 import type { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 import { mailType } from "shared/constants/appointment"
 import type { ReferrerObject } from "shared/constants/referers"

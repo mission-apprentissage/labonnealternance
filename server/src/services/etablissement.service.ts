@@ -19,14 +19,13 @@ import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 //import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 
-
+import dayjs from "shared/helpers/dayjs"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import { fetchOpcosFromCFADock } from "./cfadock.service"
-import dayjs from "./dayjs.service"
 import type { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"

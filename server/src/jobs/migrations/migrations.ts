@@ -2,8 +2,7 @@ import { readdir, writeFile } from "node:fs/promises"
 import path from "path"
 
 import { internal } from "@hapi/boom"
-import { format } from "date-fns"
-
+import dayjs from "shared/helpers/dayjs"
 import { withCause } from "@/common/utils/errorManager"
 import { __dirname } from "@/common/utils/esmUtils"
 import config from "@/config"
@@ -107,7 +106,7 @@ export async function status(): Promise<{ count: number; requireShutdown: boolea
 }
 
 export async function create({ description }: { description: string }) {
-  const fileName = `${format(new Date(), "yyyyMMddHHmmss")}-${description.replaceAll(" ", "_")}.ts`
+  const fileName = dayjs().format(`YYYYMMDDHHmmss-[${description.replaceAll(" ", "_")}.ts]`)
   const file = `src/migrations/${fileName}`
   const newContent = `
 import { getDbCollection } from "@/common/utils/mongodbUtils";

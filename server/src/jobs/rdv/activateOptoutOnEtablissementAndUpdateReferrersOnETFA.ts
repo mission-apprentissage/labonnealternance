@@ -1,9 +1,9 @@
 import * as _ from "lodash-es"
 import { referrers } from "shared/constants/referers"
 
+import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
 import config from "@/config"
-import dayjs from "@/services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import mailer from "@/services/mailer.service"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"

@@ -1,9 +1,9 @@
 import { JOB_STATUS } from "shared/models/index"
 
+import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import dayjs from "@/services/dayjs.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const cancelOfferJob = async () => {
