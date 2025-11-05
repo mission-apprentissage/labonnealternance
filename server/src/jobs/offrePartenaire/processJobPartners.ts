@@ -13,6 +13,6 @@ export const processComputedAndImportToJobPartners = async () => {
   const filter = { partner_label: { $in: jobPartnersByFlux } }
   await fillComputedJobsPartners({ addedMatchFilter: filter })
   await importFromComputedToJobsPartners(filter)
-  await cancelRemovedJobsPartners()
+  await cancelRemovedJobsPartners(filter)
   logger.info("fin de processComputedAndImportToJobPartners")
 }

@@ -1176,7 +1176,7 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
     if (!recruiter) {
       throw internal(`inattendu: aucun recruiter avec jobs._id=${job_id}`)
     }
-    const job = recruiter?.jobs?.find((job) => job._id === job_id)
+    const job = recruiter?.jobs?.find((job) => job._id.toString() === job_id.toString())
     if (!job) {
       throw internal(`inattendu: aucun job recruiter avec id=${job_id}`)
     }
@@ -1262,7 +1262,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
       if (recruiter !== null) {
-        job = recruiter.jobs.find((job) => job._id === job_id)
+        job = recruiter.jobs.find((job) => job._id.toString() === job_id?.toString())
       }
       break
     }
