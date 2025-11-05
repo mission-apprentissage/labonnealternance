@@ -72,7 +72,7 @@ const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) =>
   )
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   const requestHeaders = new Headers(request.headers)
   const session = await getSession(request)

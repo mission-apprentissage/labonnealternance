@@ -9,10 +9,10 @@ import {
   processToulouseMetropole,
   processViteUnEmploi,
 } from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
-import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
+import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
 import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
@@ -42,7 +42,6 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
-import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
@@ -227,6 +226,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres La Poste dans la collection raw & computed",
   },
   {
+    fct: processJobteaser,
+    description: "Importe les offres Jobteaser dans la collection raw & computed",
+  },
+  {
     fct: processJooble,
     description: "Importe les offres Jooble dans la collection raw & computed",
   },
@@ -270,11 +273,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: importFromComputedToJobsPartners,
     description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners",
   },
-  // IMPORT COMPUTED RECRUTEURS_LBA TO JOBS PARTNERS
-  {
-    fct: importRecruteursLbaFromComputedToJobsPartners,
-    description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners pour les recruteurs_lba",
-  },
   {
     fct: processRecruteursLba,
     description: "Chaîne complète de traitement des entreprises issues de l'algo pour jobs_partners",
@@ -282,10 +280,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processJobPartnersForApi,
     description: "Chaîne complète de traitement des jobs_partners déposés par API",
-  },
-  {
-    fct: cancelRemovedJobsPartners,
-    description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
   },
   {
     fct: removeMissingRecruteursLbaFromComputedJobPartners,

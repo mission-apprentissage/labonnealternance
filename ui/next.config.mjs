@@ -81,9 +81,6 @@ const nextConfig = {
     },
   },
   output: "standalone",
-  eslint: {
-    dirs: ["."],
-  },
   compress: false, // disable default gzip compression by nextJS, done by Nginx
   cacheMaxMemorySize: 0, // disable default in-memory caching
   images: {

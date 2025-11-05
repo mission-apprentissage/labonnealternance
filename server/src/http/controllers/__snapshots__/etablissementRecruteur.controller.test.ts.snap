@@ -34,14 +34,6 @@ exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le
   "establishment_raison_sociale": "DIRECTION INTERMINISTERIELLE DU NUMERIQUE",
   "establishment_siret": "42476141900045",
   "first_name": "John",
-  "geo_coordinates": "48.853954,2.312864",
-  "geopoint": {
-    "coordinates": [
-      2.312864,
-      48.853954,
-    ],
-    "type": "Point",
-  },
   "idcc": 3248,
   "is_delegated": false,
   "jobs": [],
