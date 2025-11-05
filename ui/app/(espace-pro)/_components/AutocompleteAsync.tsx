@@ -49,7 +49,7 @@ export default function AutocompleteAsync<T>({
     return debounce(handleSearch, debounceDelayInMs)
   }, [])
 
-  const { isOpen, getMenuProps, getInputProps, getItemProps, highlightedIndex } = useCombobox<T>({
+  const { isOpen, getMenuProps, getInputProps, getItemProps, highlightedIndex, openMenu } = useCombobox<T>({
     itemToString,
     onInputValueChange: ({ inputValue }) => {
       if (!inputValue || (error && !allowHealFromError)) {
@@ -91,7 +91,20 @@ export default function AutocompleteAsync<T>({
 
   return (
     <Box data-testid={dataTestId} sx={{ width: "100%", position: "relative" }}>
-      <CustomInput pb="0" required={false} name={name} placeholder={placeholder} {...{ ...getInputProps(), ref: undefined }} />
+      <CustomInput
+        pb="0"
+        required={false}
+        name={name}
+        placeholder={placeholder}
+        {...{
+          ...getInputProps({
+            onFocus() {
+              openMenu()
+            },
+          }),
+          ref: undefined,
+        }}
+      />
       <Box
         sx={{
           width: "100%",
