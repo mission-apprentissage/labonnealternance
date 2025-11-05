@@ -1,4 +1,3 @@
-
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"

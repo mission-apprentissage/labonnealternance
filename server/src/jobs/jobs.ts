@@ -1,7 +1,6 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
-
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
 import anonymizeAppointments from "./anonymization/anonymizeAppointments"

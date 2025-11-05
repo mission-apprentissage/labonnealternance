@@ -121,7 +121,6 @@ export const searchForFtJobs = async (
       })
 
       return { data, contentRange: headers["content-range"] } //  fyi: 'content-range': 'offres 0-149/9981',
-       
     } catch (error: any) {
       if (options.throwOnError) {
         throw error
