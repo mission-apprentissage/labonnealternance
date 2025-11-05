@@ -34,7 +34,7 @@ export const leboncoinJobToJobsPartners = (job: ILeboncoinJob): IComputedJobsPar
     workplace_name: job.entreprise,
     workplace_address_city: job.ville,
     workplace_address_zipcode: job["code postal"],
-    workplace_address_label: job.ville + " " + job["code postal"],
+    workplace_address_label: `${job.ville} ${job["code postal"]}`,
     offer_description: job.description,
     offer_expiration: dayjs.tz(now).add(2, "months").toDate(),
     apply_url: job.redirection,
