@@ -25,7 +25,7 @@ export const parseCsv = (options: CsvParseOptions = {}) => {
     on_record: (record) => {
       return pickBy(record, (v) => {
         return !isEmpty(v) && v !== "NULL" && v.trim().length
-      })
+      }) as any
     },
     ...options,
   })
