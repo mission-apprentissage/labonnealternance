@@ -62,6 +62,7 @@ import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTrav
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
+import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -367,5 +368,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
+  },
+  {
+    fct: processDecathlon,
+    description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
   },
 ]

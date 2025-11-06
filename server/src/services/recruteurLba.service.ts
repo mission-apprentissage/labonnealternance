@@ -239,9 +239,14 @@ type IRecruteursLbaSearchParams = {
   romes: string[] | null
   departements?: string[] | null
   opco: OPCOS_LABEL | null
+  partners_to_exclude?: JOBPARTNERS_LABEL[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements, partners_to_exclude }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+  if (partners_to_exclude?.includes(JOBPARTNERS_LABEL.RECRUTEURS_LBA)) {
+    return []
+  }
+
   const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
   if (romes) {

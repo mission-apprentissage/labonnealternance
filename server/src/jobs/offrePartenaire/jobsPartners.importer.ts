@@ -7,6 +7,7 @@ import { processJobteaser } from "./jobteaser/processJobteaser"
 import { processJooble } from "./jooble/processJooble"
 import { processKelio } from "./kelio/processKelio"
 import { processLaposte } from "./laposte/processLaposte"
+import { processDecathlon } from "./decathlon/processDecathlon"
 // import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
@@ -108,6 +109,12 @@ export const importers: Record<string, CronDef> = {
   "Import Toulouse Metropole": {
     cron_string: timings.import_source,
     handler: processToulouseMetropole,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Decathlon": {
+    cron_string: timings.import_source,
+    handler: processDecathlon,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
