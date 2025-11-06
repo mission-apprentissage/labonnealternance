@@ -160,6 +160,7 @@ const config = {
   jobteaserPassword: env.get("JOBTEASER_FLUX_PASSWORD").required().asString(),
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
+  decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },

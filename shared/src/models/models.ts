@@ -34,6 +34,7 @@ import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
+import rawDecathlonModel from "./rawDecathlon.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawJobteaserModel from "./rawJobteaser.model.js"
@@ -102,6 +103,7 @@ const modelDescriptorMap = {
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
+  [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,
