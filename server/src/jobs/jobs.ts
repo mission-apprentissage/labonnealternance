@@ -1,6 +1,7 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import { anonymizeReportedReasons } from "@/jobs/anonymization/anonymizeReportedReasons"
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
@@ -132,6 +133,11 @@ export async function setupJobProcessor() {
           "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
+            tag: "main",
+          },
+          "Anonymisation des reasons de plus de (1) an": {
+            cron_string: "35 0 * * *",
+            handler: anonymizeReportedReasons,
             tag: "main",
           },
           "Active tous les établissements qui ont souscrits à l'opt-out": {

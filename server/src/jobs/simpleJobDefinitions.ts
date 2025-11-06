@@ -1,3 +1,4 @@
+import { anonymizeReportedReasons } from "@/jobs/anonymization/anonymizeReportedReasons"
 import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
 import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
 import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
@@ -179,6 +180,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonymizeApplicantsAndApplications,
     description: "Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées",
+  },
+  {
+    fct: anonymizeReportedReasons,
+    description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
   },
   {
     fct: fixJobExpirationDate,
