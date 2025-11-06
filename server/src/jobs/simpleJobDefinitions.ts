@@ -9,6 +9,7 @@ import {
   processToulouseMetropole,
   processViteUnEmploi,
 } from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
+import { processDecathlon } from "@/jobs/offrePartenaire/decathlon/processDecathlon"
 import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
@@ -374,5 +375,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
+  },
+  {
+    fct: processDecathlon,
+    description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
   },
 ]

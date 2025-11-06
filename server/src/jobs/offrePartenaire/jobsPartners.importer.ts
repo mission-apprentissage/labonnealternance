@@ -7,6 +7,7 @@ import {
   processNosTalentsNosEmplois,
   processToulouseMetropole,
 } from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
+import { processDecathlon } from "@/jobs/offrePartenaire/decathlon/processDecathlon"
 import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
 import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
 import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
@@ -114,6 +115,12 @@ export const importers: Record<string, CronDef> = {
   "Import Toulouse Metropole": {
     cron_string: timings.import_source,
     handler: processToulouseMetropole,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Decathlon": {
+    cron_string: timings.import_source,
+    handler: processDecathlon,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
