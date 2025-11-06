@@ -33,6 +33,7 @@ export enum JOBPARTNERS_LABEL {
   VITE_UN_EMPLOI = "Vite un emploi",
   TOULOUSE_METROPOLE = "Toulouse metropole",
   JOOBLE = "Jooble",
+  DECATHLON = "Décathlon",
   JOBTEASER = "Jobteaser",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
