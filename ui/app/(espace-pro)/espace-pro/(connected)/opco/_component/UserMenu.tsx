@@ -1,29 +1,31 @@
-import type { IUserRecruteurForAdminJSON } from "shared"
-
+import { getLastStatusEvent } from "shared"
+import type { IUserRecruteurForAdminJSON, IUserStatusValidationJson } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 
 export const UserMenu = ({
   row,
-  tabIndex,
   setCurrentEntreprise,
   confirmationActivationUtilisateur,
   confirmationDesactivationUtilisateur,
 }: {
   row: any
-  tabIndex: string
   setCurrentEntreprise: (entreprise: IUserRecruteurForAdminJSON | null) => void
   confirmationActivationUtilisateur: any
   confirmationDesactivationUtilisateur: any
 }) => {
+  const status = getLastStatusEvent(row.status as IUserStatusValidationJson[])?.status
+  const canActivate = [ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ATTENTE].includes(status)
+  const canDeactivate = [ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.ATTENTE].includes(status)
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
       link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath(),
       type: "link",
     },
-    tabIndex !== "1"
+    canActivate
       ? {
           label: "Activer le compte",
           onClick: () => {
@@ -33,7 +35,7 @@ export const UserMenu = ({
           type: "button",
         }
       : null,
-    tabIndex !== "2"
+    canDeactivate
       ? {
           label: "Désactiver le compte",
           onClick: () => {
