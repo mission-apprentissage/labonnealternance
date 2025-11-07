@@ -71,7 +71,6 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
               onChange={(newValues) =>
                 navigateToRecherchePage({
                   displayEntreprises: newValues.includes(UserItemTypes.EMPLOI),
-                  displayPartenariats: newValues.includes(UserItemTypes.EMPLOI) && newValues.includes(UserItemTypes.FORMATIONS),
                   displayFormations: newValues.includes(UserItemTypes.FORMATIONS),
                 })
               }
