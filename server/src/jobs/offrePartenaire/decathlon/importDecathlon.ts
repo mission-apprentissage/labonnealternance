@@ -3,12 +3,10 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawDecathlonModel from "shared/models/rawDecathlon.model"
 import z from "zod"
 
+import { decathlonJobToJobsPartners, ZDecathlonJob } from "./decathlonMapper"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 import config from "@/config"
 import { importFromStreamInJson } from "@/jobs/offrePartenaire/importFromStreamInJson"
-
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
-
-import { decathlonJobToJobsPartners, ZDecathlonJob } from "./decathlonMapper"
 
 const rawCollectionName = rawDecathlonModel.collectionName
 

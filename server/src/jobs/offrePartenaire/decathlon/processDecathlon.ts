@@ -1,4 +1,4 @@
-import { importDecathlonRaw, importDecathlonToComputed } from "@/jobs/offrePartenaire/decathlon/importDecathlon"
+import { importDecathlonRaw, importDecathlonToComputed } from "./importDecathlon"
 
 export const processDecathlon = async () => {
   await importDecathlonRaw()

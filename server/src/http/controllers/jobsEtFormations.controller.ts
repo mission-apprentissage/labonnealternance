@@ -2,11 +2,11 @@ import { zRoutes } from "shared"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
-import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { getFormationsQuery } from "../../services/formation.service"
-import { getJobsFromApi } from "../../services/jobs/jobOpportunity/jobOpportunity.service"
-import { jobsEtFormationsQueryValidator } from "../../services/queryValidator.service"
-import { Server } from "../server"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { getFormationsQuery } from "@/services/formation.service"
+import { getJobsFromApi } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { jobsEtFormationsQueryValidator } from "@/services/queryValidator.service"
+import type { Server } from "@/http/server"
 
 const config = {
   rateLimit: {

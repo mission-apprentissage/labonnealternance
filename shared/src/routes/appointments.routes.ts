@@ -1,4 +1,4 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { referrers } from "../constants/referers.js"
@@ -7,7 +7,7 @@ import { EREASONS, ZAppointment, ZAppointmentRecap, ZAppointmentShortRecap } fro
 import { ZEtablissement } from "../models/etablissement.model.js"
 import { ZUser } from "../models/user.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 import { ZAppointmentResponseAvailable } from "./v2/appointments.routes.v2.js"
 
 const zContextCreateSchemaParcoursup = z

@@ -1,5 +1,5 @@
+import UserLists from "./UserLists"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
-import UserLists from "@/app/(espace-pro)/espace-pro/(connected)/administration/users/UserLists"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { PAGES } from "@/utils/routes.utils"
 

@@ -5,7 +5,8 @@ import { AccessEntityType, ZRoleManagement, ZRoleManagementEvent } from "../mode
 import { ZEtatUtilisateur, ZUserRecruteur, ZUserRecruteurForAdmin } from "../models/usersRecruteur.model.js"
 import { ZNewSuperUser, ZUserWithAccount, ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 
-import { IRoutesDef, ZResError } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
+import { ZResError } from "./common.routes.js"
 
 const ZUserForOpco = ZUserRecruteur.pick({
   _id: true,

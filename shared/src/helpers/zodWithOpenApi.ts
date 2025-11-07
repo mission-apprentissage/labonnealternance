@@ -5,6 +5,7 @@ import { makeZodI18nMap, zodI18nMap } from "zod-i18n-map"
 
 import LOCALE_FR from "./locale/locale.fr.js"
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 i18next.init({
   lng: "en",
   resources: {
@@ -16,6 +17,7 @@ z.setErrorMap(zodI18nMap)
 extendZodWithOpenApi(z)
 
 const setZodLanguage = (language: "fr" | "en") => {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   i18next.changeLanguage(language)
   z.setErrorMap(makeZodI18nMap({ t: i18next.t }))
 }

@@ -1,10 +1,9 @@
-import OpenAI from "openai"
+import type OpenAI from "openai"
 import z from "zod"
 
+import { logger } from "@/common/logger"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-
-import { logger } from "../../common/logger"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const openAiApiUrl = "https://api.openai.com/v1/chat/completions"
 

@@ -1,7 +1,8 @@
 "use client"
 
 import { Box, Typography } from "@mui/material"
-import { useCombobox, UseComboboxState } from "downshift"
+import type { UseComboboxState } from "downshift"
+import { useCombobox } from "downshift"
 import { useField } from "formik"
 import { useState } from "react"
 
@@ -42,7 +43,7 @@ export default function DropdownCombobox(props) {
     }
   }
 
-  const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, reset } = useCombobox({
+  const { isOpen, getMenuProps, getInputProps, highlightedIndex, getItemProps, reset, openMenu } = useCombobox({
     itemToString,
     onInputValueChange: ({ inputValue }) => onInputValueChange({ inputValue }),
     onSelectedItemChange,
@@ -53,9 +54,18 @@ export default function DropdownCombobox(props) {
 
   return (
     <div data-testid={props.dataTestId}>
-      <div {...getComboboxProps()}>
-        <CustomInput label={label} pb="0" required={false} name={name} placeholder={placeholder || "sélectionner un métier"} {...getInputProps()} />
-      </div>
+      <CustomInput
+        label={label}
+        pb="0"
+        required={false}
+        name={name}
+        placeholder={placeholder || "sélectionner un métier"}
+        {...getInputProps({
+          onFocus() {
+            openMenu()
+          },
+        })}
+      />
       <Box
         sx={{
           width: "100%",

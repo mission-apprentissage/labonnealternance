@@ -1,7 +1,7 @@
 import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
-import { ColumnOption } from "csv-stringify/sync"
+import type { ColumnOption } from "csv-stringify/sync"
 import { AccessEntityType, AccessStatus } from "shared/models/index"
 import { UserEventType } from "shared/models/userWithAccount.model"
 
@@ -211,8 +211,8 @@ const sendContacts = async (type: AccessEntityType) => {
 
   const postingTransform = new Transform({
     objectMode: true,
-    transform(contacts, _, callback) {
-      postToBrevo(contacts as IBrevoContact[])
+    async transform(contacts, _, callback) {
+      await postToBrevo(contacts as IBrevoContact[])
       callback()
     },
   })

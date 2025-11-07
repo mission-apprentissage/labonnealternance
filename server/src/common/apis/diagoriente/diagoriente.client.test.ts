@@ -1,8 +1,8 @@
 import nock from "nock"
 import { describe, expect, it, vi } from "vitest"
 
-import { getDiagorienteRomeClassification } from "@/common/apis/diagoriente/diagoriente.client"
-import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "@/common/apis/diagoriente/diagoriente.client.fixture"
+import { getDiagorienteRomeClassification } from "./diagoriente.client"
+import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "./diagoriente.client.fixture"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 useMongo()

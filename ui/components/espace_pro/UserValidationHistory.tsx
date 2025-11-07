@@ -1,11 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
-import { IUserStatusValidationJson } from "shared"
-
-import Badge from "@/app/(espace-pro)/_components/Badge"
+import type { IUserStatusValidationJson } from "shared"
 
 import LoadingEmptySpace from "./LoadingEmptySpace"
+import Badge from "@/app/(espace-pro)/_components/Badge"
 
 const UserValidationHistory = ({ histories }: { histories: IUserStatusValidationJson[] }) => {
   if (histories.length === 0) {

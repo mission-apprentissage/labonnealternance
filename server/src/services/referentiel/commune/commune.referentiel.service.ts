@@ -1,7 +1,8 @@
 import { internal } from "@hapi/boom"
-import { IGeoPoint, IReferentielCommune } from "shared/models/index"
+import type { IGeoPoint, IReferentielCommune } from "shared/models/index"
 
-import { getCommuneParCodeDepartement, getDepartements, IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
+import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
+import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 async function updateReferentielCommuneByCommune(commune: IGeoApiCommune): Promise<void> {

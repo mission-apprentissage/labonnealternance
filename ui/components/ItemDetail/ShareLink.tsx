@@ -1,15 +1,12 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import { SyntheticEvent, useEffect, useState } from "react"
-import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { SyntheticEvent } from "react"
+import { useState } from "react"
+import type { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
-const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
+const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
   const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    setCopied(false)
-  }, [item.id])
 
   const copyLink = (e: SyntheticEvent) => {
     e.preventDefault()
@@ -35,6 +32,10 @@ const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson |
       )}
     </Button>
   )
+}
+
+const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
+  return <ShareLinkInner key={item.id} item={item} />
 }
 
 export default ShareLink

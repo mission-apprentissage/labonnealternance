@@ -1,17 +1,19 @@
 import { createReadStream, createWriteStream } from "fs"
-import Stream, { Transform } from "stream"
+import type Stream from "stream"
+import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { JOB_STATUS_ENGLISH } from "shared"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
+import { logger } from "@/common/logger"
 import { concatStreams, waitForStreamEnd } from "@/common/utils/streamUtils"
 import config from "@/config"
 import { jobsPartnersToApiV3Read } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
-import { logger } from "../../common/logger"
-import { s3WriteStream } from "../../common/utils/awsUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { s3WriteStream } from "@/common/utils/awsUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const getFileWriteStream = (fileName: string) => {
   logger.info(`Generating file ${fileName}`)
@@ -75,7 +77,7 @@ function getJsonArrayTransform() {
   let isFirst = true
   const transform = new Transform({
     objectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       if (!chunk) {
         callback()
         return
@@ -105,7 +107,7 @@ const getCusorTransform = <T>(mapper: (obj: T) => string | null) => {
   return new Transform({
     readableObjectMode: true,
     writableObjectMode: true,
-    transform(chunk: T, encoding, callback) {
+    transform(chunk: T, _, callback) {
       const result = mapper(chunk)
       if (result !== null) {
         this.push(result)

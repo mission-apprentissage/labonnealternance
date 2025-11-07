@@ -1,6 +1,7 @@
-import { IUserRecruteurForAdminJSON } from "shared"
+import type { IUserRecruteurForAdminJSON } from "shared"
 
-import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 
 export const UserMenu = ({

@@ -1,10 +1,11 @@
 import { unauthorized } from "@hapi/boom"
-import { isValidReferrerApi, ReferrerApiEnum } from "shared/constants/referers"
+import type { ReferrerApiEnum } from "shared/constants/referers"
+import { isValidReferrerApi } from "shared/constants/referers"
 import { zRoutes } from "shared/index"
 
-import { getUserFromRequest } from "../../../security/authenticationService"
-import { findElligibleTrainingForAppointmentV2 } from "../../../services/eligibleTrainingsForAppointment.service"
-import { Server } from "../../server"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { findElligibleTrainingForAppointmentV2 } from "@/services/eligibleTrainingsForAppointment.service"
+import type { Server } from "@/http/server"
 
 export default (server: Server) => {
   // TODO: évaluation passage en GET avant communication utilisateurs finaux

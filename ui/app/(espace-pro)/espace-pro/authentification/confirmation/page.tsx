@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
-import { IoMail } from "react-icons/io5"
 
 export default function ConfirmationCreationCompte() {
   return (
@@ -17,7 +16,7 @@ export default function ConfirmationCreationCompte() {
           Vous n'avez rien reçu ?
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IoMail />
+          <div className="ri-mail-line" style={{ color: fr.colors.decisions.text.active.blueFrance.default }} />
           <Link
             sx={{ marginLeft: fr.spacing("1w") }}
             href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Creation%20compte%20LBAR%20-%20Mail%20non%20recu"

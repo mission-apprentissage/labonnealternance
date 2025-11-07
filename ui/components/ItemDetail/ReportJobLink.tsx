@@ -8,14 +8,14 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
+import { CustomRadio } from "@/app/_components/CustomRadio"
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { reportLbaItem } from "@/utils/api"
 
-import { CustomRadio } from "../../app/_components/CustomRadio"
-import { InfoTooltipOrModal } from "../InfoTooltipOrModal"
-import { ModalReadOnly } from "../ModalReadOnly"
+import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
+import { ModalReadOnly } from "@/components/ModalReadOnly"
 
 const additionalMessageByMotif = {
   "Offre offensante ou discriminatoire": "Pouvez-vous préciser l'offense ou la discrimination en question (dans la description de l'annonce, lors de l'entretien, etc) ?",
@@ -73,7 +73,6 @@ export const ReportJobLink = ({
   const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onReport = async ({ reason, reason_details }: IFormValues) => {
     if (storedValue) {
       return
@@ -107,7 +106,11 @@ export const ReportJobLink = ({
               {content.title}
             </Typography>
             <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
-            <Formik initialValues={{ reason: "", reason_details: "" }} validationSchema={toFormikValidationSchema(ZFormValues)} onSubmit={(formikValues) => onReport(formikValues)}>
+            <Formik
+              initialValues={{ reason: "", reason_details: "" }}
+              validationSchema={toFormikValidationSchema(ZFormValues)}
+              onSubmit={async (formikValues) => onReport(formikValues)}
+            >
               {({ values, handleChange, handleBlur, submitForm, dirty, isValid, isSubmitting, setFieldValue }) => {
                 return (
                   <Stack direction="column" spacing={2}>
@@ -124,7 +127,7 @@ export const ReportJobLink = ({
                       size="small"
                       name="reason"
                       value={values.reason}
-                      onChange={(_, newValue) => setFieldValue("reason", newValue, true)}
+                      onChange={async (_, newValue) => setFieldValue("reason", newValue, true)}
                       possibleValues={content.motifs}
                     />
                     {values.reason && !noAdditionalMessage.includes(values.reason) && (

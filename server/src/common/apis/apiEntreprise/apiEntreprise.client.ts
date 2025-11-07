@@ -1,12 +1,11 @@
 import { EDiffusibleStatus } from "shared/constants/diffusibleStatus"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
+import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import { ZAdresseV3 } from "shared/models/index"
 
+import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-
-import getApiClient from "../client"
 
 const client = getApiClient({ timeout: 5000 })
 

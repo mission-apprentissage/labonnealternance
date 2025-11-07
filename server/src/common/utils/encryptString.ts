@@ -1,6 +1,6 @@
 import crypto from "crypto"
 
-import config from "../../config"
+import config from "@/config"
 
 const secretLba = Buffer.alloc(32, config.lbaSecret)
 

@@ -4,10 +4,10 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZMonsterJob = z
   .object({
@@ -66,8 +66,8 @@ export const monsterJobToJobsPartners = (job: IMonsterJob): IComputedJobsPartner
     offer_description: JobBody,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs
-      .tz(publicationDate || created_at)
+    offer_expiration: dayjs(publicationDate || created_at)
+      .tz()
       .add(2, "months")
       .toDate(),
 

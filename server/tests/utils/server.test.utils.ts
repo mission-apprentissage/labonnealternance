@@ -1,6 +1,7 @@
 import { beforeAll } from "vitest"
 
-import { bindFastifyServer, Server } from "@/http/server"
+import type { Server } from "@/http/server"
+import { bindFastifyServer } from "@/http/server"
 
 export const useServer = () => {
   let app: Server

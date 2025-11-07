@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/node"
 import type { FastifyRequest } from "fastify"
 import { assertUnreachable } from "shared"
 
-import { Server } from "../../http/server"
+import type { Server } from "@/http/server"
 
 type UserData = {
   segment: string

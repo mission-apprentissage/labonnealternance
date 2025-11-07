@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"

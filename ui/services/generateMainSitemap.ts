@@ -1,6 +1,7 @@
 import path from "path"
 
-import { generateSitemapFromUrlEntries, SitemapUrlEntry } from "shared/utils/sitemapUtils"
+import type { SitemapUrlEntry } from "shared/utils/sitemapUtils"
+import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
 import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"

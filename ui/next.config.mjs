@@ -2,6 +2,7 @@
 import path from "path"
 import { fileURLToPath } from "url"
 
+// eslint-disable-next-line import-x/no-extraneous-dependencies
 import createWithBundleAnalyzer from "@next/bundle-analyzer"
 import { withSentryConfig } from "@sentry/nextjs"
 import { Config } from "next-recompose-plugins"
@@ -17,6 +18,7 @@ const withBundleAnalyzer = createWithBundleAnalyzer({
 
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
+ * @param {string} value
  */
 function inline(value) {
   return value.replace(/\s{2,}/g, " ").trim()

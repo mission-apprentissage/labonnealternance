@@ -1,9 +1,8 @@
 import { Mistral } from "@mistralai/mistralai"
 
+import { logger } from "@/common/logger"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-
-import { logger } from "../../common/logger"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const mistral = new Mistral({
   apiKey: config.mistralai.apiKey,

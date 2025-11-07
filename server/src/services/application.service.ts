@@ -3,58 +3,45 @@ import { pipeline } from "stream/promises"
 
 import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import {
-  ApplicationScanStatus,
-  CompanyFeebackSendStatus,
-  EMAIL_LOG_TYPE,
-  IApplicant,
-  IApplication,
-  IApplicationApiPrivateOutput,
-  IApplicationApiPublicOutput,
-  IJob,
-  INewApplicationV1,
-  IRecruiter,
-  JOB_STATUS,
-  JobCollectionName,
-  assertUnreachable,
-  parseEnum,
-} from "shared"
-import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
+import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
+import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { RefusalReasons } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { ITrackingCookies } from "shared/models/trafficSources.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { ITrackingCookies } from "shared/models/trafficSources.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
-
-import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { UserForAccessToken, userWithAccountToUserForToken } from "@/security/accessTokenService"
-
-import { logger } from "../common/logger"
-import { manageApiError } from "../common/utils/errorManager"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
-import config from "../config"
 
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
-import { BrevoEventStatus } from "./brevo.service"
+import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
+import config from "@/config"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { manageApiError } from "@/common/utils/errorManager"
+import { logger } from "@/common/logger"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import type { UserForAccessToken } from "@/security/accessTokenService"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -228,7 +215,7 @@ export const sendApplication = async ({
       logger.error("Error sending application", err)
       sentryCaptureException(err)
       if (newApplication?.caller) {
-        manageApiError({
+        await manageApiError({
           error: err,
           api_path: "applicationV1",
           caller: newApplication.caller,
@@ -249,7 +236,7 @@ async function identifyFileType(base64String: string) {
     // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
     return type
-  } catch (err) {
+  } catch (_) {
     return undefined
   }
 }
@@ -350,7 +337,7 @@ export const sendApplicationV2 = async ({
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
-      manageApiError({
+      await manageApiError({
         error: err,
         api_path: "applicationV2",
         caller: caller,
@@ -409,7 +396,7 @@ export const buildUserForToken = (application: IApplication, user?: IUserWithAcc
 }
 
 // get data from applicant
-const buildReplyLink = (application: IApplication, applicant: IApplicant, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
+const buildReplyLink = (application: IApplication, intention: ApplicationIntention, userForToken: UserForAccessToken) => {
   const { job_origin, _id } = application
   const applicationId = _id.toString()
   const searchParams = new URLSearchParams()
@@ -442,7 +429,7 @@ export const getUserManagingOffer = async (recruiter: IRecruiter): Promise<IUser
  * Build urls to add in email messages sent to the recruiter
  * email recruteur uniquement
  */
-const buildRecruiterEmailUrlsAndParameters = async (application: IApplication, applicant: IApplicant) => {
+const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) => {
   const utmRecruiterData = "&utm_source=lba&utm_medium=email&utm_campaign=je-candidate-recruteur"
 
   let user: IUserWithAccount | undefined
@@ -461,8 +448,8 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication, a
   const userForToken = buildUserForToken(application, user)
   const urls = {
     jobUrl: "",
-    meetCandidateUrl: buildReplyLink(application, applicant, ApplicationIntention.ENTRETIEN, userForToken),
-    refuseCandidateUrl: buildReplyLink(application, applicant, ApplicationIntention.REFUS, userForToken),
+    meetCandidateUrl: buildReplyLink(application, ApplicationIntention.ENTRETIEN, userForToken),
+    refuseCandidateUrl: buildReplyLink(application, ApplicationIntention.REFUS, userForToken),
     lbaRecruiterUrl: `${config.publicUrl}/acces-recruteur?${utmRecruiterData}-acces-recruteur`,
     unsubscribeUrl: `${config.publicUrl}/desinscription?application_id=${createToken({ application_id: application._id }, "30d", "desinscription")}${utmRecruiterData}-desinscription`,
     lbaUrl: `${config.publicUrl}?${utmRecruiterData}-home`,
@@ -1086,7 +1073,7 @@ export const processApplicationEmails = {
   async sendRecruteurEmail(application: IApplication, applicant: IApplicant, attachmentContent: string) {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
-    const recruiterEmailUrls = await buildRecruiterEmailUrlsAndParameters(application, applicant)
+    const recruiterEmailUrls = await buildRecruiterEmailUrlsAndParameters(application)
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
@@ -1454,7 +1441,7 @@ export const processScheduledRecruiterIntentions = async () => {
 
     const transform = new Transform({
       objectMode: true,
-      async transform(application: IApplication, encoding, callback: (error?: Error | null, data?: any) => void) {
+      async transform(application: IApplication, _, callback: (error?: Error | null, data?: any) => void) {
         counters.total++
         try {
           await processRecruiterIntention({ application })

@@ -1,5 +1,5 @@
 import { ObjectId } from "bson"
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
@@ -9,7 +9,8 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { zCallerParam } from "../routes/_params.js"
 import { validateSIRET } from "../validators/siretValidator.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 const collectionName = "applications" as const
 
@@ -148,6 +149,7 @@ export const ZNewApplication = ZApplicationOld.extend({
   .openapi("ApplicationUi")
 
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
   message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,

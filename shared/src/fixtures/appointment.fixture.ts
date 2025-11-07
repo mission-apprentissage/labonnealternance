@@ -1,9 +1,9 @@
 import { ObjectId } from "bson"
 
 import { referrers } from "../constants/referers.js"
-import { IAppointment } from "../models/appointments.model.js"
-import { IEligibleTrainingsForAppointment } from "../models/elligibleTraining.model.js"
-import { IEtablissement } from "../models/etablissement.model.js"
+import type { IAppointment } from "../models/appointments.model.js"
+import type { IEligibleTrainingsForAppointment } from "../models/elligibleTraining.model.js"
+import type { IEtablissement } from "../models/etablissement.model.js"
 
 export function generateEligibleTrainingFixture(data: Partial<IEligibleTrainingsForAppointment>): IEligibleTrainingsForAppointment {
   return {

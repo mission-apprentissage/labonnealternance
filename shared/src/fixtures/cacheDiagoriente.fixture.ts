@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { ICacheDiagoriente } from "../models/cacheDiagoriente.model.js"
+import type { ICacheDiagoriente } from "../models/cacheDiagoriente.model.js"
 
 export const cacheDiagorienteFixture = (props: Partial<ICacheDiagoriente> = {}): ICacheDiagoriente => {
   return {

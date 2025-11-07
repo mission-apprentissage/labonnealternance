@@ -1,5 +1,5 @@
+import RendezVousApprentissageDetailRendererClient from "./RendezVousApprentissageDetailRendererClient"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import RendezVousApprentissageDetailRendererClient from "@/app/(espace-pro)/espace-pro/(connected)/administration/rendez-vous-apprentissage/[siret]/RendezVousApprentissageDetailRendererClient"
 import { getEligibleTrainingsForAppointments, getEtablissement } from "@/utils/api"
 
 export default async function RendezVousApprentissageDetail({ params }: { params: Promise<{ siret: string }> }) {

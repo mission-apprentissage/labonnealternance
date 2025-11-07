@@ -1,4 +1,5 @@
-import { IApplicationApiPrivateJSON, ZApplicationApiPrivate } from "shared"
+import type { IApplicationApiPrivateJSON } from "shared"
+import { ZApplicationApiPrivate } from "shared"
 import { validatePhone } from "shared/validators/phoneValidator"
 import { z } from "zod"
 

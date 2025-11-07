@@ -1,7 +1,7 @@
 import dayjs from "shared/helpers/dayjs"
 
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const controlAppointments = async () => {
   const timestamp = dayjs().subtract(2, "hours").toDate()

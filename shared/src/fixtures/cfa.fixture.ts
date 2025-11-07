@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { ICFA } from "../models/cfa.model.js"
+import type { ICFA } from "../models/cfa.model.js"
 
 export function generateCfaFixture(data: Partial<ICFA>): ICFA {
   return {

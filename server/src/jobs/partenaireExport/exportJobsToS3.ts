@@ -6,9 +6,9 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { createProjectionFromZod } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL, ZJobsPartnersRecruiterApi } from "shared/models/jobsPartners.model"
 
-import { logger } from "../../common/logger"
-import { s3WriteStream } from "../../common/utils/awsUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
+import { logger } from "@/common/logger"
+import { s3WriteStream } from "@/common/utils/awsUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 interface IGeneratorParams {
   collection: "jobs" | "jobs_partners"
@@ -39,7 +39,7 @@ async function generateJsonExport({ collection, query, projection, fileName }: I
   const transform = new Transform({
     writableObjectMode: true,
     readableObjectMode: true,
-    transform(chunk, encoding, callback) {
+    transform(chunk, _, callback) {
       if (isFirst) {
         this.push("[")
         this.push(JSON.stringify(chunk, null, 4))

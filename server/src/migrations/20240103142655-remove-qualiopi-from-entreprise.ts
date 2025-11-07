@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 import { ENTREPRISE } from "shared/constants/recruteur"
 
 export const up = async (db: Db) => {

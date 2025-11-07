@@ -1,9 +1,8 @@
 import jobsModel from "shared/models/jobs.model"
 
+import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 export const createJobsCollectionForMetabase = async () => {
   const initialCount = await getDbCollection("jobs").estimatedDocumentCount({})

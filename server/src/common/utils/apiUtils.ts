@@ -1,5 +1,5 @@
-import { AxiosInstance } from "axios"
-import { AxiosCacheInstance } from "axios-cache-interceptor"
+import type { AxiosInstance } from "axios"
+import type { AxiosCacheInstance } from "axios-cache-interceptor"
 import { RateLimiterMemory, RateLimiterQueue } from "rate-limiter-flexible"
 
 import { timeout } from "./asyncUtils"

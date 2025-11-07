@@ -1,12 +1,11 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawPassModel from "shared/models/rawPass.model"
 
-import config from "../../../config"
-import { importFromStreamInXml } from "../importFromStreamInXml"
-import { importFromUrlInXml } from "../importFromUrlInXml"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
-
 import { passJobToJobsPartners, ZPassJob } from "./passMapper"
+import config from "@/config"
+import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
+import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 
 const rawCollectionName = rawPassModel.collectionName
 const offerXmlTag = "item"
