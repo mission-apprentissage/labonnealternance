@@ -64,17 +64,19 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
     <RechercheForm onSubmit={onSubmit} rechercheParams={rechercheParams}>
       <RechercheInputsLayout
         viewTypeCheckboxs={
-          <RechercheResultTypeCheckbox
-            checked={checkedItemTypes}
-            rechercheResults={rechercheResults}
-            onChange={(newValues) =>
-              navigateToRecherchePage({
-                displayEntreprises: newValues.includes(UserItemTypes.EMPLOI),
-                displayPartenariats: newValues.includes(UserItemTypes.EMPLOI) && newValues.includes(UserItemTypes.FORMATIONS),
-                displayFormations: newValues.includes(UserItemTypes.FORMATIONS),
-              })
-            }
-          />
+          !rechercheParams.viewType && (
+            <RechercheResultTypeCheckbox
+              checked={checkedItemTypes}
+              rechercheResults={rechercheResults}
+              onChange={(newValues) =>
+                navigateToRecherchePage({
+                  displayEntreprises: newValues.includes(UserItemTypes.EMPLOI),
+                  displayPartenariats: newValues.includes(UserItemTypes.EMPLOI) && newValues.includes(UserItemTypes.FORMATIONS),
+                  displayFormations: newValues.includes(UserItemTypes.FORMATIONS),
+                })
+              }
+            />
+          )
         }
         metierInput={<RechercheMetierAutocomplete />}
         lieuInput={<RechercheLieuAutocomplete />}

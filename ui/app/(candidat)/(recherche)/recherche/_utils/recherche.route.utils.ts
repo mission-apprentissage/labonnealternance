@@ -263,16 +263,16 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   }
 }
 
-export function detectModeFromParams({ displayFilters, displayEntreprises, displayPartenariats, displayFormations }: IRecherchePageParams): IRechercheMode {
+export function detectModeFromParams({ displayFilters, displayEntreprises, displayFormations }: IRecherchePageParams): IRechercheMode {
   if (displayFilters) {
     return IRechercheMode.DEFAULT
   }
 
-  if (!displayEntreprises && !displayPartenariats && displayFormations) {
+  if (!displayEntreprises && displayFormations) {
     return IRechercheMode.FORMATIONS_ONLY
   }
 
-  if (displayEntreprises && displayPartenariats && !displayFormations) {
+  if (displayEntreprises && !displayFormations) {
     return IRechercheMode.JOBS_ONLY
   }
 
