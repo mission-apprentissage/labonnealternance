@@ -468,6 +468,21 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
   return urls
 }
 
+const getCompanyNameAndSiretFromRecruiter = async (application: IApplication): Promise<{ company_name: string; company_siret: string | null }> => {
+  // utile uniquement pour les offres LBA pour s'assurer d'avoir la société mandataire au lieu du CFA mandaté
+  if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    const jobOrCompany = await getJobOrCompany(application)
+    if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+      throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
+    }
+    return {
+      company_name: jobOrCompany.recruiter.establishment_enseigne || jobOrCompany.recruiter.establishment_raison_sociale || UNKNOWN_COMPANY,
+      company_siret: jobOrCompany.recruiter.establishment_siret,
+    }
+  }
+  return { company_name: application.company_name, company_siret: application.company_siret }
+}
+
 const offreOrCompanyToCompanyFields = (
   LbaJob: IJobOrCompanyV2
 ): Pick<IApplication, "company_siret" | "company_name" | "company_naf" | "company_phone" | "company_email" | "job_title" | "company_address" | "job_id"> => {
@@ -1045,6 +1060,7 @@ export const deleteApplicationCvFile = async (application: IApplication) => {
 
 const getRecruteurEmailSubject = (application: IApplication, applicant: IApplicant) => {
   const { job_origin } = application
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (job_origin) {
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
       return `Candidature spontanée en alternance ${application.company_name}`
@@ -1074,6 +1090,7 @@ export const processApplicationEmails = {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application, { utm_campaign: "je-candidate-recruteur" })
     const recruiterEmailUrls = await buildRecruiterEmailUrlsAndParameters(application)
+    const { company_name, company_siret } = await getCompanyNameAndSiretFromRecruiter(application)
 
     const emailCompany = await mailer.sendEmail({
       to: application.company_email,
@@ -1082,6 +1099,8 @@ export const processApplicationEmails = {
       data: {
         ...sanitizeApplicationForEmail(application),
         ...sanitizeApplicantForEmail(applicant),
+        company_name: sanitizeTextField(company_name),
+        company_siret: company_siret,
         ...images,
         ...recruiterEmailUrls,
         urlOfDetail,
@@ -1245,6 +1264,8 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
   let recruiter: IJobsPartnersOfferPrivate | IRecruiter | null = null
   let job: IJob | IJobsPartnersOfferPrivate | null | undefined = null
   const { job_id, company_siret } = application
+
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
