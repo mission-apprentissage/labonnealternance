@@ -2,7 +2,7 @@
 
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useRouter } from "next/navigation"
-import { IUserRecruteurPublic } from "shared"
+import type { IUserRecruteurPublic } from "shared"
 
 import { DsfrHeaderProps } from "@/app/_components/Header"
 import { apiGet } from "@/utils/api.utils"

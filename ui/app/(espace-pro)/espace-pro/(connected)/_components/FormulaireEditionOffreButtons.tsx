@@ -5,7 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useFormikContext } from "formik"
 import { useRouter } from "next/navigation"
-import { IJobJson } from "shared/models/job.model"
+import type { IJobJson } from "shared/models/job.model"
 
 import { ArrowRightLine } from "@/theme/components/icons"
 

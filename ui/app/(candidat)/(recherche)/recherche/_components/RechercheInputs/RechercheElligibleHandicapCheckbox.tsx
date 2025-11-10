@@ -3,7 +3,7 @@ import { Box } from "@mui/material"
 import { useField } from "formik"
 
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
 
@@ -12,7 +12,7 @@ const infoIconButtonId = "recherche-elligible-handicap-tooltip-button"
 export function RechercheElligibleHandicapCheckboxFormik({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const [field, _meta, helper] = useField({ name: "elligibleHandicapFilter" })
 
-  return <RechercheElligibleHandicapCheckbox value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} rechercheParams={rechercheParams} />
+  return <RechercheElligibleHandicapCheckbox value={field.value} onChange={async (newValue) => helper.setValue(newValue, true)} rechercheParams={rechercheParams} />
 }
 
 export function RechercheElligibleHandicapCheckbox({

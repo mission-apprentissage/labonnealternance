@@ -4,11 +4,10 @@ import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 const filledFields = ["workplace_opco", "workplace_idcc"]

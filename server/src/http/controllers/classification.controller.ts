@@ -1,8 +1,7 @@
 import { zRoutes } from "shared"
 
+import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { Server } from "../server"
 
 type IModelTraining = {
   label: string

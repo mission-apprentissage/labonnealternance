@@ -1,26 +1,20 @@
-// eslint-disable-next-line import/no-unresolved
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
-import fastifySwagger, { FastifyStaticSwaggerOptions } from "@fastify/swagger"
-import fastifySwaggerUI, { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
+import type { FastifyStaticSwaggerOptions } from "@fastify/swagger"
+import fastifySwagger from "@fastify/swagger"
+import type { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
+import fastifySwaggerUI from "@fastify/swagger-ui"
 import { notFound } from "@hapi/boom"
-import fastify, { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
-import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
+import type { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
+import fastify from "fastify"
+import type { ZodTypeProvider } from "fastify-type-provider-zod"
+import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { Netmask } from "netmask"
-import { OpenAPIV3_1 } from "openapi-types"
+import type { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
-import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-
-import { localOrigin } from "@/common/utils/isOriginLocal"
-import { processorAdminRoutes } from "@/http/controllers/_private/admin/processor.admin.routes"
-import { geoRouteController } from "@/http/controllers/_private/geo.private.controller"
-import { classificationRoutes } from "@/http/controllers/classification.controller"
-
-import { initSentryFastify } from "../common/sentry/sentry.fastify"
-import config from "../config"
-import { initBrevoWebhooks } from "../services/brevo.service"
+import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
@@ -53,9 +47,21 @@ import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
+import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
+import { classificationRoutes } from "./controllers/classification.controller"
+import { geoRouteController } from "./controllers/_private/geo.private.controller"
+import { initBrevoWebhooks } from "@/services/brevo.service"
+import config from "@/config"
+import { initSentryFastify } from "@/common/sentry/sentry.fastify"
+import { localOrigin } from "@/common/utils/isOriginLocal"
 
-export interface Server
-  extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}
+export type Server = FastifyInstance<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  FastifyBaseLogger,
+  ZodTypeProvider
+>
 
 export async function bind(app: Server) {
   initSentryFastify(app)
@@ -176,7 +182,7 @@ export async function bind(app: Server) {
 
   initBrevoWebhooks()
 
-  app.setNotFoundHandler((req, res) => {
+  app.setNotFoundHandler((_, res) => {
     res.status(404).send(notFound().output)
   })
 
@@ -188,7 +194,9 @@ export const bindFastifyServer = async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
     trustProxy: 1,
-    caseSensitive: false,
+    routerOptions: {
+      caseSensitive: false,
+    },
   }).withTypeProvider<ZodTypeProvider>()
 
   return bind(app)

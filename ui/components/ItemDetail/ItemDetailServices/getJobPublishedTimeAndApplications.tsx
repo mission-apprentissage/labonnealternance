@@ -1,9 +1,9 @@
 import { Box } from "@mui/material"
 import Image from "next/image"
-import { ILbaItemJobsGlobal, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemJobsGlobal, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { getDaysSinceDate } from "../../../utils/dateUtils"
+import { getDaysSinceDate } from "@/utils/dateUtils"
 
 export default function getJobPublishedTimeAndApplications({ item }: { item: ILbaItemJobsGlobal }) {
   const hasJob = (item: ILbaItemJobsGlobal): item is ILbaItemLbaJobJson | ILbaItemPartnerJobJson => {

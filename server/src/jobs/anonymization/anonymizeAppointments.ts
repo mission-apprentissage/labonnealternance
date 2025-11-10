@@ -1,10 +1,10 @@
-import { Filter } from "mongodb"
+import type { Filter } from "mongodb"
 import anonymizedAppointmentsModel from "shared/models/anonymizedAppointments.model"
-import { IAppointment } from "shared/models/index"
+import type { IAppointment } from "shared/models/index"
 
-import { logger } from "../../common/logger"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const anonymizeAppointments = async (filter: Filter<IAppointment>) => {
   await getDbCollection("appointments")

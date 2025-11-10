@@ -8,10 +8,10 @@ import { Box, FormControl, FormLabel, Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
-import { IAppellationsRomes } from "shared"
+import type { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 
-import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ChampNombre"
+import { ChampNombre } from "./ChampNombre"
 import CustomInput from "@/app/_components/CustomInput"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
@@ -72,7 +72,12 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           <Input
             label="Intitulé de l'offre"
             hintText="Personnalisez le titre du poste (Facultatif)"
-            nativeInputProps={{ value: values.offer_title_custom, type: "text", name: "offer_title_custom", onChange: (e) => setFieldValue("offer_title_custom", e.target.value) }}
+            nativeInputProps={{
+              value: values.offer_title_custom,
+              type: "text",
+              name: "offer_title_custom",
+              onChange: async (e) => setFieldValue("offer_title_custom", e.target.value),
+            }}
           />
         </Box>
       )}
@@ -150,7 +155,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
             nativeInputProps={{
               name: "job_duration",
               value: values.job_duration,
-              onChange: (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
+              onChange: async (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
             }}
           />
         </Box>

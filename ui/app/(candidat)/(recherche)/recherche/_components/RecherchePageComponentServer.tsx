@@ -1,8 +1,8 @@
 import { Suspense } from "react"
 
-import { RecherchePageComponent } from "@/app/(candidat)/(recherche)/recherche/_components/RecherchePageComponent"
-import { RecherchePageEmpty } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RecherchePageEmpty"
-import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RecherchePageComponent } from "./RecherchePageComponent"
+import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export function RecherchePageComponentServer(props: { rechercheParams: IRecherchePageParams }) {
   return (

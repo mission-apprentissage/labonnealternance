@@ -1,11 +1,10 @@
-import { IFormationCatalogue } from "shared"
+import type { IFormationCatalogue } from "shared"
 
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { getParcoursupAndAffelnetPerimetreFromCatalogueME } from "@/services/catalogue.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { getParcoursupAndAffelnetPerimetreFromCatalogueME } from "../../services/catalogue.service"
 
 export const updateParcoursupAndAffelnetInfoOnFormationCatalogue = async () => {
   logger.info("--- update formation catalogue data --- start")

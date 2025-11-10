@@ -1,6 +1,6 @@
 import { isDynamicServerError } from "next/dist/client/components/hooks-server-context"
 import { headers } from "next/headers"
-import { ComputedUserAccess, IUserRecruteurPublic } from "shared"
+import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
 export async function getSession(): Promise<{ user?: IUserRecruteurPublic | null; access?: ComputedUserAccess | null }> {
   try {

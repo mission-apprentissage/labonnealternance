@@ -2,13 +2,12 @@ import { PassThrough } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { ObjectId } from "mongodb"
-import { CollectionName } from "shared/models/models"
+import type { CollectionName } from "shared/models/models"
 
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 export const importFromStreamInJson = async ({
   stream,

@@ -1,5 +1,5 @@
 import { ObjectId } from "bson"
-import { IReferentielEngagementEntreprise } from "shared/models/referentielEngagementEntreprise.model"
+import type { IReferentielEngagementEntreprise } from "shared/models/referentielEngagementEntreprise.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

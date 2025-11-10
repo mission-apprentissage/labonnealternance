@@ -1,4 +1,4 @@
-import { ICacheInfosSiret } from "shared/models/cacheInfosSiret.model"
+import type { ICacheInfosSiret } from "shared/models/cacheInfosSiret.model"
 
 import { deduplicateBy } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

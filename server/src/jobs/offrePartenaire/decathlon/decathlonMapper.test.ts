@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { decathlonJobToJobsPartners } from "@/jobs/offrePartenaire/decathlon/decathlonMapper"
+import { decathlonJobToJobsPartners } from "./decathlonMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 

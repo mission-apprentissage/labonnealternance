@@ -1,9 +1,9 @@
 import { zRoutes } from "shared"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
-import { trackApiCall } from "../../common/utils/sendTrackingEvent"
-import { getFormationsParRegionQuery } from "../../services/formation.service"
-import { Server } from "../server"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { getFormationsParRegionQuery } from "@/services/formation.service"
+import type { Server } from "@/http/server"
 
 const config = {
   rateLimit: {

@@ -3,8 +3,8 @@ import assert from "assert"
 import { cleanEmail, removeUrlsFromText } from "shared/helpers/common"
 import { describe, it } from "vitest"
 
-import __filename from "../../src/common/filename"
-import { isOriginLocal } from "../../src/common/utils/isOriginLocal"
+import __filename from "@/common/filename"
+import { isOriginLocal } from "@/common/utils/isOriginLocal"
 
 describe(__filename(import.meta.url), () => {
   it("Détection origine autorisée - retourne false si undefined ", () => {

@@ -5,20 +5,20 @@ import distance from "@turf/distance"
 import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import { ILbaItemPartnerJob } from "shared/models/index"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { ILbaItemPartnerJob } from "shared/models/index"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+
+import type { FTJob, FTResponse } from "./ftjob.service.types"
+import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import type { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
+import { filterJobsByOpco } from "./opco.service"
+import type { IApiError } from "@/common/utils/errorManager"
+import { manageApiError } from "@/common/utils/errorManager"
+import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
-
-import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { matchesDepartment, roundDistance } from "../common/utils/geolib"
-import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-
-import { FTJob, FTResponse } from "./ftjob.service.types"
-import { TLbaItemResult } from "./jobOpportunity.service.types"
-import { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
-import { filterJobsByOpco } from "./opco.service"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "ief2i", "institut f2i", "openclassrooms", "mewo", "acp interim et recrutement", "jour j recrutement"]
 
@@ -452,7 +452,7 @@ export const getFtJobFromId = async ({ id, caller }: { id: string; caller: strin
   } catch (error: any) {
     if (!error.isBoom) {
       sentryCaptureException(error)
-      manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
+      await manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
     }
     throw error
   }

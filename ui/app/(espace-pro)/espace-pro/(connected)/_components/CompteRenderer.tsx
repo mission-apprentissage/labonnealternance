@@ -5,21 +5,21 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
-import { IUserWithAccountFields } from "shared"
-import { CFA, ENTREPRISE } from "shared/constants/recruteur"
+import type { IUserWithAccountFields } from "shared"
+import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
-import ModificationCompteEmail from "@/app/(espace-pro)/espace-pro/(connected)/_components/ModificationCompteEmail"
+import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
+import ModificationCompteEmail from "./ModificationCompteEmail"
+import { AUTHTYPE } from "@/common/contants"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 
-import { AUTHTYPE } from "../../../../../common/contants"
-import { LoadingEmptySpace } from "../../../../../components/espace_pro"
-import { ArrowRightLine } from "../../../../../theme/components/icons"
-import { getUser, updateUserWithAccountFields } from "../../../../../utils/api"
+import { LoadingEmptySpace } from "@/components/espace_pro"
+import { ArrowRightLine } from "@/theme/components/icons"
+import { getUser, updateUserWithAccountFields } from "@/utils/api"
 
 export default function CompteRenderer() {
   const { user } = useConnectedSessionClient()
@@ -30,11 +30,11 @@ export default function CompteRenderer() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["user"],
-    queryFn: () => getUser(user._id.toString()),
+    queryFn: async () => getUser(user._id.toString()),
     throwOnError: true,
   })
   const userMutation = useMutation({
-    mutationFn: ({ values }: { values: IUserWithAccountFields; isChangingEmail: boolean }) => {
+    mutationFn: async ({ values }: { values: IUserWithAccountFields; isChangingEmail: boolean }) => {
       const userId = user._id.toString()
       return updateUserWithAccountFields(userId, values)
     },

@@ -1,9 +1,8 @@
 import { badRequest } from "@hapi/boom"
 import { zRoutes } from "shared/index"
 
+import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { Server } from "../../server"
 
 /**
  * Sample entity route module for GET

@@ -1,4 +1,4 @@
-import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
+import type { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { toKebabCase } from "../utils/stringUtils.js"
 
 export const buildJobUrl = (type: LBA_ITEM_TYPE, id: string, title?: string | undefined) => {

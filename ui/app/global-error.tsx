@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
 import { useEffect } from "react"
 
-import type { ErrorProps } from "@/app/_components/ErrorComponent"
+import type { ErrorProps } from "./_components/ErrorComponent"
 
 import "./global-error.css"
 

@@ -1,7 +1,7 @@
 import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
-import { IRecruiter } from "shared"
+import type { IRecruiter } from "shared"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation"
 import { useCallback } from "react"
 
-import { getItemReference, getResultItemUrl, IRecherchePageParams, ItemReferenceLike } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams, ItemReferenceLike } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { getItemReference, getResultItemUrl } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export function useNavigateToResultItemDetail(
   rechercheParams: IRecherchePageParams

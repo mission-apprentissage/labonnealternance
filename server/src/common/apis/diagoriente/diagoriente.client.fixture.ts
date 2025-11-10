@@ -1,5 +1,5 @@
 import nock from "nock"
-import { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema } from "shared"
+import type { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema } from "shared"
 
 export const nockDiagorienteAccessToken = () => {
   return nock("https://analytics-auth.atlantis.diagotech.dev").post("/realms/esi-auth-keycloack/protocol/openid-connect/token").reply(200, {

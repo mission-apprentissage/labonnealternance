@@ -4,7 +4,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { ZComputedUserAccess } from "../models/computedUserAccess.model.js"
 import { ZUserRecruteurPublic } from "../models/usersRecruteur.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const zLoginRoutes = {
   post: {

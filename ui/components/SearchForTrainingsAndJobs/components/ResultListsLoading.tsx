@@ -16,6 +16,7 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
   const isLoading = isTrainingSearchLoading || isJobSearchLoading
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {
+    // eslint-disable-next-line react-hooks/purity
     const initialIndex = currentIllustrationIndex ?? Math.floor(Math.random() * loadingIllustrations.length)
 
     // filtered relevant illustrations
@@ -37,6 +38,7 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
     }
 
     // Select a random index from the filtered indexes
+    // eslint-disable-next-line react-hooks/purity
     const randomIndex = Math.floor(Math.random() * filteredIllustrationIndexes.length)
 
     // Return the original array's index corresponding to the random filtered index

@@ -1,5 +1,5 @@
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material"
-import { BaseSyntheticEvent } from "react"
+import type { BaseSyntheticEvent } from "react"
 
 export const CustomRadio = ({
   name,

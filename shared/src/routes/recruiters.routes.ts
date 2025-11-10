@@ -1,4 +1,4 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
@@ -12,7 +12,7 @@ import { EntrepriseEngagementSources } from "../models/referentielEngagementEntr
 import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccount } from "../models/userWithAccount.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const ZEntrepriseInformations = z
   .object({

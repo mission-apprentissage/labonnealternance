@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { zObjectId } from "zod-mongodb-schema"
 
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 
 const collectionName = "cache_diagoriente" as const
 

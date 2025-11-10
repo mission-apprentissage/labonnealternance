@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { useCallback } from "react"
 
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
-import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export function RechercheMobileToggleMapButton({ displayMap, rechercheParams }: { rechercheParams: IRecherchePageParams; displayMap: boolean }) {
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)

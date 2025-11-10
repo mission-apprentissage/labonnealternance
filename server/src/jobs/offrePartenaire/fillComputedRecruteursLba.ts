@@ -1,19 +1,16 @@
-import { Filter } from "mongodb"
+import type { Filter } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
+import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
+import { fillLbaUrl } from "./fillLbaUrl"
+import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
+import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
+import { removeMissingRecruteursLbaFromComputedJobPartners, removeUnsubscribedRecruteursLbaFromComputedJobPartners } from "./recruteur-lba/importRecruteursLbaRaw"
+import { validateComputedJobPartners } from "./validateComputedJobPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { blockBadRomeJobsPartners } from "@/jobs/offrePartenaire/blockBadRomeJobsPartners"
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
-import { fillEntrepriseEngagementJobsPartners } from "@/jobs/offrePartenaire/fillEntrepriseEngagementJobsPartners"
-import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
-import { fillLocationInfosForPartners } from "@/jobs/offrePartenaire/fillLocationInfosForPartners"
-import { fillOpcoInfosForPartners } from "@/jobs/offrePartenaire/fillOpcoInfosForPartners"
-import {
-  removeMissingRecruteursLbaFromComputedJobPartners,
-  removeUnsubscribedRecruteursLbaFromComputedJobPartners,
-} from "@/jobs/offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
-import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
 
 const computedJobFilter: Filter<IComputedJobsPartners> = {
   partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,

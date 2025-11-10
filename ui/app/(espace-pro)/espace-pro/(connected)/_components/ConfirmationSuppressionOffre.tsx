@@ -57,7 +57,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
         })
       })
       .then(() => resetState())
-      .finally(() =>
+      .finally(async () =>
         client.invalidateQueries({
           queryKey: ["offre-liste"],
         })
@@ -90,7 +90,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
               <Select
                 label="Motif de la suppression (obligatoire) *"
                 nativeSelectProps={{
-                  onChange: (event) => formik.setFieldValue("motif", event.target.value, true),
+                  onChange: async (event) => formik.setFieldValue("motif", event.target.value, true),
                   name: "motif",
                   required: true,
                 }}

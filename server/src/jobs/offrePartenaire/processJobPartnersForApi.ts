@@ -1,11 +1,10 @@
 import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
-import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 

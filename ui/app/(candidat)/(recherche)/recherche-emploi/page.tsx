@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
 import { RecherchePageComponentServer } from "@/app/(candidat)/(recherche)/recherche/_components/RecherchePageComponentServer"
 import { IRechercheMode, parseRecherchePageParams, RechercheViewType } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"

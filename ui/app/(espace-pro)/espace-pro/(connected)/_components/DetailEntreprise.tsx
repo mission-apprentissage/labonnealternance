@@ -6,15 +6,16 @@ import { Alert, Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
-import { INewSuperUser, IUserStatusValidationJson } from "shared"
-import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
+import type { INewSuperUser, IUserStatusValidationJson } from "shared"
+import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
+import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
+import { OffresTabs } from "./OffresTabs"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
-import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
@@ -167,7 +168,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
               .required("champ obligatoire"),
             email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
-            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
+            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.required("champ obligatoire") }),
           })}
           onSubmit={async (values, { setSubmitting }) => {
             setSubmitting(true)

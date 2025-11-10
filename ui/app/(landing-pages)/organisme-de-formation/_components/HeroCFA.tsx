@@ -1,15 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid, Typography } from "@mui/material"
 
-import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
-import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
-import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { BientotCFA } from "./BientotCFA"
+import { CFA } from "./CFA"
+import { FacilitezRDVA } from "./FacilitezRDVA"
+import { GerezEntreprise } from "./GerezEntreprise"
+import { OffresAutoExposees } from "./OffresAutoExposees"
 import { OffresGratuites } from "@/app/(landing-pages)/acces-recruteur/_components/OffresGratuites"
-import { BientotCFA } from "@/app/(landing-pages)/organisme-de-formation/_components/BientotCFA"
-import { CFA } from "@/app/(landing-pages)/organisme-de-formation/_components/CFA"
-import { FacilitezRDVA } from "@/app/(landing-pages)/organisme-de-formation/_components/FacilitezRDVA"
-import { GerezEntreprise } from "@/app/(landing-pages)/organisme-de-formation/_components/GerezEntreprise"
-import { OffresAutoExposees } from "@/app/(landing-pages)/organisme-de-formation/_components/OffresAutoExposees"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
 export const HeroCFA = () => {
   return (

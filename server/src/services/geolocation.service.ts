@@ -1,13 +1,13 @@
 import { internal, isBoom } from "@hapi/boom"
-import { AxiosResponse } from "axios"
-import FormData from "form-data"
-import { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature, ZPointGeometry } from "shared/models/index"
+import type { AxiosResponse } from "axios"
+import type FormData from "form-data"
+import type { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature } from "shared/models/index"
+import { ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
 
+import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-
-import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
 const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
 
