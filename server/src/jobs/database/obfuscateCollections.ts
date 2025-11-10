@@ -269,7 +269,6 @@ export async function obfuscateCollections(): Promise<void> {
     "jobs",
     "eligible_trainings_for_appointments_histories",
     "applicants_email_logs",
-    "recruteurslbalegacies",
     "anonymized_applicants",
     "anonymized_applications",
     "anonymized_appointments",
