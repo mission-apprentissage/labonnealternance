@@ -11,6 +11,7 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export async function generateStaticParams() {
   return villeData.map((ville) => ({ ville: ville.slug }))
@@ -445,6 +446,37 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
             </Box>
           </Box>
+        </Box>
+
+        {/**
+         * BLOC DECOUVREZ EGALEMENT
+         */}
+        <Box
+          sx={{
+            mb: fr.spacing("4w"),
+            py: fr.spacing("4w"),
+            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
+            Découvrez également
+          </Typography>
+          <Box
+            component="hr"
+            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+          />
+          <ul>
+            {villeData.map((autre_ville) =>
+              autre_ville.slug !== ville ? (
+                <li key={autre_ville.slug}>
+                  <Link key={autre_ville.slug} href={PAGES.dynamic.seoVille(autre_ville.slug).getPath()}>
+                    Trouver une alternance à {autre_ville.ville}
+                  </Link>
+                </li>
+              ) : null
+            )}
+          </ul>
         </Box>
       </DefaultContainer>
     </Box>
