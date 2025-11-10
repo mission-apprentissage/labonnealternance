@@ -1262,16 +1262,14 @@ const buildSendOtherApplicationsUrl = (application: IApplication, type: LBA_ITEM
 
 const getJobOrCompanyFromApplication = async (application: IApplication) => {
   let recruiter: IJobsPartnersOfferPrivate | IRecruiter | null = null
-  let job: IJob | IJobsPartnersOfferPrivate | null | undefined = null
+  let job: IJobsPartnersOfferPrivate | null = null
   const { job_id, company_siret } = application
 
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
-      if (recruiter !== null) {
-        job = recruiter.jobs.find((job) => job._id.toString() === job_id?.toString())
-      }
+      job = await getDbCollection("jobs_partners").findOne({ _id: job_id! })
       break
     }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
@@ -1290,7 +1288,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
     type: application.job_origin,
     job,
     recruiter,
-  } as IJobOrCompanyV2
+  }
 }
 
 const getPhoneForApplication = async (application: IApplication) => {
@@ -1306,6 +1304,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (!applicant) throw notFound("Candidat non trouvé")
 
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
+
   const { recruiter, job, type } = jobOrCompany ?? {}
   let recruiter_phone = ""
   let company_name = ""
@@ -1313,14 +1312,16 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
 
-    const { managed_by, establishment_enseigne, establishment_raison_sociale } = recruiter
-    company_name = establishment_enseigne || establishment_raison_sociale || ""
+    const { managed_by } = recruiter
+    const { apply_phone, cfa_apply_phone, cfa_legal_name, workplace_brand, workplace_legal_name } = job!
+
+    company_name = cfa_legal_name || workplace_brand || workplace_legal_name || ""
     await validateUserWithAccountEmail(new ObjectId(managed_by))
-    recruiter_phone = recruiter.phone || ""
+    recruiter_phone = cfa_apply_phone || apply_phone || ""
   }
 
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    const { apply_phone, workplace_brand, workplace_name, workplace_legal_name } = job
+    const { apply_phone, workplace_brand, workplace_name, workplace_legal_name } = job!
     recruiter_phone = apply_phone || ""
     company_name = workplace_brand || workplace_name || workplace_legal_name || ""
   }
