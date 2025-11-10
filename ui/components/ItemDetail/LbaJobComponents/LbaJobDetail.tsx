@@ -61,9 +61,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
               <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
             </div>
           )}
-          <div>
-            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-          </div>
+          {job?.job?.type?.length > 0 ? (
+            <Box>
+              <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
+            </Box>
+          ) : null}
           {job?.job?.quantiteContrat > 1 && (
             <div>
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}

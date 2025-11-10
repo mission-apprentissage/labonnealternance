@@ -13,7 +13,7 @@ import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobtea
 import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
 import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
 import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-// import { processLeboncoin } from "@/jobs/offrePartenaire/leboncoin/processLeboncoin"
+import { processLeboncoin } from "@/jobs/offrePartenaire/leboncoin/processLeboncoin"
 // import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
 import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
 import { processComputedAndImportToJobPartners } from "@/jobs/offrePartenaire/processJobPartners"
@@ -74,13 +74,13 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  // "Import Le bon coin emploi": {
-  //   cron_string: timings.import_source,
-  //   handler: processLeboncoin,
-  //   checkinMargin: 350,
-  //   maxRuntimeInMinutes: 30,
-  //   tag: "slave",
-  // },
+  "Import Le bon coin emploi": {
+    cron_string: timings.import_source,
+    handler: processLeboncoin,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+    tag: "slave",
+  },
   "Import Jobteaser": {
     cron_string: timings.import_source,
     handler: processJobteaser,
