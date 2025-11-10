@@ -41,7 +41,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             },
           }}
         >
-          <HomeCircleImageDecoration />
+          <HomeCircleImageDecoration size="high" />
         </Box>
         <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("6w") }, gap: fr.spacing("4w"), gridTemplateColumns: "1fr" }}>
           <HomeRechercheForm rechercheParams={rechercheParams} />

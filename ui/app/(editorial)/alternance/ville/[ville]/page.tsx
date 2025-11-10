@@ -5,6 +5,7 @@ import Image from "next/image"
 import { redirect } from "next/navigation"
 
 import { appartements, loisirs, transports, villeData } from "@/app/(editorial)/alternance/_components/ville_data"
+import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
@@ -52,6 +53,16 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "block",
+              },
+            }}
+          >
+            <HomeCircleImageDecoration size="small" />
+          </Box>
           <Box
             sx={{
               position: "relative",
