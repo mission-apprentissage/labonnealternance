@@ -46,6 +46,7 @@ const fakeToken = await getApiApprentissageTestingTokenFromInvalidPrivateKey({
 })
 
 const recruteur = generateJobsPartnersOfferPrivate({
+  _id: new ObjectId("64a43d28eeeb7c3b210faf59"),
   partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   workplace_siret: "11000001500013",
   workplace_legal_name: "ASSEMBLEE NATIONALE",
@@ -59,7 +60,7 @@ const recruteur = generateJobsPartnersOfferPrivate({
     type: "Point",
   },
   apply_email: "contact@mail.fr",
-  apply_phone: null,
+  apply_phone: "0300000000",
   workplace_size: "1000-1999",
   workplace_website: null,
   workplace_opco: OPCOS_LABEL.MOBILITE,
@@ -198,7 +199,7 @@ describe("POST /v2/application", () => {
       company_feedback_reasons: null,
       company_naf: "Administration publique générale",
       company_name: "ASSEMBLEE NATIONALE",
-      company_phone: null,
+      company_phone: "0300000000",
       company_recruitment_intention: null,
       company_siret: recruteur.workplace_siret,
       company_recruitment_intention_date: null,
