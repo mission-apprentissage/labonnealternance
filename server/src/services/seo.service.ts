@@ -2,8 +2,8 @@ import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoVilleModel from "shared/models/seoVille.model"
 
+import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
-import { getPartnerJobsCount } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 
 const DEFAULT_RADIUS_KM = 30
 
@@ -68,12 +68,12 @@ export const updateSeoVilleActivities = async () => {
         },
         {
           $group: {
-            _id: {
-              workplace_naf_label: "$workplace_naf_label",
-              offer_rome_codes: "$offer_rome_codes",
-            },
+            _id: "$workplace_naf_label",
             count: {
               $sum: 1,
+            },
+            rome_codes: {
+              $addToSet: "$offer_rome_codes", // Collects all unique rome_codes
             },
           },
         },
@@ -87,8 +87,8 @@ export const updateSeoVilleActivities = async () => {
         },
         {
           $project: {
-            naf_label: "$_id.workplace_naf_label",
-            rome_codes: "$_id.offer_rome_codes",
+            naf_label: "$_id",
+            rome_codes: 1,
             _id: 0,
           },
         },
@@ -99,7 +99,9 @@ export const updateSeoVilleActivities = async () => {
       { _id: ville._id },
       {
         $set: {
-          "content.vie.activites": activities,
+          "content.vie.activites": activities.map((activity) => {
+            return { naf_label: activity.naf_label, rome_codes: activity.rome_codes.flat() }
+          }),
         },
       }
     )
