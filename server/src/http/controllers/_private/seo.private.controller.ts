@@ -1,8 +1,7 @@
 import { zRoutes } from "shared/index"
 
+import type { Server } from "@/http/server"
 import { getSeoVille } from "@/services/seo.service"
-
-import { Server } from "../../server"
 
 export function seoRouteController(server: Server) {
   server.get(

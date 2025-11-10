@@ -2,8 +2,8 @@ import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
 import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
-import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { DsfrHeaderProps } from "./Header"
+import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { PAGES } from "@/utils/routes.utils"
 
 import { publicConfig } from "@/config.public"

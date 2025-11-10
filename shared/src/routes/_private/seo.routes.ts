@@ -1,6 +1,6 @@
 import { z } from "../../helpers/zodWithOpenApi.js"
 import { ZSeoVille } from "../../models/index.js"
-import { IRoutesDef } from "../common.routes.js"
+import type { IRoutesDef } from "../common.routes.js"
 
 export const zPrivateSeoRoutes = {
   get: {
