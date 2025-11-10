@@ -1,5 +1,5 @@
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
-import { anonymizeReportedReasons } from "@/jobs/anonymization/anonymizeReportedReasons"
+import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
