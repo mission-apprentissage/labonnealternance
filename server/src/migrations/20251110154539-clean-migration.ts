@@ -1,7 +1,8 @@
-import { syncLbaJobsIntoJobsPartners } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
+import { getDatabase } from "@/common/utils/mongodbUtils"
 
 export const up = async () => {
-  await syncLbaJobsIntoJobsPartners()
+  const db = getDatabase()
+  await db.collection("changelog").deleteMany({})
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
