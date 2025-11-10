@@ -28,7 +28,7 @@ export const importDecathlonRaw = async (sourceStream?: NodeJS.ReadableStream) =
   await importFromStreamInJson({
     destinationCollection: rawCollectionName,
     stream: sourceStream!,
-    partnerLabel: JOBPARTNERS_LABEL.HELLOWORK,
+    partnerLabel: JOBPARTNERS_LABEL.DECATHLON,
     getOffers(json) {
       const parsed = ZJsonFile.parse(json)
       return parsed.ads
