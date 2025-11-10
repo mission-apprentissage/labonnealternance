@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 
 export function useLocalStorage<T>(key: string, initialValue?: T) {
-  const [storedValue, setStoredValue] = useState<T | null>(null)
-
-  // Load value from localStorage on mount
-  useEffect(() => {
-    if (typeof window === "undefined") return // Prevent SSR issues
+  const [storedValue, setStoredValue] = useState<T | null>(() => {
+    if (typeof window === "undefined") return initialValue ?? null
     const item = localStorage.getItem(key)
-    setStoredValue(item ? JSON.parse(item) : (initialValue ?? null))
-  }, [key, initialValue])
+    return item ? JSON.parse(item) : (initialValue ?? null)
+  })
 
   // Function to update localStorage
   const setLocalStorage = useCallback(

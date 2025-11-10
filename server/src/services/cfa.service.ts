@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
-import { ICFA } from "shared/models/cfa.model"
+import type { ICFA } from "shared/models/cfa.model"
 
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const upsertCfa = async (siret: string, cfaFields: Omit<ICFA, "_id" | "createdAt" | "updatedAt" | "origin" | "siret">, origin: string): Promise<ICFA> => {
   const now = new Date()

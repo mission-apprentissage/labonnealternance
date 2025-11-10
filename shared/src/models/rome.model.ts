@@ -1,9 +1,9 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 
 const ZRome = z
   .object({

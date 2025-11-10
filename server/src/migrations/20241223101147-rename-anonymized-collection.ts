@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 
 export const up = async (db: Db) => {
   // migrate data from anonymizeduserrecruteurs to anonymizeduserswithaccounts

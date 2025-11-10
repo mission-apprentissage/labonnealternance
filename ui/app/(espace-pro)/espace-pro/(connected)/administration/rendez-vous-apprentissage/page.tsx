@@ -6,7 +6,7 @@ import { Box, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { IFormationCatalogueJson } from "shared"
+import type { IFormationCatalogueJson } from "shared"
 
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
@@ -38,7 +38,7 @@ export default function RendezVousApprentissage() {
       } else {
         router.push(PAGES.dynamic.rendezVousApprentissageDetail({ siret: formations[0].etablissement_formateur_siret }).getPath())
       }
-    } catch (e) {
+    } catch (_e) {
       toast({ title: "Une erreur est survenue pendant la recherche.", variant: "error" })
     } finally {
       setLoading(false)

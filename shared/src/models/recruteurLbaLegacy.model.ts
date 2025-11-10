@@ -1,6 +1,7 @@
 import { z } from "zod"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 const collectionName = "recruteurslbalegacies" as const
 

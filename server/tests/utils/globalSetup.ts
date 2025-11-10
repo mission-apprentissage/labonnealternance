@@ -18,7 +18,7 @@ export default async () => {
       await client.connect()
       const dbs = await client.db().admin().listDatabases()
       await Promise.all(
-        dbs.databases.map((db) => {
+        dbs.databases.map(async (db) => {
           if (db.name.startsWith("lba-test-")) {
             return client.db(db.name).dropDatabase()
           }

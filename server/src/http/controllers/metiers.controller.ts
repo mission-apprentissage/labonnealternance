@@ -1,7 +1,7 @@
 import { zRoutes } from "shared"
 
-import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "../../services/metiers.service"
-import { Server } from "../server"
+import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "@/services/metiers.service"
+import type { Server } from "@/http/server"
 
 const config = {
   rateLimit: {
@@ -30,7 +30,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/v1/metiers/all"],
       config,
     },
-    async (req, res) => {
+    async (_, res) => {
       const result = await getTousLesMetiers()
       return res.send(result)
     }

@@ -1,7 +1,7 @@
-import { logger } from "../../common/logger"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { getEntrepriseDataFromSiret } from "../../services/etablissement.service"
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
 
 /**
  *
@@ -22,7 +22,9 @@ const OneTimeJob_AddNAFDataToEntrepriseCacheDB = async () => {
   }
   logger.info(`${entreprises.length} entreprise à traiter`)
   await asyncForEach(entreprises, async ({ siret }) => {
-    ok % 500 === 0 && logger.info(`${ok} entreprises traité`)
+    if (ok % 500 === 0) {
+      logger.info(`${ok} entreprises traité`)
+    }
     const recruiter = await getDbCollection("recruiters").findOne({ establishment_siret: siret }, { projection: { naf_code: 1, naf_label: 1 } })
     if (!recruiter) {
       needApiCall++
@@ -49,7 +51,9 @@ const OneTimeJob_AddNAFDataToEntrepriseCacheAPI = async () => {
   logger.info(`${entreprises.length} entreprise à traiter`)
   await asyncForEach(entreprises, async (etp) => {
     const { siret } = etp
-    ok % 100 === 0 && logger.info(`${ok} entreprises traité`)
+    if (ok % 100 === 0) {
+      logger.info(`${ok} entreprises traité`)
+    }
 
     const siretResponse = await getEntrepriseDataFromSiret({ siret, type: "ENTREPRISE" })
     if ("error" in siretResponse) {

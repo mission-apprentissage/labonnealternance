@@ -3,20 +3,16 @@ import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ENTREPRISE } from "shared/constants/index"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
-import { IJob, IRecruiter, getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
-import { ICFA } from "shared/models/cfa.model"
-import { IEntreprise } from "shared/models/entreprise.model"
+import type { IJob, IRecruiter } from "shared/index"
+import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
+import type { ICFA } from "shared/models/cfa.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { stopSession } from "@/common/utils/session.service"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
-import { createSuperUser } from "@/services/userWithAccount.service"
-
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "../../services/formulaire.service"
-import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "../../services/user.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "@/services/formulaire.service"
+import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
   getUserRecruteurById,
@@ -24,8 +20,12 @@ import {
   removeUser,
   updateUserWithAccountFields,
   userAndRoleAndOrganizationToUserRecruteur,
-} from "../../services/userRecruteur.service"
-import { Server } from "../server"
+} from "@/services/userRecruteur.service"
+import type { Server } from "@/http/server"
+import { createSuperUser } from "@/services/userWithAccount.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { stopSession } from "@/common/utils/session.service"
 
 export default (server: Server) => {
   server.get(
@@ -51,7 +51,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/user"],
       onRequest: [server.auth(zRoutes.get["/user"])],
     },
-    async (req, res) => {
+    async (_, res) => {
       const groupedUsers = await getUsersForAdmin()
       return res.status(200).send(groupedUsers)
     }

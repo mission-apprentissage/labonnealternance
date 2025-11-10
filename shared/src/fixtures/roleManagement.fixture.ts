@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb"
 
 import { VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
-import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "../models/roleManagement.model.js"
+import type { IRoleManagement, IRoleManagementEvent } from "../models/roleManagement.model.js"
+import { AccessEntityType, AccessStatus } from "../models/roleManagement.model.js"
 
 export const generateRoleManagementStatusEventFixture = (props: Partial<IRoleManagementEvent> = {}): IRoleManagementEvent => {
   return {

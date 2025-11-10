@@ -2,8 +2,8 @@ import { Writable, Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import { internal } from "@hapi/boom"
-import { AnyBulkWriteOperation, Filter } from "mongodb"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { AnyBulkWriteOperation, Filter } from "mongodb"
+import type { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger as globalLogger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

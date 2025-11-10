@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/node"
 import { modelDescriptors } from "shared/models/models"
 
-import { getDatabase } from "../../common/utils/mongodbUtils"
+import { getDatabase } from "@/common/utils/mongodbUtils"
 
 export async function countInvalidDocuments(collectionName: string): Promise<number> {
   const collection = getDatabase().collection(collectionName)
@@ -20,5 +20,5 @@ export async function validateDocuments(collectionName: string) {
 }
 
 export async function validateModels(): Promise<void> {
-  await Promise.all(modelDescriptors.map((d) => validateDocuments(d.collectionName)))
+  await Promise.all(modelDescriptors.map(async (d) => validateDocuments(d.collectionName)))
 }

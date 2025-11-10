@@ -8,7 +8,8 @@ import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
-import { Message, sendMistralMessages } from "@/services/mistralai/mistralai.service"
+import type { Message } from "@/services/mistralai/mistralai.service"
+import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 type RomeDocumentRaw = {
   rome: {
@@ -281,7 +282,7 @@ const doesFileExist = async (filename: string): Promise<boolean> => {
   try {
     const stat = await fs.stat(filename)
     return stat.isFile()
-  } catch (err) {
+  } catch (_) {
     return false
   }
 }

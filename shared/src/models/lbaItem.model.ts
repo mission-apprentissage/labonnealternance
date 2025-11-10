@@ -1,4 +1,4 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"

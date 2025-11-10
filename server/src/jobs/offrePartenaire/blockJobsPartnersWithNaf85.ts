@@ -1,8 +1,8 @@
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 const sourceFields = ["workplace_naf_code"] as const satisfies (keyof IComputedJobsPartners)[]
 

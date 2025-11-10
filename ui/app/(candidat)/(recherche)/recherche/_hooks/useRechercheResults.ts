@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
-import {
+import type {
   IGetRoutes,
-  ILbaItemFormation,
   ILbaItemFormationJson,
   ILbaItemLbaCompanyJson,
   ILbaItemLbaJob,
@@ -12,9 +11,8 @@ import {
   IQuery,
   IResponse,
 } from "shared"
-import { Jsonify } from "type-fest"
 
-import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
 export type QueryStatus = "success" | "error" | "disabled" | "loading"
@@ -209,7 +207,7 @@ function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
 
   const isFormationEnabled = Boolean(rechercheParams.displayFormations && formationQuerystring.romes.length > 0)
 
-  const formationQuery = useQuery<Jsonify<ILbaItemFormation>[]>({
+  const formationQuery = useQuery<ILbaItemFormationJson[]>({
     queryKey: ["/v1/_private/formations/min", formationQuerystring],
     queryFn: async ({ signal }) => {
       return apiGet("/v1/_private/formations/min", { querystring: formationQuerystring }, { signal, priority: "high" })

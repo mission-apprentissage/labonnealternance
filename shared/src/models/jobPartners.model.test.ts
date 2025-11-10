@@ -1,10 +1,10 @@
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import { describe, expectTypeOf, it } from "vitest"
 
-import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import type { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 
-import { JOB_STATUS_ENGLISH } from "./job.model.js"
-import {
+import type { JOB_STATUS_ENGLISH } from "./job.model.js"
+import type {
   /*IJobsPartnersOfferApi,*/ IJobsPartnersOfferHistoryEvent,
   IJobsPartnersRecruiterApi,
   IJobsPartnersWritableApi,

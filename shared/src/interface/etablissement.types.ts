@@ -1,4 +1,4 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 import { z } from "zod"
 
 export const ZEtablissementCatalogue = z

@@ -1,6 +1,6 @@
 import { Stack, Typography } from "@mui/material"
 import Image from "next/image"
-import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 

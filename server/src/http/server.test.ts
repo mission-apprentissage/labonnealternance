@@ -1,13 +1,14 @@
 import assert from "assert"
 
-import fastify, { RouteOptions } from "fastify"
-import { ZodTypeProvider } from "fastify-type-provider-zod"
+import type { RouteOptions } from "fastify"
+import fastify from "fastify"
+import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { zRoutes } from "shared/index"
-import { SecurityScheme } from "shared/routes/common.routes"
+import type { SecurityScheme } from "shared/routes/common.routes"
 import { describe, it } from "vitest"
 
-import { describeAuthMiddleware } from "@/http/middlewares/authMiddleware"
-import { bind } from "@/http/server"
+import { describeAuthMiddleware } from "./middlewares/authMiddleware"
+import { bind } from "./server"
 
 describe("server", () => {
   it("should follow shared schema definition", async () => {

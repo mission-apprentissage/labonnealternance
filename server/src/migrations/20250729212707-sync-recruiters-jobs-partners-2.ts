@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 
 import { syncLbaJobsIntoJobsPartners } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
 

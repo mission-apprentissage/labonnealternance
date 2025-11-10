@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Card, CardContent, Typography } from "@mui/material"
 import Image from "next/image"
 
-import { DsfrLink } from "../dsfr/DsfrLink"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: { imageUrl: string; text: string; link: string; linkTitle: string; linkAriaLabel?: string }) => {
   return (

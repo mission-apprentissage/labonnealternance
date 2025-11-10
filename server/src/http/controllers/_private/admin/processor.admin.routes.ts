@@ -1,7 +1,7 @@
 import { getProcessorStatus } from "job-processor"
 import { zRoutes } from "shared"
 
-import { Server } from "../../../server"
+import type { Server } from "@/http/server"
 
 export function processorAdminRoutes(server: Server) {
   server.get(

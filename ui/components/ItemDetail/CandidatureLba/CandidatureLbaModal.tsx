@@ -1,14 +1,13 @@
 import { useState } from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-
-import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { ModalReadOnly } from "@/components/ModalReadOnly"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import { CandidatureLbaModalBody } from "./CandidatureLbaModalBody"
 import CandidatureLbaWorked from "./CandidatureLbaWorked"
-import { IApplicationSchemaInitValues } from "./services/getSchema"
-import { useSubmitCandidature } from "./services/submitCandidature"
+import type { IApplicationSchemaInitValues } from "./services/getSchema"
+import type { useSubmitCandidature } from "./services/submitCandidature"
+import { ModalReadOnly } from "@/components/ModalReadOnly"
+import type { useDisclosure } from "@/common/hooks/useDisclosure"
 
 export const CandidatureLbaModal = ({
   item,

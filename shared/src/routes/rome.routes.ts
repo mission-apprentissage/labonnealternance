@@ -2,7 +2,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { ZMetiersEnrichis } from "../models/diplomesMetiers.model.js"
 import { ZReferentielRomeForJob } from "../models/rome.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const zRomeRoutes = {
   get: {

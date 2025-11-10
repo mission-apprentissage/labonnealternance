@@ -1,10 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography, Box } from "@mui/material"
-import { ReactElement } from "react"
-
-import { useDisclosure } from "@/common/hooks/useDisclosure"
+import type { ReactElement } from "react"
 
 import { ModalReadOnly } from "./ModalReadOnly"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
 
 export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipContent: React.ReactNode; children: ReactElement }) => {
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
