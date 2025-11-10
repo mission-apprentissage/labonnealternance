@@ -53,6 +53,7 @@ import { importers } from "./offrePartenaire/jobsPartners.importer"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
+import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import config from "@/config"
 import { getDatabase } from "@/common/utils/mongodbUtils"
 import { getLoggerWithContext, logger } from "@/common/logger"
@@ -130,6 +131,11 @@ export async function setupJobProcessor() {
           "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
+            tag: "main",
+          },
+          "Anonymisation des reasons de plus de (1) an": {
+            cron_string: "35 0 * * *",
+            handler: anonymizeReportedReasons,
             tag: "main",
           },
           "Active tous les établissements qui ont souscrits à l'opt-out": {
