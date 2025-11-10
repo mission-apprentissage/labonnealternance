@@ -165,27 +165,33 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 Activités porteuses :
               </Typography>
               {data.content.vie.activites.map((activite: { naf_label?: string; rome_codes?: string[] }) => (
-                <Box
+                <Link
                   key={activite.naf_label}
+                  underline="none"
+                  href={`/recherche?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})`}
                   sx={{
                     display: "flex",
                     width: "100%",
-                    mb: fr.spacing("1w"),
-                    backgroundColor: "white",
-                    padding: fr.spacing("2w"),
-                    borderRadius: "5px",
-                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                   }}
                 >
-                  <Link
-                    underline="none"
-                    href={`/recherche?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})`}
-                    sx={{ display: "flex", width: "100%" }}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      mb: fr.spacing("1w"),
+                      backgroundColor: "white",
+                      padding: fr.spacing("2w"),
+                      borderRadius: "5px",
+                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                      ":hover": {
+                        backgroundColor: "#E8EDFF",
+                      },
+                    }}
                   >
                     {activite.naf_label}
                     <ArrowRightLine sx={{ ml: "auto", width: 16, height: 16 }} />
-                  </Link>
-                </Box>
+                  </Box>
+                </Link>
               ))}
               <Box sx={{ mt: fr.spacing("2w"), textAlign: "right" }}>
                 <Link sx={{ textDecoration: "underline" }} href={`/recherche?lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville}+${data.cp}`}>
