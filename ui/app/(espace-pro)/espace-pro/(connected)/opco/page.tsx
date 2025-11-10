@@ -56,7 +56,6 @@ function AdministrationOpco() {
         return (
           <UserMenu
             row={row}
-            tabIndex={currentTab}
             setCurrentEntreprise={setCurrentEntreprise}
             confirmationActivationUtilisateur={confirmationActivationUtilisateur}
             confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur}
