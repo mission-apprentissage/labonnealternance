@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { IApiCall } from "shared/models/index"
+import type { IApiCall } from "shared/models/index"
 
 import { getDbCollection } from "./mongodbUtils"
 import { sentryCaptureException } from "./sentryUtils"

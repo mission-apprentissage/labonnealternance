@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
-import { IconeLogo } from "../../../../theme/components/icons"
+import { IconeLogo } from "@/theme/components/icons"
 
 export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
   return (

@@ -1,7 +1,8 @@
 import { Box } from "@mui/material"
 import Image from "next/image"
 
-import { CustomTag, CustomTagColor, customTagColors } from "@/components/SearchForTrainingsAndJobs/components/CustomTag"
+import { CustomTag, customTagColors } from "./CustomTag"
+import type { CustomTagColor } from "./CustomTag"
 
 export const LbaItemTag = ({
   children,

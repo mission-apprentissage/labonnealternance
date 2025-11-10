@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material"
 
-import { getCurrentDate, getCurrentHourMinute } from "../../../common/utils/dateUtils"
+import { getCurrentDate, getCurrentHourMinute } from "@/common/utils/dateUtils"
 
 export const CfaCandidatInformationAnswered = (props: { msg: string }) => {
   return (

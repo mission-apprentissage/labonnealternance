@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { publicConfig } from "../config.public"
+import { publicConfig } from "@/config.public"
 
 const getRobotRules = () => {
   const { env } = publicConfig

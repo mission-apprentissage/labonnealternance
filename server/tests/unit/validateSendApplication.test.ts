@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { validatePermanentEmail } from "../../src/services/application.service"
+import { validatePermanentEmail } from "@/services/application.service"
 
 describe("validateSendApplication", () => {
   it("validateSendApplication : Echoue si un l'email est d'une boîte temporaire", async () => {

@@ -4,20 +4,19 @@ import querystring from "querystring"
 import { internal } from "@hapi/boom"
 import { ObjectId } from "bson"
 import FormData from "form-data"
-import { IFTJobRaw } from "shared"
-import { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
+import type { IFTJobRaw } from "shared"
+import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
-import { sleep } from "@/common/utils/asyncUtils"
-import config from "@/config"
-import { FTResponse } from "@/services/ftjob.service.types"
+import { logger } from "@/common/logger"
+import { apiRateLimiter } from "@/common/utils/apiUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import getApiClient from "@/common/apis/client"
 import { ZFTApiToken } from "@/services/rome.service.types"
-
-import { logger } from "../../logger"
-import { apiRateLimiter } from "../../utils/apiUtils"
-import { getDbCollection } from "../../utils/mongodbUtils"
-import { sentryCaptureException } from "../../utils/sentryUtils"
-import { notifyToSlack } from "../../utils/slackUtils"
-import getApiClient from "../client"
+import type { FTResponse } from "@/services/ftjob.service.types"
+import config from "@/config"
+import { sleep } from "@/common/utils/asyncUtils"
 
 const axiosClient = getApiClient({})
 
@@ -122,7 +121,6 @@ export const searchForFtJobs = async (
       })
 
       return { data, contentRange: headers["content-range"] } //  fyi: 'content-range': 'offres 0-149/9981',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (options.throwOnError) {
         throw error

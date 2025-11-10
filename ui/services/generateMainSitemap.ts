@@ -1,6 +1,7 @@
 import path from "path"
 
-import { generateSitemapFromUrlEntries, SitemapUrlEntry } from "shared/utils/sitemapUtils"
+import type { SitemapUrlEntry } from "shared/utils/sitemapUtils"
+import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { getStaticMetiers } from "@/utils/getStaticData"

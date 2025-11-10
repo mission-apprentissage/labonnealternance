@@ -1,21 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import {
-  Box,
-  Input,
-  Typography,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Select,
-  MenuItem,
-  ListItemText,
-  SelectChangeEvent,
-  Checkbox,
-} from "@mui/material"
+import type { SelectChangeEvent } from "@mui/material"
+import { Box, Input, Typography, FormControl, FormLabel, FormHelperText, RadioGroup, FormControlLabel, Radio, Select, MenuItem, ListItemText, Checkbox } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
 import { useState } from "react"
@@ -23,12 +9,11 @@ import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
 
+import { RdvReasons } from "./RdvReasons"
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { RdvReasons } from "@/components/RDV/RdvReasons"
 import { apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
-
-import InfoBanner from "../InfoBanner/InfoBanner"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -103,7 +88,7 @@ export const DemandeDeContactForm = ({
             <FormControl>
               <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("2w") }}>
                 <Typography sx={{ mr: { xs: 0, md: 3 }, mb: { xs: 1, sm: 1, md: 0 } }}>Vous êtes * :</Typography>
-                <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={(_, value) => formik.setFieldValue("applicantType", value)}>
+                <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={async (_, value) => formik.setFieldValue("applicantType", value)}>
                   <FormControlLabel value={EApplicantType.ETUDIANT} label="L'étudiant" control={<Radio />} />
                   <FormControlLabel value={EApplicantType.PARENT} label="Le parent" control={<Radio />} />
                 </RadioGroup>

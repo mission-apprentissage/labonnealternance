@@ -7,7 +7,7 @@ import { EntrepriseEngagementSources } from "shared/models/referentielEngagement
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
-import { AUTHTYPE } from "@/common/contants"
+import type { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { useAuth } from "@/context/UserContext"

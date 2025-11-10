@@ -1,15 +1,15 @@
 import nock from "nock"
-import { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
+import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "@/jobs/offrePartenaire/detectClassificationJobsPartners"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
-const detectClassificationJobsPartners = () => detectClassificationJobsPartnersRaw({ shouldNotifySlack: false })
+const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({ shouldNotifySlack: false })
 
 const offer_title = "vendeur / vendeuse"
 const workplace_name = "decathlon"

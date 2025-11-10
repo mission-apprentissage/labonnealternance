@@ -2,10 +2,9 @@ import omit from "lodash-es/omit"
 import { generateRawRHAlternanceJobFixture } from "shared/fixtures/rawRHAlternanceJob.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 

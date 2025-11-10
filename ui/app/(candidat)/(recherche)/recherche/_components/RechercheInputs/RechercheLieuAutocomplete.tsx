@@ -1,7 +1,7 @@
 "use client"
 
 import { AutocompleteAsync } from "@/app/_components/FormComponents/AutocompleteAsync"
-import { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { searchAddress } from "@/services/baseAdresse"
 
 export async function fetchLieuOptions(query: string): Promise<IRechercheForm["lieu"][]> {

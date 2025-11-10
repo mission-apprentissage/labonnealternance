@@ -3,10 +3,9 @@ import { NextResponse } from "next/server"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 
-import { apiPost } from "@/utils/api.utils"
-
 import { publicConfig } from "./config.public"
 import { PAGES } from "./utils/routes.utils"
+import { apiPost } from "./utils/api.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 
@@ -37,7 +36,7 @@ async function getSession(request: NextRequest): Promise<{ user: IUserRecruteurP
     }
 
     return { user: await sessionRequest.json(), access: await accessRequest.json() }
-  } catch (error) {
+  } catch (_) {
     return null
   }
 }
@@ -53,7 +52,7 @@ const verifyAuthentication = async (token: string, request: NextRequest) => {
     response.cookies.set("lba_session", sessionToken)
 
     return response
-  } catch (error) {
+  } catch (_) {
     return NextResponse.redirect(new URL("/espace-pro/authentification?error=true", request.url))
   }
 }

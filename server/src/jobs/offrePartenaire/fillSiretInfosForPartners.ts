@@ -1,14 +1,15 @@
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils/index"
 
+import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
-import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getSiretInfos } from "@/services/cacheInfosSiret.service"
 import { formatEntrepriseData } from "@/services/etablissement.service"
 import { addressDetailToStreetLabel } from "@/services/geolocation.service"
-
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = [

@@ -1,9 +1,8 @@
 import { zRoutes } from "shared/index"
 
-import dayjs from "@/services/dayjs.service"
+import dayjs from "shared/helpers/dayjs"
+import type { Server } from "@/http/server"
 import { getSitemap } from "@/services/sitemap.service"
-
-import { Server } from "../server"
 
 export default function (server: Server) {
   server.get(

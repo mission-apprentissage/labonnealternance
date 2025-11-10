@@ -4,8 +4,8 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawMeteojobModel from "shared/models/rawMeteojob.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { importCleverConnectRaw, importCleverConnectToComputed } from "./importCleverConnect"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { importCleverConnectRaw, importCleverConnectToComputed } from "@/jobs/offrePartenaire/clever-connect/importCleverConnect"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

@@ -1,6 +1,6 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Typography } from "@mui/material"
-import { ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemPartnerJobJson } from "shared"
 
 const LbaJobQualites = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   return (

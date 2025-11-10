@@ -3,12 +3,11 @@ import { isEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import config from "@/config"
+import mailer from "@/services/mailer.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import config from "../../config"
-import mailer from "../../services/mailer.service"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description send mail to ocpo with awaiting validation user number

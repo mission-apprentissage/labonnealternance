@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 import recruiterModel from "shared/models/recruiter.model"

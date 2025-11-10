@@ -1,7 +1,7 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { CollectionName } from "shared/models/models"
+import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { CollectionName } from "shared/models/models"
 
-import { cleverConnectJobToJobsPartners, ZCleverConnectJob } from "@/jobs/offrePartenaire/clever-connect/cleverConnectMapper"
+import { cleverConnectJobToJobsPartners, ZCleverConnectJob } from "./cleverConnectMapper"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"

@@ -5,11 +5,10 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography, Box, Container, Stack } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { IEtablissementJson } from "shared"
+import type { IEtablissementJson } from "shared"
 
+import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
-
-import { SuccessCircle } from "../../../../theme/components/icons"
 
 type IPremiumEtablissement = {
   raison_sociale: string

@@ -1,11 +1,11 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import JobDetailRendererClient from "./JobDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import JobDetailRendererClient from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/JobDetailRendererClient"
 import { apiGet } from "@/utils/api.utils"
 
 const typeToJobMap = {

@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 import { CompanyFeebackSendStatus } from "shared/models/index"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"

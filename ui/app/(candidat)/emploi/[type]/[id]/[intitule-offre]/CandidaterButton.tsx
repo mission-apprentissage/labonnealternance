@@ -4,7 +4,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useState } from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
@@ -27,7 +27,7 @@ export function CandidaterButton({
     submitControls: ReturnType<typeof useSubmitCandidature>
   }) => React.ReactNode
 }) {
-  const [modalId, setModalId] = useState<number>(Math.random())
+  const [modalId, setModalId] = useState<number>(() => Math.random())
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { applicationDate } = submitControls

@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 import { ApplicationScanStatus } from "shared/models/index"
 
 import { logger } from "@/common/logger"

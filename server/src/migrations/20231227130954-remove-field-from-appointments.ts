@@ -1,4 +1,4 @@
-import { Db } from "mongodb"
+import type { Db } from "mongodb"
 
 const removeField = (db) => db.collection("appointments").updateMany({}, { $unset: { is_anonymized: "" } })
 

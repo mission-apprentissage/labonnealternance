@@ -1,4 +1,4 @@
-import { IRouteSchema } from "shared/routes/common.routes"
+import type { IRouteSchema } from "shared/routes/common.routes"
 
 // Messages are not constants but the codes are
 export const IJobOpportunityWarningMap = {

@@ -1,6 +1,6 @@
 import distance from "@turf/distance"
 import { round } from "lodash-es"
-import { IGeoPoint } from "shared/models/address.model"
+import type { IGeoPoint } from "shared/models/address.model"
 
 type Coordinate = {
   origin: { latitude: number; longitude: number }

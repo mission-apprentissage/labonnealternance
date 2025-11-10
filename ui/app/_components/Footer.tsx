@@ -1,12 +1,12 @@
-import { Footer as DsfrFooter, FooterProps } from "@codegouvfr/react-dsfr/Footer"
+import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
+import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
-import { publicConfig } from "@/config.public"
-
-import { PAGES } from "../../utils/routes.utils"
-
 import { DsfrHeaderProps } from "./Header"
+import { PAGES } from "@/utils/routes.utils"
+
+import { publicConfig } from "@/config.public"
 
 const linkListContent: FooterProps["linkList"] = [
   {

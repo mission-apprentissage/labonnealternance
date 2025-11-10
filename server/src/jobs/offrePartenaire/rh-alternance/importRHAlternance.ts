@@ -3,19 +3,21 @@ import axios from "axios"
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import rawRHAlternanceModel from "shared/models/rawRHAlternance.model"
 import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"
 
+import dayjs from "shared/helpers/dayjs"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import dayjs from "@/services/dayjs.service"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
 

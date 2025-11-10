@@ -2,10 +2,11 @@ import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZJobteaserJob = z
   .object({
@@ -85,7 +86,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
     offer_description: description,
     offer_creation: publicationDate,
 
-    offer_expiration: dayjs.tz(publicationDate).add(2, "months").toDate(),
+    offer_expiration: dayjs(publicationDate).tz().add(2, "months").toDate(),
 
     workplace_name: company_name,
     workplace_address_city: location_city,
