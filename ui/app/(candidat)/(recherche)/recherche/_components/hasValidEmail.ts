@@ -1,4 +1,4 @@
-import { ILbaItemJobsGlobal } from "shared"
+import type { ILbaItemJobsGlobal } from "shared"
 
 import { isNonEmptyString } from "@/utils/strutils"
 

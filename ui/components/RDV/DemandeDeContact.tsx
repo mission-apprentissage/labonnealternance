@@ -1,6 +1,6 @@
+import { DemandeDeContactButton } from "./DemandeDeContactButton"
+import { DemandeDeContactModal } from "./DemandeDeContactModal"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { DemandeDeContactButton } from "@/components/RDV/DemandeDeContactButton"
-import { DemandeDeContactModal } from "@/components/RDV/DemandeDeContactModal"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 export const DemandeDeContact = ({

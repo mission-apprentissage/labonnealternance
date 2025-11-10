@@ -1,11 +1,10 @@
 import { Stack, Typography } from "@mui/material"
 import Image from "next/image"
-import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
+import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 import { UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-
 import { getCompanyGoogleSearchLink } from "./getCompanyGoogleSearchLink"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (

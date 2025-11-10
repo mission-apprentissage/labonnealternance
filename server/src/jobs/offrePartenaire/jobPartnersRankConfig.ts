@@ -1,4 +1,4 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 export const jobPartnersRankDefaultFactor = 0.5
 

@@ -2,13 +2,13 @@ import { badRequest, notFound } from "@hapi/boom"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { ERecruteurLbaUpdateEventType } from "shared/models/index"
-import { IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
 
 useMongo()
 

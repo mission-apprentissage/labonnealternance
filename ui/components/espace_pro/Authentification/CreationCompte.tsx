@@ -3,26 +3,26 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Box, Link, Typography } from "@mui/material"
-import { FormikHelpers } from "formik"
+import type { FormikHelpers } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
-import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
-import { searchEntreprise } from "@/services/searchEntreprises"
-import { ApiError } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
-
-import { Bandeau, BandeauProps } from "../../../app/(espace-pro)/_components/Bandeau"
-import { AUTHTYPE } from "../../../common/contants"
-import { LogoContext } from "../../../context/contextLogo"
-import { WidgetContext } from "../../../context/contextWidget"
-import { getEntrepriseInformation, validateCfaCreation } from "../../../utils/api"
-import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer } from "../index"
-
+import { AnimationContainer } from ".."
 import { SiretAutocomplete } from "./SiretAutocomplete"
+import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
+import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
+import { AUTHTYPE } from "@/common/contants"
+import { LogoContext } from "@/context/contextLogo"
+import { WidgetContext } from "@/context/contextWidget"
+import { getEntrepriseInformation, validateCfaCreation } from "@/utils/api"
+import { InformationsSiret } from "@/components/espace_pro/CreationRecruteur/InformationsSiret"
+
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { PAGES } from "@/utils/routes.utils"
+import { ApiError } from "@/utils/api.utils"
+import type { searchEntreprise } from "@/services/searchEntreprises"
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 

@@ -1,7 +1,7 @@
 import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material"
 import { useField } from "formik"
 
-import { Warning } from "../../theme/components/icons"
+import { Warning } from "@/theme/components/icons"
 
 export const CustomFormControl = (props) => {
   const [_field, meta] = useField(props)

@@ -1,5 +1,5 @@
-import dayjs from "dayjs"
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import dayjs from "../helpers/dayjs.js"
 
 import { ZJobStartDateCreate } from "./job.model.js"
 

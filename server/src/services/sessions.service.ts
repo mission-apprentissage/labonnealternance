@@ -1,9 +1,9 @@
-import { Filter, FindOptions, ObjectId } from "mongodb"
-import { ISession } from "shared"
+import type { Filter, FindOptions } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { ISession } from "shared"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
 
 type TCreateSession = Pick<ISession, "token">
 

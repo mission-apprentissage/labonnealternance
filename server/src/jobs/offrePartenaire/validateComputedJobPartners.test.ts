@@ -2,8 +2,8 @@ import nock from "nock"
 import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { validateComputedJobPartners } from "./validateComputedJobPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { validateComputedJobPartners } from "@/jobs/offrePartenaire/validateComputedJobPartners"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 

@@ -1,10 +1,12 @@
-import { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
-import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
-import { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
+import type { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
+import type { PathParam, QueryString, WithQueryStringAndPathParam } from "shared/helpers/generateUri"
+import { generateUri } from "shared/helpers/generateUri"
+import type { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import type { EmptyObject } from "type-fest"
-import z, { ZodType } from "zod"
+import type { ZodType } from "zod"
+import type z from "zod"
 
-import { publicConfig } from "../config.public"
+import { publicConfig } from "@/config.public"
 
 type OptionsGet = {
   [Prop in keyof Pick<IRouteSchema, "params" | "querystring" | "headers">]: IRouteSchema[Prop] extends ZodType ? z.input<IRouteSchema[Prop]> : never
@@ -124,7 +126,7 @@ export class ApiError extends Error {
           message = data.message
           errorData = data.data
         }
-      } catch (error) {
+      } catch (_) {
         // ignore
       }
     }

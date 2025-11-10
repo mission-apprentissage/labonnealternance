@@ -2,9 +2,8 @@ import { badRequest, notFound } from "@hapi/boom"
 import { zRoutes } from "shared"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "shared/constants/index"
 
+import type { Server } from "@/http/server"
 import { unsubscribeNoSiret, unsubscribeWithSirets } from "@/services/unsubscribeRecruteurLba.service"
-
-import { Server } from "../server"
 
 export default function (server: Server) {
   server.post(

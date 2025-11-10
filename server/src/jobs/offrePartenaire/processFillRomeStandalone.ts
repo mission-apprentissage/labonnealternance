@@ -1,7 +1,7 @@
 import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
 
+import { fillRomeForPartners } from "./fillRomeForPartners"
 import { logger } from "@/common/logger"
-import { fillRomeForPartners } from "@/jobs/offrePartenaire/fillRomeForPartners"
 
 export const jobPartnersByFlux = Object.values(JOBPARTNERS_LABEL).filter((jobPartner) => !jobPartnersExcludedFromFlux.includes(jobPartner))
 

@@ -2,7 +2,7 @@
 // schema : https://schema.org/JobPosting
 // cas spécifique google : https://developers.google.com/search/docs/appearance/structured-data/job-posting
 
-import { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 type JobPostingSchemaProps = {
   title: string

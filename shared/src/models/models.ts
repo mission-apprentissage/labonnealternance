@@ -1,4 +1,4 @@
-import { z } from "zod"
+import type { z } from "zod"
 
 import anonymizedApplicantModel from "./anonymizedApplicant.model.js"
 import anonymizedApplicationsModel from "./anonymizedApplications.model.js"
@@ -16,7 +16,7 @@ import cacheDiagorienteModel from "./cacheDiagoriente.model.js"
 import cacheGeolocationModel from "./cacheGeolocation.model.js"
 import cacheInfosSiretModel from "./cacheInfosSiret.model.js"
 import cfaModel from "./cfa.model.js"
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./customEmailETFA.model.js"
 import diplomesMetiersModel from "./diplomesMetiers.model.js"
@@ -34,6 +34,7 @@ import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
+import rawDecathlonModel from "./rawDecathlon.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawJobteaserModel from "./rawJobteaser.model.js"
@@ -101,6 +102,7 @@ const modelDescriptorMap = {
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
+  [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,

@@ -1,10 +1,9 @@
-import { FastifyRequest } from "fastify"
-import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import type { FastifyRequest } from "fastify"
+import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { assertUnreachable } from "shared/utils/index"
 
-import { IAccessLog } from "@/security/accessLog.types"
-
-import { logger } from "../common/logger"
+import type { IAccessLog } from "./accessLog.types"
+import { logger } from "@/common/logger"
 
 const loggerAccess = logger.child({ module: "accessLog" })
 
@@ -65,5 +64,9 @@ export const createAccessLog = async <S extends IRouteSchema & WithSecuritySchem
     }
   }
 
-  authorized ? loggerAccess.info(acl) : loggerAccess.warn(acl)
+  if (authorized) {
+    loggerAccess.info(acl)
+  } else {
+    loggerAccess.warn(acl)
+  }
 }

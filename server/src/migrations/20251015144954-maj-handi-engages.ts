@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
-import { EntrepriseEngagementSources, IReferentielEngagementEntreprise } from "shared/models/referentielEngagementEntreprise.model"
+import type { IReferentielEngagementEntreprise } from "shared/models/referentielEngagementEntreprise.model"
+import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

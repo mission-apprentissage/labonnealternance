@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { CSSProperties } from "react"
+import type { CSSProperties } from "react"
 
 export const customTagColors = {
   pink: {

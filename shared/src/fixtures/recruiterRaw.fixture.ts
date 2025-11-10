@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 
-import { IRecruteursLbaRaw } from "../models/rawRecruteursLba.model.js"
+import type { IRecruteursLbaRaw } from "../models/rawRecruteursLba.model.js"
 
 export function generateRecruiterRawFixture(data: Partial<IRecruteursLbaRaw> = {}): IRecruteursLbaRaw {
   return {

@@ -2,12 +2,11 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 
-import { ConnectedHeader } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeader"
+import { ConnectedHeader } from "./_components/ConnectedHeader"
+import { UserContextProvider } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { AuthWatcher } from "@/app/_components/AuthWatcher"
 import { Footer } from "@/app/_components/Footer"
 import { getSession } from "@/utils/getSession"
-
-import { UserContextProvider } from "../contexts/userContext"
 
 export default async function EspaceProConnecteLayout({ children }: PropsWithChildren) {
   const { user, access } = await getSession()

@@ -1,7 +1,7 @@
 import { ReferrerApiEnum } from "../../constants/referers.js"
 import { extensions } from "../../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../../helpers/zodWithOpenApi.js"
-import { IRoutesDef } from "../common.routes.js"
+import type { IRoutesDef } from "../common.routes.js"
 
 const ZAppointmentContextParcoursup = z
   .object({
@@ -36,6 +36,7 @@ const ZAppointmentContextApi = z.union([
   ZAppointmentContextCleMinistereEducatif,
 ])
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ZAppointmentContextApiWithReferrer = z.intersection(ZAppointmentContextApi, z.object({ referrer: extensions.buildEnum(ReferrerApiEnum) }))
 export type IAppointmentContextAPI = z.output<typeof ZAppointmentContextApiWithReferrer>
 

@@ -1,8 +1,7 @@
-import { Metadata } from "next"
-
-import { PAGES } from "@/utils/routes.utils"
+import type { Metadata } from "next"
 
 import StatistiquesClient from "./StatistiquesClient"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.statistiques.getMetadata().title,

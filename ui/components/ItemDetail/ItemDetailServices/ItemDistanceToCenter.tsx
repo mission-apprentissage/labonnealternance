@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material"
 import { useContext } from "react"
-import { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
+import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 import { DisplayContext } from "@/context/DisplayContextProvider"
 

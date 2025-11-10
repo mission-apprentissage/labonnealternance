@@ -3,7 +3,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { ZJobsPartnersOfferPrivate } from "../models/jobsPartners.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const ZLbaCompanyForContactUpdate = z.object({
   siret: z.string().describe("Le Siret de la société"), // use extension.siret
