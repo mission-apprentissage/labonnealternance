@@ -8,7 +8,7 @@ export const anonymizeReportedReasons = async function () {
 
     const period = new Date()
     period.setFullYear(period.getFullYear() - 1)
-    const anonymizedReportingReasonsCount = await getDbCollection("reported_companies").updateMany({ createdAt: { $lte: period } }, { $set: { reasonDetails: null } })
+    const { modifiedCount: anonymizedReportingReasonsCount } = await getDbCollection("reported_companies").updateMany({ createdAt: { $lte: period } }, { $set: { reasonDetails: null } })
 
     await notifyToSlack({
       subject: "ANONYMISATION RAISONS",
