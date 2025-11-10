@@ -124,7 +124,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
               />
 
-              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
             </Box>
             <Box
               sx={{
@@ -170,7 +170,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           </Typography>
           <Box sx={{ mt: fr.spacing("4w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
             </Box>
             <Box sx={{ flex: 1 }}>
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
@@ -322,10 +322,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography
-                sx={{ whiteSpace: "pre-wrap", textAlign: "justify", mt: { xs: fr.spacing("5v"), md: 0 } }}
-                dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }}
-              />
+              <Typography sx={{ whiteSpace: "pre-wrap", mt: { xs: fr.spacing("5v"), md: 0 } }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
             </Box>
           </Box>
 
@@ -343,7 +340,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
 
           <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
             </Box>
 
             <Box sx={{ flex: 1, alignItems: "center", justifyContent: "center", alignContent: "center" }}>
@@ -440,7 +437,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               </Box>
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap", textAlign: "justify" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
+              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
             </Box>
           </Box>
         </Box>
