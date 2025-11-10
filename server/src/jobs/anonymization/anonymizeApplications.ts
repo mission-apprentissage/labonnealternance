@@ -41,6 +41,10 @@ const anonymize = async () => {
   return res.deletedCount
 }
 
+/**
+ * règle métier : vient en complément de anonymizeApplicantAndApplications
+ * on anonymise les candidatures de plus de 2 ans (et pas seulement celles des candidats n'ayant pas eu de connexion depuis 2 ans)
+ */
 export const anonymizeApplications = async function () {
   try {
     logger.info("[START] Anonymisation des candidatures de plus de deux (2) ans")

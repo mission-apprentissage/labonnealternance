@@ -46,7 +46,7 @@ export default function PrintableJobPage() {
       <Typography mx="auto" fontSize="28px" fontWeight={700}>
         recrute en alternance !
       </Typography>
-      <Typography sx={{ ...printExactColor }} mx="auto" fontSize="32px" mt={7} color="#ff8d7e" fontWeight={700}>
+      <Typography sx={{ ...printExactColor }} mx="auto" fontSize="32px" mt={7} color="#417DC4" fontWeight={700}>
         {offre.title}
       </Typography>
       {((offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT) || offre.job.jobStartDate) && (
@@ -74,7 +74,7 @@ export default function PrintableJobPage() {
       <Typography mt={6} fontWeight={700} mx="auto" color="#161616">
         Pour lire plus de détails sur l’offre et postuler
       </Typography>
-      <Typography sx={{ ...printExactColor, color: "#ff8d7e", fontWeight: 700, mx: "auto", mb: 2 }}>Rendez-vous sur La bonne alternance</Typography>
+      <Typography sx={{ ...printExactColor, color: "#417DC4", fontWeight: 700, mx: "auto", mb: 2 }}>Rendez-vous sur La bonne alternance</Typography>
       <QRCode
         value={`${window.location.origin}${PAGES.dynamic
           .jobDetail({

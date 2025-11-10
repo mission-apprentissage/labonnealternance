@@ -1,4 +1,5 @@
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
@@ -173,6 +174,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonymizeApplicantsAndApplications,
     description: "Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées",
+  },
+  {
+    fct: anonymizeReportedReasons,
+    description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
   },
   {
     fct: fixJobExpirationDate,
