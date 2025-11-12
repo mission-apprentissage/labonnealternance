@@ -98,51 +98,6 @@ const transformCompany = ({
 }
 
 /**
- * Adaptation au modèle LBA d'une société issue de l'algo avec les données minimales nécessaires pour l'ui LBA
- * To remove once V1 is decommissioned
- */
-const transformCompanyWithMinimalData = ({
-  company,
-  applicationCountByCompany,
-}: {
-  company: IJobsPartnersOfferPrivateWithDistance
-  applicationCountByCompany: IApplicationCount[]
-}): ILbaItemLbaCompany => {
-  // format différent selon accès aux bonnes boîtes par recherche ou par siret
-
-  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
-
-  const resultCompany: ILbaItemLbaCompany = {
-    ideaType: LBA_ITEM_TYPE_OLD.LBA,
-    id: company.workplace_siret!,
-    title: company.workplace_brand || company.workplace_legal_name,
-    place: {
-      distance: setDistance(company.distance),
-      fullAddress: company.workplace_address_label,
-      longitude: company.workplace_geopoint.coordinates[0],
-      latitude: company.workplace_geopoint.coordinates[1],
-      city: company.workplace_address_city,
-      address: company.workplace_address_label,
-    },
-    company: {
-      name: company.workplace_legal_name,
-      siret: company.workplace_siret,
-      elligibleHandicap: company.contract_is_disabled_elligible,
-    },
-    nafs: [
-      {
-        label: company.workplace_naf_label,
-      },
-    ],
-    applicationCount: applicationCount?.count || 0,
-    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
-  }
-
-  return resultCompany
-}
-
-/**
  * Adaptation au modèle LBA d'une société issue de l'algo
  */
 const transformCompanyV2 = ({
@@ -196,6 +151,45 @@ const transformCompanyV2 = ({
   return resultCompany
 }
 
+const transformCompanyV2Minimal = ({
+  company,
+  applicationCountByCompany,
+}: {
+  company: IJobsPartnersOfferPrivateWithDistance
+  applicationCountByCompany: IApplicationCount[]
+}): ILbaItemLbaCompany => {
+  const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
+
+  const resultCompany: ILbaItemLbaCompany = {
+    ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    id: company.workplace_siret!,
+    title: company.workplace_brand || company.workplace_legal_name,
+    place: {
+      distance: setDistance(company.distance),
+      fullAddress: company.workplace_address_label,
+      longitude: company.workplace_geopoint.coordinates[0],
+      latitude: company.workplace_geopoint.coordinates[1],
+      city: company.workplace_address_city,
+      address: company.workplace_address_label,
+    },
+    company: {
+      name: company.workplace_legal_name,
+      siret: company.workplace_siret,
+      elligibleHandicap: company.contract_is_disabled_elligible,
+    },
+    nafs: [
+      {
+        label: company.workplace_naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+    token: generateApplicationToken({ company_siret: company.workplace_siret! }),
+    recipient_id: `partners_${company._id.toString()}`,
+  }
+
+  return resultCompany
+}
+
 /**
  * Transformer au format unifié une liste de sociétés issues de l'algo
  */
@@ -218,7 +212,7 @@ const transformCompanies = ({
     transformedCompanies.results = companies.map((company) => {
       const contactAllowedOrigin = isAllowedSource({ referer, caller })
       return isMinimalData
-        ? transformCompanyWithMinimalData({
+        ? transformCompanyV2Minimal({
             company,
             applicationCountByCompany,
           })
