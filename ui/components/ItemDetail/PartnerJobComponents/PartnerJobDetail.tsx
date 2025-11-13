@@ -65,9 +65,11 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
                 <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
               </Box>
             )}
-            <Box>
-              <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-            </Box>
+            {job?.job?.type?.length > 0 ? (
+              <Box>
+                <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
+              </Box>
+            ) : null}
 
             {job?.target_diploma_level && (
               <Box>
