@@ -1,7 +1,11 @@
 import type { Db } from "mongodb"
 
 export const up = async (db: Db) => {
-  await db.collection("recruteurslbalegacies").drop()
+  try {
+    await db.collection("recruteurslbalegacies").drop()
+  } catch (err) {
+    // Collection may not exist, which is acceptable
+  }
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
