@@ -1,13 +1,12 @@
 import { pipeline, Writable } from "node:stream"
 
 import { ObjectId } from "mongodb"
-import { CollectionName } from "shared/models/models"
+import type { CollectionName } from "shared/models/models"
 
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { parseCsv } from "@/common/utils/fileUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 export const importFromStreamInCsv = async ({
   stream,

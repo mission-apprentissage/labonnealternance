@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CollectionName } from "shared/models/models"
+import type { CollectionName } from "shared/models/models"
 
 import { importFromStreamInCsv } from "./importFromStreamInCsv"
 

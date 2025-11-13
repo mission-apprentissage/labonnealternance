@@ -1,13 +1,11 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawLeboncoinModel from "shared/models/rawLeboncoin.model"
 
+import { leboncoinJobToJobsPartners, ZLeboncoinJob } from "./leboncoinMapper"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 import config from "@/config"
 import { importFromStreamInCsv } from "@/jobs/offrePartenaire/importFromStreamInCsv"
 import { importFromUrlInCsv } from "@/jobs/offrePartenaire/importFromUrlInCsv"
-
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
-
-import { leboncoinJobToJobsPartners, ZLeboncoinJob } from "./leboncoinMapper"
 
 const rawCollectionName = rawLeboncoinModel.collectionName
 const documentJobRoot = "job"
