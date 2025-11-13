@@ -50,7 +50,6 @@ import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import rawToulouseMetropoleModel from "./rawToulouseMetropole.model.js"
 import rawViteUnEmploiModel from "./rawViteUnEmploi.model.js"
 import recruiterModel from "./recruiter.model.js"
-import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentielEngagementEntreprise.model.js"
@@ -100,7 +99,6 @@ const modelDescriptorMap = {
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
-  [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,

@@ -2,7 +2,7 @@ import { badRequest, internal } from "@hapi/boom"
 import { captureException } from "@sentry/node"
 import type { Filter as MongoDBFilter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, ILbaCompanyLegacy, IRecruiter, ITrackingCookies } from "shared"
+import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, IRecruiter, ITrackingCookies } from "shared"
 import { parseEnum, TrafficType, ZCfaReferentielData } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/index"
@@ -37,12 +37,12 @@ import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
@@ -157,10 +157,6 @@ const getEtablissementFromReferentiel = async (siret: string): Promise<IReferent
   }
 }
 
-type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
-  (await getDbCollection("recruteurslbalegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
-
 type IGetAllEmailFromLbaCompany = Pick<IJobsPartnersOfferPrivate, "apply_email">
 export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<IJobsPartnersOfferPrivate>) =>
   (await getDbCollection("jobs_partners").find(query).project({ apply_email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
@@ -266,8 +262,7 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
   const siren = siret.slice(0, 9)
   const sirenRegex = `^${siren}`
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-  const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
+  const [bonneBoiteList, referentielOpcoList] = await Promise.all([
     getAllEstablishmentFromLbaCompany({ workplace_siret: { $regex: sirenRegex }, apply_email: { $nin: ["", null] }, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }),
     getDbCollection("referentielopcos")
       .find({ siret_code: { $regex: sirenRegex } })
@@ -275,12 +270,11 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
   ])
 
   // Format arrays to get only the emails
-  const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
   const bonneBoiteEmailList = bonneBoiteList.map(({ apply_email }) => apply_email)
   const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
 
   // Create a single array with all emails duplicate free
-  const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+  const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteEmailList])]
 
   // Check BAL API for validation
   const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
