@@ -12,6 +12,7 @@ export const ZDecathlonJob = z
     reference: z.string(),
     title: z.string(),
     description: z.string().nullish(),
+    profile: z.string().nullish(),
     contract_type: z.string().nullish(),
     education_level: z.string().nullish(),
     skills: z.array(z.string()).nullish(),
@@ -62,12 +63,17 @@ export const ZDecathlonJob = z
 export type IDecathlonJob = z.output<typeof ZDecathlonJob>
 
 export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPartners => {
-  const { contract_duration, reference, title, description, education_level, skills = [], published_at, brand, entity, apply_url, contract_type } = job
+  const { contract_duration, reference, title, description, education_level, skills = [], published_at, brand, entity, apply_url, contract_type, profile } = job
   const { address } = entity ?? {}
   const { position } = address ?? {}
   const { lat, lon } = position ?? {}
 
   const created_at = new Date()
+
+  const finalDescription = description ? `Description :<br />${description}` : null
+  const finalProfile = profile ? `Profil :<br />${profile}` : null
+  const offer_description = [finalDescription, finalProfile].filter((x) => x).join("<br /><br />")
+
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
     _id: new ObjectId(),
@@ -75,11 +81,11 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
     updated_at: created_at,
     partner_label: JOBPARTNERS_LABEL.DECATHLON,
     partner_job_id: reference,
-    contract_type: contract_type === "Contrat d'alternance (pro, apprentissage)" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE] : undefined,
+    contract_type: contract_type === "Contrat d'alternance (pro, apprentissage)" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: null,
     contract_duration: contract_duration?.min ? parseInt(contract_duration.min, 10) : null,
     offer_title: title,
-    offer_description: description,
+    offer_description,
     offer_target_diploma: getDiplomaLevel(education_level),
     offer_desired_skills: skills,
     offer_access_conditions: [],

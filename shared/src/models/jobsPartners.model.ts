@@ -29,6 +29,7 @@ export enum JOBPARTNERS_LABEL {
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
   LAPOSTE = "La Poste",
+  LEBONCOIN = "Le bon coin emploi",
   ATLAS = "annonces Atlas",
   NOS_TALENTS_NOS_EMPLOIS = "Nos Talents Nos Emplois",
   VITE_UN_EMPLOI = "Vite un emploi",
