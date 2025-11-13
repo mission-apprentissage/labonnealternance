@@ -11,7 +11,6 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
 
 export async function generateStaticParams() {
   return villeData.map((ville) => ({ ville: ville.slug }))
@@ -30,8 +29,6 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
 export const dynamic = "force-static"
 export const dynamicParams = false
 
-// export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
-//   const { ville } = await params
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
   const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
@@ -176,7 +173,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
                 Activités porteuses :
               </Typography>
-              {data.content.vie.activites.map((activite: { naf_label?: string; rome_codes?: string[] }) => (
+              {(data.content.vie.activites as { naf_label?: string; rome_codes?: string[] }[]).map((activite) => (
                 <Link
                   key={activite.naf_label}
                   underline="none"
@@ -304,7 +301,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.mobilite.transports.map((transport: { type?: string; label?: string }) => (
+                {(data.content.mobilite.transports as { type?: string; label?: string }[]).map((transport) => (
                   <Box
                     key={transport.type}
                     sx={{
@@ -321,7 +318,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                       boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                     }}
                   >
-                    <Image alt="" src={`/images/seo/transports/${transports[transport.type]}`} width="50" height={50} />
+                    <Image alt="" src={`/images/seo/transports/${transports[transport.type as string]}`} width="50" height={50} />
                     <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{transport.label}</Typography>
                   </Box>
                 ))}
@@ -360,7 +357,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.logement.loyers.map((appartement: { type?: string; price_range?: string }) => (
+                {(data.content.logement.loyers as { type?: string; price_range?: string }[]).map((appartement) => (
                   <Box
                     sx={{
                       display: "flex",
@@ -419,7 +416,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   gap: fr.spacing("2w"),
                 }}
               >
-                {data.content.loisirs.types.map((loisir: { type?: string; label?: string }) => (
+                {(data.content.loisirs.types as { type?: string; label?: string }[]).map((loisir) => (
                   <Box
                     key={loisir.type}
                     sx={{
@@ -446,37 +443,6 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
             </Box>
           </Box>
-        </Box>
-
-        {/**
-         * BLOC DECOUVREZ EGALEMENT
-         */}
-        <Box
-          sx={{
-            mb: fr.spacing("4w"),
-            py: fr.spacing("4w"),
-            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
-            backgroundColor: fr.colors.decisions.background.default.grey.hover,
-          }}
-        >
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
-            Découvrez également
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
-          <ul>
-            {villeData.map((autre_ville) =>
-              autre_ville.slug !== ville ? (
-                <li key={autre_ville.slug}>
-                  <Link key={autre_ville.slug} href={PAGES.dynamic.seoVille(autre_ville.slug).getPath()}>
-                    Trouver une alternance à {autre_ville.ville}
-                  </Link>
-                </li>
-              ) : null
-            )}
-          </ul>
         </Box>
       </DefaultContainer>
     </Box>
