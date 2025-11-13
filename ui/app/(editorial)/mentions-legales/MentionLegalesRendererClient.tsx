@@ -11,7 +11,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
-const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer))
+const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer))
 
 export default function MentionLegalesRendererClient({ mentionsLegales }: { mentionsLegales: ExtendedRecordMap }) {
   return (

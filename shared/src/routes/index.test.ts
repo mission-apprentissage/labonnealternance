@@ -3,7 +3,8 @@ import assert from "node:assert"
 import { describe, it } from "vitest"
 import { ZodEffects } from "zod"
 
-import { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef, ZResError } from "./common.routes.js"
+import type { IRouteSchema, IRouteSchemaGet, IRouteSchemaWrite, IRoutesDef } from "./common.routes.js"
+import { ZResError } from "./common.routes.js"
 
 import { zRoutes } from "./index.js"
 

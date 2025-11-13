@@ -5,12 +5,12 @@ import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 
+import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 
-import ExportButtonNew from "../../../components/espace_pro/ExportButton/ExportButtonNew"
-import PaginationReactQuery from "../../../components/espace_pro/PaginationReactQuery"
+import PaginationReactQuery from "@/components/espace_pro/PaginationReactQuery"
 
 interface GlobalFilterProps {
   globalFilter: string

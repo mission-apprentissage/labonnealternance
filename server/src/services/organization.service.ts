@@ -1,18 +1,20 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
-import { ICFA } from "shared/models/cfa.model"
-import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
+import type { CFA } from "shared/constants/index"
+import { ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
+import type { ICFA } from "shared/models/cfa.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
 
-import { asyncForEach } from "../common/utils/asyncUtils"
-import { getDbCollection } from "../common/utils/mongodbUtils"
-
-import { autoValidateUserRoleOnCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "./etablissement.service"
+import type { getEntrepriseDataFromSiret } from "./etablissement.service"
+import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { checkForJobActivations } from "./formulaire.service"
 import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 
 export type Organization = { entreprise: IEntreprise; type: typeof ENTREPRISE } | { cfa: ICFA; type: typeof CFA }
 export type UserAndOrganization = { user: IUserWithAccount; organization: Organization }

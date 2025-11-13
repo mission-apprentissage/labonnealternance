@@ -1,13 +1,12 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { isValidEmail } from "@/common/utils/isValidEmail"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import dayjs from "shared/helpers/dayjs"
+import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
+import mailer from "@/services/mailer.service"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
-
-import { logger } from "../../common/logger"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import mailer from "../../services/mailer.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 interface IEtablissementsToInviteToPremium {
   _id: {

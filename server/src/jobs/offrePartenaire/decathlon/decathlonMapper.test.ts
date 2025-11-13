@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { decathlonJobToJobsPartners } from "@/jobs/offrePartenaire/decathlon/decathlonMapper"
+import { decathlonJobToJobsPartners } from "./decathlonMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
@@ -151,13 +151,13 @@ describe("decathlonMapper", () => {
       contract_is_disabled_elligible: false,
       contract_remote: null,
       contract_start: null,
-      contract_type: ["Apprentissage"],
+      contract_type: ["Apprentissage", "Professionnalisation"],
       created_at: new Date("2024-07-21T02:49:06.000Z"),
       errors: [],
       jobs_in_success: [],
       offer_access_conditions: [],
       offer_creation: new Date("2025-11-24T10:18:17.000Z"),
-      offer_description: "description",
+      offer_description: "Description :<br />description<br /><br />Profil :<br />profile",
       offer_desired_skills: ["entrepreneur", "Esprit d'équipe", "Management", "Accueil", "Produit", "Relation Sportif"],
       offer_expiration: new Date("2026-01-24T09:18:17.000Z"),
       offer_multicast: true,

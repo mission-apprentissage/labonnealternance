@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 
-import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
+import { ChevronLeft, ChevronRight } from "@/theme/components/icons"
 
 const PageLink = ({ pageNumber, onClick, isActive = false }: { pageNumber: number; onClick: () => unknown; isActive: boolean }) => {
   return (

@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material"
-import { ILbaItemJobsGlobal } from "shared"
+import type { ILbaItemJobsGlobal } from "shared"
 
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 

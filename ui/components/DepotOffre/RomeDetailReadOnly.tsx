@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import styled from "@emotion/styled"
 import { Box, Typography } from "@mui/material"
-import { IReferentielRomeForJobJson } from "shared"
+import type { IReferentielRomeForJobJson } from "shared"
 
 const CompetencesGroupDiv = styled.div`
   margin-bottom: 20px;

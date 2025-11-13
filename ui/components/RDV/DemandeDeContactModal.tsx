@@ -2,10 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useState } from "react"
 
-import { useDisclosure } from "@/common/hooks/useDisclosure"
+import { DemandeDeContactConfirmation } from "./DemandeDeContactConfirmation"
+import { DemandeDeContactForm } from "./DemandeDeContactForm"
+import type { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
-import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
-import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
 
 export const DemandeDeContactModal = ({
   context: { cle_ministere_educatif },

@@ -1,23 +1,18 @@
-import { CronDef } from "job-processor"
+import type { CronDef } from "job-processor"
 
-import {
-  processMeteojob,
-  processAtlas,
-  processViteUnEmploi,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
-import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
-import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
-import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
-import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
-import { processKelio } from "@/jobs/offrePartenaire/kelio/processKelio"
-import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { processLeboncoin } from "@/jobs/offrePartenaire/leboncoin/processLeboncoin"
+import { processMeteojob, processAtlas, processViteUnEmploi, processNosTalentsNosEmplois, processToulouseMetropole } from "./clever-connect/processCleverConnect"
+import { processFranceTravail } from "./france-travail/processFranceTravail"
+import { processHellowork } from "./hellowork/processHellowork"
+import { processJobteaser } from "./jobteaser/processJobteaser"
+// import { processJooble } from "./jooble/processJooble"
+import { processKelio } from "./kelio/processKelio"
+import { processLaposte } from "./laposte/processLaposte"
+// import { processLeboncoin } from "@/jobs/offrePartenaire/leboncoin/processLeboncoin"
+// import { processDecathlon } from "./decathlon/processDecathlon"
 // import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
-import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
-import { processComputedAndImportToJobPartners } from "@/jobs/offrePartenaire/processJobPartners"
-import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
+import { processPass } from "./pass/processPass"
+import { processComputedAndImportToJobPartners } from "./processJobPartners"
+import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -74,13 +69,13 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  "Import Le bon coin emploi": {
-    cron_string: timings.import_source,
-    handler: processLeboncoin,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
+  // "Import Le bon coin emploi": {
+  //   cron_string: timings.import_source,
+  //   handler: processLeboncoin,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  //   tag: "slave",
+  // },
   "Import Jobteaser": {
     cron_string: timings.import_source,
     handler: processJobteaser,
@@ -88,13 +83,13 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 30,
     tag: "slave",
   },
-  "Import Jooble": {
-    cron_string: timings.import_source,
-    handler: processJooble,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
+  // "Import Jooble": {
+  //   cron_string: timings.import_source,
+  //   handler: processJooble,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  //   tag: "slave",
+  // },
   "Import PASS": {
     cron_string: timings.import_source,
     handler: processPass,
@@ -125,8 +120,14 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
+  // "Import Decathlon": {
+  //   cron_string: timings.import_source,
+  //   handler: processDecathlon,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  // },
 
-  // Leave at the end
+  // Keep at the end
   "Process computed and import to Jobs Partners": {
     cron_string: timings.process_computed,
     handler: processComputedAndImportToJobPartners,

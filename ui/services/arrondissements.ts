@@ -1,4 +1,4 @@
-import { IPointGeometry } from "shared"
+import type { IPointGeometry } from "shared"
 
 type IArrondissement = {
   value: IPointGeometry

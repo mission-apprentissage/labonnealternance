@@ -3,8 +3,9 @@ import { randomUUID } from "node:crypto"
 import { ObjectId } from "bson"
 
 import { RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "../constants/recruteur.js"
-import { IJob, JOB_STATUS } from "../models/job.model.js"
-import { IRecruiter } from "../models/recruiter.model.js"
+import type { IJob } from "../models/job.model.js"
+import { JOB_STATUS } from "../models/job.model.js"
+import type { IRecruiter } from "../models/recruiter.model.js"
 
 export function generateJobFixture(data: Partial<IJob>): IJob {
   return {

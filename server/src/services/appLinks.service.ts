@@ -1,19 +1,12 @@
-import { ApplicationIntention } from "shared/constants/application"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { IJob } from "shared/models/index"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { ApplicationIntention } from "shared/constants/application"
+import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { IJob } from "shared/models/index"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { zRoutes } from "shared/routes/index"
 
 import config from "@/config"
-import {
-  IApplicationTForUserToken,
-  IUserWithAccountForAccessToken,
-  UserForAccessToken,
-  applicationToUserForToken,
-  generateAccessToken,
-  generateScope,
-  userWithAccountToUserForToken,
-} from "@/security/accessTokenService"
+import type { IApplicationTForUserToken, IUserWithAccountForAccessToken, UserForAccessToken } from "@/security/accessTokenService"
+import { applicationToUserForToken, generateAccessToken, generateScope, userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 export function createAuthMagicLinkToken(user: UserForAccessToken) {
   return generateAccessToken(
@@ -292,7 +285,7 @@ export function createRdvaOptOutUnsubscribePageLink(email: string, siret: string
 /**
  * Forge a link for reading appointment
  */
-export function createRdvaAppointmentIdPageLink(email: string, siret: string, etablissementId: string, appointmentId: string): string {
+export function createRdvaAppointmentIdPageLink(email: string, siret: string, appointmentId: string): string {
   const token = generateAccessToken(
     { type: "cfa", email, siret },
     [

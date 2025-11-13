@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, use, type PropsWithChildren } from "react"
+import { createContext, use } from "react"
+import type { PropsWithChildren } from "react"
 import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 
 type IUserContext = {

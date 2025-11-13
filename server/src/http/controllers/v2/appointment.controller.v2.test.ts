@@ -2,10 +2,10 @@ import { generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingF
 import { generateReferentielOnisepFixture } from "shared/fixtures/referentiel/onisep.fixture"
 import { describe, expect, it } from "vitest"
 
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "../../../../tests/utils/jwt.test.utils"
-import { useMongo } from "../../../../tests/utils/mongo.test.utils"
-import { useServer } from "../../../../tests/utils/server.test.utils"
-import { getDbCollection } from "../../../common/utils/mongodbUtils"
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const parcousupToken = await getApiApprentissageTestingToken({
   email: "test@test.fr",

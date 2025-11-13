@@ -4,8 +4,8 @@ import { ObjectId } from "bson"
 import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { CollectionName } from "shared/models/models"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { CollectionName } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 
@@ -269,7 +269,6 @@ export async function obfuscateCollections(): Promise<void> {
     "jobs",
     "eligible_trainings_for_appointments_histories",
     "applicants_email_logs",
-    "recruteurslbalegacies",
     "anonymized_applicants",
     "anonymized_applications",
     "anonymized_appointments",

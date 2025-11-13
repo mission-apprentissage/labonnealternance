@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 
 export const ZRawRHAlternance = z.object({
   createdAt: z.date(),

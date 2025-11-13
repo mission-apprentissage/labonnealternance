@@ -5,7 +5,7 @@ import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const zFormulaireRoute = {
   get: {

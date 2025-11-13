@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { IJobJson } from "shared"
+import type { IJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { useToast } from "@/app/hooks/useToast"

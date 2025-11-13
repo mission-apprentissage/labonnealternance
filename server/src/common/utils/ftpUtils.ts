@@ -1,8 +1,7 @@
 import Ftp from "basic-ftp"
 
-import { logger } from "../logger"
-
 import { sentryCaptureException } from "./sentryUtils"
+import { logger } from "@/common/logger"
 
 class FTPClient {
   client = new Ftp.Client()

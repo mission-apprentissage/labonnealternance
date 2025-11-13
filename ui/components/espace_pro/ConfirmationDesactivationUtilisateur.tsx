@@ -6,13 +6,12 @@ import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
 import { useState } from "react"
-import { IUserRecruteurJson } from "shared"
+import type { IUserRecruteurJson } from "shared"
 
+import { AUTHTYPE } from "@/common/contants"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
-
-import { AUTHTYPE } from "../../common/contants"
 
 const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
@@ -107,7 +106,7 @@ const ConfirmationDesactivationUtilisateur = ({
               Annuler
             </Button>
           </Box>
-          <Button onClick={() => handleUpdate()} disabled={!reason}>
+          <Button onClick={async () => handleUpdate()} disabled={!reason}>
             Supprimer
           </Button>
         </Box>

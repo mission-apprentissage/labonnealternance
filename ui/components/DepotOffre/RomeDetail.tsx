@@ -3,12 +3,11 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import styled from "@emotion/styled"
 import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
 import { useState } from "react"
-import { IReferentielRomeForJobJson } from "shared"
+import type { IReferentielRomeForJobJson } from "shared"
 
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { classNames } from "@/utils/classNames"
-
-import { BorderedBox } from "../espace_pro/common/components/BorderedBox"
 
 const CompetenceSelectionDiv = styled.div`
   .competences-group-title {

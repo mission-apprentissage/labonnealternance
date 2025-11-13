@@ -5,16 +5,15 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixture"
+import { processRecruteursLba } from "./processRecruteursLba"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { stringToStream } from "@/common/utils/streamUtils"
-import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { generateRecruiterRawFixture } from "../../../../../shared/src/fixtures/recruiterRaw.fixture"
 
 useMongo()
 

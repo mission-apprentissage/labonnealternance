@@ -1,6 +1,6 @@
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
-import { DesinscriptionRecruteur } from "@/app/(editorial)/desinscription/Desinscription"
+import { DesinscriptionRecruteur } from "./Desinscription"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
 

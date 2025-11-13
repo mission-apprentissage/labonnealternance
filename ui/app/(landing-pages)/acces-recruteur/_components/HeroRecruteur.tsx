@@ -1,15 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Grid, Box } from "@mui/material"
 
-import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
-import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { AlgoRecruteur } from "./AlgoRecruter"
+import { Entreprise } from "./Entreprise"
+import { GerezOffres } from "./GerezOffres"
+import { OffresGratuites } from "./OffresGratuites"
+import { OrganismesMandataires } from "./OrganismesMandataires"
+import { PostezVotreOffre } from "./PostezVotreOffre"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { AlgoRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruter"
-import { Entreprise } from "@/app/(landing-pages)/acces-recruteur/_components/Entreprise"
-import { GerezOffres } from "@/app/(landing-pages)/acces-recruteur/_components/GerezOffres"
-import { OffresGratuites } from "@/app/(landing-pages)/acces-recruteur/_components/OffresGratuites"
-import { OrganismesMandataires } from "@/app/(landing-pages)/acces-recruteur/_components/OrganismesMandataires"
-import { PostezVotreOffre } from "@/app/(landing-pages)/acces-recruteur/_components/PostezVotreOffre"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
 export const HeroRecruteur = () => {
   return (

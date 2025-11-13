@@ -1,5 +1,5 @@
 import Select from "@codegouvfr/react-dsfr/Select"
-import { FormikErrors, FormikTouched } from "formik"
+import type { FormikErrors, FormikTouched } from "formik"
 import { OPCOS_LABEL } from "shared/constants/index"
 
 interface Props {

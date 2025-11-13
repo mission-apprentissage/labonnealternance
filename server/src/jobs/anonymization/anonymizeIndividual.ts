@@ -1,14 +1,13 @@
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import anonymizedApplicantsModel from "shared/models/anonymizedApplicant.model"
 import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-
 import { anonymizeAppointments } from "./anonymizeAppointments"
+import { logger } from "@/common/logger"
+
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts")
@@ -67,8 +66,8 @@ const deleteRecruiter = (query) => getDbCollection("recruiters").deleteMany(quer
 const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").deleteMany(query)
 
 const anonymizeApplication = async (_id: ObjectId) => {
-  logger.info(`[START] Anonymized applicant & related applications`)
-  const applicant = await getDbCollection("applicants")
+  logger.info(`[START] Anonymize applicant & related applications`)
+  await getDbCollection("applicants")
     .aggregate([
       {
         $match: { _id },
@@ -86,11 +85,10 @@ const anonymizeApplication = async (_id: ObjectId) => {
     ])
     .toArray()
 
-  const applicantId = applicant[0]._id
   await getDbCollection("applications")
     .aggregate([
       {
-        $match: { applicant_id: applicantId },
+        $match: { applicant_id: _id },
       },
       {
         $project: {
@@ -111,8 +109,9 @@ const anonymizeApplication = async (_id: ObjectId) => {
     ])
     .toArray()
 
-  await getDbCollection("applications").deleteOne({ _id })
-  logger.info(`[END] Anonymized applicant & related applications`)
+  await getDbCollection("applications").deleteMany({ applicant_id: _id })
+  await getDbCollection("applicants").deleteOne({ _id })
+  logger.info(`[END] Anonymize applicant & related applications`)
 }
 
 const anonymizeUser = async (_id: ObjectId) => {

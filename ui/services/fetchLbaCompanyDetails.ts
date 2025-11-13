@@ -1,4 +1,4 @@
-import { ILbaItemLbaCompanyJson } from "shared"
+import type { ILbaItemLbaCompanyJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { apiGet } from "@/utils/api.utils"

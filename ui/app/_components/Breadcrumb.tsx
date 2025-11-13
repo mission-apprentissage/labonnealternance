@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Breadcrumb as DSFRBreadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb"
 
-import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import DefaultContainer from "./Layout/DefaultContainer"
 import type { IPage } from "@/utils/routes.utils"
 import { PAGES } from "@/utils/routes.utils"
 
