@@ -140,8 +140,22 @@ export default function Authentification() {
           Vous n'avez pas de compte ?
         </Typography>
         <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationEntreprise.getPath())} style={{ width: "100%" }}>
-          <Box margin="auto">Créer un compte</Box>
+          <Box margin="auto">Je suis une entreprise</Box>
         </Button>
+        <Box mt={fr.spacing("2w")}>
+          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationCfa.getPath())} style={{ width: "100%" }}>
+            <Box margin="auto">Je suis un organisme de formation</Box>
+          </Button>
+        </Box>
+        <Typography sx={{ mt: fr.spacing("2w") }}>
+          <strong>Vous êtes candidat ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
+          offres d’emploi et de formation sans vous créer de compte.
+        </Typography>
+        <Box mt={fr.spacing("2w")}>
+          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.home.getPath())} style={{ width: "100%" }}>
+            <Box margin="auto">Je suis un candidat</Box>
+          </Button>
+        </Box>
       </Box>
     </Box>
   )
