@@ -1,7 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
@@ -100,16 +99,12 @@ const Formulaire = ({
                     }
                   />
                   <Box mb={fr.spacing("2w")}>
-                    <Alert
-                      severity="info"
-                      title="Pourquoi ces informations ?"
-                      description={
-                        <>
-                          Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
-                          email comportant <strong>le nom de domaine de votre entreprise.</strong>
-                        </>
-                      }
-                    />
+                    <Box className={fr.cx("fr-messages-group")}>
+                      <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", display: "block !important" }} className="fr-info-text">
+                        Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
+                        email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
+                      </Box>
+                    </Box>
                   </Box>
                   {shouldSelectOpco && (
                     <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco as OPCOS_LABEL} errors={errors} touched={touched} />
