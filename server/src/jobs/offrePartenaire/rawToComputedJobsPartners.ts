@@ -11,7 +11,7 @@ import type { AnyZodObject } from "zod"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
+//import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
@@ -65,7 +65,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
           const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
           logger.error(newError.message, err)
           newError.cause = err
-          sentryCaptureException(newError)
+          //sentryCaptureException(newError)
         }
         callback()
       },
