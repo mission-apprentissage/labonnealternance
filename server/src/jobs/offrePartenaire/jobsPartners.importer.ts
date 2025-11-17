@@ -1,18 +1,18 @@
 import type { CronDef } from "job-processor"
 
-import { processMeteojob, processAtlas, processViteUnEmploi, processNosTalentsNosEmplois, processToulouseMetropole } from "./clever-connect/processCleverConnect"
+import { /*processMeteojob, processAtlas, processViteUnEmploi, processNosTalentsNosEmplois,*/ processToulouseMetropole } from "./clever-connect/processCleverConnect"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
 import { processHellowork } from "./hellowork/processHellowork"
 import { processJobteaser } from "./jobteaser/processJobteaser"
 // import { processJooble } from "./jooble/processJooble"
-import { processKelio } from "./kelio/processKelio"
-import { processLaposte } from "./laposte/processLaposte"
-// import { processLeboncoin } from "@/jobs/offrePartenaire/leboncoin/processLeboncoin"
+// import { processKelio } from "./kelio/processKelio"
+// import { processLaposte } from "./laposte/processLaposte"
 // import { processDecathlon } from "./decathlon/processDecathlon"
 // import { processMonster } from "@/jobs/offrePartenaire/monster/processMonster"
-import { processPass } from "./pass/processPass"
+// import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
+import { processLeboncoin } from "./leboncoin/processLeboncoin"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -41,13 +41,14 @@ export const importers: Record<string, CronDef> = {
     maxRuntimeInMinutes: 120,
     tag: "slave",
   },
-  "Import Meteojob": {
-    cron_string: timings.import_source,
-    handler: processMeteojob,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
+  // "Import Meteojob": { // TODO: A RESTAURER
+  //   cron_string: timings.import_source,
+  //   handler: processMeteojob,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  //   tag: "slave",
+  // },
+
   // "Import Monster": {
   //   cron_string: timings.import_source,
   //   handler: processMonster,
@@ -55,27 +56,30 @@ export const importers: Record<string, CronDef> = {
   //   maxRuntimeInMinutes: 30,
   //   tag: "slave",
   // },
-  "Import Kelio": {
-    cron_string: timings.import_source,
-    handler: processKelio,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
-  "Import La Poste": {
-    cron_string: timings.import_source,
-    handler: processLaposte,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
-  // "Import Le bon coin emploi": {
+
+  // "Import Kelio": { // TODO: A RESTAURER
   //   cron_string: timings.import_source,
-  //   handler: processLeboncoin,
+  //   handler: processKelio,
   //   checkinMargin: 350,
   //   maxRuntimeInMinutes: 30,
   //   tag: "slave",
   // },
+
+  // "Import La Poste": { // TODO: A RESTAURER
+  //   cron_string: timings.import_source,
+  //   handler: processLaposte,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  //   tag: "slave",
+  // },
+
+  "Import Le bon coin emploi": {
+    cron_string: timings.import_source,
+    handler: processLeboncoin,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+    tag: "slave",
+  },
   "Import Jobteaser": {
     cron_string: timings.import_source,
     handler: processJobteaser,
@@ -90,30 +94,35 @@ export const importers: Record<string, CronDef> = {
   //   maxRuntimeInMinutes: 30,
   //   tag: "slave",
   // },
-  "Import PASS": {
-    cron_string: timings.import_source,
-    handler: processPass,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-  },
-  "Import Atlas": {
-    cron_string: timings.import_source,
-    handler: processAtlas,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-  },
-  "Import Vite un emploi": {
-    cron_string: timings.import_source,
-    handler: processViteUnEmploi,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-  },
-  "Import Nos Talents Nos Emplois": {
-    cron_string: timings.import_source,
-    handler: processNosTalentsNosEmplois,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-  },
+
+  // "Import PASS": { // TODO: A RESTAURER
+  //   cron_string: timings.import_source,
+  //   handler: processPass,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  // },
+
+  // "Import Atlas": { // TODO: A RESTAURER
+  //   cron_string: timings.import_source,
+  //   handler: processAtlas,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  // },
+
+  // "Import Vite un emploi": { // TODO: A RESTAURER
+  //   cron_string: timings.import_source,
+  //   handler: processViteUnEmploi,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  // },
+
+  // "Import Nos Talents Nos Emplois": { // TODO: A RESTAURER
+  //   cron_string: timings.import_source,
+  //   handler: processNosTalentsNosEmplois,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  // },
+
   "Import Toulouse Metropole": {
     cron_string: timings.import_source,
     handler: processToulouseMetropole,
