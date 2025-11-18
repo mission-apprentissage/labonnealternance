@@ -144,7 +144,7 @@ export const fillFieldsForPartnersFactory = async <SourceFields extends keyof IC
       } catch (err) {
         counters.error += documents.length
         const newError = internal(`error lors du traitement d'un groupe de documents`)
-        logger.error(newError.message, err)
+        logger.error(err, newError.message)
         sentryCaptureException(newError)
 
         await getDbCollection("computed_jobs_partners").bulkWrite(
