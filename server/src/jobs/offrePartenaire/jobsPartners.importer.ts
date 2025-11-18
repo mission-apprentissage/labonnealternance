@@ -12,7 +12,6 @@ import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
-import { processMonster } from "./monster/processMonster"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -44,13 +43,6 @@ export const importers: Record<string, CronDef> = {
   "Import Meteojob": {
     cron_string: timings.import_source,
     handler: processMeteojob,
-    checkinMargin: 350,
-    maxRuntimeInMinutes: 30,
-    tag: "slave",
-  },
-  "Import Monster": {
-    cron_string: timings.import_source,
-    handler: processMonster,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
     tag: "slave",
