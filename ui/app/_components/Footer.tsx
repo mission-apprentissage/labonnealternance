@@ -10,14 +10,13 @@ import { publicConfig } from "@/config.public"
 
 const linkListContent: FooterProps["linkList"] = [
   {
-    categoryName: "Liens utiles",
-    // @ts-ignore advised limit of links is 8
+    categoryName: "À propos",
     links: [
       {
         linkProps: {
-          href: PAGES.static.faq.getPath(),
+          href: PAGES.static.aPropos.getPath(),
         },
-        text: "FAQ",
+        text: "A propos",
       },
       {
         linkProps: {
@@ -27,21 +26,9 @@ const linkListContent: FooterProps["linkList"] = [
       },
       {
         linkProps: {
-          href: PAGES.static.ressources.getPath(),
+          href: PAGES.static.metiers.getPath(),
         },
-        text: "Ressources",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.aPropos.getPath(),
-        },
-        text: "A propos",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.statistiques.getPath(),
-        },
-        text: "Statistiques",
+        text: "Métiers",
       },
       {
         linkProps: {
@@ -49,12 +36,34 @@ const linkListContent: FooterProps["linkList"] = [
         },
         text: "Contact",
       },
+    ],
+  },
+  {
+    categoryName: "Aide & Ressources",
+    links: [
       {
         linkProps: {
-          href: PAGES.static.codeSources.getPath(),
+          href: PAGES.static.faq.getPath(),
         },
-        text: `Code source v${publicConfig.version}`,
+        text: "FAQ",
       },
+      {
+        linkProps: {
+          href: PAGES.static.ressources.getPath(),
+        },
+        text: "Ressources",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.statistiques.getPath(),
+        },
+        text: "Statistiques",
+      },
+    ],
+  },
+  {
+    categoryName: "Développeurs",
+    links: [
       {
         linkProps: {
           href: PAGES.static.EspaceDeveloppeurs.getPath(),
@@ -63,9 +72,9 @@ const linkListContent: FooterProps["linkList"] = [
       },
       {
         linkProps: {
-          href: PAGES.static.metiers.getPath(),
+          href: PAGES.static.codeSources.getPath(),
         },
-        text: "Métiers",
+        text: `Code source v${publicConfig.version}`,
       },
     ],
   },

@@ -322,28 +322,6 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
-- filename: ui/public/data/seo/marseille.json
-  checksum: 445e1d02e74cb83a2051819af21996137d58add6a64f39fcc50ad90cf078207a
-- filename: ui/public/data/seo/grenoble.json
-  checksum: 2075cff7a06f70643aea9b862f53ab4b8e566ce9aadc21871ed2812f24085b6d
-- filename: ui/public/data/seo/toulouse.json
-  checksum: 7dc56c66f0aa64a196bada9a1d7b57837ff90d396775209869488001c968a31a
-- filename: ui/public/data/seo/montpellier.json
-  checksum: c85b3a649c70874778cb903600d89b76f1c5fab8e94ce35fc891ed4aa5efd2b6
-- filename: ui/public/data/seo/strasbourg.json
-  checksum: 48bb4ed7a077f110f31347160ab7d1360f9f6ae029e5485462b099d7191b5337
-- filename: ui/public/data/seo/bordeaux.json
-  checksum: 0b086dfaaa593015268d83fbf392c65aaaba32d42fea165a90fc9db555cc40f7
-- filename: ui/public/data/seo/lyon.json
-  checksum: 1a70913e2f3d0ab5268ee8d4f4421751cf0cbb6292a8620e5c252a5a04a0b813
-- filename: ui/public/data/seo/rennes.json
-  checksum: 2a1defe8cf36000ec70b8729a4860d8ffa7962fdc9711082af164b88b2050ba1
-- filename: ui/public/data/seo/paris.json
-  checksum: 05d48599c011d6d4456f6ab1d62f80cf92ff6bea32270841afe7b853b39cfd86
-- filename: ui/public/data/seo/nantes.json
-  checksum: d35ae38847735bebb734cffbd9408a01ad103fd6185a9169e302820abe407c92
-- filename: ui/public/data/seo/villes.json
-  checksum: 4d21632628213e8b045891319175e84d645298f7415967082471142811445b7e
 scopeconfig:
 - scope: node
 custom_patterns:
