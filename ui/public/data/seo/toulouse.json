@@ -1,0 +1,346 @@
+{
+  "_id": "691cb4386d4778cba514421c",
+  "ville": "Toulouse",
+  "slug": "toulouse",
+  "cp": "31000",
+  "region": "Occitanie",
+  "geopoint": {
+    "lat": 43.604652,
+    "long": 1.444209
+  },
+  "job_count": 350,
+  "recruteur_count": 6039,
+  "content": {
+    "description_ville": {
+      "title": "la Ville Rose",
+      "text": "Toulouse, surnommée la &quot;Ville Rose&quot; en raison de ses briques de terre cuite caractéristiques, est la quatrième ville de France avec près de 500 000 habitants et plus d'un million dans sa métropole. Capitale de l'Occitanie, elle bénéficie d'un climat agréable du sud-ouest, d'une ambiance chaleureuse et d'un dynamisme économique remarquable. La ville accueille plus de 130 000 étudiants, ce qui en fait l'une des destinations préférées des jeunes en formation. Pour les alternants, Toulouse représente un terrain idéal : une économie tournée vers l'innovation, un coût de la vie raisonnable comparé à Paris, et une qualité de vie exceptionnelle. Entre la Garonne qui traverse la ville, les places animées du centre historique et les quartiers modernes comme Compans-Caffarelli, Toulouse offre un cadre de vie équilibré entre travail et détente. L'accent du sud-ouest, la convivialité des Toulousains et l'effervescence culturelle créent une atmosphère particulièrement accueillante pour les nouveaux arrivants. La ville est également bien connectée, avec un aéroport international et une gare TGV qui la relient facilement au reste de la France et de l'Europe.",
+      "image": "toulouse.png"
+    },
+    "vie": {
+      "text": "<span style=\"font-weight: bold;color:#0063cb\">Toulouse est mondialement connue comme la capitale européenne de l'aéronautique et du spatial</span>, avec Airbus comme fleuron industriel employant des milliers de personnes. Le secteur aéronautique et spatial représente plus de 100 000 emplois directs et indirects dans la région, offrant d'innombrables opportunités d'alternance dans l'ingénierie, la production, la logistique ou encore le commerce.<br /><br />Au-delà de l'aérospatiale, <span style=\"font-weight: bold;color:#0063cb\">la ville s'est diversifiée avec un écosystème tech très dynamique</span> : les entreprises du numérique, de la cybersécurité, de l'intelligence artificielle et des biotechnologies sont en plein essor. Le quartier de Labège Innovation et la zone de Blagnac concentrent de nombreuses PME et start-ups innovantes.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les grands groupes comme Thales, Continental, Pierre Fabre ou Capgemini sont également présents et recrutent régulièrement des alternants</span>. La French Tech Toulouse soutient activement l'entrepreneuriat et l'innovation, créant un terreau fertile pour les jeunes talents.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les secteurs du conseil, de la banque-assurance</span> (Banque Populaire Occitane, Caisse d'Épargne) et du retail offrent aussi de belles perspectives. Les CCI, pôles de compétitivité et incubateurs facilitent les rencontres entre étudiants et entreprises lors de forums dédiés à l'alternance.",
+      "activites": [
+        {
+          "naf_label": "Restauration de type rapide",
+          "rome_codes": [
+            "G1409",
+            "N1103",
+            "H1401",
+            "D1106",
+            "D1406",
+            "G1601",
+            "M1102",
+            "D1301",
+            "D1507",
+            "D1105",
+            "D1107",
+            "D1502",
+            "D1505",
+            "A1412",
+            "D1504",
+            "D1510",
+            "M1203",
+            "D1409",
+            "N1103",
+            "D1401",
+            "J1402",
+            "A1413",
+            "D1106",
+            "G1601",
+            "D1301",
+            "D1507",
+            "D1105",
+            "D1502",
+            "D1505",
+            "A1412",
+            "D1222",
+            "G1606",
+            "M1604",
+            "M1608",
+            "D1409",
+            "N1103",
+            "D1106",
+            "M1701",
+            "G1601",
+            "G1603",
+            "D1301",
+            "D1502",
+            "G1602",
+            "D1102",
+            "D1104",
+            "G1604",
+            "G1606",
+            "M1501",
+            "M1601",
+            "E1101",
+            "M1705",
+            "G1601",
+            "G1603",
+            "D1107",
+            "G1602",
+            "G1803",
+            "G1402",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1603",
+            "G1606",
+            "G1607",
+            "M1601",
+            "E1107",
+            "G1601",
+            "G1603",
+            "G1602",
+            "G1803",
+            "G1402",
+            "D1104",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1804",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503"
+          ]
+        },
+        {
+          "naf_label": "Restauration traditionnelle",
+          "rome_codes": [
+            "G1606",
+            "G1607",
+            "M1601",
+            "E1107",
+            "G1601",
+            "G1603",
+            "G1602",
+            "G1803",
+            "G1402",
+            "D1104",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1804",
+            "G1609",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503",
+            "G1401",
+            "K2204",
+            "G1606",
+            "G1202",
+            "M1607",
+            "M1601",
+            "M1205",
+            "K2503",
+            "K2502",
+            "E1103",
+            "L1504",
+            "A1413",
+            "G1803",
+            "G1401",
+            "G1801",
+            "G1804",
+            "G1603",
+            "G1606",
+            "M1501",
+            "M1601",
+            "E1101",
+            "M1705",
+            "G1601",
+            "G1603",
+            "D1107",
+            "G1602",
+            "G1803",
+            "G1402",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1803",
+            "G1606",
+            "G1602"
+          ]
+        },
+        {
+          "naf_label": "Coiffure",
+          "rome_codes": [
+            "D1202",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503",
+            "M1604",
+            "M1203",
+            "M1605",
+            "M1601",
+            "M1205",
+            "E1103",
+            "H1201",
+            "E1101",
+            "M1705",
+            "L1501",
+            "M1703",
+            "E1104",
+            "D1507",
+            "E1109",
+            "D1202"
+          ]
+        },
+        {
+          "naf_label": "Ingénierie, études techniques",
+          "rome_codes": ["F1104", "F1106", "F1201", "F1105", "I1304", "H1202", "H1206", "I1302", "H1404", "H1502", "H1302", "F1103", "H1102", "H1203", "F1112"]
+        },
+        {
+          "naf_label": "Conseil pour les affaires et autres conseils de gestion",
+          "rome_codes": [
+            "J1506",
+            "N2201",
+            "G1603",
+            "D1302",
+            "N2101",
+            "M1607",
+            "M1203",
+            "M1501",
+            "I1203",
+            "D1409",
+            "K1903",
+            "H1206",
+            "D1410",
+            "D1402",
+            "D1407",
+            "M1707",
+            "M1302",
+            "C1505",
+            "H1208",
+            "H1102",
+            "K2503",
+            "G1413",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503",
+            "D1214",
+            "M1704"
+          ]
+        }
+      ]
+    },
+    "mobilite": {
+      "text": "Se déplacer à Toulouse est relativement simple grâce au réseau Tisséo qui comprend deux lignes de métro automatique (A et B), deux lignes de tramway (T1 et T2), et un dense réseau de bus.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le métro est particulièrement pratique</span> pour relier rapidement le nord au sud et l'est à l'ouest de la ville, avec des stations comme Jean-Jaurès, Capitole ou Jeanne d'Arc qui desservent les principaux pôles d'activité. Un abonnement mensuel Pastel Étudiant coûte environ 10 euros pour les moins de 26 ans, ce qui est très avantageux pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le vélo est une option très prisée</span> : le service VélôToulouse propose des vélos en libre-service, et la ville a développé plus de 700 km de pistes cyclables. De nombreux alternants optent pour le vélo personnel ou électrique pour leurs trajets quotidiens, le climat toulousain s'y prêtant bien la majorité de l'année.<br /><br />Pour rejoindre les zones d'activité périphériques comme Labège, Blagnac ou Colomiers, <span style=\"font-weight: bold;color:#0063cb\">les lignes de bus Linéo et le réseau Arc-en-Ciel desservent efficacement la métropole</span>.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La voiture reste utile pour certaines zones industrielles moins bien desservies</span>, et le covoiturage se développe activement. Toulouse dispose aussi d'un système d'autopartage (Citiz) pour les besoins occasionnels.",
+      "transports": [
+        {
+          "label": "Réseau de métro Tisséo",
+          "type": "metro"
+        },
+        {
+          "label": "2 lignes de tramway",
+          "type": "tramway"
+        },
+        {
+          "label": "Bus",
+          "type": "bus"
+        },
+        {
+          "label": "VélôToulouse",
+          "type": "velo"
+        },
+        {
+          "label": "La voiture",
+          "type": "voiture"
+        },
+        {
+          "label": "Lignes Linéo et Réseau Arc-en-Ciel",
+          "type": "bus"
+        }
+      ]
+    },
+    "logement": {
+      "text": "<span style=\"font-weight: bold;color:#0063cb\">Trouver un logement à Toulouse demande de l'anticipation, surtout pour les rentrées de septembre où la demande est forte.</span><br /><br />Pour <span style=\"font-weight: bold;color:#0063cb\">un studio, comptez entre 400 et 550 euros</span> charges comprises selon le quartier et l'état du bien, tandis qu'un T2 oscille entre 550 et 750 euros, ce qui reste abordable comparé aux grandes métropoles françaises.<ul><li><span style=\"font-weight: bold;color:#0063cb\">Les quartiers les plus prisés par les alternants</span> sont Saint-Michel et Arnaud-Bernard pour leur ambiance jeune et leurs prix encore accessibles, les Carmes pour sa centralité et son charme, ou Compans-Caffarelli pour sa modernité et sa proximité avec le campus universitaire.</li><li><span style=\"font-weight: bold;color:#0063cb\">Les quartiers de Rangueil, Lardenne ou Croix-Daurade offrent des loyers plus modérés</span> tout en restant bien desservis par les transports.</li></ul>Pour faciliter vos recherches, utilisez les plateformes classiques mais aussi les groupes Facebook dédiés au logement étudiant à Toulouse, très actifs. <span style=\"font-weight: bold;color:#0063cb\">Pensez aux résidences étudiantes privées</span> (Studéa, Nexity Studéa) qui proposent des studios meublés avec services, pratiques quand on arrive de l'extérieur. <span style=\"font-weight: bold;color:#0063cb\">Les résidences CROUS sont une option économique mais très demandée</span>, nécessitant une candidature précoce via le dossier social étudiant. En tant qu'alternant, vous pouvez bénéficier des APL pour réduire votre loyer, et certains employeurs proposent une participation au logement dans le cadre du contrat d'apprentissage.",
+      "loyers": [
+        {
+          "type": "Studio",
+          "price_range": "400 - 550€"
+        },
+        {
+          "type": "T2",
+          "price_range": "550 - 750€"
+        }
+      ]
+    },
+    "loisirs": {
+      "text": "Toulouse offre <span style=\"font-weight: bold;color:#0063cb\">une vie culturelle et festive exceptionnellement riche</span> pour les alternants qui souhaitent profiter de leur temps libre.<ul><li>Le quartier Saint-Pierre et la place Saint-Pierre concentrent de <span style=\"font-weight: bold;color:#0063cb\">nombreux bars et restaurants où se retrouve la jeunesse toulousaine</span>, notamment en soirée et le week-end.</li><li>La place du Capitole, cœur battant de la ville, accueille régulièrement <span style=\"font-weight: bold;color:#0063cb\">des événements, marchés et animations</span>, tandis que les berges de la Garonne, notamment la Prairie des Filtres, sont parfaites pour se détendre ou pique-niquer.</li><li>Les amateurs de culture apprécieront <span style=\"font-weight: bold;color:#0063cb\">les nombreux musées (Musée des Augustins, Muséum, Fondation Bemberg), le théâtre du Capitole pour l'opéra et le ballet, et la Cinémathèque pour les cinéphiles</span>. Côté festivals, Toulouse vibre au rythme de Rio Loco, du Marathon des Mots ou encore du Festival Séquence Court-Métrage.</li><li><span style=\"font-weight: bold;color:#0063cb\">Les sportifs profiteront des installations municipales, des bords du Canal du Midi pour le jogging</span>, et pourront supporter le Stade Toulousain, club de rugby mythique.</li><li>La vie associative étudiante est très développée avec <span style=\"font-weight: bold;color:#0063cb\">des centaines d'associations culturelles, sportives et festives</span>. Le quartier Arnaud-Bernard, avec ses bars alternatifs et ses petits restaurants multiculturels, attire une population jeune et bohème, tandis que les clubs et discothèques du centre offrent des sorties nocturnes variées.</li></ul>",
+      "types": [
+        {
+          "label": "Nombreux bars et restaurants",
+          "type": "bar"
+        },
+        {
+          "label": "Berges de la Garonne",
+          "type": "quai"
+        },
+        {
+          "label": "Nombreux lieux culturels",
+          "type": "concert"
+        },
+        {
+          "label": "Clubs et discothèques",
+          "type": "musique"
+        },
+        {
+          "label": "Stade Toulousain",
+          "type": "rugby"
+        }
+      ]
+    }
+  },
+  "created_at": "2025-11-18T18:00:24.053Z",
+  "updated_at": "2025-11-18T18:00:24.053Z"
+}

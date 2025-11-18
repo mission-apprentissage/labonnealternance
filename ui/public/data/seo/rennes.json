@@ -1,0 +1,273 @@
+{
+  "_id": "691cb4386d4778cba514421f",
+  "ville": "Rennes",
+  "slug": "rennes",
+  "cp": "35000",
+  "region": "Bretagne",
+  "geopoint": {
+    "lat": 48.117266,
+    "long": -1.677793
+  },
+  "job_count": 124,
+  "recruteur_count": 3265,
+  "content": {
+    "description_ville": {
+      "title": "capitale de la Bretagne",
+      "text": "Rennes, capitale de la Bretagne et préfecture d'Ille-et-Vilaine, est une ville dynamique qui compte environ 220 000 habitants, et plus de 450 000 dans sa métropole. Classée régulièrement parmi les villes les plus agréables de France, Rennes séduit par son parfait équilibre entre modernité et patrimoine historique. Son centre-ville médiéval avec ses maisons à colombages côtoie des quartiers résolument contemporains comme Eurorennes. Pour les alternants, Rennes représente un terrain idéal : la ville accueille plus de 70 000 étudiants, créant une ambiance jeune et conviviale, tout en offrant un bassin d'emploi diversifié et en pleine expansion. Le coût de la vie y reste raisonnable comparé à Paris ou Lyon, et la qualité de vie est exceptionnelle avec ses nombreux espaces verts, sa scène culturelle bouillonnante et sa proximité avec la mer (à seulement 1h). L'accueil chaleureux des Bretons et l'effervescence étudiante font de Rennes une ville où il fait bon vivre et construire son avenir professionnel.",
+      "image": "rennes.png"
+    },
+    "vie": {
+      "text": "Rennes dispose d'<span style=\"font-weight: bold;color:#0063cb\">un écosystème économique particulièrement dynamique et diversifié</span>, idéal pour trouver une alternance dans de nombreux secteurs. <ul><li>La métropole rennaise est un <span style=\"font-weight: bold;color:#0063cb\">pôle majeur dans les technologies de l'information et la cybersécurité</span>, abritant plus de 8 000 entreprises du numérique et des centres de recherche de renommée internationale. Des grands groupes comme Orange, Thales, Capgemini, Sopra Steria ou encore Harmonie Mutuelle ont établi des sites importants à Rennes et recrutent régulièrement des alternants.</li><li><span style=\"font-weight: bold;color:#0063cb\">Le secteur automobile</span> est également présent avec le centre de production PSA de La Janais.</li><li>La ville excelle aussi dans <span style=\"font-weight: bold;color:#0063cb\">les biotechnologies, la santé et l'agroalimentaire</span>, avec des entreprises comme Lactalis ou Yoplait à proximité.</li><li>Les alternants en <span style=\"font-weight: bold;color:#0063cb\">commerce, marketing et communication</span> trouveront de nombreuses opportunités dans les PME innovantes, les start-ups (la ville compte plusieurs incubateurs et pépinières), ainsi que dans les secteurs de la banque et de l'assurance fortement représentés.</li></ul>Le quartier d'affaires Rennes Atalante et la technopole concentrent de nombreuses entreprises high-tech. Avec un taux de chômage inférieur à la moyenne nationale et une économie en croissance constante, Rennes offre d'excellentes perspectives d'insertion professionnelle pour les jeunes en formation.",
+      "activites": [
+        {
+          "naf_label": "Restauration traditionnelle",
+          "rome_codes": [
+            "G1606",
+            "G1607",
+            "M1601",
+            "E1107",
+            "G1601",
+            "G1603",
+            "G1602",
+            "G1803",
+            "G1402",
+            "D1104",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1804",
+            "G1803",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503",
+            "G1602"
+          ]
+        },
+        {
+          "naf_label": "Restauration de type rapide",
+          "rome_codes": [
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503",
+            "D1106",
+            "G1606",
+            "G1607",
+            "M1601",
+            "E1107",
+            "G1601",
+            "G1603",
+            "G1602",
+            "G1803",
+            "G1402",
+            "D1104",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1804",
+            "G1606",
+            "M1501",
+            "M1601",
+            "E1101",
+            "M1705",
+            "G1601",
+            "G1603",
+            "D1107",
+            "G1602",
+            "G1803",
+            "G1402",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1602"
+          ]
+        },
+        {
+          "naf_label": "Entretien et réparation de véhicules automobiles légers",
+          "rome_codes": ["M1607", "M1203", "M1608", "M1605", "I1103", "M1601", "N1103", "D1403", "D1401", "D1501", "I1310", "I1607", "I1604", "D1404", "I1606"]
+        },
+        {
+          "naf_label": "Travaux de maçonnerie générale et gros œuvre de bâtiment",
+          "rome_codes": [
+            "M1607",
+            "F1201",
+            "M1605",
+            "F1108",
+            "F1604",
+            "F1302",
+            "F1202",
+            "F1703",
+            "F1611",
+            "F1608",
+            "F1701",
+            "F1301",
+            "F1612",
+            "F1503",
+            "F1619",
+            "F1106",
+            "F1201",
+            "F1108",
+            "F1502",
+            "F1604",
+            "F1302",
+            "A1301",
+            "F1202",
+            "F1703",
+            "F1608",
+            "F1701",
+            "F1705",
+            "F1301",
+            "F1612",
+            "B1101",
+            "M1607",
+            "F1201",
+            "M1605",
+            "F1108",
+            "F1502",
+            "F1604",
+            "F1614",
+            "F1606",
+            "F1611",
+            "F1608",
+            "F1609",
+            "H3404",
+            "B1101",
+            "F1607",
+            "F1601"
+          ]
+        },
+        {
+          "naf_label": "Ingénierie, études techniques",
+          "rome_codes": [
+            "H1510",
+            "M1607",
+            "M1604",
+            "M1203",
+            "M1608",
+            "M1605",
+            "M1501",
+            "I1203",
+            "K1903",
+            "M1204",
+            "D1401",
+            "C1502",
+            "C1504",
+            "C1503",
+            "C1501",
+            "H1402",
+            "F1104",
+            "F1106",
+            "F1201",
+            "F1105",
+            "I1304",
+            "H1202",
+            "H1206",
+            "I1302",
+            "H1404",
+            "H1502",
+            "H1302",
+            "F1103",
+            "H1102",
+            "H1203",
+            "F1112"
+          ]
+        }
+      ]
+    },
+    "mobilite": {
+      "text": "Se déplacer à Rennes est particulièrement simple et économique, un atout majeur pour les alternants qui doivent jongler entre l'entreprise et l'école.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Le réseau de transport en commun STAR</span> propose un métro automatique (ligne A depuis 2002, et ligne B inaugurée en 2022), complété par 80 lignes de bus couvrant toute la métropole. L'abonnement mensuel jeune (moins de 26 ans) coûte environ 30€, avec des réductions possibles selon les revenus. Le métro fonctionne jusqu'à minuit en semaine et 2h le week-end, pratique pour profiter de la vie rennaise.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Rennes est également l'une des villes les plus cyclables de France</span> : 460 km de pistes cyclables sillonnent la ville, et le service de vélos en libre-service LE vélo STAR permet de se déplacer facilement pour 30€ par an.<br /><br />La gare SNCF, en plein centre-ville, permet de rejoindre Paris en 1h30 par TGV, idéal pour les week-ends en famille.<br /><br />Pour ceux qui privilégient la voiture, le stationnement peut être compliqué en centre-ville, mais des parkings relais (P+R) permettent de combiner voiture et métro. La ville est compacte, et tout est accessible rapidement, un vrai gain de temps au quotidien.",
+      "transports": [
+        {
+          "label": "Métro",
+          "type": "metro"
+        },
+        {
+          "label": "Bus",
+          "type": "bus"
+        },
+        {
+          "label": "Vélo STAR",
+          "type": "velo"
+        },
+        {
+          "label": "Centre ville piétonnier",
+          "type": "pieton"
+        },
+        {
+          "label": "Gare SNCF",
+          "type": "tgv"
+        }
+      ]
+    },
+    "logement": {
+      "text": "<span style=\"font-weight: bold;color:#0063cb\">Trouver un logement à Rennes demande de l'anticipation, surtout pour les rentrées de septembre</span>, mais l'offre reste plus accessible que dans d'autres grandes villes françaises.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Pour un studio, comptez entre 400€ et 550€</span> charges comprises selon le quartier et l'état du bien, tandis qu'<span style=\"font-weight: bold;color:#0063cb\">un T2 se situe généralement entre 550€ et 750€</span>.<br /><br />Les quartiers prisés par les alternants sont Sainte-Thérèse et Saint-Hélier (proches du centre et bien desservis), Villejean (quartier universitaire avec de nombreuses résidences étudiantes et le campus de Beaulieu), Beauregard, et le centre-ville pour ceux qui peuvent investir davantage.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les résidences CROUS proposent des logements entre 200€ et 450€</span>, mais les places sont limitées et la demande forte. De nombreuses résidences étudiantes privées (Studéa, Cardinal Campus, Nexity Studéa) offrent des studios meublés avec services, plus chers mais pratiques. Les aides au logement (APL) permettent de réduire significativement le loyer. Il est recommandé de commencer ses recherches dès avril-mai sur les plateformes Lokaviz, Leboncoin, PAP, ou Facebook Marketplace.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Attention aux arnaques</span> : ne versez jamais d'argent avant d'avoir visité et signé un contrat. Les agences immobilières demandent généralement un garant, pensez à solliciter la garantie Visale (gratuite) proposée par Action Logement, spécialement conçue pour les alternants et jeunes salariés de moins de 30 ans.",
+      "loyers": [
+        {
+          "type": "Studio",
+          "price_range": "400 - 550€"
+        },
+        {
+          "type": "T2",
+          "price_range": "550 - 750€"
+        }
+      ]
+    },
+    "loisirs": {
+      "text": "Rennes bouillonne d'activités culturelles et festives qui raviront les alternants en quête d'équilibre entre travail et détente.<br /><br />La ville accueille des festivals majeurs comme les Transmusicales en décembre (rendez-vous incontournable des musiques actuelles), le festival Yaouank (culture bretonne), et Travelling (cinéma).<br /><br />Le quartier Saint-Anne, cœur historique avec ses ruelles pavées, regorge de bars et pubs animés où les étudiants se retrouvent, notamment le jeudi soir, soir de sortie traditionnel à Rennes. Les Champs Libres, équipement culturel moderne, abritent une bibliothèque, un musée de Bretagne et l'Espace des Sciences.<br /><br />Côté sport, l'université propose plus de 50 activités via le SUAPS, et la ville compte de nombreuses salles de sport et clubs associatifs abordables. Le parc du Thabor, véritable havre de paix de 10 hectares, est parfait pour décompresser entre deux cours.<br /><br />Les quais de la Vilaine réaménagés offrent des espaces de détente et d'événements en plein air.<br /><br />Rennes possède aussi plusieurs cinémas dont le Gaumont et l'Arvor (cinéma d'art et essai), une Opéra, et de nombreuses salles de concert. L'ambiance jeune et conviviale de la ville permet de tisser facilement des liens et de profiter pleinement de son expérience d'alternant.",
+      "types": [
+        {
+          "label": "Festivals",
+          "type": "musique"
+        },
+        {
+          "label": "Bars et restaurants",
+          "type": "bar"
+        },
+        {
+          "label": "Cinémas, théâtres",
+          "type": "concert"
+        },
+        {
+          "label": "Quais de la Vilaine",
+          "type": "quai"
+        },
+        {
+          "label": "Sport",
+          "type": "sport"
+        },
+        {
+          "label": "Parc du Thabor",
+          "type": "promenade"
+        }
+      ]
+    }
+  },
+  "created_at": "2025-11-18T18:00:24.053Z",
+  "updated_at": "2025-11-18T18:00:24.053Z"
+}

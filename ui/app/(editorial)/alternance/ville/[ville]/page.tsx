@@ -4,21 +4,29 @@ import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 
-import { appartements, loisirs, transports, villeData } from "@/app/(editorial)/alternance/_components/ville_data"
+import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
+import { loadAllVilles, loadVilleData } from "@/lib/seoVilleData"
 import { ArrowRightLine } from "@/theme/components/icons"
-import { apiGet } from "@/utils/api.utils"
 
 export async function generateStaticParams() {
-  return villeData.map((ville) => ({ ville: ville.slug }))
+  const villes = loadAllVilles()
+  return villes.map((ville) => ({ ville: ville.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
+  const data = loadVilleData(ville)
+
+  if (!data) {
+    return {
+      title: "Alternance | La bonne alternance",
+      description: "Trouvez votre contrat d'apprentissage",
+    }
+  }
 
   return {
     title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations 2025`,
@@ -31,7 +39,7 @@ export const dynamicParams = false
 
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
+  const data = loadVilleData(ville)
 
   const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-villes"
 
