@@ -33,6 +33,8 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
   const { ville } = await params
   const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
 
+  const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-villes"
+
   if (!data) {
     redirect("/404")
   }
@@ -87,7 +89,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                   aria-label={`Démarrer mes recherches d'alternance à ${data.ville}`}
                   size="large"
                 >
-                  <Link sx={{ color: "white", textDecoration: "none" }} href={`/recherche?lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville}+${data.cp}`}>
+                  <Link sx={{ color: "white", textDecoration: "none" }} href={`/?${utmParams}`}>
                     Démarrer mes recherches
                   </Link>
                 </Button>
@@ -177,7 +179,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 <Link
                   key={activite.naf_label}
                   underline="none"
-                  href={`/recherche?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})`}
+                  href={`/recherche?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
                   sx={{
                     display: "flex",
                     width: "100%",
@@ -203,7 +205,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 </Link>
               ))}
               <Box sx={{ mt: fr.spacing("2w"), textAlign: "right" }}>
-                <Link sx={{ textDecoration: "underline" }} href={`/recherche?lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville}+${data.cp}`}>
+                <Link sx={{ textDecoration: "underline" }} href={`/?${utmParams}`}>
                   Voir toutes les opportunités à {data.ville}
                   <ArrowRightLine sx={{ ml: fr.spacing("2w"), width: 12, height: 12 }} />
                 </Link>
