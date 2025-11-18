@@ -1,0 +1,329 @@
+{
+  "_id": "691cb4386d4778cba514421e",
+  "ville": "Nantes",
+  "slug": "nantes",
+  "cp": "44000",
+  "region": "Pays de la Loire",
+  "geopoint": {
+    "lat": 47.218371,
+    "long": -1.553621
+  },
+  "job_count": 165,
+  "recruteur_count": 4362,
+  "content": {
+    "description_ville": {
+      "title": "direction les Pays de la Loire",
+      "text": "Nantes, sixième ville de France avec ses 320 000 habitants (plus de 650 000 dans la métropole), est une destination de choix pour les alternants. Capitale des Pays de la Loire, cette ville dynamique bénéficie d'une situation géographique idéale, à seulement 50 minutes de l'océan Atlantique et 2h de Paris en TGV. Son climat océanique doux et son cadre de vie agréable en font une ville particulièrement attractive pour les jeunes. Nantes a su se réinventer après son passé industriel pour devenir une métropole innovante, régulièrement classée parmi les villes les plus agréables à vivre en France. Avec plus de 55 000 étudiants, dont une part importante d'alternants, la ville offre un écosystème jeune et dynamique. L'ambiance y est conviviale, moins stressante qu'à Paris, tout en proposant les opportunités d'une grande métropole. Pour un alternant, Nantes représente le compromis idéal entre qualité de vie, opportunités professionnelles et vie étudiante animée.",
+      "image": "nantes.png"
+    },
+    "vie": {
+      "text": "Nantes dispose d'un tissu économique particulièrement diversifié et propice aux alternants. La métropole compte <span style=\"font-weight: bold;color:#0063cb\">plus de 26 000 entreprises</span> et se distingue dans plusieurs secteurs clés : <span style=\"font-weight: bold;color:#0063cb\">le numérique et les technologies</span> (avec des entreprises comme Webhelp, Voyage Privé ou Dataiku), <span style=\"font-weight: bold;color:#0063cb\">l'agroalimentaire</span> (présence de grands groupes comme LU, Fleury Michon, Inter Bio), <span style=\"font-weight: bold;color:#0063cb\">la construction navale avec les Chantiers de l'Atlantique à Saint-Nazaire, et le secteur créatif et culturel</span>.<br /><br />Le quartier Euronantes et l'Île de Nantes concentrent <span style=\"font-weight: bold;color:#0063cb\">de nombreux sièges sociaux et startups innovantes</span>. La French Tech Nantes est très active et favorise l'entrepreneuriat et l'innovation, créant de nombreuses opportunités pour les alternants dans les métiers du digital.<br /><br />On trouve également un fort <span style=\"font-weight: bold;color:#0063cb\">secteur tertiaire avec des cabinets de conseil, des banques et des assurances</span>. La proximité de pôles de compétitivité comme EMC2 (métiers avancés de production) facilite l'accès à des alternances dans l'industrie.<br /><br />Les opportunités sont nombreuses aussi bien dans les grands groupes que dans les PME et startups, permettant aux alternants de tous secteurs (commerce, ingénierie, digital, RH, communication) de trouver leur place.",
+      "activites": [
+        {
+          "naf_label": "Restauration traditionnelle",
+          "rome_codes": [
+            "G1606",
+            "G1607",
+            "M1601",
+            "E1107",
+            "G1601",
+            "G1603",
+            "G1602",
+            "G1803",
+            "G1402",
+            "D1104",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1804",
+            "G1609",
+            "G1602",
+            "G1409",
+            "G1803",
+            "G1606",
+            "M1501",
+            "M1601",
+            "E1101",
+            "M1705",
+            "G1601",
+            "G1603",
+            "D1107",
+            "G1602",
+            "G1803",
+            "G1402",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802",
+            "G1603",
+            "K2204",
+            "G1606",
+            "G1202",
+            "M1607",
+            "M1601",
+            "M1205",
+            "K2503",
+            "K2502",
+            "E1103",
+            "L1504",
+            "A1413",
+            "G1803",
+            "G1401",
+            "G1801",
+            "G1804",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503"
+          ]
+        },
+        {
+          "naf_label": "Restauration de type rapide",
+          "rome_codes": [
+            "G1603",
+            "G1602",
+            "G1606",
+            "G1607",
+            "M1607",
+            "M1601",
+            "N1103",
+            "H3302",
+            "D1401",
+            "E1107",
+            "G1601",
+            "G1603",
+            "G1602",
+            "G1803",
+            "D1104",
+            "D1103",
+            "D1101",
+            "G1606",
+            "M1501",
+            "M1601",
+            "E1101",
+            "M1705",
+            "G1601",
+            "G1603",
+            "D1107",
+            "G1602",
+            "G1803",
+            "G1402",
+            "G1604",
+            "G1401",
+            "G1801",
+            "G1802"
+          ]
+        },
+        {
+          "naf_label": "Conseil pour les affaires et autres conseils de gestion",
+          "rome_codes": [
+            "G1413",
+            "D1101",
+            "D1410",
+            "M1607",
+            "M1203",
+            "M1608",
+            "M1605",
+            "M1402",
+            "M1501",
+            "M1202",
+            "M1206",
+            "K1903",
+            "A1304",
+            "M1503",
+            "E1305",
+            "C1303",
+            "M1205",
+            "M1606",
+            "D1105",
+            "M1607",
+            "M1203",
+            "M1501",
+            "I1203",
+            "D1409",
+            "K1903",
+            "H1206",
+            "D1410",
+            "D1402",
+            "D1407",
+            "M1707",
+            "M1302",
+            "C1505",
+            "H1208",
+            "H1102"
+          ]
+        },
+        {
+          "naf_label": "Ingénierie, études techniques",
+          "rome_codes": [
+            "F1104",
+            "F1104",
+            "F1106",
+            "F1201",
+            "F1105",
+            "I1304",
+            "H1202",
+            "H1206",
+            "I1302",
+            "H1404",
+            "H1502",
+            "H1302",
+            "F1103",
+            "H1102",
+            "H1203",
+            "F1112",
+            "H1102",
+            "M1502",
+            "F1201",
+            "F1108",
+            "F1604",
+            "I1203",
+            "F1603",
+            "D1407",
+            "H2206",
+            "F1202",
+            "F1703",
+            "F1611",
+            "F1608",
+            "F1701",
+            "F1503",
+            "F1619",
+            "F1501",
+            "M1203",
+            "M1704",
+            "D1410",
+            "D1401",
+            "E1101",
+            "M1705",
+            "A1101",
+            "M1806",
+            "M1707",
+            "H1204",
+            "H1101",
+            "M1405",
+            "M1813",
+            "M1805",
+            "I1401",
+            "D1407"
+          ]
+        },
+        {
+          "naf_label": "Coiffure",
+          "rome_codes": [
+            "M1604",
+            "M1203",
+            "M1605",
+            "M1601",
+            "M1205",
+            "E1103",
+            "H1201",
+            "E1101",
+            "M1705",
+            "L1501",
+            "M1703",
+            "E1104",
+            "D1507",
+            "E1109",
+            "D1202",
+            "M1607",
+            "M1203",
+            "M1605",
+            "M1501",
+            "D1409",
+            "N1301",
+            "M1204",
+            "N1103",
+            "N1303",
+            "D1410",
+            "D1401",
+            "D1407",
+            "M1502",
+            "M1102",
+            "D1503"
+          ]
+        }
+      ]
+    },
+    "mobilite": {
+      "text": "Se déplacer à Nantes est particulièrement facile et économique pour les alternants.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">La TAN</span> (Transports de l'Agglomération Nantaise) propose un réseau complet avec 3 lignes de tramway, 1 ligne de busway, et plus de 70 lignes de bus qui desservent l'ensemble de la métropole.<br /><br />L'abonnement mensuel jeune (-26 ans) coûte environ 40€, et de nombreuses entreprises prennent en charge 50% du titre de transport dans le cadre de l'alternance.<br /><br />La ville est également très cyclable, <span style=\"font-weight: bold;color:#0063cb\">classée parmi les meilleures villes françaises pour le vélo, avec plus de 560 km de pistes cyclables</span>. Le service Bicloo propose 880 vélos en libre-service avec un abonnement annuel à seulement 30€.<br /><br />Pour les trajets occasionnels vers d'autres villes, <span style=\"font-weight: bold;color:#0063cb\">la gare SNCF de Nantes offre d'excellentes connexions</span> : Paris en 2h, Bordeaux en 3h, et Rennes en 1h30. La ville est aussi accessible en voiture via plusieurs axes autoroutiers, bien que posséder une voiture ne soit pas indispensable pour un alternant vivant dans la métropole.",
+      "transports": [
+        {
+          "label": "Tramway (3 lignes)",
+          "type": "tramway"
+        },
+        {
+          "label": "1 ligne Busway",
+          "type": "bus"
+        },
+        {
+          "label": "Bus (70 lignes)",
+          "type": "bus"
+        },
+        {
+          "label": "Bicloo",
+          "type": "velo"
+        },
+        {
+          "label": "Gare SNCF",
+          "type": "tgv"
+        }
+      ]
+    },
+    "logement": {
+      "text": "Trouver un logement à Nantes nécessite de l'anticipation, mais reste plus abordable que dans d'autres grandes métropoles.<br /><br />Pour un studio, comptez entre 400€ et 550€ par mois charges comprises, tandis qu'un T2 se situe généralement entre 550€ et 750€.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les quartiers les plus prisés par les alternants sont le centre-ville (Bouffay, Commerce), mais aussi Doulon, Chantenay, et surtout le secteur de l'Île de Nantes</span> qui s'est beaucoup développé avec le quartier de la Création et ses logements récents.<br /><br />Les quartiers <span style=\"font-weight: bold;color:#0063cb\">Bottière-Chénaie et Bellevue</span> offrent des loyers plus accessibles tout en étant bien desservis par les transports. <span style=\"font-weight: bold;color:#0063cb\">La Manufacture et Malakoff</span> sont également populaires auprès des jeunes.<br /><br />Pour votre recherche, utilisez les plateformes classiques <span style=\"font-weight: bold;color:#0063cb\">mais pensez aussi aux résidences étudiantes comme Studéa, Campusea ou les CROUS qui proposent des places aux alternants</span>. Les aides au logement (APL) sont accessibles et peuvent couvrir 100€ à 200€ du loyer.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Commencez vos recherches au moins 2-3 mois avant votre arrivée</span>, et n'hésitez pas à solliciter Action Logement pour le dispositif Visale (garantie locative gratuite pour les moins de 30 ans) et l'avance Loca-Pass.",
+      "loyers": [
+        {
+          "type": "Studio",
+          "price_range": "400 - 550€"
+        },
+        {
+          "type": "T2",
+          "price_range": "550 - 750€"
+        }
+      ]
+    },
+    "loisirs": {
+      "text": "Nantes offre une <span style=\"font-weight: bold;color:#0063cb\">vie culturelle et festive particulièrement riche</span> pour les alternants. La ville est célèbre pour son projet artistique permanent \"Le Voyage à Nantes\" et les Machines de l'Île, où <span style=\"font-weight: bold;color:#0063cb\">le Grand Éléphant est devenu l'emblème de la ville</span>.<br /><br />Le quartier Bouffay, cœur historique, regorge de bars et restaurants parfaits pour les soirées étudiantes, tout comme <span style=\"font-weight: bold;color:#0063cb\">le quartier Graslin et ses terrasses animées</span>.<br /><br /><span style=\"font-weight: bold;color:#0063cb\">Les bords de l'Erdre et de la Loire sont idéaux pour se détendre</span> entre deux périodes de cours ou de travail. <span style=\"font-weight: bold;color:#0063cb\">La ville accueille des festivals majeurs</span> comme les Rendez-vous de l'Erdre (jazz), le festival Scopitone (cultures électroniques), ou encore le Hellfest à Clisson à 30 minutes.<br /><br />Les alternants bénéficient de nombreux cinémas dont le Katorza (art et essai), de salles de concert comme le Stereolux et le Lieu Unique (LU).<br /><br />Pour les sportifs, <span style=\"font-weight: bold;color:#0063cb\">la ville propose de nombreuses infrastructures et associations, sans oublier la possibilité de rejoindre rapidement les plages de La Baule ou de Pornic le week-end</span>. La vie associative étudiante est très développée avec des BDE actifs qui organisent régulièrement des événements accessibles aux alternants.",
+      "types": [
+        {
+          "label": "Les Machines de l'Ile",
+          "type": "machine"
+        },
+        {
+          "label": "Nombreux bars et restaurants",
+          "type": "bar"
+        },
+        {
+          "label": "Bords de l'Erdre et de la Loire",
+          "type": "quai"
+        },
+        {
+          "label": "Festivals",
+          "type": "musique"
+        },
+        {
+          "label": "Sport",
+          "type": "sport"
+        },
+        {
+          "label": "Plages",
+          "type": "beach"
+        }
+      ]
+    }
+  },
+  "created_at": "2025-11-18T18:00:24.053Z",
+  "updated_at": "2025-11-18T18:00:24.053Z"
+}
