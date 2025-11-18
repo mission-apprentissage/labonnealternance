@@ -91,6 +91,7 @@
     "zod-mongodb-schema": "^1.0.2"
   },
   "devDependencies": {
+    "@tsconfig/node24": "^24.0.3",
     "@types/bunyan": "^1.8.11",
     "@types/ejs": "^3.1.5",
     "@types/jsonwebtoken": "^9.0.10",
