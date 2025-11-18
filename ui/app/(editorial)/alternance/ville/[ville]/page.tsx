@@ -29,7 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   }
 }
 
-export const dynamic = "force-dynamic"
+// Cache 3 jours (les données sont rafraîchies tous les samedis)
+export const revalidate = 259200 // 72h
 
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
