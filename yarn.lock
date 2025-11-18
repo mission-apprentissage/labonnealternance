@@ -6351,10 +6351,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node22@npm:^22.0.2":
-  version: 22.0.2
-  resolution: "@tsconfig/node22@npm:22.0.2"
-  checksum: b9fb6543856cbac8b9b79c234bbefa3415f083e0a46e6f0fbe418fe21c5d086440222e1383258d75ebac951cbe17564a6d146fafc59c889d6302decd1a7880dd
+"@tsconfig/node24@npm:^24.0.3":
+  version: 24.0.3
+  resolution: "@tsconfig/node24@npm:24.0.3"
+  checksum: 02318441e4fc1a493be0ea4299813f952cc564e8eac7b23508f22a1774692e7b362ba58b9dddd9ffb052d1c9fadc4f1937f5590bc581584fe662ae83512feb8d
   languageName: node
   linkType: hard
 
@@ -17954,6 +17954,7 @@ __metadata:
     "@sentry/node": ^9.46.0
     "@sentry/profiling-node": ^9.46.0
     "@smithy/types": ^4.8.1
+    "@tsconfig/node24": ^24.0.3
     "@turf/distance": ^7.2.0
     "@types/bunyan": ^1.8.11
     "@types/ejs": ^3.1.5
@@ -18079,7 +18080,7 @@ __metadata:
   dependencies:
     "@asteasolutions/zod-to-openapi": ^7.3.4
     "@fastify/swagger": ^9.5.2
-    "@tsconfig/node22": ^22.0.2
+    "@tsconfig/node24": ^24.0.3
     "@types/node": ^24.10.0
     bson: ^6.10.4
     change-case: 5.4.4
