@@ -9,17 +9,12 @@ import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleIm
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-import { loadAllVilles, loadVilleData } from "@/lib/seoVilleData"
 import { ArrowRightLine } from "@/theme/components/icons"
-
-export async function generateStaticParams() {
-  const villes = loadAllVilles()
-  return villes.map((ville) => ({ ville: ville.slug }))
-}
+import { apiGet } from "@/utils/api.utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-  const data = loadVilleData(ville)
+  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
 
   if (!data) {
     return {
@@ -34,12 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   }
 }
 
-export const dynamic = "force-static"
-export const dynamicParams = false
+export const dynamic = "force-dynamic"
 
 export default async function Ville({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
-  const data = loadVilleData(ville)
+  const data = await apiGet("/_private/seo/ville/:ville", { params: { ville } })
 
   const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-villes"
 

@@ -1,5 +1,4 @@
 import { updateSEO } from "./seo/updateSEO"
-import { exportVilleData } from "./seo/exportVilleData"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
@@ -380,9 +379,5 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
-  },
-  {
-    fct: exportVilleData,
-    description: "Export SEO ville data to JSON files",
   },
 ]
