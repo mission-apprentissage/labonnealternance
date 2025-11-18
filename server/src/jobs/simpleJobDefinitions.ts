@@ -16,7 +16,6 @@ import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { processKelio } from "./offrePartenaire/kelio/processKelio"
-import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
@@ -52,6 +51,7 @@ import { processJooble } from "./offrePartenaire/jooble/processJooble"
 import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "./offrePartenaire/lbaJobToJobsPartners"
 import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
+import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
@@ -214,16 +214,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres France Travail dans la collection raw & computed",
   },
   {
-    fct: processMonster,
-    description: "Importe les offres Monster dans la collection raw & computed",
-  },
-  {
     fct: processKelio,
     description: "Importe les offres Kelio dans la collection raw & computed",
   },
   {
     fct: processLaposte,
     description: "Importe les offres La Poste dans la collection raw & computed",
+  },
+  {
+    fct: processLeboncoin,
+    description: "Importe les offres Le Bon Coin dans la collection raw & computed",
   },
   {
     fct: processJobteaser,

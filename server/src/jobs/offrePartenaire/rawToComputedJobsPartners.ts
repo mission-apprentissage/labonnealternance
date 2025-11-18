@@ -63,7 +63,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
         } catch (err) {
           counters.error++
           const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
-          logger.error(newError.message, err)
+          logger.error(err, newError.message)
           newError.cause = err
           sentryCaptureException(newError)
         }

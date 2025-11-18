@@ -84,7 +84,7 @@
                 <%= data.applicant_first_name %> <%= data.applicant_last_name %></span> vous adresse sa candidature à
               <a href="<%= data.jobUrl %>" style="text-decoration: underline; color: inherit;">votre offre</a>
               <% if (data.job_searched_by_user) { %> sur le métier <b><%= data.job_searched_by_user %></b> <% } %>
-              pour l’entreprise <%= data.company_name %>, SIRET <%= data.company_siret %>.
+              pour l’entreprise <%= data.company_name %><% if (data.company_siret) { %>, SIRET <%= data.company_siret %> <% } %>.
               <br />
               <br />
               Nous vous invitons à répondre au candidat à l'aide de l'un de nos 2 formulaires de réponse accessibles via les liens ci-dessous :
