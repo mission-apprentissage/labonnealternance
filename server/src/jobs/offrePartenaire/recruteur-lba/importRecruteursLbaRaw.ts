@@ -188,7 +188,7 @@ export const importRecruteurLbaToComputed = async () => {
         } catch (err) {
           counters.error++
           const newError = internal(`error converting raw job to partner_label job for id=${document._id} partner_label=${partnerLabel}`)
-          logger.error(newError.message, err)
+          logger.error(err, newError.message)
           logger.error(JSON.stringify(err))
           newError.cause = err
           sentryCaptureException(newError)
