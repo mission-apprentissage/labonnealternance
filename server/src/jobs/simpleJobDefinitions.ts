@@ -1,3 +1,4 @@
+import { updateSEO } from "./seo/updateSEO"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
@@ -374,6 +375,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
   },
+  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",

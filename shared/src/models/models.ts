@@ -61,6 +61,7 @@ import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import seoVilleModel from "./seoVille.model.js"
 import sessionModel from "./session.model.js"
 import sitemapModel from "./sitemap.model.js"
 import trafficSourcesModel from "./trafficSources.model.js"
@@ -137,6 +138,7 @@ const modelDescriptorMap = {
   [rawFranceTravail.collectionName]: rawFranceTravail,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
+  [seoVilleModel.collectionName]: seoVilleModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

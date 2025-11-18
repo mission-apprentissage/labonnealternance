@@ -1,6 +1,7 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import { updateSEO } from "./seo/updateSEO"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
 import anonymizeAppointments from "./anonymization/anonymizeAppointments"
@@ -289,6 +290,10 @@ export async function setupJobProcessor() {
           "Export des données pour l'algorithme": {
             cron_string: "0 10 * * FRI",
             handler: exportFileForAlgo,
+          },
+          "Mise à jour des données calculées pour les pages SEO": {
+            cron_string: "0 4 * * SAT",
+            handler: updateSEO,
           },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",
