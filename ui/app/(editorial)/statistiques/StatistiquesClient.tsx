@@ -82,7 +82,7 @@ export default function StatistiquesClient() {
             <TabContent title="Les visites">
               <iframe
                 width="100%"
-                height="2100px"
+                height="500px"
                 title="stats_plausible"
                 plausible-embed="true"
                 src="https://plausible.io/share/labonnealternance.apprentissage.beta.gouv.fr?auth=Ck7r5NwNNf9IveZVA5U0O&embed=true&theme=light&background=transparent"
