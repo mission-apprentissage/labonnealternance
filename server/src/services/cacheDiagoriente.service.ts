@@ -27,8 +27,8 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
   const apiResponse = (await getDiagorienteRomeClassification(notFoundQueries)) ?? []
   const mappedApiResponse = notFoundQueries
     .map((payload) => {
-      const result = apiResponse.find(({ job_offer_id, code_rome, intitule_rome }) => job_offer_id === payload.id && code_rome !== null && intitule_rome !== null)
-      return result ? { id: payload.id, title: payload.title, sector: payload.sector, intitule_rome: result.intitule_rome, code_rome: result.code_rome } : null
+      const result = apiResponse[payload.id]?.classify_results[0]?.data
+      return result ? { id: payload.id, title: payload.title, sector: payload.sector, intitule_rome: result.titre, code_rome: result.rome } : null
     })
     .filter((x) => x !== null)
 
