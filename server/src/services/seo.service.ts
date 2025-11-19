@@ -1,0 +1,109 @@
+import { JOB_STATUS_ENGLISH } from "shared"
+import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import seoVilleModel from "shared/models/seoVille.model"
+
+import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+
+const DEFAULT_RADIUS_KM = 30
+
+export const getSeoVille = async ({ ville }: { ville: string }) => {
+  const seoVille = await getDbCollection(seoVilleModel.collectionName).findOne({ slug: ville })
+  return seoVille
+}
+
+export const updateSeoVilleJobCounts = async () => {
+  const villes = await getDbCollection(seoVilleModel.collectionName).find({}).toArray()
+
+  for (const ville of villes) {
+    const jobCount = await getPartnerJobsCount({
+      latitude: ville.geopoint.lat,
+      longitude: ville.geopoint.long,
+      radius: DEFAULT_RADIUS_KM,
+      partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      includePartnerLabel: false,
+    })
+
+    const recruteurCount = await getPartnerJobsCount({
+      latitude: ville.geopoint.lat,
+      longitude: ville.geopoint.long,
+      radius: DEFAULT_RADIUS_KM,
+      partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      includePartnerLabel: true,
+    })
+
+    await getDbCollection(seoVilleModel.collectionName).updateOne(
+      { _id: ville._id },
+      {
+        $set: {
+          job_count: jobCount,
+          recruteur_count: recruteurCount,
+        },
+      }
+    )
+  }
+}
+
+export const updateSeoVilleActivities = async () => {
+  const villes = await getDbCollection(seoVilleModel.collectionName)
+    .find({}, { projection: { _id: 1, slug: 1, geopoint: 1 } })
+    .toArray()
+
+  for (const ville of villes) {
+    const activities = await getDbCollection(jobsPartnersModel.collectionName)
+      .aggregate([
+        {
+          $geoNear: {
+            near: { type: "Point", coordinates: [ville.geopoint.long, ville.geopoint.lat] },
+            distanceField: "distance",
+            maxDistance: DEFAULT_RADIUS_KM * 1000,
+            spherical: true,
+            query: {
+              offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+              workplace_naf_label: {
+                $ne: null,
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$workplace_naf_label",
+            count: {
+              $sum: 1,
+            },
+            rome_codes: {
+              $addToSet: "$offer_rome_codes", // Collects all unique rome_codes
+            },
+          },
+        },
+        {
+          $sort: {
+            count: -1,
+          },
+        },
+        {
+          $limit: 5,
+        },
+        {
+          $project: {
+            naf_label: "$_id",
+            rome_codes: 1,
+            _id: 0,
+          },
+        },
+      ])
+      .toArray()
+
+    await getDbCollection(seoVilleModel.collectionName).updateOne(
+      { _id: ville._id },
+      {
+        $set: {
+          "content.vie.activites": activities.map((activity) => {
+            return { naf_label: activity.naf_label, rome_codes: activity.rome_codes.flat() }
+          }),
+        },
+      }
+    )
+  }
+}

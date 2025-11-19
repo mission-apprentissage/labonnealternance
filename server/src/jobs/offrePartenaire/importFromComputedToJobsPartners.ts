@@ -125,7 +125,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         const newError = internal(
           `error converting computed_job_partner to job_partner, partner_label=${computedJobPartner.partner_label} partner_job_id=${computedJobPartner.partner_job_id}`
         )
-        logger.error(newError.message, err)
+        logger.error(err, newError.message)
         newError.cause = err
         sentryCaptureException(newError)
         callback(null)

@@ -19,7 +19,7 @@ describe("importLaposte", () => {
     return async () => {
       vi.useRealTimers()
       await getDbCollection("computed_jobs_partners").deleteMany({})
-      await getDbCollection("raw_hellowork").deleteMany({})
+      await getDbCollection("raw_laposte").deleteMany({})
     }
   })
 

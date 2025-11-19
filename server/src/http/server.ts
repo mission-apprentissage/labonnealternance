@@ -15,7 +15,6 @@ import type { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
@@ -50,6 +49,7 @@ import { logMiddleware } from "./middlewares/logMiddleware"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { classificationRoutes } from "./controllers/classification.controller"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
+import { seoRouteController } from "./controllers/_private/seo.private.controller"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import config from "@/config"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
@@ -142,6 +142,7 @@ export async function bind(app: Server) {
       jobsEtFormationsV1Route(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
+      seoRouteController(typedSubApp)
 
       /**
        * Admin / Auth

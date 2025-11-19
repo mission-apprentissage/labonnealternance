@@ -3,59 +3,14 @@ import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
 import { DsfrHeaderProps } from "./Header"
+import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { PAGES } from "@/utils/routes.utils"
 
 import { publicConfig } from "@/config.public"
 
 const linkListContent: FooterProps["linkList"] = [
   {
-    categoryName: "Liens utiles",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.faq.getPath(),
-        },
-        text: "FAQ",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.blog.getPath(),
-        },
-        text: "Blog",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.ressources.getPath(),
-        },
-        text: "Ressources",
-      },
-    ],
-  },
-  {
-    categoryName: "Développement",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.codeSources.getPath(),
-        },
-        text: `Code source v${publicConfig.version}`,
-      },
-      {
-        linkProps: {
-          href: PAGES.static.EspaceDeveloppeurs.getPath(),
-        },
-        text: "Espace développeurs",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.metiers.getPath(),
-        },
-        text: "Métiers",
-      },
-    ],
-  },
-  {
-    categoryName: "L'organisation",
+    categoryName: "À propos",
     links: [
       {
         linkProps: {
@@ -65,9 +20,15 @@ const linkListContent: FooterProps["linkList"] = [
       },
       {
         linkProps: {
-          href: PAGES.static.statistiques.getPath(),
+          href: PAGES.static.blog.getPath(),
         },
-        text: "Statistiques",
+        text: "Blog",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.metiers.getPath(),
+        },
+        text: "Métiers",
       },
       {
         linkProps: {
@@ -78,27 +39,54 @@ const linkListContent: FooterProps["linkList"] = [
     ],
   },
   {
-    categoryName: "Règlement générales des données",
+    categoryName: "Aide & Ressources",
     links: [
       {
         linkProps: {
-          href: PAGES.static.mentionsLegales.getPath(),
+          href: PAGES.static.faq.getPath(),
         },
-        text: "Mentions légales",
+        text: "FAQ",
       },
       {
         linkProps: {
-          href: PAGES.static.politiqueConfidentialite.getPath(),
+          href: PAGES.static.ressources.getPath(),
         },
-        text: "Politique de confidentialité",
+        text: "Ressources",
       },
       {
         linkProps: {
-          href: PAGES.static.cgu.getPath(),
+          href: PAGES.static.statistiques.getPath(),
         },
-        text: "Conditions générales d'utilisation",
+        text: "Statistiques",
       },
     ],
+  },
+  {
+    categoryName: "Développeurs",
+    links: [
+      {
+        linkProps: {
+          href: PAGES.static.EspaceDeveloppeurs.getPath(),
+        },
+        text: "Espace développeurs",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.codeSources.getPath(),
+        },
+        text: `Code source v${publicConfig.version}`,
+      },
+    ],
+  },
+  {
+    categoryName: "Alternance par ville",
+    // @ts-ignore min 1 link but here we have 10
+    links: villeData.map((ville) => ({
+      linkProps: {
+        href: PAGES.dynamic.seoVille(ville.slug).getPath(),
+      },
+      text: `Alternance à ${ville.ville}`,
+    })),
   },
 ]
 
@@ -129,6 +117,26 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
       brandTop={DsfrHeaderProps.brandTop}
       homeLinkProps={DsfrHeaderProps.homeLinkProps}
       linkList={isWidget ? undefined : hideLinkList ? undefined : linkListContent}
+      bottomItems={[
+        {
+          linkProps: {
+            href: PAGES.static.politiqueConfidentialite.getPath(),
+          },
+          text: "Politique de confidentialité",
+        },
+        {
+          linkProps: {
+            href: PAGES.static.mentionsLegales.getPath(),
+          },
+          text: "Mentions légales",
+        },
+        {
+          linkProps: {
+            href: PAGES.static.cgu.getPath(),
+          },
+          text: "Conditions générales d'utilisation",
+        },
+      ]}
     />
   )
 }
