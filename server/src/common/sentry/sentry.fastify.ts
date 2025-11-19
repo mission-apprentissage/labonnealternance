@@ -54,6 +54,10 @@ function extractUserData(request: FastifyRequest): UserData {
 }
 
 export function initSentryFastify(app: Server) {
+  // Setup official Fastify error handler
+  Sentry.setupFastifyErrorHandler(app)
+
+  // Custom user data hook
   app.addHook("onRequest", async (request, _reply) => {
     const scope = Sentry.getIsolationScope()
     scope
