@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import type { SelectChangeEvent } from "@mui/material"
-import { Box, Input, Typography, FormControl, FormLabel, FormHelperText, RadioGroup, FormControlLabel, Radio, Select, MenuItem, ListItemText, Checkbox } from "@mui/material"
+import { Box, Input, Typography, FormControl, FormLabel, FormHelperText, RadioGroup, FormControlLabel, Radio, Checkbox } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
 import { useState } from "react"
@@ -228,36 +227,26 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   /**
    * On change on applicant reasons, it updates the state.
    */
-  const onChangeApplicantReasons = (event: SelectChangeEvent<EReasonsKey[]>) => {
-    const {
-      target: { value },
-    } = event
-    helper.setValue(typeof value === "string" ? value.split(",") : value, true)
+  const onChangeApplicantReasons = (reasonKey: EReasonsKey, checked: boolean) => {
+    const updatedReasons = checked ? [...applicantReasons, reasonKey] : applicantReasons.filter((key) => key !== reasonKey)
+    helper.setValue(updatedReasons, true)
   }
 
   return (
     <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Select
-        multiple
-        value={field.value}
-        onChange={onChangeApplicantReasons}
-        renderValue={(selected) => {
-          const selectedReasons = RdvReasons.filter((reason) => selected.includes(reason.key))
-          return selectedReasons.map((reason) => reason.title).join(", ")
-        }}
-        input={<Input className={fr.cx("fr-input")} />}
-      >
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (
-            <MenuItem key={key} value={key} id={`reason-${index}`}>
-              <Checkbox checked={checked} />
-              <ListItemText primary={title} />
-            </MenuItem>
+            <FormControlLabel
+              key={key}
+              control={<Checkbox checked={checked} onChange={(e) => onChangeApplicantReasons(key, e.target.checked)} id={`reason-${index}`} />}
+              label={title}
+            />
           )
         })}
-      </Select>
+      </Box>
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
         <Box sx={{ mt: fr.spacing("2w") }}>
           <FormControl data-testid="fieldset-applicantMessageToCfa" fullWidth>
