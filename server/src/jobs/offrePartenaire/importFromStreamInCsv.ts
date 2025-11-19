@@ -47,7 +47,7 @@ export const importFromStreamInCsv = async ({
       (err) => {
         logger.info(`${offerInsertCount} offers inserted`)
         if (err) {
-          logger.error("Pipeline failed.", err)
+          logger.error(err, "Pipeline failed.")
           reject(err)
         } else {
           logger.info("Pipeline succeeded.")

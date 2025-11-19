@@ -39,7 +39,7 @@ const removePredictionFile = async () => {
     logger.info("Deleting downloaded file from assets")
     await unlinkSync(PREDICTION_FILE_PATH)
   } catch (err) {
-    logger.error("Error removing company algo file", err)
+    logger.error(err, "Error removing company algo file")
   }
 }
 
@@ -70,7 +70,7 @@ const getRecruteursLbaFileFromS3 = async ({ from, to }: { from: Stream.Readable;
     await pipeline(from, writeStream)
     logger.info("File transfer completed successfully")
   } catch (error) {
-    logger.error("Error during file transfer:", error)
+    logger.error(error, "Error during file transfer:")
     throw error
   }
 }
