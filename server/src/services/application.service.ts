@@ -212,7 +212,7 @@ export const sendApplication = async ({
       await getDbCollection("applications").insertOne(application)
       return { result: "ok", message: "messages sent" }
     } catch (err) {
-      logger.error("Error sending application", err)
+      logger.error(err, "Error sending application")
       sentryCaptureException(err)
       if (newApplication?.caller) {
         await manageApiError({
@@ -1060,7 +1060,7 @@ export const deleteApplicationCvFile = async (application: IApplication) => {
 
 const getRecruteurEmailSubject = (application: IApplication, applicant: IApplicant) => {
   const { job_origin } = application
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+
   switch (job_origin) {
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
       return `Candidature spontanée en alternance ${application.company_name}`
@@ -1265,7 +1265,6 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
   let job: IJobsPartnersOfferPrivate | null = null
   const { job_id, company_siret } = application
 
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })

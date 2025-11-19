@@ -238,7 +238,7 @@ export async function* getAllFTJobsByDepartments(departement: string): AsyncGene
         // code region or departement not found
         break
       }
-      logger.error("Error while fetching jobs", error)
+      logger.error(error, "Error while fetching jobs")
     }
   }
 }

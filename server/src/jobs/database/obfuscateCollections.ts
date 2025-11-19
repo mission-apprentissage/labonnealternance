@@ -29,7 +29,7 @@ async function reduceModel(model: CollectionName, limit = 20000) {
       await Promise.all(chunks.map(async (chunk) => await getDbCollection(model).deleteMany({ _id: { $in: chunk } })))
     }
   } catch (err) {
-    logger.error("Error reducing collection", err)
+    logger.error(err, "Error reducing collection")
   }
 }
 

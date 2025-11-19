@@ -68,7 +68,7 @@ export const importFromStreamInXml = async ({
     pipeline(stream, xmlToJsonTransform, (err) => {
       logger.info(`${offerInsertCount} offers inserted`)
       if (err) {
-        logger.error("Pipeline failed.", err)
+        logger.error(err, "Pipeline failed.")
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")

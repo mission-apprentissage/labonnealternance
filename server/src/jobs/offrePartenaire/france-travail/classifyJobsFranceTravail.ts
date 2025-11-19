@@ -133,7 +133,7 @@ export const classifyFranceTravailJobs = async () => {
 
         callback()
       } catch (err: any) {
-        logger.error("Erreur de classification d’un batch France Travail", err)
+        logger.error(err, "Erreur de classification d'un batch France Travail")
         callback(err)
       }
     },

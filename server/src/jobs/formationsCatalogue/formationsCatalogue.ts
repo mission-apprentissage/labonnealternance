@@ -63,7 +63,7 @@ export const importCatalogueFormationJob = async () => {
 
             stats.created++
           } catch (e) {
-            logger.error("Erreur enregistrement de formation", e)
+            logger.error(e, "Erreur enregistrement de formation")
             stats.failed++
           }
 

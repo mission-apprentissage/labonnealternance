@@ -17,7 +17,7 @@ class FTPClient {
       await this.client.access(options)
     } catch (error) {
       sentryCaptureException(error)
-      logger.error("FTP connection failed", error)
+      logger.error(error, "FTP connection failed")
     }
   }
 
@@ -47,7 +47,7 @@ class FTPClient {
       logger.info(`File successfully downloaded.`)
     } catch (error) {
       sentryCaptureException(error)
-      logger.error("Download failed:", error)
+      logger.error(error, "Download failed:")
     }
   }
 }
