@@ -1,8 +1,6 @@
 import memoize from "memoizee"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import type { IReferentielOpco } from "shared/models/index"
-import { ZReferentielOpcoInsert } from "shared/models/index"
 import type { IOpco } from "shared/models/opco.model"
 import { parseEnum } from "shared/utils/index"
 
@@ -166,16 +164,6 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
   })
 
   return results
-}
-
-export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOpco, "_id">) => {
-  if (ZReferentielOpcoInsert.safeParse(referentiel).success && referentiel.emails.length) {
-    const deduplicatedEmails = [...new Set(referentiel.emails)]
-    referentiel.emails = deduplicatedEmails
-    return referentiel
-  } else {
-    return false
-  }
 }
 
 export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {
