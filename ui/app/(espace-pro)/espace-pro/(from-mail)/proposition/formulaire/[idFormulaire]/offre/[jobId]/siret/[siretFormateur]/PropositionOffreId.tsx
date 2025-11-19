@@ -101,7 +101,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("7v") }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ mr: fr.spacing("3v") }}>Métier :</Typography>
-              <Typography sx={{ ...valueWithEllipsis, maxWidth: "80%" }}>{job.rome_label}</Typography>
+              <Typography sx={{ ...valueWithEllipsis, maxWidth: "80%" }}>{job.rome_appellation_label}</Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ mr: fr.spacing("3v") }}>Type de contrat :</Typography>
