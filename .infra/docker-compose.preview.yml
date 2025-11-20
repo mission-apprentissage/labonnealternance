@@ -46,10 +46,10 @@ services:
       - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:3000/healthcheck"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      interval: 60s
+      timeout: 30s
+      retries: 11
+      start_period: 10s
 
   jobs_processor:
     <<: *default
