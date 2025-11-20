@@ -2,10 +2,10 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography } from "@mui/material"
 import { useCallback } from "react"
 
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import RechercheCDICDD from "@/components/SearchForTrainingsAndJobs/components/rechercheCDDCDI"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
-import { PAGES } from "@/utils/routes.utils"
 
 type RechercheResultatsFooterProps = {
   jobStatus: "success" | "error" | "disabled" | "loading"
@@ -14,18 +14,10 @@ type RechercheResultatsFooterProps = {
 }
 
 export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.searchParams)
   const onExtendSearch = useCallback(() => {
-    window.history.pushState(
-      null,
-      "",
-      PAGES.dynamic
-        .recherche({
-          ...props.searchParams,
-          geo: null,
-        })
-        .getPath()
-    )
-  }, [props.searchParams])
+    navigateToRecherchePage({ geo: null }, true)
+  }, [navigateToRecherchePage])
 
   if (props.jobStatus === "loading") {
     return <ResultListsLoading isJobSearchLoading isTrainingSearchLoading={false} />
