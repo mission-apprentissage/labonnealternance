@@ -121,6 +121,7 @@ services:
     env_file: .env_ui
     environment:
       NODE_OPTIONS: "--max_old_space_size=1536"
+      HOSTNAME: "0.0.0.0"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:3000/healthcheck"]
       interval: 60s
