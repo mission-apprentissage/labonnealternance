@@ -38,7 +38,7 @@ export const ZCleverConnectJob = z
     company: z.object({
       $: z.object({ id: z.string(), anonymous: z.string() }),
       description: z.string().nullish(),
-      name: z.string(),
+      name: z.string().nullish(),
     }),
     workplace: z.object({
       locations: z.object({
@@ -77,10 +77,18 @@ export const ZCleverConnectJob = z
     workSchedule: z
       .object({
         types: z.object({
-          type: z.object({
-            _: z.string(),
-            $: z.object({ code: z.string() }),
-          }),
+          type: z.union([
+            z.array(
+              z.object({
+                _: z.string(),
+                $: z.object({ code: z.string() }),
+              })
+            ),
+            z.object({
+              _: z.string(),
+              $: z.object({ code: z.string() }),
+            }),
+          ]),
         }),
       })
       .nullish(),
@@ -178,7 +186,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     offer_access_conditions: getAccessConditions(job),
     offer_target_diploma: getOfferTargetDiploma(job),
 
-    workplace_name: company.name,
+    workplace_name: company?.name || null,
     workplace_description: company.description && company.description.length >= 30 ? company.description : null,
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
@@ -303,8 +311,13 @@ const getOfferDescription = (job: ICleverConnectJob): IComputedJobsPartners["off
   if (position) {
     descriptionComputed += `Poste: ${position}\r\n\r\n`
   }
-  if (workSchedule?.types?.type?._) {
-    descriptionComputed += `${workSchedule.types.type._}\r\n\r\n`
+  const workScheduleTypes = workSchedule?.types?.type
+  if (workScheduleTypes) {
+    if (Array.isArray(workScheduleTypes)) {
+      descriptionComputed += `${workScheduleTypes.map((type) => type._).join(", ")}\r\n\r\n`
+    } else if (typeof workScheduleTypes === "object") {
+      descriptionComputed += `${workScheduleTypes._}\r\n\r\n`
+    }
   }
   if (typeof benefits === "string") {
     descriptionComputed += `Avantages: ${benefits}\r\n\r\n`
