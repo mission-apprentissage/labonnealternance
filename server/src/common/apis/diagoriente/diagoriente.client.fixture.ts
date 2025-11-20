@@ -14,6 +14,6 @@ export const nockDiagorienteAccessToken = () => {
   })
 }
 
-export function nockDiagorienteRomeClassifier(payload: IDiagorienteClassificationSchema[], response: IDiagorienteClassificationResponseSchema[]) {
-  return nock("https://semafor.diagoriente.fr").post("/rome_classifier", payload).matchHeader(`authorization`, `Bearer access_token`).reply(200, response)
+export function nockDiagorienteRomeClassifier(payload: IDiagorienteClassificationSchema[], response: IDiagorienteClassificationResponseSchema) {
+  return nock("https://semafor.diagoriente.fr").post("/classify/SousDomaines", payload).matchHeader(`authorization`, `Bearer access_token`).reply(200, response)
 }
