@@ -24,19 +24,16 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
   }
 
   if (props.jobStatus === "success") {
-    if (props.jobCount === 0) {
-      return (
-        <Typography textAlign="center" fontWeight="bold">
-          Aucune entreprise trouvée pour votre recherche.
-          <br />
-          Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
-        </Typography>
-      )
-    }
-
-    if (props.jobCount < 100) {
+    if (props.jobCount < 50) {
       return (
         <>
+          {props.jobCount === 0 && (
+            <Typography textAlign="center" fontWeight="bold">
+              Aucune entreprise trouvée pour votre recherche.
+              <br />
+              Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
+            </Typography>
+          )}
           {props.searchParams.geo !== null && (
             <>
               <Typography textAlign="center" fontWeight="bold">
