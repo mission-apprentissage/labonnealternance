@@ -85,15 +85,24 @@ export const ZCleverConnectJob = z
       })
       .nullish(),
     benefits: z
-      .object({
-        salary: z
-          .object({
-            _: z.string(),
-            $: z.object({ lowEnd: z.string(), currency: z.string(), period: z.string() }),
-          })
-          .nullish(),
-        description: z.string().nullish(),
-      })
+      .union([
+        z.object({
+          salary: z
+            .object({
+              _: z.string(),
+              $: z
+                .object({
+                  lowEnd: z.string().optional(),
+                  currency: z.string().optional(),
+                  period: z.string().optional(),
+                })
+                .optional(),
+            })
+            .nullish(),
+          description: z.string().nullish(),
+        }),
+        z.string(),
+      ])
       .nullish(),
     profile: z
       .object({
@@ -297,11 +306,15 @@ const getOfferDescription = (job: ICleverConnectJob): IComputedJobsPartners["off
   if (workSchedule?.types?.type?._) {
     descriptionComputed += `${workSchedule.types.type._}\r\n\r\n`
   }
-  if (benefits?.salary?._) {
-    descriptionComputed += `Avantages: ${benefits.salary._}\r\n\r\n`
-  }
-  if (benefits?.description) {
-    descriptionComputed += `${benefits.description}\r\n\r\n`
+  if (typeof benefits === "string") {
+    descriptionComputed += `Avantages: ${benefits}\r\n\r\n`
+  } else {
+    if (benefits?.salary?._) {
+      descriptionComputed += `Avantages: ${benefits.salary._}\r\n\r\n`
+    }
+    if (benefits?.description) {
+      descriptionComputed += `${benefits.description}\r\n\r\n`
+    }
   }
   if (profile?.description) {
     descriptionComputed += `Profil: ${profile.description}`
