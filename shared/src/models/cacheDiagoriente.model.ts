@@ -39,7 +39,8 @@ const ZCacheDiagoriente = z
   })
   .extend({
     ...ZDiagorienteClassificationSchema.pick({ title: true, sector: true }).shape,
-    ...ZDiagorienteClassificationResponseSchema.omit({ job_offer_id: true }).shape,
+    intitule_rome: z.string(),
+    code_rome: z.string(),
   })
 
 export type ICacheDiagoriente = z.output<typeof ZCacheDiagoriente>
