@@ -44,6 +44,12 @@ services:
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST={{pr_number}}.labonnealternance-preview.apprentissage.beta.gouv.fr
       - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   jobs_processor:
     <<: *default

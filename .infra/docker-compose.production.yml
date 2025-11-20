@@ -121,6 +121,12 @@ services:
     env_file: .env_ui
     environment:
       NODE_OPTIONS: "--max_old_space_size=1536"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     logging:
       driver: "fluentd"
       options:

@@ -89,8 +89,7 @@ ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
 RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
-# locked to node 22 for now (20251120) : https://github.com/vercel/next.js/discussions/75995 en node24
-FROM node:22-slim AS ui 
+FROM node:24-slim AS ui
 WORKDIR /app
 
 RUN apt-get update \
