@@ -235,7 +235,7 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   return (
     <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", mt: 1 }}>
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (
