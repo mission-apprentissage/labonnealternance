@@ -3,7 +3,7 @@ import dayjs from "shared/helpers/dayjs"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"
-import { JOB_STATUS } from "shared"
+import { JOB_STATUS, JobCollectionName } from "shared"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
@@ -15,6 +15,7 @@ import { generateApplicationToken } from "./appLinks.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
 import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { roundDistance } from "@/common/utils/geolib"
@@ -333,7 +334,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
-      recipient_id: `recruiters_${offre._id.toString()}`,
+      recipient_id: getRecipientID(JobCollectionName.recruiters, offre._id.toString()),
     }
 
     //TODO: remove when 1j1s switch to api V2
@@ -384,7 +385,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
-      recipient_id: `recruiters_${offre._id.toString()}`,
+      recipient_id: getRecipientID(JobCollectionName.recruiters, offre._id.toString()),
     }
 
     return resultJob

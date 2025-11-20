@@ -9,7 +9,6 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import WidgetCandidatureLba from "@/components/ItemDetail/CandidatureLba/WidgetCandidatureLba"
 import { WidgetPostulerError } from "@/components/ItemDetail/CandidatureLba/WidgetPostulerError"
-import fetchLbaCompanyDetails from "@/services/fetchLbaCompanyDetails"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
 import fetchPartnerJobDetails from "@/services/fetchPartnerJobDetails"
 
@@ -23,19 +22,15 @@ export default function WidgetPostuler() {
   }
   const caller = searchParams.get("caller")
 
-  const fetchPostulerItem = (parameters) => {
-    switch (parameters.type) {
+  const fetchPostulerItem = ({ type, itemId }: { type: string; itemId: string }) => {
+    switch (type) {
       case JobCollectionName.recruiters:
       case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
-        return fetchLbaJobDetails({ id: parameters.itemId })
-      }
-      case JobCollectionName.recruteur:
-      case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
-        return fetchLbaCompanyDetails({ id: parameters.itemId })
+        return fetchLbaJobDetails({ id: itemId })
       }
       case JobCollectionName.partners:
       case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
-        return fetchPartnerJobDetails({ id: parameters.itemId })
+        return fetchPartnerJobDetails({ id: itemId })
       }
       default: {
         const error = new Error("unexpected_type")
@@ -48,7 +43,7 @@ export default function WidgetPostuler() {
   // @ts-ignore TODO
   const { isLoading, isFetching, isError, data, error }: { data: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson } = useQuery({
     queryKey: ["jobDetail"],
-    queryFn: () => fetchPostulerItem({ type, itemId, caller }),
+    queryFn: () => fetchPostulerItem({ type, itemId }),
     enabled: Boolean(type) && Boolean(itemId) && Boolean(caller),
     retry: false,
   })
