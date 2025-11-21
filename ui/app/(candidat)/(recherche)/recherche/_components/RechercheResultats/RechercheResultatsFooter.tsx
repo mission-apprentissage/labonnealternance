@@ -28,20 +28,22 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
       return (
         <>
           {props.jobCount === 0 && (
-            <Typography textAlign="center" fontWeight="bold">
-              Aucune entreprise trouvée pour votre recherche.
-              <br />
-              Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
-            </Typography>
-          )}
-          {props.searchParams.geo !== null && (
             <>
               <Typography textAlign="center" fontWeight="bold">
-                Peu de résultats dans votre zone de recherche
+                Aucune entreprise trouvée pour votre recherche.
+                <br />
+                Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
               </Typography>
-              <Button title="Rechercher sur la France entière" priority="primary" onClick={onExtendSearch}>
-                Rechercher sur la France entière
-              </Button>
+              {props.searchParams.geo !== null && (
+                <>
+                  <Typography textAlign="center" fontWeight="bold">
+                    Peu de résultats dans votre zone de recherche
+                  </Typography>
+                  <Button title="Rechercher sur la France entière" priority="primary" onClick={onExtendSearch}>
+                    Rechercher sur la France entière
+                  </Button>
+                </>
+              )}
             </>
           )}
           <RechercheCDICDD romes={props.searchParams.romes} geo={props.searchParams.geo} />
