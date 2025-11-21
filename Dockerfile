@@ -89,7 +89,9 @@ ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
 RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
-FROM node:24-slim AS ui
+# Locked to Node 22 LTS: Node 24 has streaming issues with Next.js 16
+# See: https://github.com/vercel/next.js/discussions/75995
+FROM node:22-slim AS ui
 WORKDIR /app
 
 RUN apt-get update \
