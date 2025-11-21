@@ -61,6 +61,7 @@ export const getDiagorienteRomeClassification = async (data: IDiagorienteClassif
   const { data: response } = await axiosClient.post("https://semafor.diagoriente.fr/classify/SousDomaines", data, {
     timeout: 70_000,
     headers: { Authorization: `Bearer ${token}` },
+    params: { as_of: "2025-04-01" },
   })
   const validation = ZDiagorienteClassificationResponseSchema.safeParse(response)
   if (!validation.success) throw internal("getRomeClassificationFromDiagoriente: format de réponse non valide", { error: validation.error })
