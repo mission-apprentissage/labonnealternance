@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb"
 import type { IDiagorienteClassificationSchema } from "shared"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getDiagorienteRomeClassification } from "@/common/apis/diagoriente/diagoriente.client"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const getRomesFromCacheDiagoriente = async (queries: IDiagorienteClassificationSchema[]): Promise<(string | null)[]> => {
   const filteredQueries = queries.flatMap(({ title, sector }) => ({ title, sector }))
@@ -32,7 +32,7 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
     })
     .filter((x) => x !== null)
 
-  if (apiResponse.length) {
+  if (mappedApiResponse.length) {
     await getDbCollection("cache_diagoriente").insertMany(
       mappedApiResponse.map((result) => ({
         _id: new ObjectId(),
