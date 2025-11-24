@@ -67,6 +67,10 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
             <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
             <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
+            <Typography sx={{ color: "#0063CB" }}>
+              <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des
+              fins de contrôles.
+            </Typography>
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
                 <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
