@@ -1,7 +1,7 @@
 import { useField } from "formik"
 import { typedEntries } from "shared"
 import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
-import { IDiplomaParam } from "shared/routes/_params"
+import type { IDiplomaParam } from "shared/routes/_params"
 
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 
@@ -14,7 +14,7 @@ export const niveauOptions = typedEntries(NIVEAUX_POUR_LBA).map(([value, label])
 export function RechercheNiveauSelectFormik() {
   const [field, meta, helper] = useField({ name: "diploma" })
 
-  return <RechercheNiveauSelect value={field.value} onChange={(newValue) => helper.setValue(newValue, true)} error={meta.touched && meta.error} />
+  return <RechercheNiveauSelect value={field.value} onChange={async (newValue) => helper.setValue(newValue, true)} error={meta.touched && meta.error} />
 }
 
 export function RechercheNiveauSelect({ value, onChange, error }: { value: IDiplomaParam; onChange: (value: IDiplomaParam) => void; error?: string }) {

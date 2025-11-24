@@ -1,58 +1,51 @@
 import { badRequest, internal } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import { Filter as MongoDBFilter, ObjectId } from "mongodb"
-import {
-  IBusinessError,
-  ICfaReferentielData,
-  IEtablissement,
-  IGeoPoint,
-  ILbaCompanyLegacy,
-  IRecruiter,
-  ITrackingCookies,
-  parseEnum,
-  TrafficType,
-  ZCfaReferentielData,
-} from "shared"
+import type { Filter as MongoDBFilter } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, IRecruiter, ITrackingCookies } from "shared"
+import { parseEnum, TrafficType, ZCfaReferentielData } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/index"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
-import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IOpco } from "shared/models/opco.model"
+import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IOpco } from "shared/models/opco.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 //import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getHttpClient } from "@/common/utils/httpUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "@/services/userWithAccount.service"
 
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
-import config from "../config"
-
+import dayjs from "shared/helpers/dayjs"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import { fetchOpcosFromCFADock } from "./cfadock.service"
-import dayjs from "./dayjs.service"
-import { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import type { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
-import { updateEntrepriseOpco, upsertEntrepriseData, UserAndOrganization } from "./organization.service"
+import type { UserAndOrganization } from "./organization.service"
+import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
+import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import config from "@/config"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
+import { getHttpClient } from "@/common/utils/httpUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -164,10 +157,6 @@ const getEtablissementFromReferentiel = async (siret: string): Promise<IReferent
   }
 }
 
-type IGetAllEmailFromLbaCompanyLegacy = Pick<ILbaCompanyLegacy, "email">
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: MongoDBFilter<ILbaCompanyLegacy>) =>
-  (await getDbCollection("recruteurslbalegacies").find(query).project({ email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompanyLegacy[]
-
 type IGetAllEmailFromLbaCompany = Pick<IJobsPartnersOfferPrivate, "apply_email">
 export const getAllEstablishmentFromLbaCompany = async (query: MongoDBFilter<IJobsPartnersOfferPrivate>) =>
   (await getDbCollection("jobs_partners").find(query).project({ apply_email: 1, _id: 0 }).toArray()) as IGetAllEmailFromLbaCompany[]
@@ -273,21 +262,17 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
   const siren = siret.slice(0, 9)
   const sirenRegex = `^${siren}`
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-  const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: sirenRegex }, email: { $nin: ["", null] } }),
-    getAllEstablishmentFromLbaCompany({ workplace_siret: { $regex: sirenRegex }, apply_email: { $nin: ["", null] }, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }),
-    getDbCollection("referentielopcos")
-      .find({ siret_code: { $regex: sirenRegex } })
-      .toArray(),
-  ])
+  const bonneBoiteList = await getAllEstablishmentFromLbaCompany({
+    workplace_siret: { $regex: sirenRegex },
+    apply_email: { $nin: ["", null] },
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+  })
 
   // Format arrays to get only the emails
-  const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
   const bonneBoiteEmailList = bonneBoiteList.map(({ apply_email }) => apply_email)
-  const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
 
   // Create a single array with all emails duplicate free
-  const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+  const validEmails = [...new Set([...bonneBoiteEmailList])]
 
   // Check BAL API for validation
   const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
@@ -483,7 +468,7 @@ export const getEntrepriseDataFromSiret = async ({
   }
   const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
   const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
-  const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
+  const { latitude, longitude } = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(async () => getGeoCoordinates(codePostalEtVille))
   return { ...entrepriseData, geo_coordinates: `${latitude},${longitude}`, geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] } }
 }
 
@@ -797,7 +782,7 @@ export const sendEmailConfirmationEntreprise = async (
   }
 }
 
-export const sendMailCfaPremiumStart = (etablissement: IEtablissement, type: "affelnet" | "parcoursup") => {
+export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, type: "affelnet" | "parcoursup") => {
   if (!etablissement.gestionnaire_email) {
     throw badRequest("Gestionnaire email not found")
   }

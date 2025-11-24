@@ -1,27 +1,28 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation, assertUnreachable, removeUndefinedFields } from "shared"
+import type { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation } from "shared"
+import { assertUnreachable, removeUndefinedFields } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { ICFA } from "shared/models/cfa.model"
-import { EntrepriseStatus, IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
-import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
-import { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
+import type { ICFA } from "shared/models/cfa.model"
+import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
-import config from "../config"
 
 import { createAuthMagicLink } from "./appLinks.service"
 import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer from "./mailer.service"
-import { Organization, UserAndOrganization } from "./organization.service"
+import type { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
+import config from "@/config"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { reason, validation_type, granted_by } = entrepriseStatusEvent
@@ -47,7 +48,7 @@ const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISA
   }
 }
 
-export const getUserRecruteurById = (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
+export const getUserRecruteurById = async (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 
 export const userAndRoleAndOrganizationToUserRecruteur = (
   user: IUserWithAccount,

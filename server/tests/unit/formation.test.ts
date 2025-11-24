@@ -2,7 +2,7 @@ import assert from "assert"
 
 import { describe, it } from "vitest"
 
-import { deduplicateFormations } from "../../src/services/formation.service"
+import { deduplicateFormations } from "@/services/formation.service"
 
 describe("formation", () => {
   const sampleFormation1 = [

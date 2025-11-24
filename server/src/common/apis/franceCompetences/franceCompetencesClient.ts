@@ -3,9 +3,8 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-
-import { sentryCaptureException } from "../../utils/sentryUtils"
 
 const { baseUrl, apiKey, bearerToken } = config.franceCompetences
 

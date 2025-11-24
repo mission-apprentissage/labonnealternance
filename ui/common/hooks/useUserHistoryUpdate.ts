@@ -13,7 +13,7 @@ export default function useUserHistoryUpdate() {
     async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
       await apiCall()
         .then(() =>
-          ["user-list-opco", "user-list"].map((x) =>
+          ["user-list-opco", "user-list"].map(async (x) =>
             client.invalidateQueries({
               queryKey: [x],
             })

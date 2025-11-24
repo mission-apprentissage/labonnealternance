@@ -1,11 +1,11 @@
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { IRoleManagement, IUserWithAccount } from "shared/models/index"
+import type { IRoleManagement, IUserWithAccount } from "shared/models/index"
 
-import { getDbCollection } from "../../src/common/utils/mongodbUtils"
-import { createSessionToken } from "../../src/common/utils/session.service"
-import config from "../../src/config"
-import { createSession } from "../../src/services/sessions.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createSessionToken } from "@/common/utils/session.service"
+import config from "@/config"
+import { createSession } from "@/services/sessions.service"
 
 export const givenAConnectedOpcoUser = async (opcoProps: Partial<IUserWithAccount> = {}, roleProps: Partial<IRoleManagement> = {}) => {
   const opcoUser = generateUserWithAccountFixture({

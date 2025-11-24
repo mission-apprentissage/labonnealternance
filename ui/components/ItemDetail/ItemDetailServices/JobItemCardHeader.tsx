@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material"
-import { ILbaItemJobsGlobal } from "shared"
+import type { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 const detailActivityProperties = {

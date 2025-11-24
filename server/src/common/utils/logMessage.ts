@@ -1,4 +1,4 @@
-import { logger } from "../logger"
+import { logger } from "@/common/logger"
 
 const logMessage = (level, msg) => {
   if (level === "info") {

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
 
-import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
+import UpsertOffre from "./UpsertOffre"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"

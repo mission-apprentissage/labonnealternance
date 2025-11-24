@@ -6,13 +6,12 @@ import Input from "@codegouvfr/react-dsfr/Input"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, Typography } from "@mui/material"
 import { useState } from "react"
-import { IUserRecruteurJson } from "shared"
+import type { IUserRecruteurJson } from "shared"
 
+import { AUTHTYPE } from "@/common/contants"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
-
-import { AUTHTYPE } from "../../common/contants"
 
 const ConfirmationDesactivationUtilisateur = ({
   userRecruteur,
@@ -75,11 +74,14 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="" hidden>
               Sélectionnez un motif
             </option>
-            <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
-            <option value="Tentative de fraude">Tentative de fraude</option>
-            <option value="Injoignable">Injoignable</option>
+            <option value="Siret ou information non conforme à l'identité déclarée ">Siret ou information non conforme à l'identité déclarée </option>
+            <option value="Compte créé par un étudiant">Compte créé par un étudiant</option>
+            <option value="Compte entreprise créé par un CFA">Compte entreprise créé par un CFA</option>
             <option value="Compte en doublon">Compte en doublon</option>
             {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue</option>}
+            <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
+            <option value="Besoin de recrutement pourvu">Besoin de recrutement pourvu</option>
+            <option value="Injoignable">Injoignable</option>
             <option value="Autre">Autre</option>
           </Select>
         </Box>
@@ -104,7 +106,7 @@ const ConfirmationDesactivationUtilisateur = ({
               Annuler
             </Button>
           </Box>
-          <Button onClick={() => handleUpdate()} disabled={!reason}>
+          <Button onClick={async () => handleUpdate()} disabled={!reason}>
             Supprimer
           </Button>
         </Box>

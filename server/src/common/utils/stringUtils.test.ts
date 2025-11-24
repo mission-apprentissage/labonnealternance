@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { sanitizeTextField } from "./stringUtils"
 
 const allowedHtml = "<p><strong>Test</strong> <em>allowed</em> </p><ul><li>Item</li></ul>"
 const plainText = "This is a plain text."

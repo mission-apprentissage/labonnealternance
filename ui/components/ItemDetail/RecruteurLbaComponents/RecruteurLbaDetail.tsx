@@ -3,19 +3,18 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useContext, useEffect } from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { DisplayContext } from "@/context/DisplayContextProvider"
+import { SendPlausibleEvent } from "@/utils/plausible"
+import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/getCompanyGoogleSearchLink"
+import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/getCompanySize"
+import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
-
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { getCompanyGoogleSearchLink } from "../ItemDetailServices/getCompanyGoogleSearchLink"
-import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
-import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
-import { ReportJobLink } from "../ReportJobLink"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
   useEffect(() => {
@@ -37,7 +36,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Comment fonctionne les candidatures spontanées La bonne alternance ?
+          Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
         <Stack direction={{ xs: "column", md: "row" }} display="flex" alignItems="center">
           <Typography>

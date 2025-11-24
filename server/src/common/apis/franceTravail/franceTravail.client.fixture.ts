@@ -1,6 +1,6 @@
 import nock from "nock"
 
-import { FTJob, FTResponse } from "@/services/ftjob.service.types"
+import type { FTJob, FTResponse } from "@/services/ftjob.service.types"
 
 export function generateFtJobFixture(data: Partial<FTJob>): FTJob {
   return {

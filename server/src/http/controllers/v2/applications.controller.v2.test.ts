@@ -1,6 +1,7 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, IApplicationApiPublic, JOB_STATUS, JobCollectionName } from "shared"
+import type { IApplicationApiPublic } from "shared"
+import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -13,6 +14,7 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it, vi } from "vitest"
 
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { buildUserForToken } from "@/services/application.service"
@@ -20,8 +22,6 @@ import { generateApplicationReplyToken } from "@/services/appLinks.service"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "../../../../tests/utils/jwt.test.utils"
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {
@@ -46,6 +46,7 @@ const fakeToken = await getApiApprentissageTestingTokenFromInvalidPrivateKey({
 })
 
 const recruteur = generateJobsPartnersOfferPrivate({
+  _id: new ObjectId("64a43d28eeeb7c3b210faf59"),
   partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   workplace_siret: "11000001500013",
   workplace_legal_name: "ASSEMBLEE NATIONALE",
@@ -59,7 +60,7 @@ const recruteur = generateJobsPartnersOfferPrivate({
     type: "Point",
   },
   apply_email: "contact@mail.fr",
-  apply_phone: null,
+  apply_phone: "0300000000",
   workplace_size: "1000-1999",
   workplace_website: null,
   workplace_opco: OPCOS_LABEL.MOBILITE,
@@ -198,7 +199,7 @@ describe("POST /v2/application", () => {
       company_feedback_reasons: null,
       company_naf: "Administration publique générale",
       company_name: "ASSEMBLEE NATIONALE",
-      company_phone: null,
+      company_phone: "0300000000",
       company_recruitment_intention: null,
       company_siret: recruteur.workplace_siret,
       company_recruitment_intention_date: null,

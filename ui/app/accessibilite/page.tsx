@@ -1,4 +1,4 @@
-import { AccessibilitePage } from "@/app/accessibilite/AccessibilitePage"
+import { AccessibilitePage } from "./AccessibilitePage"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 
 const Page = async () => {

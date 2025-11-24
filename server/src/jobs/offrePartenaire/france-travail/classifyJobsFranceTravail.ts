@@ -2,17 +2,18 @@ import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 
 import type { AnyBulkWriteOperation } from "mongodb"
-import { IFTJobRaw } from "shared"
+import type { IFTJobRaw } from "shared"
 
+import type { Message } from "@/services/mistralai/mistralai.service"
+import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 // import config from "@/config"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
 import { ZChatCompletionResponse } from "@/services/openai/openai.service"
 
-import { logger } from "../../../common/logger"
-import { notifyToSlack } from "../../../common/utils/slackUtils"
-import { Message, sendMistralMessages } from "../../../services/mistralai/mistralai.service"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 export const checkFTOffer = async (data: any): Promise<any> => {
   const messages: Message[] = [
@@ -132,7 +133,7 @@ export const classifyFranceTravailJobs = async () => {
 
         callback()
       } catch (err: any) {
-        logger.error("Erreur de classification d’un batch France Travail", err)
+        logger.error(err, "Erreur de classification d'un batch France Travail")
         callback(err)
       }
     },

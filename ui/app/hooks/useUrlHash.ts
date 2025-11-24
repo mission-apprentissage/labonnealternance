@@ -14,7 +14,6 @@ export function useUrlHash() {
   useEffect(() => {
     setIsClient(true)
     const listener = () => setHash(getHash())
-    listener()
     window.addEventListener("hashchange", listener)
     return () => window.removeEventListener("hashchange", listener)
   }, [])

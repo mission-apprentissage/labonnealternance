@@ -1,14 +1,15 @@
 import { ObjectId } from "mongodb"
-import { IUnsubscribedLbaCompany } from "shared"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
+import type { IUnsubscribedLbaCompany } from "shared"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 
+import { obfuscateLbaCompanyApplications } from "./application.service"
+import mailer from "./mailer.service"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { obfuscateLbaCompanyApplications } from "@/services/application.service"
-import mailer from "@/services/mailer.service"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 

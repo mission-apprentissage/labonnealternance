@@ -1,11 +1,11 @@
-import { ReadonlyURLSearchParams } from "next/navigation"
+import type { ReadonlyURLSearchParams } from "next/navigation"
 import { typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
 import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
-import { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { PAGES } from "@/utils/routes.utils"
 
 const zIdeaType = z.nativeEnum(LBA_ITEM_TYPE_OLD)
@@ -33,7 +33,7 @@ function deserializeItemReference(item: string): ItemReference | null {
   try {
     const [ideaType, ...rest] = item.split(":")
     return { ideaType: newItemTypeToOldItemType(zIdeaType.parse(ideaType)), id: rest.join(",") }
-  } catch (e) {
+  } catch (_e) {
     return null
   }
 }
@@ -58,6 +58,7 @@ export enum RechercheViewType {
   FORMATION = "FORMATION",
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const zRecherchePageParams = z.object({
   romes: z.array(z.string()),
   geo: z
@@ -269,16 +270,16 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   }
 }
 
-export function detectModeFromParams({ displayFilters, displayEntreprises, displayPartenariats, displayFormations }: IRecherchePageParams): IRechercheMode {
+export function detectModeFromParams({ displayFilters, displayEntreprises, displayFormations }: IRecherchePageParams): IRechercheMode {
   if (displayFilters) {
     return IRechercheMode.DEFAULT
   }
 
-  if (!displayEntreprises && !displayPartenariats && displayFormations) {
+  if (!displayEntreprises && displayFormations) {
     return IRechercheMode.FORMATIONS_ONLY
   }
 
-  if (displayEntreprises && displayPartenariats && !displayFormations) {
+  if (displayEntreprises && !displayFormations) {
     return IRechercheMode.JOBS_ONLY
   }
 

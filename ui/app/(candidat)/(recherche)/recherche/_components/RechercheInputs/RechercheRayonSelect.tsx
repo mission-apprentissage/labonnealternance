@@ -13,7 +13,7 @@ export const radiusOptions = RADIUS_OPTIONS_VALUES.map((value) => ({ label: `${v
 export function RechercheRayonSelectFormik() {
   const [field, meta, helper] = useField({ name: "radius" })
 
-  return <RechercheRayonSelect value={field.value} onChange={(newValue) => helper.setValue(newValue.toString(), true)} error={meta.touched && meta.error} />
+  return <RechercheRayonSelect value={field.value} onChange={async (newValue) => helper.setValue(newValue.toString(), true)} error={meta.touched && meta.error} />
 }
 
 export function RechercheRayonSelect({ value, onChange, error }: { value: number; onChange: (value: number) => void; error?: string }) {

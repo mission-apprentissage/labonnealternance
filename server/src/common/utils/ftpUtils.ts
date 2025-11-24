@@ -1,8 +1,7 @@
 import Ftp from "basic-ftp"
 
-import { logger } from "../logger"
-
 import { sentryCaptureException } from "./sentryUtils"
+import { logger } from "@/common/logger"
 
 class FTPClient {
   client = new Ftp.Client()
@@ -18,7 +17,7 @@ class FTPClient {
       await this.client.access(options)
     } catch (error) {
       sentryCaptureException(error)
-      logger.error("FTP connection failed", error)
+      logger.error(error, "FTP connection failed")
     }
   }
 
@@ -48,7 +47,7 @@ class FTPClient {
       logger.info(`File successfully downloaded.`)
     } catch (error) {
       sentryCaptureException(error)
-      logger.error("Download failed:", error)
+      logger.error(error, "Download failed:")
     }
   }
 }

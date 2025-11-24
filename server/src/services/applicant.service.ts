@@ -1,12 +1,12 @@
 import { ObjectId } from "bson"
-import { Filter, MatchKeysAndValues } from "mongodb"
-import { IApplicant, IApplicantNew } from "shared"
+import type { Filter, MatchKeysAndValues } from "mongodb"
+import type { IApplicant, IApplicantNew } from "shared"
 
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-export const getApplicantFromDB = (filter: Filter<IApplicant>) => getDbCollection("applicants").findOne(filter)
+export const getApplicantFromDB = async (filter: Filter<IApplicant>) => getDbCollection("applicants").findOne(filter)
 
-const updateApplicant = (applicantId: ObjectId, update: MatchKeysAndValues<IApplicant>) => getDbCollection("applicants").updateOne({ _id: applicantId }, { $set: update })
+const updateApplicant = async (applicantId: ObjectId, update: MatchKeysAndValues<IApplicant>) => getDbCollection("applicants").updateOne({ _id: applicantId }, { $set: update })
 
 const createApplicant = async (applicant: IApplicantNew) => {
   const { firstname, lastname, phone, email } = applicant
@@ -25,7 +25,7 @@ const createApplicant = async (applicant: IApplicantNew) => {
   return payload
 }
 
-export const getApplicantByEmail = (email: string) => getApplicantFromDB({ email: email.toLowerCase() })
+export const getApplicantByEmail = async (email: string) => getApplicantFromDB({ email: email.toLowerCase() })
 
 export const getOrCreateApplicant = async (applicant: IApplicantNew | IApplicant) => {
   let dbApplicantOpt = await getApplicantByEmail(applicant.email.toLowerCase())

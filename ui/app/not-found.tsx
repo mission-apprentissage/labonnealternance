@@ -2,9 +2,9 @@
 
 import { Box, Container } from "@mui/material"
 
-import { Footer } from "@/app/_components/Footer"
-import NotFound from "@/app/_components/NotFound"
-import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { Footer } from "./_components/Footer"
+import NotFound from "./_components/NotFound"
+import { PublicHeaderStatic } from "./_components/PublicHeader"
 
 export default function NotFoundPage() {
   return (

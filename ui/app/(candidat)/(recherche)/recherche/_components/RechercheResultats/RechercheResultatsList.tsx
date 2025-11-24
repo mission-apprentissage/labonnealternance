@@ -10,15 +10,19 @@ import { LbaItemCard } from "@/app/(candidat)/(recherche)/recherche/_components/
 import { RechercheResultatsFooter } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheResultatsFooter"
 import { Whisper } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/Whisper"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
-import { ILbaItem, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useSearchViewNotifier } from "@/app/(candidat)/(recherche)/recherche/_hooks/useSearchViewNotifier"
-import { IWhisper, useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
-import { IRecherchePageParams, isItemReferenceInList, type WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IWhisper } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
+import { useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
+import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
 import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 import { getObjectId } from "@/utils/api"
+import { ResultCard } from "./ResultatListCard"
 
 type ResultCardILba = {
   type: "lba_item"
@@ -80,17 +84,14 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   const { formationQuery, jobQuery } = result
 
   if (result.status === "disabled") {
-    // eslint-disable-next-line react/jsx-key
     return [<RechercheResultatsPlaceholder {...props} />]
   }
 
   if (result.status === "error") {
-    // eslint-disable-next-line react/jsx-key
     return [<ErrorMessage message="Erreur technique momentanée" type="column" />]
   }
 
   if (formationQuery.status === "loading") {
-    // eslint-disable-next-line react/jsx-key
     return [<ResultListsLoading isJobSearchLoading={jobQuery.status === "loading"} isTrainingSearchLoading />]
   }
 

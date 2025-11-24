@@ -1,4 +1,5 @@
-import { createContext, FC, PropsWithChildren, useState } from "react"
+import type { FC, PropsWithChildren } from "react"
+import { createContext, useState } from "react"
 
 type IContextWidget = {
   isWidget: boolean

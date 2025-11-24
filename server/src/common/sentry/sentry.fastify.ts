@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/node"
 import type { FastifyRequest } from "fastify"
 import { assertUnreachable } from "shared"
 
-import { Server } from "../../http/server"
+import type { Server } from "@/http/server"
 
 type UserData = {
   segment: string
@@ -54,6 +54,10 @@ function extractUserData(request: FastifyRequest): UserData {
 }
 
 export function initSentryFastify(app: Server) {
+  // Setup official Fastify error handler
+  Sentry.setupFastifyErrorHandler(app)
+
+  // Custom user data hook
   app.addHook("onRequest", async (request, _reply) => {
     const scope = Sentry.getIsolationScope()
     scope

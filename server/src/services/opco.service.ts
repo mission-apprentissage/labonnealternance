@@ -1,13 +1,12 @@
 import memoize from "memoizee"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { IReferentielOpco, ZReferentielOpcoInsert } from "shared/models/index"
-import { IOpco } from "shared/models/opco.model"
+import type { IOpco } from "shared/models/opco.model"
 import { parseEnum } from "shared/utils/index"
 
+import type { ICfaDockOpcoItem } from "./cfadock.service"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { CFADOCK_FILTER_LIMIT, ICfaDockOpcoItem, fetchOpcosFromCFADock } from "./cfadock.service"
 
 /**
  * @description get opco from database collection OPCOS
@@ -144,7 +143,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
           // enregistrement des retours opcos dans notre base pour réduire les recours à CFADOCK
           await saveOpco(cfaDockOpcoItemToIOpco(sirenOpco))
         })
-      } catch (err) {
+      } catch (_) {
         // ne rien faire. 429 probable de l'api CFADOCK dont le rate limiter est trop limitant
         // les éventuelles sociétés qui auraient pu matcher sont ignorées
       }
@@ -165,16 +164,6 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
   })
 
   return results
-}
-
-export const prepareReferentielOpcoForInsert = (referentiel: Omit<IReferentielOpco, "_id">) => {
-  if (ZReferentielOpcoInsert.safeParse(referentiel).success && referentiel.emails.length) {
-    const deduplicatedEmails = [...new Set(referentiel.emails)]
-    referentiel.emails = deduplicatedEmails
-    return referentiel
-  } else {
-    return false
-  }
 }
 
 export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {

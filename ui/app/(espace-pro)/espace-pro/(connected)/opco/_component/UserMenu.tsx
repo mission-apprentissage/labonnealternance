@@ -1,6 +1,7 @@
-import { IUserRecruteurForAdminJSON } from "shared"
+import type { IUserRecruteurForAdminJSON } from "shared"
 
-import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 
 export const UserMenu = ({
@@ -22,7 +23,7 @@ export const UserMenu = ({
       link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath(),
       type: "link",
     },
-    tabIndex !== "1"
+    tabIndex === "disabled" || tabIndex === "awaiting"
       ? {
           label: "Activer le compte",
           onClick: () => {
@@ -32,7 +33,7 @@ export const UserMenu = ({
           type: "button",
         }
       : null,
-    tabIndex !== "2"
+    tabIndex === "active" || tabIndex === "awaiting"
       ? {
           label: "Désactiver le compte",
           onClick: () => {

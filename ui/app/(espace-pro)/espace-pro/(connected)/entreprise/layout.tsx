@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Container } from "@mui/material"
-import { PropsWithChildren } from "react"
+import type { PropsWithChildren } from "react"
 
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 

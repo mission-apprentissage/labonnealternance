@@ -1,4 +1,4 @@
-import { z } from "zod"
+import type { z } from "zod"
 
 import anonymizedApplicantModel from "./anonymizedApplicant.model.js"
 import anonymizedApplicationsModel from "./anonymizedApplications.model.js"
@@ -16,7 +16,7 @@ import cacheDiagorienteModel from "./cacheDiagoriente.model.js"
 import cacheGeolocationModel from "./cacheGeolocation.model.js"
 import cacheInfosSiretModel from "./cacheInfosSiret.model.js"
 import cfaModel from "./cfa.model.js"
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 import credentialsModel from "./credentials.model.js"
 import customEmailETFAModel from "./customEmailETFA.model.js"
 import diplomesMetiersModel from "./diplomesMetiers.model.js"
@@ -34,12 +34,14 @@ import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
+import rawDecathlonModel from "./rawDecathlon.model.js"
 import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawJobteaserModel from "./rawJobteaser.model.js"
 import rawJoobleModel from "./rawJooble.model.js"
 import rawKelioModel from "./rawKelio.model.js"
 import rawLaposteModel from "./rawLaposte.model.js"
+import rawLeboncoinModel from "./rawLeboncoin.model.js"
 import rawMeteojobModel from "./rawMeteojob.model.js"
 import rawMonsterModel from "./rawMonster.model.js"
 import rawNosTalentsNosEmploisModel from "./rawNosTalentsNosEmplois.model.js"
@@ -49,17 +51,16 @@ import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import rawToulouseMetropoleModel from "./rawToulouseMetropole.model.js"
 import rawViteUnEmploiModel from "./rawViteUnEmploi.model.js"
 import recruiterModel from "./recruiter.model.js"
-import lbaCompanyLegacyModel from "./recruteurLbaLegacy.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentielEngagementEntreprise.model.js"
 import referentielOnisepModel from "./referentielOnisep.model.js"
-import referentielOpcoModel from "./referentielOpco.model.js"
 import reportedCompanyModel from "./reportedCompany.model.js"
 import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import seoVilleModel from "./seoVille.model.js"
 import sessionModel from "./session.model.js"
 import sitemapModel from "./sitemap.model.js"
 import trafficSourcesModel from "./trafficSources.model.js"
@@ -99,8 +100,8 @@ const modelDescriptorMap = {
   [jobsModel.collectionName]: jobsModel,
   [jobsPartnersModel.collectionName]: jobsPartnersModel,
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
-  [lbaCompanyLegacyModel.collectionName]: lbaCompanyLegacyModel,
   [opcoModel.collectionName]: opcoModel,
+  [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,
@@ -111,7 +112,6 @@ const modelDescriptorMap = {
   [recruiterModel.collectionName]: recruiterModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
-  [referentielOpcoModel.collectionName]: referentielOpcoModel,
   [referentielEngagementEntrepriseModel.collectionName]: referentielEngagementEntrepriseModel,
   [resumeTokensModel.collectionName]: resumeTokensModel,
   [romeModel.collectionName]: romeModel,
@@ -128,6 +128,7 @@ const modelDescriptorMap = {
   [rawAtlasModel.collectionName]: rawAtlasModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawLaposteModel.collectionName]: rawLaposteModel,
+  [rawLeboncoinModel.collectionName]: rawLeboncoinModel,
   [rawJoobleModel.collectionName]: rawJoobleModel,
   [rawJobteaserModel.collectionName]: rawJobteaserModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
@@ -135,6 +136,7 @@ const modelDescriptorMap = {
   [rawFranceTravail.collectionName]: rawFranceTravail,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
+  [seoVilleModel.collectionName]: seoVilleModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

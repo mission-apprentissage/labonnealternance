@@ -3,25 +3,24 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography, Link } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
-import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import type { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
-import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
-import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
+import { DisplayContext } from "@/context/DisplayContextProvider"
+import { SendPlausibleEvent } from "@/utils/plausible"
+import { formatDate } from "@/utils/strutils"
+import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "@/components/ItemDetail/ItemDetailServices/ItemDistanceToCenter"
+import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
+import ItemWebsiteLink from "@/components/ItemDetail/ItemDetailServices/ItemWebsiteLink"
+import { JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { notifyJobDetailViewV3 } from "@/utils/api"
-
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { formatDate } from "../../../utils/strutils"
-import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
-import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
-import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
-import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
-import { JobDescription } from "../ItemDetailServices/JobDescription"
-import { ReportJobLink } from "../ReportJobLink"
+import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
+import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
+import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -66,9 +65,11 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
                 <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
               </Box>
             )}
-            <Box>
-              <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-            </Box>
+            {job?.job?.type?.length > 0 ? (
+              <Box>
+                <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
+              </Box>
+            ) : null}
 
             {job?.target_diploma_level && (
               <Box>

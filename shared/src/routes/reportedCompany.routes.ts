@@ -2,7 +2,7 @@ import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const zReportedCompanyRoutes = {
   post: {

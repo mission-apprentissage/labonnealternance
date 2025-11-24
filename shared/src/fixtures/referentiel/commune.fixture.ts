@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 
-import { IReferentielCommune } from "../../models/referentiel/communes.model.js"
+import type { IReferentielCommune } from "../../models/referentiel/communes.model.js"
 
 export const parisFixture: Omit<IReferentielCommune, "_id"> = {
   centre: {

@@ -1,18 +1,17 @@
 import { PassThrough, pipeline } from "node:stream"
 
 import { ObjectId } from "mongodb"
-import { CollectionName } from "shared/models/models"
+import type { CollectionName } from "shared/models/models"
 import * as xml2j from "xml2js"
 
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 
 const xmlToJson = async (offerXml: string, index: number) => {
-  index % 1000 === 0 && logger.info("parsing offer", index)
+  if (index % 1000 === 0) logger.info("parsing offer", index)
   const json = await xmlParser.parseStringPromise(offerXml)
   return json
 }
@@ -61,15 +60,15 @@ export const importFromStreamInXml = async ({
   }
 
   const xmlToJsonTransform = new PassThrough({
-    transform(chunk, _encoding, callback) {
-      readChunk(chunk.toString()).then(() => callback(null, null))
+    async transform(chunk, _encoding, callback) {
+      await readChunk(chunk.toString()).then(() => callback(null, null))
     },
   })
   return new Promise((resolve, reject) => {
     pipeline(stream, xmlToJsonTransform, (err) => {
       logger.info(`${offerInsertCount} offers inserted`)
       if (err) {
-        logger.error("Pipeline failed.", err)
+        logger.error(err, "Pipeline failed.")
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")

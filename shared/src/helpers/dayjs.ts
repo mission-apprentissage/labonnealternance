@@ -1,5 +1,4 @@
 import dayjs from "dayjs"
-// eslint-disable-next-line import/extensions
 import "dayjs/locale/fr.js"
 import advancedFormat from "dayjs/plugin/advancedFormat.js"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
@@ -9,13 +8,13 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js"
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js"
 import isYesterday from "dayjs/plugin/isYesterday.js"
 import localizedFormat from "dayjs/plugin/localizedFormat.js"
-import timezone from "dayjs/plugin/timezone.js"
-import utc from "dayjs/plugin/utc.js"
+import timezonePlugin from "dayjs/plugin/timezone.js"
+import utcPlugin from "dayjs/plugin/utc.js"
 
 dayjs.locale("fr")
-dayjs.extend(utc)
+dayjs.extend(utcPlugin)
 dayjs.extend(duration)
-dayjs.extend(timezone)
+dayjs.extend(timezonePlugin)
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isBetween)

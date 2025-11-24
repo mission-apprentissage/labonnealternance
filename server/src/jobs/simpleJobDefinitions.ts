@@ -1,36 +1,6 @@
-import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
-import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
-import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
-import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
-import {
-  processAtlas,
-  processMeteojob,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-  processViteUnEmploi,
-} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
-import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
-import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
-import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
-import { processJobteaser } from "@/jobs/offrePartenaire/jobteaser/processJobteaser"
-import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
-import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
-import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
-import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
-import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
-import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
-import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
-import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
-import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
-import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
-import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
-import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
-import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
-import { processScheduledRecruiterIntentions } from "@/services/application.service"
-import { generateSitemap } from "@/services/sitemap.service"
-
+import { updateSEO } from "./seo/updateSEO"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
@@ -46,7 +16,6 @@ import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { processKelio } from "./offrePartenaire/kelio/processKelio"
-import { processMonster } from "./offrePartenaire/monster/processMonster"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
@@ -71,6 +40,33 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
+import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
+import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
+import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
+import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
+import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
+import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
+import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
+import { processJooble } from "./offrePartenaire/jooble/processJooble"
+import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
+import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "./offrePartenaire/lbaJobToJobsPartners"
+import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
+import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
+import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
+import { processPass } from "./offrePartenaire/pass/processPass"
+import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
+import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
+import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
+import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
+import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
+import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
+import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
+import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
+import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
+import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
+import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { generateSitemap } from "@/services/sitemap.service"
 
 type SimpleJobDefinition = {
   fct: () => Promise<unknown>
@@ -181,6 +177,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées",
   },
   {
+    fct: anonymizeReportedReasons,
+    description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
+  },
+  {
     fct: fixJobExpirationDate,
     description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
   },
@@ -214,16 +214,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres France Travail dans la collection raw & computed",
   },
   {
-    fct: processMonster,
-    description: "Importe les offres Monster dans la collection raw & computed",
-  },
-  {
     fct: processKelio,
     description: "Importe les offres Kelio dans la collection raw & computed",
   },
   {
     fct: processLaposte,
     description: "Importe les offres La Poste dans la collection raw & computed",
+  },
+  {
+    fct: processLeboncoin,
+    description: "Importe les offres Le Bon Coin dans la collection raw & computed",
   },
   {
     fct: processJobteaser,
@@ -374,5 +374,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
+  },
+  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
+  {
+    fct: processDecathlon,
+    description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
   },
 ]

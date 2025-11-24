@@ -1,55 +1,48 @@
 import Boom, { badRequest, internal, notFound } from "@hapi/boom"
-import { IApiAlternanceTokenData } from "api-alternance-sdk"
-import dayjs from "dayjs"
-import { DateTime } from "luxon"
-import { Document, Filter, ObjectId } from "mongodb"
-import { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { IApiAlternanceTokenData } from "api-alternance-sdk"
+import dayjs from "shared/helpers/dayjs"
+import type { Document, Filter } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
+import { JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import {
-  IJobsPartnersOfferApi,
-  IJobsPartnersOfferPrivate,
-  IJobsPartnersOfferPrivateWithDistance,
-  INiveauDiplomeEuropeen,
-  JOBPARTNERS_LABEL,
-} from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, IComputedJobsPartnersWrite, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import {
+import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type {
   IJobOfferApiReadV3,
   IJobOfferPublishingV3,
-  JOB_PUBLISHING_STATUS,
-  jobsRouteApiv3Converters,
-  zJobOfferApiReadV3,
-  zJobRecruiterApiReadV3,
-  type IJobOfferApiWriteV3,
-  type IJobRecruiterApiReadV3,
-  type IJobSearchApiV3Query,
-  type IJobSearchApiV3QueryResolved,
-  type IJobSearchApiV3Response,
+  IJobOfferApiWriteV3,
+  IJobRecruiterApiReadV3,
+  IJobSearchApiV3Query,
+  IJobSearchApiV3QueryResolved,
+  IJobSearchApiV3Response,
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
-import { normalizeDepartementToRegex } from "@/common/utils/geolib"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
-import { getPartnerJobs } from "@/services/partnerJob.service"
+import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import { logger } from "@/common/logger"
+import type { IApiError } from "@/common/utils/errorManager"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import config from "@/config"
+import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
+import { getSomeFtJobs } from "@/services/ftjob.service"
+import type { FTJob } from "@/services/ftjob.service.types"
+import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
+import type { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/services/lbaitem.shared.service.types"
+import { getLbaJobs, incrementLbaJobsViewCount } from "@/services/lbajob.service"
+import { jobsQueryValidator, jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
+import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
+
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
-
-import { logger } from "../../../common/logger"
-import { IApiError } from "../../../common/utils/errorManager"
-import { getDbCollection } from "../../../common/utils/mongodbUtils"
-import { trackApiCall } from "../../../common/utils/sendTrackingEvent"
-import config from "../../../config"
-import { getRomesFromRncp } from "../../external/api-alternance/certification.service"
-import { getSomeFtJobs } from "../../ftjob.service"
-import { FTJob } from "../../ftjob.service.types"
-import { TJobSearchQuery, TLbaItemResult } from "../../jobOpportunity.service.types"
-import { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "../../lbaitem.shared.service.types"
-import { getLbaJobs, incrementLbaJobsViewCount } from "../../lbajob.service"
-import { jobsQueryValidator, jobsQueryValidatorPrivate } from "../../queryValidator.service"
-import { getRecruteursLbaFromDB, getSomeCompanies } from "../../recruteurLba.service"
-
-import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import { getPartnerJobs } from "@/services/partnerJob.service"
+import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 
 // TODO : QUICK FIX & TO REFACTO WITH JOBS PARTNER RETURN MODEL
 export const getJobsFromApiPrivate = async ({
@@ -664,6 +657,9 @@ export const convertFranceTravailJobToJobOfferApi = (offresEmploiFranceTravail: 
 }
 
 export const findFranceTravailOpportunitiesFromDB = async (resolvedQuery: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> => {
+  if (resolvedQuery.partners_to_exclude?.includes(JOBPARTNERS_LABEL.FRANCE_TRAVAIL)) {
+    return []
+  }
   const jobsPartners = await getJobsPartnersFromDB({ ...resolvedQuery, partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL })
 
   return jobsPartners.map((j) =>
@@ -674,7 +670,11 @@ export const findFranceTravailOpportunitiesFromDB = async (resolvedQuery: IJobSe
   )
 }
 
-async function findLbaJobOpportunities({ romes, geo, target_diploma_level, departements, opco }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
+async function findLbaJobOpportunities({ romes, geo, target_diploma_level, departements, opco, partners_to_exclude }: IJobSearchApiV3QueryResolved): Promise<IJobOfferApiReadV3[]> {
+  if (partners_to_exclude?.includes(JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)) {
+    return []
+  }
+
   const jobsPartners = await getJobsPartnersFromDB({
     romes,
     geo,
@@ -796,9 +796,7 @@ async function upsertJobOfferPrivate({
     lba_url: current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, current?.offer_title ?? data.offer.title),
   }
 
-  const defaultOfferExpiration = current?.offer_expiration
-    ? current.offer_expiration
-    : DateTime.fromJSDate(invariantData.created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
+  const defaultOfferExpiration = current?.offer_expiration ? current.offer_expiration : dayjs.tz(invariantData.created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
 
   const offer_target_diploma_european = data.offer.target_diploma?.european ?? null
 
@@ -1095,8 +1093,8 @@ const incrementJobCounter = (fieldName: keyof IJobsPartnersOfferPrivate) => asyn
 }
 
 export const incrementSearchViewCount = incrementJobCounter("stats_search_view")
-export const incrementDetailViewCount = (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
-export const incrementPostulerClickCount = (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
+export const incrementDetailViewCount = async (id: ObjectId) => incrementJobCounter("stats_detail_view")([id])
+export const incrementPostulerClickCount = async (id: ObjectId) => incrementJobCounter("stats_postuler")([id])
 
 export async function upsertJobsPartnersMulti({
   data,
@@ -1108,10 +1106,9 @@ export async function upsertJobsPartnersMulti({
   const now = new Date()
   const { partner_label, partner_job_id } = data
 
-  let current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
-  if (!current) {
-    current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
-  }
+  const currentJobsPartners = await getDbCollection("jobs_partners").findOne({ partner_label, partner_job_id })
+  const currentComputedJobsPartners = await getDbCollection("computed_jobs_partners").findOne({ partner_label, partner_job_id, currently_processed_id: null })
+  const current = currentJobsPartners ?? currentComputedJobsPartners ?? null
 
   const { created_at, _id } = {
     _id: current?._id ?? new ObjectId(),
@@ -1119,17 +1116,17 @@ export async function upsertJobsPartnersMulti({
   } satisfies Partial<IJobsPartnersOfferPrivate>
 
   const offerCreation = current?.offer_creation ?? new Date(data.offer_creation)
-  const offerExpiration = current?.offer_expiration ?? DateTime.fromJSDate(created_at, { zone: "Europe/Paris" }).plus({ months: 2 }).startOf("day").toJSDate()
+  const offerExpiration = current?.offer_expiration ?? dayjs.tz(created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
   const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
-  const offerTitle = current?.offer_title ?? data.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
-  const lbaUrl = current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)
+  const offerTitle = data.offer_title ?? current?.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
+  const lbaUrl = buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)
 
   const userWrittenFields = {
     ...data,
     offer_creation: offerCreation,
     offer_expiration: offerExpiration,
     offer_status: offerStatus,
-  }
+  } satisfies Partial<IComputedJobsPartners>
 
   const technicalFields = {
     updated_at: now,
@@ -1138,10 +1135,11 @@ export async function upsertJobsPartnersMulti({
     validated: false,
     jobs_in_success: [],
     currently_processed_id: null,
-  }
+    lba_url: lbaUrl,
+  } satisfies Partial<IComputedJobsPartners>
   const writtenFields: Omit<IComputedJobsPartners, InvariantFields> = { ...userWrittenFields, ...technicalFields }
   let modified: boolean
-  if (current) {
+  if (currentComputedJobsPartners) {
     const updateResult = await getDbCollection("computed_jobs_partners").updateOne({ _id }, { $set: userWrittenFields })
     modified = Boolean(updateResult.modifiedCount)
     if (modified) {
@@ -1149,7 +1147,7 @@ export async function upsertJobsPartnersMulti({
     }
   } else {
     modified = true
-    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id, lba_url: lbaUrl })
+    await getDbCollection("computed_jobs_partners").insertOne({ ...writtenFields, created_at, _id, offer_status_history: [], partner_label, partner_job_id })
   }
   if (current && current.offer_status !== offerStatus) {
     await getDbCollection("computed_jobs_partners").updateOne(
@@ -1168,4 +1166,40 @@ export async function upsertJobsPartnersMulti({
   }
 
   return { id: _id, modified }
+}
+
+export async function getPartnerJobsCount({
+  latitude,
+  longitude,
+  radius,
+  partnerLabel,
+  includePartnerLabel,
+}: {
+  latitude: number
+  longitude: number
+  radius: number
+  partnerLabel: string
+  includePartnerLabel: boolean
+}): Promise<number> {
+  const result = await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [longitude, latitude] },
+          distanceField: "distance",
+          maxDistance: radius * 1000,
+          spherical: true,
+          query: {
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            partner_label: includePartnerLabel ? { $in: [partnerLabel] } : { $nin: [partnerLabel] },
+          },
+        },
+      },
+      {
+        $count: "total",
+      },
+    ])
+    .toArray()
+
+  return result[0]?.total || 0
 }

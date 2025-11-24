@@ -1,5 +1,5 @@
 import Select from "@codegouvfr/react-dsfr/Select"
-import { FormikErrors, FormikTouched } from "formik"
+import type { FormikErrors, FormikTouched } from "formik"
 import { OPCOS_LABEL } from "shared/constants/index"
 
 interface Props {
@@ -19,7 +19,9 @@ export const OpcoSelect = ({ name, onChange, value, errors, touched }: Props) =>
       state={errors?.opco && touched?.opco ? "error" : "default"}
       stateRelatedMessage={errors?.opco && touched?.opco ? (errors.opco as string) : undefined}
     >
-      <option hidden>Sélectionnez un OPCO</option>
+      <option value="" hidden>
+        Sélectionnez un OPCO
+      </option>
       <option value={OPCOS_LABEL.AFDAS}>AFDAS</option>
       <option value={OPCOS_LABEL.AKTO}>AKTO</option>
       <option value={OPCOS_LABEL.ATLAS}>ATLAS</option>

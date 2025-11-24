@@ -1,4 +1,5 @@
-import { SxProps, Container } from "@mui/material"
+import type { SxProps } from "@mui/material"
+import { Container } from "@mui/material"
 
 const DefaultContainer = ({ children, sx }: { children: React.ReactNode; sx?: SxProps }) => {
   return (

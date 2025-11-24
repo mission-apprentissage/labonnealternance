@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { isCompanyInBlockedCfaList } from "@/jobs/offrePartenaire/isCompanyInBlockedCfaList"
+import { isCompanyInBlockedCfaList } from "./isCompanyInBlockedCfaList"
 
 describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", () => {
   it("devrait trouver les CFA avec casse et accents exacts", () => {
