@@ -1,10 +1,12 @@
-import { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
-import { PathParam, QueryString, WithQueryStringAndPathParam, generateUri } from "shared/helpers/generateUri"
-import { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
+import type { IDeleteRoutes, IGetRoutes, IPatchRoutes, IPostRoutes, IPutRoutes, IRequest, IRequestFetchOptions, IResponse } from "shared"
+import type { PathParam, QueryString, WithQueryStringAndPathParam } from "shared/helpers/generateUri"
+import { generateUri } from "shared/helpers/generateUri"
+import type { IResErrorJson, IRouteSchema, IRouteSchemaWrite } from "shared/routes/common.routes"
 import type { EmptyObject } from "type-fest"
-import z, { ZodType } from "zod"
+import type { ZodType } from "zod"
+import type z from "zod"
 
-import { publicConfig } from "../config.public"
+import { publicConfig } from "@/config.public"
 
 type OptionsGet = {
   [Prop in keyof Pick<IRouteSchema, "params" | "querystring" | "headers">]: IRouteSchema[Prop] extends ZodType ? z.input<IRouteSchema[Prop]> : never
@@ -111,7 +113,7 @@ export class ApiError extends Error {
     return this.context.statusCode === 404
   }
 
-  static async build(path: string, requestHeaders: Headers, options: WithQueryStringAndPathParam, res: Response, finalUrl?: string): Promise<ApiError> {
+  static async build(path: string, requestHeaders: Headers, options: WithQueryStringAndPathParam, res: Response): Promise<ApiError> {
     let message = res.status === 0 ? "Network Error" : res.statusText
     let name = "Api Error"
     let errorData: IResErrorJson["data"] | null = null
@@ -124,12 +126,11 @@ export class ApiError extends Error {
           message = data.message
           errorData = data.data
         }
-      } catch (error) {
+      } catch (_) {
         // ignore
       }
     }
 
-    console.error("error calling", finalUrl)
     return new ApiError({
       path,
       params: "params" in options ? options.params : {},
@@ -163,10 +164,9 @@ export async function apiGet<P extends keyof IGetRoutes, S extends IGetRoutes[P]
   fetchOptions: IRequestFetchOptions = {}
 ): Promise<IResponse<S>> {
   const { requestInit, headers } = await optionsToFetchParams("GET", options, fetchOptions)
-  const url = generateUrl(path, options)
-  const res = await fetch(url, requestInit)
+  const res = await fetch(generateUrl(path, options), requestInit)
   if (!res.ok) {
-    throw await ApiError.build(path, headers, options, res, url)
+    throw await ApiError.build(path, headers, options, res)
   }
   return res.json()
 }

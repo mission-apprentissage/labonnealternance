@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-// import { assertUnreachable } from "shared/utils/assertUnreachable"
+import { assertUnreachable } from "shared/utils/assertUnreachable"
 
 import { LbaItemCard } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/LbaItemCard"
 import { RechercheResultatsFooter } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheResultatsFooter"
@@ -191,8 +191,4 @@ function heightEstimation(type: ResultCardData["type"]): number {
       assertUnreachable(type)
     }
   }
-}
-
-function assertUnreachable(x: never): never {
-  throw new Error(`Didn't expect to get here, got type ${typeof x} with value ${x}`)
 }
