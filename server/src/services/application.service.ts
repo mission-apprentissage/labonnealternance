@@ -5,22 +5,10 @@ import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import {
-  ApplicationScanStatus,
-  CompanyFeebackSendStatus,
-  EMAIL_LOG_TYPE,
-  IApplicant,
-  IApplication,
-  IApplicationApiPrivateOutput,
-  IJob,
-  INewApplicationV1,
-  IRecruiter,
-  JOB_STATUS,
-  JobCollectionName,
-  assertUnreachable,
-  parseEnum,
-} from "shared"
-import { ApplicationIntention, ApplicationIntentionDefaultText, RefusalReasons } from "shared/constants/application"
+import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
+import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { RefusalReasons } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -33,6 +21,15 @@ import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
+import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
+import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
+import type { BrevoEventStatus } from "./brevo.service"
+import { isInfected } from "./clamav.service"
+import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import mailer from "./mailer.service"
+import { validateCaller } from "./queryValidator.service"
+import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
+import { validateUserWithAccountEmail } from "./userWithAccount.service"
 import { logger } from "@/common/logger"
 import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 import { manageApiError } from "@/common/utils/errorManager"
@@ -45,15 +42,6 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { UserForAccessToken } from "@/security/accessTokenService"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
-import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
-import type { BrevoEventStatus } from "./brevo.service"
-import { isInfected } from "./clamav.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer from "./mailer.service"
-import { validateCaller } from "./queryValidator.service"
-import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
-import { validateUserWithAccountEmail } from "./userWithAccount.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -274,7 +262,7 @@ export const sendApplicationV2 = async ({
   caller,
   source,
 }: {
-  newApplication: IApplicationApiPrivateOutput
+  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
@@ -572,7 +560,12 @@ const newApplicationToApplicationDocument = async (newApplication: INewApplicati
  * @description Initialize application object from query parameters
  */
 // get data from applicant
-const newApplicationToApplicationDocumentV2 = async (newApplication: IApplicationApiPrivateOutput, applicant: IApplicant, LbaJob: IJobOrCompanyV2, caller?: string) => {
+const newApplicationToApplicationDocumentV2 = async (
+  newApplication: IApplicationApiPublicOutput | IApplicationApiPrivateOutput,
+  applicant: IApplicant,
+  LbaJob: IJobOrCompanyV2,
+  caller?: string
+) => {
   const now = new Date()
   const application: IApplication = {
     _id: new ObjectId(),
