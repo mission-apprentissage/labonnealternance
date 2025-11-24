@@ -36,7 +36,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Comment fonctionne les candidatures spontanées La bonne alternance ?
+          Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
         <Stack direction={{ xs: "column", md: "row" }} display="flex" alignItems="center">
           <Typography>
