@@ -179,7 +179,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
                 <Link
                   key={activite.naf_label}
                   underline="none"
-                  href={`/recherche?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
+                  href={`/recherche-emploi?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
                   sx={{
                     display: "flex",
                     width: "100%",
