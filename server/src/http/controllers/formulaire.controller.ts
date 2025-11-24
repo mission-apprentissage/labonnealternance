@@ -2,14 +2,15 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { JOB_STATUS, zRoutes } from "shared/index"
 
-import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
+import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
+import type { Server } from "@/http/server"
 import {
   archiveFormulaireByEstablishmentId,
   cancelOffre,
@@ -23,13 +24,13 @@ import {
   getJob,
   getJobWithRomeDetail,
   getOffre,
-  updateJobDelegation,
   patchOffre,
   provideOffre,
-  validateUserEmailFromJobId,
   updateCfaManagedRecruiter,
+  updateJobDelegation,
+  validateDelegatedCompanyPhoneAndEmail,
+  validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
-import type { Server } from "@/http/server"
 
 export default (server: Server) => {
   /**
@@ -102,19 +103,11 @@ export default (server: Server) => {
       if (!userRecruteurOpt) {
         throw badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
-      if (userRecruteurOpt.phone === phone) {
-        throw badRequest(
-          "Veuillez renseigner le numéro de téléphone de la personne en charge des recrutements au sein de l’entreprise. Ce numéro ne peut être identique à celui de votre organisme de formation"
-        )
-      }
-      if (userRecruteurOpt.email.toLocaleLowerCase() === email.toLocaleLowerCase()) {
-        throw badRequest(
-          "Veuillez renseigner l’email de la personne en charge des recrutements au sein de l’entreprise. L’email renseigné ne peut être identique à celui de l’organisme de formation."
-        )
-      }
       if (!userRecruteurOpt.establishment_siret) {
         throw internal("unexpected: userRecruteur without establishment_siret")
       }
+      validateDelegatedCompanyPhoneAndEmail(userRecruteurOpt, phone, email)
+
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
         last_name,
@@ -325,13 +318,19 @@ export default (server: Server) => {
   )
 
   server.post(
+    // this route is for CFA only
     "/formulaire/:establishment_id/informations",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/informations"],
       onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/informations"])],
     },
     async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/informations"]).value
       const { establishment_id } = req.params
+      const { email, phone } = req.body
+
+      validateDelegatedCompanyPhoneAndEmail(user, phone, email)
+
       await updateCfaManagedRecruiter(establishment_id, req.body)
 
       return res.status(200).send({ ok: true })

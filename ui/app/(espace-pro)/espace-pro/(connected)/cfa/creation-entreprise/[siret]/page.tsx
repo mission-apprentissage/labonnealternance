@@ -83,7 +83,12 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   checked={informationForm.values.isDeclarationExact}
                 />
               }
-              label={<Typography component="strong">Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.</Typography>}
+              label={
+                <Typography>
+                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire l’objet de contrôles
+                  par La bonne alternance.
+                </Typography>
+              }
               sx={{ mt: 2 }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>

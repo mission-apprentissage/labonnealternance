@@ -41,6 +41,7 @@ import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPart
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { logger } from "@/common/logger"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -869,6 +870,19 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   const recruiterOpt = await getOffre(jobId)
   const { managed_by } = recruiterOpt ?? {}
   await validateUserWithAccountEmail(new ObjectId(managed_by))
+}
+
+export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | IUserRecruteur, phone?: string, email?: string) => {
+  if (user.phone === phone) {
+    throw badRequest(
+      "Veuillez renseigner le numéro de téléphone de la personne en charge des recrutements au sein de l’entreprise. Ce numéro ne peut être identique à celui de votre organisme de formation"
+    )
+  }
+  if (!email || user.email.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
+    throw badRequest(
+      "Veuillez renseigner l’email de la personne en charge des recrutements au sein de l’entreprise. L’email renseigné ne peut être identique à celui de l’organisme de formation."
+    )
+  }
 }
 
 export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {
