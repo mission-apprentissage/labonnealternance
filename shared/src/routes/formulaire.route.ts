@@ -81,6 +81,7 @@ export const zFormulaireRoute = {
           last_name: z.string(),
           first_name: z.string(),
           phone: z.string(),
+          isDeclarationExact: z.boolean().optional(),
         })
         .strict(),
       response: {

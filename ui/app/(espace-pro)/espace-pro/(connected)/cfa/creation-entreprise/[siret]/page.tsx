@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Typography } from "@mui/material"
+import { Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -51,12 +51,14 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         first_name: undefined,
         phone: undefined,
         email: undefined,
+        isDeclarationExact: false,
       }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
         last_name: Yup.string().required("champ obligatoire"),
         first_name: Yup.string().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
+        isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}
       onSubmit={submitForm}
     >
@@ -71,6 +73,19 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
               <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des
               fins de contrôles.
             </Typography>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(event) => {
+                    console.log(event.target.checked)
+                    informationForm.setFieldValue("isDeclarationExact", event.target.checked)
+                  }}
+                  checked={informationForm.values.isDeclarationExact}
+                />
+              }
+              label={<Typography component="strong">Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.</Typography>}
+              sx={{ mt: 2 }}
+            />
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
                 <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
