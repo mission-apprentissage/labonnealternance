@@ -34,7 +34,11 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         router.push(PAGES.dynamic.backCfaEntrepriseCreationOffre(data.establishment_id).getPath())
       })
       .catch((err) => {
-        setFieldError("email", err.message)
+        if (err.message.includes("phone")) {
+          setFieldError("phone", err.message)
+        } else {
+          setFieldError("email", err.message)
+        }
         setSubmitting(false)
       })
   }

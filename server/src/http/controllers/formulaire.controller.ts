@@ -102,6 +102,16 @@ export default (server: Server) => {
       if (!userRecruteurOpt) {
         throw badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
+      if (userRecruteurOpt.phone === phone) {
+        throw badRequest(
+          "Veuillez renseigner le numéro de téléphone de la personne en charge des recrutements au sein de l’entreprise. Ce numéro ne peut être identique à celui de votre organisme de formation"
+        )
+      }
+      if (userRecruteurOpt.email.toLocaleLowerCase() === email.toLocaleLowerCase()) {
+        throw badRequest(
+          "Veuillez renseigner l’email de la personne en charge des recrutements au sein de l’entreprise. L’email renseigné ne peut être identique à celui de l’organisme de formation."
+        )
+      }
       if (!userRecruteurOpt.establishment_siret) {
         throw internal("unexpected: userRecruteur without establishment_siret")
       }
