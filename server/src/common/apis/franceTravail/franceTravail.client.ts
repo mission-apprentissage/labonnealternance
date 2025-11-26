@@ -7,16 +7,16 @@ import FormData from "form-data"
 import type { IFTJobRaw } from "shared"
 import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
+import getApiClient from "@/common/apis/client"
 import { logger } from "@/common/logger"
 import { apiRateLimiter } from "@/common/utils/apiUtils"
+import { sleep } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import getApiClient from "@/common/apis/client"
-import { ZFTApiToken } from "@/services/rome.service.types"
-import type { FTResponse } from "@/services/ftjob.service.types"
 import config from "@/config"
-import { sleep } from "@/common/utils/asyncUtils"
+import type { FTResponse } from "@/services/ftjob.service.types"
+import { ZFTApiToken } from "@/services/rome.service.types"
 
 const axiosClient = getApiClient({})
 
@@ -150,11 +150,13 @@ export const getFtJob = async (id: string) => {
 /**
  * Sends CSV file to France Travail API through a "form data".
  */
-export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => {
+// KBA 20251126 : Passage au flux HACOFILE le 2 décembre 2025. Décomissionnement du flux LABONATA à validé par Patricia BOYER (FT)
+// => modifier la configuration en conséquence et retirer le paramètre nomFlux
+export const sendCsvToFranceTravail = async (csvPath: string, nomFlux: string = config.franceTravailDepotOffres.nomFlux): Promise<void> => {
   const form = new FormData()
   form.append("login", config.franceTravailDepotOffres.login)
   form.append("password", config.franceTravailDepotOffres.password)
-  form.append("nomFlux", config.franceTravailDepotOffres.nomFlux)
+  form.append("nomFlux", nomFlux)
   form.append("fichierAenvoyer", createReadStream(csvPath))
   form.append("periodeRef", "")
 
