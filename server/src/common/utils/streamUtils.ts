@@ -107,3 +107,54 @@ export async function waitForStreamEnd(readable: Stream.Readable | Stream.Writab
     readable.on("error", reject)
   })
 }
+
+type LimitStreamOptions<TInput> = {
+  concurrency: number
+  processItem: (item: TInput) => Promise<void>
+}
+
+/**
+ * Creates a Transform stream with concurrency control for async operations.
+ * Limits the number of simultaneous async operations to prevent memory overflow.
+ *
+ * @param options Configuration with concurrency limit and item processor
+ * @returns A Transform stream that processes items with controlled concurrency
+ */
+export function limitStream<TInput>(options: LimitStreamOptions<TInput>): Transform {
+  const { concurrency, processItem } = options
+  let activeCount = 0
+  const pendingPromises: Promise<void>[] = []
+
+  return new Transform({
+    objectMode: true,
+    async transform(item: TInput, _encoding: BufferEncoding, callback: TransformCallback) {
+      // Attendre qu'un slot se libère si on est à la limite
+      while (activeCount >= concurrency) {
+        await new Promise((resolve) => setTimeout(resolve, 10))
+      }
+
+      activeCount++
+
+      // Lancer le traitement de manière asynchrone
+      const promise = (async () => {
+        try {
+          await processItem(item)
+        } finally {
+          activeCount--
+        }
+      })()
+
+      pendingPromises.push(promise)
+      callback(null)
+    },
+    async flush(callback: TransformCallback) {
+      // Attendre que toutes les opérations en cours se terminent
+      try {
+        await Promise.all(pendingPromises)
+        callback(null)
+      } catch (err) {
+        callback(err as Error)
+      }
+    },
+  })
+}
