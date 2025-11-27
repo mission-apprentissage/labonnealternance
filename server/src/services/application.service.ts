@@ -308,13 +308,6 @@ export const sendApplicationV2 = async ({
     }
     lbaJob = { type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
   }
-  if (collectionName === JobCollectionName.recruteur) {
-    const job = await getDbCollection("jobs_partners").findOne({ workplace_siret: jobId })
-    if (!job) {
-      throw badRequest(BusinessErrorCodes.NOTFOUND)
-    }
-    lbaJob = { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job, recruiter: null }
-  }
 
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
 

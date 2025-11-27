@@ -539,7 +539,7 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
       apply: {
         url: buildApplyUrl(recruteurLba.workplace_siret!, recruteurLba.workplace_legal_name!, LBA_ITEM_TYPE.RECRUTEURS_LBA),
         phone: recruteurLba.apply_phone,
-        recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.recruteur, recruteurLba.workplace_siret!) : null,
+        recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.partners, recruteurLba._id.toString()) : null,
       },
     })
   )
@@ -1069,9 +1069,6 @@ export const getRecipientID = (type: IJobCollectionName, id: string) => {
   }
   if (type === JobCollectionName.partners) {
     return `partners_${id}`
-  }
-  if (type === JobCollectionName.recruteur) {
-    return `recruteur_${id}`
   }
   assertUnreachable(type)
 }
