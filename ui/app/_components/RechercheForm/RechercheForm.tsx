@@ -54,7 +54,6 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
   return {
     displayEntreprises: displayedItemTypes?.includes(UserItemTypes.EMPLOI),
     displayFormations: displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
-    displayPartenariats: displayedItemTypes?.includes(UserItemTypes.EMPLOI) && displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
     romes: metier?.romes ?? [],
     geo: lieu
       ? {
