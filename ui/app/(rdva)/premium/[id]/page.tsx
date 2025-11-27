@@ -121,15 +121,32 @@ export default function PremiumParcoursup() {
           <>
             <Typography>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Typography>
 
-            <Stack sx={{ mt: fr.spacing("2w") }} gap={fr.spacing("1w")}>
+            <Stack
+              sx={{
+                gap: fr.spacing("1w"),
+                mt: fr.spacing("2w"),
+              }}
+            >
               <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
                 <SuccessCircle fillHexaColor="#00AC8C" />
-                <Typography fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Typography>
+                <Typography
+                  sx={{
+                    fontWeight: "700",
+                  }}
+                >
+                  Répondre par email ou téléphone à tous les candidats qui me contacteront
+                </Typography>
               </Box>
 
               <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
                 <SuccessCircle fillHexaColor="#00AC8C" />
-                <Typography fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Typography>
+                <Typography
+                  sx={{
+                    fontWeight: "700",
+                  }}
+                >
+                  Dans un délai de 4 jours ouvrés après réception de la demande par e-mail
+                </Typography>
               </Box>
             </Stack>
 

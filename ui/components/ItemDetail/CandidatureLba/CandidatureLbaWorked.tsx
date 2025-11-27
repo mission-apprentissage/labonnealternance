@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import React from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -57,7 +57,13 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
         >
           <Image src="/images/dame_papier_coche_verte.svg" aria-hidden={true} alt="" width={110} height={102} />
           <Box>
-            <Typography marginBottom="24px" fontSize="18px" lineHeight="28px">
+            <Typography
+              sx={{
+                marginBottom: "24px",
+                fontSize: "18px",
+                lineHeight: "28px",
+              }}
+            >
               <b>
                 Augmentez vos chances de trouver une alternance avec des <TagCandidatureSpontanee /> visibles en fin de résultats de recherche.
               </b>

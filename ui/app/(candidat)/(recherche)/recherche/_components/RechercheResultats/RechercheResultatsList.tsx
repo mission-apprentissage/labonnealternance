@@ -111,12 +111,26 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
       {jobQuery.errorMessage && <ErrorMessage message={jobQuery.errorMessage} />}
 
       {formationQuery.status === "success" && formationQuery.formations.length === 0 && (
-        <Box mx={6} textAlign="center" my={2} fontWeight={700}>
+        <Box
+          sx={{
+            mx: 6,
+            textAlign: "center",
+            my: 2,
+            fontWeight: 700,
+          }}
+        >
           Aucune formation en alternance disponible pour ce métier
         </Box>
       )}
       {formationQuery.status === "success" && firstFormation && props.rechercheParams.geo !== null && props.rechercheParams.radius < firstFormation.place?.distance && (
-        <Box fontWeight={700} textAlign="center" mx={4} my={2}>
+        <Box
+          sx={{
+            fontWeight: 700,
+            textAlign: "center",
+            mx: 4,
+            my: 2,
+          }}
+        >
           Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
         </Box>
       )}

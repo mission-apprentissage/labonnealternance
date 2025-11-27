@@ -10,7 +10,12 @@ export const OffresGratuites = () => {
         <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
           Vos offres sont diffusées gratuitement au plus près des candidats
         </Typography>
-        <Typography fontSize="18px" mt={4}>
+        <Typography
+          sx={{
+            fontSize: "18px",
+            mt: 4,
+          }}
+        >
           Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
           <DsfrLink aria-label="Accès au site un jeune une solution - nouvelle fenêtre" href="https://www.1jeune1solution.gouv.fr">
             1jeune1solution

@@ -91,10 +91,21 @@ const InfoBanner = ({
   return (
     <>
       {showEnvAlert && env !== "production" && (forceEnvBanner || !isEnvClosed) && (
-        <Box sx={{ backgroundColor: "#FFE9E6" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#FFE9E6",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#B34000" }}>
             <Typography className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {envBannerText}
             </Box>
             {!forceEnvBanner && getCloseButton(setBannerContext, "isEnvClosed", "#B34000")}
@@ -102,10 +113,21 @@ const InfoBanner = ({
         </Box>
       )}
       {!isAlertClosed && showAlert && (
-        <Box sx={{ backgroundColor: "#FFE9E6" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#FFE9E6",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#B34000" }}>
             <Typography className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {redBannerText}
             </Box>
             {getCloseButton(setBannerContext, "isAlertClosed", "#B34000")}
@@ -113,10 +135,21 @@ const InfoBanner = ({
         </Box>
       )}
       {!isOKClosed && showOK && (
-        <Box sx={{ backgroundColor: "#B8FEC9" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#B8FEC9",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#18753C" }}>
             <Typography className={fr.cx("ri-checkbox-circle-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {greenBannerText}
             </Box>
             {getCloseButton(setBannerContext, "isOKClosed", "#18753C")}
@@ -124,10 +157,21 @@ const InfoBanner = ({
         </Box>
       )}
       {!isInfoClosed && showInfo && (
-        <Box sx={{ backgroundColor: "#E8EDFF" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#E8EDFF",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#0063CB" }}>
             <Typography className={fr.cx("ri-information-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {blueBannerText}
             </Box>
             {getCloseButton(setBannerContext, "isInfoClosed", "#0063CB")}

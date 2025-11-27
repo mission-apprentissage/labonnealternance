@@ -34,7 +34,12 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
   if (props.jobStatus === "success") {
     if (props.jobCount === 0) {
       return (
-        <Typography textAlign="center" fontWeight="bold">
+        <Typography
+          sx={{
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
           Aucune entreprise trouvée pour votre recherche.
           <br />
           Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
@@ -47,7 +52,12 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
         <>
           {props.searchParams.geo !== null && (
             <>
-              <Typography textAlign="center" fontWeight="bold">
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  fontWeight: "bold",
+                }}
+              >
                 Peu de résultats dans votre zone de recherche
               </Typography>
               <Button title="Rechercher sur la France entière" priority="primary" onClick={onExtendSearch}>
@@ -63,8 +73,20 @@ export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
 
   return (
     <>
-      <Typography fontWeight="bold">Vous êtes arrivé.e au bout de la liste.</Typography>
-      <Typography fontWeight="bold">Pour voir d'autres possibilités, revenez plus tard ou changez vos critères de recherche</Typography>
+      <Typography
+        sx={{
+          fontWeight: "bold",
+        }}
+      >
+        Vous êtes arrivé.e au bout de la liste.
+      </Typography>
+      <Typography
+        sx={{
+          fontWeight: "bold",
+        }}
+      >
+        Pour voir d'autres possibilités, revenez plus tard ou changez vos critères de recherche
+      </Typography>
     </>
   )
 }

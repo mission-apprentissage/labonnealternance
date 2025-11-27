@@ -90,10 +90,20 @@ export default function DropdownCombobox(props) {
               data-testid={item.appellation}
               {...getItemProps({ item, index })}
             >
-              <Typography fontSize="16px" fontWeight="700">
+              <Typography
+                sx={{
+                  fontSize: "16px",
+                  fontWeight: "700",
+                }}
+              >
                 {item.appellation}
               </Typography>
-              <Typography fontSize="12px" color="#666666">
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  color: "#666666",
+                }}
+              >
                 {item.intitule}
               </Typography>
             </li>

@@ -241,7 +241,13 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
               {errorMessage && (
                 <Box sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("1w") }}>
                   <Warning sx={{ m: 0 }} />
-                  <Box ml={1}>{errorMessage}</Box>
+                  <Box
+                    sx={{
+                      ml: 1,
+                    }}
+                  >
+                    {errorMessage}
+                  </Box>
                 </Box>
               )}
 

@@ -53,9 +53,18 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   const ActionButtons = (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
-        <Box mr={fr.spacing("3w")}>
+        <Box
+          sx={{
+            mr: fr.spacing("3w"),
+          }}
+        >
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-hotel-line")} />
+            <Typography
+              className={fr.cx("fr-icon-hotel-line")}
+              sx={{
+                mr: fr.spacing("1w"),
+              }}
+            />
             {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
           </Button>
         </Box>
@@ -70,7 +79,12 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
     return (
       <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
-          <Typography fontSize="2rem" fontWeight={700}>
+          <Typography
+            sx={{
+              fontSize: "2rem",
+              fontWeight: 700,
+            }}
+          >
             {entrepriseTitle}
           </Typography>
           {ActionButtons}
@@ -83,12 +97,22 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   return (
     <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
-        <Typography fontSize="2rem" fontWeight={700}>
+        <Typography
+          sx={{
+            fontSize: "2rem",
+            fontWeight: 700,
+          }}
+        >
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Typography>
         {ActionButtons}
       </Box>
-      <Typography fontWeight="700" py={fr.spacing("3w")}>
+      <Typography
+        sx={{
+          fontWeight: "700",
+          py: fr.spacing("3w"),
+        }}
+      >
         Offres de recrutement en alternance
       </Typography>
       <OffresTabs showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
@@ -98,11 +122,24 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
 const EmptySpace = () => (
   <Stack direction={{ xs: "column", lg: "row" }} spacing="32px" sx={{ mt: fr.spacing("4w"), py: fr.spacing("5w"), border: "1px solid", borderColor: "grey.400" }}>
-    <Box sx={{ display: "flex", justifyContent: { xs: "center", lg: "flex-end" }, align: { xs: "center", lg: "flex-start" } }} width={{ xs: "100%", lg: "350px" }} height="150px">
+    <Box
+      sx={{
+        width: { xs: "100%", lg: "350px" },
+        height: "150px",
+        display: "flex",
+        justifyContent: { xs: "center", lg: "flex-end" },
+        align: { xs: "center", lg: "flex-start" },
+      }}
+    >
       <Image src="/images/espace_pro/add-offer.svg" width="246" height="170" alt="" />
     </Box>
 
-    <Box px={{ xs: fr.spacing("2w") }} width={{ xs: "100%", lg: "600px" }}>
+    <Box
+      sx={{
+        px: { xs: fr.spacing("2w") },
+        width: { xs: "100%", lg: "600px" },
+      }}
+    >
       <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
         Ajoutez votre première offre d’emploi en alternance.
       </Typography>

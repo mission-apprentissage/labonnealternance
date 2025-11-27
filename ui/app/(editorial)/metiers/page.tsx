@@ -47,7 +47,13 @@ export default async function Metiers() {
               Vous voulez travailler en alternance ? Vous voulez obtenir un diplôme en alternance ? Toutes les informations pour trouver une alternance rapidement sont sur La bonne
               alternance :
             </Typography>
-            <Stack spacing={1} alignItems="flex-start" sx={{ mt: 2 }}>
+            <Stack
+              spacing={1}
+              sx={{
+                alignItems: "flex-start",
+                mt: 2,
+              }}
+            >
               <Typography>Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</Typography>
               <Typography>Liste d'entreprises qui recrutent en alternance</Typography>
               <Typography>Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</Typography>

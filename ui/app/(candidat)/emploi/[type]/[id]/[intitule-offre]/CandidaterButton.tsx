@@ -59,7 +59,13 @@ export function CandidaterButton({
               </Button>
             </Box>
             {item.company?.mandataire && (
-              <Stack direction="row" alignItems="center" sx={{ my: 4 }}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  my: 4,
+                }}
+              >
                 <Box component="span">
                   <Image width={16} height={16} src="/images/icons/small_info.svg" alt="" />
                 </Box>
