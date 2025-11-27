@@ -88,6 +88,7 @@ const zRecherchePageParams = z.object({
     .optional(),
   opco: z.string().nullish(),
   rncp: z.string().nullish(),
+  scrollToRecruteursLba: z.boolean().nullish(),
 })
 
 export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
@@ -165,6 +166,9 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   if (rechercheParams.elligibleHandicapFilter === true) {
     query.set("elligibleHandicapFilter", "true")
   }
+  if (rechercheParams.scrollToRecruteursLba) {
+    query.set("scrollToRecruteursLba", "true")
+  }
 
   return query.toString()
 }
@@ -214,6 +218,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const displayMobileForm = search.get("displayMobileForm") === "true"
   const elligibleHandicapFilter = search.get("elligibleHandicapFilter") === "true"
+  const scrollToRecruteursLba = search.get("scrollToRecruteursLba") === "true"
 
   const commonProps = {
     romes,
@@ -228,7 +233,8 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     opco,
     rncp,
     radius,
-  }
+    scrollToRecruteursLba,
+  } satisfies Partial<IRecherchePageParams>
 
   if (mode === IRechercheMode.FORMATIONS_ONLY) {
     return {

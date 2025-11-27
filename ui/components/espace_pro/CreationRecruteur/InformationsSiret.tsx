@@ -145,7 +145,11 @@ function InformationsCfa() {
           ou bien sur les registres de votre organisme de formation.
         </Typography>
       </Box>
-      <Box mt={5}>
+      <Box
+        sx={{
+          mt: 5,
+        }}
+      >
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
           Vous avez déjà déposé une offre en alternance par le passé ?
         </Typography>
