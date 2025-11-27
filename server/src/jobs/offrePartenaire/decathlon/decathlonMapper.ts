@@ -70,9 +70,13 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
 
   const created_at = new Date()
 
-  const finalDescription = description ? `Description :<br />${description}` : null
-  const finalProfile = profile ? `Profil :<br />${profile}` : null
-  const offer_description = [finalDescription, finalProfile].filter((x) => x).join("<br /><br />")
+  const finalDescription = description ? `<b>Description :</b><br />${description}` : null
+  const finalProfile = profile ? `<b>Profil :</b><br />${profile}` : null
+  const offer_description = [finalDescription, finalProfile]
+    .filter((x) => x)
+    .join("<br /><br />")
+    .replaceAll("<p>", "")
+    .replaceAll("</p>", "")
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(),
@@ -125,8 +129,8 @@ function getDiplomaLevel(value: string | null | undefined) {
     "BTS, Bac+2": "5",
     "BUT, Licence, Bac+3": "6",
     "Maitrise, IEP, IUP, Bac+4": "6",
-    "Master, Bac+5": "6",
-    "Doctorat, Bac+8": "6",
+    "Master, Bac+5": "7",
+    "Doctorat, Bac+8": "7",
   }
   const diplomeValue = mapping[value]
   const found = NIVEAUX_DIPLOMES_EUROPEENS.find((x) => x.value === diplomeValue)
