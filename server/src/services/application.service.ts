@@ -1156,7 +1156,7 @@ export const processApplicationEmails = {
 function buildRecruitingCompaniesUrl(application: IApplication) {
   const { application_url } = application
   if (!application_url) {
-    console.log("no application_url")
+    console.warn("no application_url")
     return
   }
   const searchParams = new URL(application_url).searchParams
@@ -1170,7 +1170,6 @@ function buildRecruitingCompaniesUrl(application: IApplication) {
   searchParams.append("utm_medium", "email")
   searchParams.append("utm_campaign", "confirmation-envoi-candidature-offre_promo-candidature-spontanee")
   const result = `${config.publicUrl}/recherche?${searchParams}`
-  console.log("result url", result)
   return result
 }
 
