@@ -67,18 +67,15 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
   const { address } = entity ?? {}
   const { position } = address ?? {}
   const { lat, lon } = position ?? {}
-
-  const created_at = new Date()
+  const now = new Date()
 
   const finalDescription = description ? `Description :<br />${description}` : null
   const finalProfile = profile ? `Profil :<br />${profile}` : null
   const offer_description = [finalDescription, finalProfile].filter((x) => x).join("<br /><br />")
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at,
-    updated_at: created_at,
     partner_label: JOBPARTNERS_LABEL.DECATHLON,
     partner_job_id: reference,
     contract_type: contract_type === "Contrat d'alternance (pro, apprentissage)" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
@@ -94,7 +91,7 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
     offer_rome_codes: undefined,
     offer_creation: published_at ? new Date(published_at) : null,
     offer_expiration: dayjs
-      .tz(published_at || created_at)
+      .tz(published_at || now)
       .add(2, "months")
       .toDate(),
     workplace_siret: null,
