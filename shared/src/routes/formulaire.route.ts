@@ -81,6 +81,7 @@ export const zFormulaireRoute = {
           last_name: z.string(),
           first_name: z.string(),
           phone: z.string(),
+          isDeclarationExact: z.boolean().optional(),
         })
         .strict(),
       response: {
@@ -98,7 +99,9 @@ export const zFormulaireRoute = {
       method: "post",
       path: "/formulaire/:establishment_id/informations",
       params: z.object({ establishment_id: z.string() }).strict(),
-      body: ZUserWithAccountFields.partial(),
+      body: ZUserWithAccountFields.partial().extend({
+        isDeclarationExact: z.boolean().optional(),
+      }),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
       },

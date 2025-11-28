@@ -42,15 +42,19 @@ const CreationCompte = () => {
   )
 }
 
-const InformationSiret = () => (
+const InformationEntreprise = () => (
   <Box sx={{ border: "1px solid #000091", p: { xs: fr.spacing("2w"), sm: fr.spacing("4w") } }}>
-    <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "30px" }} component="h2">
-      Où trouver votre SIRET ?
+    <Typography sx={{ fontSize: "24px", mb: fr.spacing("5v"), fontWeight: 700, lineHeight: "30px" }} component="h2">
+      Ajout d’une entreprise partenaire
     </Typography>
     <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-      <Typography sx={{ mr: fr.spacing("1w") }} color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
       <Typography sx={{ textAlign: "justify" }}>
-        Le numéro d’identification de votre entreprise partenaire peut être trouvé sur{" "}
+        Ajoutez l’entreprise pour laquelle vous recherchez des candidats.
+        <br />
+        <strong>L’entreprise doit vous avoir préalablement donné son accord.</strong>
+        <br />
+        <br />
+        Le SIRET de votre entreprise partenaire peut être trouvé sur{" "}
         <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" external aria-label="Site de l'annuaire des entreprises - nouvelle fenêtre">
           l’annuaire des entreprises
         </DsfrLink>
@@ -75,7 +79,7 @@ function CreationEntreprise() {
         }}
       >
         <Box sx={{ mb: 2 }}>
-          <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "30px" }} component="h1">
+          <Typography sx={{ fontSize: "32px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "40px" }} component="h1">
             Renseignements entreprise
           </Typography>
           <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>
@@ -86,7 +90,7 @@ function CreationEntreprise() {
           </Box>
         </Box>
         <Box>
-          <InformationSiret />
+          <InformationEntreprise />
         </Box>
       </Box>
     </DepotSimplifieStyling>
