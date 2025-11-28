@@ -27,7 +27,7 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
     >
       <RechercheInputsLayout
         forceMobileStyle={true}
-        viewTypeCheckboxs={<RechercheResultTypeCheckboxFormik forceMobileStyle={true} rechercheResults={rechercheResults} />}
+        viewTypeCheckboxs={!rechercheParams.viewType && <RechercheResultTypeCheckboxFormik forceMobileStyle={true} rechercheResults={rechercheResults} />}
         metierInput={<RechercheMetierAutocomplete />}
         lieuInput={<RechercheLieuAutocomplete />}
         rayonSelect={<RechercheRayonSelectFormik />}
