@@ -77,7 +77,6 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
               control={
                 <Checkbox
                   onChange={(event) => {
-                    console.log(event.target.checked)
                     informationForm.setFieldValue("isDeclarationExact", event.target.checked)
                   }}
                   checked={informationForm.values.isDeclarationExact}
