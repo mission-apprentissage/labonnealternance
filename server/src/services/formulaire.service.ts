@@ -20,6 +20,7 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import dayjs from "shared/helpers/dayjs"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
@@ -874,14 +875,10 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
 
 export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | IUserRecruteur, phone?: string, email?: string) => {
   if (user.phone === phone) {
-    throw badRequest(
-      "Veuillez renseigner le numéro de téléphone de la personne en charge des recrutements au sein de l’entreprise. Ce numéro ne peut être identique à celui de votre organisme de formation"
-    )
+    throw badRequest(EntrepriseErrorCodes.PHONE_SAME_AS_CFA)
   }
   if (!email || user.email.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
-    throw badRequest(
-      "Veuillez renseigner l’email de la personne en charge des recrutements au sein de l’entreprise. L’email renseigné ne peut être identique à celui de l’organisme de formation."
-    )
+    throw badRequest(EntrepriseErrorCodes.EMAIL_SAME_AS_CFA)
   }
 }
 
