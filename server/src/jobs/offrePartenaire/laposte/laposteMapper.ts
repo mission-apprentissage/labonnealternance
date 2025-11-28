@@ -128,11 +128,11 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
   const isoString = `${year}-${month}-${day}`
 
   const updatedDate = new Date(isoString)
+  const now = new Date()
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at: updatedDate ?? publicationDate,
     partner_label: JOBPARTNERS_LABEL.LAPOSTE,
     partner_job_id: job.reference,
     offer_title: job["intitule-du-poste"],

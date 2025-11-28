@@ -45,9 +45,8 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
   const business_error = regex.test(job.description) || regex.test(job.title) ? JOB_PARTNER_BUSINESS_ERROR.FULL_TIME : null
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(updatedDate ?? publicationDate),
     _id: new ObjectId(),
-    created_at: updatedDate ?? publicationDate,
     partner_label: JOBPARTNERS_LABEL.JOOBLE,
     partner_job_id: job.referencenumber,
     offer_title: job.title,

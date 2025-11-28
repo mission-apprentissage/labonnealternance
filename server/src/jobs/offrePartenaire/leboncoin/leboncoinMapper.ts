@@ -25,9 +25,8 @@ export const leboncoinJobToJobsPartners = (job: ILeboncoinJob): IComputedJobsPar
   const now = new Date()
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at: now,
     partner_label: JOBPARTNERS_LABEL.LEBONCOIN,
     partner_job_id: job.identifiant,
     offer_title: job.titre,
