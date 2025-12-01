@@ -40,7 +40,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
   const importDate = new Date()
   const transform = new Transform({
     objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, _, callback: (error?: Error | null, data?: any) => void) {
+    async transform(computedJobPartner: Omit<IComputedJobsPartners, "created_at">, _, callback: (error?: Error | null, data?: any) => void) {
       try {
         counters.total++
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
@@ -52,9 +52,9 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           contract_type: computedJobPartner.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
           contract_remote: computedJobPartner.contract_remote ?? null,
           contract_is_disabled_elligible: computedJobPartner.contract_is_disabled_elligible ?? false,
-          offer_title: computedJobPartner.offer_title,
-          offer_rome_codes: computedJobPartner.offer_rome_codes,
-          offer_description: computedJobPartner.offer_description,
+          offer_title: computedJobPartner.offer_title ?? undefined,
+          offer_rome_codes: computedJobPartner.offer_rome_codes ?? undefined,
+          offer_description: computedJobPartner.offer_description ?? undefined,
           offer_target_diploma: computedJobPartner.offer_target_diploma ?? null,
           offer_desired_skills: computedJobPartner.offer_desired_skills ?? [],
           offer_to_be_acquired_skills: computedJobPartner.offer_to_be_acquired_skills ?? [],
@@ -70,11 +70,11 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           workplace_name: computedJobPartner.workplace_name ?? null,
           workplace_description: computedJobPartner.workplace_description ?? null,
           workplace_size: computedJobPartner.workplace_size ?? null,
-          workplace_address_label: computedJobPartner.workplace_address_label,
+          workplace_address_label: computedJobPartner.workplace_address_label ?? undefined,
           workplace_address_street_label: computedJobPartner.workplace_address_street_label,
           workplace_address_zipcode: computedJobPartner.workplace_address_zipcode,
           workplace_address_city: computedJobPartner.workplace_address_city,
-          workplace_geopoint: computedJobPartner.workplace_geopoint,
+          workplace_geopoint: computedJobPartner.workplace_geopoint ?? undefined,
           workplace_idcc: computedJobPartner.workplace_idcc ?? null,
           workplace_opco: computedJobPartner.workplace_opco ?? null,
           workplace_naf_code: computedJobPartner.workplace_naf_code ?? null,
@@ -91,7 +91,6 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           cfa_address_label: null,
           cfa_legal_name: null,
           cfa_apply_phone: null,
-          lba_url: computedJobPartner.lba_url ?? "",
         }
 
         await getDbCollection("jobs_partners").updateOne(

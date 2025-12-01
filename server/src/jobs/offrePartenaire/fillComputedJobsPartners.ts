@@ -3,19 +3,18 @@ import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
+import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
+import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
+import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
 import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
+import { formatTextFieldsJobsPartners } from "./formatTextFieldsJobsPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
-import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
-import { fillLbaUrl } from "./fillLbaUrl"
-import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
-import { formatTextFieldsJobsPartners } from "./formatTextFieldsJobsPartners"
-import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
 import { logger } from "@/common/logger"
 
 export type FillComputedJobsPartnersContext = {
@@ -45,7 +44,6 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   await rankJobPartners(context)
   await detectDuplicateJobPartners(context)
 
-  await fillLbaUrl(context)
   await validateComputedJobPartners(context)
   logger.info("fin de fillComputedJobsPartners")
 }
@@ -94,5 +92,4 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   workplace_size: null,
   workplace_website: null,
   jobs_in_success: [],
-  lba_url: null,
 })
