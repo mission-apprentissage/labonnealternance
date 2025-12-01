@@ -1,7 +1,6 @@
 import axios from "axios"
 import { zOpcoLabel } from "shared/models/opco.model"
 import { z } from "zod"
-import { sleep } from "@/common/utils/asyncUtils"
 
 const cfaDockEndpoint = "https://www.cfadock.fr/api/opcos"
 
@@ -23,36 +22,16 @@ const ZResponseArray = z.array(ZResponseItem)
  * Les sirens non trouvés sont ignorés.
  */
 export const fetchOpcosFromCFADock = async (sirenSet: Set<string>) => {
-  const maxRetries = 2
-  let lastError
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await axios.post(
-        cfaDockEndpoint,
-        Array.from(sirenSet, (siret) => ({ siret })),
-        { headers: { accept: "text/plain" } }
-      )
-
-      const { data } = response
-      if (data?.found) {
-        const parsed = ZResponseArray.parse(data.found)
-        return parsed
-      } else {
-        return []
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 429) {
-        lastError = error
-        if (attempt < maxRetries) {
-          await sleep(1000)
-          continue
-        }
-      }
-      throw error
-    }
+  const response = await axios.post(
+    cfaDockEndpoint,
+    Array.from(sirenSet, (siret) => ({ siret })),
+    { headers: { accept: "text/plain" } }
+  )
+  const { data } = response
+  if (data?.found) {
+    const parsed = ZResponseArray.parse(data.found)
+    return parsed
+  } else {
+    return []
   }
-
-  // This should never be reached, but TypeScript needs it
-  throw lastError
 }
