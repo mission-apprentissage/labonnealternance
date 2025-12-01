@@ -65,6 +65,7 @@ import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBre
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
+import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -379,5 +380,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: fillLbaUrl,
+    description: "Remplit le champ lba_url dans la collection jobs_partners",
   },
 ]
