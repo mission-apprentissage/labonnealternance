@@ -877,7 +877,7 @@ export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | I
   if (user.phone === phone) {
     throw badRequest(EntrepriseErrorCodes.PHONE_SAME_AS_CFA)
   }
-  if (!email || user.email.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
+  if (!email || user.email?.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
     throw badRequest(EntrepriseErrorCodes.EMAIL_SAME_AS_CFA)
   }
 }
