@@ -4,7 +4,9 @@ import { pipeline } from "node:stream/promises"
 
 import { z } from "zod"
 
-import { deduplicate } from "@/common/utils/array"
+import type { AggregationCursor } from "mongodb"
+import { removeAccents } from "shared"
+import { deduplicate, partition } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
@@ -14,10 +16,16 @@ import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 type RomeDocumentRaw = {
   rome: {
     intitule: string
+    code_rome: string
   }
   definition: string
   appellations: {
     libelle: string
+  }[]
+  domaines: {
+    codes_romes: string[]
+    intitules_romes: string[]
+    sous_domaine: string
   }[]
 }
 
@@ -29,6 +37,23 @@ type LLMInputDocument = {
 
 const ZLLMOutput = z.record(z.array(z.string()))
 
+const domainContainsRome = (
+  domaine: {
+    codes_romes: string[]
+    intitules_romes: string[]
+  },
+  rome: { intitule: string; code_rome: string }
+): boolean => {
+  return domaine.codes_romes.some((code_rome, index) => code_rome === rome.code_rome && domaine.intitules_romes[index] === rome.intitule)
+}
+
+const isAlreadyClassified = (document: RomeDocumentRaw): boolean => {
+  if (document.domaines.length === 0) {
+    return false
+  }
+  return document.domaines.every((domaine) => domainContainsRome(domaine, document.rome))
+}
+
 export const classifyRomesForDomainesMetiers = async () => {
   const BATCH_SIZE = 20
   const sousDomaines = await getValidSousDomaines()
@@ -38,7 +63,12 @@ export const classifyRomesForDomainesMetiers = async () => {
   const currentMappings = await getAllMappings()
 
   async function processBatch(typedDocuments: RomeDocumentRaw[]) {
-    const llmInputDocuments: LLMInputDocument[] = typedDocuments.map(({ rome, definition, appellations }) => ({
+    const toClassifyDocuments = typedDocuments.filter((document) => !isAlreadyClassified(document))
+    if (!toClassifyDocuments.length) {
+      return
+    }
+
+    const llmInputDocuments: LLMInputDocument[] = toClassifyDocuments.map(({ rome, definition, appellations }) => ({
       titre: rome.intitule,
       definition,
       appellations: appellations.map(({ libelle }) => libelle),
@@ -81,7 +111,7 @@ export const classifyRomesForDomainesMetiers = async () => {
   }
 
   await pipeline(
-    getMissingOutputQuery(currentMappings).stream(),
+    getMissingOutputQuery(Object.keys(currentMappings)).stream(),
     groupStreamData({ size: BATCH_SIZE }),
     new Writable({
       objectMode: true,
@@ -95,32 +125,69 @@ export const classifyRomesForDomainesMetiers = async () => {
   console.info(stats)
 }
 
+function normalizeDomain(domain: string): string {
+  if (!domain) return domain
+  return removeAccents(domain)
+    .toLocaleLowerCase()
+    .split("")
+    .filter((x) => /[a-z ]/.test(x))
+    .join("")
+}
+
+function isIntituleEqual(intitule1: string, intitule2: string): boolean {
+  return normalizeDomain(intitule1) === normalizeDomain(intitule2)
+}
+
+function isInDomainArray(domains: string[], domain: string): boolean {
+  return domains.map(normalizeDomain).includes(normalizeDomain(domain))
+}
+
 export const classifyRomesForDomainesMetiersAnalyze = async () => {
-  const mappings = await getAllMappings()
-  if (!Object.keys(mappings).length) {
+  const romesToTreatDocuments = (await getMissingOutputQuery([]).toArray()).filter((document) => !isAlreadyClassified(document))
+  console.info("Romes à traiter", romesToTreatDocuments.length)
+
+  const romesToTreat = romesToTreatDocuments.map((x) => x.rome.intitule)
+
+  const romeToDomaines = Object.fromEntries(Object.entries(await getAllMappings()).filter(([rome]) => romesToTreat.includes(rome)))
+  if (!Object.keys(romeToDomaines).length) {
     throw new Error("no mappings found")
   }
-  console.info("nombre de romes", Object.keys(mappings).length)
-  const validDomains = await getValidSousDomaines()
-  const invalidDomains = deduplicate(Object.values(mappings).flatMap((array) => array.filter((domain) => !validDomains.includes(domain))))
-  console.info("invalid sous domaines", invalidDomains)
+  console.info("nombre de romes", Object.keys(romeToDomaines).length)
 
-  const missingOutput = await getMissingOutputQuery(mappings).toArray()
-  console.info("missing", missingOutput)
+  const notTreatedRomes = romesToTreat.filter((rome) => !Object.keys(romeToDomaines).includes(rome))
+  console.info("Romes non traités", notTreatedRomes.length)
+  if (notTreatedRomes.length) {
+    console.info("1er rome non traité", notTreatedRomes[0])
+  }
+
+  const validDomains = await getValidSousDomaines()
+  function isValidDomain(domain: string): boolean {
+    return isInDomainArray(validDomains, domain)
+  }
+
+  const hallucinatedDomains = deduplicate(Object.values(romeToDomaines).flatMap((array) => array.filter((domain) => !isValidDomain(domain))))
+  console.info("Sous domaines hallucinés", hallucinatedDomains)
+
+  Object.entries(romeToDomaines).forEach(([rome, domains]) => {
+    const hasValidDomain = domains.some(isValidDomain)
+    if (!hasValidDomain) {
+      console.info(`Rome sans domaine valide: ${rome}`)
+    }
+  })
 
   const romeIntitulesAndCodes = await getDbCollection("referentielromes")
     .find({}, { projection: { _id: 0, "rome.intitule": 1, "rome.code_rome": 1 } })
     .toArray()
-  const wrongIntitules = Object.keys(mappings).filter((intitule) => !romeIntitulesAndCodes.find((x) => x.rome.intitule === intitule))
-  console.info("mauvais intitulés", wrongIntitules)
+  const intituleRomeHallucines = Object.keys(romeToDomaines).filter((intitule) => !romeIntitulesAndCodes.find((x) => x.rome.intitule === intitule))
+  console.info("Intitulés de ROME hallucinés", intituleRomeHallucines)
 
-  const invertedMappings: Record<string, { code: string; intitule: string }[]> = {}
-  Object.entries(mappings).forEach(([intitule, domains]) => {
+  const domaineToRomes: Record<string, { code: string; intitule: string }[]> = {}
+  Object.entries(romeToDomaines).forEach(([intitule, domains]) => {
     domains.forEach((domain) => {
-      let group = invertedMappings[domain]
+      let group = domaineToRomes[domain]
       if (!group) {
         group = []
-        invertedMappings[domain] = group
+        domaineToRomes[domain] = group
       }
       const code = romeIntitulesAndCodes.find((x) => x.rome.intitule === intitule)?.rome.code_rome
       if (!code) {
@@ -129,10 +196,22 @@ export const classifyRomesForDomainesMetiersAnalyze = async () => {
       group.push({ intitule, code: code ?? "" })
     })
   })
-  const validInverted = Object.fromEntries(Object.entries(invertedMappings).filter(([domain]) => validDomains.includes(domain)))
-  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.valid.json", JSON.stringify(validInverted, null, 2))
-  const invalidInverted = Object.fromEntries(Object.entries(invertedMappings).filter(([domain]) => !validDomains.includes(domain)))
-  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.invalid.json", JSON.stringify(invalidInverted, null, 2))
+  const { match: validInvertedEntries, notMatch: hallucinatedInvertedEntries } = partition(Object.entries(domaineToRomes), ([domain]) => isValidDomain(domain))
+
+  const validDomainToRomes = Object.fromEntries(validInvertedEntries)
+  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.valid.json", JSON.stringify(validDomainToRomes, null, 2))
+  const hallucinatedDomainToRomes = Object.fromEntries(hallucinatedInvertedEntries)
+  await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.invalid.json", JSON.stringify(hallucinatedDomainToRomes, null, 2))
+
+  const domainesAvecRomes = Object.entries(domaineToRomes)
+    .filter(([_domain, romes]) => Boolean(romes.length))
+    .map(([domain]) => domain)
+  const domainesSansRomes = validDomains.filter((domain) => !isInDomainArray(domainesAvecRomes, domain))
+  console.info("Domaines sans nouveau rome", domainesSansRomes)
+
+  const { sousDomainesSansAnciensRomes } = await analyzeRemovedRomes()
+  const domainesSansAncienNiNouveauRomes = domainesSansRomes.filter((domaine) => sousDomainesSansAnciensRomes.includes(domaine))
+  console.info("domaines sans ancien ni nouveau rome", domainesSansAncienNiNouveauRomes)
 }
 
 const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
@@ -223,6 +302,8 @@ const getValidSousDomaines = async () => {
   const domaineMetiers = await getDbCollection("domainesmetiers").find({}).toArray()
   const sousDomainesSet = new Set<string>()
   domaineMetiers.forEach((domaineMetier) => sousDomainesSet.add(domaineMetier.sous_domaine))
+  sousDomainesSet.add("Arts plastiques, galeries, marché de l'art")
+  sousDomainesSet.add("Industrie des matériaux de construction")
   const sousDomaines = [...sousDomainesSet].sort()
   return sousDomaines
 }
@@ -243,10 +324,6 @@ const getCurrentIndex = async () => {
 
 const getAllMappings = async (): Promise<Record<string, string[]>> => {
   const outputFilename = `./classifyRomesForDomainesMetiers.output.json`
-  if (await doesFileExist(outputFilename)) {
-    console.info("reading", outputFilename)
-    return JSON.parse((await fs.readFile(outputFilename)).toString())
-  }
 
   let mappings: Record<string, string[]> = {}
   await asyncForEach(await fs.readdir("."), async (filename) => {
@@ -261,28 +338,67 @@ const getAllMappings = async (): Promise<Record<string, string[]>> => {
   return mappings
 }
 
-const getMissingOutputQuery = (mappings: Record<string, string[]>) => {
-  const treatedInputs = Object.keys(mappings)
-  return getDbCollection("referentielromes").find(
+const getMissingOutputQuery = (treatedRomesIntitules: string[]): AggregationCursor<RomeDocumentRaw> => {
+  return getDbCollection("referentielromes").aggregate([
     {
-      "rome.intitule": { $nin: treatedInputs },
+      $match: {
+        "rome.intitule": { $nin: treatedRomesIntitules },
+      },
     },
     {
-      projection: {
+      $lookup: {
+        from: "domainesmetiers",
+        localField: "rome.code_rome",
+        foreignField: "codes_romes",
+        as: "domaines",
+      },
+    },
+    {
+      $project: {
         _id: 0,
+        "domaines.codes_romes": 1,
+        "domaines.intitules_romes": 1,
+        "domaines.sous_domaine": 1,
         "rome.intitule": 1,
+        "rome.code_rome": 1,
         definition: 1,
         "appellations.libelle": 1,
       },
-    }
-  )
+    },
+  ])
 }
 
-const doesFileExist = async (filename: string): Promise<boolean> => {
-  try {
-    const stat = await fs.stat(filename)
-    return stat.isFile()
-  } catch (_) {
-    return false
+const analyzeRemovedRomes = async () => {
+  const romeIntitulesAndCodes = await getDbCollection("referentielromes")
+    .find({}, { projection: { _id: 0, "rome.intitule": 1, "rome.code_rome": 1 } })
+    .toArray()
+
+  const domaines = await getDbCollection("domainesmetiers").find({}).toArray()
+  const notMatchingSizeDomains = domaines.filter((x) => x.codes_romes.length !== x.intitules_romes.length)
+  console.info("Domaines dont la taille ne correspond pas", notMatchingSizeDomains.length)
+  console.info(
+    "Sous-Domaines dont la taille ne correspond pas",
+    notMatchingSizeDomains.map((x) => x.sous_domaine)
+  )
+
+  function isExistingRome(code: string, intitule: string): boolean {
+    return romeIntitulesAndCodes.some((x) => x.rome.code_rome === code && isIntituleEqual(x.rome.intitule, intitule))
   }
+
+  const sousDomainesSansAnciensRomes: string[] = []
+
+  const removedRomes = domaines.flatMap((x) => {
+    const domainRomes = x.codes_romes.map((code, index) => ({ code, intitule: x.intitules_romes[index] }))
+    const domainRemovedRomes = domainRomes.filter((domainRome) => !isExistingRome(domainRome.code, domainRome.intitule))
+    if (domainRemovedRomes.length === domainRomes.length) {
+      sousDomainesSansAnciensRomes.push(x.sous_domaine)
+    }
+    return domainRemovedRomes
+  })
+  console.info("Rome supprimés", removedRomes.length)
+  // console.info("Rome supprimés", removedRomes)
+
+  console.info("domaines sans anciens romes", sousDomainesSansAnciensRomes)
+
+  return { sousDomainesSansAnciensRomes }
 }
