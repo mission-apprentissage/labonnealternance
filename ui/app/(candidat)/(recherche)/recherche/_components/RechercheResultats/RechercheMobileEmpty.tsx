@@ -25,7 +25,12 @@ export function RechercheMobileEmpty(props: { rechercheParams: IRecherchePagePar
         flexDirection: "column",
       }}
     >
-      <Typography variant="h1" marginBottom={fr.spacing("2w")}>
+      <Typography
+        variant="h1"
+        sx={{
+          marginBottom: fr.spacing("2w"),
+        }}
+      >
         {titles[viewType] ?? titles.default}{" "}
         <Box component="span" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
           en alternance

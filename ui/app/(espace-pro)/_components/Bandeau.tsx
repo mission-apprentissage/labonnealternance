@@ -13,7 +13,16 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
     <>
       {description}
       {lien && (
-        <Link ml={1} underline="always" href={lien} color="inherit" target="_blank" rel="noopener noreferrer">
+        <Link
+          underline="always"
+          href={lien}
+          color="inherit"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            ml: 1,
+          }}
+        >
           {lien}
         </Link>
       )}
@@ -21,7 +30,11 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
   )
 
   return (
-    <Box mb={1}>
+    <Box
+      sx={{
+        mb: 1,
+      }}
+    >
       <Alert severity={type === "success" ? "success" : "error"} title={header} description={descriptionContent} />
     </Box>
   )

@@ -9,7 +9,13 @@ export const IntensionPageResult = ({ intention, canceled = false }: { intention
     >
       {canceled ? (
         <>
-          <Typography fontSize="22px" marginBottom="24px" fontWeight={700}>
+          <Typography
+            sx={{
+              fontSize: "22px",
+              marginBottom: "24px",
+              fontWeight: 700,
+            }}
+          >
             C’est noté ! Aucune réponse ne sera envoyée au candidat.
           </Typography>
           <Typography sx={{ fontSize: "18px", lineHeight: "28px", maxWidth: "555px" }}>
@@ -18,7 +24,13 @@ export const IntensionPageResult = ({ intention, canceled = false }: { intention
         </>
       ) : (
         <>
-          <Typography fontSize="22px" fontWeight={700} maxWidth="555px">
+          <Typography
+            sx={{
+              fontSize: "22px",
+              fontWeight: 700,
+              maxWidth: "555px",
+            }}
+          >
             Merci beaucoup d’avoir pris le temps d’envoyer un commentaire au candidat.
           </Typography>
           {intention === ApplicationIntention.ENTRETIEN ? (

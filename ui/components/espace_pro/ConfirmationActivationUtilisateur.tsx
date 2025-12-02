@@ -36,7 +36,11 @@ const ConfirmationActivationUtilisateur = (props: ConfirmationActivationUtilisat
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
-          <Box mr={fr.spacing("3v")}>
+          <Box
+            sx={{
+              mr: fr.spacing("3v"),
+            }}
+          >
             <Button priority="secondary" onClick={() => onClose()}>
               Annuler
             </Button>

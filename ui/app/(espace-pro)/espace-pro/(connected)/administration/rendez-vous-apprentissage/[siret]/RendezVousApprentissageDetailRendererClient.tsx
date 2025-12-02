@@ -134,7 +134,17 @@ export default function RendezVousApprentissageDetailRendererClient({
 
                             return (
                               <Box component="tr" key={i} sx={{ _hover: { bg: "#f4f4f4", transition: "0.5s" } }}>
-                                <Box component="td" sx={{ verticalAlign: "top", fontSize: "0.8em", py: fr.spacing("2w"), px: fr.spacing("1v") }} fontSize="0.8em" px="1px">
+                                <Box
+                                  component="td"
+                                  sx={{
+                                    fontSize: "0.8em",
+                                    px: "1px",
+                                    verticalAlign: "top",
+                                    fontSize: "0.8em",
+                                    py: fr.spacing("2w"),
+                                    px: fr.spacing("1v"),
+                                  }}
+                                >
                                   <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                                     <Box>
                                       <Typography sx={{ fontWeight: 700 }}>Clé ministere educatif</Typography> {parameter?.cle_ministere_educatif}
@@ -153,7 +163,6 @@ export default function RendezVousApprentissageDetailRendererClient({
                                     </DsfrLink>
                                   </Box>
                                 </Box>
-
                                 <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
                                   <Box sx={{ width: 180 }}>
                                     <Typography>{parameter.etablissement_formateur_street}</Typography>
@@ -168,7 +177,11 @@ export default function RendezVousApprentissageDetailRendererClient({
                                     inputRef={emailRef}
                                     defaultValue={parameter?.lieu_formation_email}
                                   />
-                                  <Box mt={fr.spacing("2w")}>
+                                  <Box
+                                    sx={{
+                                      mt: fr.spacing("2w"),
+                                    }}
+                                  >
                                     {/* @ts-expect-error: TODO */}
                                     <Button onClick={async () => saveEmail(parameter._id, emailRef.current.value, parameter.cle_ministere_educatif)}>OK</Button>
                                   </Box>
@@ -202,7 +215,6 @@ export default function RendezVousApprentissageDetailRendererClient({
                                     <Typography>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Typography>
                                   </Box>
                                 </Box>
-
                                 <Box component="td" sx={{ fontSize: "0.8em", px: "1px", verticalAlign: "top !important" }}>
                                   <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
                                     {Object.values(referrers).map((referrer, i) => {

@@ -43,7 +43,13 @@ export default function User() {
 
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
   return (
-    <Box maxWidth={1200} marginX="auto" mt={fr.spacing("4v")}>
+    <Box
+      sx={{
+        maxWidth: 1200,
+        marginX: "auto",
+        mt: fr.spacing("4v"),
+      }}
+    >
       <Breadcrumb pages={[PAGES.static.backOpcoHome, PAGES.dynamic.backOpcoInformationEntreprise({ user_id: userId, user_label: establishmentLabel })]} />
       <DetailEntreprise
         userRecruteur={userRecruteur}
