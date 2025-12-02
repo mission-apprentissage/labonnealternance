@@ -1,4 +1,3 @@
-import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
@@ -14,6 +13,7 @@ import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { limitStream } from "@/common/utils/streamUtils"
 import config from "@/config"
 
 export const buildUrlLba = (type: string, id: string, siret: string | null, title?: string) => {
@@ -38,11 +38,17 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
-  const transform = new Transform({
-    objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, _, callback: (error?: Error | null, data?: any) => void) {
+
+  const transform = limitStream<Omit<IJobsPartnersOfferPrivate, "created_at">>({
+    concurrency: 1_000,
+    processItem: async (computedJobPartner) => {
       try {
         counters.total++
+
+        if (counters.total % 10000 === 0) {
+          logger.info(`import progression: ${counters.total} documents traités`)
+        }
+
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
           updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
@@ -118,7 +124,6 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           )
         }
         counters.success++
-        callback(null)
       } catch (err: unknown) {
         counters.error++
 
@@ -128,7 +133,6 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         logger.error(err, newError.message)
         newError.cause = err
         sentryCaptureException(newError)
-        callback(null)
       }
     },
   })
