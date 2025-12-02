@@ -368,7 +368,7 @@ const getMissingOutputQuery = (treatedRomesIntitules: string[]): AggregationCurs
   ])
 }
 
-const analyzeRemovedRomes = async () => {
+export const analyzeRemovedRomes = async () => {
   const romeIntitulesAndCodes = await getDbCollection("referentielromes")
     .find({}, { projection: { _id: 0, "rome.intitule": 1, "rome.code_rome": 1 } })
     .toArray()
@@ -396,7 +396,7 @@ const analyzeRemovedRomes = async () => {
     return domainRemovedRomes
   })
   console.info("Rome supprimés", removedRomes.length)
-  // console.info("Rome supprimés", removedRomes)
+  // console.info("Rome supprimés", JSON.stringify(removedRomes, null, 2))
 
   console.info("domaines sans anciens romes", sousDomainesSansAnciensRomes)
 
