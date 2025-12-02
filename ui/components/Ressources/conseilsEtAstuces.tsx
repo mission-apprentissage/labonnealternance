@@ -26,13 +26,6 @@ const accordions = [
             , par rapport à une formation scolaire. Et ce, car l'alternance vous permet d'acquérir une première expérience professionnelle. En contrepartie, c’est un mode de
             formation exigeant qui implique un rythme de travail professionnel, avec des congés limités et non plus de vacances scolaires.
           </ListItem>
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
-              Des doutes sur votre orientation ?
-            </Typography>{" "}
-            Pensez à la Prépa-apprentissage : un dispositif qui vous permet de découvrir un ou plusieurs métiers !{" "}
-            <DsfrLink href="https://travail-emploi.gouv.fr/le-ministere-en-action/pic/prepa-apprentissage-pic">En savoir plus</DsfrLink>
-          </ListItem>
         </List>
       </Box>
     ),

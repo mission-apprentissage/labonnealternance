@@ -5,6 +5,17 @@ import config from "@/config"
 
 function getOptions(): Sentry.NodeOptions {
   return {
+    beforeSend(event, hint) {
+      // Filter out 4xx errors from Boom
+      const error = hint.originalException
+      if (error && typeof error === "object" && "isBoom" in error && error.isBoom) {
+        const statusCode = (error as any).output?.statusCode
+        if (statusCode && statusCode < 500) {
+          return null // Don't send to Sentry
+        }
+      }
+      return event
+    },
     tracesSampler: (samplingContext) => {
       // Continue trace decision, if there is any parentSampled information
       if (samplingContext.parentSampled != null) {
