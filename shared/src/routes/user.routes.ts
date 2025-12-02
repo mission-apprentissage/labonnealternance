@@ -1,3 +1,5 @@
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zObjectId } from "../models/common.js"
 import { ZJob } from "../models/job.model.js"
@@ -47,20 +49,16 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
-    "/user": {
+    "/admin/users-recruteurs": {
       method: "get",
-      path: "/user",
-      // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
-      // => /admin/user-recruteur?
+      path: "/admin/users-recruteurs",
+      querystring: z.object({
+        status: extensions.buildEnum(ETAT_UTILISATEUR),
+        opco: extensions.buildEnum(OPCOS_LABEL).optional(),
+        type: z.enum([CFA, ENTREPRISE]).optional(),
+      }),
       response: {
-        "200": z
-          .object({
-            awaiting: z.array(ZUserRecruteurForAdmin),
-            active: z.array(ZUserRecruteurForAdmin),
-            disabled: z.array(ZUserRecruteurForAdmin),
-            error: z.array(ZUserRecruteurForAdmin),
-          })
-          .strict(),
+        "200": z.array(ZUserRecruteurForAdmin),
       },
       securityScheme: {
         auth: "cookie-session",

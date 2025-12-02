@@ -61,6 +61,7 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
       // Or, override the default text filter to use
       // "startWith"
       text: (rows, id, filterValue) => {
+        if (!filterValue) return rows
         return rows.filter((row) => {
           const rowValue = row.values[id]
           return rowValue !== undefined ? String(rowValue).toLowerCase().startsWith(String(filterValue).toLowerCase()) : true

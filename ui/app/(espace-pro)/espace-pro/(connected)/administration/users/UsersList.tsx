@@ -7,9 +7,11 @@ import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { UserMenu } from "./_component/UserMenu"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -21,12 +23,9 @@ import { apiGet } from "@/utils/api.utils"
 
 type TabKey = "awaiting" | "active" | "disabled" | "error"
 
-function Users() {
+export function UsersList() {
   const { newUser } = useParams() as { newUser: string }
-  const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const [currentTab, setCurrentTab] = useState<TabKey>("awaiting")
-  const confirmationDesactivationUtilisateur = useDisclosure()
-  const confirmationActivationUtilisateur = useDisclosure()
   const toast = useToast()
 
   useEffect(() => {
@@ -39,13 +38,78 @@ function Users() {
     }
   }, [newUser, toast])
 
-  const { isLoading, data } = useQuery({
-    queryKey: ["user-list"],
-    queryFn: () => apiGet("/user", {}),
+  return (
+    <>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
+        <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Gestion des recruteurs</Typography>
+      </Box>
+
+      <CustomTabs
+        currentTab={currentTab}
+        onChange={setCurrentTab}
+        panels={[
+          {
+            id: "awaiting" as const,
+            title: `En attente de vérification`,
+            content: <TabContent status={ETAT_UTILISATEUR.ATTENTE} />,
+          },
+          {
+            id: "active" as const,
+            title: "Actifs",
+            content: <TabContent status={ETAT_UTILISATEUR.VALIDE} />,
+          },
+          {
+            id: "disabled" as const,
+            title: `Désactivés`,
+            content: <TabContent status={ETAT_UTILISATEUR.DESACTIVE} />,
+          },
+          {
+            id: "error" as const,
+            title: `En erreur`,
+            content: <TabContent status={ETAT_UTILISATEUR.ERROR} />,
+          },
+        ]}
+      />
+    </>
+  )
+}
+
+const accountTypes = ["Tous", CFA, ENTREPRISE] as const
+const opcoValues = ["Tous", ...Object.values(OPCOS_LABEL)] as const
+
+type AccountType = (typeof accountTypes)[number]
+type OpcoValue = (typeof opcoValues)[number]
+
+const validTypesForOpcoFilter: AccountType[] = ["Tous", ENTREPRISE]
+
+function TabContent({ status }: { status: ETAT_UTILISATEUR }) {
+  const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
+  const confirmationDesactivationUtilisateur = useDisclosure()
+  const confirmationActivationUtilisateur = useDisclosure()
+  const [accountType, setAccountType] = useState<AccountType>("Tous")
+  const [opco, setOpco] = useState<OpcoValue>("Tous")
+
+  const { data: dataRaw, isLoading } = useQuery({
+    queryKey: ["/admin/users-recruteurs", status],
+    queryFn: () => {
+      return apiGet("/admin/users-recruteurs", {
+        querystring: {
+          status,
+        },
+      })
+    },
   })
+  let data = dataRaw as IUserRecruteurJson[]
 
   if (isLoading) {
     return <LoadingEmptySpace />
+  }
+
+  if (accountType !== "Tous") {
+    data = data.filter(({ type }) => type === accountType)
+  }
+  if (opco !== "Tous") {
+    data = data.filter((userRecruteur) => userRecruteur.opco === opco)
   }
 
   const columns = [
@@ -54,7 +118,6 @@ function Users() {
       id: "action",
       maxWidth: "40",
       disableSortBy: true,
-      // isSticky: true,
       accessor: (row: IUserRecruteurJson) => {
         return (
           <UserMenu
@@ -154,39 +217,63 @@ function Users() {
         _id={currentEntreprise?._id}
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
       />
-
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
-        <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Gestion des recruteurs</Typography>
+      <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
+        <SelectField
+          id="account-type"
+          label="Type de compte"
+          style={{
+            minWidth: "200px",
+          }}
+          options={accountTypes.map((option) => ({ value: option, label: option, selected: option === accountType }))}
+          nativeSelectProps={{
+            required: true,
+            value: accountType,
+            onChange: (event) => {
+              const { value } = event.target
+              if (!validTypesForOpcoFilter.includes(value)) {
+                setOpco("Tous")
+              }
+              setAccountType(value)
+            },
+          }}
+        />
+        <SelectField
+          id="opco"
+          label="OPCO"
+          style={{
+            minWidth: "200px",
+          }}
+          options={opcoValues.map((option) => ({ value: option, label: option, selected: option === opco }))}
+          nativeSelectProps={{
+            disabled: !validTypesForOpcoFilter.includes(accountType),
+            required: true,
+            value: opco,
+            onChange: (event) => {
+              const { value } = event.target
+              setOpco(value)
+            },
+          }}
+        />
       </Box>
-
-      <CustomTabs
-        currentTab={currentTab}
-        onChange={setCurrentTab}
-        panels={[
-          {
-            id: "awaiting" as const,
-            title: `En attente de vérification (${data.awaiting.length})`,
-            content: <TableWithPagination columns={columns} data={data.awaiting} description={null} exportable={null} />,
-          },
-          {
-            id: "active" as const,
-            title: "Actifs",
-            content: <TableWithPagination columns={columns} data={data.active} description={null} exportable={null} />,
-          },
-          {
-            id: "disabled" as const,
-            title: `Désactivés (${data.disabled.length})`,
-            content: <TableWithPagination columns={columns} data={data.disabled} description={null} exportable={null} />,
-          },
-          {
-            id: "error" as const,
-            title: `En erreur (${data.error.length})`,
-            content: <TableWithPagination columns={columns} data={data.error} description={null} exportable={null} />,
-          },
-        ]}
-      />
+      <Typography
+        sx={{
+          fontSize: "16px",
+          lineHeight: "24px",
+          color: "#666666",
+          marginTop: fr.spacing("2w"),
+          marginBottom: fr.spacing("2w") + "!important",
+        }}
+      >
+        {data.length} comptes {statusLabels[status].toLocaleLowerCase()} :
+      </Typography>
+      <TableWithPagination columns={columns} data={data ?? []} description={null} exportable={null} />
     </>
   )
 }
 
-export default Users
+const statusLabels = {
+  [ETAT_UTILISATEUR.ATTENTE]: `En attente de vérification`,
+  [ETAT_UTILISATEUR.VALIDE]: "Actifs",
+  [ETAT_UTILISATEUR.DESACTIVE]: `Désactivés`,
+  [ETAT_UTILISATEUR.ERROR]: `En erreur`,
+}
