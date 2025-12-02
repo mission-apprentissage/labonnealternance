@@ -109,7 +109,7 @@ function rechercheParamsToJobQueryString(rechercheParams: IRecherchePageParams |
 function useJobQuery(rechercheParams: IRecherchePageParams | null) {
   const { isJobsEnabled, queryString: jobQuerystring } = useMemo(() => {
     const queryString = rechercheParamsToJobQueryString(rechercheParams)
-    const isJobsEnabled = Boolean((queryString.romes.length > 0 || queryString.rncp) && (rechercheParams.displayEntreprises || rechercheParams.displayPartenariats))
+    const isJobsEnabled = Boolean((queryString.romes.length > 0 || queryString.rncp) && rechercheParams.displayEntreprises)
     return { isJobsEnabled, queryString }
   }, [rechercheParams])
 
@@ -122,6 +122,8 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
     throwOnError: false,
     staleTime: 1000 * 60 * 60,
   })
+
+  const displayPartenariats = rechercheParams.displayEntreprises && rechercheParams.displayFormations
 
   const jobQueryResult = useMemo(() => {
     const queryStatus = getQueryStatus(jobQuery, isJobsEnabled)
@@ -144,16 +146,16 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
     if (jobData) {
       if (jobData.lbaJobs && "results" in jobData.lbaJobs) {
         lbaJobs.push(
-          ...[
-            ...(jobData.lbaJobs.results as any[]).filter((job: ILbaItemLbaJob) => {
+          ...(jobData.lbaJobs.results as any[])
+            .filter((job: ILbaItemLbaJob) => {
               if (job.company.mandataire) {
-                return rechercheParams.displayPartenariats
+                return displayPartenariats
               }
               return rechercheParams.displayEntreprises
-            }),
-          ].sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
-            return a.place.distance - b.place.distance
-          })
+            })
+            .sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
+              return a.place.distance - b.place.distance
+            })
         )
       }
       if (rechercheParams.displayEntreprises && jobData.partnerJobs && "results" in jobData.partnerJobs) {
@@ -182,7 +184,7 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
             : null,
     }
     return jobQueryResult
-  }, [isJobsEnabled, jobQuery, rechercheParams.displayEntreprises, rechercheParams.displayPartenariats])
+  }, [isJobsEnabled, jobQuery, rechercheParams.displayEntreprises, displayPartenariats])
   return { jobQueryResult }
 }
 
@@ -250,16 +252,7 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
     const allJobs = [...allJobQueryResult.lbaJobs, ...allJobQueryResult.partnerJobs, ...allJobQueryResult.lbaCompanies]
     const handicapJobs = [...handicapJobQueryResult.lbaJobs, ...handicapJobQueryResult.partnerJobs, ...handicapJobQueryResult.lbaCompanies]
 
-    let displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
-
-    if (!rechercheParams.displayPartenariats) {
-      displayedJobs = displayedJobs.filter((item) => {
-        if ("company" in item) {
-          return !item.company.mandataire
-        }
-        return true
-      })
-    }
+    const displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
 
     const displayedFormations = rechercheParams.elligibleHandicapFilter ? [] : formationQueryResult.formations
 
@@ -275,7 +268,7 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
       elligibleHandicapCount,
     }
     return result
-  }, [rechercheParams.elligibleHandicapFilter, rechercheParams.displayPartenariats, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
+  }, [rechercheParams.elligibleHandicapFilter, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
 
   return result
 }
