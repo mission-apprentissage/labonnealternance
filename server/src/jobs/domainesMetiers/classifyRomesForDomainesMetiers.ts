@@ -8,7 +8,7 @@ import type { AggregationCursor } from "mongodb"
 import { removeAccents } from "shared"
 import { deduplicate, partition } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
@@ -125,21 +125,17 @@ export const classifyRomesForDomainesMetiers = async () => {
   console.info(stats)
 }
 
-function normalizeDomain(domain: string): string {
-  if (!domain) return domain
-  return removeAccents(domain)
+function normalizeString(str: string): string {
+  if (!str) return str
+  return removeAccents(str)
     .toLocaleLowerCase()
     .split("")
     .filter((x) => /[a-z ]/.test(x))
     .join("")
 }
 
-function isIntituleEqual(intitule1: string, intitule2: string): boolean {
-  return normalizeDomain(intitule1) === normalizeDomain(intitule2)
-}
-
 function isInDomainArray(domains: string[], domain: string): boolean {
-  return domains.map(normalizeDomain).includes(normalizeDomain(domain))
+  return domains.map(normalizeString).includes(normalizeString(domain))
 }
 
 export const classifyRomesForDomainesMetiersAnalyze = async () => {
@@ -208,10 +204,6 @@ export const classifyRomesForDomainesMetiersAnalyze = async () => {
     .map(([domain]) => domain)
   const domainesSansRomes = validDomains.filter((domain) => !isInDomainArray(domainesAvecRomes, domain))
   console.info("Domaines sans nouveau rome", domainesSansRomes)
-
-  const { sousDomainesSansAnciensRomes } = await analyzeRemovedRomes()
-  const domainesSansAncienNiNouveauRomes = domainesSansRomes.filter((domaine) => sousDomainesSansAnciensRomes.includes(domaine))
-  console.info("domaines sans ancien ni nouveau rome", domainesSansAncienNiNouveauRomes)
 }
 
 const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
@@ -369,36 +361,40 @@ const getMissingOutputQuery = (treatedRomesIntitules: string[]): AggregationCurs
 }
 
 export const analyzeRemovedRomes = async () => {
-  const romeIntitulesAndCodes = await getDbCollection("referentielromes")
+  const newRomes = (
+    await getDbCollection("referentielromes")
+      .find({}, { projection: { _id: 0, "rome.intitule": 1, "rome.code_rome": 1 } })
+      .toArray()
+  ).map((x) => x.rome)
+
+  const oldRomesRaw = (await getDatabase()
+    .collection("referentielromes_previous")
     .find({}, { projection: { _id: 0, "rome.intitule": 1, "rome.code_rome": 1 } })
-    .toArray()
+    .toArray()) as unknown as { rome: { code_rome: string; intitule: string } }[]
+  const oldRomes = oldRomesRaw.map((x) => x.rome)
+
+  const codeRomeSupprimes = oldRomes.filter((oldRome) => !newRomes.some((newRome) => newRome.code_rome === oldRome.code_rome))
+  console.info("Code ROME supprimés", codeRomeSupprimes.length)
+
+  const codeRomeRenommes = oldRomes.filter((oldRome) => newRomes.find((newRome) => newRome.code_rome === oldRome.code_rome && newRome.intitule !== oldRome.intitule))
+  console.info("Code ROME renommés", codeRomeRenommes.length)
+
+  const romeRenommesSimilaires = codeRomeRenommes.filter((oldRome) =>
+    newRomes.find((newRome) => newRome.code_rome === oldRome.code_rome && normalizeString(newRome.intitule) === normalizeString(oldRome.intitule))
+  )
+  console.info("Code ROME renommés avec libellé similaire", romeRenommesSimilaires.length)
 
   const domaines = await getDbCollection("domainesmetiers").find({}).toArray()
   const notMatchingSizeDomains = domaines.filter((x) => x.codes_romes.length !== x.intitules_romes.length)
   console.info("Domaines dont la taille ne correspond pas", notMatchingSizeDomains.length)
-  console.info(
-    "Sous-Domaines dont la taille ne correspond pas",
-    notMatchingSizeDomains.map((x) => x.sous_domaine)
-  )
 
-  function isExistingRome(code: string, intitule: string): boolean {
-    return romeIntitulesAndCodes.some((x) => x.rome.code_rome === code && isIntituleEqual(x.rome.intitule, intitule))
-  }
-
-  const sousDomainesSansAnciensRomes: string[] = []
-
-  const removedRomes = domaines.flatMap((x) => {
-    const domainRomes = x.codes_romes.map((code, index) => ({ code, intitule: x.intitules_romes[index] }))
-    const domainRemovedRomes = domainRomes.filter((domainRome) => !isExistingRome(domainRome.code, domainRome.intitule))
-    if (domainRemovedRomes.length === domainRomes.length) {
-      sousDomainesSansAnciensRomes.push(x.sous_domaine)
-    }
-    return domainRemovedRomes
+  const romesInDomainSet = new Set<string>()
+  domaines.forEach((domaine) => {
+    domaine.codes_romes.forEach((code) => {
+      romesInDomainSet.add(code)
+    })
   })
-  console.info("Rome supprimés", removedRomes.length)
-  // console.info("Rome supprimés", JSON.stringify(removedRomes, null, 2))
 
-  console.info("domaines sans anciens romes", sousDomainesSansAnciensRomes)
-
-  return { sousDomainesSansAnciensRomes }
+  const oldRomesNotInDomain = oldRomes.filter((rome) => !romesInDomainSet.has(rome.code_rome))
+  console.info("anciens ROME qui ne sont pas dans domainesmetiers", oldRomesNotInDomain.length)
 }
