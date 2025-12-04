@@ -1,4 +1,4 @@
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recruteur.js"
+import { ETAT_UTILISATEUR } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zObjectId } from "../models/common.js"
@@ -53,9 +53,8 @@ export const zUserRecruteurRoutes = {
       method: "get",
       path: "/admin/users-recruteurs",
       querystring: z.object({
-        status: extensions.buildEnum(ETAT_UTILISATEUR),
-        opco: extensions.buildEnum(OPCOS_LABEL).optional(),
-        type: z.enum([CFA, ENTREPRISE]).optional(),
+        status: extensions.buildEnum(ETAT_UTILISATEUR).optional(),
+        limit: z.string().optional(),
       }),
       response: {
         "200": z.array(ZUserRecruteurForAdmin),

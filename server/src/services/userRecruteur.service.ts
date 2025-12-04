@@ -1,4 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
+import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation } from "shared"
 import { entriesToTypedRecord, removeUndefinedFields, typedEntries } from "shared"
@@ -522,32 +523,29 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   )
 }
 
-export const getUsersForAdmin = async (filters: { opco?: OPCOS_LABEL; status?: ETAT_UTILISATEUR; type?: typeof CFA | typeof ENTREPRISE }) => {
+export const getUsersForAdmin = async ({ status, limit }: { status?: ETAT_UTILISATEUR; limit?: number }) => {
   // return getUserRecruteursForManagement({ activeRoleLimit: 40 })
-  return getUserRecruteursForManagement2(filters)
+  return getUserRecruteursForManagement2({ status, roleLimit: limit })
 }
 
-export const getUserRecruteursForManagement2 = async ({
-  opco,
-  status: queryStatus,
-  type,
-}: {
-  opco?: OPCOS_LABEL
-  status?: ETAT_UTILISATEUR
-  type?: typeof CFA | typeof ENTREPRISE
-}) => {
+export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatus, roleLimit }: { opco?: OPCOS_LABEL; status?: ETAT_UTILISATEUR; roleLimit?: number }) => {
   let aggregationStages: any = [...roleManagement360AggregationStages]
+
+  const roleFilter: Filter<IRoleManagement> = {}
+  if (opco) {
+    roleFilter.authorized_type = AccessEntityType.ENTREPRISE
+  }
   if (queryStatus) {
     const roleStatus = userRecruteurStatusToRoleStatus(queryStatus)
     if (roleStatus) {
-      aggregationStages = [
-        {
-          $match: {
-            "status.status": roleStatus,
-          },
+      roleFilter.$expr = { $eq: [{ $arrayElemAt: ["$status.status", -1] }, roleStatus] }
+    }
+    if (queryStatus === ETAT_UTILISATEUR.ERROR) {
+      aggregationStages.push({
+        $match: {
+          $expr: { $eq: [{ $arrayElemAt: ["$entreprise.status.status", -1] }, EntrepriseStatus.ERROR] },
         },
-        ...aggregationStages,
-      ]
+      })
     }
   }
   if (opco) {
@@ -557,20 +555,26 @@ export const getUserRecruteursForManagement2 = async ({
       },
     })
   }
-  if (type === ENTREPRISE) {
-    aggregationStages.push({
-      $match: {
-        "entreprise._id": { $ne: null },
+  if (Object.keys(roleFilter).length) {
+    aggregationStages = [
+      {
+        $match: roleFilter,
       },
+      ...aggregationStages,
+    ]
+  }
+  aggregationStages.push({
+    $sort: {
+      updatedAt: -1,
+    },
+  })
+  if (roleLimit) {
+    aggregationStages.push({
+      $limit: roleLimit,
     })
   }
-  if (type === CFA) {
-    aggregationStages.push({
-      $match: {
-        "cfa._id": { $ne: null },
-      },
-    })
-  }
+
+  console.info(JSON.stringify(aggregationStages, null, 2))
 
   const documents = (await getDbCollection("rolemanagements").aggregate(aggregationStages).toArray()) as RoleManagement360Document[]
 

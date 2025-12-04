@@ -3,9 +3,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import { useParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useMemo, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
+import { entriesToTypedRecord } from "shared"
 
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { UserMenu } from "./_component/UserMenu"
@@ -20,13 +21,41 @@ import ConfirmationActivationUtilisateur from "@/components/espace_pro/Confirmat
 import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
-type TabKey = "awaiting" | "active" | "disabled" | "error"
+const panelOrder = [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ERROR]
+const accountTypes = [CFA, ENTREPRISE] as const
+const opcoValues = [...Object.values(OPCOS_LABEL)] as const
+
+type AccountType = (typeof accountTypes)[number] | undefined
+type OpcoValue = (typeof opcoValues)[number] | undefined
+
+const validTypesForOpcoFilter: AccountType[] = [undefined, ENTREPRISE]
+
+const activeUserLimit = 100
+
+const routeBuilder = PAGES.dynamic.backAdminGestionDesRecruteurs
+
+type RouteParams = { newUser?: string } & Partial<Parameters<typeof routeBuilder>[0]>
 
 export function UsersList() {
-  const { newUser } = useParams() as { newUser: string }
-  const [currentTab, setCurrentTab] = useState<TabKey>("awaiting")
+  const routeParamsRaw = useSearchParamsRecord() as RouteParams
+  const [routeParams, setRouteParams] = useState<RouteParams>(routeParamsRaw)
+  const { newUser, status, accountType, opco, page: pageStr } = routeParams
+  const pageIndex = pageStr !== undefined ? parseInt(pageStr, 10) - 1 : 0
+  const currentTab = status ?? ETAT_UTILISATEUR.ATTENTE
   const toast = useToast()
+  const router = useRouter()
+
+  function updateRouteParams(newParams: RouteParams) {
+    const finalParams = {
+      ...routeParams,
+      ...newParams,
+    }
+    setRouteParams(finalParams)
+    router.replace(routeBuilder(finalParams).getPath())
+  }
 
   useEffect(() => {
     if (newUser) {
@@ -38,6 +67,94 @@ export function UsersList() {
     }
   }, [newUser, toast])
 
+  const queryResults = entriesToTypedRecord(
+    panelOrder.map((etatUtilisateur) => {
+      // c'est ok parce que le nombre de useQuery est constant
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const useQueryResult = useQuery({
+        queryKey: ["/admin/users-recruteurs", etatUtilisateur],
+        queryFn: () => {
+          return apiGet("/admin/users-recruteurs", {
+            querystring: {
+              status: etatUtilisateur,
+              ...(etatUtilisateur === ETAT_UTILISATEUR.VALIDE ? { limit: activeUserLimit.toString() } : {}),
+            },
+          })
+        },
+        staleTime: 1000 * 60 * 20, // 20 minutes
+      })
+      const { data: dataRaw, refetch, isLoading } = useQueryResult
+      const data = dataRaw as IUserRecruteurJson[]
+      return [etatUtilisateur, { data, refetch, isLoading }] as const
+    })
+  )
+
+  const isCurrentTabLoading = queryResults[currentTab].isLoading
+
+  function refetchAll() {
+    Object.values(queryResults).map((x) => x.refetch())
+  }
+
+  function onOpcoChange(newValue: OpcoValue) {
+    updateRouteParams({
+      ...routeParams,
+      opco: newValue,
+      page: undefined,
+    })
+  }
+
+  function onAccountTypeChange(newValue: AccountType) {
+    updateRouteParams({
+      ...routeParams,
+      accountType: newValue,
+      opco: validTypesForOpcoFilter.includes(newValue) ? opco : undefined,
+      page: undefined,
+    })
+  }
+
+  function onStatusChange(newStatus: ETAT_UTILISATEUR) {
+    updateRouteParams({
+      ...routeParams,
+      status: newStatus,
+      page: undefined,
+    })
+  }
+
+  function onPageChange(newValue: number) {
+    updateRouteParams({
+      ...routeParams,
+      page: (newValue + 1).toString(),
+    })
+  }
+
+  const panelsData = useMemo(() => {
+    return panelOrder.map((etatUtilisateur) => {
+      let { data: userRecruteurs } = queryResults[etatUtilisateur]
+      const isCountAccurate = Boolean(userRecruteurs && userRecruteurs.length !== activeUserLimit)
+      let title = statusLabels[etatUtilisateur]
+      if (userRecruteurs) {
+        if (accountType) {
+          userRecruteurs = userRecruteurs.filter(({ type }) => type === accountType)
+        }
+        if (opco) {
+          userRecruteurs = userRecruteurs.filter((userRecruteur) => userRecruteur.opco === opco)
+        }
+        title += ` (${userRecruteurs.length}${!isCountAccurate ? "+" : ""})`
+      }
+      return {
+        id: etatUtilisateur,
+        title,
+        userRecruteurs,
+        isCountAccurate,
+        etatUtilisateur,
+      }
+    })
+  }, [queryResults])
+
+  if (isCurrentTabLoading) {
+    return <LoadingEmptySpace />
+  }
+
   return (
     <>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
@@ -46,71 +163,58 @@ export function UsersList() {
 
       <CustomTabs
         currentTab={currentTab}
-        onChange={setCurrentTab}
-        panels={[
-          {
-            id: "awaiting" as const,
-            title: `En attente de vérification`,
-            content: <TabContent status={ETAT_UTILISATEUR.ATTENTE} />,
-          },
-          {
-            id: "active" as const,
-            title: "Actifs",
-            content: <TabContent status={ETAT_UTILISATEUR.VALIDE} />,
-          },
-          {
-            id: "disabled" as const,
-            title: `Désactivés`,
-            content: <TabContent status={ETAT_UTILISATEUR.DESACTIVE} />,
-          },
-          {
-            id: "error" as const,
-            title: `En erreur`,
-            content: <TabContent status={ETAT_UTILISATEUR.ERROR} />,
-          },
-        ]}
+        onChange={onStatusChange}
+        panels={panelsData.map(({ etatUtilisateur, isCountAccurate, id, title, userRecruteurs }) => {
+          return {
+            id,
+            title,
+            content: (
+              <TabContent
+                status={etatUtilisateur}
+                userRecruteurs={userRecruteurs ?? []}
+                onInvalidateData={refetchAll}
+                accountType={accountType}
+                opco={opco}
+                onAccountTypeChange={onAccountTypeChange}
+                onOpcoChange={onOpcoChange}
+                isCountAccurate={isCountAccurate}
+                page={pageIndex}
+                onPageChange={onPageChange}
+              />
+            ),
+          }
+        })}
       />
     </>
   )
 }
 
-const accountTypes = ["Tous", CFA, ENTREPRISE] as const
-const opcoValues = ["Tous", ...Object.values(OPCOS_LABEL)] as const
-
-type AccountType = (typeof accountTypes)[number]
-type OpcoValue = (typeof opcoValues)[number]
-
-const validTypesForOpcoFilter: AccountType[] = ["Tous", ENTREPRISE]
-
-function TabContent({ status }: { status: ETAT_UTILISATEUR }) {
+function TabContent({
+  status: queryStatus,
+  userRecruteurs,
+  onInvalidateData,
+  accountType,
+  onAccountTypeChange,
+  opco,
+  onOpcoChange,
+  isCountAccurate,
+  page,
+  onPageChange,
+}: {
+  status: ETAT_UTILISATEUR
+  userRecruteurs: IUserRecruteurJson[]
+  onInvalidateData: () => void
+  accountType: AccountType
+  onAccountTypeChange: (newValue: AccountType) => void
+  opco: OpcoValue
+  onOpcoChange: (newValue: OpcoValue) => void
+  isCountAccurate: boolean
+  page: number
+  onPageChange: (newPage: number) => void
+}) {
   const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
-  const [accountType, setAccountType] = useState<AccountType>("Tous")
-  const [opco, setOpco] = useState<OpcoValue>("Tous")
-
-  const { data: dataRaw, isLoading } = useQuery({
-    queryKey: ["/admin/users-recruteurs", status],
-    queryFn: () => {
-      return apiGet("/admin/users-recruteurs", {
-        querystring: {
-          status,
-        },
-      })
-    },
-  })
-  let data = dataRaw as IUserRecruteurJson[]
-
-  if (isLoading) {
-    return <LoadingEmptySpace />
-  }
-
-  if (accountType !== "Tous") {
-    data = data.filter(({ type }) => type === accountType)
-  }
-  if (opco !== "Tous") {
-    data = data.filter((userRecruteur) => userRecruteur.opco === opco)
-  }
 
   const columns = [
     {
@@ -210,50 +314,17 @@ function TabContent({ status }: { status: ETAT_UTILISATEUR }) {
 
   return (
     <>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={currentEntreprise} onUpdate={onInvalidateData} />
       <ConfirmationActivationUtilisateur
         onClose={confirmationActivationUtilisateur.onClose}
         isOpen={confirmationActivationUtilisateur.isOpen}
         _id={currentEntreprise?._id}
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
+        onConfirmation={onInvalidateData}
       />
       <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
-        <SelectField
-          id="account-type"
-          label="Type de compte"
-          style={{
-            minWidth: "200px",
-          }}
-          options={accountTypes.map((option) => ({ value: option, label: option, selected: option === accountType }))}
-          nativeSelectProps={{
-            required: true,
-            value: accountType,
-            onChange: (event) => {
-              const { value } = event.target
-              if (!validTypesForOpcoFilter.includes(value)) {
-                setOpco("Tous")
-              }
-              setAccountType(value)
-            },
-          }}
-        />
-        <SelectField
-          id="opco"
-          label="OPCO"
-          style={{
-            minWidth: "200px",
-          }}
-          options={opcoValues.map((option) => ({ value: option, label: option, selected: option === opco }))}
-          nativeSelectProps={{
-            disabled: !validTypesForOpcoFilter.includes(accountType),
-            required: true,
-            value: opco,
-            onChange: (event) => {
-              const { value } = event.target
-              setOpco(value)
-            },
-          }}
-        />
+        <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
+        <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
       </Box>
       <Typography
         sx={{
@@ -264,9 +335,18 @@ function TabContent({ status }: { status: ETAT_UTILISATEUR }) {
           marginBottom: fr.spacing("2w") + "!important",
         }}
       >
-        {data.length} comptes {statusLabels[status].toLocaleLowerCase()} :
+        {userRecruteurs.length}
+        {!isCountAccurate && "+"} comptes {statusLabels[queryStatus].toLocaleLowerCase()} :
       </Typography>
-      <TableWithPagination columns={columns} data={data ?? []} description={null} exportable={null} />
+      <TableWithPagination
+        columns={columns}
+        data={userRecruteurs}
+        description={null}
+        exportable={null}
+        pageIndex={page}
+        onPageChange={onPageChange}
+        defaultSortBy={[queryStatus === ETAT_UTILISATEUR.ATTENTE ? { id: "createdAt", desc: false } : { id: "createdAt", desc: true }]}
+      />
     </>
   )
 }
@@ -276,4 +356,51 @@ const statusLabels = {
   [ETAT_UTILISATEUR.VALIDE]: "Actifs",
   [ETAT_UTILISATEUR.DESACTIVE]: `Désactivés`,
   [ETAT_UTILISATEUR.ERROR]: `En erreur`,
+}
+
+function AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: (newValue: AccountType) => void }) {
+  const localValue = value ?? "Tous"
+  const possibleValues = ["Tous", ...accountTypes] as const
+  return (
+    <SelectField
+      id="account-type"
+      label="Type de compte"
+      style={{
+        minWidth: "200px",
+      }}
+      options={possibleValues.map((option) => ({ value: option, label: option, selected: option === value }))}
+      nativeSelectProps={{
+        required: true,
+        value: localValue,
+        onChange: (event) => {
+          const { value: newValue } = event.target
+          onChange(newValue === "Tous" ? undefined : newValue)
+        },
+      }}
+    />
+  )
+}
+
+function OpcoSelect({ value, onChange, accountType }: { value: OpcoValue; onChange: (newValue: OpcoValue) => void; accountType: AccountType }) {
+  const localValue = value ?? "Tous"
+  const possibleValues = ["Tous", ...opcoValues] as const
+  return (
+    <SelectField
+      id="opco"
+      label="OPCO"
+      style={{
+        minWidth: "200px",
+      }}
+      options={possibleValues.map((option) => ({ value: option, label: option, selected: option === value }))}
+      nativeSelectProps={{
+        disabled: !validTypesForOpcoFilter.includes(accountType),
+        required: true,
+        value: localValue,
+        onChange: (event) => {
+          const { value: newValue } = event.target
+          onChange(newValue === "Tous" ? undefined : newValue)
+        },
+      }}
+    />
+  )
 }
