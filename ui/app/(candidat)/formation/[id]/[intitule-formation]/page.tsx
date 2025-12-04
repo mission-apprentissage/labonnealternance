@@ -14,6 +14,7 @@ async function getFormationOption(id: string) {
     if (err && err instanceof ApiError && err.context.statusCode === 404) {
       return null
     }
+    throw err
   }
 }
 
