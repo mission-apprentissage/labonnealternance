@@ -67,8 +67,40 @@ jobs:
         env:
           APP_VERSION: ${{ inputs.app_version }}
 
+  npm-packages-check:
+    runs-on: ubuntu-latest
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
+        with:
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check                                                                                                                                         
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
+      - name: Notify failure on Slack
+        uses: ravsamhq/notify-slack-action@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          notification_title: "Le déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} a échoué"
+          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. Suspected     traces of known attacks on the NPM supply chain!`"
+          notify_when: "failure"
+          mention_groups: "!channel"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
   deploy:
-    needs: version
+    if: ${{ success() }}
+    needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
@@ -93,7 +125,7 @@ jobs:
           cache: "yarn"
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install --immutable --ignore-scripts
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
