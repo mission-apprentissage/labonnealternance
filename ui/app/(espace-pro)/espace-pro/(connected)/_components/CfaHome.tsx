@@ -161,8 +161,6 @@ function ListeEntreprise() {
     },
   ]
 
-  console.log(data)
-
   return (
     <AnimationContainer>
       {currentEntreprise && (
