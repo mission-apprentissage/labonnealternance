@@ -104,6 +104,7 @@ function ListeEntreprise() {
     {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
+      accessor: ({ establishment_raison_sociale, establishment_siret, opco }) => [establishment_raison_sociale, establishment_siret, opco].join(" "),
       width: "500",
       maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
@@ -159,35 +160,36 @@ function ListeEntreprise() {
       },
     },
   ]
+
+  console.log(data)
+
   return (
-    <>
-      <AnimationContainer>
-        {currentEntreprise && (
-          <ConfirmationSuppressionEntreprise
-            establishment_id={currentEntreprise.establishment_id}
-            onClose={confirmationSuppression.onClose}
-            isOpen={confirmationSuppression.isOpen}
-            establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
-          />
-        )}
-        <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
-          <Box>
-            <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
-              <Box>
-                <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
-              </Box>
-              <Box mr={3}>
-                <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                  Nouvelle entreprise
-                </Button>
-              </Box>
+    <AnimationContainer>
+      {currentEntreprise && (
+        <ConfirmationSuppressionEntreprise
+          establishment_id={currentEntreprise.establishment_id}
+          onClose={confirmationSuppression.onClose}
+          isOpen={confirmationSuppression.isOpen}
+          establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
+        />
+      )}
+      <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
+        <Box>
+          <Breadcrumb pages={[PAGES.static.backCfaHome]} />
+          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
+            <Box>
+              <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
+            </Box>
+            <Box mr={3}>
+              <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+                Nouvelle entreprise
+              </Button>
             </Box>
           </Box>
-          {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
         </Box>
-      </AnimationContainer>
-    </>
+        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
+      </Box>
+    </AnimationContainer>
   )
 }
 
