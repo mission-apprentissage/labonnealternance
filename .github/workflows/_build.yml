@@ -31,7 +31,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: mission-apprentissage/mna-npm-check
-          path: mna-npm-check                                                                                                                                         
+          path: mna-npm-check
+
       - name: Analyze NPM dependancies
         run: mna-npm-check/npm-check.sh -p .
 
