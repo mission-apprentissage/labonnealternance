@@ -4,6 +4,7 @@ import { sanitizeTextField } from "./stringUtils"
 
 const allowedHtml = "<p><strong>Test</strong> <em>allowed</em> </p><ul><li>Item</li></ul>"
 const plainText = "This is a plain text."
+const plainTextWithSpecialChars = "This is a plain text with < > & special chars."
 
 const xssVectors = [
   { input: "<script>alert(1)</script>", expected: "" },
@@ -61,6 +62,10 @@ describe("sanitizeTextField", () => {
   it("should handle null and undefined inputs", () => {
     expect(sanitizeTextField(null)).toBe("")
     expect(sanitizeTextField(undefined)).toBe("")
+  })
+
+  it("should keep special chars in plain text", () => {
+    expect(sanitizeTextField(plainTextWithSpecialChars, false)).toBe(plainTextWithSpecialChars)
   })
 
   it("should decode HTML entities before sanitizing", () => {
