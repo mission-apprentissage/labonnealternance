@@ -503,7 +503,7 @@ export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaC
   })) as IJobsPartnersRecruteurAlgoPrivate
 
   if (!lbaCompany) {
-    throw badRequest("Company not found")
+    throw notFound("Company not found")
   }
 
   const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
