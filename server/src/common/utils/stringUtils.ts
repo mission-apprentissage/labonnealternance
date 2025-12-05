@@ -9,5 +9,5 @@ export const sanitizeTextField = (text: string | null | undefined, keepFormat: b
   }
   // On décode 2 fois pour gérer les cas où le texte est encodé 2 fois (voir dernier test server/src/common/utils/stringUtils.test.ts)
   const decodedText = he.decode(he.decode(text)).trim()
-  return sanitizeHtml(decodedText, sanitizeOptions)
+  return he.decode(sanitizeHtml(decodedText, sanitizeOptions)) // last decode to convert entities like &amp; back to &
 }
