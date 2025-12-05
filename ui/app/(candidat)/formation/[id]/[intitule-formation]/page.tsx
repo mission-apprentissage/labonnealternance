@@ -4,12 +4,24 @@ import { redirect } from "next/navigation"
 
 import TrainingDetailRendererClient from "./TrainingDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { apiGet } from "@/utils/api.utils"
+import { ApiError, apiGet } from "@/utils/api.utils"
+
+async function getFormationOption(id: string) {
+  try {
+    const formation = await apiGet("/_private/formations/:id", { params: { id } })
+    return formation
+  } catch (err) {
+    if (err && err instanceof ApiError && err.context.statusCode === 404) {
+      return null
+    }
+    throw err
+  }
+}
 
 export async function generateMetadata({ params }): Promise<Metadata> {
   const { id } = await params
   const idParam = decodeURIComponent(id)
-  const formation = await apiGet("/_private/formations/:id", { params: { id: idParam } })
+  const formation = await getFormationOption(idParam)
 
   if (!formation) return { title: "Offre de formation introuvable" }
 
@@ -21,7 +33,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 export default async function FormationPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string>> }) {
   const { id } = await params
   const idParam = decodeURIComponent(id)
-  const formation = await apiGet("/_private/formations/:id", { params: { id: idParam } })
+  const formation = await getFormationOption(idParam)
   if (!formation) redirect("/404")
 
   return (
