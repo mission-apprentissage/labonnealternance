@@ -40,8 +40,8 @@ const RechercheCDICDD = (props: RechercheCDICDDProps) => {
   return (
     <Box
       sx={{
-        py: fr.spacing("3w"),
-        px: fr.spacing("9w"),
+        py: { xs: fr.spacing("2w"), md: fr.spacing("3w") },
+        px: { xs: fr.spacing("3w"), md: fr.spacing("9w") },
         backgroundColor: fr.colors.decisions.background.contrast.info.default,
         display: "grid",
         gridTemplateColumns: {
@@ -67,7 +67,7 @@ const RechercheCDICDD = (props: RechercheCDICDDProps) => {
       <Box
         sx={{
           display: {
-            sm: "none",
+            xs: "none",
             md: "block",
           },
         }}
