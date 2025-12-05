@@ -76,9 +76,8 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
   const publicationDate = new Date(first_activated_at)
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
-    created_at: publicationDate,
     partner_label: JOBPARTNERS_LABEL.JOBTEASER,
     partner_job_id: id,
 

@@ -27,8 +27,9 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     createdAt,
   } = recruteursLba
 
+  const now = new Date()
   return {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     partner_job_id: siret,

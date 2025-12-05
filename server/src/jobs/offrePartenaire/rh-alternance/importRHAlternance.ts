@@ -11,11 +11,12 @@ import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"
 
 import dayjs from "shared/helpers/dayjs"
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 
@@ -76,18 +77,17 @@ export const importRHAlternanceRaw = async () => {
 }
 
 export const importRHAlternanceToComputed = async () => {
-  const now = new Date()
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.RH_ALTERNANCE,
     zodInput: ZRawRHAlternanceJob,
-    mapper: rawRhAlternanceToComputedMapper(now),
+    mapper: rawRhAlternanceToComputedMapper(),
     documentJobRoot: "job",
   })
 }
 
 export const rawRhAlternanceToComputedMapper =
-  (now: Date) =>
+  () =>
   ({
     jobCode,
     companyName,
@@ -101,12 +101,13 @@ export const rawRhAlternanceToComputedMapper =
     jobCity,
     jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
+    const now = new Date()
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
 
     const business_error = jobType === "Alternance" ? null : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
 
     const computedJob: IComputedJobsPartners = {
-      ...blankComputedJobPartner(),
+      ...blankComputedJobPartner(now),
       _id: new ObjectId(),
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
@@ -129,7 +130,6 @@ export const rawRhAlternanceToComputedMapper =
       workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
       business_error,
-      updated_at: now,
     }
     return computedJob
   }

@@ -138,7 +138,7 @@ export const ZCleverConnectJob = z
 export type ICleverConnectJob = z.output<typeof ZCleverConnectJob>
 
 export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
-  const { $, title, link, publicationDate, lastModificationDate, company } = job
+  const { $, title, link, publicationDate, company } = job
   const startDate = job.contract.startDate && job.contract.startDate.endsWith("Z") ? new Date(job.contract.startDate.slice(0, -1)) : null
   const workplaceLocation = isArray(job.workplace.locations.location) ? job.workplace.locations.location[0] : job.workplace.locations.location
   const workplace_geopoint = geolocToLatLon(workplaceLocation)
@@ -146,20 +146,18 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
   const urlParsing = extensions.url().safeParse(link)
   const creationDate = new Date(publicationDate)
 
-  const created_at = new Date()
+  const now = new Date()
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at,
-    updated_at: lastModificationDate ? new Date(lastModificationDate) : created_at,
     partner_label: partner_label,
     partner_job_id: $.id,
 
     offer_title: title,
     offer_description: getOfferDescription(job),
     offer_creation: creationDate,
-    offer_expiration: dayjs(creationDate || created_at)
+    offer_expiration: dayjs(creationDate || now)
       .tz()
       .add(2, "months")
       .toDate(),
