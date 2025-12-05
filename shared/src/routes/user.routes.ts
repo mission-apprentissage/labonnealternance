@@ -1,3 +1,5 @@
+import { ETAT_UTILISATEUR } from "../constants/recruteur.js"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zObjectId } from "../models/common.js"
 import { ZJob } from "../models/job.model.js"
@@ -47,20 +49,15 @@ export const zUserRecruteurRoutes = {
         resources: {},
       },
     },
-    "/user": {
+    "/admin/users-recruteurs": {
       method: "get",
-      path: "/user",
-      // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
-      // => /admin/user-recruteur?
+      path: "/admin/users-recruteurs",
+      querystring: z.object({
+        status: extensions.buildEnum(ETAT_UTILISATEUR).optional(),
+        limit: z.string().optional(),
+      }),
       response: {
-        "200": z
-          .object({
-            awaiting: z.array(ZUserRecruteurForAdmin),
-            active: z.array(ZUserRecruteurForAdmin),
-            disabled: z.array(ZUserRecruteurForAdmin),
-            error: z.array(ZUserRecruteurForAdmin),
-          })
-          .strict(),
+        "200": z.array(ZUserRecruteurForAdmin),
       },
       securityScheme: {
         auth: "cookie-session",

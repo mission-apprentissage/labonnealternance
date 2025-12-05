@@ -1,7 +1,8 @@
 import { badRequest, internal } from "@hapi/boom"
+import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation } from "shared"
-import { assertUnreachable, removeUndefinedFields } from "shared"
+import { entriesToTypedRecord, removeUndefinedFields, typedEntries } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { ICFA } from "shared/models/cfa.model"
@@ -18,11 +19,13 @@ import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
 import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
-import config from "@/config"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import type { RoleManagement360Document } from "@/jobs/metabase/metabaseRoleManagement360"
+import { roleManagement360AggregationStages } from "@/jobs/metabase/metabaseRoleManagement360"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { reason, validation_type, granted_by } = entrepriseStatusEvent
@@ -35,17 +38,22 @@ const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: 
   }
 }
 
+const userRecruteurStatusToRoleStatusMapping = {
+  [ETAT_UTILISATEUR.VALIDE]: AccessStatus.GRANTED,
+  [ETAT_UTILISATEUR.DESACTIVE]: AccessStatus.DENIED,
+  [ETAT_UTILISATEUR.ATTENTE]: AccessStatus.AWAITING_VALIDATION,
+} as const
+const roleStatusToUserRecruteurStatusMapping = entriesToTypedRecord(typedEntries(userRecruteurStatusToRoleStatusMapping).map(([key, value]) => [value, key]))
+
 const roleStatusToUserRecruteurStatus = (roleStatus: AccessStatus): ETAT_UTILISATEUR => {
-  switch (roleStatus) {
-    case AccessStatus.GRANTED:
-      return ETAT_UTILISATEUR.VALIDE
-    case AccessStatus.DENIED:
-      return ETAT_UTILISATEUR.DESACTIVE
-    case AccessStatus.AWAITING_VALIDATION:
-      return ETAT_UTILISATEUR.ATTENTE
-    default:
-      assertUnreachable(roleStatus)
+  const result = roleStatusToUserRecruteurStatusMapping[roleStatus]
+  if (!result) {
+    throw new Error("inattendu: correspondance introuvable")
   }
+  return result
+}
+const userRecruteurStatusToRoleStatus = (roleStatus: ETAT_UTILISATEUR): AccessStatus | undefined => {
+  return userRecruteurStatusToRoleStatusMapping[roleStatus]
 }
 
 export const getUserRecruteurById = async (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
@@ -515,6 +523,89 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   )
 }
 
-export const getUsersForAdmin = async () => {
-  return getUserRecruteursForManagement({ activeRoleLimit: 40 })
+export const getUsersForAdmin = async ({ status, limit }: { status?: ETAT_UTILISATEUR; limit?: number }) => {
+  // return getUserRecruteursForManagement({ activeRoleLimit: 40 })
+  return getUserRecruteursForManagement2({ status, roleLimit: limit })
+}
+
+export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatus, roleLimit }: { opco?: OPCOS_LABEL; status?: ETAT_UTILISATEUR; roleLimit?: number }) => {
+  let aggregationStages: any = [...roleManagement360AggregationStages]
+
+  const roleFilter: Filter<IRoleManagement> = {}
+  if (opco) {
+    roleFilter.authorized_type = AccessEntityType.ENTREPRISE
+  }
+  if (queryStatus) {
+    const roleStatus = userRecruteurStatusToRoleStatus(queryStatus)
+    if (roleStatus) {
+      roleFilter.$expr = { $eq: [{ $arrayElemAt: ["$status.status", -1] }, roleStatus] }
+    }
+    if (queryStatus === ETAT_UTILISATEUR.ERROR) {
+      aggregationStages.push({
+        $match: {
+          $expr: { $eq: [{ $arrayElemAt: ["$entreprise.status.status", -1] }, EntrepriseStatus.ERROR] },
+        },
+      })
+    }
+  }
+  if (opco) {
+    aggregationStages.push({
+      $match: {
+        "entreprise.opco": opco,
+      },
+    })
+  }
+  if (Object.keys(roleFilter).length) {
+    aggregationStages = [
+      {
+        $match: roleFilter,
+      },
+      ...aggregationStages,
+    ]
+  }
+  aggregationStages.push({
+    $sort: {
+      updatedAt: -1,
+    },
+  })
+  if (roleLimit) {
+    aggregationStages.push({
+      $limit: roleLimit,
+    })
+  }
+
+  console.info(JSON.stringify(aggregationStages, null, 2))
+
+  const documents = (await getDbCollection("rolemanagements").aggregate(aggregationStages).toArray()) as RoleManagement360Document[]
+
+  return documents.flatMap((document) => {
+    const { user, entreprise, cfa } = document
+    const role = document
+    const organization = entreprise ?? cfa ?? null
+    if (!organization) {
+      return []
+    }
+    const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, null)
+    const lastStatus = getLastStatusEvent(userRecruteur.status)?.status
+    if (queryStatus && queryStatus !== lastStatus) {
+      return []
+    }
+    const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
+    const userRecruteurForAdmin: IUserRecruteurForAdmin = {
+      _id,
+      establishment_raison_sociale,
+      establishment_siret,
+      type,
+      first_name,
+      last_name,
+      email,
+      phone,
+      createdAt,
+      origin,
+      opco,
+      status,
+      organizationId: organization._id,
+    }
+    return [userRecruteurForAdmin]
+  })
 }

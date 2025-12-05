@@ -44,6 +44,8 @@ export const CustomTabs = <Name extends string>({
     onChange(panels[newValue].id)
   }
 
+  const currentPanel = panels[currentIndex]
+
   return (
     <>
       <Box>
@@ -54,11 +56,9 @@ export const CustomTabs = <Name extends string>({
         </Tabs>
       </Box>
       <Box>
-        {panels.map(({ id, content }, index) => (
-          <TabPanel value={value} index={index} key={id}>
-            {content}
-          </TabPanel>
-        ))}
+        <TabPanel value={value} index={currentIndex}>
+          {currentPanel.content}
+        </TabPanel>
       </Box>
     </>
   )

@@ -46,13 +46,15 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/user",
+    "/admin/users-recruteurs",
     {
-      schema: zRoutes.get["/user"],
-      onRequest: [server.auth(zRoutes.get["/user"])],
+      schema: zRoutes.get["/admin/users-recruteurs"],
+      onRequest: [server.auth(zRoutes.get["/admin/users-recruteurs"])],
     },
-    async (_, res) => {
-      const groupedUsers = await getUsersForAdmin()
+    async (req, res) => {
+      const { status, limit } = req.query
+      const parsedLimit = limit ? parseInt(limit, 10) : undefined
+      const groupedUsers = await getUsersForAdmin({ status, limit: parsedLimit })
       return res.status(200).send(groupedUsers)
     }
   )
