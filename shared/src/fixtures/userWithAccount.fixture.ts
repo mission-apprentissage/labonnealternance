@@ -22,6 +22,7 @@ export function generateUserWithAccountFixture(data: Partial<IUserWithAccount> =
 
     createdAt: new Date("2021-01-28T15:00:00.000Z"),
     updatedAt: new Date("2021-01-28T15:00:00.000Z"),
+    last_action_date: new Date("2021-01-28T15:00:00.000Z"),
 
     ...data,
   }

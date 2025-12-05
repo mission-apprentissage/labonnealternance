@@ -38,7 +38,7 @@ export const ZUserWithAccount = z
     last_name: z.string(),
     email: z.string().email(),
     phone: extensions.phone(),
-    last_action_date: z.date().nullish(),
+    last_action_date: z.date(),
     createdAt: z.date(),
     updatedAt: z.date(),
   })

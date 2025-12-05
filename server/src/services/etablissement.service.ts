@@ -555,7 +555,7 @@ export const entrepriseOnboardingWorkflow = {
 
     let validated = false
     const { user: managingUser } = await createOrganizationUser({
-      userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail },
+      userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail, last_action_date: new Date() },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
     })
