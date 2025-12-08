@@ -45,7 +45,7 @@ export const fetchOpcosFromCFADock = async (sirenSet: Set<string>) => {
       if (axios.isAxiosError(error) && error.response?.status === 429) {
         lastError = error
         if (attempt < maxRetries) {
-          await sleep(1000)
+          await sleep(1000 * Math.pow(2, attempt))
           continue
         }
       }
