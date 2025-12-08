@@ -54,5 +54,5 @@ export const fetchOpcosFromCFADock = async (sirenSet: Set<string>) => {
   }
 
   // This should never be reached, but TypeScript needs it
-  throw lastError
+  throw lastError ?? new Error("Unknown error occurred in fetchOpcosFromCFADock")
 }
