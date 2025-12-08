@@ -11,7 +11,7 @@ jobs:
 
   npm-packages-check:
     runs-on: ubuntu-latest
-    secrets:
+    env:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     steps:
       - name: Checkout project
