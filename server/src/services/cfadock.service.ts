@@ -24,7 +24,7 @@ const ZResponseArray = z.array(ZResponseItem)
  */
 export const fetchOpcosFromCFADock = async (sirenSet: Set<string>) => {
   const maxRetries = 2
-  let lastError
+  let lastError: Error | undefined
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
