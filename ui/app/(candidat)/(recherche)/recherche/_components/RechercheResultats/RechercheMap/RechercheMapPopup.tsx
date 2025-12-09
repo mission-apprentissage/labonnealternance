@@ -31,6 +31,7 @@ function RechercheMapPopupLink(props: WithRecherchePageParams<{ item: ILbaItem }
         size="sm"
         style={{
           color: fr.colors.decisions.text.title.grey.default,
+          fontFamily: "Marianne",
         }}
       >
         {props.item.title}

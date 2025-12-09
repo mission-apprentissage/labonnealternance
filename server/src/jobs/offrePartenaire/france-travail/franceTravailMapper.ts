@@ -28,10 +28,8 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
   }
 
   return {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at: now,
-    updated_at: now,
     partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
     partner_job_id: job.id,
     contract_start: null,
