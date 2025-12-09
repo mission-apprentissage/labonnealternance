@@ -67,8 +67,29 @@ jobs:
         env:
           APP_VERSION: ${{ inputs.app_version }}
 
+  npm-packages-check:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
+        with:
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check
+
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
   deploy:
-    needs: version
+    if: ${{ success() }}
+    needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
