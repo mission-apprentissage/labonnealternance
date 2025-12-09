@@ -8,6 +8,13 @@ import JobDetailRendererClient from "./JobDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
 
+// Désactive le streaming SSR pour éviter l'erreur "transformAlgorithm is not a function"
+// avec Next.js 16 quand les connexions sont interrompues (healthchecks, timeouts, etc.)
+// Voir: https://github.com/vercel/next.js/discussions/75995
+// Context: PRs #2474-2479, Sentry issue https://sentry.apprentissage.beta.gouv.fr/organizations/sentry/issues/6/
+export const dynamic = "force-dynamic"
+export const revalidate = 300 // Cache ISR pendant 5 minutes
+
 const typeToJobMap = {
   [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "ILbaItemLbaCompanyJson",
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "ILbaItemPartnerJobJson",

@@ -120,9 +120,8 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
   const updatedDate = last_activation_at ? new Date(last_activation_at) : null
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
-    created_at: publicationDate,
     partner_label: JOBPARTNERS_LABEL.KELIO,
     partner_job_id: id,
 
