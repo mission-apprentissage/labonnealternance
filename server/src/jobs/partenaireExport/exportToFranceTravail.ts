@@ -226,10 +226,7 @@ export const exportJobsToFranceTravail = async () => {
     const jobs = await getJobsToExport()
     await generateCsvFile(csvPath, jobs)
     logger.info("Send CSV file to France Travail")
-    // KBA 20251126 : Passage au flux HACOFILE le 2 décembre 2025. Décomissionnement du flux LABONATA à validé par Patricia BOYER (FT)
-    // => modifier la configuration en conséquence et retirer le paramètre nomFlux
     await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
-    await sendCsvToFranceTravail(path.resolve(csvPath.pathname), "HACOFILE")
     await notifyToSlack({
       subject: "EXPORT FRANCE TRAVAIL",
       message: `${jobs.length} offres transmises à France Travail`,
