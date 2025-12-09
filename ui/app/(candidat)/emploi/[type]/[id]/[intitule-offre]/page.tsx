@@ -8,6 +8,13 @@ import JobDetailRendererClient from "./JobDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { ApiError, apiGet } from "@/utils/api.utils"
 
+// Désactive le streaming SSR pour éviter l'erreur "transformAlgorithm is not a function"
+// avec Next.js 16 quand les connexions sont interrompues (healthchecks, timeouts, etc.)
+// Voir: https://github.com/vercel/next.js/discussions/75995
+// Context: PRs #2474-2479, Sentry issue https://sentry.apprentissage.beta.gouv.fr/organizations/sentry/issues/6/
+export const dynamic = "force-dynamic"
+export const revalidate = 300 // Cache ISR pendant 5 minutes
+
 export async function generateMetadata({ params }): Promise<Metadata> {
   const { type, id } = await params
   const job = await getOffreOption(type, id)
