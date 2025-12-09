@@ -150,13 +150,11 @@ export const getFtJob = async (id: string) => {
 /**
  * Sends CSV file to France Travail API through a "form data".
  */
-// KBA 20251126 : Passage au flux HACOFILE le 2 décembre 2025. Décomissionnement du flux LABONATA à validé par Patricia BOYER (FT)
-// => modifier la configuration en conséquence et retirer le paramètre nomFlux
-export const sendCsvToFranceTravail = async (csvPath: string, nomFlux: string = config.franceTravailDepotOffres.nomFlux): Promise<void> => {
+export const sendCsvToFranceTravail = async (csvPath: string): Promise<void> => {
   const form = new FormData()
   form.append("login", config.franceTravailDepotOffres.login)
   form.append("password", config.franceTravailDepotOffres.password)
-  form.append("nomFlux", nomFlux)
+  form.append("nomFlux", config.franceTravailDepotOffres.nomFlux)
   form.append("fichierAenvoyer", createReadStream(csvPath))
   form.append("periodeRef", "")
 
