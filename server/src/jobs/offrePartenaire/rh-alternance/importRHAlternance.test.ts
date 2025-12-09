@@ -24,12 +24,12 @@ describe("import RH Alternance", () => {
 
   describe("rawRhAlternanceToComputedMapper", () => {
     it("should test that the mapper works", async () => {
-      const mapped = rawRhAlternanceToComputedMapper(now)(generateRawRHAlternanceJobFixture())
+      const mapped = rawRhAlternanceToComputedMapper(generateRawRHAlternanceJobFixture())
       expect.soft(mapped.business_error).toBeFalsy()
       expect.soft(omit(mapped, "_id")).toMatchSnapshot()
     })
     it("should detect a business error", async () => {
-      const mapped = rawRhAlternanceToComputedMapper(now)(
+      const mapped = rawRhAlternanceToComputedMapper(
         generateRawRHAlternanceJobFixture({
           jobType: "invalid",
         })
