@@ -81,53 +81,55 @@ export const importRHAlternanceToComputed = async () => {
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.RH_ALTERNANCE,
     zodInput: ZRawRHAlternanceJob,
-    mapper: rawRhAlternanceToComputedMapper,
+    mapper: rawRhAlternanceToComputedMapper(),
     documentJobRoot: "job",
   })
 }
 
-export const rawRhAlternanceToComputedMapper = ({
-  jobCode,
-  companyName,
-  companySiret,
-  companyUrl,
-  jobTitle,
-  jobDescription,
-  jobSubmitDateTime,
-  jobType,
-  jobUrl,
-  jobCity,
-  jobPostalCode,
-}: IRawRHAlternance["job"]): IComputedJobsPartners => {
-  const now = new Date()
-  const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
+export const rawRhAlternanceToComputedMapper =
+  () =>
+  ({
+    jobCode,
+    companyName,
+    companySiret,
+    companyUrl,
+    jobTitle,
+    jobDescription,
+    jobSubmitDateTime,
+    jobType,
+    jobUrl,
+    jobCity,
+    jobPostalCode,
+  }: IRawRHAlternance["job"]): IComputedJobsPartners => {
+    const now = new Date()
+    const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
 
-  const business_error = jobType === "Alternance" ? null : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+    const business_error = jobType === "Alternance" ? null : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
 
-  const computedJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(now),
-    _id: new ObjectId(),
-    partner_job_id: jobCode,
-    partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
-    contract_type: jobType === "Alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [],
-    offer_title: jobTitle,
-    offer_description: (jobDescription ?? [])
-      .map(({ descriptionHeadline, descriptionText }) => [descriptionHeadline, descriptionText].join(" : "))
-      .filter((line) => line.length)
-      .join("\n")
-      .trim(),
-    offer_creation,
-    offer_expiration: dayjs.tz(offer_creation).add(60, "days").toDate(),
-    offer_opening_count: 1,
-    offer_multicast: true,
-    workplace_siret: companySiret,
-    workplace_name: companyName,
-    workplace_website: companyUrl,
-    workplace_address_label: joinNonNullStrings([jobPostalCode, jobCity]),
-    workplace_address_city: jobCity,
-    workplace_address_zipcode: jobPostalCode,
-    apply_url: jobUrl,
-    business_error,
+    const computedJob: IComputedJobsPartners = {
+      ...blankComputedJobPartner(now),
+      _id: new ObjectId(),
+      partner_job_id: jobCode,
+      partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
+      contract_type: jobType === "Alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : [],
+      offer_title: jobTitle,
+      offer_description: (jobDescription ?? [])
+        .map(({ descriptionHeadline, descriptionText }) => [descriptionHeadline, descriptionText].join(" : "))
+        .filter((line) => line.length)
+        .join("\n")
+        .trim(),
+      offer_creation,
+      offer_expiration: dayjs.tz(offer_creation).add(60, "days").toDate(),
+      offer_opening_count: 1,
+      offer_multicast: true,
+      workplace_siret: companySiret,
+      workplace_name: companyName,
+      workplace_website: companyUrl,
+      workplace_address_label: joinNonNullStrings([jobPostalCode, jobCity]),
+      workplace_address_city: jobCity,
+      workplace_address_zipcode: jobPostalCode,
+      apply_url: jobUrl,
+      business_error,
+    }
+    return computedJob
   }
-  return computedJob
-}
