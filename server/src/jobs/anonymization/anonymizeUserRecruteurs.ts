@@ -31,7 +31,7 @@ const recruiterProjection: Partial<Record<keyof IRecruiter, 1>> = {
 
 const anonymize = async () => {
   const fromDate = dayjs().subtract(2, "years").toDate()
-  const userWithAccountQuery = { $or: [{ last_action_date: { $lte: fromDate } }, { last_action_date: null, createdAt: { $lte: fromDate } }] }
+  const userWithAccountQuery = { last_action_date: { $lte: fromDate } }
   const usersToAnonymize = await getDbCollection("userswithaccounts").find(userWithAccountQuery).toArray()
   const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
   const recruiterQuery = { managed_by: { $in: userIds } } //TODO: à mettre à jour quand multi compte
