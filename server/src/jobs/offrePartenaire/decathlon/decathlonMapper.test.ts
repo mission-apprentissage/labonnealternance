@@ -157,7 +157,7 @@ describe("decathlonMapper", () => {
       jobs_in_success: [],
       offer_access_conditions: [],
       offer_creation: new Date("2025-11-24T10:18:17.000Z"),
-      offer_description: "Description :<br />description<br /><br />Profil :<br />profile",
+      offer_description: "<b>Description :</b><br />description<br /><br /><b>Profil :</b><br />profile",
       offer_desired_skills: ["entrepreneur", "Esprit d'équipe", "Management", "Accueil", "Produit", "Relation Sportif"],
       offer_expiration: new Date("2026-01-24T09:18:17.000Z"),
       offer_multicast: true,
