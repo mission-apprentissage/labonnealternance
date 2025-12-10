@@ -82,10 +82,8 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   }
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at: now,
-    updated_at: now,
     partner_label: JOBPARTNERS_LABEL.PASS,
     partner_job_id: dcIdentifier,
     contract_type: ["Apprentissage"],

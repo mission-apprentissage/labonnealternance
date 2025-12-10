@@ -251,7 +251,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
     brand: input.is_delegated ? null : input.workplace_brand,
     legal_name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name) || null,
     website: input.workplace_website,
-    name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name || input.workplace_brand) || null,
+    name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name || input.workplace_brand || input.workplace_name) || null,
     description: input.workplace_description,
     size: input.workplace_size,
     location: {

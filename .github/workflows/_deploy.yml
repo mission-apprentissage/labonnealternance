@@ -69,8 +69,6 @@ jobs:
 
   npm-packages-check:
     runs-on: ubuntu-latest
-    secrets:
-      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -114,7 +112,7 @@ jobs:
           cache: "yarn"
 
       - name: Install dependencies
-        run: yarn install --immutable --ignore-scripts
+        run: yarn install --immutable
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
