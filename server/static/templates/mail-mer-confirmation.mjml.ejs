@@ -83,7 +83,9 @@
               <br /><br />
               Votre offre <a href="<%= data.job_url %>"><%= data.job_title %></a> a été partagée à <%= data.delegations.length %> école(s) :
               <br />
-              <% data.delegations.forEach(function(delegation) { %>
+            </mj-text>
+            <% data.delegations.forEach(function(delegation) { %>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 12px 0px">
               <br />
               Établissement :<span style="font-weight: 700;"> <%= delegation.raison_sociale %></span>
               <br />Adresse : <span style="font-weight: 700;"><%= delegation.adresse_etablissement %>

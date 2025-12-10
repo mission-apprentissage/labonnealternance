@@ -262,19 +262,17 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
   const siren = siret.slice(0, 9)
   const sirenRegex = `^${siren}`
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-  const [bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromLbaCompany({ workplace_siret: { $regex: sirenRegex }, apply_email: { $nin: ["", null] }, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }),
-    getDbCollection("referentielopcos")
-      .find({ siret_code: { $regex: sirenRegex } })
-      .toArray(),
-  ])
+  const bonneBoiteList = await getAllEstablishmentFromLbaCompany({
+    workplace_siret: { $regex: sirenRegex },
+    apply_email: { $nin: ["", null] },
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+  })
 
   // Format arrays to get only the emails
   const bonneBoiteEmailList = bonneBoiteList.map(({ apply_email }) => apply_email)
-  const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
 
   // Create a single array with all emails duplicate free
-  const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteEmailList])]
+  const validEmails = [...new Set([...bonneBoiteEmailList])]
 
   // Check BAL API for validation
   const isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
@@ -557,7 +555,7 @@ export const entrepriseOnboardingWorkflow = {
 
     let validated = false
     const { user: managingUser } = await createOrganizationUser({
-      userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail },
+      userFields: { first_name, last_name, phone: phone ?? "", origin, email: formatedEmail, last_action_date: new Date() },
       is_email_checked: false,
       organization: { type: ENTREPRISE, entreprise },
     })

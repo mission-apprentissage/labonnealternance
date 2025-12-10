@@ -168,7 +168,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
               .required("champ obligatoire"),
             email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
-            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.required("champ obligatoire") }),
+            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
           })}
           onSubmit={async (values, { setSubmitting }) => {
             setSubmitting(true)

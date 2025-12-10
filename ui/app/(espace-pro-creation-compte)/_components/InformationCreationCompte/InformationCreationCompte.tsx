@@ -70,7 +70,7 @@ const Formulaire = ({
         first_name: Yup.string().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
-        opco: shouldSelectOpco ? Yup.string().required("champ obligatoire") : Yup.string(),
+        opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
       })}
       onSubmit={onSubmit}
     >
