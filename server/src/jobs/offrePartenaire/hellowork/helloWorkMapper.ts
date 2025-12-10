@@ -84,7 +84,6 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     city,
     geoloc,
     url,
-    updated_date,
     postal_code,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
@@ -94,12 +93,10 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const urlParsing = extensions.url().safeParse(url)
   const creationDate = parseDate(publication_date)
 
-  const created_at = new Date()
+  const now = new Date()
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at,
-    updated_at: updated_date ? parseDate(updated_date) : created_at,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
     partner_job_id: job_id,
     contract_start: parseDate(contract_start_date),
@@ -116,7 +113,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: creationDate,
     offer_expiration: dayjs
-      .tz(creationDate || created_at)
+      .tz(creationDate || now)
       .add(2, "months")
       .toDate(),
     workplace_siret: siretParsing.success ? siretParsing.data : null,
