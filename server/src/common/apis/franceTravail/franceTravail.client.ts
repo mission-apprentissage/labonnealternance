@@ -7,16 +7,16 @@ import FormData from "form-data"
 import type { IFTJobRaw } from "shared"
 import type { IFranceTravailAccess, IFranceTravailAccessType } from "shared/models/franceTravailAccess.model"
 
+import getApiClient from "@/common/apis/client"
 import { logger } from "@/common/logger"
 import { apiRateLimiter } from "@/common/utils/apiUtils"
+import { sleep } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import getApiClient from "@/common/apis/client"
-import { ZFTApiToken } from "@/services/rome.service.types"
-import type { FTResponse } from "@/services/ftjob.service.types"
 import config from "@/config"
-import { sleep } from "@/common/utils/asyncUtils"
+import type { FTResponse } from "@/services/ftjob.service.types"
+import { ZFTApiToken } from "@/services/rome.service.types"
 
 const axiosClient = getApiClient({})
 

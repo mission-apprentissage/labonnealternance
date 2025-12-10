@@ -15,7 +15,27 @@ on:
           - pentest
 
 jobs:
+  npm-packages-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
+        with:
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check
+
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
   build:
+    if: ${{ success() }}
+    needs: ["npm-packages-check"]
     concurrency:
       group: "build-${{ github.workflow }}-${{ github.ref }}"
     permissions: write-all
