@@ -238,6 +238,7 @@ export default (server: Server) => {
               phone,
               email: formatedEmail,
               origin,
+              last_action_date: new Date(),
             },
             is_email_checked: false,
             organization: { type: CFA, cfa },
