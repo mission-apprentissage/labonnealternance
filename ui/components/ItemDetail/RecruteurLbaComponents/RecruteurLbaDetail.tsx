@@ -15,6 +15,7 @@ import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLoc
 import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { notifyJobDetailViewV3 } from "@/utils/api"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
   useEffect(() => {
@@ -22,7 +23,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
       partner_label: recruteurLba.ideaType,
       info_fiche: `${recruteurLba?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
-    /* eslint react-hooks/exhaustive-deps: 0 */
+    notifyJobDetailViewV3(recruteurLba)
   }, [recruteurLba?.company?.siret])
 
   useEffect(() => {
