@@ -49,7 +49,7 @@ export const createUser2IfNotExist = async (
       first_name,
       last_name,
       phone: phone ?? "",
-      last_action_date: last_action_date ?? new Date(),
+      last_action_date,
       origin,
       status,
       createdAt: now,
