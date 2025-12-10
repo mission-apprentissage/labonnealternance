@@ -58,7 +58,7 @@
             <mj-image align="left" alt="Image" css-class="image" alt="" src="<%= data.images.logoRf %>" width="89px"></mj-image>
           </mj-column>
           <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
-            <mj-image align="left" alt="Image" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
+            <mj-image align="left" alt="Image" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr?utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
           </mj-column>
           <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
         </mj-group>
@@ -66,79 +66,66 @@
       <mj-spacer height="24px"></mj-spacer>
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="16px 0px 16px 0px">
+                Recevez les demandes de contact des candidats directement dans les boîtes mail de votre CFA !
+            </mj-text>
+            <mj-text>
+                Le formulaire de contact La bonne alternance est désormais disponibles sur vos formations. Vérifiez régulièrement vos boîtes mails (ainsi que vos courriers indésirables) pour répondre aux candidats dès que possible.    
+            </mj-text>
 
-        <mj-section padding-top="0" padding-bottom="0">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px 0 10px">
-                <mj-text color="#000091" font-size="18px" padding-bottom="20px">
-                    <b>Recevez les demandes de contact des candidats directement dans les boîtes mail de votre CFA !</b>
-                </mj-text>
-                <mj-text>
-                    Un nouveau service vient d'être ajouté à vos fiches formations publiées sur La bonne alternance.
-                    Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact. </mj-text>
-                <mj-text>Vous recevrez ces demandes sur les adresses email que vous avez enregistrées auprès de votre <u><a href="https://www.intercariforef.org">Carif-Oref</a></u> pour l’organisme de formation suivant :
-                    <br/>
-                    <b>
-                        <%= data.etablissement.name %> <br />
-                        <%= data.etablissement.formateur_address %><br/>
-                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
-                        SIRET : <%= data.etablissement.formateur_siret %>
-                    </b>
-                </mj-text>
-                <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
-                <mj-text padding-top="20px">
-                    Pour continuer à améliorer votre sourcing, ce service sera progressivement activé sur chacune de vos fiches formations publiées sur
-                    Parcoursup, Affelnet et d’autres plateformes et portails du service public.
-                </mj-text>
-                <mj-button color="#000091" background-color="#ffffff" border="1px solid #000091" href="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/la-recherche-simultanee-dune-formation-et-dun-emploi-en-apprentissage">
-                    Je souhaite en savoir plus sur ce service
-                </mj-button>
-                <mj-button color="#000091" background-color="#ffffff" border="1px solid #000091" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20CFA%20Optout%20-%20Question">
-                    J’ai une question
-                </mj-button>
-                <mj-button color="#000091" background-color="#ffffff" border="1px solid #000091" href="<%= data.etablissement.linkToUnsubscribe %>">
-                    Je ne souhaite pas bénéficier de ce service
-                </mj-button>
+            <mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.desk_optout_cfa %>" width="100%"></mj-image>
+
+            <mj-text>
+                La bonne alternance exploite les données du catalogue de l’apprentissage du réseau des Carif Oref. Ainsi, lorsque vous déclarez une formation à votre Carif Oref, celle-ci est automatiquement affichée sur La bonne alternance.
+                <br /><br />
+                <span style="font-weight:bold;">Le formulaire de contact est déployé</span> pour les <span style="font-weight:bold;"><%= data.trainingCount %> formation(s)</span> de votre établissement:
+                <br /><br/>
+                <%= data.etablissement.name %> <br />
+                <%= data.etablissement.formateur_address %><br/>
+                <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
+                SIRET : <%= data.etablissement.formateur_siret %>
+                <br /><br />
+                Vous recevrez les demandes des candidats sur l’adresse email du contact principal du lieu de formation renseigné auprès de votre <a style="color:#161616; text-decoration: 'underline';" href="https://www.intercariforef.org">Carif-Oref</a>.
+                <br /><br />
+            </mj-text>  
+
+            <mj-column width="100%" background-color="#ECECFE">
+              <mj-text  padding="20px"color="#000091"font-style="italic">
+                Si le contact renseigné est erroné ou obsolète, nous vous invitons à faire la mise à jour auprès de votre Carif Oref directement. 
+              </mj-text>
             </mj-column>
-        </mj-section>
-        <mj-section background-color="#FFFFFF" padding-top="20px">
-            <mj-column width="50px" background-color="#EEEEEE" padding="14px 10px" vertical-align="middle" padding-right="0">
-                <mj-image src="<%= data.images.informationIcon %>" width="20px" padding-left="3px" padding-right="7px" />
-            </mj-column>
-            <mj-column width="480px" background-color="#EEEEEE" vertical-align="middle" padding-left="0">
-                <mj-text>
-                    Nous vous invitons à vérifier régulièrement vos boîtes mails pour répondre aux candidats dès que possible.
+						
+						<mj-spacer height="24px"></mj-spacer>
+            <mj-button color="#000091" font-weight="bold" background-color="#ffffff" border="1px solid #000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa">
+                Je souhaite en savoir plus sur ce service
+            </mj-button>
+            <mj-spacer height="16px"></mj-spacer>
+            <mj-button color="#000091" background-color="#ffffff" font-weight="bold" border="1px solid #000091" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20CFA%20Optout%20-%20Question">
+                J’ai une question
+            </mj-button>
+            <mj-spacer height="16px"></mj-spacer>
+            <mj-button color="#000091" background-color="#ffffff" font-weight="bold" border="1px solid #000091" href="<%= data.etablissement.linkToUnsubscribe %>">
+                Je ne souhaite pas bénéficier de ce service
+            </mj-button>
+						<mj-spacer height="24px"></mj-spacer>
+            <mj-text>
+                    Cordialement,<br/>
+                    L'équipe <a href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a>,<br/>
                 </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20CFA%20Optout%20-%20Question">labonnealternance@apprentissage.beta.gouv.fr</a>
-                </mj-text>
-                <mj-text>
-                    Cette demande à été réalisée sur le site La bonne alternance
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    A très bientôt,<br/>
-                    L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation">La bonne alternance</a>,<br/>
-                    <a class="grey" href="https://www.linkedin.com/company/mission-apprentissage/posts/?feedView=all">Mission ministérielle pour l'apprentissage</a>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        
+          </mj-column>
+        </mj-group> 
+      </mj-section>
+                     
       <mj-spacer height="24px"></mj-spacer>
+      
       <mj-section border-radius="4px" css-class="section" name="mj-section_group">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
               Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
               <br />
-              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>
               <br /><br />
               La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
               <br /><br />
@@ -146,7 +133,7 @@
               <br /><br />
               Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
               <br /><br />
-              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité de La bonne alternance</a>.
+              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa">politique de confidentialité de La bonne alternance</a>.
             </mj-text>
           </mj-column>
         </mj-group>

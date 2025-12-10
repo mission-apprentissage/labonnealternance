@@ -54,6 +54,11 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
 
       if (!etablissement.gestionnaire_email) return
       if (!etablissement.gestionnaire_siret) return
+
+      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
+        etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
+      })
+
       // Send email
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
@@ -62,9 +67,8 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.webp?raw=true`,
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -73,12 +77,9 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
+            trainingCount: eligibleTrainingsForAppointmentsFound.length,
           },
         },
-      })
-
-      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
-        etablissement_gestionnaire_siret: etablissement.gestionnaire_siret,
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
@@ -103,9 +104,8 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
               replyTo: config.publicEmail,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
-                optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.webp?raw=true`,
+                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+                optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,
