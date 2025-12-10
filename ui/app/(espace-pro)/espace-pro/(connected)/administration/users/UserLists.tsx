@@ -82,13 +82,25 @@ function Users() {
         const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}`} aria-label="voir les informations">
+            <Link
+              href={`/espace-pro/administration/users/${_id}`}
+              aria-label="voir les informations"
+              sx={{
+                fontWeight: "700",
+              }}
+            >
               {establishment_raison_sociale}
             </Link>
             {establishment_raison_sociale ? (
               siretText
             ) : (
-              <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}`} aria-label="voir les informations">
+              <Link
+                href={`/espace-pro/administration/users/${_id}`}
+                aria-label="voir les informations"
+                sx={{
+                  fontWeight: "700",
+                }}
+              >
                 {siretText}
               </Link>
             )}
