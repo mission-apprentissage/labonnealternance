@@ -12,6 +12,7 @@ import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
+// import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -112,6 +113,12 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
+  // "Import Engagement Jeunes": {
+  //   cron_string: timings.import_source,
+  //   handler: processEngagementJeunes,
+  //   checkinMargin: 350,
+  //   maxRuntimeInMinutes: 30,
+  // },
   // "Import Decathlon": {
   //   cron_string: timings.import_source,
   //   handler: processDecathlon,
