@@ -75,7 +75,6 @@ const zRecherchePageParams = z.object({
   displayMap: z.boolean().optional(),
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
-  displayPartenariats: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
   displayMobileForm: z.boolean().optional(),
   elligibleHandicapFilter: z.boolean().optional(),
@@ -151,9 +150,6 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
     }
     if (rechercheParams.displayFormations === false) {
       query.set("displayFormations", "false")
-    }
-    if (rechercheParams.displayPartenariats === false) {
-      query.set("displayPartenariats", "false")
     }
     if (rechercheParams.displayFilters === false) {
       query.set("displayFilters", "false")
@@ -241,7 +237,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       ...commonProps,
       displayEntreprises: false,
       displayFormations: true,
-      displayPartenariats: false,
       displayFilters: false,
     }
   }
@@ -251,21 +246,18 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       ...commonProps,
       displayEntreprises: true,
       displayFormations: false,
-      displayPartenariats: false,
       displayFilters: false,
     }
   }
 
   const displayEntreprises = search.get("displayEntreprises") !== "false"
   const displayFormations = search.get("displayFormations") !== "false"
-  const displayPartenariats = search.get("displayPartenariats") !== "false"
   const displayFilters = search.get("displayFilters") !== "false"
 
   return {
     ...commonProps,
     displayEntreprises,
     displayFormations,
-    displayPartenariats,
     displayFilters,
   }
 }
