@@ -15,6 +15,7 @@ import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { formatTextFieldsJobsPartners } from "./formatTextFieldsJobsPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
+
 import { logger } from "@/common/logger"
 
 export type FillComputedJobsPartnersContext = {
@@ -48,7 +49,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   logger.info("fin de fillComputedJobsPartners")
 }
 
-export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> => ({
+export const blankComputedJobPartner = (now: Date): Omit<IComputedJobsPartners, "_id" | "partner_label" | "partner_job_id"> => ({
   apply_phone: null,
   apply_url: null,
   business_error: null,
@@ -57,7 +58,8 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   contract_start: null,
   contract_type: [],
   contract_is_disabled_elligible: false,
-  created_at: new Date(),
+  created_at: now,
+  updated_at: now,
   errors: [],
   offer_access_conditions: [],
   offer_creation: null,
@@ -73,7 +75,6 @@ export const blankComputedJobPartner = (): Omit<IComputedJobsPartners, "_id" | "
   offer_title: null,
   offer_to_be_acquired_skills: [],
   offer_to_be_acquired_knowledge: [],
-  updated_at: null,
   validated: false,
   workplace_address_city: null,
   workplace_address_label: null,
