@@ -38,7 +38,6 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
         rechercheParams={{
           displayEntreprises: true,
           displayFormations: true,
-          displayPartenariats: true,
         }}
       >
         <RechercheInputsLayout
