@@ -75,6 +75,7 @@ export const inviteEtablissementToOptOut = async () => {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
             trainingCount: eligibleTrainingsForAppointmentsFound.length,
+            name: etablissementDetails.raison_sociale,
             formateur_address: etablissementDetails.formateur_address,
             formateur_zip_code: etablissementDetails.formateur_zip_code,
             formateur_city: etablissementDetails.formateur_city,
