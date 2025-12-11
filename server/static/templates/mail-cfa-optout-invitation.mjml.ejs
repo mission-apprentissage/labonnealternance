@@ -74,7 +74,7 @@
               À partir du <span style="font-weight:bold;"><%= data.etablissement.optOutActivatedAtDate %></span>, un formulaire de contact sera ajouté à vos formations publiées sur La bonne alternance, ONISEP et 1jeune1solution. Il permettra aux candidats intéressés par vos formations de vous envoyer leurs questions par courriel.
 						</mj-text>
 
-						<mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="100%"></mj-image>
+						<mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="500px"></mj-image>
 
             <mj-text font-weight="bold" font-size="20px">
               Comment ça marche ?
@@ -112,7 +112,7 @@
             <mj-spacer height="24px"></mj-spacer>
             <mj-text align="center" font-weight="bold">Pour refuser l’activation du service, cliquez sur le lien ci-dessous :</mj-text>
             <mj-spacer height="16px"></mj-spacer>
-            <mj-button color="#ffffff" font-weight="bold" background-color="#000091" border="1px solid #000091" href="<%= data.etablissement.linkToUnsubscribe %>">
+            <mj-button color="#ffffff" font-weight="bold" background-color="#000091" border="1px solid #000091" href="<%= data.etablissement.linkToUnsubscribe %>&<%= data.utmParams %>">
               Je ne souhaite pas bénéficier de ce service
             </mj-button>
             <mj-spacer height="24px"></mj-spacer>
