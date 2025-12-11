@@ -114,13 +114,12 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
                 formateur_zip_code: etablissement.formateur_zip_code,
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
-                email: etablissement.gestionnaire_email,
                 optOutActivatedAtDate: dayjs().format("DD/MM/YYYY"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
-              user: {
-                destinataireEmail: email,
-              },
+              // user: {
+              //   destinataireEmail: email,
+              // },
               publicEmail: config.publicEmail,
               utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa",
             },

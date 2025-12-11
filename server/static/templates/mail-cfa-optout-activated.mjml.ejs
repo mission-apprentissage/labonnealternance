@@ -66,60 +66,49 @@
       <mj-spacer height="24px"></mj-spacer>
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="26px" padding="16px 0px 16px 0px">
+                Recevez les demandes de contact des candidats directement dans les boîtes mail de votre CFA !
+            </mj-text>
+            <mj-text font-size="16px" line-height="24px">
+              Le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" class="grey">La bonne alternance</a>. Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+            </mj-text>
+                
+            <mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="500px"></mj-image>
 
-        <mj-section padding-top="0" padding-bottom="0">
-            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px 12px">
-                <mj-text color="#000091" font-size="18px" padding-right="0" padding-top="26px">
-                    <b>Recevez les demandes de contact des candidats directement dans les boîtes mails de votre CFA !</b>
-                </mj-text>
-            </mj-column>
-            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 37px 0">
-                <mj-image padding="10px 10px 4px 0" width="510px" src="<%= data.images.peopleLaptop %>" />
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="0">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
-                <mj-text>
-                    Le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" class="grey">La bonne alternance</a>. Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+            <mj-text font-weight="bold" font-size="20px" line-height="26px">
+              Comment ça marche ?
+              <br /><br />
+            </mj-text>
 
-                </mj-text>
-                <mj-text>
-                    Vous recevrez ces demandes pour l’organisme de formation suivant :
-                    <br/>
-                    <b>
-                        <%= data.etablissement.name %> <br />
-                        <%= data.etablissement.formateur_address %><br/>
-                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %> <br/>
-                        SIRET: <%= data.etablissement.siret %>
-                    </b>
-                </mj-text>
-                <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="24px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text font-size="24px" font-weight="700">Qu’est ce que La bonne alternance ?</mj-text>
-                <mj-text><a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" class="grey">La bonne alternance</a> a pour objectif d’aider les entreprises et les organismes de formation à <b>diffuser et gérer leurs offres de manière simplifiée</b>, et à faciliter la mise en relation entre les acteurs de l’apprentissage.<br/><br/>
-                    <b>Vos offres d’emploi et vos formations sont visibles sur les sites d’alternance les plus visités par les candidats</b>, notamment La bonne alternance, Affelnet, Parcoursup, 1jeune1solution. Les informations de vos entreprises partenaires ne sont pas exposées aux candidats. Vous recevez directement les candidatures afin de préserver votre exclusivité.
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="24px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text><b>Qui reçoit les demandes de rendez-vous ?</b><br/><br/>
-                    Les demandes de rendez-vous envoyées par les candidats auprès de votre CFA sont reçues sur le mail formateur renseigné auprès de votre Carif-Oref pour vos fiches formation.<br/><br/>
+            <mj-text font-size="16px" line-height="24px">
+              La bonne alternance exploite les données du <a href="https://catalogue-apprentissage.intercariforef.org/" style="color:#161616; text-decoration: 'underline';">catalogue de l’apprentissage du réseau des Carif Oref</a>. Ainsi, lorsque vous déclarez une formation à votre Carif Oref, celle-ci est automatiquement affichée sur La bonne alternance.
+              <br /><br />
+              <span style="font-weight:bold;">Le formulaire de contact est déployé</span> pour les <span style="font-weight:bold;"><%= data.trainingCount %> formation(s)</span> de votre établissement:
+              <br /><br/>
+              <%= data.etablissement.name %> <br />
+              <%= data.etablissement.formateur_address %><br/>
+              <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
+              SIRET : <%= data.etablissement.siret %>
+              <br /><br />
+              Vous recevrez les demandes des candidats sur l’adresse email du contact principal du lieu de formation renseigné auprès de votre <a style="color:#161616; text-decoration: 'underline';" href="https://www.intercariforef.org">Carif-Oref</a>.
+              <br /><br />
+            </mj-text>  
 
-                    <b>Vous souhaitez modifier le mail de la personne en charge de traiter les demandes de prise de RDV ?</b><br/><br/>
-
-                    Merci de nous fournir les éléments suivants: <br/><br/>
-                    • SIRET de votre établissement, <br/>
-                    • nom de la/les formation(s) à modifier, <br/>
-                    • nouveau(x) mail(s) contact <br/><br/>
-                    à <a href="mailto:<%= data.publicEmail %>" class="grey"><%= data.publicEmail %></a> afin de nous permettre d’effectuer ces modifications.
-                </mj-text>
+            <mj-column width="100%" background-color="#ECECFE">
+              <mj-text padding="20px" color="#000091" font-style="italic" font-size="16px" line-height="24px">
+                Si le contact renseigné est erroné ou obsolète, nous vous invitons à faire la mise à jour auprès de votre Carif Oref directement. 
+              </mj-text>
             </mj-column>
-        </mj-section>
+
+            <mj-spacer height="24px"></mj-spacer>
+            <mj-text font-size="16px" line-height="24px">
+              Cordialement,<br/>
+              L'équipe <a href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a>,<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group> 
+      </mj-section>
 
       <mj-spacer height="24px"></mj-spacer>
       <mj-section border-radius="4px" css-class="section" name="mj-section_group">

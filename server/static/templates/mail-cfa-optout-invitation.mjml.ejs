@@ -68,20 +68,21 @@
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="16px 0px 16px 0px">Recevez les demandes de contact des candidats directement dans les boîtes mail de votre CFA !</b>
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="26px" padding="16px 0px 16px 0px">
+              Recevez les demandes de contact des candidats directement dans les boîtes mail de votre CFA !
             </mj-text>
-            <mj-text>
+            <mj-text font-size="16px" line-height="24px">
               À partir du <span style="font-weight:bold;"><%= data.etablissement.optOutActivatedAtDate %></span>, un formulaire de contact sera ajouté à vos formations publiées sur La bonne alternance, ONISEP et 1jeune1solution. Il permettra aux candidats intéressés par vos formations de vous envoyer leurs questions par courriel.
 						</mj-text>
 
 						<mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="500px"></mj-image>
 
-            <mj-text font-weight="bold" font-size="20px">
+            <mj-text font-weight="bold" font-size="20px" line-height="26px">
               Comment ça marche ?
               <br /><br />
             </mj-text>
 						
-						<mj-text>
+						<mj-text font-size="16px" line-height="24px">
               La bonne alternance exploite les données du <a href="https://catalogue-apprentissage.intercariforef.org/" style="color:#161616; text-decoration: 'underline';">catalogue de l’apprentissage du réseau des Carif Oref</a>. Ainsi, lorsque vous déclarez une formation à votre Carif Oref, celle-ci est automatiquement affichée sur La bonne alternance.
               <br /><br />  
               Si vous consentez à activer le service, vous n’avez rien à faire : le <%= data.etablissement.optOutActivatedAtDate %>, <span style="font-weight:bold;">le formulaire de contact sera déployé pour les <%= data.trainingCount %> formation(s)</span> de votre établissement:
@@ -96,28 +97,28 @@
           	</mj-text>
 
 						<mj-column width="100%" background-color="#ECECFE">
-              <mj-text  padding="20px"color="#000091"font-style="italic">
+              <mj-text padding="20px" color="#000091" font-style="italic" font-size="16px" line-height="24px">
                 Si le contact renseigné est erroné ou obsolète, nous vous invitons à faire la mise à jour auprès de votre Carif Oref directement. 
               </mj-text>
             </mj-column>
 						<mj-spacer height="24px"></mj-spacer>
                                   
-            <mj-button color="#000091" font-weight="bold" background-color="#ffffff" border="1px solid #000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">
+            <mj-button color="#000091" font-size="16px" font-weight="bold" background-color="#ffffff" border="1px solid #000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">
               Je souhaite en savoir plus sur ce service
             </mj-button>
             <mj-spacer height="16px"></mj-spacer>
-            <mj-button color="#000091" font-weight="bold" background-color="#ffffff" border="1px solid #000091"  href="mailto:<%= data.publicEmail %>?subject=Email%20CFA%20Optout%20-%20Question">
+            <mj-button color="#000091" font-size="16px" font-weight="bold" background-color="#ffffff" border="1px solid #000091"  href="mailto:<%= data.publicEmail %>?subject=Email%20CFA%20Optout%20-%20Question">
               J’ai une question
             </mj-button>
             <mj-spacer height="24px"></mj-spacer>
-            <mj-text align="center" font-weight="bold">Pour refuser l’activation du service, cliquez sur le lien ci-dessous :</mj-text>
+            <mj-text align="center" font-weight="bold" font-size="16px" line-height="24px">Pour refuser l’activation du service, cliquez sur le lien ci-dessous :</mj-text>
             <mj-spacer height="16px"></mj-spacer>
-            <mj-button color="#ffffff" font-weight="bold" background-color="#000091" border="1px solid #000091" href="<%= data.etablissement.linkToUnsubscribe %>&<%= data.utmParams %>">
+            <mj-button color="#ffffff" font-size="16px" font-weight="bold" background-color="#000091" border="1px solid #000091" href="<%= data.etablissement.linkToUnsubscribe %>&<%= data.utmParams %>">
               Je ne souhaite pas bénéficier de ce service
             </mj-button>
             <mj-spacer height="24px"></mj-spacer>
 
-            <mj-text>
+            <mj-text font-size="16px" line-height="24px">
               Cordialement,<br/>
               L'équipe <a href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">La bonne alternance</a>,<br/>
             </mj-text>
