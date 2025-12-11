@@ -1,14 +1,14 @@
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 const sourceFields = ["workplace_naf_code"] as const satisfies (keyof IComputedJobsPartners)[]
 
 export const blockJobsPartnersWithNaf85 = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.REMOVE_NAF_85,
     sourceFields,
     filledFields,

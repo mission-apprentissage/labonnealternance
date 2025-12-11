@@ -3,7 +3,7 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { isEnum } from "shared/utils/index"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
@@ -26,7 +26,7 @@ export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComput
     "workplace_legal_name",
     "business_error",
   ] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_SIRET,
     sourceFields: ["workplace_siret"],
     filledFields,

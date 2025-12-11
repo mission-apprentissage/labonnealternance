@@ -2,7 +2,7 @@ import type { Filter } from "mongodb"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
 
@@ -15,7 +15,7 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
   ]
   if (addedMatchFilter) filters.push(addedMatchFilter)
 
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
     sourceFields: ["workplace_description", "workplace_name", "offer_description", "offer_title", "partner_job_id", "partner_label"],
     filledFields,
