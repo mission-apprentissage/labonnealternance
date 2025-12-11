@@ -79,6 +79,8 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement.gestionnaire_siret, etablissement._id.toString()),
             trainingCount: eligibleTrainingsForAppointmentsFound.length,
           },
+          publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa",
         },
       })
 
