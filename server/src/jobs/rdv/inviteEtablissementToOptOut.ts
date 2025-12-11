@@ -1,4 +1,5 @@
 import dayjs from "shared/helpers/dayjs"
+import { ObjectId } from "mongodb"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
@@ -6,6 +7,7 @@ import mailer from "@/services/mailer.service"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 
 interface IEtablissementsWithouOptMode {
   _id: {
@@ -50,7 +52,15 @@ export const inviteEtablissementToOptOut = async () => {
 
   for (const etablissement of etablissementsWithouOptMode) {
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret) {
+
+    const etablissementDetails = await getDbCollection("etablissements").findOne({
+      _id: new ObjectId(etablissement.id),
+    })
+
+    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret && etablissementDetails) {
+      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
+        etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
+      })
       const emailEtablissement = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
@@ -64,11 +74,17 @@ export const inviteEtablissementToOptOut = async () => {
           etablissement: {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
+            trainingCount: eligibleTrainingsForAppointmentsFound.length,
+            formateur_address: etablissementDetails.formateur_address,
+            formateur_zip_code: etablissementDetails.formateur_zip_code,
+            formateur_city: etablissementDetails.formateur_city,
+            formateur_siret: etablissementDetails.formateur_siret,
           },
           user: {
             destinataireEmail: etablissement.gestionnaire_email,
           },
           publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-invitation-acces-cfa",
         },
       })
 
