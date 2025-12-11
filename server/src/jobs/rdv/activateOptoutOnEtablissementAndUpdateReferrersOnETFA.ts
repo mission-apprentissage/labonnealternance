@@ -103,7 +103,6 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             template: getStaticFilePath("./templates/mail-cfa-optout-activated.mjml.ejs"),
             data: {
               url: config.publicUrl,
-              replyTo: config.publicEmail,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
                 logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
@@ -122,6 +121,8 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
               user: {
                 destinataireEmail: email,
               },
+              publicEmail: config.publicEmail,
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa",
             },
           })
         )
