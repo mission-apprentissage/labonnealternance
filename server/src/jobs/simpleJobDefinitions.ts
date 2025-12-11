@@ -55,7 +55,7 @@ import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
-import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
@@ -379,5 +379,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processRecruteursLbaRawToEnd,
+    description: "Import des recruteurs LBA de la collection raw à la collection jobs_partners",
   },
 ]

@@ -8,15 +8,17 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import type { ILbaItemPartnerJob } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
+import { JobCollectionName } from "shared"
 import type { FTJob, FTResponse } from "./ftjob.service.types"
 import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import type { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import type { IApiError } from "@/common/utils/errorManager"
-import { manageApiError } from "@/common/utils/errorManager"
-import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
+import { manageApiError } from "@/common/utils/errorManager"
+import type { IApiError } from "@/common/utils/errorManager"
 
 import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 
@@ -166,7 +168,7 @@ export const transformFtJobV2 = (job: IJobsPartnersOfferPrivate): ILbaItemPartne
     romes: [{ code: job.offer_rome_codes.join(","), label: null }],
     nafs: [{ code: job.workplace_naf_code, label: job.workplace_naf_label }],
     token: "",
-    recipient_id: `partners_${job._id.toString()}`,
+    recipient_id: getRecipientID(JobCollectionName.partners, job._id.toString()),
   }
 
   return resultJob

@@ -5,13 +5,13 @@ import type { OPCOS_LABEL } from "shared/constants/index"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import type { ILbaItemPartnerJob } from "shared/models/index"
-import { JOB_STATUS_ENGLISH, traductionJobStatus } from "shared/models/index"
+import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
-import { getJobsPartnersFromDBForUI, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sortLbaJobs } from "./lbajob.service"
 import { filterJobsByOpco } from "./opco.service"
 import type { IApplicationCount } from "./application.service"
@@ -51,7 +51,12 @@ function transformPartnerJob(
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
 
-  const recipient_id = version === "V1" ? `partners_${id}` : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA ? `recruiters_${id}` : `partners_${id}`
+  const recipient_id =
+    version === "V1"
+      ? getRecipientID(JobCollectionName.partners, id)
+      : partnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA
+        ? getRecipientID(JobCollectionName.recruiters, id)
+        : getRecipientID(JobCollectionName.partners, id)
 
   const resultJob: ILbaItemPartnerJob = {
     id,
