@@ -58,9 +58,8 @@ export const inviteEtablissementToOptOut = async () => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-            peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           },
           etablissement: {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
@@ -69,6 +68,7 @@ export const inviteEtablissementToOptOut = async () => {
           user: {
             destinataireEmail: etablissement.gestionnaire_email,
           },
+          publicEmail: config.publicEmail,
         },
       })
 

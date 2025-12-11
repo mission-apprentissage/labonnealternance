@@ -106,7 +106,7 @@
               Je souhaite en savoir plus sur ce service
             </mj-button>
             <mj-spacer height="16px"></mj-spacer>
-            <mj-button color="#000091" font-weight="bold" background-color="#ffffff" border="1px solid #000091"  href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20CFA%20Optout%20-%20Question">
+            <mj-button color="#000091" font-weight="bold" background-color="#ffffff" border="1px solid #000091"  href="mailto:<%= data.publicEmail %>?subject=Email%20CFA%20Optout%20-%20Question">
               J’ai une question
             </mj-button>
             <mj-spacer height="24px"></mj-spacer>
@@ -133,13 +133,13 @@
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
               Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
               <br />
-              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
               <br /><br />
               La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
               <br /><br />
               Nous vous contactons car vous avez déclaré des formations en apprentissage auprès de votre Carif Oref.
               <br /><br />
-              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
               <br /><br />
               Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité de La bonne alternance</a>.
             </mj-text>
