@@ -5,19 +5,73 @@
     <% } %> <% if(data.isAffelnet){ %>
     <mj-title>RDV Apprentissage est disponible sur Choisir son affectation après la 3e</mj-title>
     <% } %>
-    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
-    <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
+    <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
-      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+      <mj-all padding="0"></mj-all>
     </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+      .text > div {
+      text-align: inherit !important;
+      }
+      .wrapper > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .section > table > tbody > tr > td {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      }
+      .column > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .padB40 {
+      padding-bottom: 40px !important;
+      }
+      .image {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .image > table {
+      text-align: center !important;
+      margin: 0 auto !important;
+      }
+      .divider {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .button > table {
+      width: 100% !important;
+      }
+      .button > table > tbody > tr > td > a {
+      width: 80% !important;
+      }
+      }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
   </mj-head>
-  <mj-body background-color="#E5E5E5">
-    <mj-section>
-      <mj-column>
-        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance" />
-      </mj-column>
-    </mj-section>
+
+  <mj-body background-color="#f5f5fe" width="800px">
+    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="Image" css-class="image" alt="" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="Image" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+
     <mj-section padding-top="0">
       <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
         <mj-text color="#000091" font-size="18px" padding-bottom="20px">
@@ -68,33 +122,27 @@
         </mj-text>
       </mj-column>
     </mj-section>
-    <mj-section padding-top="30px">
-      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-        <mj-text font-size="12px">
-          « La bonne alternance » est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l'Etat, conformément aux missions d'intérêt public du
-          ministère du Travail.
-        </mj-text>
-        <mj-text font-size="12px">
-          Conformément à l'article L.34-5 du code des postes et communications électroniques, vous bénéficiez d'un droit d'opposition que vous pouvez utiliser à tout moment via
-          l'adresse
-          <a class="grey" href="mailto:<%= data.publicEmail %>?subject=Email%20CFA%20Premium%20invite%20-%20Droit%20Opposition"
-            ><%= data.publicEmail %></a
-          >. Votre adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté.
-        </mj-text>
-        <mj-text font-size="12px"> Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. </mj-text>
-        <mj-text font-size="12px">
-          Pour plus d'informations sur le traitement de vos données, vous pouvez vous rendre sur la
-          <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité</a> de La bonne alternance.
-        </mj-text>
-      </mj-column>
-    </mj-section>
-    <mj-section padding-top="5px" text-align="left">
-      <mj-column width="250px">
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.webp" width="200px" align="left"></mj-image>
-      </mj-column>
-      <mj-column width="350px">
-        <mj-text font-size="12px"> Cet email a été envoyé à <u><%= data.etablissement.email %></u> </mj-text>
-      </mj-column>
-    </mj-section>
+    <mj-spacer height="24px"></mj-spacer>
+
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+              <br />
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?<%= data.utmParams %>">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
+              <br /><br />
+              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+              <br /><br />
+              Nous vous contactons car vous avez déclaré des formations en apprentissage auprès de votre Carif Oref.
+              <br /><br />
+              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+              <br /><br />
+              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?<%= data.utmParams %>">politique de confidentialité de La bonne alternance</a>.
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-wrapper>
   </mj-body>
 </mjml>
