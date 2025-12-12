@@ -59,8 +59,8 @@
     </mj-style>
   </mj-head>
   <mj-body background-color="#f5f5fe" name="Entreprise - notif compte validé" width="800px">
-    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
-      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+    <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
             <mj-image align="left" alt="" css-class="image" src="<%= data.images.logoRf %>" width="89px">
@@ -80,9 +80,9 @@
       <mj-spacer height="24px">
 
       </mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column"  padding="23px 23px 23px 23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 24px 0px">
               Bonjour <%= data.first_name %> <%= data.last_name %>,
               <br /><br />
@@ -121,7 +121,7 @@
       <mj-spacer height="24px">
 
       </mj-spacer>
-      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+      <mj-section border-radius="4px" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
@@ -135,7 +135,7 @@
       <mj-spacer height="24px">
 
       </mj-spacer>
-      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+      <mj-section border-radius="4px" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
@@ -151,6 +151,6 @@
           </mj-column>
         </mj-group>
       </mj-section>
-    </mj-wrapper>
+    </mj-column>
   </mj-body>
 </mjml>
