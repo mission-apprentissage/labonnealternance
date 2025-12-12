@@ -64,7 +64,7 @@ export const premiumActivatedReminder = async () => {
             replyTo: config.publicEmail,
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.webp?raw=true`,
+              logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
               logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
               peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
               integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,

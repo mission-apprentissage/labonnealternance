@@ -85,7 +85,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
-          logoParcoursup: `${config.publicUrl}/assets/emails/logo-parcoursup.png`,
+          logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,

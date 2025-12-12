@@ -77,8 +77,9 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
         isParcoursup: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-          integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
+          logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
@@ -86,6 +87,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
         publicEmail: config.publicEmail,
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation-acces-cfa",
       },
     })
 

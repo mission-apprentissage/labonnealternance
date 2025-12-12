@@ -85,7 +85,7 @@
               <% if(data.isAffelnet){ %><b>Choisir son affectation après la 3e</b>.<%}%> 
               Les candidats intéressés peuvent ainsi vous adresser leurs questions, que vous recevez par courriel.
             </mj-text>
-            <mj-button color="#ffffff" padding-top="20px" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>&<%= data.utmParams %>">
+            <mj-button color="#ffffff" padding-top="20px" font-size="16px" font-weight="bold" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>&<%= data.utmParams %>">
               Je souhaite activer le service<% if(data.isParcoursup){ %> sur Parcoursup<%}%>
             </mj-button>
             <mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="500px"></mj-image>
@@ -96,7 +96,7 @@
             </mj-text>
 						
 						<mj-text font-size="16px" line-height="24px">
-              Ce service est proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a> pour <% if(data.isParcoursup){ %>Parcoursup<% } %> <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>.              
+              Ce service est proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a> pour <% if(data.isParcoursup){ %>Parcoursup<% } %> <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>.              
               <br /><br />  
               En acceptant l’invitation, <span style="font-weight:bold;">un formulaire de contact sera déployé sur vos formation(s)</span> actuelles et futures exposées sur <% if(data.isParcoursup){ %>Parcoursup<% } %><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>, rattachées à votre établissement.
               <br /><br/>
@@ -129,8 +129,14 @@
       </mj-section>
         
       <% if(data.isParcoursup){ %>
-      <mj-spacer height="16px"></mj-spacer>
-      <mj-image align="right" alt="" css-class="image" alt="" src="<%= data.images.logoParcoursup %>" width="268px"></mj-image>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-spacer height="16px"></mj-spacer>
+          <mj-image align="right" alt="" css-class="image" alt="" src="<%= data.images.logoParcoursup %>" width="268px"></mj-image>
+          </mj-column>
+        </mj-group>
+      </mj-section>
       <% } %>
     
       <mj-spacer height="24px"></mj-spacer>

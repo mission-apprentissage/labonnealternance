@@ -54,7 +54,7 @@ export const premiumInviteOneShot = async () => {
           url: config.publicUrl,
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.webp?raw=true`,
+            logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
             logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
             peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
             informationIcon: `${config.publicUrl}/assets/icon-information-orange.webp?raw=true`,
@@ -74,6 +74,7 @@ export const premiumInviteOneShot = async () => {
             destinataireEmail: etablissement.gestionnaire_email,
           },
           publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation-acces-cfa",
         },
       })
 
