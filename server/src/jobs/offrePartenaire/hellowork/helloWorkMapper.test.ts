@@ -65,7 +65,7 @@ describe("helloWorkJobToJobsPartners", () => {
       created_at: now,
       updated_at: new Date("2024-07-21T04:49:06.000+02:00"),
       partner_label: "Hellowork",
-      partner_job_id: "73228597",
+      partner_job_id: "1267078/12939556 GPEADPA/69V",
       contract_start: new Date("2024-12-01T00:00:00.000+01:00"),
       contract_type: ["Apprentissage", "Professionnalisation"],
       contract_remote: "onsite",
