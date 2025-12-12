@@ -798,17 +798,21 @@ export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, typ
     template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
     data: {
       ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true` },
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+        logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
+      },
       etablissement: {
         name: etablissement.raison_sociale,
         formateur_address: etablissement.formateur_address,
         formateur_zip_code: etablissement.formateur_zip_code,
         formateur_city: etablissement.formateur_city,
         formateur_siret: etablissement.formateur_siret,
-        email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM/YYYY"),
       publicEmail: config.publicEmail,
+      utmParams: `utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-${type}-confirmation-activation-home`,
     },
   })
 }
