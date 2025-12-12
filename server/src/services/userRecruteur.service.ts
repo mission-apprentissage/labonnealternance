@@ -400,6 +400,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
       confirmation_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
       email: sanitizeTextField(user.email),
       establishment_name: organization.raison_sociale,
+      publicEmail: config.publicEmail,
     },
   })
 }

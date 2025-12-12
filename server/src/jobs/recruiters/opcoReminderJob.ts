@@ -64,6 +64,7 @@ export const opcoReminderJob = async () => {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             },
             count,
+            publicEmail: config.publicEmail,
           },
         })
       })

@@ -97,6 +97,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
           })),
           threshold: numberOfDaysToExpirationDate,
           connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
+          publicEmail: config.publicEmail,
         },
       })
       if (dateRelanceFieldName) {

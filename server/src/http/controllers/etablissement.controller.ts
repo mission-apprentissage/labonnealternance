@@ -128,6 +128,7 @@ export default (server: Server) => {
               user: {
                 destinataireEmail: email,
               },
+              publicEmail: config.publicEmail,
             },
           })
         )
@@ -221,6 +222,7 @@ export default (server: Server) => {
               user: {
                 destinataireEmail: email,
               },
+              publicEmail: config.publicEmail,
             },
           })
         )
@@ -285,6 +287,7 @@ export default (server: Server) => {
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM/YYYY"),
+          publicEmail: config.publicEmail,
         },
       })
 
@@ -349,6 +352,7 @@ export default (server: Server) => {
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM/YYYY"),
+          publicEmail: config.publicEmail,
         },
       })
 
@@ -398,6 +402,7 @@ export default (server: Server) => {
               formateur_city: etablissement.formateur_city,
               opt_out_question: sanitizeTextField(req.body.opt_out_question),
             },
+            publicEmail: config.publicEmail,
           },
           from: config.transactionalEmail,
         })

@@ -285,6 +285,7 @@ export const sendDeactivatedRecruteurMail = async ({
       raison_sociale: sanitizeTextField(establishment_raison_sociale),
       phone: sanitizeTextField(phone),
       emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+      publicEmail: config.publicEmail,
     },
   })
 }

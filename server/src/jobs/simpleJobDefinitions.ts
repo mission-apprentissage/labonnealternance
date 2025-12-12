@@ -28,7 +28,6 @@ import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementA
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
-import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
@@ -135,10 +134,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: premiumActivatedReminder,
     description: "Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup",
-  },
-  {
-    fct: premiumInviteOneShot,
-    description: "Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau",
   },
   {
     fct: syncEtablissementsAndFormations,
