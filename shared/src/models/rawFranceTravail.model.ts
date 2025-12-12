@@ -99,18 +99,6 @@ export const ZFTJobRaw = z
     formations: z.array(ZFTFormation).optional(),
     langues: z.array(z.object({}).passthrough()).optional(),
     complementExercice: z.string().optional(),
-    _metadata: z
-      .object({
-        openai: z
-          .object({
-            type: z.enum(["entreprise", "cfa", "entreprise_cfa"]),
-            cfa: z.string().optional(),
-            human_verification: z.enum(["entreprise", "cfa", "entreprise_cfa"]).optional(),
-          })
-          .optional(),
-      })
-      .passthrough()
-      .optional(),
   })
   .passthrough()
 
