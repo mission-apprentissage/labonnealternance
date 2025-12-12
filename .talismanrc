@@ -3,7 +3,10 @@ fileignoreconfig:
   checksum: 36d809c0fb0b3c298ef696e4225a556fda60920d7302f71304d4c9126c42415f
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
-  ignore_detectors: [filecontent, filename, filesize]
+  ignore_detectors:
+  - filecontent
+  - filename
+  - filesize
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -77,7 +80,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
   checksum: 997465cfcd84fbd424d01574c22fd8fb11b62f6ea09fa03abc408b926018f6a6
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/__snapshots__/processRecruteursLba.test.ts.snap
-  checksum: e904e8a118130aee6751aa0ca30a48260e37912be10c25ccd2f46c7ea325a28b
+  checksum: 16e6e644cf1fa9cde4becbe1c6f7ac57a45a7a2dac51291b9af64e6bed3d7bab
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/__tests__/processRecruteursLba.test.1.json
   checksum: e201980c6db433d36acd65c802fe6da698b922387d574e1a20483fd96cd951bb
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts

@@ -19,3 +19,8 @@ export enum BusinessErrorCodes {
   GEOLOCATION_NOT_FOUND = "Une erreur est survenue lors de la récupération de la géolocalisation à partir de l'adresse de l'entreprise",
   TRAINING_NOT_FOUND = "Formation introuvable",
 }
+
+export enum EntrepriseErrorCodes {
+  PHONE_SAME_AS_CFA = "Veuillez renseigner le numéro de téléphone de la personne en charge des recrutements au sein de l’entreprise. Ce numéro ne peut être identique à celui de votre organisme de formation",
+  EMAIL_SAME_AS_CFA = "Veuillez renseigner l’email de la personne en charge des recrutements au sein de l’entreprise. L’email renseigné ne peut être identique à celui de l’organisme de formation.",
+}
