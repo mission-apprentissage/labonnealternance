@@ -79,14 +79,21 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         isAffelnet: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_affelnet.webp?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
+          name: hasOneAvailableFormation.etablissement_formateur_raison_sociale,
+          formateur_address: hasOneAvailableFormation.lieu_formation_street,
+          formateur_zip_code: hasOneAvailableFormation.lieu_formation_zip_code,
+          formateur_city: hasOneAvailableFormation.lieu_formation_city,
+          formateur_siret: hasOneAvailableFormation.etablissement_formateur_siret,
         },
         publicEmail: config.publicEmail,
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-invitation-acces-cfa",
       },
     })
 
