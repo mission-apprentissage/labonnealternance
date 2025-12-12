@@ -113,6 +113,7 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], reas
             logoLba: `${imagePath}logo_LBA.png`,
             logoRf: `${imagePath}logo_rf.png`,
           },
+          publicEmail: config.publicEmail,
         },
       })
     }

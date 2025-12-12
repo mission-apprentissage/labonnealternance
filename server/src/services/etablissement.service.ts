@@ -728,6 +728,7 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
       last_name: sanitizeTextField(user.last_name),
       first_name: sanitizeTextField(user.first_name),
       confirmation_url: url,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -771,6 +772,7 @@ export const sendEmailConfirmationEntreprise = async (
           delegations: offre.delegations,
         },
         isUserAwaiting,
+        publicEmail: config.publicEmail,
       },
     })
   } else {
@@ -806,6 +808,7 @@ export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, typ
         email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM/YYYY"),
+      publicEmail: config.publicEmail,
     },
   })
 }

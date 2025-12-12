@@ -73,6 +73,7 @@ export const premiumInviteOneShot = async () => {
           user: {
             destinataireEmail: etablissement.gestionnaire_email,
           },
+          publicEmail: config.publicEmail,
         },
       })
 

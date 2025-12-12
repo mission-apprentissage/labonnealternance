@@ -82,6 +82,7 @@ export const premiumActivatedReminder = async () => {
             user: {
               destinataireEmail: email,
             },
+            publicEmail: config.publicEmail,
           },
         })
 
