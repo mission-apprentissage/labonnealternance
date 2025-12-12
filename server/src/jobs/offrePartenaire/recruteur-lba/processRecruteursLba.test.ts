@@ -65,7 +65,7 @@ describe("importRecruteursLbaRaw", () => {
 
   it("should process all recruteurs", async () => {
     await processRecruteursLbaFromFile(`${testDir}/processRecruteursLba.test.1.json`)
-    const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
+    const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).sort({ apply_email: 1 }).toArray()
     expect.soft(publishedJobPartners.map((job) => omit(job, "_id"))).toMatchSnapshot()
   })
 
