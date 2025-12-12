@@ -99,7 +99,7 @@
             </mj-column>
             <mj-column width="400px" padding-left="30px">
                 <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
-                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20desactivation%20RDVA%20-%20Question">labonnealternance@apprentissage.beta.gouv.fr</a>.
+                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:<%= data.publicEmail %>?subject=Email%20desactivation%20RDVA%20-%20Question"><%= data.publicEmail %></a>.
                 </mj-text>
                 <mj-text padding-top="15px" padding-right="0" font-size="12px">
                     Cette demande a été réalisée sur le site <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/">La bonne alternance</a>.
@@ -114,13 +114,13 @@
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
               Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
               <br />
-              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq">FAQ</a> ou écrivez-nous à <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
               <br /><br />
               La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
               <br /><br />
               Nous vous contactons car vous avez déclaré des formations en apprentissage auprès de votre Carif Oref.
               <br /><br />
-              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
               <br /><br />
               Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité de La bonne alternance</a>.
             </mj-text>

@@ -81,6 +81,7 @@ export default (server: Server) => {
           last_name: sanitizeTextField(removeUrlsFromText(last_name)),
           first_name: sanitizeTextField(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
+          publicEmail: config.publicEmail,
         },
       })
       return res.status(200).send({})

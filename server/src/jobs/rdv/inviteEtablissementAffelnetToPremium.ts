@@ -86,6 +86,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
+        publicEmail: config.publicEmail,
       },
     })
 
