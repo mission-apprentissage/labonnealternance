@@ -116,6 +116,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
           job_type: Yup.array().required("Champ obligatoire"),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
+            .trim()
             .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
             .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
             .test("no-urls-emails", "Les urls et les emails sont interdits", (value) => !value || detectUrlAndEmails(value).length === 0),
