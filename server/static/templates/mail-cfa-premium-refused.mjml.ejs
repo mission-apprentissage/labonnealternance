@@ -94,6 +94,7 @@
               SIRET : <%= data.etablissement.formateur_siret %>
             </mj-text>
 
+            <mj-spacer height="24px"></mj-spacer>
             <mj-column width="100%" background-color="#ECECFE">
               <mj-text padding="20px" color="#000091" font-style="italic" font-size="16px" line-height="24px">
                 Cette action n’aura aucun impact sur le référencement de vos formations dans <% if(data.isParcoursup){ %>Parcoursup<%}%>
@@ -111,7 +112,7 @@
           </mj-column>
         </mj-group> 
       </mj-section>
-        
+
       <% if(data.isParcoursup){ %>
         <mj-section border-radius="4px" css-class="section" name="mj-section_group">
         <mj-group>
