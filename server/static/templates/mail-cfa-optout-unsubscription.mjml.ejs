@@ -58,7 +58,7 @@
             <mj-image align="left" alt="" css-class="image" alt="" src="<%= data.images.logoRf %>" width="89px"></mj-image>
           </mj-column>
           <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
-            <mj-image align="left" alt="" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
+            <mj-image align="left" alt="" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr?<%= data.utmParams %>" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
           </mj-column>
           <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
         </mj-group>
@@ -88,7 +88,7 @@
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text>
                     Cordialement,<br/>
-                    L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation">La bonne alternance</a>,<br/>
+                    L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">La bonne alternance</a>,<br/>
                     <a class="grey" href="https://www.linkedin.com/company/mission-apprentissage/posts/?feedView=all">Mission ministérielle pour l'apprentissage</a>
                 </mj-text>
             </mj-column>
@@ -102,7 +102,7 @@
                     Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:<%= data.publicEmail %>?subject=Email%20desactivation%20RDVA%20-%20Question"><%= data.publicEmail %></a>.
                 </mj-text>
                 <mj-text padding-top="15px" padding-right="0" font-size="12px">
-                    Cette demande a été réalisée sur le site <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/">La bonne alternance</a>.
+                    Cette demande a été réalisée sur le site <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>">La bonne alternance</a>.
                 </mj-text>
             </mj-column>
         </mj-section>
@@ -114,7 +114,7 @@
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
               Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
               <br />
-              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?<%= data.utmParams %>">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
               <br /><br />
               La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
               <br /><br />
@@ -122,7 +122,7 @@
               <br /><br />
               Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
               <br /><br />
-              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">politique de confidentialité de La bonne alternance</a>.
+              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?<%= data.utmParams %>">politique de confidentialité de La bonne alternance</a>.
             </mj-text>
           </mj-column>
         </mj-group>

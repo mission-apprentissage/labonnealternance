@@ -80,7 +80,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
             trainingCount: eligibleTrainingsForAppointmentsFound.length,
           },
           publicEmail: config.publicEmail,
-          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa",
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation",
         },
       })
 
@@ -121,7 +121,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
               //   destinataireEmail: email,
               // },
               publicEmail: config.publicEmail,
-              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation-acces-cfa",
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-activation",
             },
           })
         )

@@ -85,7 +85,7 @@ export const inviteEtablissementToOptOut = async () => {
             destinataireEmail: etablissement.gestionnaire_email,
           },
           publicEmail: config.publicEmail,
-          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-invitation-acces-cfa",
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-invitation",
         },
       })
 

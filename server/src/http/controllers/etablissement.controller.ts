@@ -458,6 +458,8 @@ export default (server: Server) => {
             formateur_city: etablissement!.formateur_city,
             siret: etablissement!.formateur_siret,
           },
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-desinscription",
+          publicEmail: config.publicEmail,
         },
       })
 
