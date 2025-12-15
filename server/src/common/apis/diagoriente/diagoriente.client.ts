@@ -9,7 +9,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 export const MAX_DIAGORIENTE_PAYLOAD_SIZE = 100
-export const DIAGORIENTE_AS_OF_DATE = "2025-11-01"
+export const DIAGORIENTE_AS_OF_DATE = "2025-04-01"
 
 const authParams = {
   url: config.diagoriente.authUrl,
