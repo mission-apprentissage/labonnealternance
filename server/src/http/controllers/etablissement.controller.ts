@@ -129,6 +129,7 @@ export default (server: Server) => {
                 destinataireEmail: email,
               },
               publicEmail: config.publicEmail,
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-confirmation-activation",
             },
           })
         )
@@ -223,6 +224,7 @@ export default (server: Server) => {
                 destinataireEmail: email,
               },
               publicEmail: config.publicEmail,
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-confirmation-activation",
             },
           })
         )
@@ -288,6 +290,7 @@ export default (server: Server) => {
           },
           activationDate: dayjs().format("DD/MM/YYYY"),
           publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-confirmation-desactivation",
         },
       })
 
@@ -353,6 +356,7 @@ export default (server: Server) => {
           },
           activationDate: dayjs().format("DD/MM/YYYY"),
           publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-confirmation-desactivation",
         },
       })
 
