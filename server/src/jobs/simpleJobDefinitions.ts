@@ -43,7 +43,6 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
-import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
@@ -284,10 +283,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: removeMissingRecruteursLbaFromComputedJobPartners,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
-  },
-  {
-    fct: classifyFranceTravailJobs,
-    description: "Classifie les offres France Travail en fonction de leur contenu",
   },
   {
     fct: processApplications,
