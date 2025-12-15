@@ -206,6 +206,7 @@ export default (server: Server) => {
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
                 logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+                logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
               },
               etablissement: {
                 email,
