@@ -1,4 +1,4 @@
-import { badRequest } from "@hapi/boom"
+import { notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import type { OPCOS_LABEL } from "shared/constants/index"
@@ -9,12 +9,12 @@ import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shar
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
+import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
 import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sortLbaJobs } from "./lbajob.service"
 import { filterJobsByOpco } from "./opco.service"
-import type { IApplicationCount } from "./application.service"
 import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
@@ -288,7 +288,7 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
   const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
 
   if (!rawPartnerJob) {
-    throw badRequest("Job not found")
+    throw notFound("Job not found")
   }
 
   let applicationCountByJob: null | IApplicationCount[] = null
