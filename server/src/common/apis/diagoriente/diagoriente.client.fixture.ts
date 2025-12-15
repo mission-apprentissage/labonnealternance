@@ -1,5 +1,6 @@
 import nock from "nock"
 import type { IDiagorienteClassificationResponseSchema, IDiagorienteClassificationSchema } from "shared"
+import { DIAGORIENTE_AS_OF_DATE } from "./diagoriente.client"
 
 export const nockDiagorienteAccessToken = () => {
   return nock("https://analytics-auth.atlantis.diagotech.dev").post("/realms/esi-auth-keycloack/protocol/openid-connect/token").reply(200, {
@@ -15,5 +16,8 @@ export const nockDiagorienteAccessToken = () => {
 }
 
 export function nockDiagorienteRomeClassifier(payload: IDiagorienteClassificationSchema[], response: IDiagorienteClassificationResponseSchema) {
-  return nock("https://semafor.diagoriente.fr").post("/classify/SousDomaines?as_of=2025-04-01", payload).matchHeader(`authorization`, `Bearer access_token`).reply(200, response)
+  return nock("https://semafor.diagoriente.fr")
+    .post(`/classify/SousDomaines?as_of=${DIAGORIENTE_AS_OF_DATE}`, payload)
+    .matchHeader(`authorization`, `Bearer access_token`)
+    .reply(200, response)
 }
