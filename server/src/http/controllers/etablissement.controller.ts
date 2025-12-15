@@ -112,8 +112,7 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
               },
               etablissement: {
                 email,
@@ -206,8 +205,7 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
               },
               etablissement: {
                 email,
@@ -277,8 +275,7 @@ export default (server: Server) => {
           isAffelnet: true,
           images: {
             informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
-            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -342,9 +339,8 @@ export default (server: Server) => {
         data: {
           isParcoursup: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
