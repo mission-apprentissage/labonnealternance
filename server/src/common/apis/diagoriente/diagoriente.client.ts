@@ -9,6 +9,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
 export const MAX_DIAGORIENTE_PAYLOAD_SIZE = 100
+export const DIAGORIENTE_AS_OF_DATE = "2025-11-01"
 
 const authParams = {
   url: config.diagoriente.authUrl,
@@ -61,7 +62,7 @@ export const getDiagorienteRomeClassification = async (data: IDiagorienteClassif
   const { data: response } = await axiosClient.post("https://semafor.diagoriente.fr/classify/SousDomaines", data, {
     timeout: 70_000,
     headers: { Authorization: `Bearer ${token}` },
-    params: { as_of: "2025-04-01" },
+    params: { as_of: DIAGORIENTE_AS_OF_DATE },
   })
   const validation = ZDiagorienteClassificationResponseSchema.safeParse(response)
   if (!validation.success) throw internal("getRomeClassificationFromDiagoriente: format de réponse non valide", { error: validation.error })
