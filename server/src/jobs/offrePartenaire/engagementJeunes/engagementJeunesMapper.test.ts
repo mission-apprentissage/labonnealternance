@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
+import omit from "lodash-es/omit"
 import type { IEngagementJeunesJob } from "./engagementJeunesMapper"
 import { engagementJeunesJobToJobsPartners } from "./engagementJeunesMapper"
 
@@ -39,6 +40,6 @@ describe("engagementJeunesJobToJobsPartners", () => {
   }
 
   it("should convert a job", () => {
-    expect(engagementJeunesJobToJobsPartners(engagementJeunesJob)).toMatchSnapshot()
+    expect(omit(engagementJeunesJobToJobsPartners(engagementJeunesJob), ["_id"])).toMatchSnapshot()
   })
 })

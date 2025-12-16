@@ -2,7 +2,6 @@
 
 exports[`engagementJeunesJobToJobsPartners > should convert a job 1`] = `
 {
-  "_id": "669c7722d13eee621fcd12d5",
   "apply_phone": null,
   "apply_url": "https://www.engagement-jeunes.com/fr/detail-offre/34161720/contrat-d-apprentissage-veolia-agent-de-tri-en-alternance-f-h.html",
   "business_error": null,
