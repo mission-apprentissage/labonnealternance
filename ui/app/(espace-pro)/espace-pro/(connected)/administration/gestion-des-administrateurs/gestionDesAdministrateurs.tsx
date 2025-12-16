@@ -102,6 +102,7 @@ export default function GestionDesAdministrateurs() {
         searchPlaceholder="Rechercher par email"
         exportable={null}
         description={null}
+        defaultSortBy={[{ id: "createdAt", desc: true }]}
       />
     </AdminLayout>
   )

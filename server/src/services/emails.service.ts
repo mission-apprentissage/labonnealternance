@@ -17,6 +17,7 @@ import {
   processAppointmentToApplicantWebhookEvent,
   processAppointmentToCfaWebhookEvent,
 } from "./appointment.service"
+import { logger } from "@/common/logger"
 
 // webhook events excluding hardbounce
 export const processWebhookEvent = async (payload) => {
@@ -45,7 +46,7 @@ export type IBrevoWebhookEvent = {
 export const processHardBounceWebhookEvent = async (
   payload: IBrevoWebhookEvent,
   _mockedFn?: ({ application, payload }: { application: IApplication; payload: any }) => Promise<void>
-) => {
+): Promise<boolean> => {
   const { event, email } = payload
 
   let origin = BlackListOrigins.CAMPAIGN
@@ -64,8 +65,10 @@ export const processHardBounceWebhookEvent = async (
     }
 
     await processBlacklistedEmail(email, origin, event)
+    return true
   } else {
-    throw new Error("Non hardbounce event received on hardbounce webhook route")
+    logger.warn("Non hardbounce event received on hardbounce webhook route")
+    return false
   }
 }
 

@@ -43,7 +43,6 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
-import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
@@ -55,7 +54,7 @@ import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
-import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
@@ -65,6 +64,7 @@ import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBre
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
+import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -286,10 +286,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
-    fct: classifyFranceTravailJobs,
-    description: "Classifie les offres France Travail en fonction de leur contenu",
-  },
-  {
     fct: processApplications,
     description: "Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.",
   },
@@ -379,5 +375,13 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processRecruteursLbaRawToEnd,
+    description: "Import des recruteurs LBA de la collection raw à la collection jobs_partners",
+  },
+  {
+    fct: processEngagementJeunes,
+    description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
   },
 ]
