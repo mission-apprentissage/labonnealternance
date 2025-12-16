@@ -44,7 +44,7 @@ export const ZEngagementJeunesJob = z
     title: z.string(),
     mission: z.string().nullish(),
     profil: z.string().nullish(),
-    reference: z.string(),
+    reference: z.string().nullish(),
     contrat: z.enum(["Apprentissage"]).nullish(),
     duree_contrat: z.number().nullish(),
     temps_partiel: z.boolean().nullish(),
