@@ -19,7 +19,7 @@ exports[`importDecathlon > should test the import of data into computed_job_part
     "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-11-23T12:07:38.000Z,
-    "offer_description": "Description :<br /><div><p>TES FUTURES MISSIONS : </p><p>Aux côtés de notre responsable d'exploitation, tu garantis la sécurité du bâtiment, des biens et des personnes. En relation avec les prestataires, tu garantis la maintenance des installations des bâtiments à travers la gestion du planning des interventions. </p><br><p>Pour mettre en œuvre tes projets, tu assures le développement et le pilotage de groupes de travail. Ta mission sera d'intégrer le maximum de collaborateurs avec toi, dans les décisions et la mise en œuvre des plans d’actions. Tu accompagnes également les équipes en préparant les différents audits internes. </p><br><p>Garant-e de ton périmètre, tu t’assures du respect des réglementations sur le site. Tu travailles l’évolution des indicateurs de performance et recherche l'amélioration continue des procédures. Tu as aussi pour responsabilité le respect du budget attribué. </p><br><p>En bref, tu assures la sécurité de tes coéquipiers. Pour t’accompagner dans cette mission, tu pourras bien sûr toujours compter sur ton/ta tuteur/tutrice !</p></div><br /><br />Profil :<br /><div><p>Tu es étudiant(e) en formation supérieure, passionné(e) de sport et à la recherche d'une alternance dans l'exploitation et la sécurité d'un site de conception. Tu cherches un apprentissage riche avec de vraies responsabilités. Tu es mobile au national. </p><br><p>Tu es partant(e) pour ton premier match.</p><br><p>A l’aise avec les outils informatiques, tu es autonome, curieux(se) et tes expériences passées ont démontré ta réactivité et ta capacité à entreprendre.</p><p>Tu as aussi un bon relationnel, tu aimes travailler en équipe. </p><br><p> Ose, on te fait confiance.</p></div>",
+    "offer_description": "<b>Description :</b><br /><div>TES FUTURES MISSIONS : Aux côtés de notre responsable d'exploitation, tu garantis la sécurité du bâtiment, des biens et des personnes. En relation avec les prestataires, tu garantis la maintenance des installations des bâtiments à travers la gestion du planning des interventions. <br>Pour mettre en œuvre tes projets, tu assures le développement et le pilotage de groupes de travail. Ta mission sera d'intégrer le maximum de collaborateurs avec toi, dans les décisions et la mise en œuvre des plans d’actions. Tu accompagnes également les équipes en préparant les différents audits internes. <br>Garant-e de ton périmètre, tu t’assures du respect des réglementations sur le site. Tu travailles l’évolution des indicateurs de performance et recherche l'amélioration continue des procédures. Tu as aussi pour responsabilité le respect du budget attribué. <br>En bref, tu assures la sécurité de tes coéquipiers. Pour t’accompagner dans cette mission, tu pourras bien sûr toujours compter sur ton/ta tuteur/tutrice !</div><br /><br /><b>Profil :</b><br /><div>Tu es étudiant(e) en formation supérieure, passionné(e) de sport et à la recherche d'une alternance dans l'exploitation et la sécurité d'un site de conception. Tu cherches un apprentissage riche avec de vraies responsabilités. Tu es mobile au national. <br>Tu es partant(e) pour ton premier match.<br>A l’aise avec les outils informatiques, tu es autonome, curieux(se) et tes expériences passées ont démontré ta réactivité et ta capacité à entreprendre.Tu as aussi un bon relationnel, tu aimes travailler en équipe. <br> Ose, on te fait confiance.</div>",
     "offer_desired_skills": [
       "curieu(se)",
       "autonome",
@@ -83,37 +83,37 @@ exports[`importDecathlon > should test the import of data into computed_job_part
     "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-11-24T10:18:17.000Z,
-    "offer_description": "Description :<br /><p>Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b></p>
+    "offer_description": "<b>Description :</b><br />Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b>
 
-<p style="text-align:center;"><b>#CHOISIS TA TEAM# </b></p>
+<p style="text-align:center;"><b>#CHOISIS TA TEAM# </b>
 
-<p>Une stratégie qui contribue au parcours de milliers de jeunes en France et qui nous permettra de recruter nos talents sportifs de demain. Une politique qui fera de Decathlon un acteur majeur dans l'insertion professionnelle et sociale des jeunes en France<br><b>DECATHLON = une opportunité vers mon 1er emploi</b></p>
+Une stratégie qui contribue au parcours de milliers de jeunes en France et qui nous permettra de recruter nos talents sportifs de demain. Une politique qui fera de Decathlon un acteur majeur dans l'insertion professionnelle et sociale des jeunes en France<br><b>DECATHLON = une opportunité vers mon 1er emploi</b>
 
-<p><b>Une ambition forte : 100% de nos alternants satisfaits de leur expérience chez Decathlon.</b><br>Decathlon considère ses alternants comme des coéquipiers CDI.<br></p>
+<b>Une ambition forte : 100% de nos alternants satisfaits de leur expérience chez Decathlon.</b><br>Decathlon considère ses alternants comme des coéquipiers CDI.<br>
 
-<p><b>Nous portons un sens fort : Être utile aux gens et à leur planète. </b></p>
+<b>Nous portons un sens fort : Être utile aux gens et à leur planète. </b>
 
-<p>Le sport n'a de sens que dans un environnement préservé. Nous développons nos activités sans dégrader nos terrains de jeux en proposant des services liés à l'économie circulaire (Occasion / location /réparation / recyclage) en proposant des produits éco-conçus en sourçant des énergies renouvelables...<br></p>
+Le sport n'a de sens que dans un environnement préservé. Nous développons nos activités sans dégrader nos terrains de jeux en proposant des services liés à l'économie circulaire (Occasion / location /réparation / recyclage) en proposant des produits éco-conçus en sourçant des énergies renouvelables...<br>
 
-<p>Decathlon est engagé dans l'inclusion et la non-discrimination, et agit ainsi quotidiennement en faveur du handicap, des séniors, de la mixité sociale, de l'égalité entre les femmes et les hommes. <b>Chez Decathlon, nous recrutons avant tout des personnalités. </b><br></p>
+Decathlon est engagé dans l'inclusion et la non-discrimination, et agit ainsi quotidiennement en faveur du handicap, des séniors, de la mixité sociale, de l'égalité entre les femmes et les hommes. <b>Chez Decathlon, nous recrutons avant tout des personnalités. </b><br>
 
-<p><b>Rejoins DECATHLON et intègre une entreprise où il fait bon vivre<br></b>Viens partager une passion collective pour le sport avec une équipe unie et motivée. Marque des points en prenant des responsabilités, exprime ton sens de l’initiative et contribue à <b>rendre durablement le sport au plus grand nombre</b>. Une diversité de parcours s’offre à toi dans un environnement dynamique et challengeant. Dès ton arrivée, tu prends la responsabilité d’une équipe au sein d’un magasin.</p>
+<b>Rejoins DECATHLON et intègre une entreprise où il fait bon vivre<br></b>Viens partager une passion collective pour le sport avec une équipe unie et motivée. Marque des points en prenant des responsabilités, exprime ton sens de l’initiative et contribue à <b>rendre durablement le sport au plus grand nombre</b>. Une diversité de parcours s’offre à toi dans un environnement dynamique et challengeant. Dès ton arrivée, tu prends la responsabilité d’une équipe au sein d’un magasin.
 
-<p><b>Ta mission met en valeur ton leadership<br></b>Entre dans le jeu avec la responsabilité d’un <b>projet Humain et Commercial</b>.<br>Tu définis et mets en œuvre ce projet avec l’équipe que tu animes. Ensemble, vous relevez les défis que vous vous êtes fixés.</p>
+<b>Ta mission met en valeur ton leadership<br></b>Entre dans le jeu avec la responsabilité d’un <b>projet Humain et Commercial</b>.<br>Tu définis et mets en œuvre ce projet avec l’équipe que tu animes. Ensemble, vous relevez les défis que vous vous êtes fixés.
 
-<p><b>Ton terrain de jeu te permet de mettre tes compétences au service du sport<br></b>Tu es le·a coach·e/Leader de l’équipe, tu as la responsabilité  managériale de celle-ci : le recrutement, la gestion des parcours, la formation et le développement des compétences, la planification.</p>
+<b>Ton terrain de jeu te permet de mettre tes compétences au service du sport<br></b>Tu es le·a coach·e/Leader de l’équipe, tu as la responsabilité  managériale de celle-ci : le recrutement, la gestion des parcours, la formation et le développement des compétences, la planification.
 
-<p>Plus important encore, tu assures le bien-être de chaque co-équipier-e.</p>
+Plus important encore, tu assures le bien-être de chaque co-équipier-e.
 
-<p>Tu définis et tu animes le projet commercial de ton rayon : gestion de la gamme de tes produits, du  linéaire, des stocks, et du dynamisme de vente. Tu joues collectif : toute l’équipe est ambassadrice de nos produits !</p>
+Tu définis et tu animes le projet commercial de ton rayon : gestion de la gamme de tes produits, du  linéaire, des stocks, et du dynamisme de vente. Tu joues collectif : toute l’équipe est ambassadrice de nos produits !
 
-<p>Responsable de ton compte d'exploitation et véritable pilote de ton activité, tu développes et gères tes ressources en toute autonomie pour atteindre les objectifs. Tu fais équipe avec le Leader du magasin qui te manage, et tu bénéficies d’un plan de formation pour t’accompagner dans la réussite de l’ensemble de tes missions.</p><br /><br />Profil :<br /><p style="text-align:center;"><b>Ta passion du sport et tes qualités de leader nous intéressent !</b><br></p>
+Responsable de ton compte d'exploitation et véritable pilote de ton activité, tu développes et gères tes ressources en toute autonomie pour atteindre les objectifs. Tu fais équipe avec le Leader du magasin qui te manage, et tu bénéficies d’un plan de formation pour t’accompagner dans la réussite de l’ensemble de tes missions.<br /><br /><b>Profil :</b><br /><p style="text-align:center;"><b>Ta passion du sport et tes qualités de leader nous intéressent !</b><br>
 
-<p><b><br></b>De formation supérieure dans le domaine du commerce ou du management, ta passion du sport te donne l’avantage du terrain.<br>Tel un coach·e sportif·ve, tu as envie de faire grandir ton équipe, tu sais prendre des décisions, écouter et communiquer avec bienveillance et exigence.</p>
+<b><br></b>De formation supérieure dans le domaine du commerce ou du management, ta passion du sport te donne l’avantage du terrain.<br>Tel un coach·e sportif·ve, tu as envie de faire grandir ton équipe, tu sais prendre des décisions, écouter et communiquer avec bienveillance et exigence.
 
-<p>Audacieux·se, tu aimes relever des défis.<br>Responsable, tu as aussi le sens du service client.</p>
+Audacieux·se, tu aimes relever des défis.<br>Responsable, tu as aussi le sens du service client.
 
-<p>Tu as de multiples cordes à ton arc : tu aimes être sur le terrain avec les clients, tu as l’esprit coopératif, tu es organisé·e, tu as aussi le sens du commerce et des chiffres.</p>",
+Tu as de multiples cordes à ton arc : tu aimes être sur le terrain avec les clients, tu as l’esprit coopératif, tu es organisé·e, tu as aussi le sens du commerce et des chiffres.",
     "offer_desired_skills": [
       "entrepreneur",
       "Esprit d'équipe",
@@ -180,43 +180,43 @@ exports[`importDecathlon > should test the import of data into computed_job_part
     "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-11-22T15:32:41.000Z,
-    "offer_description": "Description :<br /><p>Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b></p>
+    "offer_description": "<b>Description :</b><br />Chez Decathlon l’<b>alternance</b> est au cœur de nos préoccupations. Riche de plus de 300 métiers regroupés dans 8 filières, Decathlon te permettra d’acquérir un grand nombre de compétences humaines et professionnelles dans le secteur qui t’attire. Si tu es étudiant(e), passionné(e) de sport, que tu aimes les challenges et que tu souhaites te professionnaliser en parallèle de ton parcours scolaire…<b> DECATHLON est sans hésiter le “terrain de jeu”  idéal ! </b>
 
-<p style="text-align:center;"><b>#CHOISIS TA TEAM# </b></p>
+<p style="text-align:center;"><b>#CHOISIS TA TEAM# </b>
 
-<p>Une stratégie qui contribue au parcours de milliers de jeunes en France et qui nous permettra de recruter nos talents sportifs de demain. Une politique qui fera de Decathlon un acteur majeur dans l'insertion professionnelle et sociale des jeunes en France<br><b>DECATHLON = une opportunité vers mon 1er emploi</b></p>
+Une stratégie qui contribue au parcours de milliers de jeunes en France et qui nous permettra de recruter nos talents sportifs de demain. Une politique qui fera de Decathlon un acteur majeur dans l'insertion professionnelle et sociale des jeunes en France<br><b>DECATHLON = une opportunité vers mon 1er emploi</b>
 
-<p><b>Une ambition forte : 100% de nos alternants satisfaits de leur expérience chez Decathlon.</b><br>Decathlon considère ses alternants comme des coéquipiers CDI.<br></p>
+<b>Une ambition forte : 100% de nos alternants satisfaits de leur expérience chez Decathlon.</b><br>Decathlon considère ses alternants comme des coéquipiers CDI.<br>
 
-<p><b>Nous portons un sens fort : Être utile aux gens et à leur planète. </b></p>
+<b>Nous portons un sens fort : Être utile aux gens et à leur planète. </b>
 
-<p>Le sport n'a de sens que dans un environnement préservé. Nous développons nos activités sans dégrader nos terrains de jeux en proposant des services liés à l'économie circulaire (Occasion / location /réparation / recyclage) en proposant des produits éco-conçus en sourçant des énergies renouvelables...<br></p>
+Le sport n'a de sens que dans un environnement préservé. Nous développons nos activités sans dégrader nos terrains de jeux en proposant des services liés à l'économie circulaire (Occasion / location /réparation / recyclage) en proposant des produits éco-conçus en sourçant des énergies renouvelables...<br>
 
-<p>Decathlon est engagé dans l'inclusion et la non-discrimination, et agit ainsi quotidiennement en faveur du handicap, des séniors, de la mixité sociale, de l'égalité entre les femmes et les hommes. <b>Chez Decathlon, nous recrutons avant tout des personnalités. </b><br></p>
+Decathlon est engagé dans l'inclusion et la non-discrimination, et agit ainsi quotidiennement en faveur du handicap, des séniors, de la mixité sociale, de l'égalité entre les femmes et les hommes. <b>Chez Decathlon, nous recrutons avant tout des personnalités. </b><br>
 
-<p><b>Rejoins DECATHLON et intègre une entreprise où il fait bon vivre<br></b>Viens partager une passion collective pour le sport avec une équipe unie et motivée. Marque des points en prenant des responsabilités, exprime ton sens de l’initiative et contribue à <b>rendre durablement le sport au plus grand nombre</b>. Une diversité de parcours s’offre à toi dans un environnement dynamique et challengeant. Dès ton arrivée, tu prends la responsabilité d’une équipe au sein d’un magasin.</p>
+<b>Rejoins DECATHLON et intègre une entreprise où il fait bon vivre<br></b>Viens partager une passion collective pour le sport avec une équipe unie et motivée. Marque des points en prenant des responsabilités, exprime ton sens de l’initiative et contribue à <b>rendre durablement le sport au plus grand nombre</b>. Une diversité de parcours s’offre à toi dans un environnement dynamique et challengeant. Dès ton arrivée, tu prends la responsabilité d’une équipe au sein d’un magasin.
 
-<p><b>Ta mission met en valeur ton leadership<br></b>Entre dans le jeu avec la responsabilité d’un <b>projet Humain et Commercial</b>.<br>Tu définis et mets en œuvre ce projet avec l’équipe que tu animes. Ensemble, vous relevez les défis que vous vous êtes fixés.</p>
+<b>Ta mission met en valeur ton leadership<br></b>Entre dans le jeu avec la responsabilité d’un <b>projet Humain et Commercial</b>.<br>Tu définis et mets en œuvre ce projet avec l’équipe que tu animes. Ensemble, vous relevez les défis que vous vous êtes fixés.
 
-<p><b>Ton terrain de jeu te permet de mettre tes compétences au service du sport<br></b>Tu es le·a coach·e/Leader de l’équipe, tu as la responsabilité  managériale de celle-ci : le recrutement, la gestion des parcours, la formation et le développement des compétences, la planification.</p>
+<b>Ton terrain de jeu te permet de mettre tes compétences au service du sport<br></b>Tu es le·a coach·e/Leader de l’équipe, tu as la responsabilité  managériale de celle-ci : le recrutement, la gestion des parcours, la formation et le développement des compétences, la planification.
 
-<p>Plus important encore, tu assures le bien-être de chaque co-équipier-e.</p>
+Plus important encore, tu assures le bien-être de chaque co-équipier-e.
 
-<p>Tu définis et tu animes le projet commercial de ton rayon : gestion de la gamme de tes produits, du  linéaire, des stocks, et du dynamisme de vente. Tu joues collectif : toute l’équipe est ambassadrice de nos produits !</p>
+Tu définis et tu animes le projet commercial de ton rayon : gestion de la gamme de tes produits, du  linéaire, des stocks, et du dynamisme de vente. Tu joues collectif : toute l’équipe est ambassadrice de nos produits !
 
-<p>Responsable de ton compte d'exploitation et véritable pilote de ton activité, tu développes et gères tes ressources en toute autonomie pour atteindre les objectifs. Tu fais équipe avec le Leader du magasin qui te manage, et tu bénéficies d’un plan de formation pour t’accompagner dans la réussite de l’ensemble de tes missions.</p><br /><br />Profil :<br /><p style="text-align:center;"><b>Ta passion du sport et tes qualités de leader nous intéressent !</b><br></p>
+Responsable de ton compte d'exploitation et véritable pilote de ton activité, tu développes et gères tes ressources en toute autonomie pour atteindre les objectifs. Tu fais équipe avec le Leader du magasin qui te manage, et tu bénéficies d’un plan de formation pour t’accompagner dans la réussite de l’ensemble de tes missions.<br /><br /><b>Profil :</b><br /><p style="text-align:center;"><b>Ta passion du sport et tes qualités de leader nous intéressent !</b><br>
 
-<p><b><br></b>De formation Master sur 2 ans dans le domaine du commerce ou du management, ta passion du sport te donne l’avantage du terrain.</p>
+<b><br></b>De formation Master sur 2 ans dans le domaine du commerce ou du management, ta passion du sport te donne l’avantage du terrain.
 
-<p><br>Tel un coach·e sportif·ve, tu as envie de faire grandir ton équipe, tu sais prendre des décisions, écouter et communiquer avec bienveillance et exigence.</p>
+<br>Tel un coach·e sportif·ve, tu as envie de faire grandir ton équipe, tu sais prendre des décisions, écouter et communiquer avec bienveillance et exigence.
 
-<p>Audacieux·se, tu aimes relever des défis.<br>Responsable, tu as aussi le sens du service client.</p>
+Audacieux·se, tu aimes relever des défis.<br>Responsable, tu as aussi le sens du service client.
 
-<p>Tu as de multiples cordes à ton arc : tu aimes être sur le terrain avec les clients, tu as l’esprit coopératif, tu es organisé·e, tu as aussi le sens du commerce et des chiffres.</p>
+Tu as de multiples cordes à ton arc : tu aimes être sur le terrain avec les clients, tu as l’esprit coopératif, tu es organisé·e, tu as aussi le sens du commerce et des chiffres.
 
-<p><br></p>
+<br>
 
-<p>Point Bonus si tu es pratiquant(e) de cyclisme ;) </p>",
+Point Bonus si tu es pratiquant(e) de cyclisme ;) ",
     "offer_desired_skills": [
       "entrepreneur",
       "Esprit d'équipe",
@@ -233,8 +233,8 @@ exports[`importDecathlon > should test the import of data into computed_job_part
     "offer_status": "Active",
     "offer_status_history": [],
     "offer_target_diploma": {
-      "european": "6",
-      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+      "european": "7",
+      "label": "Master, titre ingénieur, autres formations (Bac+5)",
     },
     "offer_title": "ALTERNANCE Manager Commerce (H/F)",
     "offer_to_be_acquired_knowledge": [],

@@ -12,6 +12,7 @@ import { isValidEmail } from "@/common/utils/isValidEmail"
 import config from "@/config"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logger } from "@/common/logger"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 
 export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
   getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()
@@ -96,6 +97,9 @@ export const findElligibleTrainingForAppointment = async ({
 }): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const referrerObj = getReferrerByKeyName(referrer)
   let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
+
+  // tracking v1 pour décommissionnement
+  await trackApiCall({ caller: referrerObj.name, api_path: "v1:/appointment-request/context/create", response: "tracking-v1" })
 
   if (idCleMinistereEducatif) {
     eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(idCleMinistereEducatif)
