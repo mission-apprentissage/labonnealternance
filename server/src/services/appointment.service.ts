@@ -82,7 +82,7 @@ export const sendCandidateAppointmentEmail = async (
     to: candidate.email,
     subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-    data: { ...await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj), publicEmail: config.publicEmail },
+    data: { ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)), publicEmail: config.publicEmail },
   })
   await findOneAndUpdate(
     { _id: appointment._id },
