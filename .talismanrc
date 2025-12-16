@@ -82,7 +82,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
   checksum: 997465cfcd84fbd424d01574c22fd8fb11b62f6ea09fa03abc408b926018f6a6
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/__snapshots__/processRecruteursLba.test.ts.snap
-  checksum: e904e8a118130aee6751aa0ca30a48260e37912be10c25ccd2f46c7ea325a28b
+  checksum: 16e6e644cf1fa9cde4becbe1c6f7ac57a45a7a2dac51291b9af64e6bed3d7bab
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/__tests__/processRecruteursLba.test.1.json
   checksum: e201980c6db433d36acd65c802fe6da698b922387d574e1a20483fd96cd951bb
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
