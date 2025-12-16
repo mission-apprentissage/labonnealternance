@@ -113,7 +113,12 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], reas
             logoLba: `${imagePath}logo_LBA.png`,
             logoRf: `${imagePath}logo_rf.png`,
           },
+          company: {
+            siret: company.workplace_siret,
+            name: company.workplace_legal_name || company.workplace_brand,
+          },
           publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_recruteurs-algo_confirmation-dereferencement",
         },
       })
     }

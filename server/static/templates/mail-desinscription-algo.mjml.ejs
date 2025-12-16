@@ -87,14 +87,10 @@
               Votre demande a bien été prise en compte
               <br />
             </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 24px 0px">
-              <span style="font-weight: 700;">Votre établissement vient d'être déréférencé du volet candidature spontanée de </span><a href="https://labonnealternance.apprentissage.beta.gouv.fr/" style="font-weight: 700; text-decoration: underline; color: inherit;">La bonne alternance</a>.
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              <span style="font-weight: 700;">Votre établissement vient d'être déréférencé du volet candidature spontanée de </span><a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" style="font-weight: 700; text-decoration: underline; color: inherit;">La bonne alternance</a>.
               <br /><br />
               Si vous n'êtes pas à l'origine de cette demande, vous pouvez nous contacter à <a href="mailto:<%= data.publicEmail %>" style="text-decoration: underline; color: inherit;"><%= data.publicEmail %></a>
-              <br />
-            </mj-text>
-            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
-              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
               <br />
             </mj-text>
           </mj-column>
@@ -103,33 +99,86 @@
       <mj-spacer height="24px">
 
       </mj-spacer>
+      
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="23px 22px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="18px" font-weight="700" line-height="20px" padding="0px 0px 24px 0px">
+              Établissement concerné :
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              SIRET: <br />
+              <span style="font-weight: 700;"><%= data.company.siret %></span>.
+              <br /><br />
+              Raison sociale de l’entreprise :<br />
+              <span style="font-weight: 700;"><%= data.company.name %></span>.
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" padding="23px 22px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" line-height="24px" padding="0px 0px 24px 0px">
               <span style="font-weight: 700;">En complément, permettez-nous de vous expliquer notre fonctionnement.</span>
               <br /><br />
-              <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" style="text-decoration: underline; color: inherit;">La bonne alternance</a> est un service public, porté par différents ministères (Emploi, Education Nationale, Transition numérique). Notre rôle est de faciliter les entrées en alternance. Pour cela, nous exposons différents types d'entreprises :
+              <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" style="text-decoration: underline; color: inherit;">La bonne alternance</a> est un service public, porté par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein du ministère du Travail et des Solidarités. Notre rôle est de faciliter les entrées en alternance. Pour cela, nous exposons différents types d’entreprises :
               <br /><br />
 
-              <ul style="margin: 0; padding-left: 32px;">
-                <li style="line-height: 24px; ">Celles ayant diffusé une offre d'emploi sur notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/acces-recruteur" style="text-decoration: underline; color: #161616;">formulaire de dépôt simplifié</a>
+              <ol style="margin: 0; padding-left: 32px;">
+                <li style="line-height: 24px; ">les entreprises <b>ayant publié une offre</b> directement sur notre plateforme,</a>
                 </li>
-                <li style="line-height: 24px;">Celles ayant diffusé une offre d'emploi sur <a href="https://www.francetravail.fr/accueil/" style="text-decoration: underline; color: #161616;">France Travail</a> ou <a href="https://www.francetravail.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html" style="text-decoration: underline; color: #161616;">ses sites partenaires</a>
+                <li style="line-height: 24px;">les entreprises ayant publié <b>des offres chez nos partenaires</b> : France Travail, Hellowork, MétéoJob et bien d’autres,</a>
                 </li>
-                <li style="line-height: 24px;">Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance" grâce à l'analyse de diverses données publiques.
+                <li style="line-height: 24px;">celles n’ayant pas diffusé d’offres, mais <b>ayant été identifiées comme “à fort potentiel d’embauche</b> en alternance” grâce à l’analyse de diverses données publiques.
                 </li>
-              </ul>
-
+              </ol>
               <br />
-              Votre établissement se situait dans la troisième catégorie. Pour cette raison, il était affiché sur La bonne alternance et vous receviez des candidatures spontanées en conséquence. L'email ainsi que le numéro de téléphone référencés sur votre entreprise sont issus de votre espace recruteur France Travail.
+              Votre établissement se situait dans la troisième catégorie. Pour cette raison, il était affiché sur La bonne alternance et vous receviez des candidatures spontanées en conséquence. 
+            </mj-text>
+            
+            <mj-text align="left" color="#161616" css-class="text" font-weight="bold" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" line-height="24px"></mj-text>
+              Pour recevoir des candidatures plus qualifiées, vous pouvez également déposer une offre gratuitement en quelques clics :
+            </mj-text>
+
+            <mj-button color="#ffffff" font-size="16px" font-weight="bold" background-color="#000091" border="1px solid #000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/creation/entreprise?<%= data.utmParams %>">
+              Publier une offre en alternance
+            </mj-button>
+
+            <mj-spacer height="24px"></mj-spacer>
+
+            <mj-text font-size="16px" line-height="24px">
+              Cordialement,<br/>
+              L'équipe <a href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">La bonne alternance</a>,<br/>
             </mj-text>
           </mj-column>
         </mj-group>
       </mj-section>
-      <mj-spacer height="24px" padding="0px 0px 32px 0px">
+      <mj-spacer height="24px"></mj-spacer>
 
-      </mj-spacer>
+      <mj-section border-radius="4px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+              <br />
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?<%= data.utmParams %>">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
+              <br /><br />
+              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+              <br /><br />
+              Nous vous contactons car vous avez déclaré des formations en apprentissage auprès de votre Carif Oref.
+              <br /><br />
+              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+              <br /><br />
+              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?<%= data.utmParams %>">politique de confidentialité de La bonne alternance</a>.
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
     </mj-column>
   </mj-body>
 </mjml>
