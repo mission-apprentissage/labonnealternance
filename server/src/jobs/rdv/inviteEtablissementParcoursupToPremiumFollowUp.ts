@@ -87,7 +87,7 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
         publicEmail: config.publicEmail,
-        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation-acces-cfa",
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation",
       },
     })
 

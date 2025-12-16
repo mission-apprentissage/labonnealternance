@@ -98,7 +98,7 @@ export const inviteEtablissementParcoursupToPremium = async () => {
           formateur_siret: hasOneAvailableFormation.etablissement_formateur_siret,
         },
         publicEmail: config.publicEmail,
-        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation-acces-cfa",
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation",
       },
     })
 

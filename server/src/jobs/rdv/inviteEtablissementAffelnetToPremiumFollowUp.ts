@@ -86,7 +86,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
           linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
         publicEmail: config.publicEmail,
-        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-invitation-acces-cfa",
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-invitation",
       },
     })
 
