@@ -197,20 +197,18 @@ function ListeEntreprise() {
         />
       )}
       <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
-        <Box>
-          <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
-            <Box>
-              <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
-            </Box>
-            <Box mr={3}>
-              <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                Nouvelle entreprise
-              </Button>
-            </Box>
+        <Breadcrumb pages={[PAGES.static.backCfaHome]} />
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
+          <Box>
+            <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
+          </Box>
+          <Box mr={3}>
+            <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+              Nouvelle entreprise
+            </Button>
           </Box>
         </Box>
-        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
+        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} /> : <EmptySpace />}
       </Box>
     </AnimationContainer>
   )

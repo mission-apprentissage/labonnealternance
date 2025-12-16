@@ -213,8 +213,6 @@ export const createJob = async ({
     throw internal("unexpected: no job found after job creation")
   }
 
-  console.log("ICICIICIICIC : ", jobs.length, is_delegated, entrepriseStatus)
-
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
     if (!entrepriseStatus) {
@@ -222,8 +220,6 @@ export const createJob = async ({
     }
     const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
-
-    console.log("ENTERPRISE MAIL : ", roleStatus)
 
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
 
