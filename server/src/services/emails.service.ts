@@ -46,7 +46,7 @@ export type IBrevoWebhookEvent = {
 export const processHardBounceWebhookEvent = async (
   payload: IBrevoWebhookEvent,
   _mockedFn?: ({ application, payload }: { application: IApplication; payload: any }) => Promise<void>
-) => {
+): Promise<boolean> => {
   const { event, email } = payload
 
   let origin = BlackListOrigins.CAMPAIGN
@@ -65,8 +65,10 @@ export const processHardBounceWebhookEvent = async (
     }
 
     await processBlacklistedEmail(email, origin, event)
+    return true
   } else {
     logger.warn("Non hardbounce event received on hardbounce webhook route")
+    return false
   }
 }
 
