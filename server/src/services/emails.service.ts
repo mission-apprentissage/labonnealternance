@@ -17,6 +17,7 @@ import {
   processAppointmentToApplicantWebhookEvent,
   processAppointmentToCfaWebhookEvent,
 } from "./appointment.service"
+import { logger } from "@/common/logger"
 
 // webhook events excluding hardbounce
 export const processWebhookEvent = async (payload) => {
@@ -65,7 +66,7 @@ export const processHardBounceWebhookEvent = async (
 
     await processBlacklistedEmail(email, origin, event)
   } else {
-    throw new Error("Non hardbounce event received on hardbounce webhook route")
+    logger.warn("Non hardbounce event received on hardbounce webhook route")
   }
 }
 
