@@ -12,6 +12,7 @@ import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobs
 export const ZHelloWorkJob = z
   .object({
     job_id: z.string(),
+    reference: z.string(),
     contract_start_date: z.string().nullish(),
     contract: z.string(),
     remote: z.string().nullish(),
@@ -70,7 +71,7 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
 export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPartners => {
   const {
     contract,
-    job_id,
+    reference,
     contract_start_date,
     remote,
     title,
@@ -98,7 +99,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     ...blankComputedJobPartner(now),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: job_id,
+    partner_job_id: reference,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: remote ? (teletravailMapping[remote] ?? null) : null,
