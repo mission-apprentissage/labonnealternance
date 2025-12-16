@@ -65,6 +65,10 @@ fileignoreconfig:
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
   checksum: 42830bef5459bba7625d1c52c2eac844911c3471f483f38499002e61dfd7cbb5
+- filename: server/src/jobs/offrePartenaire/hellowork/__snapshots__/importHelloWork.test.ts.snap
+  checksum: fb15cd047e0decb1e972d9e8be5796f20b73372f0b1d4a3026cce2669d469357
+- filename: server/src/jobs/offrePartenaire/engagementJeunes/__snapshots__/engagementJeunesMapper.test.ts.snap
+  checksum: c572ee96ddf9b9b26c58fce45b51cb5806093367c4f55f070a3bcd8d6e72352d
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
@@ -80,7 +84,7 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/pass/importPass.test.input.rss
   checksum: 997465cfcd84fbd424d01574c22fd8fb11b62f6ea09fa03abc408b926018f6a6
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/__snapshots__/processRecruteursLba.test.ts.snap
-  checksum: 16a8c15c593a679d3bda076364f049512ffe5e14d2174847653256223c3fbcc1
+  checksum: 16e6e644cf1fa9cde4becbe1c6f7ac57a45a7a2dac51291b9af64e6bed3d7bab
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/__tests__/processRecruteursLba.test.1.json
   checksum: e201980c6db433d36acd65c802fe6da698b922387d574e1a20483fd96cd951bb
 - filename: server/src/jobs/offrePartenaire/recruteur-lba/processRecruteursLba.test.ts
