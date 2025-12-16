@@ -3,7 +3,10 @@ fileignoreconfig:
   checksum: 36d809c0fb0b3c298ef696e4225a556fda60920d7302f71304d4c9126c42415f
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
-  ignore_detectors: [filecontent, filename, filesize]
+  ignore_detectors:
+  - filecontent
+  - filename
+  - filesize
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -150,6 +153,8 @@ fileignoreconfig:
   checksum: ad25d72b5287060499c4e44bfe93eacd8dbfb7b40122b912eb9c3cf657f6aed7
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 3bc64c3329e8979bad6cc6e2597d2c1212b9772fae1ee0e0400324f46351062d
+- filename: server/static/templates/mail-relance-opco.mjml.ejs
+  checksum: c9f5fd3e3e7692e376c04fa72a452565472231819989c886a3aa64d46ec04d16
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts
