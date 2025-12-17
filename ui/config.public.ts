@@ -18,7 +18,7 @@ interface PublicConfig {
 }
 
 const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
-const PUBLIC_EMAIL = "labonnealternance@apprentissage.beta.gouv.fr"
+const PUBLIC_EMAIL = "contact@labonnealternance.apprentissage.beta.gouv.fr"
 
 function getProductionPublicConfig(): PublicConfig {
   const host = "labonnealternance.apprentissage.beta.gouv.fr"

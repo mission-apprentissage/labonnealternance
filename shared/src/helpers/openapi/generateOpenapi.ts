@@ -105,7 +105,7 @@ export function generateOpenApiSchema(version: string, env: string, publicUrl: s
       contact: {
         name: "La bonne alternance",
         url: "https://labonnealternance.apprentissage.beta.gouv.fr",
-        email: "labonnealternance@apprentissage.beta.gouv.fr",
+        email: "contact@labonnealternance.apprentissage.beta.gouv.fr",
       },
     },
     openapi: "3.1.0",
