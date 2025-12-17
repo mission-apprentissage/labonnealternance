@@ -72,7 +72,7 @@
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       environment:
         CI: "{{ CI | default() }}"
-      async: 900 # max 15 minutes
+      async: 1200 # max 20 minutes
       poll: 15 # check every 15s
 
     - name: "[{{ pr_number }}] Start Application"
