@@ -96,16 +96,16 @@
             </mj-text>
 						
 						<mj-text font-size="16px" line-height="24px">
-              Ce service est proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a> pour <% if(data.isParcoursup){ %>Parcoursup<% } %> <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>.              
-              <br /><br />  
-              En acceptant l’invitation, <span style="font-weight:bold;">un formulaire de contact sera déployé sur vos formation(s)</span> actuelles et futures exposées sur <% if(data.isParcoursup){ %>Parcoursup<% } %><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>, rattachées à votre établissement.
+              En acceptant l’invitation, <span style="font-weight:bold;">un formulaire de contact sera déployé sur vos formations</span> actuelles et futures exposées sur <% if(data.isParcoursup){ %>Parcoursup<% } %><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>, rattachées à votre établissement.
               <br /><br/>
               <%= data.etablissement.name %> <br />
               <%= data.etablissement.formateur_address %><br/>
               <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
               SIRET : <%= data.etablissement.formateur_siret %>
               <br /><br />
-              Vous recevrez les demandes des candidats sur l’adresse email du contact principal du lieu de formation renseigné auprès de votre <a href="https://catalogue-apprentissage.intercariforef.org/" style="color:#161616; text-decoration: 'underline';">Carif-Oref</a>.
+              Vous recevrez les demandes des candidats à l’adresse email renseignée par votre établissement comme email de contact du lieu de formation auprès de votre <a href="https://catalogue-apprentissage.intercariforef.org/" style="color:#161616; text-decoration: 'underline';">Carif-Oref</a>.
+              <br /><br />
+              Ce service est proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a> pour <% if(data.isParcoursup){ %>Parcoursup<% } %> <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %>.
               <br /><br />
           	</mj-text>
 
