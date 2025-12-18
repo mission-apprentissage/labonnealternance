@@ -62,8 +62,8 @@ import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTrav
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
-import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
+import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
