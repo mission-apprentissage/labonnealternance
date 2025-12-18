@@ -3,7 +3,10 @@ fileignoreconfig:
   checksum: 36d809c0fb0b3c298ef696e4225a556fda60920d7302f71304d4c9126c42415f
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
-  ignore_detectors: [filecontent, filename, filesize]
+  ignore_detectors:
+  - filecontent
+  - filename
+  - filesize
 - filename: docker-compose.yml
   checksum: 8cdd1da6c1155f26b417a27e26311d4f00b7d8bd6c21f1f86c1c7cb3f0599e6a
 - filename: server/.env.test
@@ -62,6 +65,8 @@ fileignoreconfig:
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
   checksum: 42830bef5459bba7625d1c52c2eac844911c3471f483f38499002e61dfd7cbb5
+- filename: server/src/jobs/offrePartenaire/france-travail-CEGID/importFranceTravailCEGID.test.input.json
+  checksum: dccc2cc1fc8b0325cea15b0298a2b17fdb10b78bf06475b701630543581532ba
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml

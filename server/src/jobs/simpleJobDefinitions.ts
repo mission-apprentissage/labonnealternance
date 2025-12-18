@@ -65,6 +65,7 @@ import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBre
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
+import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -383,5 +384,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processRecruteursLbaRawToEnd,
     description: "Import des recruteurs LBA de la collection raw à la collection jobs_partners",
+  },
+  {
+    fct: processFranceTravailCEGID,
+    description: "Import du flux France Travail CEGID jusqu'à la collection computed_jobs_partners",
   },
 ]

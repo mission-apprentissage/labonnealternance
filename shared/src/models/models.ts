@@ -68,6 +68,7 @@ import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model.js"
 import unsubscribeOFModel from "./unsubscribeOF.model.js"
 import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
+import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -134,6 +135,7 @@ const modelDescriptorMap = {
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
   [rawFranceTravail.collectionName]: rawFranceTravail,
+  [rawFranceTravailCEGIDModel.collectionName]: rawFranceTravailCEGIDModel,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,

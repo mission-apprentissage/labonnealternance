@@ -23,6 +23,7 @@ export enum JOBPARTNERS_LABEL {
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
   FRANCE_TRAVAIL = "France Travail",
+  FRANCE_TRAVAIL_CEGID = "FranceTravail CEGID",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
   MONSTER = "Monster",
