@@ -2,10 +2,10 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography } from "@mui/material"
 import { useCallback } from "react"
 
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import RechercheCDICDD from "@/components/SearchForTrainingsAndJobs/components/rechercheCDDCDI"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
-import { PAGES } from "@/utils/routes.utils"
 
 type RechercheResultatsFooterProps = {
   jobStatus: "success" | "error" | "disabled" | "loading"
@@ -14,45 +14,36 @@ type RechercheResultatsFooterProps = {
 }
 
 export function RechercheResultatsFooter(props: RechercheResultatsFooterProps) {
+  const navigateToRecherchePage = useNavigateToRecherchePage(props.searchParams)
   const onExtendSearch = useCallback(() => {
-    window.history.pushState(
-      null,
-      "",
-      PAGES.dynamic
-        .recherche({
-          ...props.searchParams,
-          geo: null,
-        })
-        .getPath()
-    )
-  }, [props.searchParams])
+    navigateToRecherchePage({ geo: null }, true)
+  }, [navigateToRecherchePage])
 
   if (props.jobStatus === "loading") {
     return <ResultListsLoading isJobSearchLoading isTrainingSearchLoading={false} />
   }
 
   if (props.jobStatus === "success") {
-    if (props.jobCount === 0) {
-      return (
-        <Typography textAlign="center" fontWeight="bold">
-          Aucune entreprise trouvée pour votre recherche.
-          <br />
-          Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
-        </Typography>
-      )
-    }
-
-    if (props.jobCount < 100) {
+    if (props.jobCount < 50) {
       return (
         <>
-          {props.searchParams.geo !== null && (
+          {props.jobCount === 0 && (
             <>
               <Typography textAlign="center" fontWeight="bold">
-                Peu de résultats dans votre zone de recherche
+                Aucune entreprise trouvée pour votre recherche.
+                <br />
+                Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
               </Typography>
-              <Button title="Rechercher sur la France entière" priority="primary" onClick={onExtendSearch}>
-                Rechercher sur la France entière
-              </Button>
+              {props.searchParams.geo !== null && (
+                <>
+                  <Typography textAlign="center" fontWeight="bold">
+                    Peu de résultats dans votre zone de recherche
+                  </Typography>
+                  <Button title="Rechercher sur la France entière" priority="primary" onClick={onExtendSearch}>
+                    Rechercher sur la France entière
+                  </Button>
+                </>
+              )}
             </>
           )}
           <RechercheCDICDD romes={props.searchParams.romes} geo={props.searchParams.geo} />

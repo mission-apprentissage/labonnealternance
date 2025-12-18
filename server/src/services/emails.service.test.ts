@@ -59,7 +59,7 @@ describe("email blaklist events", () => {
 
   it("Non 'blocked' event shoud throw an error", async () => {
     baseWebHookPayload.event = BrevoEventStatus.DELIVRE
-    await expect.soft(processHardBounceWebhookEvent(baseWebHookPayload)).rejects.toThrow("Non hardbounce event received on hardbounce webhook route")
+    expect.soft(await processHardBounceWebhookEvent(baseWebHookPayload)).toEqual(false)
   })
 
   it("Unidentified hardbounce should register campaign origin", async () => {

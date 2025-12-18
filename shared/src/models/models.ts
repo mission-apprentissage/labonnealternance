@@ -68,6 +68,7 @@ import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model.js"
 import unsubscribeOFModel from "./unsubscribeOF.model.js"
 import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
+import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -102,6 +103,7 @@ const modelDescriptorMap = {
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
+  [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,

@@ -43,7 +43,6 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
-import { classifyFranceTravailJobs } from "./offrePartenaire/france-travail/classifyJobsFranceTravail"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
@@ -64,8 +63,9 @@ import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTrav
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
-import { processDecathlon } from "./offrePartenaire/decathlon/processDecathlon"
 import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
+import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
+import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -287,10 +287,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
   },
   {
-    fct: classifyFranceTravailJobs,
-    description: "Classifie les offres France Travail en fonction de leur contenu",
-  },
-  {
     fct: processApplications,
     description: "Scanne les virus des pièces jointes et envoie les candidatures. Timeout à 8 minutes.",
   },
@@ -388,5 +384,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processRecruteursLbaRawToEnd,
     description: "Import des recruteurs LBA de la collection raw à la collection jobs_partners",
+  },
+  {
+    fct: processEngagementJeunes,
+    description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
   },
 ]
