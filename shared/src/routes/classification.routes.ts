@@ -11,8 +11,8 @@ export const zClassificationRoute = {
         200: z.array(
           z.object({
             label: z.string(),
-            workplace_name: z.string(),
-            workplace_description: z.string(),
+            workplace_name: z.string().nullable(),
+            workplace_description: z.string().nullable(),
             offer_title: z.string(),
             offer_description: z.string(),
           })
