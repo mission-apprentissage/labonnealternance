@@ -1,13 +1,12 @@
-import dayjs from "shared/helpers/dayjs"
 import { ObjectId } from "mongodb"
+import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import mailer from "@/services/mailer.service"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
 
 interface IEtablissementsWithouOptMode {
   _id: {
@@ -58,9 +57,6 @@ export const inviteEtablissementToOptOut = async () => {
     })
 
     if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret && etablissementDetails) {
-      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
-        etablissement_gestionnaire_siret: etablissement._id.gestionnaire_siret,
-      })
       const emailEtablissement = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
@@ -74,7 +70,6 @@ export const inviteEtablissementToOptOut = async () => {
           etablissement: {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
-            trainingCount: eligibleTrainingsForAppointmentsFound.length,
             name: etablissementDetails.raison_sociale,
             formateur_address: etablissementDetails.formateur_address,
             formateur_zip_code: etablissementDetails.formateur_zip_code,
