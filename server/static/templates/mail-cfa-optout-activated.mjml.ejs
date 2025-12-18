@@ -71,7 +71,15 @@
                 Recevez les demandes de contact des candidats directement dans les boîtes mail de votre CFA !
             </mj-text>
             <mj-text font-size="16px" line-height="24px">
-              Le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://labonnealternance.apprentissage.beta.gouv.fr/?<%= data.utmParams %>" class="grey">La bonne alternance</a>. Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+              Depuis le <%= data.etablissement.optOutActivatedAtDate %> le service de mise en relation La bonne alternance est disponible pour vos formations. Un formulaire de contact est affiché sur vos formations publiées sur <strong>La bonne alternance</strong>. Il permet aux candidats de vous adresser leurs questions par mail. 
+              <br /><br />
+              Vous recevrez les demandes pour l’organisme de formation suivant :
+              <br /><br/>
+              <%= data.etablissement.name %> <br />
+              <%= data.etablissement.formateur_address %><br/>
+              <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
+              SIRET : <%= data.etablissement.formateur_siret %>
+              <br /><br />
             </mj-text>
                 
             <mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="500px"></mj-image>
@@ -82,22 +90,13 @@
             </mj-text>
 
             <mj-text font-size="16px" line-height="24px">
-              La bonne alternance exploite les données du <a href="https://catalogue-apprentissage.intercariforef.org/" style="color:#161616; text-decoration: 'underline';">catalogue de l’apprentissage du réseau des Carif Oref</a>. Ainsi, lorsque vous déclarez une formation à votre Carif Oref, celle-ci est automatiquement affichée sur La bonne alternance.
-              <br /><br />
-              <span style="font-weight:bold;">Le formulaire de contact est déployé</span> pour les <span style="font-weight:bold;"><%= data.trainingCount %> formation(s)</span> de votre établissement:
-              <br /><br/>
-              <%= data.etablissement.name %> <br />
-              <%= data.etablissement.formateur_address %><br/>
-              <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
-              SIRET : <%= data.etablissement.siret %>
-              <br /><br />
               Vous recevrez les demandes des candidats sur l’adresse email du contact principal du lieu de formation renseigné auprès de votre <a style="color:#161616; text-decoration: 'underline';" href="https://www.intercariforef.org">Carif-Oref</a>.
               <br /><br />
             </mj-text>  
 
             <mj-column width="100%" background-color="#ECECFE">
               <mj-text padding="20px" color="#000091" font-style="italic" font-size="16px" line-height="24px">
-                Si le contact renseigné est erroné ou obsolète, nous vous invitons à faire la mise à jour auprès de votre Carif Oref directement. 
+                Si votre email ne correspond pas au bon contact, nous vous invitons à faire la mise à jour auprès de votre Carif Oref directement.
               </mj-text>
             </mj-column>
 
