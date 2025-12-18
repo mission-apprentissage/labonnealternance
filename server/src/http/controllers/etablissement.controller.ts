@@ -104,7 +104,7 @@ export default (server: Server) => {
           mailer.sendEmail({
             // TODO string | null
             to: email as string,
-            subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
+            subject: `Le formulaire de contact La bonne alternance est activé pour votre CFA sur Choisir son affectation après la 3e`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isAffelnet: true,
@@ -197,7 +197,7 @@ export default (server: Server) => {
           mailer.sendEmail({
             // TODO string | null
             to: email as string,
-            subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
+            subject: `Le formulaire de contact La bonne alternance est activé pour votre CFA sur Parcoursup`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isParcoursup: true,
@@ -207,6 +207,7 @@ export default (server: Server) => {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
                 logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
                 logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
+                optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
               },
               etablissement: {
                 email,
