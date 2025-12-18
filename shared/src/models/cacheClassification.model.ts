@@ -46,6 +46,9 @@ export type IClassificationLabVersionResponse = z.output<typeof ZClassificationL
 
 export default {
   zod: ZClassitifationJobsPartners,
-  indexes: [[{ partner_job_id: 1, partner_label: 1 }, {}]],
+  indexes: [
+    [{ partner_job_id: 1, partner_label: 1 }, {}],
+    [{ human_verification: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor
