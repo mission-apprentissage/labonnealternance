@@ -12,7 +12,6 @@ exports[`importEngagementJeunes > should test the import of data into computed_j
     "contract_start": null,
     "contract_type": [
       "Apprentissage",
-      "Professionnalisation",
     ],
     "errors": [],
     "jobs_in_success": [],
@@ -86,13 +85,12 @@ RÉMUNÉRATION (BRUTE ANNUELLE) À PARTIR DE :
     "apply_phone": null,
     "apply_url": "https://www.engagement-jeunes.com/fr/detail-offre/34161720/contrat-d-apprentissage-veolia-agent-de-tri-en-alternance-f-h.html",
     "business_error": null,
-    "contract_duration": null,
+    "contract_duration": 12,
     "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
     "contract_type": [
       "Apprentissage",
-      "Professionnalisation",
     ],
     "errors": [],
     "jobs_in_success": [],

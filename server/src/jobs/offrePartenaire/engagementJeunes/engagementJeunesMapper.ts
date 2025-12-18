@@ -47,6 +47,7 @@ export const ZEngagementJeunesJob = z
     reference: z.string().nullish(),
     contrat: z.enum(["Apprentissage"]).nullish(),
     duree_contrat: z.number().nullish(),
+    duree_contrat_unit: z.string().nullish(),
     temps_partiel: z.boolean().nullish(),
     niveau_diplome: extensions.buildEnum(EngagementJeunesDiplome).nullish(),
     societe: z.string(),
@@ -77,6 +78,7 @@ export const engagementJeunesJobToJobsPartners = (job: IEngagementJeunesJob): IC
     title,
     contrat,
     duree_contrat,
+    duree_contrat_unit,
     location_departement,
     location_departement_code,
     location_pays,
@@ -106,7 +108,7 @@ export const engagementJeunesJobToJobsPartners = (job: IEngagementJeunesJob): IC
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.ENGAGEMENT_JEUNES,
     partner_job_id: id.toString(),
-    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     offer_title: title,
     offer_description,
     offer_target_diploma,
@@ -124,6 +126,8 @@ export const engagementJeunesJobToJobsPartners = (job: IEngagementJeunesJob): IC
     workplace_address_zipcode: location_cp,
     workplace_address_city: location_ville,
     apply_url: application_url,
+    // max 5 ans. J'ai trouvé un contrat à 24 ans de durée
+    contract_duration: duree_contrat_unit === "months" && duree_contrat && duree_contrat <= 12 * 5 ? duree_contrat : null,
   }
   return partnerJob
 }
