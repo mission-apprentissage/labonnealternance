@@ -17,6 +17,8 @@
     "location_departement_code": "33",
     "location_ville": "Bègles",
     "location_cp": "33130",
+    "duree_contrat": 12,
+    "duree_contrat_unit": "months",
     "application_url": "https://www.engagement-jeunes.com/fr/detail-offre/34161720/contrat-d-apprentissage-veolia-agent-de-tri-en-alternance-f-h.html"
   },
   {
