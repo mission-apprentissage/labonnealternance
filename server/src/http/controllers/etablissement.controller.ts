@@ -450,7 +450,7 @@ export default (server: Server) => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           etablissement: {
             name: etablissement!.raison_sociale,
