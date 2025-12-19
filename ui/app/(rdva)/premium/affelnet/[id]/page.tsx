@@ -9,6 +9,7 @@ import type { IEtablissementJson } from "shared"
 
 import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
+import { publicConfig } from "@/config.public"
 
 type IAffelnetEtablissement = {
   raison_sociale: string
@@ -102,8 +103,8 @@ export default function PremiumAffelnet() {
             <Typography sx={{ fontWeight: 700 }}>
               Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
               l'adresse suivante:{" "}
-              <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
-                labonnealternance@apprentissage.beta.gouv.fr
+              <a style={{ textDecoration: "underline" }} href={`mailto:${publicConfig.publicEmail}?subject=Formulaire%20premium%20-%20Activer%20RDVA`}>
+                {publicConfig.publicEmail}
               </a>
             </Typography>
           </Box>

@@ -15,6 +15,7 @@ import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
+import { publicConfig } from "@/config.public"
 
 const unsubscribeReasons = [
   "Nous avons déjà trouvé nos alternants pour l’année en cours",
@@ -30,7 +31,7 @@ const unsubscribeReasons = [
 const SupportLink = ({ subject }: { subject: string }) => {
   const fullSubject = `Candidature spontanée - Déréférencement - ${subject}`
   return (
-    <DsfrLink external href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent(fullSubject)}`}>
+    <DsfrLink external href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent(fullSubject)}`}>
       support
     </DsfrLink>
   )

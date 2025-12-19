@@ -436,7 +436,7 @@ export const getEntrepriseDataFromSiret = async ({
       return errorFactory("Non-distributable company.", BusinessErrorCodes.NON_DIFFUSIBLE)
     } else {
       return errorFactory(
-        `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
+        `Les informations de votre entreprise sont non diffusibles. <a href="mailto:${config.publicEmail}?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
         BusinessErrorCodes.NON_DIFFUSIBLE
       )
     }

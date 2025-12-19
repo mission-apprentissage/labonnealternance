@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
-  checksum: 4fbe7f8abdfbd25a6c8230b408cd6e1c4acf9a9c91c63469782627743e29554f
+  checksum: e0004b8112c17d5cdb1c72164cd1a180f68d914896d9cb2c0292a257a11e176b
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
@@ -65,10 +65,10 @@ fileignoreconfig:
   checksum: 41e5eadcdaa0cb1eb95e4cb3859f4b7b1d176bbb95ee8451d46a6b2c9021c3fd
 - filename: server/src/jobs/offrePartenaire/detectDuplicateJobPartners.test.ts
   checksum: 42830bef5459bba7625d1c52c2eac844911c3471f483f38499002e61dfd7cbb5
-- filename: server/src/jobs/offrePartenaire/hellowork/__snapshots__/importHelloWork.test.ts.snap
-  checksum: fb15cd047e0decb1e972d9e8be5796f20b73372f0b1d4a3026cce2669d469357
 - filename: server/src/jobs/offrePartenaire/engagementJeunes/__snapshots__/engagementJeunesMapper.test.ts.snap
   checksum: c572ee96ddf9b9b26c58fce45b51cb5806093367c4f55f070a3bcd8d6e72352d
+- filename: server/src/jobs/offrePartenaire/hellowork/__snapshots__/importHelloWork.test.ts.snap
+  checksum: fb15cd047e0decb1e972d9e8be5796f20b73372f0b1d4a3026cce2669d469357
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
@@ -224,7 +224,9 @@ fileignoreconfig:
 - filename: shared/src/fixtures/recruiterRaw.fixture.ts
   checksum: 9216d7b2d5123d6e72e22056c488e991ecf1cfda9a112c47fd9374b3c9c03dc0
 - filename: shared/src/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: ac7786e3082174e9164d4634a9432511815d79828f0e408ad75c0532a18ddd98
+  checksum: a8fa4fededdd7b1570d71c1cca23973e551c9a83b8eccdb3553ed55db187641a
+- filename: shared/src/helpers/openapi/generateOpenapi.ts
+  checksum: ff2996c487992235de03a64d1f8dc6b25321fafae22da2d9b58ba45811eaff2b
 - filename: shared/src/routes/appointments.routes.ts
   checksum: c9e50c644e7f14004c8c141c2c0b350adc29c49cfa72a766a0822a8f27b1ccd7
 - filename: shared/utils/detectUrlAndEmails.test.ts
@@ -315,6 +317,8 @@ fileignoreconfig:
   checksum: e0dd3ec2ac813053ee5e672472b545719c95e49f0891cf2f8e1b5db484d00479
 - filename: ui/components/head.tsx
   checksum: fd94387931e07a6150e82417ef13ec3c03cad372e69e95c4be60d360ee285ead
+- filename: ui/config.public.ts
+  checksum: b69560725bcbf4808e22aff47eaf07ed36c6c1465540da1ed9a8968728f1c925
 - filename: ui/public/assets/logo-republique-francaise-short.svg
   checksum: bc174b3196566a2242eb58c76cfbf51d16422d75d0db7b28b6299c06b5917384
 - filename: ui/public/images/home_pics/illu-offreformation.svg
