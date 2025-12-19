@@ -82,12 +82,15 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
           logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
         },
         etablissement: {
-          email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
+          name: hasOneAvailableFormation.etablissement_formateur_raison_sociale,
+          formateur_address: hasOneAvailableFormation.etablissement_formateur_street,
+          formateur_zip_code: hasOneAvailableFormation.etablissement_formateur_zip_code,
+          formateur_city: hasOneAvailableFormation.etablissement_formateur_city,
+          siret: hasOneAvailableFormation.etablissement_formateur_siret,
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
         publicEmail: config.publicEmail,
-        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation",
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-parcoursup-followup",
       },
     })
 
