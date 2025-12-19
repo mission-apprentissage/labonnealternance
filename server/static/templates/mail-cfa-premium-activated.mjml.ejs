@@ -77,6 +77,7 @@
                     <% } %>
                     <% if(data.isAffelnet){ %>
                         Les candidats peuvent vous contacter directement depuis Choisir son affectation après la 3e !
+                    <% } %>
             </mj-text>
             <mj-text font-size="16px" line-height="24px">
                 Le <% if(data.isParcoursup){ %><%= data.etablissement.premiumActivatedDate %><% } %><% if(data.isAffelnet){ %><%= data.etablissement.premiumAffelnetActivatedDate %><% } %>, votre établissement gestionnaire a activé le service de mise en relation La bonne alternance, permettant aux candidats de vous adresser leurs questions par mail. Un formulaire de contact est ainsi ajouté à vos formations publiées sur <strong><% if(data.isParcoursup){ %>Parcoursup<% } %><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<% } %></strong>. 
@@ -136,6 +137,17 @@
           </mj-column>
         </mj-group> 
       </mj-section>
+
+      <% if(data.isParcoursup){ %>
+        <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-spacer height="16px"></mj-spacer>
+          <mj-image align="right" alt="" css-class="image" alt="" src="<%= data.images.logoParcoursup %>" width="268px"></mj-image>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <% } %>
 
       <mj-spacer height="24px"></mj-spacer>
       <mj-section border-radius="4px" css-class="section">
