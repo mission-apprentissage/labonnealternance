@@ -88,7 +88,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   par La bonne alternance.
                 </Typography>
               }
-              sx={{ mt: 2 }}
+              sx={{ alignItems: "flex-start", mt: fr.spacing("1w") }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
