@@ -224,7 +224,7 @@ export default (server: Server) => {
                 destinataireEmail: email,
               },
               publicEmail: config.publicEmail,
-              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-confirmation-activation",
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-parcoursup-notif-formateur",
             },
           })
         )

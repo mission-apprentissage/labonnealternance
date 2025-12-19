@@ -1,103 +1,168 @@
 <mjml>
-    <mj-head>
-        <mj-title>Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup</mj-title>
-        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
-        <mj-style inline="inline">
-            .grey {color: #1E1E1E;}
-            .blue {color: #000091;}
-        </mj-style>
-        <mj-attributes>
-            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
-        </mj-attributes>
-    </mj-head>
-    <mj-body background-color="#E5E5E5">
-        <mj-section padding-top="20px" padding-bottom="20px">
-            <mj-column padding-left="0">
-                <mj-image src="<%= data.images.logoLba %>" width="200px"  alt="Logo du site La bonne alternance" padding="0" align="left" />
-            </mj-column>
-            <mj-column padding-right="0">
-                <mj-image src="<%= data.images.logoParcoursup %>" width="200px"  alt="Logo" padding="12px 0 0 0" align="right" />
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="0" padding-bottom="0">
-            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px 12px">
-                <mj-text color="#000091" font-size="18px" padding-right="0" padding-top="26px">
-                    <b>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</b>
-                </mj-text>
-            </mj-column>
-            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 37px 0">
-                <mj-image padding="10px 10px 4px 0" width="510px" src="<%= data.images.peopleLaptop %>" />
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="0">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
-                <mj-text>
-                    Depuis le <b><%= data.etablissement.premiumActivatedDate %></b>, votre centre de formation bénéficie du service de prise de rendez-vous sur Parcoursup, proposé par <a href="<%= data.url %>" class="grey">La bonne alternance</a>. Avec l’ouverture des voeux sur Parcoursup le 18 janvier 2023, des candidats potentiels peuvent vous contacter directement depuis vos fiches formations.
-                </mj-text>
-                <mj-image width="520px" src="<%= data.images.integrationExample %>" />
-                <mj-text>
-                    Vous recevrez ces demandes pour l’organisme de formation suivant :
-                    <br/>
-                    <b>
-                        <%= data.etablissement.name %> <br />
-                        <%= data.etablissement.formateur_address %><br/>
-                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %> <br/>
-                        SIRET: <%= data.etablissement.siret %>
-                    </b>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="24px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text font-size="24px" font-weight="700">Vos engagements Parcoursup</mj-text>
-                <mj-text>Le service de prise de rendez-vous sur Parcoursup vous engage en tant que CFA à : <br/><br/>
-                    • ✉️ Contacter par mail ou téléphone tous les candidats qui feront une demande sur cette plateforme <br/>
-                    • ⏳ Dans un délai de 4 jours ouvrés après réception de la demande par e-mail
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="24px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text font-size="24px" font-weight="700">Qu’est ce que La bonne alternance ?</mj-text>
-                <mj-text><a href="https://labonnealternance.apprentissage.beta.gouv.fr" class="grey">La bonne alternance</a> a pour objectif d’aider les entreprises et les organismes de formation à <b>diffuser et gérer leurs offres de manière simplifiée</b>, et à faciliter la mise en relation entre les acteurs de l’apprentissage.<br/><br/>
-                    <b>Vos offres d’emploi et vos formations sont visibles sur les sites d’alternance les plus visités par les candidats</b>, notamment La bonne alternance, Affelnet, Parcoursup, 1jeune1solution. Les informations de vos entreprises partenaires ne sont pas exposées aux candidats. Vous recevez directement les candidatures afin de préserver votre exclusivité.
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="24px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text><b>Qui reçoit les demandes de rendez-vous ?</b><br/><br/>
-                    Les demandes de rendez-vous envoyées par les candidats auprès de votre CFA sont reçues sur le mail formateur renseigné auprès de votre Carif-Oref pour vos fiches formation.<br/><br/>
+  <mj-head>
+    <mj-title>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</mj-title>
+    <mj-breakpoint width="480px"></mj-breakpoint>
+    <mj-attributes>
+      <mj-all padding="0"></mj-all>
+    </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+      .text > div {
+      text-align: inherit !important;
+      }
+      .wrapper > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .section > table > tbody > tr > td {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      }
+      .column > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .padB40 {
+      padding-bottom: 40px !important;
+      }
+      .image {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .image > table {
+      text-align: center !important;
+      margin: 0 auto !important;
+      }
+      .divider {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+      .button > table {
+      width: 100% !important;
+      }
+      .button > table > tbody > tr > td > a {
+      width: 80% !important;
+      }
+      }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
+  </mj-head>
 
-                    <b>Vous souhaitez modifier le mail de la personne en charge de traiter les demandes de prise de RDV ?</b><br/><br/>
+  <mj-body background-color="#f5f5fe" width="800px">
+    <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="" css-class="image" alt="" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="" css-class="image" href="https://labonnealternance.apprentissage.beta.gouv.fr?<%= data.utmParams %>" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" alt="Lien vers le site de La bonne alternance" width="160px"></mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="26px" padding="16px 0px 16px 0px">
+                Les candidats peuvent contacter votre CFA directement depuis Parcoursup !
+            </mj-text>
+            <mj-text font-size="16px" line-height="24px">
+                Depuis <%= data.etablissement.premiumActivatedDate %>, votre centre de formation bénéficie du service de mise en relation permettant aux candidats de contacter votre CFA sur Parcoursup, proposé par La bonne alternance. L'ouverture de la saisie des voeux sur Parcoursup approche, préparer vous à répondre aux sollicitations des candidats
+                <br /><br />
+                Vous recevrez les demandes des candidats sur l’adresse email du contact principal du lieu de formation renseigné auprès de votre Carif-Oref pour l’organisme de formation suivant :
+                <br /><br />
+                <%= data.etablissement.name %> <br />
+                <%= data.etablissement.formateur_address %><br/>
+                <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %> <br/>
+                SIRET: <%= data.etablissement.siret %>
+            </mj-text>
 
-                    Merci de nous fournir les éléments suivants: <br/><br/>
-                    • SIRET de votre établissement, <br/>
-                    • nom de la/les formation(s) à modifier, <br/>
-                    • nouveau(x) mail(s) contact <br/><br/>
-                    à <a href="mailto:<%= data.replyTo %>" class="grey"><%= data.publicEmail %></a> afin de nous permettre d’effectuer ces modifications.
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="24px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    Cordialement,<br/>
-                    L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation">La bonne alternance</a>,<br/>
-                    <a class="grey" href="https://www.linkedin.com/company/mission-apprentissage/posts/?feedView=all">Mission ministérielle pour l'apprentissage</a>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="5px" text-align="left">
-            <mj-column width="200px">
-                <mj-image padding="0" src="<%= data.images.logoFooter %>"></mj-image>
-            </mj-column>
-            <mj-column width="400px" padding-left="30px">
-                <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
-                    Cet email a été envoyé à <a class="grey" href="mailto:<%= data.user.destinataireEmail %>"><%= data.user.destinataireEmail %></a>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-    </mj-body>
+            <mj-image align="center" alt="" css-class="image" padding="12px" src="<%= data.images.optoutCfa %>" width="500px"></mj-image>
+
+            <mj-text font-weight="bold" font-size="20px" line-height="26px">
+              Comment ça marche ?
+              <br /><br />
+            </mj-text>
+
+            <mj-text font-size="16px" line-height="24px">
+              Vous recevrez les demandes des candidats à l’adresse email renseignée par votre établissement comme email de contact du lieu de formation auprès de votre <a style="color:#161616; text-decoration: 'underline';" href="https://www.intercariforef.org">Carif-Oref</a>.
+              <br /><br />
+              Un <strong>formulaire de contact est disponible sur les formations</strong> actuelles et futures exposées sur Parcoursup, rattachées à votre établissement.
+              <br /><br />
+              Ce service est proposé par <a style="color:#161616; text-decoration: 'underline';" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">La bonne alternance</a> pour Parcoursup.
+            </mj-text>
+
+            <mj-spacer height="24px"></mj-spacer>
+
+            <mj-button color="#000091" font-size="16px" font-weight="bold" background-color="#ffffff" border="1px solid #000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?<%= data.utmParams %>">
+              Je souhaite en savoir plus sur ce service
+            </mj-button>
+            
+            <mj-spacer height="24px"></mj-spacer>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+
+      <mj-spacer height="24px"></mj-spacer>
+      
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
+            <mj-text font-weight="bold" font-size="20px" line-height="26px">
+              Vos engagements Parcoursup
+              <br /><br />
+            </mj-text>
+            <mj-text font-size="16px" line-height="24px">
+              Ce service sur Parcoursup vous engage en tant que CFA à contacter tous les candidats qui feront une demande sur la plateforme dans un délai de 4 jours ouvrés après réception de la demande par courriel.
+              <br /><br />
+            </mj-text>
+            <mj-text font-weight="bold" font-size="20px" line-height="26px">
+              Vous souhaitez modifier le mail destinataire des demandes des candidats ?
+              <br /><br />
+            </mj-text>
+            <mj-text font-size="16px" line-height="24px">
+              Contactez notre équipe support à <a style="color:#161616; text-decoration: 'underline';" href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>.
+              <br /><br />
+              Cordialement,<br/>
+              L'équipe <a href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>" style="color:#161616; text-decoration: 'underline';">La bonne alternance</a>,<br/>
+            </mj-text>
+          </mj-column>
+        </mj-group> 
+      </mj-section>
+
+      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-spacer height="16px"></mj-spacer>
+          <mj-image align="right" alt="" css-class="image" alt="" src="<%= data.images.logoParcoursup %>" width="268px"></mj-image>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      
+      <mj-spacer height="24px"></mj-spacer>
+      <mj-section border-radius="4px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+              <br />
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?<%= data.utmParams %>">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
+              <br /><br />
+              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+              <br /><br />
+              Nous vous contactons car vous avez déclaré des formations en apprentissage auprès de votre Carif Oref.
+              <br /><br />
+              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+              <br /><br />
+              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?<%= data.utmParams %>">politique de confidentialité de La bonne alternance</a>.
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-column>
+  </mj-body>
 </mjml>
