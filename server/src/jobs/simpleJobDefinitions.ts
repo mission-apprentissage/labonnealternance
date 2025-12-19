@@ -64,6 +64,8 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
+import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
+import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -134,6 +136,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: premiumActivatedReminder,
     description: "Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup",
+  },
+  {
+    fct: inviteEtablissementParcoursupToPremiumFollowUpCli,
+    description: "Relance les établissements (via email décisionnaire) au premium (Parcoursup) sans tenir compte de la date d'invitation",
+  },
+  {
+    fct: inviteEtablissementAffelnetToPremiumFollowUpCli,
+    description: "Relance les établissements (via email décisionnaire) au premium (Affelnet) sans tenir compte de la date d'invitation",
   },
   {
     fct: syncEtablissementsAndFormations,
