@@ -18,7 +18,7 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate: boolean = false) => {
+export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate: boolean = true) => {
   logger.info("Cron #inviteEtablissementParcoursupToPremiumFollowUp started.")
 
   let count = 0
