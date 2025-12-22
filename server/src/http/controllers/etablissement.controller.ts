@@ -445,7 +445,7 @@ export default (server: Server) => {
 
       await mailer.sendEmail({
         to: etablissement!.gestionnaire_email,
-        subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
+        subject: "Le formulaire de contact ne sera pas activé pour votre CFA sur La bonne alternance",
         template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
         data: {
           images: {

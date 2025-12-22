@@ -789,8 +789,7 @@ export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, typ
     throw badRequest("Gestionnaire email not found")
   }
 
-  const subject =
-    type === "affelnet" ? `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e` : `La prise de RDV est activée pour votre CFA sur Parcoursup`
+  const subject = `Le formulaire de contact La bonne alternance est activé pour votre CFA sur ${type === "affelnet" ? "Choisir son affectation après la 3e" : "Parcoursup"}`
 
   return mailer.sendEmail({
     to: etablissement.gestionnaire_email,
