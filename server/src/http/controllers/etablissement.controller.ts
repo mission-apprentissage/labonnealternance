@@ -271,7 +271,7 @@ export default (server: Server) => {
 
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
+        subject: `Le formulaire de contact La bonne alternance ne sera pas activé pour votre CFA sur Choisir son affectation après la 3e`,
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isAffelnet: true,
@@ -334,7 +334,7 @@ export default (server: Server) => {
 
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV ne sera pas activée pour votre CFA sur Parcoursup`,
+        subject: `Le formulaire de contact La bonne alternance ne sera pas activé pour votre CFA sur Parcoursup`,
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isParcoursup: true,
