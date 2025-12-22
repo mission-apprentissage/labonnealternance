@@ -117,10 +117,11 @@ Voici les étapes pour créer votre clé GPG :
 
 ### Gettting started
 
-Avant de lancer l'application, assurez-vous d'installer toutes les dépendances nécessaires en exécutant la commande suivante :
+Avant de lancer l'application, assurez-vous d'avoir Docker actif et d'avoir installer toutes les dépendances nécessaires en exécutant la commande suivante :
 
 ```bash
 yarn
+yarn typecheck
 yarn setup
 ```
 
