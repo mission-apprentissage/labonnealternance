@@ -22,7 +22,7 @@ export const inviteEtablissementParcoursupToPremiumBypassDate = async () => {
   await inviteEtablissementParcoursupToPremium(true)
 }
 
-export const inviteEtablissementParcoursupToPremium = async (bypassDate: boolean = false) => {
+export const inviteEtablissementParcoursupToPremium = async (bypassDate?: boolean) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
   if (!bypassDate) {
