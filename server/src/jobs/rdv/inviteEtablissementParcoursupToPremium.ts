@@ -18,17 +18,23 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementParcoursupToPremium = async () => {
+export const inviteEtablissementParcoursupToPremiumBypassDate = async () => {
+  await inviteEtablissementParcoursupToPremium(true)
+}
+
+export const inviteEtablissementParcoursupToPremium = async (bypassDate: boolean = false) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const { startDay, startMonth } = config.parcoursupPeriods.start
-  const { endDay, endMonth } = config.parcoursupPeriods.end
+  if (!bypassDate) {
+    const { startDay, startMonth } = config.parcoursupPeriods.start
+    const { endDay, endMonth } = config.parcoursupPeriods.end
 
-  const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
-  const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
-  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not within the eligible period.")
-    return
+    const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
+    const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
+    if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
+      logger.info("Stopped because we are not within the eligible period.")
+      return
+    }
   }
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")

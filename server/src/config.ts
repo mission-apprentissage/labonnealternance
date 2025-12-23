@@ -125,7 +125,7 @@ const config = {
       startDay: 2,
     },
     end: {
-      endMonth: 11,
+      endMonth: 7,
       endDay: 31,
     },
   },
@@ -135,7 +135,7 @@ const config = {
       startDay: 15,
     },
     end: {
-      endMonth: 11,
+      endMonth: 7,
       endDay: 31,
     },
   },

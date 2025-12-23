@@ -18,19 +18,25 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementAffelnetToPremium = async () => {
+export const inviteEtablissementAffelnetToPremiumBypassDate = async () => {
+  await inviteEtablissementAffelnetToPremium(true)
+}
+
+export const inviteEtablissementAffelnetToPremium = async (bypassDate: boolean = false) => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
 
-  const { startDay, startMonth } = config.affelnetPeriods.start
-  const { endDay, endMonth } = config.affelnetPeriods.end
-  let count = 0
+  if (!bypassDate) {
+    const { startDay, startMonth } = config.affelnetPeriods.start
+    const { endDay, endMonth } = config.affelnetPeriods.end
 
-  const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
-  const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
-  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not within the eligible period.")
-    return
+    const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
+    const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
+    if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
+      logger.info("Stopped because we are not within the eligible period.")
+      return
+    }
   }
+  let count = 0
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
     .aggregate([
