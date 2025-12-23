@@ -62,7 +62,7 @@ export const activateOptoutOnEtablissementAndUpdateReferrersOnETFA = async () =>
       // Send email
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
+        subject: "Le service de mise en relation est activé pour votre CFA sur La bonne alternance",
         template: getStaticFilePath("./templates/mail-cfa-optout-start.mjml.ejs"),
         data: {
           images: {
