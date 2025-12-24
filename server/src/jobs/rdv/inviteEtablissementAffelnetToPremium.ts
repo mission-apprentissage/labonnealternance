@@ -18,19 +18,25 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementAffelnetToPremium = async () => {
+export const inviteEtablissementAffelnetToPremiumBypassDate = async () => {
+  await inviteEtablissementAffelnetToPremium(true)
+}
+
+export const inviteEtablissementAffelnetToPremium = async (bypassDate?: boolean) => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
 
-  const { startDay, startMonth } = config.affelnetPeriods.start
-  const { endDay, endMonth } = config.affelnetPeriods.end
-  let count = 0
+  if (!bypassDate) {
+    const { startDay, startMonth } = config.affelnetPeriods.start
+    const { endDay, endMonth } = config.affelnetPeriods.end
 
-  const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
-  const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
-  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not within the eligible period.")
-    return
+    const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
+    const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
+    if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
+      logger.info("Stopped because we are not within the eligible period.")
+      return
+    }
   }
+  let count = 0
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
     .aggregate([
@@ -79,13 +85,21 @@ export const inviteEtablissementAffelnetToPremium = async () => {
         isAffelnet: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_affelnet.webp?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
+          name: hasOneAvailableFormation.etablissement_formateur_raison_sociale,
+          formateur_address: hasOneAvailableFormation.lieu_formation_street,
+          formateur_zip_code: hasOneAvailableFormation.lieu_formation_zip_code,
+          formateur_city: hasOneAvailableFormation.lieu_formation_city,
+          formateur_siret: hasOneAvailableFormation.etablissement_formateur_siret,
         },
+        publicEmail: config.publicEmail,
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-invitation",
       },
     })
 

@@ -145,6 +145,7 @@ export const sendMiseEnRelation = async () => {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
               logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
+            publicEmail: config.publicEmail,
           },
         })
         counters.successSent++

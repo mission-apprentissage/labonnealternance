@@ -24,11 +24,10 @@ import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
-import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
-import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
+import { inviteEtablissementAffelnetToPremium, inviteEtablissementAffelnetToPremiumBypassDate } from "./rdv/inviteEtablissementAffelnetToPremium"
+import { inviteEtablissementParcoursupToPremium, inviteEtablissementParcoursupToPremiumBypassDate } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
-import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
@@ -65,6 +64,8 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
+import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
+import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 
@@ -129,6 +130,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Invite les établissements (via email décisionnaire) au premium (Parcoursup)",
   },
   {
+    fct: inviteEtablissementParcoursupToPremiumBypassDate,
+    description: "Invite les établissements (via email décisionnaire) au premium (Parcoursup) sans tenir compte de la période d'invitation",
+  },
+  {
     fct: inviteEtablissementAffelnetToPremium,
     description: "Invite les établissements (via email décisionnaire) au premium (Affelnet)",
   },
@@ -137,8 +142,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup",
   },
   {
-    fct: premiumInviteOneShot,
-    description: "Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau",
+    fct: inviteEtablissementParcoursupToPremiumFollowUpCli,
+    description: "Relance les établissements (via email décisionnaire) au premium (Parcoursup) sans tenir compte de la date d'invitation",
+  },
+  {
+    fct: inviteEtablissementAffelnetToPremiumBypassDate,
+    description: "Invite les établissements (via email décisionnaire) au premium (Affelnet) sans tenir compte de la période d'invitation",
+  },
+  {
+    fct: inviteEtablissementAffelnetToPremiumFollowUpCli,
+    description: "Relance les établissements (via email décisionnaire) au premium (Affelnet) sans tenir compte de la date d'invitation",
   },
   {
     fct: syncEtablissementsAndFormations,
