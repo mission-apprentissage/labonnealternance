@@ -8,7 +8,6 @@ import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
 import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
-import { fillLbaUrl } from "./fillLbaUrl"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
@@ -46,7 +45,6 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   await rankJobPartners(context)
   await detectDuplicateJobPartners(context)
 
-  await fillLbaUrl(context)
   await validateComputedJobPartners(context)
   logger.info("fin de fillComputedJobsPartners")
 }
@@ -95,5 +93,4 @@ export const blankComputedJobPartner = (now: Date): Omit<IComputedJobsPartners, 
   workplace_size: null,
   workplace_website: null,
   jobs_in_success: [],
-  lba_url: null,
 })
