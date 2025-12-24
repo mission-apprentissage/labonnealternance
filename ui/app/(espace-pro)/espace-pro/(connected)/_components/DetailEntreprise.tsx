@@ -255,7 +255,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                                   l’objet de contrôles par La bonne alternance.
                                 </Typography>
                               }
-                              sx={{ mt: fr.spacing("2w") }}
+                              sx={{ mt: fr.spacing("3w") }}
                             />
                           </>
                         )}
