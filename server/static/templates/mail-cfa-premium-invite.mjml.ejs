@@ -114,7 +114,7 @@
               Je souhaite en savoir plus sur ce service
             </mj-button>
             <mj-spacer height="16px"></mj-spacer>
-            <mj-button color="#000091" font-size="16px" font-weight="bold" background-color="#ffffff" border="1px solid #000091"  href="mailto:<%= data.publicEmail %>?subject=Email%20CFA%20Optout%20-%20Question">
+            <mj-button color="#000091" font-size="16px" font-weight="bold" background-color="#ffffff" border="1px solid #000091"  href="mailto:<%= data.publicEmail %>?subject=Email%20<% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Affelnet<%}%>%20-%20Question">
               J’ai une question
             </mj-button>
             <mj-spacer height="24px"></mj-spacer>
