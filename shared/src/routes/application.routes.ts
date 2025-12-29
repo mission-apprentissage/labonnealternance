@@ -1,7 +1,7 @@
 import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { ZNewApplication } from "../models/applications.model.js"
+import { ZHelloworkApplication, ZNewApplication } from "../models/applications.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
 import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
@@ -76,6 +76,23 @@ export const zApplicationRoutes = {
       params: z.object({ id: z.string() }).strict(),
       response: {
         "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "access-token",
+        access: null,
+        resources: {},
+      },
+    },
+    "/application/hellowork": {
+      path: "/application/hellowork",
+      method: "post",
+      body: ZHelloworkApplication,
+      response: {
+        "200": z
+          .object({
+            result: z.object({ status: z.literal("ok") }),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "access-token",

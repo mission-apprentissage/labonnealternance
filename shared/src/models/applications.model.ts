@@ -242,6 +242,31 @@ export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   application_url: true,
 })
 
+// Schéma principal
+export const ZHelloworkApplication = z.object({
+  applicationId: z.string(),
+  job: z.object({
+    jobId: z.string(),
+    jobAtsUrl: z.string(),
+  }),
+  applicant: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string(),
+    phoneNumber: z.string(),
+  }),
+  resume: z.object({
+    file: z.object({
+      fileName: z.string(),
+      contentType: z.string(),
+      data: z.string(),
+    }),
+  }),
+  source: z.union([z.string(), z.record(z.unknown())]),
+  statusApiUrl: z.string(),
+  screenerQuestions: z.array(z.any()),
+})
+
 export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>
 export type IApplicationApiPrivateOutput = z.output<typeof ZApplicationApiPrivate>
 export type IApplicationApiPublic = z.input<typeof ZApplicationApiPublic>
