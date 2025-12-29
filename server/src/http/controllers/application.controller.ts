@@ -136,4 +136,14 @@ export default function (server: Server) {
       return res.status(200).send(data)
     }
   )
+
+  server.post(
+    "/application/hellowork",
+    {
+      schema: zRoutes.post["/application/hellowork"],
+    },
+    async (_req, res) => {
+      return res.status(200).send({ status: "ok" })
+    }
+  )
 }
