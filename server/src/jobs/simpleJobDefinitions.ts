@@ -70,7 +70,7 @@ import { processScheduledRecruiterIntentions } from "@/services/application.serv
 import { generateSitemap } from "@/services/sitemap.service"
 
 type SimpleJobDefinition = {
-  fct: () => Promise<unknown>
+  fct: (payload?: any) => Promise<unknown>
   description: string
 }
 

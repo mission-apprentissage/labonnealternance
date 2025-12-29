@@ -93,6 +93,7 @@ const zRoutesPost2 = {
   ...zRecruiterRoutes.post,
   ...zApplicationRoutesV2.post,
   ...zAppointmentsRouteV2.post,
+  ...zClassificationRoute.post,
 }
 
 const zRoutesPost3 = {
