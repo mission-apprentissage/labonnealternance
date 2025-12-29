@@ -219,6 +219,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/fixtures/application.fixture.ts
+  checksum: 6d74987c0df45f31d4f772007e53d98e41a4e3aef42cdfff6975ef581732a831
 - filename: shared/src/fixtures/jobPartners.fixture.ts
   checksum: e280d6b82495cae5cfba648c9f4c250d1ad4039cfc1fe650a31d2cc410abbc64
 - filename: shared/src/fixtures/recruiterRaw.fixture.ts

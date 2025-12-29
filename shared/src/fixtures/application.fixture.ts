@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import type { IApplicant } from "../models/applicant.model.js"
-import type { IApplication } from "../models/applications.model.js"
+import type { IApplication, IHelloworkApplication } from "../models/applications.model.js"
 import { ApplicationScanStatus } from "../models/applications.model.js"
 
 export function generateApplicationFixture(data: Partial<IApplication>): IApplication {
@@ -46,6 +46,33 @@ export function generateApplicantFixture(data: Partial<IApplicant> = {}): IAppli
     last_connection: new Date("2024-07-28T03:05:34.187Z"),
     createdAt: new Date("2024-07-28T03:05:34.187Z"),
     updatedAt: new Date("2024-07-28T03:05:34.187Z"),
+    ...data,
+  }
+}
+
+export function generateHelloworkApplicationFixture(data: Partial<IHelloworkApplication>): IHelloworkApplication {
+  return {
+    applicationId: "app_123456789",
+    job: {
+      jobId: "job_dev_001",
+      jobAtsUrl: "https://ats.company.com/jobs/developer",
+    },
+    applicant: {
+      firstName: "Marie",
+      lastName: "Dupont",
+      email: "marie.dupont@example.com",
+      phoneNumber: "+33612345678",
+    },
+    resume: {
+      file: {
+        fileName: "CV_Marie_Dupont.pdf",
+        contentType: "application/pdf",
+        data: "JVBERi0xLjQKJeLjz9MKM...",
+      },
+    },
+    source: "LinkedIn",
+    statusApiUrl: "https://api.company.com/status/app_123456789",
+    screenerQuestions: [],
     ...data,
   }
 }

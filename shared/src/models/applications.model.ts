@@ -273,6 +273,7 @@ export type IApplicationApiPublic = z.input<typeof ZApplicationApiPublic>
 export type IApplicationApiPrivate = z.input<typeof ZApplicationApiPrivate>
 export type IApplicationApiPrivateJSON = Jsonify<z.input<typeof ZApplicationApiPrivate>>
 export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPublic>>
+export type IHelloworkApplication = Jsonify<z.input<typeof ZHelloworkApplication>>
 
 export default {
   zod: ZApplication,
