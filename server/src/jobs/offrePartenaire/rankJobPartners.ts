@@ -2,7 +2,7 @@ import type { Filter } from "mongodb"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { jobPartnersRankConfig, jobPartnersRankDefaultFactor } from "./jobPartnersRankConfig"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
@@ -31,7 +31,7 @@ export const rankJobPartners = async ({ addedMatchFilter }: FillComputedJobsPart
   const filters: Filter<IComputedJobsPartners>[] = [{ business_error: null }]
   if (addedMatchFilter) filters.push(addedMatchFilter)
 
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.RANKING,
     sourceFields,
     filledFields,

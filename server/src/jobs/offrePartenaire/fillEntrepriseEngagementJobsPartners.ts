@@ -2,14 +2,14 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const fillEntrepriseEngagementJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["contract_is_disabled_elligible"] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.ENGAGEMENT_ENTREPRISE,
     sourceFields: ["workplace_siret"],
     filledFields,
