@@ -19,7 +19,7 @@ const accordions = [
             >
               Vous ne savez pas vers quel métier vous orienter ?{" "}
               <Typography component="span">
-                Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation professionnelle.{" "}
+                Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation professionnelle.{"  "}
                 <DsfrLink href="https://diagoriente.beta.gouv.fr/">C'est parti !</DsfrLink>
               </Typography>
             </Typography>

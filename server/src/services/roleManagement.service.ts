@@ -269,11 +269,10 @@ export const sendDeactivatedRecruteurMail = async ({
 }) => {
   await mailer.sendEmail({
     to: email,
-    subject: "Votre compte a été désactivé sur La bonne alternance",
+    subject: "Mise à jour de votre compte sur La bonne alternance",
     template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
     data: {
       images: {
-        accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
@@ -284,7 +283,8 @@ export const sendDeactivatedRecruteurMail = async ({
       siret: sanitizeTextField(establishment_siret),
       raison_sociale: sanitizeTextField(establishment_raison_sociale),
       phone: sanitizeTextField(phone),
-      emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+      publicEmail: config.publicEmail,
+      utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_compte-recruteur_desactivation",
     },
   })
 }

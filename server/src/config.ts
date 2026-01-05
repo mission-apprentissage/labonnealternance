@@ -8,7 +8,7 @@ const config = {
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
-  publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
+  publicEmail: "contact@labonnealternance.apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   transactionalEmailSender: "La bonne alternance",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
@@ -160,6 +160,7 @@ const config = {
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
+  engagementJeunesFluxUrl: env.get("ENGAGEMENT_JEUNES_FLUX_URL").required().asString(),
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },

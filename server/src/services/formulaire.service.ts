@@ -334,6 +334,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
         },
+        publicEmail: config.publicEmail,
       },
     })
   }
@@ -728,6 +729,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
       policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -758,6 +760,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_title: job.offer_title_custom,
       },
       lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
+      publicEmail: config.publicEmail,
     },
   })
 }

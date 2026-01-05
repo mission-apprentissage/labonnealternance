@@ -9,6 +9,7 @@ import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import { publicConfig } from "@/config.public"
 
 const EmailEnValidationManuelle = () => (
   <Box sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
@@ -28,7 +29,7 @@ const ErreurValidation = () => (
     </Typography>
     <Typography sx={{ fontSize: "18px" }}>
       La validation de votre email a échoué. Merci de{" "}
-      <Link sx={{ ml: 1 }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Authentification%20LBAR%20-%20Mail%20invalide">
+      <Link sx={{ ml: 1 }} href={`mailto:${publicConfig.publicEmail}?subject=Authentification%20LBAR%20-%20Mail%20invalide`}>
         Contacter l'équipe La bonne alternance
       </Link>
     </Typography>

@@ -67,13 +67,23 @@ describe("fillRomeForPartners", () => {
       },
     ])
     nock.cleanAll()
-    const apiResponseDiagoriente: IDiagorienteClassificationResponseSchema[] = [
-      {
-        job_offer_id: computedJob[0]._id.toString(),
-        code_rome: romeCode,
-        intitule_rome: "Chef de partie, second de cuisine",
-      },
-    ]
+    const apiResponseDiagoriente: IDiagorienteClassificationResponseSchema = {}
+    apiResponseDiagoriente[computedJob[0]._id.toString()] = {
+      classify_results: [
+        {
+          data: {
+            _key: "key",
+            item_version_id: "version_id",
+            item_id: "item_id",
+            titre: "Chef de partie, second de cuisine",
+            valid_from: "2024-01-01",
+            rome: romeCode,
+            valid_to: null,
+            item_type: "SousDomaine",
+          },
+        },
+      ],
+    }
     nockDiagorienteAccessToken()
     nockDiagorienteRomeClassifier(
       [

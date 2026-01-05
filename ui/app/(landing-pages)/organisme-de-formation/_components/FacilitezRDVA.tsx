@@ -2,6 +2,7 @@ import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { publicConfig } from "@/config.public"
 
 export const FacilitezRDVA = () => {
   return (
@@ -13,7 +14,7 @@ export const FacilitezRDVA = () => {
         <Typography>Vous recevez directement dans votre boite mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.</Typography>
         <Typography sx={{ fontSize: "14px", mt: 2 }}>
           *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
-          <DsfrLink size="sm" href="mailto:labonnealternance@beta.gouv.fr?subject=CFA désactivation RDVA" aria-label="Adresse email de l'équipe La bonne alternance">
+          <DsfrLink size="sm" href={`mailto:${publicConfig.publicEmail}?subject=CFA désactivation RDVA`} aria-label="Adresse email de l'équipe La bonne alternance">
             contactant notre équipe
           </DsfrLink>
           .

@@ -184,18 +184,19 @@ function AdministrationOpco() {
                 data={data.awaiting}
                 description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d'accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu'il s'agit bien d'une entreprise relevant de vos champs de compétences, et qu'il ne s'agit pas d'une tentative d'usurpation de compte."
                 exportable={null}
+                defaultSortBy={[{ id: "createdAt", desc: true }]}
               />
             ),
           },
           {
             id: "active" as const,
             title: `Actives ${data.active.length}`,
-            content: <TableWithPagination columns={columns} data={data.active} exportable />,
+            content: <TableWithPagination columns={columns} data={data.active} exportable defaultSortBy={[{ id: "createdAt", desc: true }]} />,
           },
           {
             id: "disabled" as const,
             title: `Désactivés (${data.disable.length})`,
-            content: <TableWithPagination columns={columns} data={data.disable} description={null} exportable={null} />,
+            content: <TableWithPagination columns={columns} data={data.disable} description={null} exportable={null} defaultSortBy={[{ id: "createdAt", desc: true }]} />,
           },
         ]}
       />

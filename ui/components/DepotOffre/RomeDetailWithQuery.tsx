@@ -8,6 +8,7 @@ import { RomeDetail } from "./RomeDetail"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
+import { publicConfig } from "@/config.public"
 
 const fakeLoadingDuration = 1000
 
@@ -72,7 +73,7 @@ export const RomeDetailWithQuery = ({
         La fiche métier n'a pas pu être trouvée, merci de le{" "}
         <DsfrLink
           aria-label="Envoi d'un email à l'équipe La bonne alternance - nouvelle fenêtre"
-          href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Dépôt%20offre%20-%20ROME%20manquant-${title}"
+          href={`mailto:${publicConfig.publicEmail}?subject=Dépôt%20offre%20-%20ROME%20manquant-${title}`}
           external
         >
           signaler à notre équipe support

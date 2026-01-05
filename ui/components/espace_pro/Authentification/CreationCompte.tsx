@@ -23,6 +23,7 @@ import { PAGES } from "@/utils/routes.utils"
 import { ApiError } from "@/utils/api.utils"
 import type { searchEntreprise } from "@/services/searchEntreprises"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
+import { publicConfig } from "@/config.public"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
@@ -115,7 +116,7 @@ const CreationCompteForm = ({
                         underline="hover"
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
+                        href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
                       >
                         Contactez-nous
                       </Link>{" "}

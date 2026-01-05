@@ -66,6 +66,7 @@ async function sendEngagementHandicapEmail(user: IUserWithAccount, entreprise: I
         handiMatch: `${config.publicUrl}/images/emails/handimatch.png?raw=true`,
         franceTravail: `${config.publicUrl}/images/logosPartenaires/minimal/france-travail.svg?raw=true`,
       },
+      publicEmail: config.publicEmail,
     },
   })
   return messageId
