@@ -392,7 +392,7 @@ export async function setupJobProcessor() {
           return [
             command,
             {
-              handler: async () => fct(),
+              handler: async (job) => fct(job.payload),
             },
           ]
         })
