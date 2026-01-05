@@ -137,8 +137,6 @@ export default function RendezVousApprentissageDetailRendererClient({
                                 <Box
                                   component="td"
                                   sx={{
-                                    fontSize: "0.8em",
-                                    px: "1px",
                                     verticalAlign: "top",
                                     fontSize: "0.8em",
                                     py: fr.spacing("2w"),
