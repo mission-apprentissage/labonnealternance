@@ -87,6 +87,12 @@ const ZApplicationOld = z
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
     scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
     application_url: z.string().nullish().describe("URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA."),
+    foreign_application_id: z.string().nullish().describe("Identifiant de la candidature dans un système tiers."),
+    foreign_application_source: z.string().nullish().describe("Source de la candidature dans un système tiers. ex: Hellowork"),
+    foreign_application_status_url: z
+      .string()
+      .nullish()
+      .describe("URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status"),
   })
   .strict()
   .openapi("Application")
@@ -234,6 +240,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
       return { collectionName: collectionName as IJobCollectionName, jobId }
     })
     .describe("Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection"),
+  status_api_url: z.string().nullish().describe("URL du endpoint de signalement de changement de statut de la candidature auprès du partenaire d'où provient la candidature"),
 })
 
 export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
@@ -254,6 +261,7 @@ export const ZHelloworkApplication = z.object({
     lastName: z.string(),
     email: z.string(),
     phoneNumber: z.string(),
+    coverLetter: z.string().nullish(),
   }),
   resume: z.object({
     file: z.object({
@@ -262,7 +270,7 @@ export const ZHelloworkApplication = z.object({
       data: z.string(),
     }),
   }),
-  source: z.union([z.string(), z.record(z.unknown())]),
+  source: z.any(),
   statusApiUrl: z.string(),
   screenerQuestions: z.array(z.any()),
 })

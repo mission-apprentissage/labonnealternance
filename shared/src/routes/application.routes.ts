@@ -93,12 +93,20 @@ export const zApplicationRoutes = {
             status: z.literal("ok"),
           })
           .strict(),
+        "400": z
+          .object({
+            message: z.string(),
+            code: z.string(),
+          })
+          .strict(),
+        "401": z
+          .object({
+            message: z.string(),
+            code: z.string(),
+          })
+          .strict(),
       },
-      securityScheme: {
-        auth: "access-token",
-        access: null,
-        resources: {},
-      },
+      securityScheme: null,
     },
   },
   get: {

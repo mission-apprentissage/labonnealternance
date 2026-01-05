@@ -4,8 +4,15 @@ import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "@/services/application.service"
+import {
+  buildApplicationFromHelloworkAndSaveToDb,
+  getApplicationDataForIntentionAndScheduleMessage,
+  getCompanyEmailFromToken,
+  sendApplication,
+  sendRecruiterIntention,
+} from "@/services/application.service"
 import type { Server } from "@/http/server"
+import config from "@/config"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -143,7 +150,37 @@ export default function (server: Server) {
       schema: zRoutes.post["/application/hellowork"],
     },
     async (_req, res) => {
-      return res.status(200).send({ status: "ok" })
+      if (_req.headers["x-api-key"] !== config.helloworkApiKey) {
+        return res.status(401).send({
+          message: "Problème d'authentification",
+          code: "Authentication",
+        })
+      }
+      console.log("OKOKOKOKOKOKOK", _req.body)
+
+      try {
+        const result = await buildApplicationFromHelloworkAndSaveToDb(_req.body)
+        return res.status(200).send(result)
+      } catch (e) {
+        switch (e.message) {
+          case "MissingData":
+            return res.status(400).send({
+              message: "Données manquantes dans la candidature",
+              code: "MissingData",
+            })
+          case "InvalidData":
+            return res.status(400).send({
+              message: "Données invalides dans la candidature",
+              code: "InvalidData",
+            })
+          default:
+            console.error("Error processing Hellowork application:", e)
+            return res.status(500).send({
+              message: "Erreur interne du serveur",
+              code: "InternalServerError",
+            })
+        }
+      }
     }
   )
 }

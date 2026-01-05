@@ -6,8 +6,8 @@ import { isEmailBurner } from "burner-email-providers"
 import dayjs from "shared/helpers/dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
-import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IHelloworkApplication, IJob, INewApplicationV1, IRecruiter } from "shared"
+import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import type { RefusalReasons } from "shared/constants/application"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -305,6 +305,9 @@ export const sendApplicationV2 = async ({
     const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
+    }
+    if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      throw badRequest(BusinessErrorCodes.EXPIRED)
     }
     lbaJob = { type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
   }
@@ -1054,6 +1057,7 @@ export const deleteApplicationCvFile = async (application: IApplication) => {
 const getRecruteurEmailSubject = (application: IApplication, applicant: IApplicant) => {
   const { job_origin } = application
 
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (job_origin) {
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
       return `Candidature spontanée en alternance ${application.company_name}`
@@ -1258,6 +1262,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
   let job: IJobsPartnersOfferPrivate | null = null
   const { job_id, company_siret } = application
 
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
@@ -1490,4 +1495,51 @@ export const processScheduledRecruiterIntentions = async () => {
     })
     throw err
   }
+}
+
+export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHelloworkApplication) => {
+  const { job, applicant, resume, statusApiUrl } = payload
+
+  const result = await sendApplicationV2({
+    newApplication: {
+      applicant_attachment_name: resume.file.fileName,
+      applicant_attachment_content: resume.file.data,
+      applicant_first_name: applicant.firstName,
+      applicant_last_name: applicant.lastName,
+      applicant_email: applicant.email,
+      applicant_phone: applicant.phoneNumber,
+      recipient_id: {
+        collectionName: "partners",
+        jobId: job.jobId,
+      },
+      applicant_message: applicant.coverLetter || "",
+      status_api_url: statusApiUrl,
+    },
+    caller: "Hellowork",
+  })
+
+  return {
+    atsApplicationId: result._id.toString(),
+  }
+
+  // applicationId: 'app_123456789',
+  // job: {
+  //   jobId: 'job_dev_001',
+  //   jobAtsUrl: 'https://ats.company.com/jobs/developer'
+  // },
+  // applicant: {
+  //   firstName: 'Marie',
+  //   lastName: 'Dupont',
+  //   email: 'marie.dupont@example.com',
+  //   phoneNumber: '+33612345678'
+  // },
+  // resume: {
+  // file: {
+  // fileName: 'CV_Marie_Dupont.pdf',
+  // contentType: 'application/pdf',
+  // data: 'JVBERi0xLjQKJeLjz9MKM...'
+  // }
+  // },
+  // source: 'LinkedIn',
+  // statusApiUrl: 'https://api.company.com/status/app_123456789',
 }
