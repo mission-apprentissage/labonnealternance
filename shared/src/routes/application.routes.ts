@@ -90,7 +90,7 @@ export const zApplicationRoutes = {
       response: {
         "200": z
           .object({
-            status: z.literal("ok"),
+            atsApplicationId: z.string(),
           })
           .strict(),
         "400": z

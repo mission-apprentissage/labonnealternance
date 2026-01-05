@@ -582,6 +582,8 @@ const newApplicationToApplicationDocumentV2 = async (
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
     application_url: "application_url" in newApplication ? newApplication.application_url : null,
+    foreign_application_status_url: "foreign_application_status_url" in newApplication ? newApplication.foreign_application_status_url : null,
+    foreign_application_id: "foreign_application_id" in newApplication ? newApplication.foreign_application_id : null,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
@@ -1513,7 +1515,8 @@ export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHellowo
         jobId: job.jobId,
       },
       applicant_message: applicant.coverLetter || "",
-      status_api_url: statusApiUrl,
+      foreign_application_id: payload.applicationId,
+      foreign_application_status_url: statusApiUrl,
     },
     caller: "Hellowork",
   })
@@ -1521,25 +1524,4 @@ export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHellowo
   return {
     atsApplicationId: result._id.toString(),
   }
-
-  // applicationId: 'app_123456789',
-  // job: {
-  //   jobId: 'job_dev_001',
-  //   jobAtsUrl: 'https://ats.company.com/jobs/developer'
-  // },
-  // applicant: {
-  //   firstName: 'Marie',
-  //   lastName: 'Dupont',
-  //   email: 'marie.dupont@example.com',
-  //   phoneNumber: '+33612345678'
-  // },
-  // resume: {
-  // file: {
-  // fileName: 'CV_Marie_Dupont.pdf',
-  // contentType: 'application/pdf',
-  // data: 'JVBERi0xLjQKJeLjz9MKM...'
-  // }
-  // },
-  // source: 'LinkedIn',
-  // statusApiUrl: 'https://api.company.com/status/app_123456789',
 }

@@ -3,6 +3,7 @@ import { ApplicationIntention } from "shared/constants/application"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import {
   buildApplicationFromHelloworkAndSaveToDb,
@@ -156,25 +157,31 @@ export default function (server: Server) {
           code: "Authentication",
         })
       }
-      console.log("OKOKOKOKOKOKOK", _req.body)
-
       try {
         const result = await buildApplicationFromHelloworkAndSaveToDb(_req.body)
         return res.status(200).send(result)
-      } catch (e) {
-        switch (e.message) {
-          case "MissingData":
+      } catch (err: any) {
+        switch (err.message) {
+          case BusinessErrorCodes.BURNER:
+          case BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER:
+          case BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY:
+          case BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET:
             return res.status(400).send({
-              message: "Données manquantes dans la candidature",
-              code: "MissingData",
+              message: err.message,
+              code: "RejectedCandidate",
             })
-          case "InvalidData":
+          case BusinessErrorCodes.NOTFOUND:
+          case BusinessErrorCodes.EXPIRED:
             return res.status(400).send({
-              message: "Données invalides dans la candidature",
-              code: "InvalidData",
+              message: err.message,
+              code: "Offer",
+            })
+          case BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED:
+            return res.status(400).send({
+              message: err.message,
+              code: "Attachment",
             })
           default:
-            console.error("Error processing Hellowork application:", e)
             return res.status(500).send({
               message: "Erreur interne du serveur",
               code: "InternalServerError",
