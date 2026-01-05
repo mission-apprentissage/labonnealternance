@@ -4,12 +4,11 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 
+import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { PAGES } from "@/utils/routes.utils"
 
-import { classNames } from "../../utils/classNames"
-
-import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
+import { classNames } from "@/utils/classNames"
 
 export const ValorisationCandidatureSpontanee = () => {
   const router = useRouter()
@@ -31,7 +30,7 @@ export const ValorisationCandidatureSpontanee = () => {
           .getPath()
       )
     return onClick
-  }, [])
+  }, [router])
 
   return (
     <Box
