@@ -84,7 +84,7 @@ export const PAGES = {
     },
     politiqueConfidentialite: {
       getPath: () => `/politique-de-confidentialite` as string,
-      title: "Politique de confidentialité",
+      title: "Politique de confidentialité - La bonne alternance",
       index: false,
       getMetadata: () => ({
         title: "Politique de confidentialité - Protection de vos données",
@@ -96,7 +96,7 @@ export const PAGES = {
       title: "Métiers",
       index: false,
       getMetadata: () => ({
-        title: "Métiers en alternance - Découvrez les opportunités",
+        title: "Métiers en alternance - Découvrez les opportunités sur La bonne alternance",
         description: "Explorez les différents métiers accessibles en alternance et trouvez celui qui correspond à votre projet professionnel.",
       }),
     },
@@ -123,7 +123,7 @@ export const PAGES = {
       title: "Ressources",
       index: false,
       getMetadata: () => ({
-        title: "Ressources pour réussir votre alternance",
+        title: "Ressources pour réussir votre alternance - La bonne alternance",
         description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
       }),
     },
@@ -132,7 +132,7 @@ export const PAGES = {
       title: "Espace développeurs",
       index: false,
       getMetadata: () => ({
-        title: "Espace developpeurs - Transparence et qualité des offres",
+        title: "Espace développeurs - Transparence et qualité des offres - La bonne alternance",
         description: "En savoir plus sur notre API et nos données pour développer vos propres outils et services d’alternance.",
       }),
     },
@@ -175,57 +175,95 @@ export const PAGES = {
     espaceProCreationEntreprise: {
       getPath: () => `/espace-pro/creation/entreprise` as string,
       title: "Créer un compte entreprise",
+      getMetadata: () => ({
+        title: "Créer un compte recruteur - La bonne alternance",
+        description: "Créer un compte recruteur pour diffuser simplement et gratuitement vos offres en alternance.",
+      }),
     },
     espaceProCreationCfa: {
       getPath: () => `/espace-pro/creation/cfa` as string,
       title: "Créer un compte d'organisme de formation",
+      getMetadata: () => ({
+        title: "Créer un compte d'organisme de formation - La bonne alternance",
+        description: "Créer un compte d'organisme de formation pour diffuser simplement et gratuitement los offres en alternance de vos entreprises partenaires.",
+      }),
     },
     backCfaHome: {
       getPath: () => `/espace-pro/cfa` as string,
       title: "Accueil CFA",
+      getMetadata: () => ({
+        title: "Accueil espace CFA - La bonne alternance",
+      }),
     },
     backCfaCreationEntreprise: {
       getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
       title: "Création d'entreprise",
+      getMetadata: () => ({
+        title: "Création d'entreprise partenaire - La bonne alternance",
+      }),
     },
     backAdminHome: {
       getPath: () => `/espace-pro/administration/users` as string,
       title: "Accueil administration",
+      getMetadata: () => ({
+        title: "Accueil espace administration - La bonne alternance",
+      }),
     },
     backAdminGestionDesEntreprises: {
       getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
       title: "Gestion des entreprises",
+      getMetadata: () => ({
+        title: "Gestion des entreprises - La bonne alternance",
+      }),
     },
     backAdminGestionDesAdministrateurs: {
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs` as string,
       title: "Gestion des administrateurs",
+      getMetadata: () => ({
+        title: "Gestion des administrateurs - La bonne alternance",
+      }),
     },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
+      getMetadata: () => ({
+        title: "Accueil espace OPCO - La bonne alternance",
+      }),
     },
     backHomeEntreprise: {
       getPath: () => `/espace-pro/entreprise` as string,
       title: "Accueil entreprise",
+      getMetadata: () => ({
+        title: "Accueil espace recruteur - La bonne alternance",
+      }),
     },
     backEntrepriseCreationOffre: {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
+      getMetadata: () => ({
+        title: "Nouvelle offre - La bonne alternance",
+      }),
     },
     rendezVousApprentissageRecherche: {
       getPath: () => `/espace-pro/administration/rendez-vous-apprentissage` as string,
       title: "Recherche etablissement rendez-vous apprentissage",
+      getMetadata: () => ({
+        title: "Recherche etablissement rendez-vous apprentissage - La bonne alternance",
+      }),
     },
     backCreateCFAEnAttente: {
       getPath: () => "/espace-pro/authentification/en-attente" as string,
       title: "Création de compte CFA en attente",
+      getMetadata: () => ({
+        title: "Création de compte CFA en attente - La bonne alternance",
+      }),
     },
     desinscription: {
       getPath: () => `/desinscription` as string,
       title: "Désinscription candidatures spontanées",
       index: false,
       getMetadata: () => ({
-        title: "Désinscription candidatures spontanées",
+        title: "Désinscription candidatures spontanées - La bonne alternance",
         description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
       }),
     },
@@ -234,7 +272,7 @@ export const PAGES = {
       title: "Déclaration d'accessibilité",
       index: true,
       getMetadata: () => ({
-        title: "Déclaration d'accessibilité",
+        title: "Déclaration d'accessibilité - La bonne alternance",
         description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
       }),
     },
@@ -261,7 +299,7 @@ export const PAGES = {
         }
       },
       index: false,
-      getMetadata: () => ({ title: "Informations de contact" }),
+      getMetadata: () => ({ title: "Informations de contact - La bonne alternance" }),
       title: "Informations de contact",
     }),
     metierJobById: (metier: string): IPage => ({
