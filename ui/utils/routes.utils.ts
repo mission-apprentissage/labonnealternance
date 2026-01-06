@@ -289,6 +289,14 @@ export const PAGES = {
         title: "Postuler à l'offre - La bonne alternance",
       }),
     },
+    detailRendezVousApprentissage: {
+      title: "Détail du rendez-vous d'apprentissage",
+      getPath: () => `/detail-rendez-vous` as string,
+      index: false,
+      getMetadata: () => ({
+        title: "Détail du rendez-vous d'apprentissage - La bonne alternance",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
