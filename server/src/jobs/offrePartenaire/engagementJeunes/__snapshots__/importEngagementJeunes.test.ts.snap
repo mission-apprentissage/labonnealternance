@@ -16,7 +16,6 @@ exports[`importEngagementJeunes > should test the import of data into computed_j
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-12-10T00:00:00.000Z,
     "offer_description": "<b>Mission :</b><br />LA CULTURE AVEC UN GRAND AAAH ! 
@@ -96,7 +95,6 @@ RÉMUNÉRATION (BRUTE ANNUELLE) À PARTIR DE :
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-12-10T00:00:00.000Z,
     "offer_description": "<b>Mission :</b><br />L'Activité Recyclage et Valorisation des Déchets de VEOLIA recherche un AGENT DE TRI EN ALTERNANCE pour son centre de tri automatisé de collectes sélectives des ménages (55 000 t/An) .
