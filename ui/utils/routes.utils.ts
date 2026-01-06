@@ -281,6 +281,14 @@ export const PAGES = {
       index: false,
       title: "Statut du processeur",
     },
+    postuler: {
+      getPath: () => `/postuler` as string,
+      title: "Postuler",
+      index: false,
+      getMetadata: () => ({
+        title: "Postuler à l'offre - La bonne alternance",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
