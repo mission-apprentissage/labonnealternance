@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import CreationDetail from "./DetailPage"
+import CreationDetail from "./CreationDetailPage"
 
 export const metadata: Metadata = {
   title: "Formulaire de dépôt d'offre - Informations de compte - La bonne alternance",
