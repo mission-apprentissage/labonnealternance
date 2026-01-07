@@ -69,11 +69,11 @@ export const ValorisationCandidatureSpontanee = () => {
         </Typography>
 
         <Typography sx={{ pt: 2 }}>
-          👉 Vous étendez votre champ d'opportunités,
+          <span aria-hidden="true">👉</span> Vous étendez votre champ d'opportunités,
           <br />
-          👉 Vous choisissez les entreprises qui vous intéressent,
+          <span aria-hidden="true">👉</span> Vous choisissez les entreprises qui vous intéressent,
           <br />
-          👉 Vous augmentez vos chances car il y a moins de concurrence.
+          <span aria-hidden="true">👉</span> Vous augmentez vos chances car il y a moins de concurrence.
           <br />
         </Typography>
       </Box>

@@ -1,4 +1,5 @@
 import Button from "@codegouvfr/react-dsfr/Button"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import type { SyntheticEvent } from "react"
@@ -35,7 +36,7 @@ const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJ
           <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
           <Typography
             sx={{
-              color: "bluefrance.500",
+              color: fr.colors.decisions.text.actionHigh.blueFrance.default,
             }}
           >
             Partager

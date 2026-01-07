@@ -150,9 +150,9 @@ function TrainingDetailPage({
             id="detail-header"
             component="p"
             sx={{
-              color: "grey.600",
-              mt: isCollapsedHeader ? 1 : 1,
-              mb: isCollapsedHeader ? 1 : 1,
+              color: fr.colors.decisions.text.mention.grey.default,
+              mt: fr.spacing("1w"),
+              mb: fr.spacing("1w"),
             }}
           >
             <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>

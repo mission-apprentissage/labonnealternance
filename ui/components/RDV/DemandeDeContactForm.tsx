@@ -148,7 +148,7 @@ export const DemandeDeContactForm = ({
             >
               <Typography
                 sx={{
-                  color: "grey.600",
+                  color: fr.colors.decisions.text.mention.grey.default,
                   mb: fr.spacing("2w"),
                 }}
               >
@@ -226,7 +226,7 @@ const EmailField = () => {
           sx={{
             mt: 2,
             fontSize: "12px",
-            color: "grey.600",
+            color: fr.colors.decisions.text.mention.grey.default,
           }}
         >
           <Typography
