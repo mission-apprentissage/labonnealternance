@@ -1149,7 +1149,7 @@ export const processApplicationEmails = {
 function buildRecruitingCompaniesUrl(application: IApplication) {
   const { application_url } = application
   if (!application_url) {
-    console.warn("no application_url")
+    logger.warn("no application_url")
     return
   }
   const searchParams = new URL(application_url).searchParams
