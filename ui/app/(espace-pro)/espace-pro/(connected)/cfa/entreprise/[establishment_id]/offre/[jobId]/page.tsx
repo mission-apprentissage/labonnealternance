@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
+import { CFA } from "shared/constants/recruteur"
+
 import CfaOffrePage from "./CfaOffrePage"
 import { PAGES } from "@/utils/routes.utils"
-import { CFA } from "shared/constants/recruteur"
 
 export async function generateMetadata({ params }: { params: Promise<{ establishment_id: string; jobId: string }> }): Promise<Metadata> {
   const { establishment_id, jobId } = await params
