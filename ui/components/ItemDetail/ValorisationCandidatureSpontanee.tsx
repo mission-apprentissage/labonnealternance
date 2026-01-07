@@ -58,7 +58,7 @@ export const ValorisationCandidatureSpontanee = () => {
     >
       <Box>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ai été déposée.
+          Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée.
         </Typography>
         <Typography>
           Pour vous aider à trouver un contrat, nous identifions des entreprises susceptibles d'accueillir des alternants.

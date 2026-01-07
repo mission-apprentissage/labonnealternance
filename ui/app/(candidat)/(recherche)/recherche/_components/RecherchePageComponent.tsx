@@ -36,7 +36,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   }
 
   const scolledElementIndex = elements.findIndex((element) => {
-    if (!("item" in element)) return
+    if (!("item" in element)) return false
     const { item } = element
     const { type } = item
     if (activeItems.length) {
@@ -45,6 +45,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
     if (scrollToRecruteursLba) {
       return type === "lba_item" && item.value.ideaType === LBA_ITEM_TYPE_OLD.LBA
     }
+    return false
   })
 
   return (
