@@ -168,7 +168,7 @@ export const PAGES = {
       title: "Organisme de formation",
       index: false,
       getMetadata: () => ({
-        title: "Accès recruteur - La bonne alternance",
+        title: "Accès Organisme de formation - La bonne alternance",
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
