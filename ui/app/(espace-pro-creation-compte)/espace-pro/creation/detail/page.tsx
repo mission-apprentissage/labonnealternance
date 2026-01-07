@@ -1,10 +1,12 @@
-"use client"
+import type { Metadata } from "next"
+import CreationDetail from "./DetailPage"
 
-import { InformationCreationCompte } from "@/app/(espace-pro-creation-compte)/_components/InformationCreationCompte/InformationCreationCompte"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
-
-export default function CreationDetail() {
-  const { siret, email, type, origin } = useSearchParamsRecord()
-
-  return <InformationCreationCompte establishment_siret={siret} email={email} type={type as "CFA" | "ENTREPRISE"} origin={origin} />
+export const metadata: Metadata = {
+  title: "Formulaire de dépôt d'offre - Informations de compte - La bonne alternance",
 }
+
+const Page = async () => {
+  return <CreationDetail />
+}
+
+export default Page
