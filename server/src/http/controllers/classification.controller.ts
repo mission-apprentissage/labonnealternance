@@ -1,6 +1,8 @@
+import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 
 import { addJob } from "job-processor"
+import { unauthorized } from "@hapi/boom"
 import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -47,6 +49,8 @@ export const classificationRoutes = (server: Server) => {
   })
 
   server.post("/classification", { schema: zRoutes.post["/classification"], onRequest: server.auth(zRoutes.post["/classification"]) }, async (req, res) => {
+    const user = req.user?.value as ICredential
+    if (user.scope !== "classification") throw unauthorized("scope classification required")
     const { classification, partner_job_ids } = req.body
     await updateClassificationAndSynchronise({ classification, partner_job_ids })
     return res.status(200).send({ response: "Les mises à jour vont être traité par le serveur", time: new Date() })
@@ -67,14 +71,18 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
   for await (const job of filteredScope) {
     const jobPartners = await getDbCollection("jobs_partners").findOne({ partner_job_id: job.partner_job_id })
     if (jobPartners) {
-      await getDbCollection("jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE } })
+      await Promise.all([
+        getDbCollection("jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } }),
+        getDbCollection("computed_jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { business_error: null, errors: [], validated: false } }),
+      ])
     } else {
       const computedJobPartner = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: job.partner_job_id })
       if (computedJobPartner) {
-        await getDbCollection("computed_jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { business_error: null, errors: [] } })
+        await getDbCollection("computed_jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { business_error: null, errors: [], validated: false } })
       }
     }
   }
   // add job to fillComputedJobsPartners with the filteredScopeIds
   await addJob({ name: "fillComputedJobsPartners", payload: { addedMatchFilter: { partner_job_id: { $in: filteredScopeIds } } } })
+  await addJob({ name: "importFromComputedToJobsPartners", payload: { partner_job_id: { $in: filteredScopeIds } } })
 }
