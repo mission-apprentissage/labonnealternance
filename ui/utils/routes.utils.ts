@@ -333,7 +333,7 @@ export const PAGES = {
     modificationEntreprise: (userType: string, establishment_id?: string): IPage => ({
       getPath: () => (userType === "CFA" ? `/espace-pro/cfa/entreprise/${establishment_id}/informations` : "/espace-pro/entreprise/compte"),
       index: false,
-      getMetadata: () => ({ title: "Modification entreprise" }),
+      getMetadata: () => ({ title: "Modification entreprise - La bonne alternance" }),
       title: "Modification entreprise",
     }),
     offreUpsert: ({
@@ -367,7 +367,7 @@ export const PAGES = {
           }
         },
         index: false,
-        getMetadata: () => ({ title: isCreation ? "Création d'une offre" : "Edition d'une offre" }),
+        getMetadata: () => ({ title: `${isCreation ? "Création d'une offre" : "Edition d'une offre"} - La bonne alternance` }),
         title: isCreation ? "Création d'une offre" : "Edition d'une offre",
       }
     },
