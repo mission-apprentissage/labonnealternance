@@ -67,13 +67,21 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
             </Typography>
             {details && <Typography gutterBottom>{details}</Typography>}
 
-            <Box mt={2}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <Button onClick={() => reset()} type="button">
                 Essayer à nouveau
               </Button>
             </Box>
 
-            <Box mt={2}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <DsfrLink href="/" locale="fr">
                 Retourner à la page d'accueil
               </DsfrLink>

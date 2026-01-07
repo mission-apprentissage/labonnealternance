@@ -11,7 +11,14 @@ import { publicConfig } from "@/config.public"
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
   return (
-    <Box pb={props.pb ?? 3} sx={props.sx ? { ...props.sx } : {}}>
+    <Box
+      sx={[
+        {
+          pb: props.pb ?? 3,
+        },
+        props.sx ? { ...props.sx } : {},
+      ]}
+    >
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
         {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
         {props.info && (
@@ -24,7 +31,11 @@ const CustomInput = (props) => {
         {meta.error &&
           meta.touched &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
-            <Box ml={1}>
+            <Box
+              sx={{
+                ml: 1,
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Warning sx={{ mr: fr.spacing("1w") }} />
                 <Typography sx={{ color: fr.colors.decisions.text.actionHigh.redMarianne.default }}>Les informations de votre entreprise sont non diffusibles.</Typography>

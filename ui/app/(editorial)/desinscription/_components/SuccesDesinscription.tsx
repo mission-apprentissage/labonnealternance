@@ -14,7 +14,13 @@ const SuccesDesinscription = () => (
           <Typography variant="h1" sx={{ mb: fr.spacing("2w") }}>
             Merci pour votre signalement.
           </Typography>
-          <Typography fontSize="18px">Votre établissement vient d'être déréférencé du volet candidature spontanée de La bonne alternance.</Typography>
+          <Typography
+            sx={{
+              fontSize: "18px",
+            }}
+          >
+            Votre établissement vient d'être déréférencé du volet candidature spontanée de La bonne alternance.
+          </Typography>
         </Box>
       </Box>
     </Box>

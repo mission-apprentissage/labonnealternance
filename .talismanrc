@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 36d809c0fb0b3c298ef696e4225a556fda60920d7302f71304d4c9126c42415f
+  checksum: c58cfe457e84ceef232f9874ddd4e949f914b04c0226a4e9a86f1645c327c006
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
   ignore_detectors:
@@ -142,7 +142,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 8c4747be47fcb6facb9ca3b5597653ba01684949483e22f88ff7ebd7ec866e06
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 1b52190fb8a1a5b5a0f4248f64760218448e128417e228c91b9a4472e217169d
+  checksum: 74c5d71e4e85238ddf47a1568c247430b4324724f19474ae6672aea270dfd6d2
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
   checksum: 12a469e0fbb0a05cecdc155db325e141e5a27b06b4eb4643914d4b4b988babf2
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
@@ -158,7 +158,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 3bc64c3329e8979bad6cc6e2597d2c1212b9772fae1ee0e0400324f46351062d
 - filename: server/static/templates/mail-relance-opco.mjml.ejs
-  checksum: c9f5fd3e3e7692e376c04fa72a452565472231819989c886a3aa64d46ec04d16
+  checksum: 10eadd2b38ec25c19355802987a7dd182a4521e015bd1f84bcbe9fc5a936d425
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts

@@ -12,14 +12,23 @@ export default async function Layout({ children }: PropsWithChildren) {
   return (
     <>
       <Header />
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         <Box
-          maxWidth={1200}
-          paddingTop={fr.spacing("4w")}
-          paddingBottom={fr.spacing("8w")}
-          marginX={{
-            xs: fr.spacing("2w"),
-            md: fr.spacing("4w"),
+          sx={{
+            maxWidth: 1200,
+            paddingTop: fr.spacing("4w"),
+            paddingBottom: fr.spacing("8w"),
+
+            marginX: {
+              xs: fr.spacing("2w"),
+              md: fr.spacing("4w"),
+            },
           }}
         >
           <DepotSimplifieStyling>{children}</DepotSimplifieStyling>

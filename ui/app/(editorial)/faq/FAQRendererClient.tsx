@@ -99,10 +99,19 @@ function FAQRendererClientGeneric({
   const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
-    <Box ref={pageRef} mb={fr.spacing("3w")}>
+    <Box
+      ref={pageRef}
+      sx={{
+        mb: fr.spacing("3w"),
+      }}
+    >
       <Breadcrumb pages={[PAGES.static.faq]} />
       <DefaultContainer>
-        <Box mb={fr.spacing("1w")}>
+        <Box
+          sx={{
+            mb: fr.spacing("1w"),
+          }}
+        >
           <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
             Questions fréquement posées
           </Typography>

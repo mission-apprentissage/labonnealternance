@@ -84,7 +84,12 @@ export const ReportJobLink = ({
   const content = contentByItemType[type] ?? contentByItemType.offres_emploi_lba
 
   return (
-    <Stack direction="row" alignItems="center">
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: "center",
+      }}
+    >
       {storedValue ? (
         <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
           {linkLabelReported}
@@ -174,7 +179,14 @@ export const ReportJobLink = ({
 const ReportedAcknowledgement = () => {
   return (
     <Box sx={{ justifySelf: "center", p: fr.spacing("4w") }}>
-      <Stack direction="row" spacing={4} alignItems="center" sx={{ mb: 2 }}>
+      <Stack
+        direction="row"
+        spacing={4}
+        sx={{
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
         <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />
         <Typography variant="h2">Votre signalement a bien été envoyé à notre équipe.</Typography>
       </Stack>
