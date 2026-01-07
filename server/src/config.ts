@@ -8,7 +8,7 @@ const config = {
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
-  publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
+  publicEmail: "contact@labonnealternance.apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   transactionalEmailSender: "La bonne alternance",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
@@ -111,9 +111,8 @@ const config = {
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
   franceCompetences: {
-    baseUrl: "https://api-preprod.francecompetences.fr",
+    baseUrl: "https://api.francecompetences.fr",
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
-    bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
   apiApprentissage: {
     baseUrl: "https://api.apprentissage.beta.gouv.fr/api",

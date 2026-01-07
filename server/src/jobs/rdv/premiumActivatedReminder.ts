@@ -60,14 +60,11 @@ export const premiumActivatedReminder = async () => {
           subject: `Rappel - Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
           template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
           data: {
-            url: config.publicUrl,
-            replyTo: config.publicEmail,
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.webp?raw=true`,
-              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-              peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
-              integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+              logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
+              optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,
@@ -75,13 +72,10 @@ export const premiumActivatedReminder = async () => {
               formateur_zip_code: etablissement.formateur_zip_code,
               formateur_city: etablissement.formateur_city,
               siret: etablissement.formateur_siret,
-              email: etablissement.gestionnaire_email,
               premiumActivatedDate: dayjs(etablissement.premium_activation_date).format("DD/MM/YYYY"),
-              emailGestionnaire: etablissement.gestionnaire_email,
             },
-            user: {
-              destinataireEmail: email,
-            },
+            publicEmail: config.publicEmail,
+            utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-rappel-annuel",
           },
         })
 

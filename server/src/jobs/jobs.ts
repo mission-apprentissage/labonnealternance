@@ -229,12 +229,12 @@ export async function setupJobProcessor() {
           },
           "Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
             cron_string: "0 9 * * *",
-            handler: inviteEtablissementParcoursupToPremium,
+            handler: async () => inviteEtablissementParcoursupToPremium(false),
             tag: "main",
           },
           "Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
             cron_string: "15 9 * * *",
-            handler: inviteEtablissementAffelnetToPremium,
+            handler: async () => inviteEtablissementAffelnetToPremium(false),
             tag: "main",
           },
           "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
@@ -392,7 +392,7 @@ export async function setupJobProcessor() {
           return [
             command,
             {
-              handler: async () => fct(),
+              handler: async (job) => fct(job.payload),
             },
           ]
         })

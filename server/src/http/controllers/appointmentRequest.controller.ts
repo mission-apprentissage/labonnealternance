@@ -293,6 +293,7 @@ export default (server: Server) => {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
               logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
+            publicEmail: config.publicEmail,
           },
         })
       }

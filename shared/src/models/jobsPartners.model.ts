@@ -294,6 +294,7 @@ export default {
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
+    [{ partner_job_id: 1 }, {}],
     [{ partner_label: 1 }, {}],
     [{ workplace_siret: 1 }, {}],
     [{ workplace_brand: 1 }, {}],
