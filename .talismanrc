@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 3a54098d2da277df44731060cc0c28b79944d97b6e5955b5fcf4cb303dc683b7
+  checksum: c58cfe457e84ceef232f9874ddd4e949f914b04c0226a4e9a86f1645c327c006
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
   ignore_detectors:
