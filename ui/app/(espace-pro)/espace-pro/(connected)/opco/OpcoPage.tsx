@@ -1,14 +1,29 @@
-import type { Metadata } from "next"
-import OpcoPage from "./OpcoPage"
+"use client"
+
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Link, Typography } from "@mui/material"
+import { useQuery } from "@tanstack/react-query"
+import dayjs from "dayjs"
+import { useEffect, useState } from "react"
+import type { IUserRecruteurForAdminJSON } from "shared"
+
+import { UserMenu } from "./_component/UserMenu"
+import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useToast } from "@/app/hooks/useToast"
+import { useDisclosure } from "@/common/hooks/useDisclosure"
+import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
+import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace } from "@/components/espace_pro"
+import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
+import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
+import { webkitLineClamp } from "@/styles/webkitLineClamp"
+import { getOpcoUsers } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
-export const metadata: Metadata = {
-  title: PAGES.static.backOpcoHome.getMetadata().title,
-}
+type TabKey = "awaiting" | "active" | "disabled"
 
-export default async function Page() {
-  return <OpcoPage />
-}
+function AdministrationOpco() {
   const { newUser } = useSearchParamsRecord()
   const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const [currentTab, setCurrentTab] = useState<TabKey>("awaiting")
