@@ -185,7 +185,7 @@ export const PAGES = {
       title: "Créer un compte d'organisme de formation",
       getMetadata: () => ({
         title: "Créer un compte d'organisme de formation - La bonne alternance",
-        description: "Créer un compte d'organisme de formation pour diffuser simplement et gratuitement los offres en alternance de vos entreprises partenaires.",
+        description: "Créer un compte d'organisme de formation pour diffuser simplement et gratuitement les offres en alternance de vos entreprises partenaires.",
       }),
     },
     backCfaHome: {
