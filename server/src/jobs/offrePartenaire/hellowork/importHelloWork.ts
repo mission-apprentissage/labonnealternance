@@ -14,7 +14,13 @@ export const importHelloWorkRaw = async (sourceStream?: NodeJS.ReadableStream) =
   if (sourceStream) {
     await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.HELLOWORK })
   } else {
-    await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.helloworkUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.HELLOWORK })
+    await importFromUrlInXml({
+      destinationCollection: rawCollectionName,
+      url: config.helloworkUrl,
+      offerXmlTag,
+      partnerLabel: JOBPARTNERS_LABEL.HELLOWORK,
+      conflictingOpeningTagWithoutAttributes: true,
+    })
   }
 }
 
