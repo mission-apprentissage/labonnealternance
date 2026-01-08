@@ -111,9 +111,8 @@ const config = {
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
   franceCompetences: {
-    baseUrl: "https://api-preprod.francecompetences.fr",
+    baseUrl: "https://api.francecompetences.fr",
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
-    bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
   apiApprentissage: {
     baseUrl: "https://api.apprentissage.beta.gouv.fr/api",
