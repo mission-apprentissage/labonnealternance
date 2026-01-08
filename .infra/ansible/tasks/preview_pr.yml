@@ -75,16 +75,6 @@
       async: 1500 # max 15 minutes
       poll: 15 # check every 15s
 
-    - name: "[{{ pr_number }}] Start Application"
-      shell:
-        chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: docker compose up -d --remove-orphans --wait
-
-    - name: "[{{ pr_number }}] Trigger ACME companion"
-      shell:
-        chdir: /opt/app
-        cmd: docker exec nginx-proxy-acme /app/signal_le_service
-
     - name: "[{{ pr_number }}] Seed database"
       shell:
         chdir: "/opt/app"
@@ -96,6 +86,16 @@
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "docker compose run --rm server yarn cli migrations:up"
+
+    - name: "[{{ pr_number }}] Start Application"
+      shell:
+        chdir: "/opt/app/projects/{{ pr_number }}"
+        cmd: docker compose up -d --remove-orphans --wait
+
+    - name: "[{{ pr_number }}] Trigger ACME companion"
+      shell:
+        chdir: /opt/app
+        cmd: docker exec nginx-proxy-acme /app/signal_le_service
 
     - name: "Create MongoDB Indexes"
       shell:
