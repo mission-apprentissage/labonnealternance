@@ -71,19 +71,21 @@
         cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       environment:
-        CI: "{{ CI | default() }}"
+        CI: "{{ CI | default('true') }}"
       async: 1500 # max 15 minutes
       poll: 15 # check every 15s
 
-    - name: "[{{ pr_number }}] Start Application"
+    - name: "[{{ pr_number }}] Check if preview is already running"
+      stat:
+        path: "/opt/app/projects/{{ pr_number }}"
+      register: preview_exists
+
+    - name: "[{{ pr_number }}] Stop existing application before seed"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: docker compose up -d --remove-orphans --wait
-
-    - name: "[{{ pr_number }}] Trigger ACME companion"
-      shell:
-        chdir: /opt/app
-        cmd: docker exec nginx-proxy-acme /app/signal_le_service
+        cmd: docker compose down --remove-orphans
+      when: preview_exists.stat.exists
+      ignore_errors: true
 
     - name: "[{{ pr_number }}] Seed database"
       shell:
@@ -96,6 +98,16 @@
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "docker compose run --rm server yarn cli migrations:up"
+
+    - name: "[{{ pr_number }}] Start Application"
+      shell:
+        chdir: "/opt/app/projects/{{ pr_number }}"
+        cmd: docker compose up -d --remove-orphans --wait
+
+    - name: "[{{ pr_number }}] Trigger ACME companion"
+      shell:
+        chdir: /opt/app
+        cmd: docker exec nginx-proxy-acme /app/signal_le_service
 
     - name: "Create MongoDB Indexes"
       shell:
