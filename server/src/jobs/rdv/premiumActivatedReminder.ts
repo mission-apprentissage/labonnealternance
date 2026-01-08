@@ -1,11 +1,10 @@
-import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isValidEmail } from "@/common/utils/isValidEmail"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import mailer from "@/services/mailer.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Send a "Premium" reminder mail.
@@ -32,9 +31,11 @@ export const premiumActivatedReminder = async () => {
     eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
+  let targetedEmails: string[] = []
+
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
+    let establishmentEmails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
       if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
         const email = eligibleTrainingsForAppointment.lieu_formation_email
         return email ? [email] : []
@@ -44,52 +45,40 @@ export const premiumActivatedReminder = async () => {
     })
 
     if (etablissement.gestionnaire_email) {
-      emails.push(etablissement.gestionnaire_email)
+      establishmentEmails.push(etablissement.gestionnaire_email)
     }
-    emails = [...new Set(emails)]
 
-    for (const email of emails) {
-      try {
-        if (!isValidEmail(email)) {
-          logger.info("Invalid email syntax.", { email, etablissement })
-          continue
-        }
+    establishmentEmails = [...new Set(establishmentEmails)]
 
-        await mailer.sendEmail({
-          to: email,
-          subject: `Rappel - Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
-          template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
-          data: {
-            images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-              logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
-              logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
-              optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
-            },
-            etablissement: {
-              name: etablissement.raison_sociale,
-              formateur_address: etablissement.formateur_address,
-              formateur_zip_code: etablissement.formateur_zip_code,
-              formateur_city: etablissement.formateur_city,
-              siret: etablissement.formateur_siret,
-              premiumActivatedDate: dayjs(etablissement.premium_activation_date).format("DD/MM/YYYY"),
-            },
-            publicEmail: config.publicEmail,
-            utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-rappel-annuel",
-          },
-        })
+    targetedEmails.push(...establishmentEmails)
+  }
 
-        await getDbCollection("etablissements").updateOne(
-          { formateur_siret: etablissement.formateur_siret },
-          {
-            $set: {
-              premium_invitation_date: dayjs().toDate(),
-            },
-          }
-        )
-      } catch (error) {
-        logger.error(error)
+  targetedEmails = [...new Set(targetedEmails)]
+
+  for (const email of targetedEmails) {
+    try {
+      if (!isValidEmail(email)) {
+        logger.info("Invalid email syntax.", { email })
+        continue
       }
+
+      await mailer.sendEmail({
+        to: email,
+        subject: "[Rappel] Trouvez et recrutez vos candidats sur Parcoursup avec La bonne alternance",
+        template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
+        data: {
+          images: {
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
+            optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
+          },
+          publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-rappel-annuel",
+        },
+      })
+    } catch (error) {
+      logger.error(error)
     }
   }
 
