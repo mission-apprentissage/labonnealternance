@@ -248,7 +248,7 @@ export async function setupJobProcessor() {
             handler: async () => inviteEtablissementAffelnetToPremiumFollowUp(),
             tag: "main",
           },
-          "Rappel aux établissement que le premium est activé (Parcoursup)": {
+          "Rappel aux établissements que le premium est activé (Parcoursup)": {
             cron_string: "0 6 8-14 1 1",
             handler: async () => premiumActivatedReminder(),
             tag: "main",
