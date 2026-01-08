@@ -10,6 +10,8 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
+const XML_PREVIEW_LENGTH = 500
+
 function logError(error: any) {
   logger.error(error)
   if (Boom.isBoom(error)) {
@@ -32,7 +34,10 @@ const xmlToJson = async (offerXml: string, index: number) => {
     const json = await xmlParser.parseStringPromise(offerXml)
     return json
   } catch (err) {
-    const newError = internal(`error while parsing xml`, { xml: offerXml })
+    const newError = internal(`error while parsing xml`, { 
+      xmlLength: offerXml?.length ?? 0, 
+      xmlPreview: offerXml?.substring(0, XML_PREVIEW_LENGTH) ?? "" 
+    })
     newError.cause = err
     throw newError
   }
@@ -89,7 +94,10 @@ export const importFromStreamInXml = async ({
       readChunk(chunk)
         .then(() => callback(null, null))
         .catch((err) => {
-          const newError = internal("error while reading xml chunk", { chunk })
+          const newError = internal("error while reading xml chunk", { 
+            chunkLength: chunk?.length ?? 0, 
+            chunkPreview: chunk?.substring(0, XML_PREVIEW_LENGTH) ?? "" 
+          })
           newError.cause = err
           logError(newError)
           sentryCaptureException(newError)
