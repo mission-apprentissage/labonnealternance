@@ -33,8 +33,8 @@ const xmlToJson = async (offerXml: string, index: number) => {
     return json
   } catch (err) {
     const newError = internal(`error while parsing xml`, { 
-      xmlLength: offerXml.length, 
-      xmlPreview: offerXml.substring(0, 500) 
+      xmlLength: offerXml?.length ?? 0, 
+      xmlPreview: offerXml?.substring(0, 500) ?? "" 
     })
     newError.cause = err
     throw newError
@@ -93,8 +93,8 @@ export const importFromStreamInXml = async ({
         .then(() => callback(null, null))
         .catch((err) => {
           const newError = internal("error while reading xml chunk", { 
-            chunkLength: chunk.length, 
-            chunkPreview: chunk.substring(0, 500) 
+            chunkLength: chunk?.length ?? 0, 
+            chunkPreview: chunk?.substring(0, 500) ?? "" 
           })
           newError.cause = err
           logError(newError)
