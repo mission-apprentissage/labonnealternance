@@ -44,10 +44,6 @@ export const premiumActivatedReminder = async () => {
       }
     })
 
-    if (etablissement.gestionnaire_email) {
-      establishmentEmails.push(etablissement.gestionnaire_email)
-    }
-
     establishmentEmails = [...new Set(establishmentEmails)]
 
     targetedEmails.push(...establishmentEmails)
