@@ -79,10 +79,10 @@ export const importFromStreamInXml = async ({
       currentOffer += content
       const found = stringReader.skip(closingTag)
       if (found) {
-        offerInsertCount++
         const xmlContent = openingTag + currentOffer + closingTag
-        const json = await xmlToJson(xmlContent, offerInsertCount)
+        const json = await xmlToJson(xmlContent, offerInsertCount + 1)
         await getDbCollection(destinationCollection).insertOne({ ...json, _id: new ObjectId(), createdAt: now })
+        offerInsertCount++
         currentOffer = ""
       }
     }
