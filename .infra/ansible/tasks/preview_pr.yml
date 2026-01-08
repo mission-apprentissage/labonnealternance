@@ -75,6 +75,18 @@
       async: 1500 # max 15 minutes
       poll: 15 # check every 15s
 
+    - name: "[{{ pr_number }}] Check if preview is already running"
+      stat:
+        path: "/opt/app/projects/{{ pr_number }}"
+      register: preview_exists
+
+    - name: "[{{ pr_number }}] Stop existing application before seed"
+      shell:
+        chdir: "/opt/app/projects/{{ pr_number }}"
+        cmd: docker compose down --remove-orphans
+      when: preview_exists.stat.exists
+      ignore_errors: true
+
     - name: "[{{ pr_number }}] Seed database"
       shell:
         chdir: "/opt/app"
