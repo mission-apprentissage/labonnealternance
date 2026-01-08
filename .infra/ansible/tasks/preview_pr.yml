@@ -71,7 +71,7 @@
         cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       environment:
-        CI: "{{ CI | default() }}"
+        CI: "{{ CI | default('true') }}"
       async: 1500 # max 15 minutes
       poll: 15 # check every 15s
 
