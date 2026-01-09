@@ -62,6 +62,7 @@ export default function GestionDesAdministrateurs() {
       </Box>
 
       <TableWithPagination
+        caption="Liste des administrateurs"
         data={users || []}
         columns={[
           {
