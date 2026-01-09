@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { parseEnum } from "shared"
-import { CFA, ENTREPRISE, OPCO, OPCOS_LABEL } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
@@ -10,11 +10,9 @@ import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
 import type { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
-import { useAuth } from "@/context/UserContext"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
 const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret: string; type: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; viewerType: AUTHTYPE }) => {
-  const { user } = useAuth()
   const entrepriseQuery = useQuery({
     queryKey: ["get-entreprise", siret],
     queryFn: () => getEntrepriseInformation(siret, { skipUpdate: true }),
@@ -39,12 +37,6 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
       <Typography fontWeight={700} component="h2" mb={2}>
         {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations légales"}
       </Typography>
-      {raisonSociale && user?.type !== OPCO && (
-        <Box sx={{ display: "flex", alignItems: "flex-start", mb: 4 }}>
-          <Typography color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
-          <Typography sx={{ ml: 1 }}>Vérifiez que les informations pré-remplies sont correctes avant de continuer.</Typography>
-        </Box>
-      )}
       {!raisonSociale && (
         <Box sx={{ display: "flex", alignItems: "flex-start", mb: 4 }}>
           <Typography color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
@@ -143,9 +135,9 @@ const OrganizationInfoFields = ({
       />
       {type === ENTREPRISE && (
         <FieldWithValue
-          title="Opco de référence"
+          title="OPCO de référence"
           value={opco}
-          tooltip='La donnée "Opco" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.'
+          tooltip='La donnée "OPCO" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.'
         />
       )}
       {type === CFA && (
