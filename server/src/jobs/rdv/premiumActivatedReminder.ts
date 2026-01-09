@@ -1,6 +1,5 @@
 import { logger } from "@/common/logger"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { isValidEmail } from "@/common/utils/isValidEmail"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
@@ -53,11 +52,6 @@ export const premiumActivatedReminder = async () => {
 
   for (const email of targetedEmails) {
     try {
-      if (!isValidEmail(email)) {
-        logger.info("Invalid email syntax.", { email })
-        continue
-      }
-
       await mailer.sendEmail({
         to: email,
         subject: "[Rappel] Trouvez et recrutez vos candidats sur Parcoursup avec La bonne alternance",
