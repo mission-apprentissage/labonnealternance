@@ -61,7 +61,7 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
         backgroundImage: "none !important",
         borderBottom: "1px solid #3c3c3c",
       },
-      "& .fr-table": {
+      "& .fr-table__wrapper": {
         "--table-offset": "unset !important",
       },
     }}
