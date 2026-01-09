@@ -160,7 +160,7 @@ function TableWithPagination({
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                       {headerGroup.headers.map((column, i) => (
-                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
+                        <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
                           <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
                             <Typography className="fr-cell__title">{column.render("Header")}</Typography>
                             <Box component="span" pl={1}>
@@ -179,7 +179,13 @@ function TableWithPagination({
                       <Box key={i} as="tr" {...row.getRowProps()}>
                         {row.cells.map((cell, j) => {
                           return (
-                            <Box key={j} component="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}>
+                            <Box
+                              key={j}
+                              headers={cell.column.id}
+                              component="td"
+                              {...cell.getCellProps()}
+                              sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}
+                            >
                               {cell.render("Cell")}
                             </Box>
                           )
