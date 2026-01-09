@@ -57,7 +57,7 @@ const Table = ({ caption, data, columns }) => {
                     <Box key={i} as="tr" {...row.getRowProps()}>
                       {row.cells.map((cell, j) => {
                         return (
-                          <Box key={j} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
+                          <Box key={j} headers={cell.column.id} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
                             {cell.render("Cell")}
                           </Box>
                         )
