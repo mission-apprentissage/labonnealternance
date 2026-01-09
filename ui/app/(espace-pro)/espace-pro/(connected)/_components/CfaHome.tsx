@@ -183,7 +183,11 @@ function ListeEntreprise() {
             </Button>
           </Box>
         </Box>
-        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} /> : <EmptySpace />}
+        {data?.length ? (
+          <TableWithPagination caption="Liste des entreprises" columns={columns} data={data} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} />
+        ) : (
+          <EmptySpace />
+        )}
       </Box>
     </AnimationContainer>
   )

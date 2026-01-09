@@ -61,6 +61,7 @@ function TableWithPagination({
   pageIndex = 0,
   onPageChange = null,
   defaultSortBy = [],
+  caption,
 }: {
   data?: any[]
   columns: any
@@ -70,6 +71,7 @@ function TableWithPagination({
   pageIndex?: number
   onPageChange?: (newPageIndex: number) => void
   defaultSortBy?: { id: string; desc: boolean }[]
+  caption: string
 }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
@@ -156,6 +158,9 @@ function TableWithPagination({
           <Box className="fr-table__container">
             <Box className="fr-table__content">
               <Box as="table" {...getTableProps()}>
+                <Box sx={{ fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
+                  {caption}
+                </Box>
                 <Box component="thead">
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>

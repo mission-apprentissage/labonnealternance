@@ -92,7 +92,7 @@ export function UsersList() {
   const isCurrentTabLoading = queryResults[currentTab].isLoading
 
   function refetchAll() {
-    Object.values(queryResults).map((x) => x.refetch())
+    Object.values(queryResults).map(async (x) => x.refetch())
   }
 
   function onOpcoChange(newValue: OpcoValue) {
@@ -339,6 +339,7 @@ function TabContent({
         {!isCountAccurate && "+"} comptes {statusLabels[queryStatus].toLocaleLowerCase()} :
       </Typography>
       <TableWithPagination
+        caption="Liste des recruteurs"
         columns={columns}
         data={userRecruteurs}
         description={null}
