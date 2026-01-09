@@ -220,6 +220,7 @@ function TabContent({
     {
       Header: "",
       id: "action",
+      srOnly: "Actions sur le recruteur",
       maxWidth: "40",
       disableSortBy: true,
       accessor: (row: IUserRecruteurJson) => {

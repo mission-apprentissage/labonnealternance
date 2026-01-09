@@ -49,6 +49,7 @@ function AdministrationOpco() {
   const columns = [
     {
       Header: "",
+      srOnly: "Actions sur l'entreprise",
       id: "action",
       maxWidth: "40",
       disableSortBy: true,

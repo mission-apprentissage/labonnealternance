@@ -167,7 +167,7 @@ function TableWithPagination({
                       {headerGroup.headers.map((column, i) => (
                         <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
                           <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                            <Typography className="fr-cell__title">{column.render("Header")}</Typography>
+                            <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
                             <Box component="span" pl={1}>
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
                             </Box>

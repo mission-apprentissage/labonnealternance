@@ -100,6 +100,7 @@ function ListeEntreprise() {
       accessor: (row: IRecruiterJson) => {
         return <CfaHomeEntrepriseMenu row={row} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
       },
+      srOnly: "Actions sur l'entreprise",
     },
     {
       Header: "Entreprise",
