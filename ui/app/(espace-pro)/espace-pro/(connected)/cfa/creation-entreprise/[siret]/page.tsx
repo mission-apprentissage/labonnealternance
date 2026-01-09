@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, CircularProgress, Typography } from "@mui/material"
+import { Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
 import { useParams, useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants/recruteur"
@@ -34,7 +34,11 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         router.push(PAGES.dynamic.backCfaEntrepriseCreationOffre(data.establishment_id).getPath())
       })
       .catch((err) => {
-        setFieldError("email", err.message)
+        if (err.message.includes("phone")) {
+          setFieldError("phone", err.message)
+        } else {
+          setFieldError("email", err.message)
+        }
         setSubmitting(false)
       })
   }
@@ -47,12 +51,14 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
         first_name: undefined,
         phone: undefined,
         email: undefined,
+        isDeclarationExact: false,
       }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
         last_name: Yup.string().required("champ obligatoire"),
         first_name: Yup.string().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
+        isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations"),
       })}
       onSubmit={submitForm}
     >
@@ -63,6 +69,27 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
             <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
             <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
+            <Typography sx={{ color: "#0063CB" }}>
+              <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par nos équipes à des
+              fins de contrôles.
+            </Typography>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  onChange={(event) => {
+                    informationForm.setFieldValue("isDeclarationExact", event.target.checked)
+                  }}
+                  checked={informationForm.values.isDeclarationExact}
+                />
+              }
+              label={
+                <Typography>
+                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire l’objet de contrôles
+                  par La bonne alternance.
+                </Typography>
+              }
+              sx={{ alignItems: "flex-start", mt: fr.spacing("3w") }}
+            />
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
                 <Button type="button" priority="secondary" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
@@ -89,13 +116,10 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-      <Box sx={{ display: "grid", gridTemplateRows: { xs: "1fr", sm: ".5fr 2fr" }, gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("3w") }}>
+      <Box sx={{ display: "grid", gridTemplateRows: { xs: "1fr", sm: "auto 1fr" }, gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("3w") }}>
         <Box>
           <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
             Informations de contact
-          </Typography>
-          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>
-            Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
           </Typography>
         </Box>
         <Box sx={{ gridRowStart: { xs: "auto", sm: 2 } }}>

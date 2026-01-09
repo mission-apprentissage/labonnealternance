@@ -105,9 +105,9 @@ function ListeEntreprise() {
     {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
+      width: "350",
+      maxWidth: "350",
       accessor: ({ establishment_raison_sociale, establishment_siret, opco }) => [establishment_raison_sociale, establishment_siret, opco].join(" "),
-      width: "500",
-      maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
         data,
@@ -135,16 +135,41 @@ function ListeEntreprise() {
       },
     },
     {
-      Header: "Ajoutée le",
-      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
-      id: "createdAt",
-      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
+      Header: "Contact entreprise",
+      id: "contact_entreprise",
+      width: "350",
+      maxWidth: "350",
+      accessor: "contact_entreprise",
+      sortType: (a, b) => sortReactTableString(`${a.original.last_name} ${a.original.first_name}`, `${b.original.last_name} ${b.original.first_name}`),
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => {
+        const { last_name, first_name, email, phone } = data[id]
+        return (
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography sx={{ fontWeight: 700 }}>
+              {last_name} {first_name}
+            </Typography>
+            <Typography sx={{ color: "#666666", fontSize: "14px" }}>{email}</Typography>
+            <Typography sx={{ color: "#666666", fontSize: "14px" }}>{phone}</Typography>
+          </Box>
+        )
+      },
     },
     {
       Header: "Offres",
       id: "nombre_offres",
       sortType: "basic",
       accessor: ({ jobs }: IRecruiterJson) => jobs.length,
+    },
+    {
+      Header: "Ajoutée le",
+      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
+      id: "createdAt",
+      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
     {
       Header: "Dernière offre créée le",

@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box, CircularProgress, Typography } from "@mui/material"
+import { Alert, Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
@@ -11,6 +11,7 @@ import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
 import Badge from "@/app/(espace-pro)/_components/Badge"
@@ -27,7 +28,7 @@ import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-type Variables = { userId: string; values: INewSuperUser; siret: string }
+type Variables = { userId: string; values: INewSuperUser; siret: string; setFieldError: (field: string, message: string) => void }
 
 export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter?: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
   const router = useRouter()
@@ -36,6 +37,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
+  const isDeclarationExactField = user.type === AUTHTYPE.CFA ? { isDeclarationExact: true } : {}
+  const isDeclarationExactValidation = user.type === AUTHTYPE.CFA ? { isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations") } : {}
 
   const ActivateUserButton = ({ userId }: { userId: string }) => {
     const { activate } = useUserPermissionsActions(userId)
@@ -61,7 +64,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string) => {
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return (
@@ -81,7 +84,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const getUserBadge = (userHistory: IUserStatusValidationJson) => {
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return <Badge variant="awaiting">À VERIFIER</Badge>
@@ -96,22 +99,30 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const userMutation = useMutation({
-    mutationFn: async (variables: Variables) => {
-      const { userId, values, siret } = variables
+    mutationFn: async (props: Variables) => {
+      const { userId, values, siret, setFieldError } = props
       const { type, ...value } = values
 
-      if (user.type === AUTHTYPE.CFA) {
-        const { email, first_name, last_name, phone } = values
-        await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
-      } else {
-        await updateEntrepriseAdmin(userId, value, siret)
+      try {
+        if (user.type === AUTHTYPE.CFA) {
+          const { email, first_name, last_name, phone } = values
+          await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
+        } else {
+          await updateEntrepriseAdmin(userId, value, siret)
+        }
+        onChange?.({ opco: "opco" in values ? values.opco : undefined })
+        toast({
+          title: "Mise à jour enregistrée avec succès",
+        })
+      } catch (err: any) {
+        if (err.message === EntrepriseErrorCodes.PHONE_SAME_AS_CFA) {
+          setFieldError("phone", err.message)
+        } else if (err.message === EntrepriseErrorCodes.EMAIL_SAME_AS_CFA) {
+          setFieldError("email", err.message)
+        } else {
+          throw err
+        }
       }
-      onChange?.({ opco: "opco" in values ? values.opco : undefined })
-    },
-    onSuccess: () => {
-      toast({
-        title: "Mise à jour enregistrée avec succès",
-      })
     },
   })
 
@@ -159,6 +170,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             email: userRecruteur.email,
             opco: userRecruteur.opco,
             type: userRecruteur.type,
+            ...isDeclarationExactField,
           }}
           validationSchema={Yup.object().shape({
             last_name: Yup.string().required("champ obligatoire"),
@@ -171,12 +183,12 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
             opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
+            ...isDeclarationExactValidation,
           })}
-          onSubmit={async (values, { setSubmitting }) => {
+          onSubmit={async (values, { setFieldError, setSubmitting }) => {
             setSubmitting(true)
             // For companies we update the User Collection and the Formulaire collection at the same time
-            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret })
-
+            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret, setFieldError })
             setSubmitting(false)
           }}
         >
@@ -221,6 +233,31 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                               confirmationModificationOpco.onOpen()
                             }}
                           />
+                        )}
+                        {user.type === AUTHTYPE.CFA && (
+                          <>
+                            <Typography sx={{ color: "#0063CB" }}>
+                              <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par
+                              nos équipes à des fins de contrôles.
+                            </Typography>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  onChange={(event) => {
+                                    setFieldValue("isDeclarationExact", event.target.checked)
+                                  }}
+                                  checked={values.isDeclarationExact}
+                                />
+                              }
+                              label={
+                                <Typography>
+                                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire
+                                  l’objet de contrôles par La bonne alternance.
+                                </Typography>
+                              }
+                              sx={{ mt: fr.spacing("3w") }}
+                            />
+                          </>
                         )}
                         {userMutation.error && (
                           <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
