@@ -88,10 +88,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
         </Typography>
         {ActionButtons}
       </Box>
-      <Typography fontWeight="700" py={fr.spacing("3w")}>
-        Offres de recrutement en alternance
-      </Typography>
-      <OffresTabs showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
+      <OffresTabs caption="Offres de recrutement en alternance" showStats={showStats} recruiter={data} buildOfferEditionUrl={getOffreEditionUrl} />
     </Box>
   )
 }

@@ -2,11 +2,12 @@ import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
 import { useFlexLayout, useSortBy, useTable } from "react-table"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 
-const Table = ({ data, columns }) => {
+const Table = ({ caption, data, columns }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -28,14 +29,17 @@ const Table = ({ data, columns }) => {
         <Box className="fr-table__container">
           <Box className="fr-table__content">
             <Box component="table" {...getTableProps()}>
+              <Box sx={{ fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
+                {caption}
+              </Box>
               <Box component="thead">
                 {headerGroups.map((headerGroup, g) => (
                   <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                     {headerGroup.headers.map((column, i) => {
                       return (
-                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
+                        <Box key={i} scope="col" id={column.id} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
                           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
-                            <Typography>{column.render("Header")}</Typography>
+                            <Typography className={column.srOnly ? "fr-sr-only" : ""}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
                             <Box component="span" pl={1}>
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
                             </Box>

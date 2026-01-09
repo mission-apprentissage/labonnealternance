@@ -61,6 +61,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string) => {
+    // eslint-disable-next-line
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return (
@@ -80,6 +81,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const getUserBadge = (userHistory: IUserStatusValidationJson) => {
+    // eslint-disable-next-line
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return <Badge variant="awaiting">À VERIFIER</Badge>
@@ -251,8 +253,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                   <>
                     <hr style={{ marginTop: 24 }} />
                     <Box my={6}>
-                      <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
                       <OffresTabs
+                        caption="Offres de recrutement en alternance"
                         recruiter={recruiter}
                         buildOfferEditionUrl={(offerId) => {
                           return PAGES.dynamic
