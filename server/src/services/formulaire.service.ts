@@ -20,6 +20,7 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import dayjs from "shared/helpers/dayjs"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
@@ -41,6 +42,7 @@ import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPart
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { logger } from "@/common/logger"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -868,6 +870,15 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   const recruiterOpt = await getOffre(jobId)
   const { managed_by } = recruiterOpt ?? {}
   await validateUserWithAccountEmail(new ObjectId(managed_by))
+}
+
+export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | IUserRecruteur, phone?: string, email?: string) => {
+  if (user.phone === phone) {
+    throw badRequest(EntrepriseErrorCodes.PHONE_SAME_AS_CFA)
+  }
+  if (!email || user.email?.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
+    throw badRequest(EntrepriseErrorCodes.EMAIL_SAME_AS_CFA)
+  }
 }
 
 export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {

@@ -46,7 +46,7 @@ Avant d'installer le projet, assurez-vous d'avoir les éléments suivants :
 - **yq**
 - **shred**
 - **sshpass**
-- **NodeJS** 20+
+- **NodeJS** 24+
 - **Ansible** 2.7+
 
 #### Installation des pré-requis sur un environnement **MacOS** :
