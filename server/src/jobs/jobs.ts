@@ -55,6 +55,7 @@ import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBre
 import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
+import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import config from "@/config"
 import { getDatabase } from "@/common/utils/mongodbUtils"
 import { getLoggerWithContext, logger } from "@/common/logger"
@@ -245,6 +246,11 @@ export async function setupJobProcessor() {
           "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
             cron_string: "45 9 * * *",
             handler: async () => inviteEtablissementAffelnetToPremiumFollowUp(),
+            tag: "main",
+          },
+          "Rappel aux établissements que le premium est activé (Parcoursup)": {
+            cron_string: "0 6 8-14 1 1",
+            handler: async () => premiumActivatedReminder(),
             tag: "main",
           },
           "Creation de la collection rolemanagement360": {

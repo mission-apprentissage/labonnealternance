@@ -150,24 +150,24 @@ export default function APropos() {
                   }}
                 >
                   <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
-                  <Image src={parcoursup} alt="Parcoursup" style={{ width: "100%", height: "auto" }} />
+                  <Image src={parcoursup} alt="Parcoursup - Entrez dans l'enseignement supérieur" style={{ width: "100%", height: "auto" }} />
                   <Image src={onisep} alt="Onisep" style={{ width: "100%", height: "auto" }} />
-                  <Image src={portailAlternance} alt="Portail de l'alternance" style={{ width: "100%", height: "auto" }} />
-                  <Image src={j1s} alt="un jeune une solution" style={{ width: "100%", height: "auto" }} />
-                  <Image src={affelnet} alt="affelnet" style={{ width: "100%", height: "auto" }} />
-                  <Image src={ocapiat} alt="opco ocapiat" style={{ width: "100%", height: "auto" }} />
-                  <Image src={opco2i} alt="opco 2i" style={{ width: "100%", height: "auto" }} />
-                  <Image src={sante} alt="opco santé" style={{ width: "100%", height: "auto" }} />
-                  <Image src={atlas} alt="opco atlas" style={{ width: "100%", height: "auto" }} />
-                  <Image src={afdas} alt="opco afdas" style={{ width: "100%", height: "auto" }} />
-                  <Image src={ep} alt="opco ep" style={{ width: "100%", height: "auto" }} />
-                  <Image src={commerce} alt="opco commerce" style={{ width: "100%", height: "auto" }} />
-                  <Image src={constructys} alt="opco constructys" style={{ width: "100%", height: "auto" }} />
-                  <Image src={uniformation} alt="opco uniformation" style={{ width: "100%", height: "auto" }} />
-                  <Image src={akto} alt="opco akto" style={{ width: "100%", height: "auto" }} />
+                  <Image src={portailAlternance} alt="Portail de l'Alternance - Apprentissage et contrat de professionnalisation" style={{ width: "100%", height: "auto" }} />
+                  <Image src={j1s} alt="#1jeune1solution" style={{ width: "100%", height: "auto" }} />
+                  <Image src={affelnet} alt="Choisir son affectation - Demander une formation et un établissement après la 3ème" style={{ width: "100%", height: "auto" }} />
+                  <Image src={ocapiat} alt="OPCO Ocapiat" style={{ width: "100%", height: "auto" }} />
+                  <Image src={opco2i} alt="OPCO 2i" style={{ width: "100%", height: "auto" }} />
+                  <Image src={sante} alt="OPCO Santé" style={{ width: "100%", height: "auto" }} />
+                  <Image src={atlas} alt="OPCO Atlas" style={{ width: "100%", height: "auto" }} />
+                  <Image src={afdas} alt="OPCO Afdas - Demain sera formation" style={{ width: "100%", height: "auto" }} />
+                  <Image src={ep} alt="OPCO EP" style={{ width: "100%", height: "auto" }} />
+                  <Image src={commerce} alt="L'opcommerce - opérateur de compétences" style={{ width: "100%", height: "auto" }} />
+                  <Image src={constructys} alt="OPCO Constructys - votre partenaire compétences" style={{ width: "100%", height: "auto" }} />
+                  <Image src={uniformation} alt="OPCO Uniformation" style={{ width: "100%", height: "auto" }} />
+                  <Image src={akto} alt="OPCO Akto - L'humain au coeur des services" style={{ width: "100%", height: "auto" }} />
                   <Image src={diagoriente} alt="Diagoriente" style={{ width: "100%", height: "auto" }} />
                   <Image src={tbd} alt="Tableau de bord de l'apprentissage" style={{ width: "100%", height: "auto" }} />
-                  <Image src={catalogue} alt="Catalogue intercarif oref" style={{ width: "100%", height: "auto" }} />
+                  <Image src={catalogue} alt="Le catalogue des Carif Oref" style={{ width: "100%", height: "auto" }} />
                 </Box>
 
                 <Typography variant="h4" mb={fr.spacing("2w")}>
