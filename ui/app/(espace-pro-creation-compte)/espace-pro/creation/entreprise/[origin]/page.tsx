@@ -1,16 +1,14 @@
-"use client"
+import type { Metadata } from "next"
+import CreationWithOriginPage from "./CreationWithOriginPage"
+import { PAGES } from "@/utils/routes.utils"
 
-import { useParams } from "next/navigation"
-import { Suspense } from "react"
-
-import { AUTHTYPE } from "@/common/contants"
-import CreationCompte from "@/components/espace_pro/Authentification/CreationCompte"
-
-export default function CreationEntreprise() {
-  const { origin } = useParams() as { origin: string }
-  return (
-    <Suspense>
-      <CreationCompte type={AUTHTYPE.ENTREPRISE} origin={origin} isWidget={false} />
-    </Suspense>
-  )
+export const metadata: Metadata = {
+  title: PAGES.static.espaceProCreationEntreprise.getMetadata().title,
+  description: PAGES.static.espaceProCreationEntreprise.getMetadata().description,
 }
+
+const Page = async () => {
+  return <CreationWithOriginPage />
+}
+
+export default Page
