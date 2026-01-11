@@ -4,7 +4,7 @@ import { joinNonNullStrings } from "shared/utils/index"
 
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 import { getCityFromProperties, getGeolocation, getStreetFromProperties } from "@/services/geolocation.service"
 
@@ -23,7 +23,7 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNot
     "business_error",
   ] as const satisfies (keyof IComputedJobsPartners)[]
 
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_ADRESSE,
     sourceFields,
     filledFields,

@@ -13,7 +13,6 @@ exports[`importLeboncoin > should test the import of Le bon coin emploi data int
     "contract_type": [],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": null,
     "offer_description": "Résumé
@@ -95,7 +94,6 @@ Nous nous mobilisons au quotidien autour de 4 piliers de responsabilité sociét
     "contract_type": [],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": null,
     "offer_description": "Résumé
