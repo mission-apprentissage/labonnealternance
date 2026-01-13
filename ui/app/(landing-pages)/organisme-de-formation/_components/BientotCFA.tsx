@@ -4,7 +4,7 @@ import Image from "next/image"
 
 export const BientotCFA = () => {
   return (
-    <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
+    <Grid container spacing={fr.spacing("4v")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 6 }}>
         <Image src="/images/home_pics/illu-candidatures.svg" alt="" width={571} height={308} style={{ width: "100%", height: "auto" }} />
       </Grid>
@@ -15,7 +15,7 @@ export const BientotCFA = () => {
             sx={{
               background: "linear-gradient(90deg,#6a11cb,#2575fc)",
               color: "#fff",
-              borderRadius: "80px",
+              borderRadius: fr.spacing("20v"),
               lineHeight: "32px",
               px: fr.spacing("3w"),
               fontSize: "20px",
@@ -26,11 +26,11 @@ export const BientotCFA = () => {
           </Box>
         </Grid>
         <Grid>
-          <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ mb: fr.spacing("4v") }}>
             Gérez vos offres de manière collaborative
           </Typography>
           <Typography>Un accès multi-comptes permettra à plusieurs personnes de votre entreprise d’accéder et de gérer vos offres d&apos;emploi.</Typography>
-          <Typography component="h3" variant="h3" sx={{ my: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ my: fr.spacing("4v") }}>
             Administrez les demandes de RDV des candidats sur vos formations
           </Typography>
           <Typography>Gérez dans votre espace personnel les demandes de rendez-vous envoyées par les candidats intérressés par vos offres d’emploi et de formation.</Typography>

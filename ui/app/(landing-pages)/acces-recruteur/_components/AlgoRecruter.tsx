@@ -11,15 +11,15 @@ export const AlgoRecruteur = ({ withLinks = false }: { withLinks?: boolean }) =>
     >
       <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
         <Grid size={{ xs: 12, md: 7 }}>
-          <Typography component="h2" variant="h2" sx={{ mb: 2 }}>
+          <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v") }}>
             La bonne alternance révèle
             <br />
             <Typography component="h2" variant="h2" sx={{ color: "#0063BC" }}>
               le marché caché de l&apos;emploi
             </Typography>{" "}
           </Typography>
-          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #0063CB", opacity: 1 }} />
-          <Stack spacing={2} sx={{ my: fr.spacing("3w") }}>
+          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: fr.spacing("1v") + " solid #0063CB", opacity: 1 }} />
+          <Stack spacing={fr.spacing("4v")} sx={{ my: fr.spacing("3w") }}>
             <Box sx={{ display: "flex", gap: fr.spacing("2w"), flexDirection: "column" }}>
               <Typography sx={{ display: "list-item", ml: fr.spacing("2w") }}>
                 <span className="fr-text--bold">Celles ayant émis un besoin en recrutement </span>sur notre plateforme ainsi que sur France Travail et ses sites partenaires

@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
@@ -5,9 +6,9 @@ import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActi
 
 export const CFA = () => {
   return (
-    <Grid container spacing={5}>
+    <Grid container spacing={fr.spacing("10v")}>
       <Grid size={{ xs: 12, md: 5 }}>
-        <Typography variant="h1" component="h1" sx={{ mb: 2, color: "#000091" }}>
+        <Typography variant="h1" component="h1" sx={{ mb: fr.spacing("4v"), color: "#000091" }}>
           Vous êtes un organisme de formation
         </Typography>
 
@@ -15,7 +16,7 @@ export const CFA = () => {
           Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
         </Typography>
 
-        <Typography sx={{ my: 2 }}>Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.</Typography>
+        <Typography sx={{ my: fr.spacing("4v") }}>Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.</Typography>
 
         <ConnectionActions service="cfa" />
       </Grid>

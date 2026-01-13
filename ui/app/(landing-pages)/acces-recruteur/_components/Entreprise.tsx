@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
@@ -5,9 +6,9 @@ import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActi
 
 export const Entreprise = () => {
   return (
-    <Grid container spacing={5}>
+    <Grid container spacing={fr.spacing("10v")}>
       <Grid size={{ xs: 12, md: 6 }}>
-        <Typography variant="h1" component="h1" sx={{ mb: 2, color: "#000091" }}>
+        <Typography variant="h1" component="h1" sx={{ mb: fr.spacing("4v"), color: "#000091" }}>
           Vous êtes une entreprise
         </Typography>
 
@@ -15,7 +16,7 @@ export const Entreprise = () => {
           Diffusez simplement et gratuitement vos offres en alternance
         </Typography>
 
-        <Typography sx={{ my: 2 }}>
+        <Typography sx={{ my: fr.spacing("4v") }}>
           Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
         </Typography>
 
