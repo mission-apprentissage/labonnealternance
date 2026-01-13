@@ -1,4 +1,3 @@
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
 import type { Filter } from "mongodb"
