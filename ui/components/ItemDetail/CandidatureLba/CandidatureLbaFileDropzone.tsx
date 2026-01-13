@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Button, Typography, CircularProgress } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
@@ -94,7 +95,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
     <Box sx={{ p: "20px", border: "1px dashed", borderColor: mandatoryFileError || showUnacceptedFileMessages ? "error.main" : "grey.600" }} {...getRootProps()}>
       {fileLoading ? (
         <Box sx={{ display: "flex", ml: 6, alignItems: "center", flexDirection: "row" }}>
-          <CircularProgress sx={{ mr: 4 }} />
+          <CircularProgress sx={{ mr: fr.spacing("8v") }} />
           <Typography>Chargement du fichier en cours</Typography>
         </Box>
       ) : hasSelectedFile() ? (
@@ -109,7 +110,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
                 padding: "0 0 4px",
                 fontSize: "14px",
                 fontWeight: 400,
-                ml: 4,
+                ml: fr.spacing("8v"),
                 height: "fit-content",
                 borderRadius: 0,
                 borderBottom: "1px solid",
@@ -130,7 +131,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           {isDragActive ? (
             <Typography sx={{ ml: 6 }}>Déposez le fichier ici</Typography>
           ) : (
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: 4 }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: fr.spacing("8v") }}>
               <Image width={24} height={24} style={{ marginRight: "8px" }} alt="" src="/images/icons/candidature_file_upload.svg" />{" "}
               <Box>
                 <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "grey.700", mb: 0 }}>Chargez votre CV ou déposez le ici</Typography>

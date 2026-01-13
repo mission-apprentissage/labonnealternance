@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Stack, Typography } from "@mui/material"
 import Image from "next/image"
@@ -53,17 +54,17 @@ export function CandidaterButton({
           <ItemDetailApplicationsStatus item={item} />
         ) : isOfferActive(item) ? (
           <>
-            <Box sx={{ my: 2 }}>
+            <Box sx={{ my: fr.spacing("4v") }}>
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>
             </Box>
             {item.company?.mandataire && (
-              <Stack direction="row" alignItems="center" sx={{ my: 4 }}>
+              <Stack direction="row" alignItems="center" sx={{ my: fr.spacing("8v") }}>
                 <Box component="span">
                   <Image width={16} height={16} src="/images/icons/small_info.svg" alt="" />
                 </Box>
-                <Typography component="span" variant="body2" sx={{ ml: 2, fontSize: "12px", fontStyle: "italic" }}>
+                <Typography component="span" variant="body2" sx={{ ml: fr.spacing("4v"), fontSize: "12px", fontStyle: "italic" }}>
                   Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l'entreprise.{" "}
                 </Typography>
               </Stack>

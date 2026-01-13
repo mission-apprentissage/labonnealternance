@@ -93,7 +93,7 @@ export const DemandeDeContactForm = ({
                 </RadioGroup>
               </Box>
             </FormControl>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("2w") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("2w") }}>
               <FormControl data-testid="fieldset-lastname" error={formik.touched.lastname && Boolean(formik.errors.lastname)} fullWidth>
                 <FormLabel htmlFor="lastname">Nom *</FormLabel>
                 <Input
@@ -121,7 +121,7 @@ export const DemandeDeContactForm = ({
                 <FormHelperText>{formik.touched.firstname && formik.errors.firstname}</FormHelperText>
               </FormControl>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("2w") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("2w") }}>
               <EmailField />
               <FormControl data-testid="fieldset-phone" error={formik.touched.phone && Boolean(formik.errors.phone)} fullWidth>
                 <FormLabel htmlFor="email">Téléphone *</FormLabel>
@@ -235,7 +235,7 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   return (
     <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Box sx={{ display: "flex", flexDirection: "column", mt: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", mt: fr.spacing("2v") }}>
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (

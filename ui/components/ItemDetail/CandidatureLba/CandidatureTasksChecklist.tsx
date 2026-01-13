@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import styled from "@emotion/styled"
 import { Box, Checkbox, Typography, FormControlLabel } from "@mui/material"
 import { AnimatePresence, domAnimation, LazyMotion } from "motion/react"
@@ -70,7 +71,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
                 className="animated-div"
               >
                 <Image src="/images/head_with_bulb.svg" alt="" width={120} height={120} style={{ marginBottom: "28px" }} />
-                <Typography variant="h2" sx={{ textAlign: "center", color: "#000091", fontSize: "20px", lineHeight: "28px", fontWeight: 700, mb: 6 }}>
+                <Typography variant="h2" sx={{ textAlign: "center", color: "#000091", fontSize: "20px", lineHeight: "28px", fontWeight: 700, mb: fr.spacing("12v") }}>
                   Mettez toutes les chances de votre côté !
                 </Typography>
                 <Box className="checkbox-container">
@@ -79,7 +80,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
                       key={task}
                       control={<Checkbox defaultChecked={false} onChange={() => toggleTask(task)} />}
                       label={task}
-                      sx={{ mt: 2, alignItems: "flex-start" }}
+                      sx={{ mt: fr.spacing("4v"), alignItems: "flex-start" }}
                       className="mui-checkbox"
                     />
                   ))}
@@ -96,7 +97,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
               className="animated-div"
             >
               <Image src="/images/launching_rocket.svg" alt="" width={120} height={120} style={{ marginBottom: "28px" }} />
-              <Typography variant="h2" sx={{ textAlign: "center", color: "#000091", fontSize: "20px", lineHeight: "28px", fontWeight: 700, mb: 6 }}>
+              <Typography variant="h2" sx={{ textAlign: "center", color: "#000091", fontSize: "20px", lineHeight: "28px", fontWeight: 700, mb: fr.spacing("12v") }}>
                 Bravo !<br />
                 Vous pouvez envoyer votre candidature en toute sérénité.
               </Typography>

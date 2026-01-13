@@ -78,7 +78,7 @@ function CreationEntreprise() {
           gap: { xs: 0, sm: 2, lg: 5 },
         }}
       >
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: fr.spacing("4v") }}>
           <Typography sx={{ fontSize: "32px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "40px" }} component="h1">
             Renseignements entreprise
           </Typography>

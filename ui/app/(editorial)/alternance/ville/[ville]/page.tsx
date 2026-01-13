@@ -73,7 +73,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             }}
           >
             <Box>
-              <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
+              <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
                 Trouver une alternance
                 <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
                   <span style={{ color: "#161616" }}>à </span>
@@ -115,7 +115,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             }}
           >
             <Box sx={{ mb: fr.spacing("4w") }}>
-              <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+              <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
                 <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
               </Typography>
               <Box
@@ -157,7 +157,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
           }}
         >
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
             La vie d'alternant <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box
@@ -218,7 +218,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
          * BLOC STATISTIQUES
          */}
         <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
             Opportunités d'emploi
             <br />
             en alternance <span style={{ color: "#161616" }}>à {data.ville}</span>
@@ -279,7 +279,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v") }}>
             La mobilité et le logement
           </Typography>
           <Box
@@ -398,7 +398,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
          * BLOC LOISIRS
          */}
         <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
             Les loisirs <span style={{ color: "#161616" }}>à {data.ville}</span>
           </Typography>
           <Box

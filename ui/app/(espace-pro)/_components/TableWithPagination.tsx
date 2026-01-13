@@ -127,7 +127,7 @@ function TableWithPagination({
 
   return (
     <Box className="search-page">
-      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: fr.spacing("8v") }}>
         <Box width="90%">
           <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" } }}>
             <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />

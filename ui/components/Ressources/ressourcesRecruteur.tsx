@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography, Grid, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
@@ -10,15 +11,15 @@ const RessourcesRecruteur = () => {
     <Box>
       <Typography variant="body1">La bonne alternance vous propose un ensemble d’outils et de liens pour faciliter vos démarches liées à l’alternance.</Typography>
 
-      <Typography variant="h2" fontSize={32} fontWeight={700} my={2}>
+      <Typography variant="h2" fontSize="32px" fontWeight={700} my={fr.spacing("4v")}>
         Testez vos connaissances
       </Typography>
 
-      <Typography variant="body1" mb={6}>
+      <Typography variant="body1" mb={fr.spacing("12v")}>
         Entraînez-vous avec notre premier parcours de mise en situation à destination des recruteurs :
       </Typography>
 
-      <Grid container spacing={2} my={6}>
+      <Grid container spacing={fr.spacing("4v")} my={fr.spacing("12v")}>
         <Grid size={{ xs: 12, md: 6 }}>
           <CardForLink
             imageUrl="/images/serrage-main.svg"
@@ -30,14 +31,14 @@ const RessourcesRecruteur = () => {
         </Grid>
       </Grid>
 
-      <Box display="flex" alignItems="center" my={6}>
-        <Box mr={2}>
+      <Box display="flex" alignItems="center" my={fr.spacing("12v")}>
+        <Box mr={fr.spacing("4v")}>
           <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={60} height={60} aria-hidden="true" />
         </Box>
         <Typography variant="h2">Liens utiles</Typography>
       </Box>
 
-      <List sx={{ listStyleType: "disc", pl: 2 }}>
+      <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
         <ListItem sx={{ display: "list-item" }}>
           <Typography component="span" fontWeight={700}>
             Estimez le coût d’un alternant
@@ -91,12 +92,12 @@ const RessourcesRecruteur = () => {
         <ListItem sx={{ display: "list-item" }}>En tant qu’employeur, vous devez conserver le contrat signé pendant 5 ans en cas de contrôle.</ListItem>
       </List>
 
-      <Box display="flex" alignItems="center" my={8}>
-        <Box mr={2}>
+      <Box display="flex" alignItems="center" my={fr.spacing("16v")}>
+        <Box mr={fr.spacing("4v")}>
           <Image src="/images/pages_ressources/recruteur.svg" alt="" width={189} height={119} aria-hidden="true" />
         </Box>
         <Stack>
-          <Typography fontWeight={700} mb={1}>
+          <Typography fontWeight={700} mb={fr.spacing("2v")}>
             Diffusez simplement et gratuitement vos offres en alternance
           </Typography>
           <Box>

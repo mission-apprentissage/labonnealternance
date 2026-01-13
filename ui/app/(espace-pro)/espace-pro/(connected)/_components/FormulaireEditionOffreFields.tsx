@@ -101,7 +101,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           })}
           legend={
             <>
-              <FormLabel sx={{ ...(values.job_type.length === 0 ? { color: fr.colors.decisions.text.default.error.default } : {}), display: "inline-block", mb: 0, mr: 1 }}>
+              <FormLabel sx={{ ...(values.job_type.length === 0 ? { color: fr.colors.decisions.text.default.error.default } : {}), display: "inline-block", mb: 0, mr: fr.spacing("2v") }}>
                 Type de contrat en alternance *
               </FormLabel>
               <Link
@@ -143,11 +143,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           max={maxStartDate.format(ISO_DATE_FORMAT)}
         />
       </Box>
-      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} required={true}>
+      <FormControl sx={{ mt: fr.spacing("4v"), width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} required={true}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>
-      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <FormControl sx={{ mt: fr.spacing("4v"), width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v") }}>
           <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois) *</FormLabel>
           <Input
             label=""
@@ -169,7 +169,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         )}
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
-        <FormControl sx={{ mt: 2, width: "100%" }}>
+        <FormControl sx={{ mt: fr.spacing("4v"), width: "100%" }}>
           <Select
             state={errors.job_rythm && touched.job_rythm ? "error" : "default"}
             stateRelatedMessage={errors.job_rythm as string}

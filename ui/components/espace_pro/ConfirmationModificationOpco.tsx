@@ -34,7 +34,7 @@ export default function ConfirmationModificationOpco(props: ConfirmationModifica
         </Typography>
 
         <Box sx={{ pb: fr.spacing("1w") }}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+          <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
             Vous vous apprêtez à modifier l’OPCO de rattachement de cette entreprise, cela signifie que cette entreprise n’apparaîtra plus dans votre console de gestion.
           </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v"), pt: fr.spacing("2w") }}>

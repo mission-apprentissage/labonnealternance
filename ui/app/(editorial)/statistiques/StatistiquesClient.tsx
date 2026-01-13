@@ -21,7 +21,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ pt: fr.spacing("6v") }}>{children}</Box>}
     </div>
   )
 }
@@ -49,7 +49,7 @@ export default function StatistiquesClient() {
     <Box>
       <Breadcrumb pages={[PAGES.static.statistiques]} />
       <DefaultContainer>
-        <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+        <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
           Statistiques
         </Typography>
 
@@ -69,7 +69,7 @@ export default function StatistiquesClient() {
           Pour visualiser correctement cette page, veuillez désactiver votre bloqueur de publicité
         </Typography>
 
-        <Box sx={{ mt: 6 }}>
+        <Box sx={{ mt: fr.spacing("12v") }}>
           <Box sx={{ px: { xs: 0, sm: 4 } }}>
             <Tabs value={value} onChange={handleChange} aria-label="statistiques tabs">
               <Tab sx={tabSx} label="Exposition" />

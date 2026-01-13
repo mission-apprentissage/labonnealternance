@@ -30,15 +30,15 @@ export default function Contact() {
             />
           </Grid>
           <Grid size={{ xs: 12, md: 8 }} sx={{ p: { xs: fr.spacing("2w"), md: fr.spacing("5w") } }}>
-            <Typography component="p" sx={{ mb: 2 }}>
+            <Typography component="p" sx={{ mb: fr.spacing("4v") }}>
               Vous avez une question sur nos outils ? Consultez notre foire aux questions.
             </Typography>
-            <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", my: fr.spacing("8v") }}>
               <Button priority="secondary" aria-label="Accès à la Foire aux questions" size="large">
                 <DsfrLink href={PAGES.static.faq.getPath()}>Consulter la FAQ</DsfrLink>
               </Button>
             </Box>
-            <Typography component="p" sx={{ mb: 2 }}>
+            <Typography component="p" sx={{ mb: fr.spacing("4v") }}>
               Si jamais vous ne trouvez pas votre réponse dans notre FAQ, ou souhaitez nous partager votre avis ou une suggestion d'amélioration sur nos outils, contactez nous par
               email à<br />
               <DsfrLink aria-label="Envoi d'un email au service candidat de La bonne alternance" href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
