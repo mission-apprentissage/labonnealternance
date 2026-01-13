@@ -58,7 +58,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
   }
   if (error || !data) {
     return (
-      <Box sx={{ width: "80%", maxWidth: "800px", margin: "auto", pt: 20, display: "flex" }}>
+      <Box sx={{ width: "80%", maxWidth: "800px", margin: "auto", pt: fr.spacing("4v")0, display: "flex" }}>
         <Box sx={{ fontSize: "20px", margin: "auto" }}>{error?.message ?? "Une erreur technique s'est produite"}</Box>
       </Box>
     )

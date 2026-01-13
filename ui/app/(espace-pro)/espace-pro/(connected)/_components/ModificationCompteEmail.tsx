@@ -18,11 +18,11 @@ export default function ModificationCompteEmail(props) {
   return (
     <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
       <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: 2 }} component="h2">
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("4v") }} component="h2">
           Changement d'email détecté
         </Typography>
         <Box pb={fr.spacing("1w")}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+          <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
             Vous venez de modifier votre email. Vous allez être redirigé vers la page d'authentification.
           </Typography>
           <Typography pt={fr.spacing("5v")}>Merci de vous connecter avec votre nouvel email.</Typography>

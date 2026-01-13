@@ -4,9 +4,9 @@ import { Box, Typography, TextareaAutosize } from "@mui/material"
 const CandidatureLbaMessage = ({ formik }) => {
   return (
     <>
-      <Box data-testid="fieldset-message" sx={{ mt: 4 }}>
+      <Box data-testid="fieldset-message" sx={{ mt: fr.spacing("8v") }}>
         <Typography>Votre message au responsable du recrutement (Facultatif)</Typography>
-        <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600" }}>
+        <Typography sx={{ mb: fr.spacing("4v"), fontSize: "14px", color: "grey.600" }}>
           Indiquez pourquoi vous souhaitez réaliser votre alternance dans son établissement. <br />
           Un message personnalisé augmente vos chances d&apos;obtenir un contact avec le recruteur. <br />
           La taille du champ n&apos;est pas limitée.

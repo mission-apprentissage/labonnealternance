@@ -23,7 +23,7 @@ const ConfirmationActivationUtilisateur = (props: { isOpen: boolean; onClose: ()
         </Typography>
 
         <Box sx={{ pb: fr.spacing("1w") }}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+          <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
             Vous êtes sur le point d’activer le compte de l’entreprise {establishment_raison_sociale}. Une fois le compte validé, l’entreprise pourra accéder au service de dépot
             d’offres et modifier ses informations.
           </Typography>

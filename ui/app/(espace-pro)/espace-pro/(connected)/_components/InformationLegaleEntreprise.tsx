@@ -38,9 +38,9 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
         {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations légales"}
       </Typography>
       {!raisonSociale && (
-        <Box sx={{ display: "flex", alignItems: "flex-start", mb: 4 }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", mb: fr.spacing("8v") }}>
           <Typography color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
-          <Box sx={{ ml: 1 }}>
+          <Box sx={{ ml: fr.spacing("2v") }}>
             <Typography mb={4}>Suite à un problème technique, nous ne sommes pas en mesure d’afficher votre raison sociale et l'adresse de votre établissement.</Typography>
             <Typography>Nous vous invitons à poursuivre votre parcours. Les informations de votre entreprise seront remplies automatiquement ultérieurement.</Typography>
           </Box>
@@ -96,7 +96,7 @@ const OrganizationInfoFields = ({
     establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : (establishment_raison_sociale ?? "")
   const firstLineAddress = address
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
       <FieldWithValue
         title="SIRET"
         value={siret}

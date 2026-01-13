@@ -66,7 +66,7 @@ const ConfirmationDesactivationUtilisateur = ({
         </Typography>
 
         <Box sx={{ pb: fr.spacing("1w") }}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+          <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
             Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?
           </Typography>
 
@@ -88,7 +88,7 @@ const ConfirmationDesactivationUtilisateur = ({
 
         {reasonComment.isOpen && (
           <Box sx={{ pb: fr.spacing("1w") }}>
-            <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+            <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
               <Input label="Autre" nativeInputProps={{ type: "text", name: "autre", minLength: 3, onChange: (e) => setReason(e.target.value) }} />
             </Typography>
           </Box>

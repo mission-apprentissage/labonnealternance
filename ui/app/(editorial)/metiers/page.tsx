@@ -25,7 +25,7 @@ export default async function Metiers() {
         <Breadcrumb pages={[PAGES.static.metiers]} />
         <DefaultContainer>
           <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-            <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: 2 }}>
+            <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
               Tous les emplois
               <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
                 et formations en alternance
@@ -43,11 +43,11 @@ export default async function Metiers() {
               }}
             />
 
-            <Typography component="p" sx={{ mb: 2 }}>
+            <Typography component="p" sx={{ mb: fr.spacing("4v") }}>
               Vous voulez travailler en alternance ? Vous voulez obtenir un diplôme en alternance ? Toutes les informations pour trouver une alternance rapidement sont sur La bonne
               alternance :
             </Typography>
-            <Stack spacing={1} alignItems="flex-start" sx={{ mt: 2 }}>
+            <Stack spacing={1} alignItems="flex-start" sx={{ mt: fr.spacing("4v") }}>
               <Typography>Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</Typography>
               <Typography>Liste d'entreprises qui recrutent en alternance</Typography>
               <Typography>Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</Typography>

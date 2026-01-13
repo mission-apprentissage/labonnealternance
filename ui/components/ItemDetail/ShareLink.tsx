@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
@@ -20,12 +21,12 @@ const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJ
   return (
     <Button priority="tertiary no outline" onClick={copyLink} data-tracking-id={`partager-${item.ideaType}`}>
       {copied ? (
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
           <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
           <Typography color="#18753C">Lien copié !</Typography>
         </Box>
       ) : (
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
           <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
           <Typography color="bluefrance.500">Partager</Typography>
         </Box>

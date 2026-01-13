@@ -153,7 +153,7 @@ function FinComponent(props: ComponentProps) {
 
 const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), my: fr.spacing("2v") }}>
       <Typography>Voici les prochaines étapes qui vous attendent :</Typography>
       <ContenuAvecPuce contenuPuce={1}>
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
@@ -182,7 +182,7 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+    <Box sx={{ display: "flex", flexDirection: "row", gap: fr.spacing("2v") }}>
       <Box
         sx={{
           display: "flex",

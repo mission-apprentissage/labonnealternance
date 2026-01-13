@@ -136,18 +136,18 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
               </List>
             </Typography>
             {(appointment.appointment?.applicant_reasons || []).includes("autre") ? (
-              <Typography component="p" sx={{ bgcolor: "#F6F6F6", color: "#2A2A2A", fontSize: "16px", lineHeight: "24px", fontWeight: 700, px: 4, py: 2 }}>
+              <Typography component="p" sx={{ bgcolor: "#F6F6F6", color: "#2A2A2A", fontSize: "16px", lineHeight: "24px", fontWeight: 700, px: fr.spacing("8v"), py: fr.spacing("4v") }}>
                 {appointment.appointment.applicant_message_to_cfa}
               </Typography>
             ) : (
-              <Typography component="div" sx={{ marginTop: 2 }}></Typography>
+              <Typography component="div" sx={{ marginTop: fr.spacing("4v") }}></Typography>
             )}
             {appointment.formation && (
               <>
-                <Typography component="p" sx={{ mt: 2 }}>
+                <Typography component="p" sx={{ mt: fr.spacing("4v") }}>
                   à propos de la formation : <strong>{appointment.formation.training_intitule_long}</strong>
                 </Typography>
-                <Typography component="p" sx={{ mt: 1 }}>
+                <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
                   dispensée par :{" "}
                   <strong>
                     {appointment.formation.etablissement_formateur_raison_sociale}, {appointment.formation.lieu_formation_street}, {appointment.formation.lieu_formation_zip_code},{" "}

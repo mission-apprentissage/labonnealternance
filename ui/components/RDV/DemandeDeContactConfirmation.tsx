@@ -22,7 +22,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
   return (
     <div>
       <Box sx={{ mb: fr.spacing("3w"), display: "flex", alignItems: "center" }}>
-        <Box component="img" src="/images/paperplane2.svg" aria-hidden={true} alt="" sx={{ mr: 2 }} />
+        <Box component="img" src="/images/paperplane2.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
         <Typography variant="h4" data-testid="DemandeDeContactConfirmationTitle">
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
         </Typography>

@@ -35,8 +35,8 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
   return (
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
-      <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+      <Box sx={{ pt: fr.spacing("4v"), pb: fr.spacing("6v"), px: fr.spacing("6v"), position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
         <Stack direction={{ xs: "column", md: "row" }} display="flex" alignItems="center">
@@ -57,8 +57,8 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
       <Box sx={{ mb: fr.spacing("2w") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
-      <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+      <Box sx={{ pt: fr.spacing("4v"), pb: fr.spacing("6v"), px: fr.spacing("6v"), position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment candidater ?
         </Typography>
 
@@ -185,7 +185,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             linkLabelNotReported="Signaler l’entreprise"
             linkLabelReported="Entreprise signalée"
             tooltip={
-              <Box sx={{ p: 1 }}>
+              <Box sx={{ p: fr.spacing("2v") }}>
                 <Typography fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
                   Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
                 </Typography>

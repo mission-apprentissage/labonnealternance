@@ -50,10 +50,10 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           mx: { xs: 0, md: "auto" },
         }}
       >
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
         </Typography>
-        <Box sx={{ p: 2, mb: fr.spacing("2w"), borderRadius: "8px", backgroundColor: "#f6f6f6" }}>
+        <Box sx={{ p: fr.spacing("4v"), mb: fr.spacing("2w"), borderRadius: "8px", backgroundColor: "#f6f6f6" }}>
           <Stack spacing={1}>
             {jobStartDate && (
               <Box>
@@ -82,10 +82,10 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
                     color: "bluefrance.500",
                     background: "#e3e3fd",
                     py: 0.5,
-                    px: 2,
+                    px: fr.spacing("4v"),
                     borderRadius: "40px",
-                    ml: 2,
-                    mb: 1,
+                    ml: fr.spacing("4v"),
+                    mb: fr.spacing("2v"),
                   }}
                 >
                   {job?.target_diploma_level}
@@ -113,7 +113,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
             tooltip={
-              <Box sx={{ p: 1 }}>
+              <Box sx={{ p: fr.spacing("2v") }}>
                 <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, marginBottom: "8px", color: "#161616" }}>
                   Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
                 </Typography>
@@ -146,9 +146,9 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
 
       {Boolean(job?.job?.offer_to_be_acquired_skills?.length || job?.job?.offer_access_conditions?.length) && (
         <Box sx={{ pb: 0, position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-          <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>
+          <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>
           <Box data-testid="lbb-component">
-            <Box sx={{ mb: 4 }}>
+            <Box sx={{ mb: fr.spacing("8v") }}>
               {job?.job?.offer_to_be_acquired_skills?.length ? (
                 <JobAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} defaultExpanded={false} />
               ) : null}
@@ -170,7 +170,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           mx: { xs: 0, md: "auto" },
         }}
       >
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
         </Typography>
 

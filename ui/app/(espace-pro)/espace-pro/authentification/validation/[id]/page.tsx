@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -13,23 +14,23 @@ import { publicConfig } from "@/config.public"
 
 const EmailEnValidationManuelle = () => (
   <Box sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
-    <Typography component="h1" sx={{ fontSize: "28px", mb: 3 }}>
+    <Typography component="h1" sx={{ fontSize: "28px", mb: fr.spacing("6v") }}>
       Merci ! Votre adresse email est bien confirmée.
     </Typography>
     <Typography sx={{ fontSize: "18px" }}>Nos équipes se chargent à présent de valider votre compte. Vous serez notifié par email dès que ce sera fait.</Typography>
     <Typography sx={{ fontSize: "18px" }}>À bientôt sur La bonne alternance !</Typography>
-    <Typography sx={{ fontSize: "18px", pt: 1 }}>Vous allez être redirigé automatiquement dans quelques instants...</Typography>
+    <Typography sx={{ fontSize: "18px", pt: fr.spacing("2v") }}>Vous allez être redirigé automatiquement dans quelques instants...</Typography>
   </Box>
 )
 
 const ErreurValidation = () => (
   <Box sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
-    <Typography component="h1" sx={{ fontSize: "28px", mb: 3 }}>
+    <Typography component="h1" sx={{ fontSize: "28px", mb: fr.spacing("6v") }}>
       Mail invalide
     </Typography>
     <Typography sx={{ fontSize: "18px" }}>
       La validation de votre email a échoué. Merci de{" "}
-      <Link sx={{ ml: 1 }} href={`mailto:${publicConfig.publicEmail}?subject=Authentification%20LBAR%20-%20Mail%20invalide`}>
+      <Link sx={{ ml: fr.spacing("2v") }} href={`mailto:${publicConfig.publicEmail}?subject=Authentification%20LBAR%20-%20Mail%20invalide`}>
         Contacter l'équipe La bonne alternance
       </Link>
     </Typography>

@@ -1,4 +1,5 @@
 "use client"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
@@ -61,7 +62,7 @@ export default function WidgetPostuler() {
   if (!isError && (isLoading || isFetching)) {
     return (
       <Box sx={{ display: "flex", alignItems: "center", m: "auto", width: "250px", my: 8 }}>
-        <CircularProgress sx={{ mr: 4 }} />
+        <CircularProgress sx={{ mr: fr.spacing("8v") }} />
         <Typography>Veuillez patienter</Typography>
       </Box>
     )

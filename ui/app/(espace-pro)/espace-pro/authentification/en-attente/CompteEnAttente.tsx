@@ -21,15 +21,15 @@ export default function CompteEnAttente() {
       <BorderedBox sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 1, lg: 2 }, justifyContent: "center", width: "100%", my: fr.spacing("1w") }}>
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
         <Box>
-          <Typography component="h1" sx={{ fontSize: "28px", mb: 3, fontWeight: "bold", lineHeight: "28px" }}>
+          <Typography component="h1" sx={{ fontSize: "28px", mb: fr.spacing("6v"), fontWeight: "bold", lineHeight: "28px" }}>
             Votre demande d’accès est désormais en attente de validation.
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "flex-start", mb: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "flex-start", mb: fr.spacing("6v") }}>
             <InfoCircle sx={{ mr: fr.spacing("1w"), mt: fr.spacing("1v") }} />
             <Typography>Vous serez notifié par email une fois votre compte validé, et vous pourrez ensuite publier vos offres d’emplois.</Typography>
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", ml: 2, mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", ml: fr.spacing("4v"), mb: fr.spacing("4v") }}>
             <Button priority="secondary" onClick={redirectFn}>
               Retour à l'accueil
             </Button>
