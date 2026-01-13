@@ -6,7 +6,7 @@ import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
-import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze, findDomainesMetiersIncoherents } from "./domainesMetiers/classifyRomesForDomainesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -338,6 +338,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: classifyRomesForDomainesMetiersAnalyze,
     description: "Analyse les fichiers de sortie de classifyRomesForDomainesMetiers",
+  },
+  {
+    fct: findDomainesMetiersIncoherents,
+    description: "Analyse les incohérences dans la collection domainesmetiers",
   },
   {
     fct: exportJobsToFranceTravail,
