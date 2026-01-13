@@ -121,7 +121,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
           </Box>
           <hr />
           <Box sx={{ mb: fr.spacing("2w") }}>
-            <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
+            <Typography component="p" sx={{ mt: fr.spacing("1v") }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Typography>
             <Typography component="p">
