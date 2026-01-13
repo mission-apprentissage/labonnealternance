@@ -59,13 +59,17 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
           }}
         >
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
-            <Typography
-              className={fr.cx("fr-icon-hotel-line")}
-              sx={{
-                mr: fr.spacing("1w"),
-              }}
-            />
-            {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+            {user.type === AUTHTYPE.ENTREPRISE ? (
+              <>
+                <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-hotel-line")} />
+                Mes informations
+              </>
+            ) : (
+              <>
+                <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-user-line")} />
+                Modifier l'entreprise
+              </>
+            )}
           </Button>
         </Box>
       )}
