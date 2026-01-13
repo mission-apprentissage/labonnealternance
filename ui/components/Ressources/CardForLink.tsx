@@ -9,7 +9,7 @@ export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: 
     <Card
       sx={{
         p: fr.spacing("3w"),
-        boxShadow: "0px 0px 12px 6px rgba(121, 121, 121, 0.4)",
+        boxShadow: "0px 0px " + fr.spacing("3v") + " " + fr.spacing("1-5v") + " rgba(121, 121, 121, 0.4)",
         display: "flex",
         alignItems: "center",
       }}

@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Typography, Box, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
@@ -12,22 +13,22 @@ const RessourcesCFA = () => {
       <Typography>
         La bonne alternance vous propose un ensemble d’outils pour soutenir vos démarches d’accompagnement auprès des jeunes et de vos entreprises partenaires.
       </Typography>
-      <Typography component={"h3"} variant="h3" sx={{ my: 2 }}>
+      <Typography component={"h3"} variant="h3" sx={{ my: fr.spacing("4v") }}>
         Liens utiles pour accompagner vos candidats
       </Typography>
       <Typography>Proposez-leur de s’entraîner avec nos 3 parcours de mise en situation :</Typography>
       <MisesEnSituation target="cfa" />
       <Typography sx={{ mb: 2 }}>Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :</Typography>
       <ConseilsEtAstuces />
-      <Box display="flex" alignItems="center" mt={6} mb={6}>
-        <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: 16 }} />
+      <Box display="flex" alignItems="center" mt={fr.spacing("12v")} mb={fr.spacing("12v")}>
+        <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: fr.spacing("4v") }} />
         <Typography variant="h3" component="h3">
           Autres liens utiles
         </Typography>
       </Box>
-      <Box ml={4}>
-        <List sx={{ listStyleType: "disc", pl: 2 }}>
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
+      <Box ml={fr.spacing("8v")}>
+        <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
+          <ListItem sx={{ display: "list-item", mb: fr.spacing("4v") }}>
             Pour rechercher une formation en alternance, le{" "}
             <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Accéder au catalogue des offres de formation en apprentissage">
               Catalogue des offres de formations en apprentissage
@@ -67,10 +68,10 @@ const RessourcesCFA = () => {
           <ListItem sx={{ display: "list-item" }}>Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emploi</ListItem>
         </List>
       </Box>
-      <Box display="flex" alignItems="center" mt={6} mb={6}>
-        <Image src="/images/pages_ressources/offres completes.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: 16 }} />
+      <Box display="flex" alignItems="center" mt={fr.spacing("12v")} mb={fr.spacing("12v")}>
+        <Image src="/images/pages_ressources/offres completes.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: fr.spacing("4v") }} />
         <Box>
-          <Typography fontWeight={700} mb={2}>
+          <Typography fontWeight={700} mb={fr.spacing("4v")}>
             Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
           </Typography>
           <DsfrLink href="/organisme-de-formation" aria-label="Accès à la page d'accueil">

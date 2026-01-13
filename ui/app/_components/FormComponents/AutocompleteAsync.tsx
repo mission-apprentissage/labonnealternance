@@ -135,9 +135,9 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
                   justifyContent: "center",
                   width: fr.spacing("4w"),
                   position: "absolute",
-                  right: 1,
-                  top: 1,
-                  bottom: 1,
+                  right: fr.spacing("0-5v"),
+                  top: fr.spacing("0-5v"),
+                  bottom: fr.spacing("0-5v"),
                   backgroundColor: fr.colors.decisions.background.default.grey.default,
                 }}
               >
@@ -217,7 +217,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
           placement: "bottom",
           modifiers: [
             { name: "flip", enabled: false },
-            { name: "offset", options: { offset: [0, 12] } },
+            { name: "offset", options: { offset: [0, fr.spacing("3v")] } },
           ],
         },
         paper: {
@@ -225,7 +225,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
             minWidth: {
               lg: "450px",
             },
-            boxShadow: "rgba(0, 0, 0, 0.2) 1px 1px 10px 0px",
+            boxShadow: "rgba(0, 0, 0, 0.2) " + fr.spacing("0-5v") + " " + fr.spacing("0-5v") + " " + fr.spacing("2-5v") + " 0px",
             fontSize: "0.875rem",
           },
           elevation: 6,
