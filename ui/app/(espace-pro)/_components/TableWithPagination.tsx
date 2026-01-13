@@ -138,7 +138,7 @@ function TableWithPagination({
                 mt={3}
                 sx={{
                   display: "-webkit-box",
-                  WebkitLineClamp: fr.spacing("6v"), // ← number of lines
+                  WebkitLineClamp: 3, // ← number of lines
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                 }}

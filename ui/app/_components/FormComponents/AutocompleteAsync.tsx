@@ -217,7 +217,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
           placement: "bottom",
           modifiers: [
             { name: "flip", enabled: false },
-            { name: "offset", options: { offset: [0, fr.spacing("3v")] } },
+            { name: "offset", options: { offset: [0, 12] } },
           ],
         },
         paper: {

@@ -288,7 +288,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 </Box>
                 {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                   <>
-                    <hr style={{ marginTop: fr.spacing("4v")4 }} />
+                    <hr style={{ marginTop: fr.spacing("8v") }} />
                     <Box my={6}>
                       <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
                       <OffresTabs
