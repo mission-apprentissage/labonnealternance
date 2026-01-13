@@ -40,7 +40,7 @@ export default function PrintableJobPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("3w"), px: fr.spacing("3w") }}>
+    <Box component="main" role="main" sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("3w"), px: fr.spacing("3w") }}>
       <Image style={{ margin: "auto" }} src="/images/espace_pro/images/illustration-impression.svg" width="209" height="95" alt="" aria-hidden={true} />
       <Typography sx={{ mx: "auto", fontSize: "24px", mt: fr.spacing("4w") }}>{offre.company.name}</Typography>
       <Typography mx="auto" fontSize="28px" fontWeight={700}>

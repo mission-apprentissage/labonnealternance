@@ -12,7 +12,7 @@ export default async function Layout({ children }: PropsWithChildren) {
   return (
     <>
       <Header />
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box component="main" role="main" display="flex" flexDirection="column" alignItems="center">
         <Box
           maxWidth={1200}
           paddingTop={fr.spacing("4w")}
