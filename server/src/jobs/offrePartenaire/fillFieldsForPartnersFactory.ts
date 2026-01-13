@@ -279,7 +279,7 @@ function groupTransformFactory(groupSize: number) {
     writableObjectMode: true,
   })
 
-  let buffer: IComputedJobsPartners[] = []
+  let buffer: any[] = []
 
   groupTransform._transform = function (chunk, _, callback) {
     buffer.push(chunk)
