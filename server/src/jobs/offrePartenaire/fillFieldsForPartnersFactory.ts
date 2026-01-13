@@ -174,8 +174,8 @@ export const fillFieldsForComputedPartnersFactory = async <SourceFields extends 
  * @param sourceFields: champs nécessaires à la récupération des données (au moins un doit être renseigné)
  * @param filledFields: champs potentiellement modifiés par l'enrichissement (au moins un doit être null)
  * @param groupSize: taille du packet de documents (utile pour optimiser les appels API et BDD)
- * @param replaceMatchFilter: si présent, remplace le filtre source de la collection computed_jobs_partners
- * @param addedMatchFilter: si présent et replaceMatchFilter absent, ajoute une condition sur le filtre source de la collection computed_jobs_partners
+ * @param replaceMatchFilter: si présent, remplace le filtre source de la collection jobs_partners
+ * @param addedMatchFilter: si présent et replaceMatchFilter absent, ajoute une condition sur le filtre source de la collection jobs_partners
  * @param getData: fonction récupérant les nouvelles données.
  * La fonction doit retourner un tableau d'objet contenant l'_id du document à mettre à jour et les nouvelles valeurs à mettre à jour.
  * Les valeurs retournées seront modifiées et écraseront les anciennes données.
