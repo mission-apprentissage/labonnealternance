@@ -117,6 +117,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
       brandTop={DsfrHeaderProps.brandTop}
       homeLinkProps={DsfrHeaderProps.homeLinkProps}
       linkList={isWidget ? undefined : hideLinkList ? undefined : linkListContent}
+      linkListTitle={<h1 className="fr-sr-only">Informations et liens du site</h1>}
       bottomItems={[
         {
           linkProps: {
