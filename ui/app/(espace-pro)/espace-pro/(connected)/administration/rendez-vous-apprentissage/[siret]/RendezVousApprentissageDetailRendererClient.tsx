@@ -105,7 +105,7 @@ export default function RendezVousApprentissageDetailRendererClient({
         {eligibleTrainingsForAppointmentResult ? (
           <>
             <EtablissementComponent id={etablissement?._id.toString()} />
-            <Box sx={{ display: "flex", backgroundColor: "white", mt: fr.spacing("5w"), border: "1px solid #E0E5ED", borderRadius: "4px", borderBottom: "none" }}>
+            <Box sx={{ display: "flex", backgroundColor: "white", mt: fr.spacing("5w"), border: "1px solid #E0E5ED", borderRadius: fr.spacing("1v"), borderBottom: "none" }}>
               <Typography sx={{ flex: "1", fontSize: "20px", fontWeight: 700, p: fr.spacing("2w") }}>Formations</Typography>
             </Box>
             <Box sx={{ border: "1px solid #E0E5ED", overflow: "auto", cursor: "pointer" }}>

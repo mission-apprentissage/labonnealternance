@@ -1,10 +1,11 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Grid } from "@mui/material"
 
 import { CardForLink } from "./CardForLink"
 
 const MisesEnSituation = ({ target }: { target: "candidat" | "cfa" }) => {
   return (
-    <Grid container spacing={2} sx={{ my: 6 }}>
+    <Grid container spacing={2} sx={{ my: fr.spacing("12v") }}>
       {target === "candidat" && (
         <Grid size={{ xs: 12, md: 6 }}>
           <CardForLink
