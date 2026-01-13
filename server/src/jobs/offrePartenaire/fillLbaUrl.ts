@@ -6,7 +6,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { buildUrlLba } from "./importFromComputedToJobsPartners"
 
-const sourceFields = ["workplace_siret", "_id", "partner_label", "offer_title"] as const satisfies (keyof IComputedJobsPartners)[]
+const sourceFields = ["workplace_siret", "_id", "partner_label", "offer_title"] as const satisfies (keyof IJobsPartnersOfferPrivate)[]
 
 export const fillLbaUrl = async ({ addedMatchFilter }: { addedMatchFilter?: Filter<IJobsPartnersOfferPrivate> } = {}) => {
   const filledFields = ["lba_url"] as const satisfies (keyof IJobsPartnersOfferPrivate)[]
