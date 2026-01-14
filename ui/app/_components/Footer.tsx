@@ -22,6 +22,7 @@ const linkListContent: FooterProps["linkList"] = [
           href: PAGES.static.blog.getPath(),
         },
         text: "Blog",
+        isExternal: true,
       },
       {
         linkProps: {
@@ -74,6 +75,7 @@ const linkListContent: FooterProps["linkList"] = [
           href: PAGES.static.codeSources.getPath(),
         },
         text: `Code source v${publicConfig.version}`,
+        isExternal: true,
       },
     ],
   },
@@ -104,11 +106,40 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
 
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">
+      {showLinkList && (
+        <nav className="fr-footer__top" role="navigation" aria-label="Informations et liens du site">
+          <h2 className="fr-sr-only">Informations et liens du site</h2>
+          <div className="fr-container">
+            <div className="fr-grid-row fr-grid-row--gutters">
+              {linkListContent.map((category, index) => (
+                <div key={index} className="fr-col-12 fr-col-sm-3 fr-col-md-2">
+                  <h3 className="fr-footer__top-cat">{category.categoryName}</h3>
+                  <ul className="fr-footer__top-list">
+                    {category.links.map((link, linkIndex) => (
+                      <li key={linkIndex}>
+                        {link.isExternal ? (
+                          <a className="fr-footer__top-link" href={link.linkProps.href as string} target="_blank" rel="noopener noreferrer">
+                            {link.text}
+                          </a>
+                        ) : (
+                          <a className="fr-footer__top-link" href={link.linkProps.href as string}>
+                            {link.text}
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </nav>
+      )}
       <div className="fr-container">
         <div className="fr-footer__body">
           <div className="fr-footer__brand fr-enlarge-link">
             <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
-            <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href} title={DsfrHeaderProps.homeLinkProps.title}>
+            <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
               <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
             </a>
           </div>
@@ -116,18 +147,18 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
             <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
             <ul className="fr-footer__content-list">
               <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr" target="_blank" rel="noopener noreferrer">
+                <a className="fr-footer__content-link" href="https://info.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                  info.gouv.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://service-public.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                  service-public.gouv.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr/" target="_blank" rel="noopener noreferrer">
                   legifrance.gouv.fr
-                </a>
-              </li>
-              <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://gouvernement.fr" target="_blank" rel="noopener noreferrer">
-                  gouvernement.fr
-                </a>
-              </li>
-              <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://service-public.fr" target="_blank" rel="noopener noreferrer">
-                  service-public.fr
                 </a>
               </li>
               <li className="fr-footer__content-item">
@@ -138,29 +169,6 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
             </ul>
           </div>
         </div>
-        {showLinkList && (
-          <div className="fr-footer__body">
-            <nav className="fr-footer__body-nav" role="navigation" aria-label="Informations et liens du site">
-              <h2 className="fr-sr-only">Informations et liens du site</h2>
-              <div className="fr-footer__body-row">
-                {linkListContent.map((category, index) => (
-                  <div key={index} className="fr-footer__body-col fr-col-12 fr-col-sm-6 fr-col-md-3">
-                    <h3 className="fr-footer__top-cat">{category.categoryName}</h3>
-                    <ul className="fr-footer__top-list">
-                      {category.links.map((link, linkIndex) => (
-                        <li key={linkIndex}>
-                          <a className="fr-footer__top-link" href={link.linkProps.href}>
-                            {link.text}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </nav>
-          </div>
-        )}
         <div className="fr-footer__bottom">
           <ul className="fr-footer__bottom-list">
             <li className="fr-footer__bottom-item">
