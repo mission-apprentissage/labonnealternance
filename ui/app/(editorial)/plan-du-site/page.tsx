@@ -37,34 +37,22 @@ export default function PlanDuSite() {
                 <Box component="nav" aria-label="Plan du site">
                   <Box component="ul" sx={{ my: 4, pl: 2, listStyle: "disc", "& > li": { mb: 3 } }}>
                     <li>
-                      <DsfrLink href="/" aria-label="Accéder à l'espace candidat">
-                        Espace candidat
-                      </DsfrLink>
+                      <DsfrLink href="/">Espace candidat</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/acces-recruteur" aria-label="Accéder à l'espace recruteur">
-                        Accès recruteur
-                      </DsfrLink>
+                      <DsfrLink href="/acces-recruteur">Accès recruteur</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/organisme-de-formation" aria-label="Accéder à l'espace organisme de formation">
-                        Organisme de formation
-                      </DsfrLink>
+                      <DsfrLink href="/organisme-de-formation">Organisme de formation</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/espace-pro/authentification" aria-label="Accéder à l'authentification espace pro">
-                        Authentification espace pro
-                      </DsfrLink>
+                      <DsfrLink href="/espace-pro/authentification">Authentification espace pro</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/espace-pro/creation/entreprise" aria-label="Accéder à la création de compte entreprise">
-                        Création de compte entreprise
-                      </DsfrLink>
+                      <DsfrLink href="/espace-pro/creation/entreprise">Création de compte entreprise</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/espace-pro/creation/cfa" aria-label="Accéder à la création de compte CFA">
-                        Création de compte CFA
-                      </DsfrLink>
+                      <DsfrLink href="/espace-pro/creation/cfa">Création de compte CFA</DsfrLink>
                     </li>
                   </Box>
                 </Box>
