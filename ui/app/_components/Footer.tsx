@@ -1,4 +1,3 @@
-import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
 import { DsfrHeaderProps } from "./Header"
