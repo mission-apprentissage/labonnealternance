@@ -10,6 +10,35 @@ import { publicConfig } from "@/config.public"
 
 const linkListContent: FooterProps["linkList"] = [
   {
+    categoryName: "Aide & Ressources",
+    links: [
+      {
+        linkProps: {
+          href: PAGES.static.planDuSite.getPath(),
+        },
+        text: "Plan du site",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.faq.getPath(),
+        },
+        text: "FAQ",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.ressources.getPath(),
+        },
+        text: "Ressources",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.statistiques.getPath(),
+        },
+        text: "Statistiques",
+      },
+    ],
+  },
+  {
     categoryName: "À propos",
     links: [
       {
@@ -35,29 +64,6 @@ const linkListContent: FooterProps["linkList"] = [
           href: PAGES.static.contact.getPath(),
         },
         text: "Contact",
-      },
-    ],
-  },
-  {
-    categoryName: "Aide & Ressources",
-    links: [
-      {
-        linkProps: {
-          href: PAGES.static.faq.getPath(),
-        },
-        text: "FAQ",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.ressources.getPath(),
-        },
-        text: "Ressources",
-      },
-      {
-        linkProps: {
-          href: PAGES.static.statistiques.getPath(),
-        },
-        text: "Statistiques",
       },
     ],
   },
