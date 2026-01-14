@@ -1,5 +1,4 @@
 import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
-import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
 import { DsfrHeaderProps } from "./Header"
@@ -101,43 +100,100 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
     </Typography>
   )
 
+  const showLinkList = !isWidget && !hideLinkList
+
   return (
-    <DsfrFooter
-      id="footer-links"
-      accessibility="partially compliant"
-      accessibilityLinkProps={{
-        href: PAGES.static.accessibilite.getPath(),
-      }}
-      contentDescription={isWidget ? widgetDescription : description}
-      operatorLogo={{
-        alt: "France relance",
-        imgUrl: "/images/france_relance.svg",
-        orientation: "vertical",
-      }}
-      brandTop={DsfrHeaderProps.brandTop}
-      homeLinkProps={DsfrHeaderProps.homeLinkProps}
-      linkList={isWidget ? undefined : hideLinkList ? undefined : linkListContent}
-      linkListTitle={<h1 className="fr-sr-only">Informations et liens du site</h1>}
-      bottomItems={[
-        {
-          linkProps: {
-            href: PAGES.static.politiqueConfidentialite.getPath(),
-          },
-          text: "Politique de confidentialité",
-        },
-        {
-          linkProps: {
-            href: PAGES.static.mentionsLegales.getPath(),
-          },
-          text: "Mentions légales",
-        },
-        {
-          linkProps: {
-            href: PAGES.static.cgu.getPath(),
-          },
-          text: "Conditions générales d'utilisation",
-        },
-      ]}
-    />
+    <footer className="fr-footer" role="contentinfo" id="footer-links">
+      <div className="fr-container">
+        <div className="fr-footer__body">
+          <div className="fr-footer__brand fr-enlarge-link">
+            <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
+            <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href} title={DsfrHeaderProps.homeLinkProps.title}>
+              <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "auto" }} />
+            </a>
+          </div>
+          <div className="fr-footer__content">
+            <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
+            <ul className="fr-footer__content-list">
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr">
+                  legifrance.gouv.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://gouvernement.fr">
+                  gouvernement.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://service-public.fr">
+                  service-public.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://data.gouv.fr">
+                  data.gouv.fr
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        {showLinkList && (
+          <div className="fr-footer__body">
+            <nav className="fr-footer__body-nav" role="navigation" aria-label="Informations et liens du site">
+              <h2 className="fr-sr-only">Informations et liens du site</h2>
+              <div className="fr-footer__body-row">
+                {linkListContent.map((category, index) => (
+                  <div key={index} className="fr-footer__body-col">
+                    <h3 className="fr-footer__top-cat">{category.categoryName}</h3>
+                    <ul className="fr-footer__top-list">
+                      {category.links.map((link, linkIndex) => (
+                        <li key={linkIndex}>
+                          <a className="fr-footer__top-link" href={link.linkProps.href}>
+                            {link.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </nav>
+          </div>
+        )}
+        <div className="fr-footer__bottom">
+          <ul className="fr-footer__bottom-list">
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.accessibilite.getPath()}>
+                Accessibilité: partiellement conforme
+              </a>
+            </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.politiqueConfidentialite.getPath()}>
+                Politique de confidentialité
+              </a>
+            </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.mentionsLegales.getPath()}>
+                Mentions légales
+              </a>
+            </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.cgu.getPath()}>
+                Conditions générales d'utilisation
+              </a>
+            </li>
+          </ul>
+          <div className="fr-footer__bottom-copy">
+            <p>
+              Sauf mention contraire, tous les contenus de ce site sont sous{" "}
+              <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
+                licence etalab-2.0
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }
