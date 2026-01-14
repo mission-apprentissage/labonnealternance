@@ -62,6 +62,7 @@ import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTrav
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
+import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
@@ -392,6 +393,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: fillLbaUrl,
+    description: "Remplit le champ lba_url dans la collection jobs_partners",
   },
   {
     fct: processRecruteursLbaRawToEnd,

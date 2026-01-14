@@ -1115,8 +1115,6 @@ export async function upsertJobsPartnersMulti({
   const offerCreation = current?.offer_creation ?? new Date(data.offer_creation)
   const offerExpiration = current?.offer_expiration ?? dayjs.tz(created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
   const offerStatus = current?.offer_status ?? JOB_STATUS_ENGLISH.ACTIVE
-  const offerTitle = data.offer_title ?? current?.offer_title ?? "" // offer_title is mandatory but set to nullish in ZComputedJobsPartnersBase.
-  const lbaUrl = buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, offerTitle)
 
   const userWrittenFields = {
     ...data,
@@ -1132,7 +1130,6 @@ export async function upsertJobsPartnersMulti({
     validated: false,
     jobs_in_success: [],
     currently_processed_id: null,
-    lba_url: lbaUrl,
   } satisfies Partial<IComputedJobsPartners>
   const writtenFields: Omit<IComputedJobsPartners, InvariantFields> = { ...userWrittenFields, ...technicalFields }
   let modified: boolean

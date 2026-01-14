@@ -5,7 +5,6 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
-import { fillLbaUrl } from "./fillLbaUrl"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { removeMissingRecruteursLbaFromComputedJobPartners, removeUnsubscribedRecruteursLbaFromComputedJobPartners } from "./recruteur-lba/importRecruteursLbaRaw"
@@ -27,6 +26,5 @@ export const fillComputedRecruteursLba = async () => {
   await fillOpcoInfosForPartners(context)
   await blockBadRomeJobsPartners(context)
   await fillLocationInfosForPartners({ ...context, addedMatchFilter: { $and: [computedJobFilter, { workplace_geopoint: null }] } })
-  await fillLbaUrl(context)
   await validateComputedJobPartners(context)
 }
