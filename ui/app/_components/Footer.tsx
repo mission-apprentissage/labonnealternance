@@ -7,7 +7,20 @@ import { PAGES } from "@/utils/routes.utils"
 
 import { publicConfig } from "@/config.public"
 
-const linkListContent: FooterProps["linkList"] = [
+type LinkItem = {
+  linkProps: {
+    href: string
+  }
+  text: string
+  isExternal?: boolean
+}
+
+type LinkCategory = {
+  categoryName: string
+  links: LinkItem[]
+}
+
+const linkListContent: LinkCategory[] = [
   {
     categoryName: "À propos",
     links: [
