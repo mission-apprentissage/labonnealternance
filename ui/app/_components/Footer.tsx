@@ -1,5 +1,7 @@
 import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
-import { Typography } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Link, Typography } from "@mui/material"
+import Image from "next/image"
 
 import { DsfrHeaderProps } from "./Header"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
@@ -103,97 +105,101 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
   const showLinkList = !isWidget && !hideLinkList
 
   return (
-    <footer className="fr-footer" role="contentinfo" id="footer-links">
-      <div className="fr-container">
-        <div className="fr-footer__body">
-          <div className="fr-footer__brand fr-enlarge-link">
-            <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
-            <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href} title={DsfrHeaderProps.homeLinkProps.title}>
-              <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "auto" }} />
-            </a>
-          </div>
-          <div className="fr-footer__content">
-            <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
-            <ul className="fr-footer__content-list">
-              <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr">
+    <Box component="footer" className={fr.cx("fr-footer")} role="contentinfo" id="footer-links">
+      <Box className={fr.cx("fr-container")}>
+        <Box className={fr.cx("fr-footer__body")}>
+          <Box className={fr.cx("fr-footer__brand", "fr-enlarge-link")}>
+            <Typography className={fr.cx("fr-logo")}>{DsfrHeaderProps.brandTop}</Typography>
+            <Link className={fr.cx("fr-footer__brand-link")} href={DsfrHeaderProps.homeLinkProps.href} title={DsfrHeaderProps.homeLinkProps.title}>
+              <Image className={fr.cx("fr-footer__logo")} src="/images/france_relance.svg" alt="France relance" width={56} height={56} style={{ width: "3.5rem", height: "auto" }} />
+            </Link>
+          </Box>
+          <Box className={fr.cx("fr-footer__content")}>
+            <Typography className={fr.cx("fr-footer__content-desc")}>{isWidget ? widgetDescription : description}</Typography>
+            <Box component="ul" className={fr.cx("fr-footer__content-list")}>
+              <Box component="li" className={fr.cx("fr-footer__content-item")}>
+                <Link className={fr.cx("fr-footer__content-link")} href="https://legifrance.gouv.fr" target="_blank" rel="noopener noreferrer">
                   legifrance.gouv.fr
-                </a>
-              </li>
-              <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://gouvernement.fr">
+                </Link>
+              </Box>
+              <Box component="li" className={fr.cx("fr-footer__content-item")}>
+                <Link className={fr.cx("fr-footer__content-link")} href="https://gouvernement.fr" target="_blank" rel="noopener noreferrer">
                   gouvernement.fr
-                </a>
-              </li>
-              <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://service-public.fr">
+                </Link>
+              </Box>
+              <Box component="li" className={fr.cx("fr-footer__content-item")}>
+                <Link className={fr.cx("fr-footer__content-link")} href="https://service-public.fr" target="_blank" rel="noopener noreferrer">
                   service-public.fr
-                </a>
-              </li>
-              <li className="fr-footer__content-item">
-                <a className="fr-footer__content-link" href="https://data.gouv.fr">
+                </Link>
+              </Box>
+              <Box component="li" className={fr.cx("fr-footer__content-item")}>
+                <Link className={fr.cx("fr-footer__content-link")} href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer">
                   data.gouv.fr
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+                </Link>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
         {showLinkList && (
-          <div className="fr-footer__body">
-            <nav className="fr-footer__body-nav" role="navigation" aria-label="Informations et liens du site">
-              <h2 className="fr-sr-only">Informations et liens du site</h2>
-              <div className="fr-footer__body-row">
+          <Box className={fr.cx("fr-footer__body")}>
+            <Box component="nav" className={fr.cx("fr-footer__body-nav")} role="navigation" aria-label="Informations et liens du site">
+              <Typography component="h2" className={fr.cx("fr-sr-only")}>
+                Informations et liens du site
+              </Typography>
+              <Box className={fr.cx("fr-footer__body-row")}>
                 {linkListContent.map((category, index) => (
-                  <div key={index} className="fr-footer__body-col">
-                    <h3 className="fr-footer__top-cat">{category.categoryName}</h3>
-                    <ul className="fr-footer__top-list">
+                  <Box key={index} className={fr.cx("fr-footer__body-col")}>
+                    <Typography component="h3" className={fr.cx("fr-footer__top-cat")}>
+                      {category.categoryName}
+                    </Typography>
+                    <Box component="ul" className={fr.cx("fr-footer__top-list")}>
                       {category.links.map((link, linkIndex) => (
-                        <li key={linkIndex}>
-                          <a className="fr-footer__top-link" href={link.linkProps.href}>
+                        <Box component="li" key={linkIndex}>
+                          <Link className={fr.cx("fr-footer__top-link")} href={link.linkProps.href}>
                             {link.text}
-                          </a>
-                        </li>
+                          </Link>
+                        </Box>
                       ))}
-                    </ul>
-                  </div>
+                    </Box>
+                  </Box>
                 ))}
-              </div>
-            </nav>
-          </div>
+              </Box>
+            </Box>
+          </Box>
         )}
-        <div className="fr-footer__bottom">
-          <ul className="fr-footer__bottom-list">
-            <li className="fr-footer__bottom-item">
-              <a className="fr-footer__bottom-link" href={PAGES.static.accessibilite.getPath()}>
+        <Box className={fr.cx("fr-footer__bottom")}>
+          <Box component="ul" className={fr.cx("fr-footer__bottom-list")}>
+            <Box component="li" className={fr.cx("fr-footer__bottom-item")}>
+              <Link className={fr.cx("fr-footer__bottom-link")} href={PAGES.static.accessibilite.getPath()}>
                 Accessibilité: partiellement conforme
-              </a>
-            </li>
-            <li className="fr-footer__bottom-item">
-              <a className="fr-footer__bottom-link" href={PAGES.static.politiqueConfidentialite.getPath()}>
+              </Link>
+            </Box>
+            <Box component="li" className={fr.cx("fr-footer__bottom-item")}>
+              <Link className={fr.cx("fr-footer__bottom-link")} href={PAGES.static.politiqueConfidentialite.getPath()}>
                 Politique de confidentialité
-              </a>
-            </li>
-            <li className="fr-footer__bottom-item">
-              <a className="fr-footer__bottom-link" href={PAGES.static.mentionsLegales.getPath()}>
+              </Link>
+            </Box>
+            <Box component="li" className={fr.cx("fr-footer__bottom-item")}>
+              <Link className={fr.cx("fr-footer__bottom-link")} href={PAGES.static.mentionsLegales.getPath()}>
                 Mentions légales
-              </a>
-            </li>
-            <li className="fr-footer__bottom-item">
-              <a className="fr-footer__bottom-link" href={PAGES.static.cgu.getPath()}>
+              </Link>
+            </Box>
+            <Box component="li" className={fr.cx("fr-footer__bottom-item")}>
+              <Link className={fr.cx("fr-footer__bottom-link")} href={PAGES.static.cgu.getPath()}>
                 Conditions générales d'utilisation
-              </a>
-            </li>
-          </ul>
-          <div className="fr-footer__bottom-copy">
-            <p>
+              </Link>
+            </Box>
+          </Box>
+          <Box className={fr.cx("fr-footer__bottom-copy")}>
+            <Typography>
               Sauf mention contraire, tous les contenus de ce site sont sous{" "}
-              <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
+              <Link href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
                 licence etalab-2.0
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </footer>
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   )
 }
