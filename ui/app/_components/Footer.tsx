@@ -1,5 +1,3 @@
-import type { FooterProps } from "@codegouvfr/react-dsfr/Footer"
-import { Footer as DsfrFooter } from "@codegouvfr/react-dsfr/Footer"
 import { Typography } from "@mui/material"
 
 import { DsfrHeaderProps } from "./Header"
@@ -8,7 +6,20 @@ import { PAGES } from "@/utils/routes.utils"
 
 import { publicConfig } from "@/config.public"
 
-const linkListContent: FooterProps["linkList"] = [
+type LinkItem = {
+  linkProps: {
+    href: string
+  }
+  text: string
+  isExternal?: boolean
+}
+
+type LinkCategory = {
+  categoryName: string
+  links: LinkItem[]
+}
+
+const linkListContent: LinkCategory[] = [
   {
     categoryName: "Aide & Ressources",
     links: [
@@ -52,6 +63,7 @@ const linkListContent: FooterProps["linkList"] = [
           href: PAGES.static.blog.getPath(),
         },
         text: "Blog",
+        isExternal: true,
       },
       {
         linkProps: {
@@ -81,6 +93,7 @@ const linkListContent: FooterProps["linkList"] = [
           href: PAGES.static.codeSources.getPath(),
         },
         text: `Code source v${publicConfig.version}`,
+        isExternal: true,
       },
     ],
   },
@@ -107,43 +120,106 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
     </Typography>
   )
 
+  const showLinkList = !isWidget && !hideLinkList
+
   return (
-    <DsfrFooter
-      id="footer-links"
-      accessibility="partially compliant"
-      accessibilityLinkProps={{
-        href: PAGES.static.accessibilite.getPath(),
-      }}
-      contentDescription={isWidget ? widgetDescription : description}
-      operatorLogo={{
-        alt: "France relance",
-        imgUrl: "/images/france_relance.svg",
-        orientation: "vertical",
-      }}
-      brandTop={DsfrHeaderProps.brandTop}
-      homeLinkProps={DsfrHeaderProps.homeLinkProps}
-      linkList={isWidget ? undefined : hideLinkList ? undefined : linkListContent}
-      linkListTitle={<h1 className="fr-sr-only">Informations et liens du site</h1>}
-      bottomItems={[
-        {
-          linkProps: {
-            href: PAGES.static.politiqueConfidentialite.getPath(),
-          },
-          text: "Politique de confidentialité",
-        },
-        {
-          linkProps: {
-            href: PAGES.static.mentionsLegales.getPath(),
-          },
-          text: "Mentions légales",
-        },
-        {
-          linkProps: {
-            href: PAGES.static.cgu.getPath(),
-          },
-          text: "Conditions générales d'utilisation",
-        },
-      ]}
-    />
+    <footer className="fr-footer" role="contentinfo" id="footer-links">
+      {showLinkList && (
+        <nav className="fr-footer__top" role="navigation" aria-label="Informations et liens du site">
+          <h2 className="fr-sr-only">Informations et liens du site</h2>
+          <div className="fr-container">
+            <div className="fr-grid-row fr-grid-row--gutters">
+              {linkListContent.map((category, index) => (
+                <div key={index} className="fr-col-12 fr-col-sm-3 fr-col-md-2">
+                  <h3 className="fr-footer__top-cat">{category.categoryName}</h3>
+                  <ul className="fr-footer__top-list">
+                    {category.links.map((link, linkIndex) => (
+                      <li key={linkIndex}>
+                        {link.isExternal ? (
+                          <a className="fr-footer__top-link" href={link.linkProps.href as string} target="_blank" rel="noopener noreferrer">
+                            {link.text}
+                          </a>
+                        ) : (
+                          <a className="fr-footer__top-link" href={link.linkProps.href as string}>
+                            {link.text}
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </nav>
+      )}
+      <div className="fr-container">
+        <div className="fr-footer__body">
+          <div className="fr-footer__brand fr-enlarge-link">
+            <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
+            <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
+              <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
+            </a>
+          </div>
+          <div className="fr-footer__content">
+            <p className="fr-footer__content-desc">{isWidget ? widgetDescription : description}</p>
+            <ul className="fr-footer__content-list">
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://info.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                  info.gouv.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://service-public.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                  service-public.gouv.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://legifrance.gouv.fr/" target="_blank" rel="noopener noreferrer">
+                  legifrance.gouv.fr
+                </a>
+              </li>
+              <li className="fr-footer__content-item">
+                <a className="fr-footer__content-link" href="https://data.gouv.fr" target="_blank" rel="noopener noreferrer">
+                  data.gouv.fr
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="fr-footer__bottom">
+          <ul className="fr-footer__bottom-list">
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.accessibilite.getPath()}>
+                Accessibilité: partiellement conforme
+              </a>
+            </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.politiqueConfidentialite.getPath()}>
+                Politique de confidentialité
+              </a>
+            </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.mentionsLegales.getPath()}>
+                Mentions légales
+              </a>
+            </li>
+            <li className="fr-footer__bottom-item">
+              <a className="fr-footer__bottom-link" href={PAGES.static.cgu.getPath()}>
+                Conditions générales d'utilisation
+              </a>
+            </li>
+          </ul>
+          <div className="fr-footer__bottom-copy">
+            <p>
+              Sauf mention contraire, tous les contenus de ce site sont sous{" "}
+              <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
+                licence etalab-2.0
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }
