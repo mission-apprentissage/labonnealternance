@@ -142,7 +142,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
         </Box>
         {showLinkList && (
           <Box className={fr.cx("fr-footer__body")}>
-            <Box component="nav" className={fr.cx("fr-footer__body-nav")} role="navigation" aria-label="Informations et liens du site">
+            <Box component="nav" className={fr.cx("fr-footer__body-nav")} aria-label="Informations et liens du site">
               <Typography component="h2" className={fr.cx("fr-sr-only")}>
                 Informations et liens du site
               </Typography>
