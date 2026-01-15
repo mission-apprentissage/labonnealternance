@@ -297,6 +297,75 @@ yarn ui:dev           # UI on localhost:3000
 - All promises must be awaited or handled (no floating promises)
 - Exhaustive switch statements required
 
+### Commit Message Format
+
+**REQUIRED**: Use Conventional Commits format enforced by commitlint:
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`, `revert`
+
+**Example**:
+```
+feat(lba-1234): add user authentication
+
+- Implement JWT token generation
+- Add login endpoint
+- Configure session management
+```
+
+Configuration: `.husky/commitlint.config.js` extends `@commitlint/config-conventional`
+
+### Pull Request Requirements
+
+**PR Title Format**: MUST include JIRA ticket reference
+```
+feat(lba-XXX): brief description
+fix(lba-XXX): brief description
+```
+
+**PR Description**: Place content directly in the PR description field (NOT as a comment)
+
+**PR Description Header**: Extract JIRA key from title and prepend link:
+```
+https://tableaudebord-apprentissage.atlassian.net/browse/LBA-XXX
+
+## Changes
+...
+```
+
+**Code Review Focus Areas**:
+
+1. **Security Critical Issues** (highest priority):
+   - Check for hardcoded secrets, API keys, or credentials
+   - Look for SQL injection and XSS vulnerabilities
+   - Verify proper input validation and sanitization
+   - Review authentication and authorization logic
+
+2. **Performance Red Flags**:
+   - Identify N+1 database query problems
+   - Spot inefficient loops and algorithmic issues
+   - Check for memory leaks and resource cleanup
+   - Review caching opportunities for expensive operations
+
+3. **Code Quality Essentials**:
+   - Functions should be focused and appropriately sized
+   - Use clear, descriptive naming conventions
+   - Ensure proper error handling throughout
+   - Suggest refactoring for readability (extract functions, simplify logic)
+
+4. **Review Style**:
+   - Be specific and actionable in feedback
+   - Explain the "why" behind recommendations
+   - Acknowledge good patterns when you see them
+   - Ask clarifying questions when code intent is unclear
+
 ### Database Migrations
 
 ```bash
