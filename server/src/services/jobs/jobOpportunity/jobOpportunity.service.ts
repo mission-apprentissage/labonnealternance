@@ -1,6 +1,5 @@
 import Boom, { badRequest, internal, notFound } from "@hapi/boom"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
-import dayjs from "shared/helpers/dayjs"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
@@ -8,14 +7,15 @@ import { JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } f
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type {
   IJobOfferApiReadV3,
-  IJobOfferPublishingV3,
   IJobOfferApiWriteV3,
+  IJobOfferPublishingV3,
   IJobRecruiterApiReadV3,
   IJobSearchApiV3Query,
   IJobSearchApiV3QueryResolved,
@@ -38,11 +38,10 @@ import { getLbaJobs, incrementLbaJobsViewCount } from "@/services/lbajob.service
 import { jobsQueryValidator, jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
 
-import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
-import { getPartnerJobs } from "@/services/partnerJob.service"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getPartnerJobs } from "@/services/partnerJob.service"
+import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
 
 // TODO : QUICK FIX & TO REFACTO WITH JOBS PARTNER RETURN MODEL
 export const getJobsFromApiPrivate = async ({
@@ -765,7 +764,7 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   }
 }
 
-type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id" | "lba_url"
+type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
 async function upsertJobOfferPrivate({
   data,
@@ -793,7 +792,6 @@ async function upsertJobOfferPrivate({
     created_at: current?.created_at ?? now,
     partner_label,
     partner_job_id: current?.partner_job_id ?? partnerJobIdIfNew ?? _id.toString(),
-    lba_url: current?.lba_url ?? buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, _id.toString(), null, current?.offer_title ?? data.offer.title),
   }
 
   const defaultOfferExpiration = current?.offer_expiration ? current.offer_expiration : dayjs.tz(invariantData.created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()

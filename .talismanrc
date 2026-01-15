@@ -69,6 +69,8 @@ fileignoreconfig:
   checksum: c572ee96ddf9b9b26c58fce45b51cb5806093367c4f55f070a3bcd8d6e72352d
 - filename: server/src/jobs/offrePartenaire/hellowork/__snapshots__/importHelloWork.test.ts.snap
   checksum: fb15cd047e0decb1e972d9e8be5796f20b73372f0b1d4a3026cce2669d469357
+- filename: server/src/jobs/offrePartenaire/hellowork/importHelloWork.test.input.xml
+  checksum: b1532881a727d065bb67c7f659e537aee6eb77cee598a096d85a9324137326c9
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml

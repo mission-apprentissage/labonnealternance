@@ -157,6 +157,14 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
   }
 }
 
+export function generateComputedJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate> = {}): Partial<IJobsPartnersOfferPrivate> {
+  const base = generateJobsPartnersFull(data)
+
+  const { lba_url, ...rest } = base
+
+  return rest
+}
+
 export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsPartners> = {}): IComputedJobsPartners {
   return {
     errors: [],
