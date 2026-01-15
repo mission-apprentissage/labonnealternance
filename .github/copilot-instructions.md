@@ -5,14 +5,14 @@
 **La Bonne Alternance (LBA)** is a French government platform for finding apprenticeship training and job opportunities. It's a full-stack web application serving job seekers, employers, and training centers.
 
 **Repository Size**: ~93,000 lines of TypeScript/JavaScript code across 3 workspaces  
-**Tech Stack**: Node.js 24, Yarn 3.8.7, TypeScript 5.9, Next.js 16 (UI), Fastify (Server), MongoDB, Vitest  
+**Tech Stack**: Node.js, Yarn, TypeScript, Next.js (UI), Fastify (Server), MongoDB, Vitest  
 **Architecture**: Monorepo with 3 workspaces: `server` (API), `ui` (Next.js frontend), `shared` (common code)
 
 ## Critical Build & Test Requirements
 
 ### Prerequisites - ALWAYS verify these first
-- **Node.js**: 24+ required (v20 will work but v24 is preferred)
-- **Yarn**: 3.8.7 (automatically enforced via `packageManager` field)
+- **Node.js**: Version specified in `package.json` `engines` field (check root package.json)
+- **Yarn**: Version automatically enforced via `packageManager` field in package.json
 - **Docker**: Required for MongoDB and local services
 - **MongoDB**: Local instance required for tests via Docker Compose
 
@@ -504,7 +504,7 @@ yarn seed:update          # Update seed from local DB
 
 | Task | Command | Prerequisites |
 |------|---------|---------------|
-| Install | `yarn install --immutable` | Node 24+, Yarn 3.8.7 |
+| Install | `yarn install --immutable` | Node, Yarn (see package.json) |
 | Typecheck | `yarn typecheck` | Dependencies installed |
 | Lint | `yarn lint` | - |
 | Format | `yarn prettier:fix` | - |
