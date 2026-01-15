@@ -115,7 +115,7 @@ export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: I
 
 function agenceToLocality(agence: IAgenceCEGID) {
   const { GoogleRef, Ville } = agence
-  const zipcode = GoogleRef.length < 5 ? "0" + GoogleRef : GoogleRef
+  const zipcode = GoogleRef.toString().padStart(5, "0")
   return {
     city: Ville,
     zipcode,
