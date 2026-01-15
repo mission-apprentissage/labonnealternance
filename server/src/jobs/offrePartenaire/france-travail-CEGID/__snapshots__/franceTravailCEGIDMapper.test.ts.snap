@@ -1,0 +1,217 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`franceTravailCEGIDMapper > should convert a job 1`] = `
+{
+  "apply_phone": null,
+  "apply_url": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82794&idOrigine=502&LCID=1036&offerReference=2025-82794",
+  "business_error": null,
+  "contract_duration": null,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_start": null,
+  "contract_type": [
+    "Apprentissage",
+    "Professionnalisation",
+  ],
+  "created_at": 2024-07-21T02:49:06.000Z,
+  "errors": [],
+  "jobs_in_success": [],
+  "offer_access_conditions": [],
+  "offer_creation": 2025-10-03T07:19:58.723Z,
+  "offer_description": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».
+Votre mission met en valeur votre sens du relationnel
+- Vous informez et orientez les usagers qui contactent votre agence France Travail
+- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)
+- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi
+- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant
+- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation
+- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)
+- Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)
+Découvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :
+https://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy
+ Vous aimez être au contact d’un public varié.
+Vous êtes doté de qualités relationnelles et rédactionnelles.
+Vous avez le sens des responsabilités et vous savez prendre des initiatives.
+Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.
+Vous êtes à l’aise avec les outils informatiques et numériques.
+Enfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.
+Alors, n'hésitez pas et postulez !
+ 
+A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.",
+  "offer_desired_skills": [],
+  "offer_expiration": 2025-12-02T08:19:58.723Z,
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": null,
+  "offer_rome_codes": null,
+  "offer_status": "Active",
+  "offer_target_diploma": null,
+  "offer_title": "CONSEILLER(E) EN CHARGE DE L'INDEMNISATION - 77",
+  "offer_to_be_acquired_knowledge": [],
+  "offer_to_be_acquired_skills": [],
+  "partner_job_id": "2025-82794",
+  "partner_label": "FranceTravail CEGID",
+  "updated_at": 2024-07-21T02:49:06.000Z,
+  "validated": false,
+  "workplace_address_city": "BRIANCON",
+  "workplace_address_label": "05023 BRIANCON",
+  "workplace_address_street_label": null,
+  "workplace_address_zipcode": "05023",
+  "workplace_brand": null,
+  "workplace_description": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
+  "workplace_geopoint": null,
+  "workplace_idcc": null,
+  "workplace_legal_name": null,
+  "workplace_naf_code": null,
+  "workplace_naf_label": null,
+  "workplace_name": "DT 77 (755A000015)",
+  "workplace_opco": null,
+  "workplace_siret": "13001833800019",
+  "workplace_size": null,
+  "workplace_website": "https://www.francetravail.fr/",
+}
+`;
+
+exports[`franceTravailCEGIDMapper > should convert a job without department field 1`] = `
+{
+  "apply_phone": null,
+  "apply_url": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82794&idOrigine=502&LCID=1036&offerReference=2025-82794",
+  "business_error": null,
+  "contract_duration": null,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_start": null,
+  "contract_type": [
+    "Apprentissage",
+    "Professionnalisation",
+  ],
+  "created_at": 2024-07-21T02:49:06.000Z,
+  "errors": [],
+  "jobs_in_success": [],
+  "offer_access_conditions": [],
+  "offer_creation": 2025-10-03T07:19:58.723Z,
+  "offer_description": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».
+Votre mission met en valeur votre sens du relationnel
+- Vous informez et orientez les usagers qui contactent votre agence France Travail
+- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)
+- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi
+- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant
+- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation
+- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)
+- Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)
+Découvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :
+https://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy
+ Vous aimez être au contact d’un public varié.
+Vous êtes doté de qualités relationnelles et rédactionnelles.
+Vous avez le sens des responsabilités et vous savez prendre des initiatives.
+Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.
+Vous êtes à l’aise avec les outils informatiques et numériques.
+Enfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.
+Alors, n'hésitez pas et postulez !
+ 
+A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.",
+  "offer_desired_skills": [],
+  "offer_expiration": 2025-12-02T08:19:58.723Z,
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": null,
+  "offer_rome_codes": null,
+  "offer_status": "Active",
+  "offer_target_diploma": null,
+  "offer_title": "CONSEILLER(E) EN CHARGE DE L'INDEMNISATION - 77",
+  "offer_to_be_acquired_knowledge": [],
+  "offer_to_be_acquired_skills": [],
+  "partner_job_id": "2025-82794",
+  "partner_label": "FranceTravail CEGID",
+  "updated_at": 2024-07-21T02:49:06.000Z,
+  "validated": false,
+  "workplace_address_city": "AVON",
+  "workplace_address_label": "77014 AVON",
+  "workplace_address_street_label": null,
+  "workplace_address_zipcode": "77014",
+  "workplace_brand": null,
+  "workplace_description": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
+  "workplace_geopoint": null,
+  "workplace_idcc": null,
+  "workplace_legal_name": null,
+  "workplace_naf_code": null,
+  "workplace_naf_label": null,
+  "workplace_name": "DT 77 (755A000015)",
+  "workplace_opco": null,
+  "workplace_siret": "13001833800019",
+  "workplace_size": null,
+  "workplace_website": "https://www.francetravail.fr/",
+}
+`;
+
+exports[`franceTravailCEGIDMapper > should convert a job without department field and region field 1`] = `
+{
+  "apply_phone": null,
+  "apply_url": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82794&idOrigine=502&LCID=1036&offerReference=2025-82794",
+  "business_error": null,
+  "contract_duration": null,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_start": null,
+  "contract_type": [
+    "Apprentissage",
+    "Professionnalisation",
+  ],
+  "created_at": 2024-07-21T02:49:06.000Z,
+  "errors": [],
+  "jobs_in_success": [],
+  "offer_access_conditions": [],
+  "offer_creation": 2025-10-03T07:19:58.723Z,
+  "offer_description": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».
+Votre mission met en valeur votre sens du relationnel
+- Vous informez et orientez les usagers qui contactent votre agence France Travail
+- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)
+- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi
+- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant
+- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation
+- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)
+- Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)
+Découvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :
+https://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy
+ Vous aimez être au contact d’un public varié.
+Vous êtes doté de qualités relationnelles et rédactionnelles.
+Vous avez le sens des responsabilités et vous savez prendre des initiatives.
+Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.
+Vous êtes à l’aise avec les outils informatiques et numériques.
+Enfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.
+Alors, n'hésitez pas et postulez !
+ 
+A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.",
+  "offer_desired_skills": [],
+  "offer_expiration": 2025-12-02T08:19:58.723Z,
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": null,
+  "offer_rome_codes": null,
+  "offer_status": "Active",
+  "offer_target_diploma": null,
+  "offer_title": "CONSEILLER(E) EN CHARGE DE L'INDEMNISATION - 77",
+  "offer_to_be_acquired_knowledge": [],
+  "offer_to_be_acquired_skills": [],
+  "partner_job_id": "2025-82794",
+  "partner_label": "FranceTravail CEGID",
+  "updated_at": 2024-07-21T02:49:06.000Z,
+  "validated": false,
+  "workplace_address_city": "PARIS 02",
+  "workplace_address_label": "75102 PARIS 02",
+  "workplace_address_street_label": null,
+  "workplace_address_zipcode": "75102",
+  "workplace_brand": null,
+  "workplace_description": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
+  "workplace_geopoint": null,
+  "workplace_idcc": null,
+  "workplace_legal_name": null,
+  "workplace_naf_code": null,
+  "workplace_naf_label": null,
+  "workplace_name": "DT 77 (755A000015)",
+  "workplace_opco": null,
+  "workplace_siret": "13001833800019",
+  "workplace_size": null,
+  "workplace_website": "https://www.francetravail.fr/",
+}
+`;

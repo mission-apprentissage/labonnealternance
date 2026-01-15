@@ -4,7 +4,7 @@ import path from "path"
 import { internal } from "@hapi/boom"
 import dayjs from "shared/helpers/dayjs"
 import { withCause } from "@/common/utils/errorManager"
-import { __dirname } from "@/common/utils/esmUtils"
+import { __dirname } from "@/common/utils/dirname"
 import config from "@/config"
 
 import { getDatabase, getMongodbClient } from "@/common/utils/mongodbUtils"

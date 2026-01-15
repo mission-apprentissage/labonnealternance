@@ -11,6 +11,7 @@ import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
+import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./decathlon/importDecathlon"
 
@@ -39,6 +40,13 @@ export const importers: Record<string, CronDef> = {
     handler: processFranceTravail,
     checkinMargin: 350,
     maxRuntimeInMinutes: 120,
+    tag: "slave",
+  },
+  "Import France Travail CEGID": {
+    cron_string: timings.import_source,
+    handler: processFranceTravailCEGID,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 60,
     tag: "slave",
   },
   "Import Meteojob": {
