@@ -55,6 +55,7 @@ import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinition
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
+import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
 import { generateSitemap } from "@/services/sitemap.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import config from "@/config"
@@ -247,11 +248,11 @@ export async function setupJobProcessor() {
             handler: async () => inviteEtablissementAffelnetToPremiumFollowUp(),
             tag: "main",
           },
-          // "Rappel aux établissements que le premium est activé (Parcoursup)": {
-          //   cron_string: "0 6 8-14 1 1",   // Warning : condition on Monday is not detected, job is run everyday between 8 and 14 Jan
-          //   handler: async () => premiumActivatedReminder(),
-          //   tag: "main",
-          // },
+          "Rappel aux établissements que le premium est activé (Parcoursup)": {
+            cron_string: "0 6 8 1 *",
+            handler: async () => premiumActivatedReminder(),
+            tag: "main",
+          },
           "Creation de la collection rolemanagement360": {
             cron_string: "00 10,13,17 * * *",
             handler: createRoleManagement360,
