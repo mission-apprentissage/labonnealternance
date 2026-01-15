@@ -445,6 +445,53 @@ yarn seed                 # Apply seed to local DB
 yarn seed:update          # Update seed from local DB
 ```
 
+## TypeScript Best Practices
+
+### Type System
+- **Avoid `any`**: Prefer `unknown` with type narrowing or proper types
+- **Use discriminated unions** for state machines and complex types
+- **Centralize shared contracts**: Define types in `shared/` workspace
+- **Utility types**: Leverage `Readonly`, `Partial`, `Record`, `Pick`, `Omit`
+
+### Code Organization
+- **Single responsibility**: Keep functions focused and extract helpers when logic branches grow
+- **Immutability**: Prefer immutable data and pure functions
+- **ES Modules only**: Never emit `require` or CommonJS - use pure ES modules
+- **Target ES2022**: Use native features over polyfills
+
+### Async & Error Handling
+- **Use async/await**: Wrap awaits in try/catch with structured errors
+- **Guard early**: Check edge cases at function start to avoid deep nesting
+- **No floating promises**: All promises must be awaited or handled (enforced by ESLint)
+- **Structured logging**: Send errors through Sentry and logging utilities
+
+### Security Practices
+- **Validate inputs**: Use Zod schemas for all external input validation
+- **Sanitize content**: Use `sanitize-html` before rendering user content
+- **No dynamic code**: Avoid `eval()` and dynamic template execution
+- **Parameterized queries**: Use MongoDB query builders, never string concatenation
+- **Secrets management**: Load from environment variables, never hardcode
+
+## GitHub Actions & CI/CD Best Practices
+
+### Workflow Security
+- **Least privilege**: Set explicit `permissions` for `GITHUB_TOKEN` (default: `contents: read`)
+- **Pin action versions**: Use full commit SHA or major version tags (e.g., `@v4`), never `@main`
+- **Secret management**: Use GitHub Secrets, access via `${{ secrets.SECRET_NAME }}`
+- **OIDC authentication**: Prefer OIDC for cloud providers over long-lived credentials
+
+### Performance Optimization
+- **Caching**: Use `actions/cache@v3` with `hashFiles()` for cache keys
+- **Matrix strategies**: Run tests in parallel across Node versions, OS types
+- **Conditional execution**: Use `if` conditions to skip unnecessary jobs
+- **Job dependencies**: Use `needs` to define execution order and data passing via `outputs`
+
+### Workflow Structure
+- **Clear naming**: Descriptive names for workflows, jobs, and steps
+- **Concurrency control**: Use `concurrency` to prevent simultaneous runs
+- **Environment protection**: Use GitHub Environments for deployment approvals
+- **Reusable workflows**: Extract common patterns with `workflow_call`
+
 ## When Instructions Are Incomplete
 
 **Trust these instructions first**. Only search or explore when:
