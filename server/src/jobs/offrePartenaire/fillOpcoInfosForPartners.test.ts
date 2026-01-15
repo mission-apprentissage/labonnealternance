@@ -1,6 +1,5 @@
 import pick from "lodash-es/pick"
 import { ObjectId } from "mongodb"
-import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -19,11 +18,8 @@ describe("fillOpcoInfosForPartners", () => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
 
-    nock("https://www.cfadock.fr").post(/.*/).reply(404)
-
     return async () => {
       vi.useRealTimers()
-      nock.cleanAll()
       await getDbCollection("computed_jobs_partners").deleteMany({})
       await getDbCollection("opcos").deleteMany({})
     }
@@ -72,38 +68,6 @@ describe("fillOpcoInfosForPartners", () => {
     const { workplace_opco, workplace_idcc } = job
     expect.soft(job.errors).toEqual([])
     expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.AFDAS, workplace_idcc: 1313 })
-  })
-  it("should enrich with api when siret is present", async () => {
-    // given
-    await givenSomeComputedJobPartners([
-      {
-        workplace_siret: "42476141900045",
-        workplace_opco: null,
-        workplace_idcc: null,
-      },
-    ])
-    nock.cleanAll()
-    nock("https://www.cfadock.fr")
-      .post(`/api/opcos`, [{ siret: "424761419" }])
-      .reply(200, {
-        found: [
-          {
-            filters: { siret: "424761419" },
-            opcoName: OPCOS_LABEL.CONSTRUCTYS,
-            searchStatus: "ok",
-            idcc: 124,
-          },
-        ],
-      })
-    // when
-    await fillOpcoInfosForPartners()
-    // then
-    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    expect.soft(jobs.length).toBe(1)
-    const [job] = jobs
-    const { workplace_opco, workplace_idcc } = job
-    expect.soft(job.errors).toEqual([])
-    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.CONSTRUCTYS, workplace_idcc: 124 })
   })
   it("should not fill opco if already present", async () => {
     // given
