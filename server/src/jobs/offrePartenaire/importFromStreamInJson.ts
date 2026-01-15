@@ -44,9 +44,9 @@ export const importFromStreamInJson = async ({
       callback(null, null)
     },
   })
-  logger.info("starting stream pipeline")
+  logger.info(`starting stream pipeline for partner "${partnerLabel}" into collection "${destinationCollection}"`)
   await pipeline(stream, takeChunkTransform)
-  logger.info("stream pipeline ended")
+  logger.info(`stream pipeline ended for partner "${partnerLabel}" into collection "${destinationCollection}"`)
   const content = chunks.join("")
   const json = JSON.parse(content)
   await readJson(json)
