@@ -1,8 +1,7 @@
 import fs from "node:fs/promises"
-import path from "node:path"
 import z from "zod"
 import { parseCsvContent } from "@/common/utils/fileUtils"
-import { __dirname } from "@/common/utils/dirname"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 const ZAgenceCEGID = z.object({
   ClientCode: z.string(),
@@ -18,7 +17,7 @@ const ZAgenceCEGID = z.object({
 export type IAgenceCEGID = z.output<typeof ZAgenceCEGID>
 
 export async function parseAgences() {
-  const filepath = path.join(__dirname(import.meta.url), "./Flux FT Alternance_Table de transcodage des villes.xlsx - Table de transcodage des villes.csv")
+  const filepath = getStaticFilePath("referentiel/Flux FT Alternance_Table de transcodage des villes.xlsx - Table de transcodage des villes.csv")
 
   const content = (await fs.readFile(filepath)).toString()
   const parsedContent = await parseCsvContent(content)

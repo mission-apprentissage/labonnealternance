@@ -109,6 +109,5 @@ export const importFranceTravailCEGIDToComputed = async () => {
 
 export const processFranceTravailCEGID = async () => {
   await importFranceTravailCEGIDRaw()
-  // await importFranceTravailCEGIDToComputed()
-  // await getOAuth2Token()
+  await importFranceTravailCEGIDToComputed()
 }

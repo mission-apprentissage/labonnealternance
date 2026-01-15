@@ -1,90 +1,179 @@
-{
-  "_id": {
-    "$oid": "69677072d5df3a1b39e40451"
-  },
-  "reference": "2025-83792",
-  "isTopOffer": false,
-  "title": "CONTRAT DE PROFESSIONNALISATION CONSEILLER(E) EN CHARGE DE L'INDEMNISATION -  BRIANCON",
-  "modificationDate": "2026-01-14T10:51:21.603",
-  "contractType": {
-    "code": 13185,
-    "clientCode": "_TS_CO_Contract_CDD_Contratprofessionnalisation",
-    "label": "CDD - Contrat de professionnalisation",
-    "active": true,
-    "parentCode": 79,
-    "type": "contractType",
-    "parentType": "",
-    "hasChildren": false
-  },
-  "organisationName": "Agence Briançon (347A000489)",
-  "organisationDescription": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
-  "organisationLogoUrl": "https://francetravail-career.talent-soft.com/Handlers/Image.ashx?imagetype=logo&entityid=154440",
-  "contractTypeCountry": null,
-  "description1": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».\r\nVotre mission met en valeur votre sens du relationnel\r\n- Vous informez et orientez les usagers qui contactent votre agence France Travail\r\n- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)\r\n- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi\r\n- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant\r\n- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation\r\n- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)\r\n- Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)\r\nDécouvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :\r\nhttps://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy\r\n\r\n ",
-  "description2": "Vous aimez être au contact d’un public varié.\r\nVous êtes doté de qualités relationnelles et rédactionnelles.\r\nVous avez le sens des responsabilités et vous savez prendre des initiatives.\r\nVous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.\r\nVous êtes à l’aise avec les outils informatiques et numériques.\r\nEnfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.\r\nAlors, n'hésitez pas et postulez !\r\n \r\nA compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.\r\n ",
-  "description1Formatted": "<p>Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de «&nbsp;faire plus pour ceux qui en ont le plus besoin&nbsp;».</p><p>Votre mission met en valeur votre sens du relationnel</p><p>- Vous informez et orientez les usagers qui contactent votre agence France Travail</p><p>- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)</p><p>- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi</p><p>- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant</p><p>- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation</p><p>- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)</p><p>-&nbsp;Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)</p><p>Découvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :</p><p>https://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy</p><p><iframe src=\"//www.youtube.com/embed/-E93vKKRCQU\" width=\"560\" height=\"314\" allowfullscreen=\"allowfullscreen\"></iframe></p><div class=\"know_div_element know_div\" lang=\"fr\" style=\"top: 0px; left: 0px; z-index: 210000; font-size: 1rem\">&nbsp;</div>",
-  "description2Formatted": "<p>Vous aimez être au contact d’un public varié.</p><p>Vous êtes doté de&nbsp;qualités relationnelles et rédactionnelles.</p><p>Vous avez&nbsp;le sens des responsabilités et vous savez prendre des initiatives.</p><p>Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.</p><p>Vous êtes à l’aise avec les outils informatiques et numériques.</p><p>Enfin, votre connaissance du&nbsp;marché de l'emploi et votre&nbsp;curiosité intellectuelle, sont des atouts pour délivrer une&nbsp;prestation de qualité.</p><p>Alors, n'hésitez pas et postulez !<br>&nbsp;<br>A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.</p><div class=\"know_div_element know_div\" lang=\"fr\" style=\"top: 0px; left: 0px; z-index: 210000; font-size: 1rem\">&nbsp;</div>",
-  "salaryRange": {
-    "code": 13609,
-    "clientCode": "1940",
-    "label": "1 940 €",
-    "active": true,
-    "parentCode": null,
-    "type": "salaryRange",
-    "parentType": "",
-    "hasChildren": false
-  },
-  "geographicalLocation": [],
-  "country": [
-    {
-      "code": 4044,
-      "clientCode": "_TS_CO_Region_ProvenceCotedAzur",
-      "label": "DR Provence-Cote d'Azur",
+[
+  {
+    "reference": "2025-82802",
+    "isTopOffer": false,
+    "title": "CONSEILLER(E) RELATION ENTREPRISE - 78",
+    "modificationDate": "2025-10-03T09:42:16.9",
+    "contractType": {
+      "code": 578,
+      "clientCode": "_TS_CO_Contract_CDD",
+      "label": "CDD",
       "active": true,
-      "parentCode": 22,
-      "type": "offerCountry",
+      "parentCode": 79,
+      "type": "contractType",
       "parentType": "",
       "hasChildren": false
-    }
-  ],
-  "region": [
-    {
-      "code": 4110,
-      "clientCode": "_TS_CO_Department_HautesAlpes05",
-      "label": "Hautes Alpes (05)",
+    },
+    "organisationName": "DT 78 (755A000016)",
+    "organisationDescription": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
+    "organisationLogoUrl": "https://francetravail-career.talent-soft.com/Handlers/Image.ashx?imagetype=logo&entityid=127806",
+    "contractTypeCountry": null,
+    "description1": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».\r\nVotre mission met en valeur votre sens du relationnel\r\n- Vous informez et orientez les usagers qui se présentent à l’accueil de votre agence France Travail (ouverte sans rdv le matin et sur rdv l’après-midi)\r\n- Vous êtes l’interlocuteur privilégié d'entreprises avec qui vous instaurez une relation de confiance (de la petite TPE à la grosse PME qui rayonne à l'international sans oublier les associations et les établissements publics)\r\n- Vous pouvez être amené à vous déplacer pour rencontrer de potentiels nouveaux employeurs\r\n- Vous ciblez leurs besoins et leurs éventuelles difficultés à recruter rapidement et vous leur proposez des services adaptés tout en les informant sur le marché du travail local (pour en savoir plus sur notre offre de services https://entreprise.francetravail.fr/)\r\n- Vous leur offrez un accompagnement et un conseil personnalisés et évolutifs au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)\r\n- Vous animez des salons en ligne, des sessions de recrutement et autre...\r\n- Vous pouvez être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)\r\nDécouvrez le métier de conseiller(e) relation entreprise avec Jordan au travers de cette vidéo :\r\nhttps://youtu.be/Fbi14JWDTdg?si=v87cn6GW0FU-5U57\r\n\r\n\r\n",
+    "description2": "Vous aimez être au contact d’un public varié.\r\nVous êtes doté de qualités relationnelles et rédactionnelles.\r\nVous avez le sens des responsabilités et vous savez prendre des initiatives.\r\nVous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.\r\nVous êtes à l’aise avec les outils informatiques et numériques.\r\nEnfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.\r\nAlors, n'hésitez pas et postulez !\r\n \r\nA compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.",
+    "description1Formatted": "<p>Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de «&nbsp;faire plus pour ceux qui en ont le plus besoin&nbsp;».</p><p>Votre mission met en valeur votre sens du relationnel</p><p>- Vous informez et orientez les usagers qui se présentent à l’accueil de votre agence France Travail (ouverte sans rdv le matin et sur rdv l’après-midi)</p><p>- Vous êtes l’interlocuteur privilégié d'entreprises avec qui vous instaurez une relation de confiance (de la petite TPE à la grosse PME qui rayonne à l'international sans oublier les associations et les établissements publics)</p><p>- Vous pouvez être amené à vous déplacer pour rencontrer de potentiels nouveaux employeurs</p><p>- Vous ciblez leurs besoins et leurs éventuelles difficultés à recruter rapidement et vous leur proposez des services adaptés tout en les informant sur le marché du travail local (pour en savoir plus sur notre offre de services <a href=\"https://entreprise.francetravail.fr/\" target=\"_blank\">https://entreprise.francetravail.fr/</a>)</p><p>- Vous leur offrez un accompagnement et un conseil personnalisés et évolutifs au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)</p><p>- Vous animez des salons en ligne, des sessions de recrutement et autre...</p><p>- Vous pouvez être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)</p><p>Découvrez le métier de conseiller(e) relation entreprise avec Jordan au travers de cette vidéo :</p><p>https://youtu.be/Fbi14JWDTdg?si=v87cn6GW0FU-5U57</p><p><br><iframe src=\"//www.youtube.com/embed/Fbi14JWDTdg\" width=\"560\" height=\"314\" allowfullscreen=\"allowfullscreen\"></iframe></p><p>&nbsp;</p>",
+    "description2Formatted": "<p>Vous aimez être au contact d’un public varié.</p><p>Vous êtes doté de&nbsp;qualités relationnelles et rédactionnelles.</p><p>Vous avez&nbsp;le sens des responsabilités et vous savez prendre des initiatives.</p><p>Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.</p><p>Vous êtes à l’aise avec les outils informatiques et numériques.</p><p>Enfin, votre connaissance du&nbsp;marché de l'emploi et votre&nbsp;curiosité intellectuelle, sont des atouts pour délivrer une&nbsp;prestation de qualité.</p><p>Alors, n'hésitez pas et postulez !<br>&nbsp;<br>A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.</p>",
+    "salaryRange": { "code": 13609, "clientCode": "1940", "label": "1 940 €", "active": true, "parentCode": null, "type": "salaryRange", "parentType": "", "hasChildren": false },
+    "geographicalLocation": [],
+    "country": [
+      {
+        "code": 4040,
+        "clientCode": "_TS_CO_Region_IledeFrance",
+        "label": "DR Ile-de-France",
+        "active": true,
+        "parentCode": 22,
+        "type": "offerCountry",
+        "parentType": "",
+        "hasChildren": false
+      }
+    ],
+    "region": [
+      {
+        "code": 4162,
+        "clientCode": "_TS_CO_Department_Yvelines78",
+        "label": "Yvelines (78)",
+        "active": true,
+        "parentCode": 4040,
+        "type": "offerRegion",
+        "parentType": "",
+        "hasChildren": false
+      }
+    ],
+    "department": [],
+    "latitude": null,
+    "longitude": null,
+    "_links": [{ "href": "https://francetravail-career.talent-soft.com/api/V2/offers/getoffer?reference=2025-82802", "rel": "detail" }],
+    "offerUrl": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82802&idOrigine=502&LCID=1036&offerReference=2025-82802",
+    "urlRedirectionEmployee": null,
+    "urlRedirectionApplicant": null,
+    "startPublicationDate": "2025-10-03T09:42:16.853",
+    "beginningDate": null
+  },
+  {
+    "reference": "2025-82799",
+    "isTopOffer": false,
+    "title": "CONSEILLER(E) EN CHARGE DE L'INDEMNISATION - 94",
+    "modificationDate": "2025-10-03T09:25:54.657",
+    "contractType": {
+      "code": 578,
+      "clientCode": "_TS_CO_Contract_CDD",
+      "label": "CDD",
       "active": true,
-      "parentCode": 4044,
-      "type": "offerRegion",
+      "parentCode": 79,
+      "type": "contractType",
       "parentType": "",
       "hasChildren": false
-    }
-  ],
-  "department": [
-    {
-      "code": 10619,
-      "clientCode": "_TS_CO_etab_34029",
-      "label": "Agence BRIANCON ",
+    },
+    "organisationName": "DT 94 (755A000020)",
+    "organisationDescription": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
+    "organisationLogoUrl": "https://francetravail-career.talent-soft.com/Handlers/Image.ashx?imagetype=logo&entityid=127819",
+    "contractTypeCountry": null,
+    "description1": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».\r\nVotre mission met en valeur votre sens du relationnel\r\n- Vous informez et orientez les usagers qui contactent votre agence France Travail\r\n- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)\r\n- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi\r\n- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant\r\n- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation\r\n- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)\r\n- Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)\r\nDécouvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :\r\nhttps://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy\r\n",
+    "description2": "Vous aimez être au contact d’un public varié.\r\nVous êtes doté de qualités relationnelles et rédactionnelles.\r\nVous avez le sens des responsabilités et vous savez prendre des initiatives.\r\nVous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.\r\nVous êtes à l’aise avec les outils informatiques et numériques.\r\nEnfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.\r\nAlors, n'hésitez pas et postulez !\r\n \r\nA compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.",
+    "description1Formatted": "<p>Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de «&nbsp;faire plus pour ceux qui en ont le plus besoin&nbsp;».</p><p>Votre mission met en valeur votre sens du relationnel</p><p>- Vous informez et orientez les usagers qui contactent votre agence France Travail</p><p>- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)</p><p>- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi</p><p>- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant</p><p>- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation</p><p>- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)</p><p>-&nbsp;Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)</p><p>Découvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :</p><p>https://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy</p><p><iframe src=\"//www.youtube.com/embed/-E93vKKRCQU\" width=\"560\" height=\"314\" allowfullscreen=\"allowfullscreen\"></iframe></p>",
+    "description2Formatted": "<p>Vous aimez être au contact d’un public varié.</p><p>Vous êtes doté de&nbsp;qualités relationnelles et rédactionnelles.</p><p>Vous avez&nbsp;le sens des responsabilités et vous savez prendre des initiatives.</p><p>Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.</p><p>Vous êtes à l’aise avec les outils informatiques et numériques.</p><p>Enfin, votre connaissance du&nbsp;marché de l'emploi et votre&nbsp;curiosité intellectuelle, sont des atouts pour délivrer une&nbsp;prestation de qualité.</p><p>Alors, n'hésitez pas et postulez !<br>&nbsp;<br>A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.</p>",
+    "salaryRange": { "code": 13609, "clientCode": "1940", "label": "1 940 €", "active": true, "parentCode": null, "type": "salaryRange", "parentType": "", "hasChildren": false },
+    "geographicalLocation": [],
+    "country": [
+      {
+        "code": 4040,
+        "clientCode": "_TS_CO_Region_IledeFrance",
+        "label": "DR Ile-de-France",
+        "active": true,
+        "parentCode": 22,
+        "type": "offerCountry",
+        "parentType": "",
+        "hasChildren": false
+      }
+    ],
+    "region": [
+      {
+        "code": 4156,
+        "clientCode": "_TS_CO_Department_ValdeMarne94",
+        "label": "Val de Marne (94)",
+        "active": true,
+        "parentCode": 4040,
+        "type": "offerRegion",
+        "parentType": "",
+        "hasChildren": false
+      }
+    ],
+    "department": [],
+    "latitude": null,
+    "longitude": null,
+    "_links": [{ "href": "https://francetravail-career.talent-soft.com/api/V2/offers/getoffer?reference=2025-82799", "rel": "detail" }],
+    "offerUrl": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82799&idOrigine=502&LCID=1036&offerReference=2025-82799",
+    "urlRedirectionEmployee": null,
+    "urlRedirectionApplicant": null,
+    "startPublicationDate": "2025-10-03T09:25:54.61",
+    "beginningDate": null
+  },
+  {
+    "reference": "2025-82797",
+    "isTopOffer": false,
+    "title": "CONSEILLER(E) EN CHARGE DE L'INDEMNISATION - 92",
+    "modificationDate": "2025-10-03T09:23:42.963",
+    "contractType": {
+      "code": 578,
+      "clientCode": "_TS_CO_Contract_CDD",
+      "label": "CDD",
       "active": true,
-      "parentCode": 4110,
-      "type": "offerDepartment",
+      "parentCode": 79,
+      "type": "contractType",
       "parentType": "",
       "hasChildren": false
-    }
-  ],
-  "latitude": null,
-  "longitude": null,
-  "_links": [
-    {
-      "href": "https://francetravail-career.talent-soft.com/api/V2/offers/getoffer?reference=2025-83792",
-      "rel": "detail"
-    }
-  ],
-  "offerUrl": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=83792&idOrigine=502&LCID=1036&offerReference=2025-83792",
-  "urlRedirectionEmployee": null,
-  "urlRedirectionApplicant": null,
-  "startPublicationDate": "2026-01-14T10:51:21.563",
-  "beginningDate": null,
-  "createdAt": {
-    "$date": "2026-01-14T10:31:14.415Z"
+    },
+    "organisationName": "DT 92 (755A000018)",
+    "organisationDescription": "Rejoignez France Travail et intégrez un établissement public engagé. France Travail, c'est plus de 58 000 agents mobilisés partout en France au service des demandeurs d'emploi et des employeurs. Ce qui nous réunit ? Une seule et même ambition : faciliter le retour à l'emploi. Non-discrimination à l'embauche, respect de la diversité et de la mixité, politique d'intégration des nouveaux arrivants, formation continue et montée en compétences…France Travail est engagé dans une politique de recrutement et de gestion des carrières responsables. Pour en savoir plus, consultez le site www.france-travail.org/accueil/ ",
+    "organisationLogoUrl": "https://francetravail-career.talent-soft.com/Handlers/Image.ashx?imagetype=logo&entityid=127815",
+    "contractTypeCountry": null,
+    "description1": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».\r\nVotre mission met en valeur votre sens du relationnel\r\n- Vous informez et orientez les usagers qui contactent votre agence France Travail\r\n- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)\r\n- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi\r\n- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant\r\n- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation\r\n- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)\r\n- Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)\r\nDécouvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :\r\nhttps://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy\r\n",
+    "description2": "Vous aimez être au contact d’un public varié.\r\nVous êtes doté de qualités relationnelles et rédactionnelles.\r\nVous avez le sens des responsabilités et vous savez prendre des initiatives.\r\nVous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.\r\nVous êtes à l’aise avec les outils informatiques et numériques.\r\nEnfin, votre connaissance du marché de l'emploi et votre curiosité intellectuelle, sont des atouts pour délivrer une prestation de qualité.\r\nAlors, n'hésitez pas et postulez !\r\n \r\nA compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.",
+    "description1Formatted": "<p>Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de «&nbsp;faire plus pour ceux qui en ont le plus besoin&nbsp;».</p><p>Votre mission met en valeur votre sens du relationnel</p><p>- Vous informez et orientez les usagers qui contactent votre agence France Travail</p><p>- Vous accueillez et délivrez aux demandeurs d’emploi des informations et conseils sur les démarches et les droits liés à l'indemnisation, au travers d’échanges par mail, téléphone ou en entretien (physique ou visio)</p><p>- Vous assurez la sécurisation financière et le traitement du dossier d'indemnisation dans les délais impartis et contribuez ainsi à la satisfaction du demandeur d’emploi</p><p>- Vous gérez, en tant qu'interlocuteur privilégié, les réclamations, les trop-perçus et mettez en œuvre la procédure de recouvrement le cas échéant</p><p>- Vous établissez une relation personnalisée et proactive avec le demandeur d’emploi dans la gestion et le suivi du dossier d’indemnisation</p><p>- Vous animez des ateliers collectifs sur des thématiques variées (création d’entreprise, accès à la formation…)</p><p>-&nbsp;Vous pouvez peux être amené à représenter France Travail lors d’évènements extérieurs (salons, forums…)</p><p>Découvrez le métier de conseiller(e) en charge de l'indemnisation avec Barbara au travers de cette vidéo :</p><p>https://youtu.be/-E93vKKRCQU?si=pBTIhy2pSF0HVjcy</p><p><iframe src=\"//www.youtube.com/embed/-E93vKKRCQU\" width=\"560\" height=\"314\" allowfullscreen=\"allowfullscreen\"></iframe></p>",
+    "description2Formatted": "<p>Vous aimez être au contact d’un public varié.</p><p>Vous êtes doté de&nbsp;qualités relationnelles et rédactionnelles.</p><p>Vous avez&nbsp;le sens des responsabilités et vous savez prendre des initiatives.</p><p>Vous savez vous mobiliser pour obtenir des résultats, la satisfaction des usagers sera la vôtre.</p><p>Vous êtes à l’aise avec les outils informatiques et numériques.</p><p>Enfin, votre connaissance du&nbsp;marché de l'emploi et votre&nbsp;curiosité intellectuelle, sont des atouts pour délivrer une&nbsp;prestation de qualité.</p><p>Alors, n'hésitez pas et postulez !<br>&nbsp;<br>A compétences égales, les candidatures des personnes en situation de handicap seront particulièrement valorisées.</p>",
+    "salaryRange": { "code": 13609, "clientCode": "1940", "label": "1 940 €", "active": true, "parentCode": null, "type": "salaryRange", "parentType": "", "hasChildren": false },
+    "geographicalLocation": [],
+    "country": [
+      {
+        "code": 4040,
+        "clientCode": "_TS_CO_Region_IledeFrance",
+        "label": "DR Ile-de-France",
+        "active": true,
+        "parentCode": 22,
+        "type": "offerCountry",
+        "parentType": "",
+        "hasChildren": false
+      }
+    ],
+    "region": [
+      {
+        "code": 4112,
+        "clientCode": "_TS_CO_Department_HautsdeSeine92",
+        "label": "Hauts-de-Seine (92)",
+        "active": true,
+        "parentCode": 4040,
+        "type": "offerRegion",
+        "parentType": "",
+        "hasChildren": false
+      }
+    ],
+    "department": [],
+    "latitude": null,
+    "longitude": null,
+    "_links": [{ "href": "https://francetravail-career.talent-soft.com/api/V2/offers/getoffer?reference=2025-82797", "rel": "detail" }],
+    "offerUrl": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82797&idOrigine=502&LCID=1036&offerReference=2025-82797",
+    "urlRedirectionEmployee": null,
+    "urlRedirectionApplicant": null,
+    "startPublicationDate": "2025-10-03T09:23:42.917",
+    "beginningDate": null
   }
-}
+]
