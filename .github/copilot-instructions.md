@@ -481,7 +481,7 @@ yarn seed:update          # Update seed from local DB
 - **OIDC authentication**: Prefer OIDC for cloud providers over long-lived credentials
 
 ### Performance Optimization
-- **Caching**: Use `actions/cache@v3` with `hashFiles()` for cache keys
+- **Caching**: Use `actions/cache@v4` with `hashFiles()` for cache keys
 - **Matrix strategies**: Run tests in parallel across Node versions, OS types
 - **Conditional execution**: Use `if` conditions to skip unnecessary jobs
 - **Job dependencies**: Use `needs` to define execution order and data passing via `outputs`
