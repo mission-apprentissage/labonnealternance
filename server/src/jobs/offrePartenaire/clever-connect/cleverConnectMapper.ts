@@ -38,7 +38,7 @@ export const ZCleverConnectJob = z
     company: z.object({
       $: z.object({ id: z.string(), anonymous: z.string() }),
       description: z.string().nullish(),
-      name: z.string(),
+      name: z.string().nullish(),
     }),
     workplace: z.object({
       locations: z.object({
@@ -77,23 +77,40 @@ export const ZCleverConnectJob = z
     workSchedule: z
       .object({
         types: z.object({
-          type: z.object({
-            _: z.string(),
-            $: z.object({ code: z.string() }),
-          }),
+          type: z.union([
+            z.array(
+              z.object({
+                _: z.string(),
+                $: z.object({ code: z.string() }),
+              })
+            ),
+            z.object({
+              _: z.string(),
+              $: z.object({ code: z.string() }),
+            }),
+          ]),
         }),
       })
       .nullish(),
     benefits: z
-      .object({
-        salary: z
-          .object({
-            _: z.string(),
-            $: z.object({ lowEnd: z.string(), currency: z.string(), period: z.string() }),
-          })
-          .nullish(),
-        description: z.string().nullish(),
-      })
+      .union([
+        z.object({
+          salary: z
+            .object({
+              _: z.string(),
+              $: z
+                .object({
+                  lowEnd: z.string().optional(),
+                  currency: z.string().optional(),
+                  period: z.string().optional(),
+                })
+                .optional(),
+            })
+            .nullish(),
+          description: z.string().nullish(),
+        }),
+        z.string(),
+      ])
       .nullish(),
     profile: z
       .object({
@@ -138,7 +155,7 @@ export const ZCleverConnectJob = z
 export type ICleverConnectJob = z.output<typeof ZCleverConnectJob>
 
 export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_label: JOBPARTNERS_LABEL): IComputedJobsPartners => {
-  const { $, title, link, publicationDate, lastModificationDate, company } = job
+  const { $, title, link, publicationDate, company } = job
   const startDate = job.contract.startDate && job.contract.startDate.endsWith("Z") ? new Date(job.contract.startDate.slice(0, -1)) : null
   const workplaceLocation = isArray(job.workplace.locations.location) ? job.workplace.locations.location[0] : job.workplace.locations.location
   const workplace_geopoint = geolocToLatLon(workplaceLocation)
@@ -146,20 +163,18 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
   const urlParsing = extensions.url().safeParse(link)
   const creationDate = new Date(publicationDate)
 
-  const created_at = new Date()
+  const now = new Date()
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at,
-    updated_at: lastModificationDate ? new Date(lastModificationDate) : created_at,
     partner_label: partner_label,
     partner_job_id: $.id,
 
     offer_title: title,
     offer_description: getOfferDescription(job),
     offer_creation: creationDate,
-    offer_expiration: dayjs(creationDate || created_at)
+    offer_expiration: dayjs(creationDate || now)
       .tz()
       .add(2, "months")
       .toDate(),
@@ -169,7 +184,7 @@ export const cleverConnectJobToJobsPartners = (job: ICleverConnectJob, partner_l
     offer_access_conditions: getAccessConditions(job),
     offer_target_diploma: getOfferTargetDiploma(job),
 
-    workplace_name: company.name,
+    workplace_name: company?.name || null,
     workplace_description: company.description && company.description.length >= 30 ? company.description : null,
     workplace_address_zipcode: workplaceLocation?.postalCode || null,
     workplace_address_city: workplaceLocation.city || null,
@@ -294,14 +309,23 @@ const getOfferDescription = (job: ICleverConnectJob): IComputedJobsPartners["off
   if (position) {
     descriptionComputed += `Poste: ${position}\r\n\r\n`
   }
-  if (workSchedule?.types?.type?._) {
-    descriptionComputed += `${workSchedule.types.type._}\r\n\r\n`
+  const workScheduleTypes = workSchedule?.types?.type
+  if (workScheduleTypes) {
+    if (Array.isArray(workScheduleTypes)) {
+      descriptionComputed += `${workScheduleTypes.map((type) => type._).join(", ")}\r\n\r\n`
+    } else if (typeof workScheduleTypes === "object") {
+      descriptionComputed += `${workScheduleTypes._}\r\n\r\n`
+    }
   }
-  if (benefits?.salary?._) {
-    descriptionComputed += `Avantages: ${benefits.salary._}\r\n\r\n`
-  }
-  if (benefits?.description) {
-    descriptionComputed += `${benefits.description}\r\n\r\n`
+  if (typeof benefits === "string") {
+    descriptionComputed += `Avantages: ${benefits}\r\n\r\n`
+  } else {
+    if (benefits?.salary?._) {
+      descriptionComputed += `Avantages: ${benefits.salary._}\r\n\r\n`
+    }
+    if (benefits?.description) {
+      descriptionComputed += `${benefits.description}\r\n\r\n`
+    }
   }
   if (profile?.description) {
     descriptionComputed += `Profil: ${profile.description}`

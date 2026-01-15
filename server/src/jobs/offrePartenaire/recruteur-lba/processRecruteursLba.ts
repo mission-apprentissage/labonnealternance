@@ -15,6 +15,7 @@ import { logger } from "@/common/logger"
 import { cancelRemovedJobsPartners } from "@/jobs/offrePartenaire/cancelRemovedJobsPartners"
 import { fillComputedRecruteursLba } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
 import { importFromComputedToJobsPartners } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
+import { fillLbaUrl } from "@/jobs/offrePartenaire/fillLbaUrl"
 
 export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFileDate = false }: { sourceFileReadStream?: Stream.Readable; skipCheckFileDate?: boolean } = {}) => {
   logger.info("début de processRecruteursLba")
@@ -27,6 +28,11 @@ export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFile
   }
 
   await importRecruteursLbaRaw(sourceFileReadStream)
+  await processRecruteursLbaRawToEnd()
+  logger.info("fin de processRecruteursLba")
+}
+
+export async function processRecruteursLbaRawToEnd() {
   await importRecruteurLbaToComputed()
   await fillComputedRecruteursLba()
 
@@ -34,6 +40,6 @@ export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFile
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   }
   await importFromComputedToJobsPartners(filter)
+  await fillLbaUrl()
   await cancelRemovedJobsPartners(filter)
-  logger.info("fin de processRecruteursLba")
 }

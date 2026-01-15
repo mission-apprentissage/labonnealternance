@@ -18,17 +18,23 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
-export const inviteEtablissementParcoursupToPremium = async () => {
+export const inviteEtablissementParcoursupToPremiumBypassDate = async () => {
+  await inviteEtablissementParcoursupToPremium(true)
+}
+
+export const inviteEtablissementParcoursupToPremium = async (bypassDate?: boolean) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const { startDay, startMonth } = config.parcoursupPeriods.start
-  const { endDay, endMonth } = config.parcoursupPeriods.end
+  if (!bypassDate) {
+    const { startDay, startMonth } = config.parcoursupPeriods.start
+    const { endDay, endMonth } = config.parcoursupPeriods.end
 
-  const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
-  const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
-  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
-    logger.info("Stopped because we are not within the eligible period.")
-    return
+    const startInvitationPeriod = dayjs().month(startMonth).date(startDay)
+    const endInvitationPeriod = dayjs().month(endMonth).date(endDay)
+    if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
+      logger.info("Stopped because we are not within the eligible period.")
+      return
+    }
   }
 
   const etablissementsToInviteToPremium: Array<IEtablissementsToInviteToPremium> = (await getDbCollection("etablissements")
@@ -83,13 +89,22 @@ export const inviteEtablissementParcoursupToPremium = async () => {
         isParcoursup: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
+          logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
+          name: hasOneAvailableFormation.etablissement_formateur_raison_sociale,
+          formateur_address: hasOneAvailableFormation.lieu_formation_street,
+          formateur_zip_code: hasOneAvailableFormation.lieu_formation_zip_code,
+          formateur_city: hasOneAvailableFormation.lieu_formation_city,
+          formateur_siret: hasOneAvailableFormation.etablissement_formateur_siret,
         },
+        publicEmail: config.publicEmail,
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-invitation",
       },
     })
 

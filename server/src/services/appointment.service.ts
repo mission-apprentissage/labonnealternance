@@ -82,7 +82,7 @@ export const sendCandidateAppointmentEmail = async (
     to: candidate.email,
     subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-    data: await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+    data: { ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)), publicEmail: config.publicEmail },
   })
   await findOneAndUpdate(
     { _id: appointment._id },
@@ -109,6 +109,7 @@ export const sendFormateurAppointmentEmail = async (
     data: {
       ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)),
       link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, appointment._id.toString()),
+      publicEmail: config.publicEmail,
     },
   })
   await findOneAndUpdate(
@@ -203,7 +204,7 @@ export const sendCandidateAppointmentHardbounceEmail = async (appointment: IAppo
     to: user.email,
     subject: `Le centre de formation ${training?.etablissement_formateur_raison_sociale} n’a pas reçu votre demande`,
     template: getStaticFilePath("./templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs"),
-    data: { phone: formation.num_tel, ...(await getMailData(user, appointment, training, getReferrerByKeyName(appointment.appointment_origin))) },
+    data: { phone: formation.num_tel, ...(await getMailData(user, appointment, training, getReferrerByKeyName(appointment.appointment_origin))), publicEmail: config.publicEmail },
   })
 
   await findOneAndUpdate(

@@ -4,6 +4,7 @@
     <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
       <mj-all padding="0"></mj-all>
+      <mj-all font-family="Arial, sans-serif" />
     </mj-attributes>
     <mj-style>
       @media only screen and (max-width: 799px) {
@@ -59,23 +60,23 @@
     </mj-style>
   </mj-head>
   <mj-body background-color="#f5f5fe" name="Candidature spontanée" width="800px">
-    <mj-wrapper border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
-      <mj-section border-radius="0px" css-class="section" name="mj-section_group">
+    <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
-            <mj-image align="left" alt="Image" css-class="image" src="<%= data.images.logoRf %>" width="89px"></mj-image>
+            <mj-image align="left" alt="" css-class="image" src="<%= data.images.logoRf %>" width="89px"></mj-image>
           </mj-column>
           <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
-            <mj-image align="left" alt="Image" css-class="image" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
+            <mj-image align="left" alt="" css-class="image" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px"></mj-image>
           </mj-column>
           <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%"></mj-column>
         </mj-group>
       </mj-section>
       <mj-spacer height="24px"></mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="33.03%">
-            <mj-image align="center" alt="Image" css-class="image" padding="2px 0px 2px 0px" src="<%= data.images.recuCandidature %>" width="183px"></mj-image>
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="33.03%">
+            <mj-image align="center" alt="" css-class="image" padding="2px 0px 2px 0px" src="<%= data.images.recuCandidature %>" width="183px"></mj-image>
           </mj-column>
           <mj-column css-class="padB40" width="4.7%">
             <mj-spacer height="0px"></mj-spacer>
@@ -89,9 +90,9 @@
         </mj-group>
       </mj-section>
       <mj-spacer height="24px"></mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 16px 0px">
               <span style="font-weight: 700;">
                 <%= data.applicant_first_name %> <%= data.applicant_last_name %>
@@ -123,9 +124,9 @@
         </mj-group>
       </mj-section>
       <mj-spacer height="24px"></mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column"  padding="23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
               Candidature
               <br />
@@ -186,9 +187,9 @@
         </mj-group>
       </mj-section>
       <mj-spacer height="24px"></mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="11px 23px 11px 23px">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" padding="0px 0px 0px 0px" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column" padding="11px 23px 11px 23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
               🎲 Préparez l'arrivée de votre futur·e alternant·e
               <br />
@@ -202,9 +203,9 @@
         </mj-group>
       </mj-section>
       <mj-spacer height="24px"></mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px 23px 23px 23px">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+          <mj-column border-radius="0px" css-class="column"  padding="23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="28px" padding="0px 0px 12px 0px">
               Une question ?
               <br />
@@ -217,7 +218,7 @@
               <br />
               <br />
 
-              📝 <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=MAJ%20informations%20entreprise%20-%20Candidature%20spontanée" style="text-decoration: underline; color: inherit;">
+              📝 <a href="mailto:<%= data.publicEmail %>?subject=MAJ%20informations%20entreprise%20-%20Candidature%20spontanée" style="text-decoration: underline; color: inherit;">
                 Modifier les données de mon établissement
               </a>
               <br />
@@ -235,7 +236,7 @@
         </mj-group>
       </mj-section>
       <mj-spacer height="24px"></mj-spacer>
-      <mj-section border-radius="4px" css-class="section" name="mj-section_group">
+      <mj-section border-radius="4px" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
@@ -244,7 +245,7 @@
               <br />
               <br />Nous vous contactons car nous souhaitons vous proposer des candidats à l'alternance.
               <br />
-              <br />Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">labonnealternance@apprentissage.beta.gouv.fr</a>
+              <br />Nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>?subject=Droit%20opposition" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;"><%= data.publicEmail %></a>
               <br />
               <br />Si vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite" style="font-family: Arial, Helvetica, Verdana, sans-serif; font-weight: 400; text-decoration: underline; color: inherit;">politique de confidentialité</a> de La bonne alternance.
               <br />
@@ -252,6 +253,6 @@
           </mj-column>
         </mj-group>
       </mj-section>
-    </mj-wrapper>
+    </mj-column>
   </mj-body>
 </mjml>

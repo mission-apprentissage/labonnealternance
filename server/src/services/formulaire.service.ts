@@ -20,6 +20,7 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import dayjs from "shared/helpers/dayjs"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
@@ -41,6 +42,7 @@ import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPart
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { logger } from "@/common/logger"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -211,8 +213,6 @@ export const createJob = async ({
     throw internal("unexpected: no job found after job creation")
   }
 
-  console.log("ICICIICIICIC : ", jobs.length, is_delegated, entrepriseStatus)
-
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
     if (!entrepriseStatus) {
@@ -220,8 +220,6 @@ export const createJob = async ({
     }
     const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
-
-    console.log("ENTERPRISE MAIL : ", roleStatus)
 
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
 
@@ -338,6 +336,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
         },
+        publicEmail: config.publicEmail,
       },
     })
   }
@@ -732,6 +731,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
       policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -762,6 +762,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_title: job.offer_title_custom,
       },
       lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -869,6 +870,15 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   const recruiterOpt = await getOffre(jobId)
   const { managed_by } = recruiterOpt ?? {}
   await validateUserWithAccountEmail(new ObjectId(managed_by))
+}
+
+export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | IUserRecruteur, phone?: string, email?: string) => {
+  if (user.phone === phone) {
+    throw badRequest(EntrepriseErrorCodes.PHONE_SAME_AS_CFA)
+  }
+  if (!email || user.email?.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
+    throw badRequest(EntrepriseErrorCodes.EMAIL_SAME_AS_CFA)
+  }
 }
 
 export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {

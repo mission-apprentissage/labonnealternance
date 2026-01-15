@@ -7,11 +7,12 @@ import { processJobteaser } from "./jobteaser/processJobteaser"
 // import { processJooble } from "./jooble/processJooble"
 import { processKelio } from "./kelio/processKelio"
 import { processLaposte } from "./laposte/processLaposte"
-// import { processDecathlon } from "./decathlon/processDecathlon"
 import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
+// import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
+import { processDecathlon } from "./decathlon/importDecathlon"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -112,12 +113,18 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
-  // "Import Decathlon": {
+  // "Import Engagement Jeunes": {
   //   cron_string: timings.import_source,
-  //   handler: processDecathlon,
+  //   handler: processEngagementJeunes,
   //   checkinMargin: 350,
   //   maxRuntimeInMinutes: 30,
   // },
+  "Import Decathlon": {
+    cron_string: timings.import_source,
+    handler: processDecathlon,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
 
   // Keep at the end
   "Process computed and import to Jobs Partners": {

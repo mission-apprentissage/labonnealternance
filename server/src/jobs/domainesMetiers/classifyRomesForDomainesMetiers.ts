@@ -206,6 +206,28 @@ export const classifyRomesForDomainesMetiersAnalyze = async () => {
   console.info("Domaines sans nouveau rome", domainesSansRomes)
 }
 
+export async function findDomainesMetiersIncoherents() {
+  const domainesmetiers = await getDbCollection("domainesmetiers")
+    .find(
+      {
+        $expr: {
+          $ne: [{ $size: "$codes_romes" }, { $size: "$intitules_romes" }],
+        },
+      },
+      {
+        projection: {
+          domaine: 1,
+          sous_domaine: 1,
+          codes_romes: 1,
+          intitules_romes: 1,
+        },
+      }
+    )
+    .toArray()
+  console.info(domainesmetiers.length, "domaines incohérents trouvés")
+  await fs.writeFile("./domainesmetiers.incoherents.json", JSON.stringify(domainesmetiers, null, 2))
+}
+
 const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
   const messages: Message[] = [
     {

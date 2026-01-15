@@ -1,70 +1,154 @@
 <mjml>
   <mj-head>
     <mj-title>Nouveaux comptes entreprises à valider</mj-title>
-    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"></mj-font>
-    <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
+    <mj-breakpoint width="480px"></mj-breakpoint>
     <mj-attributes>
-      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px"></mj-text>
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px"></mj-button>
+      <mj-all padding="0"></mj-all>
+      <mj-all font-family="Arial, sans-serif" />
     </mj-attributes>
+    <mj-style>
+      @media only screen and (max-width: 799px) {
+      .text > div {
+      text-align: inherit !important;
+      }
+
+      .wrapper > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .section > table > tbody > tr > td {
+      padding-left: 20px !important;
+      padding-right: 20px !important;
+      }
+
+      .column > table > tbody > tr > td {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .padB40 {
+      padding-bottom: 40px !important;
+      }
+
+      .image {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .image > table {
+      text-align: center !important;
+      margin: 0 auto !important;
+      }
+
+      .divider {
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+      }
+
+      .button > table {
+      width: 100% !important;
+      }
+
+      .button > table > tbody > tr > td > a {
+      width: 80% !important;
+      }
+      }
+    </mj-style>
+    <mj-style inline="inline">
+      .column > table { border-collapse: separate; }
+    </mj-style>
   </mj-head>
-  <mj-body background-color="#E5E5E5">
-    <mj-section>
-      <mj-column>
-        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance" />
-      </mj-column>
-    </mj-section>
+  <mj-body background-color="#f5f5fe" width="800px">
+    <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
+      <mj-section border-radius="0px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="14.83%">
+            <mj-image align="left" alt="" css-class="image" href="#" src="<%= data.images.logoRf %>" width="89px">
 
-    <mj-section padding-top="0">
-      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-        <mj-text> Bonjour <%= data.prenom %> <%= data.nom %>, </mj-text>
+            </mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" padding="0px 24px 0px 24px" vertical-align="middle" width="34.83%">
+            <mj-image align="left" alt="" css-class="image" href="#" padding="17px 0px 17px 0px" src="<%= data.images.logoLba %>" width="160px">
 
-        <% if(data.count > 1) { %>
-        <mj-text>
-          <strong><%= data.count %></strong> nouvelles entreprises dépendant de votre OPCO se sont connectées pour la première fois cette semaine à La bonne alternance pour
-          exprimer un besoin en recrutement.
-        </mj-text>
-        <mj-text>
-          <b
-            >Nous vous invitons à vérifier leurs coordonnées en vous
-            <a href="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/authentification">connectant à votre espace OPCO</a>.</b
-          >
-          Vous pourrez alors valider leur compte afin que leurs offres apparaissent sur les plateformes de recherche d'alternance les plus consultées des jeunes (1jeune 1solution,
-          Parcoursup, Affelnet, ONISEP,...).
-        </mj-text>
-        <% } %> <% if(data.count === 1) { %>
-        <mj-text>
-          <strong><%= data.count %></strong> nouvelle entreprise dépendant de votre OPCO s'est connectée pour la première fois cette semaine à La bonne alternance pour exprimer un
-          besoin en recrutement.
-        </mj-text>
-        <mj-text>
-          <b
-            >Nous vous invitons à vérifier ses coordonnées en vous
-            <a href="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/authentification">connectant à votre espace OPCO</a>.</b
-          >
-          Vous pourrez alors valider son compte pour que ses offres apparaissent sur les plateformes de recherche d'alternance les plus consultées des jeunes (1jeune 1solution,
-          Parcoursup, Affelnet, ONISEP,...).
-        </mj-text>
-        <% } %>
-        <mj-button color="#ffffff" background-color="#000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/authentification"> Accéder à mon espace </mj-button>
+            </mj-image>
+          </mj-column>
+          <mj-column border-radius="0px" css-class="column" vertical-align="top" width="50.33%">
 
-        <mj-text>
-          Ces entreprises ne connaissent pas forcément votre OPCO. Vous pouvez les contacter, leur présenter vos services et vérifier qu'elles sont bien adhérentes et qu'il ne
-          s'agit pas d'une tentative d'usurpation de compte.
-        </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px"></mj-spacer>
 
-        <mj-text>Pour activer la vérification automatique, vous pouvez vous rapprocher de nos équipes par mail à l'adresse labonnealternance@apprentissage.beta.gouv.fr</mj-text>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" line-height="24px" padding="0px 0px 24px 0px">
+              Bonjour,
+              <br /><br />
+              <%= data.count %> nouvelles entreprises dépendant de votre OPCO se sont connectées pour la première fois cette semaine à La bonne alternance et attendent votre validation pour exposer leurs offres aux candidats sur La bonne alternance, Parcoursup, Affelnet, ONISEP, ...
+              <br /><br />
+              Vérifiez leurs coordonnées en vous connectant à votre compte OPCO La bonne alternance. 
+            </mj-text>
 
-        <mj-text>
-          L'équipe La bonne alternance, <br />
-          Mission ministérielle pour l'apprentissage
-        </mj-text>
-      </mj-column>
-    </mj-section>
-    <mj-section padding-top="30px">
-      <mj-column>
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/assets/logo-republique-francaise.webp" width="200px" align="left"></mj-image>
-      </mj-column>
-    </mj-section>
+            <mj-button color="#ffffff" font-size="16px" font-weight="bold" background-color="#000091" border="1px solid #000091" href="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/authentification?<%= data.utmParams %>">
+              Me connecter à mon espace OPCO
+            </mj-button>
+            <mj-spacer height="24px"></mj-spacer>
+
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="0px 0px 24px 0px">
+              Objectif : sécuriser la plateforme pour les candidats
+              <br />
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              En tant que référent OPCO, votre rôle est majeur pour garantir que derrière chaque compte entreprise est associée une personne légitime. Nous vous proposons une méthode de vérification en 5 étapes maximum :
+              <br />
+            </mj-text>
+
+            <mj-spacer height="24px"></mj-spacer>
+            <mj-button color="#000091" font-size="16px" font-weight="bold" background-color="#ffffff" border="1px solid #000091" href="https://docs.google.com/document/d/1wMASQm-kHFqz2REAy7JYkiUyl7X5y8gP4PMiYe6qLAg/edit?tab=t.0">
+              Télécharger la méthode de vérification (PDF)
+            </mj-button>
+            <mj-spacer height="24px"></mj-spacer>
+
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px"  padding="0px 0px 12px 0px">
+              Votre validation des comptes entreprise enclenche la diffusion de leurs offres sur les plateformes les plus consultées des candidats (Parcourup, Affelnet, ONISEP, ...).
+            </mj-text>
+
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px" padding="0px 0px 24px 0px">
+              Pour activer la vérification automatique de toutes les nouvelles entreprises inscrites et dépendantes de votre OPCO, rapprochez-vous de nos équipes par email à l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>.
+            </mj-text>
+            
+            <mj-text font-size="16px" line-height="24px">
+              Cordialement,<br/>
+              L'équipe <a href="https://labonnealternance.apprentissage.beta.gouv.fr/acces-recruteur?<%= data.utmParams %>">La bonne alternance</a>
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      
+
+      <mj-spacer height="24px"></mj-spacer>
+
+      <mj-section border-radius="4px" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#666666" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" line-height="24px">
+              Ce courriel est généré automatiquement, vous ne pouvez pas y répondre.
+              <br />
+              Pour toute question, consultez notre <a href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?<%= data.utmParams %>">FAQ</a> ou écrivez-nous à <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>
+              <br /><br />
+              La bonne alternance est un site développé par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP), au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail et des Solidarités.
+              <br /><br />
+              Nous vous contactons car vous avez déclaré des formations en apprentissage auprès de votre Carif Oref.
+              <br /><br />
+              Par ailleurs, nous ne faisons aucune utilisation commerciale de vos adresses e-mail. Nous avons accès à vos données à caractère personnel car votre école transmet vos données au Tableau de bord de l’apprentissage. Vous bénéficiez d’un droit d’opposition que vous pouvez utiliser à tout moment via l’adresse <a href="mailto:<%= data.publicEmail %>"><%= data.publicEmail %></a>. Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL.
+              <br /><br />
+              Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la <a href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite?<%= data.utmParams %>">politique de confidentialité de La bonne alternance</a>.
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-column>
   </mj-body>
 </mjml>

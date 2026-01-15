@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
+import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
@@ -474,6 +475,18 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
     }),
+    backAdminGestionDesRecruteurs: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
+      const searchParams = new URLSearchParams()
+      Object.entries(props).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value + "")
+        }
+      })
+      return {
+        getPath: () => `/espace-pro/administration/users?${searchParams}` as string,
+        title: "Gestion des recruteurs",
+      }
+    },
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",

@@ -161,7 +161,7 @@ describe("POST /v2/application", () => {
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      recipient_id: getRecipientID(JobCollectionName.recruteur, recruteur.workplace_siret!),
+      recipient_id: getRecipientID(JobCollectionName.partners, recruteur._id.toString()),
     }
 
     const response = await httpClient().inject({

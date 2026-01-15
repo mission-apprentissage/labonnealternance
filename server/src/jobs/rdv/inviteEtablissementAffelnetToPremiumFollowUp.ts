@@ -18,6 +18,10 @@ interface IEtablissementsToInviteToPremium {
   count: number
 }
 
+export const inviteEtablissementAffelnetToPremiumFollowUpCli = async () => {
+  await inviteEtablissementAffelnetToPremiumFollowUp(true)
+}
+
 export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: boolean = false) => {
   logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp started.")
 
@@ -71,20 +75,25 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async (bypassDate: b
     // Invite all etablissements only in production environment
     const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e`,
+      subject: `Rappel: Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
       data: {
         isAffelnet: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-          integrationExample: `${config.publicUrl}/assets/exemple_integration_affelnet.webp?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
         },
         etablissement: {
-          email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
+          name: hasOneAvailableFormation.etablissement_formateur_raison_sociale,
+          formateur_address: hasOneAvailableFormation.etablissement_formateur_street,
+          formateur_zip_code: hasOneAvailableFormation.etablissement_formateur_zip_code,
+          formateur_city: hasOneAvailableFormation.etablissement_formateur_city,
+          siret: hasOneAvailableFormation.etablissement_formateur_siret,
           linkToForm: createRdvaPremiumAffelnetPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
+        publicEmail: config.publicEmail,
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-affelnet-followup",
       },
     })
 

@@ -91,7 +91,7 @@ const transformCompany = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
+    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
   }
 
   return resultCompany
@@ -136,7 +136,7 @@ const transformCompanyWithMinimalData = ({
     ],
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
+    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
   }
 
   return resultCompany
@@ -190,7 +190,7 @@ const transformCompanyV2 = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: `partners_${company._id.toString()}`,
+    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
   }
 
   return resultCompany
@@ -503,7 +503,7 @@ export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaC
   })) as IJobsPartnersRecruteurAlgoPrivate
 
   if (!lbaCompany) {
-    throw badRequest("Company not found")
+    throw notFound("Company not found")
   }
 
   const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])

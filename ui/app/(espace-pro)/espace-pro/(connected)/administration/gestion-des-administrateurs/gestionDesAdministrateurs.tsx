@@ -94,14 +94,15 @@ export default function GestionDesAdministrateurs() {
           {
             Header: "Actif",
             id: "last_connection",
-            accessor: ({ last_action_date: date }) => {
-              return date ? dayjs(date).format("DD/MM/YYYY") : "Jamais"
+            accessor: ({ last_action_date }) => {
+              return dayjs(last_action_date).format("DD/MM/YYYY")
             },
           },
         ]}
         searchPlaceholder="Rechercher par email"
         exportable={null}
         description={null}
+        defaultSortBy={[{ id: "createdAt", desc: true }]}
       />
     </AdminLayout>
   )
