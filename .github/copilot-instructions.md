@@ -135,10 +135,9 @@ yarn build
 
 **Issue: Prettier check fails**
 ```bash
-# Current known issues: 2 files fail prettier check (as of testing)
-# server/src/jobs/offrePartenaire/hellowork/importHelloWork.ts
-# server/src/jobs/offrePartenaire/importFromStreamInXml.ts
-# Auto-fix with: yarn prettier:fix
+# Some files may currently fail Prettier formatting checks.
+# To auto-fix formatting issues, run:
+yarn prettier:fix
 ```
 
 ## Project Structure & Key Locations
