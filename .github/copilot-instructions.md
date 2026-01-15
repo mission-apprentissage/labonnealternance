@@ -457,7 +457,7 @@ yarn seed:update          # Update seed from local DB
 - **Single responsibility**: Keep functions focused and extract helpers when logic branches grow
 - **Immutability**: Prefer immutable data and pure functions
 - **ES Modules only**: Never emit `require` or CommonJS - use pure ES modules
-- **Target ES2022**: Use native features over polyfills
+- **TypeScript target/lib**: UI `tsconfig` targets ES2017; `lib` includes `es2022` in shared/UI. Prefer native features over polyfills where supported.
 
 ### Async & Error Handling
 - **Use async/await**: Wrap awaits in try/catch with structured errors
