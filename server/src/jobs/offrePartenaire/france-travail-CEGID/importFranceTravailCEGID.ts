@@ -67,6 +67,9 @@ export const importFranceTravailCEGIDRaw = async (sourceStream?: NodeJS.Readable
           Authorization: `bearer ${token}`,
         },
       })
+      if (!response.ok) {
+        throw new Error(`Failed to fetch CEGID offers from ${url}: ${response.status} ${response.statusText}`)
+      }
       const json = await response.json()
       const parsedJson = ZJsonFile.parse(json)
       const {
