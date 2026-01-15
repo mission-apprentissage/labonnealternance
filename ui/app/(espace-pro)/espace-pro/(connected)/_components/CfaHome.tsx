@@ -104,9 +104,9 @@ function ListeEntreprise() {
     {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
+      width: "350",
+      maxWidth: "350",
       accessor: ({ establishment_raison_sociale, establishment_siret, opco }) => [establishment_raison_sociale, establishment_siret, opco].join(" "),
-      width: "500",
-      maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
         data,
@@ -134,16 +134,41 @@ function ListeEntreprise() {
       },
     },
     {
-      Header: "Ajoutée le",
-      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
-      id: "createdAt",
-      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
+      Header: "Contact entreprise",
+      id: "contact_entreprise",
+      width: "350",
+      maxWidth: "350",
+      accessor: "contact_entreprise",
+      sortType: (a, b) => sortReactTableString(`${a.original.last_name} ${a.original.first_name}`, `${b.original.last_name} ${b.original.first_name}`),
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => {
+        const { last_name, first_name, email, phone } = data[id]
+        return (
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography sx={{ fontWeight: 700 }}>
+              {last_name} {first_name}
+            </Typography>
+            <Typography sx={{ color: "#666666", fontSize: "14px" }}>{email}</Typography>
+            <Typography sx={{ color: "#666666", fontSize: "14px" }}>{phone}</Typography>
+          </Box>
+        )
+      },
     },
     {
       Header: "Offres",
       id: "nombre_offres",
       sortType: "basic",
       accessor: ({ jobs }: IRecruiterJson) => jobs.length,
+    },
+    {
+      Header: "Ajoutée le",
+      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
+      id: "createdAt",
+      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
     {
       Header: "Dernière offre créée le",
@@ -172,20 +197,18 @@ function ListeEntreprise() {
         />
       )}
       <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
-        <Box>
-          <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
-            <Box>
-              <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
-            </Box>
-            <Box mr={3}>
-              <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                Nouvelle entreprise
-              </Button>
-            </Box>
+        <Breadcrumb pages={[PAGES.static.backCfaHome]} />
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
+          <Box>
+            <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
+          </Box>
+          <Box mr={3}>
+            <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+              Nouvelle entreprise
+            </Button>
           </Box>
         </Box>
-        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
+        {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} /> : <EmptySpace />}
       </Box>
     </AnimationContainer>
   )

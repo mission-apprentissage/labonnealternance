@@ -79,7 +79,10 @@ export function errorMiddleware(server: Server) {
 
     if (error.output.statusCode >= 500 || (request.url.startsWith("/api/emails/webhook") && error.output.statusCode >= 400)) {
       server.log.error(rawError)
-      captureException(rawError)
+      const errorMessage = rawError + ""
+      if (errorMessage !== "TokenExpiredError: jwt expired") {
+        captureException(rawError)
+      }
     }
 
     return reply.status(payload.statusCode).send(payload)

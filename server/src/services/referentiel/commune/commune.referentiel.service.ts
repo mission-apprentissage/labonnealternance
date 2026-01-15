@@ -4,6 +4,7 @@ import type { IGeoPoint, IReferentielCommune } from "shared/models/index"
 import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sleep } from "@/common/utils/asyncUtils"
 
 async function updateReferentielCommuneByCommune(commune: IGeoApiCommune): Promise<void> {
   const { code, ...rest } = commune
@@ -19,12 +20,36 @@ async function updateReferentielCommuneByCommune(commune: IGeoApiCommune): Promi
 }
 
 async function updateReferentielCommuneByDepartement(departement: { code: string }): Promise<void> {
-  const communes = await getCommuneParCodeDepartement(departement.code)
+  let communes: IGeoApiCommune[] = []
+  const maxAttempts = 3
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      communes = await getCommuneParCodeDepartement(departement.code)
+      break
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw error
+      }
+      await sleep(1000)
+    }
+  }
   await Promise.all(communes.map(updateReferentielCommuneByCommune))
 }
 
 export async function updateReferentielCommune(): Promise<number> {
-  const departements = await getDepartements()
+  const maxAttempts = 3
+  let departements: { code: string; nom: string; codeRegion: string }[] = []
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      departements = await getDepartements()
+      break
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw error
+      }
+      await sleep(1000)
+    }
+  }
 
   await Promise.all(departements.map(updateReferentielCommuneByDepartement))
 

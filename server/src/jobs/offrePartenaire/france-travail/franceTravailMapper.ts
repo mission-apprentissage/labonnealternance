@@ -10,16 +10,11 @@ import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobs
 
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
   const now = new Date()
-  const jobType = job._metadata?.openai?.type || ""
   const expirationDate = dayjs(job.dateCreation).tz().add(2, "months").toDate()
   let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
 
   if (expirationDate <= now) {
     businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
-  }
-
-  if (["cfa", "entreprise_cfa"].includes(jobType)) {
-    businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
   }
 
   const workplace_address_label = getAddressLabel(job.lieuTravail)

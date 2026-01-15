@@ -33,6 +33,7 @@ export const ZHelloWorkJob = z
     country: z.string().nullish(),
     geoloc: z.string().nullish(),
     url: extensions.url(),
+    guid: z.string(),
   })
   .passthrough()
 
@@ -70,7 +71,6 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
 export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPartners => {
   const {
     contract,
-    job_id,
     contract_start_date,
     remote,
     title,
@@ -85,6 +85,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     geoloc,
     url,
     postal_code,
+    guid,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
@@ -98,7 +99,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     ...blankComputedJobPartner(now),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: job_id,
+    partner_job_id: guid,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: remote ? (teletravailMapping[remote] ?? null) : null,

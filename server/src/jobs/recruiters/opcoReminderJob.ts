@@ -61,9 +61,12 @@ export const opcoReminderJob = async () => {
           template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
           data: {
             images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png`,
             },
             count,
+            publicEmail: config.publicEmail,
+            utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_opco_notif-comptes-a-valider",
           },
         })
       })

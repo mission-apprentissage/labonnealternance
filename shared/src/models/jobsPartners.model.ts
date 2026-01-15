@@ -37,6 +37,7 @@ export enum JOBPARTNERS_LABEL {
   TOULOUSE_METROPOLE = "Toulouse metropole",
   JOOBLE = "Jooble",
   DECATHLON = "Décathlon",
+  ENGAGEMENT_JEUNES = "Engagement Jeunes",
   JOBTEASER = "Jobteaser",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
@@ -294,6 +295,7 @@ export default {
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
+    [{ partner_job_id: 1 }, {}],
     [{ partner_label: 1 }, {}],
     [{ workplace_siret: 1 }, {}],
     [{ workplace_brand: 1 }, {}],

@@ -42,3 +42,8 @@ export const importDecathlonToComputed = async () => {
     mapper: decathlonJobToJobsPartners,
   })
 }
+
+export const processDecathlon = async () => {
+  await importDecathlonRaw()
+  await importDecathlonToComputed()
+}

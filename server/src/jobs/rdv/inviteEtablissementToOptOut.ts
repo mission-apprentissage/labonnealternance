@@ -1,11 +1,12 @@
+import { ObjectId } from "mongodb"
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import mailer from "@/services/mailer.service"
 import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import mailer from "@/services/mailer.service"
 
 interface IEtablissementsWithouOptMode {
   _id: {
@@ -50,7 +51,12 @@ export const inviteEtablissementToOptOut = async () => {
 
   for (const etablissement of etablissementsWithouOptMode) {
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret) {
+
+    const etablissementDetails = await getDbCollection("etablissements").findOne({
+      _id: new ObjectId(etablissement.id),
+    })
+
+    if (etablissement.gestionnaire_email && etablissement._id.gestionnaire_siret && etablissementDetails) {
       const emailEtablissement = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
@@ -58,17 +64,23 @@ export const inviteEtablissementToOptOut = async () => {
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-            peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
           },
           etablissement: {
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM/YYYY"),
             linkToUnsubscribe: createRdvaOptOutUnsubscribePageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
+            name: etablissementDetails.raison_sociale,
+            formateur_address: etablissementDetails.formateur_address,
+            formateur_zip_code: etablissementDetails.formateur_zip_code,
+            formateur_city: etablissementDetails.formateur_city,
+            formateur_siret: etablissementDetails.formateur_siret,
           },
           user: {
             destinataireEmail: etablissement.gestionnaire_email,
           },
+          publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-invitation",
         },
       })
 

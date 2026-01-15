@@ -8,7 +8,8 @@ import { logger } from "@/common/logger"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
-export const MAX_DIAGORIENTE_PAYLOAD_SIZE = 10
+export const MAX_DIAGORIENTE_PAYLOAD_SIZE = 100
+export const DIAGORIENTE_AS_OF_DATE = "2025-04-01"
 
 const authParams = {
   url: config.diagoriente.authUrl,
@@ -55,15 +56,15 @@ const getDiagorienteToken = async (access: IAuthParams): Promise<string> => {
     throw internal("impossible d'obtenir un token pour l'API Diagoriente")
   }
 }
-
-export const getDiagorienteRomeClassification = async (data: IDiagorienteClassificationSchema[]): Promise<IDiagorienteClassificationResponseSchema[]> => {
-  if (data.length > 10) throw internal("Trop de données à envoyer à l'API Diagoriente, limiter la requête à 10 éléments")
+export const getDiagorienteRomeClassification = async (data: IDiagorienteClassificationSchema[]): Promise<IDiagorienteClassificationResponseSchema> => {
+  if (data.length > 100) throw internal("Trop de données à envoyer à l'API Diagoriente, limiter la requête à 100 éléments")
   const token = await getDiagorienteToken(authParams)
-  const { data: response } = await axiosClient.post("https://semafor.diagoriente.fr/rome_classifier", data, {
+  const { data: response } = await axiosClient.post("https://semafor.diagoriente.fr/classify/SousDomaines", data, {
     timeout: 70_000,
     headers: { Authorization: `Bearer ${token}` },
+    params: { as_of: DIAGORIENTE_AS_OF_DATE },
   })
-  const validation = z.array(ZDiagorienteClassificationResponseSchema).safeParse(response)
+  const validation = ZDiagorienteClassificationResponseSchema.safeParse(response)
   if (!validation.success) throw internal("getRomeClassificationFromDiagoriente: format de réponse non valide", { error: validation.error })
   return validation.data
 }

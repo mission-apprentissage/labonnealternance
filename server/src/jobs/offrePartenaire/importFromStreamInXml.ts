@@ -3,17 +3,44 @@ import { PassThrough, pipeline } from "node:stream"
 import { ObjectId } from "mongodb"
 import type { CollectionName } from "shared/models/models"
 import * as xml2j from "xml2js"
+import Boom, { internal } from "@hapi/boom"
 
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+
+const XML_PREVIEW_LENGTH = 500
+
+function logError(error: any) {
+  logger.error(error)
+  if (Boom.isBoom(error)) {
+    const { data, cause } = error
+    if (data) {
+      logger.error(data)
+    }
+    if (cause) {
+      logger.error("Caused by:")
+      logError(cause)
+    }
+  }
+}
 
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 
 const xmlToJson = async (offerXml: string, index: number) => {
-  if (index % 1000 === 0) logger.info("parsing offer", index)
-  const json = await xmlParser.parseStringPromise(offerXml)
-  return json
+  try {
+    if (index % 1_000 === 0) logger.info("parsing offer", index)
+    const json = await xmlParser.parseStringPromise(offerXml)
+    return json
+  } catch (err) {
+    const newError = internal(`error while parsing xml`, {
+      xmlLength: offerXml?.length ?? 0,
+      xmlPreview: offerXml?.substring(0, XML_PREVIEW_LENGTH) ?? "",
+    })
+    newError.cause = err
+    throw newError
+  }
 }
 
 export const importFromStreamInXml = async ({
@@ -37,6 +64,7 @@ export const importFromStreamInXml = async ({
   const now = new Date()
   let currentOffer = ""
   let offerInsertCount = 0
+  let offerErrorCount = 0
   const openingTag = `<${offerXmlTag}${conflictingOpeningTagWithoutAttributes ? ">" : ""}`
   const closingTag = `</${offerXmlTag}>`
 
@@ -51,17 +79,33 @@ export const importFromStreamInXml = async ({
       currentOffer += content
       const found = stringReader.skip(closingTag)
       if (found) {
-        offerInsertCount++
-        const json = await xmlToJson(openingTag + currentOffer + closingTag, offerInsertCount)
+        const xmlContent = openingTag + currentOffer + closingTag
+        const json = await xmlToJson(xmlContent, offerInsertCount + 1)
         await getDbCollection(destinationCollection).insertOne({ ...json, _id: new ObjectId(), createdAt: now })
+        offerInsertCount++
         currentOffer = ""
       }
     }
   }
 
   const xmlToJsonTransform = new PassThrough({
-    async transform(chunk, _encoding, callback) {
-      await readChunk(chunk.toString()).then(() => callback(null, null))
+    async transform(chunkBuffer, _encoding, callback) {
+      const chunk = chunkBuffer.toString()
+      readChunk(chunk)
+        .then(() => callback(null, null))
+        .catch((err) => {
+          const newError = internal("error while reading xml chunk", {
+            chunkLength: chunk?.length ?? 0,
+            chunkPreview: chunk?.substring(0, XML_PREVIEW_LENGTH) ?? "",
+          })
+          newError.cause = err
+          logError(newError)
+          sentryCaptureException(newError)
+
+          offerErrorCount++
+          currentOffer = ""
+          callback(null, null)
+        })
     },
   })
   return new Promise((resolve, reject) => {
@@ -72,14 +116,16 @@ export const importFromStreamInXml = async ({
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")
-        const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées`
+        const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées. ${offerErrorCount} offres en erreur.`
         logger.info(message)
         notifyToSlack({
           subject: `import des offres ${partnerLabel} dans raw`,
           message,
+          error: offerErrorCount > 0,
         })
         resolve({
           offerInsertCount,
+          offerErrorCount,
         })
       }
     })

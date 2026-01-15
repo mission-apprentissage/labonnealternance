@@ -436,7 +436,7 @@ export const getEntrepriseDataFromSiret = async ({
       return errorFactory("Non-distributable company.", BusinessErrorCodes.NON_DIFFUSIBLE)
     } else {
       return errorFactory(
-        `Les informations de votre entreprise sont non diffusibles. <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
+        `Les informations de votre entreprise sont non diffusibles. <a href="mailto:${config.publicEmail}?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" target="_blank" title="contacter le support - nouvelle fenêtre">Contacter le support pour en savoir plus</a>`,
         BusinessErrorCodes.NON_DIFFUSIBLE
       )
     }
@@ -728,6 +728,7 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
       last_name: sanitizeTextField(user.last_name),
       first_name: sanitizeTextField(user.first_name),
       confirmation_url: url,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -771,6 +772,7 @@ export const sendEmailConfirmationEntreprise = async (
           delegations: offre.delegations,
         },
         isUserAwaiting,
+        publicEmail: config.publicEmail,
       },
     })
   } else {
@@ -787,8 +789,7 @@ export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, typ
     throw badRequest("Gestionnaire email not found")
   }
 
-  const subject =
-    type === "affelnet" ? `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e` : `La prise de RDV est activée pour votre CFA sur Parcoursup`
+  const subject = `Le formulaire de contact La bonne alternance est activé pour votre CFA sur ${type === "affelnet" ? "Choisir son affectation après la 3e" : "Parcoursup"}`
 
   return mailer.sendEmail({
     to: etablissement.gestionnaire_email,
@@ -796,16 +797,21 @@ export const sendMailCfaPremiumStart = async (etablissement: IEtablissement, typ
     template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
     data: {
       ...(type === "affelnet" ? { isAffelnet: true } : type === "parcoursup" ? { isParcoursup: true } : {}),
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true` },
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+        logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
+      },
       etablissement: {
         name: etablissement.raison_sociale,
         formateur_address: etablissement.formateur_address,
         formateur_zip_code: etablissement.formateur_zip_code,
         formateur_city: etablissement.formateur_city,
         formateur_siret: etablissement.formateur_siret,
-        email: etablissement.gestionnaire_email,
       },
       activationDate: dayjs().format("DD/MM/YYYY"),
+      publicEmail: config.publicEmail,
+      utmParams: `utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-${type}-confirmation-activation-home`,
     },
   })
 }

@@ -34,7 +34,7 @@ function ItemCompanyName({ item }: Pick<ResultCardProps, "item">) {
     return `Secteur d'activité : ${item?.nafs?.[0]?.label ?? ""}`
   }
 
-  return item.company?.name == null ? <i>Offre anonyme</i> : item.company?.name
+  return item.company?.name == null ? <i>Offre anonyme</i> : <Typography dangerouslySetInnerHTML={{ __html: item.company.name }} />
 }
 
 function getAdresse(item: ILbaItem) {
@@ -137,9 +137,8 @@ export function ResultCard({ item, active, rechercheParams }: ResultCardProps) {
               sx={{
                 color: fr.colors.decisions.text.actionHigh.grey.default,
               }}
-            >
-              {getTitle(item)}
-            </Typography>
+              dangerouslySetInnerHTML={{ __html: getTitle(item) }}
+            />
           }
           desc={
             <Box
