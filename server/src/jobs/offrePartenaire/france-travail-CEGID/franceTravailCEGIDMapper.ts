@@ -106,7 +106,6 @@ export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: I
 
     workplace_address_city: city,
     workplace_address_zipcode: zipcode,
-    // TODO
     workplace_address_label: [zipcode, city].filter((x) => x).join(" "),
 
     apply_url: offerUrl || null,
