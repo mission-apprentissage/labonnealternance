@@ -232,7 +232,7 @@ Steps executed in order:
    - `yarn prettier:check`
    - Upload coverage to Codecov
 
-**Timeout**: 10 minutes for tests job
+**Timeout**: 10 minutes for tests job. Note: CI does **not** run `yarn build`; it only validates typecheck, lint, tests, and formatting.
 
 ### Pre-commit Hooks (`.husky/pre-commit`)
 ```bash
