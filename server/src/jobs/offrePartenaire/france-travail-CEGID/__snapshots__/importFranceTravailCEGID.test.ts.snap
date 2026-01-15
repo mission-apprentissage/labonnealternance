@@ -16,7 +16,6 @@ exports[`importFranceTravailCEGID > should test the import of data into computed
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-10-03T07:23:42.917Z,
     "offer_description": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».
@@ -86,7 +85,6 @@ A compétences égales, les candidatures des personnes en situation de handicap 
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-10-03T07:25:54.610Z,
     "offer_description": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».
@@ -156,7 +154,6 @@ A compétences égales, les candidatures des personnes en situation de handicap 
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-10-03T07:42:16.853Z,
     "offer_description": "Les conseillers forment le cœur de France Travail. Ils assurent en première ligne notre mission de service public selon le principe de « faire plus pour ceux qui en ont le plus besoin ».
