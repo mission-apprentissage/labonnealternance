@@ -130,7 +130,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--gutters">
               {linkListContent.map((category, index) => (
-                <div key={index} className="fr-col-12 fr-col-md-3">
+                <div key={index} className="fr-col-12 fr-col-sm-3 fr-col-md-2">
                   <h3 className="fr-footer__top-cat">{category.categoryName}</h3>
                   <ul className="fr-footer__top-list">
                     {category.links.map((link, linkIndex) => (
