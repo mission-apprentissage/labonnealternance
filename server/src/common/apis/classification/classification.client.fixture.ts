@@ -5,5 +5,5 @@ import type { IGetLabClassificationBatch } from "./classification.client"
 import config from "@/config"
 
 export function nockLabClassification(payload: IGetLabClassificationBatch, response: IClassificationLabBatchResponse) {
-  return nock(config.labonnealternanceLab.baseUrl).post("/scores", { items: payload }).reply(200, response)
+  return nock(config.labonnealternanceLab.baseUrl).post("/model/scores", { items: payload }).reply(200, response)
 }
