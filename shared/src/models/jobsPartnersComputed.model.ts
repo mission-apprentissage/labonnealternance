@@ -43,6 +43,7 @@ export const ZComputedJobsPartnersBase = extensions
     partner_job_id: true,
     partner_label: true,
     created_at: true,
+    lba_url: true,
   })
   .extend({
     _id: zObjectId,

@@ -3,13 +3,13 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { getOpcosData } from "@/services/etablissement.service"
 
 export const fillOpcoInfosForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["workplace_idcc", "workplace_opco"] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_OPCO,
     sourceFields: ["workplace_siret"],
     filledFields,
