@@ -1,5 +1,4 @@
 import { badRequest, internal } from "@hapi/boom"
-import { captureException } from "@sentry/node"
 import type { Filter as MongoDBFilter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, IRecruiter, ITrackingCookies } from "shared"
@@ -12,7 +11,6 @@ import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IOpco } from "shared/models/opco.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -25,12 +23,11 @@ import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
-import { fetchOpcosFromCFADock } from "./cfadock.service"
-import type { ICFADock, IFormatAPIEntreprise, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types"
+import type { IFormatAPIEntreprise, IReferentiel } from "./etablissement.service.types"
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer from "./mailer.service"
-import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
+import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, saveOpco } from "./opco.service"
 import type { UserAndOrganization } from "./organization.service"
 import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
@@ -68,65 +65,6 @@ const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_
 
 const getEffectif = (code: IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]) => {
   return (code ? effectifMapping[code] : null) ?? "Non diffusé"
-}
-
-/**
- * @description Get opco details from CFADOCK API for a given SIRET
- * @param {String} siret
- * @returns {Promise<Object>}
- */
-const getOpcoFromCfaDock = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  try {
-    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
-    if (!data) {
-      return undefined
-    }
-    const { searchStatus, opcoName, idcc } = data
-    switch (searchStatus) {
-      case "OK": {
-        return { opco: opcoName, idcc }
-      }
-      case "MULTIPLE_OPCO": {
-        return { opco: OPCOS_LABEL.MULTIPLE_OPCO, idcc: null }
-      }
-      default: {
-        return undefined
-      }
-    }
-  } catch (err: any) {
-    sentryCaptureException(err)
-    return undefined
-  }
-}
-
-/**
- * @description Get opco details from CFADOCK API from a given IDCC
- * @param {Number} idcc
- * @returns {Promise<Object>}
- */
-const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
-  try {
-    const { data } = await getHttpClient({ timeout: 5000 }).get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
-    return data
-  } catch (err: any) {
-    sentryCaptureException(err)
-    return null
-  }
-}
-
-/**
- * @description Get idcc number from SIRET2IDCC API from a given SIRET
- * @param {String} siret
- * @returns {Promise<Object>}
- */
-const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
-  try {
-    const { data } = await getHttpClient({ timeout: 5000 }).get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
-    return data
-  } catch (err) {
-    sentryCaptureException(err)
-    return null
-  }
 }
 
 /**
@@ -285,27 +223,14 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
 }
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
-
-const getOpcoFromCfaDockByIdcc = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  const idccResult = await getIdcc(siret)
-  if (!idccResult) return undefined
-  const convention = idccResult.conventions?.at(0)
-  if (convention) {
-    const { num } = convention
-    const opcoByIdccResult = await getOpcoByIdcc(num)
-    if (opcoByIdccResult) {
-      return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc }
-    }
-  }
-}
-
+// TODO: to be reactivated when France Compétences OPCO service is back in production
 // const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
 //   const opcoOpt = await FCGetOpcoInfos(siret)
 //   return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
 // }
 
-const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  return (await getOpcoFromCfaDock(siret)) ?? (await getOpcoFromCfaDockByIdcc(siret)) // ?? (await getOpcoFromFranceCompetences(siret))
+const getOpcoDataRaw = async (_siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
+  return undefined // TODO: to be reactivated when France Compétences OPCO service is back in production // ?? (await getOpcoFromFranceCompetences(siret))
 }
 
 export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
@@ -337,16 +262,8 @@ export const getOpcosData = async (sirets: string[]): Promise<{ opco: OPCOS_LABE
   sirets = sirets.filter((requestedSiret) => !opcoFromDB.some(({ siret }) => siret === requestedSiret))
   const opcoFromEntreprises = await getOpcosDataFromEntreprises(sirets)
   sirets = sirets.filter((requestedSiret) => !opcoFromEntreprises.some(({ siret }) => siret === requestedSiret))
-  const opcoFromCfaDock = await getOpcosDataFromCfaDock(sirets)
-  sirets = sirets.filter((requestedSiret) => !opcoFromCfaDock.some(({ siret }) => siret === requestedSiret))
   //const opcoFromFranceCompetences = await getOpcosDataFromFranceCompetence(sirets)
-  const savedOpcoDatas: Omit<IOpco, "_id">[] = [...opcoFromCfaDock /*, ...opcoFromFranceCompetences*/].map(({ siret, opco, idcc }) => ({
-    opco,
-    idcc,
-    siren: siret.substring(0, 9),
-  }))
-  await insertOpcos(savedOpcoDatas)
-  return [...opcoFromDB, ...opcoFromEntreprises, ...opcoFromCfaDock /*, ...opcoFromFranceCompetences*/]
+  return [...opcoFromDB, ...opcoFromEntreprises /*, ...opcoFromFranceCompetences*/]
 }
 
 const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
@@ -362,28 +279,6 @@ const getOpcosDataFromEntreprises = async (sirets: string[]): Promise<{ opco: OP
     }
     return [{ siret, opco, idcc: idcc ?? null }]
   })
-}
-
-const getOpcosDataFromCfaDock = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: number | null; siret: string }[]> => {
-  try {
-    if (!sirets.length) {
-      return []
-    }
-    const sirens = new Set<string>(sirets.map((siret) => siret.substring(0, 9)))
-    const results = await fetchOpcosFromCFADock(sirens)
-    return sirets.flatMap((siret) => {
-      const siren = siret.substring(0, 9)
-      const result = results.find((result) => result.filters.siret === siren)
-      if (!result) {
-        return []
-      }
-      const { opcoName, idcc } = result
-      return [{ siret, opco: opcoName, idcc: idcc ?? null }]
-    })
-  } catch (err) {
-    captureException(err)
-    return []
-  }
 }
 
 // const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opco: OPCOS_LABEL; idcc: null; siret: string }[]> => {

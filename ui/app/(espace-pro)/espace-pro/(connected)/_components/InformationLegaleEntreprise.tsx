@@ -134,11 +134,7 @@ const OrganizationInfoFields = ({
         tooltip="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
       />
       {type === ENTREPRISE && (
-        <FieldWithValue
-          title="OPCO de référence"
-          value={opco}
-          tooltip='La donnée "OPCO" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.'
-        />
+        <FieldWithValue title="OPCO de référence" value={opco} tooltip='La donnée "OPCO" est déduite du SIRET. Si cette information est erronée, merci de nous contacter.' />
       )}
       {type === CFA && (
         <FieldWithValue

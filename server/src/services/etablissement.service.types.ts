@@ -101,21 +101,6 @@ interface IUaiPotentiel {
   sources: string[]
   date_collecte: Date
 }
-export interface ICFADock {
-  filterNAFCode: string
-  filterNAFType: string
-  filters: IFilters
-  idcc: number | null
-  opcoName: string
-  opcoSiren: string
-  searchStatus: string
-  url: string
-}
-
-interface IFilters {
-  idcc: null
-  siret: string
-}
 
 export interface ISIRET2IDCC {
   conventions?: IConvention[]
