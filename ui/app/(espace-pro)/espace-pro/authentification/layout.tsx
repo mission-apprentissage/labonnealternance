@@ -12,7 +12,7 @@ export default async function AuthentificationLayout({ children }: PropsWithChil
   return (
     <>
       <PublicHeader user={user} />
-      <Box maxWidth={1200} paddingTop={fr.spacing("3v")} paddingBottom={fr.spacing("3v")} marginX="auto">
+      <Box role="main" component="main" maxWidth={1200} paddingTop={fr.spacing("3v")} paddingBottom={fr.spacing("3v")} marginX="auto">
         {children}
       </Box>
       <Footer />

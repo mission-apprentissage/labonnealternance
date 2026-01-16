@@ -16,6 +16,7 @@ import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { Footer } from "@/app/_components/Footer"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMap, displayMobileForm, activeItems = [] } = props.rechercheParams
@@ -96,9 +97,12 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
   const rechercheResult = useRechercheResults(props.rechercheParams)
   if (rechercheResult.status === "disabled") {
     return (
-      <Box id="search-content-container">
-        <RecherchePageEmpty {...props} />
-      </Box>
+      <>
+        <Box role="main" component="main" id="search-content-container">
+          <RecherchePageEmpty {...props} />
+        </Box>
+        <Footer />
+      </>
     )
   }
   return <RecherchePageComponentWithParams {...props} />

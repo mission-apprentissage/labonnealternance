@@ -132,70 +132,70 @@ function TrainingDetailPage({
       }}
       {...swipeHandlers}
     >
-      <Box
-        sx={{
-          filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-          padding: "10px 20px 0px 20px",
-          background: "white",
-          ...stickyHeaderProperties,
-        }}
-      >
-        <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("1w") }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
-            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-          </Box>
-
-          <Box id="detail-header" component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>
-            <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
-            <Typography component="span" fontWeight={400}>
-              &nbsp;propose cette formation
-            </Typography>
-          </Box>
-
-          {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
-
-          <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
-            {actualTitle}
-          </Typography>
-
-          {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
-          {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-
-          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
-            <Box sx={{ flex: 1 }}>
-              {Boolean(appliedDate) && (
-                <div>
-                  <Typography
-                    component="span"
-                    className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
-                    sx={{
-                      px: 2,
-                      fontStyle: "italic",
-                      backgroundColor: fr.colors.decisions.background.contrast.info.default,
-                      color: fr.colors.decisions.background.actionHigh.info.default,
-                    }}
-                  >
-                    Super, vous avez déjà pris contact le {appliedDate}.
-                  </Typography>
-                </div>
-              )}
-              {elligibleForAppointment && (
-                <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
-              )}
+      <Box role="main" component="main" sx={{ mb: fr.spacing("6w") }}>
+        <Box
+          sx={{
+            filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+            padding: "10px 20px 0px 20px",
+            background: "white",
+            ...stickyHeaderProperties,
+          }}
+        >
+          <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("1w") }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
+              <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
             </Box>
-            <ShareLink item={selectedItem} />
+
+            <Box id="detail-header" component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>
+              <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
+              <Typography component="span" fontWeight={400}>
+                &nbsp;propose cette formation
+              </Typography>
+            </Box>
+
+            {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
+
+            <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+              {actualTitle}
+            </Typography>
+
+            {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
+            {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
+
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
+              <Box sx={{ flex: 1 }}>
+                {Boolean(appliedDate) && (
+                  <div>
+                    <Typography
+                      component="span"
+                      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
+                      sx={{
+                        px: 2,
+                        fontStyle: "italic",
+                        backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                        color: fr.colors.decisions.background.actionHigh.info.default,
+                      }}
+                    >
+                      Super, vous avez déjà pris contact le {appliedDate}.
+                    </Typography>
+                  </div>
+                )}
+                {elligibleForAppointment && (
+                  <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+                )}
+              </Box>
+              <ShareLink item={selectedItem} />
+            </Box>
           </Box>
         </Box>
+
+        <TrainingDetail training={selectedItem} />
+
+        <AideApprentissage />
+
+        {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
       </Box>
-
-      <TrainingDetail training={selectedItem} />
-
-      <AideApprentissage />
-
-      {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
-
-      <Box mt={fr.spacing("6w")} />
       <Footer />
     </Box>
   )
