@@ -1,4 +1,5 @@
 import Button from "@codegouvfr/react-dsfr/Button"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import type { SyntheticEvent } from "react"
@@ -22,12 +23,24 @@ const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJ
       {copied ? (
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
-          <Typography color="#18753C">Lien copié !</Typography>
+          <Typography
+            sx={{
+              color: "#18753C",
+            }}
+          >
+            Lien copié !
+          </Typography>
         </Box>
       ) : (
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
-          <Typography color="bluefrance.500">Partager</Typography>
+          <Typography
+            sx={{
+              color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+            }}
+          >
+            Partager
+          </Typography>
         </Box>
       )}
     </Button>
