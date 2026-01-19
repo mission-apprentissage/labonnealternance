@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "@/common/apis/franceCompetences/franceCompetencesClient.fixture"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
@@ -94,6 +95,35 @@ describe("fillOpcoInfosForPartners", () => {
     expect.soft(job.errors).toEqual([])
     expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.ATLAS, workplace_idcc: 267 })
   })
+  it("should enrich with France Competences API when siret is not in cache", async () => {
+    // given
+    const testSiret = "42476141900045"
+    await givenSomeComputedJobPartners([
+      {
+        workplace_siret: testSiret,
+        workplace_opco: null,
+        workplace_idcc: null,
+      },
+    ])
+    // Mock France Competences API response
+    const fcResponse = generateFCOpcoResponseFixture({
+      siret: testSiret,
+      opcoRattachement: {
+        code: "1",
+        nom: "CONSTRUCTYS",
+      },
+    })
+    nockFranceCompetencesOpcoSearch(testSiret, fcResponse)
+    // when
+    await fillOpcoInfosForPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    const { workplace_opco, workplace_idcc } = job
+    expect.soft(job.errors).toEqual([])
+    expect.soft({ workplace_opco, workplace_idcc }).toEqual({ workplace_opco: OPCOS_LABEL.CONSTRUCTYS, workplace_idcc: null })
+  }, 20_000)
   it("should set opco to unknown when data is not found", async () => {
     // given
     await givenSomeComputedJobPartners([
