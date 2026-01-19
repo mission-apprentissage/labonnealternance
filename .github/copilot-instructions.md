@@ -357,14 +357,44 @@ feat(lba-XXX): brief description
 fix(lba-XXX): brief description
 ```
 
-**PR Description Generation**:
-When generating a pull request description (using Copilot's summary feature or filling the PR template):
+**CRITICAL: PR Description with JIRA Link**
 
-1. **ALWAYS extract the JIRA ticket number** from the PR title (format: `lba-XXX` or `LBA-XXX`)
-2. **Replace the placeholder** `LBA-XXX` in the template with the actual ticket number (uppercase)
-3. The JIRA link MUST be the first line: `https://tableaudebord-apprentissage.atlassian.net/browse/LBA-XXX`
-4. Follow with `## Changes` section describing what was modified
-5. Place content directly in the PR description field (NOT as a comment)
+When creating or updating ANY pull request description (whether using the Copilot Summary button, generating a description, or responding to `@copilot` mentions):
+
+1. **FIRST STEP - Extract JIRA ticket**: Look at the PR title and extract the ticket number (format: `lba-XXX` or `LBA-XXX`)
+   - Example: From title `fix(lba-3524): copilot pr review`, extract `3524`
+
+2. **SECOND STEP - Add JIRA link as FIRST LINE**: The description MUST start with:
+
+   ```
+   https://tableaudebord-apprentissage.atlassian.net/browse/LBA-3524
+   ```
+
+   (Replace 3524 with the actual ticket number from the title, ALWAYS UPPERCASE)
+
+3. **THIRD STEP - Add Changes section**: After the JIRA link, add:
+
+   ```
+   ## Changes
+
+   [Describe what was modified]
+   ```
+
+4. **MANDATORY FORMAT**:
+
+   ```
+   https://tableaudebord-apprentissage.atlassian.net/browse/LBA-{NUMBER}
+
+   ## Changes
+
+   - List of changes...
+
+   ## Testing
+
+   - How it was tested...
+   ```
+
+**IMPORTANT**: The JIRA link is NOT optional. NEVER generate a PR description without the JIRA link. ALWAYS check the PR title for the ticket number first.
 
 **Code Review Focus Areas**:
 
