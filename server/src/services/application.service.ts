@@ -1515,10 +1515,15 @@ export const processScheduledRecruiterIntentions = async () => {
 export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHelloworkApplication) => {
   const { job, applicant, resume, statusApiUrl } = payload
 
+  const attachmentContentType =
+    typeof resume.file.contentType === "string" && resume.file.contentType.trim().length > 0
+      ? resume.file.contentType.trim()
+      : "application/pdf"
+
   const result = await sendApplicationV2({
     newApplication: {
       applicant_attachment_name: resume.file.fileName,
-      applicant_attachment_content: `data:application/pdf;base64,${resume.file.data}`,
+      applicant_attachment_content: `data:${attachmentContentType};base64,${resume.file.data}`,
       applicant_first_name: applicant.firstName,
       applicant_last_name: applicant.lastName,
       applicant_email: applicant.email,
