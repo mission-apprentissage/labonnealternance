@@ -15,8 +15,6 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-//import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
-
 import dayjs from "shared/helpers/dayjs"
 import { captureException } from "@sentry/node"
 import { createValidationMagicLink } from "./appLinks.service"
