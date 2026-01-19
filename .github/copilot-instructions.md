@@ -362,7 +362,7 @@ When generating a pull request description (using Copilot's summary feature or f
 
 1. **ALWAYS extract the JIRA ticket number** from the PR title (format: `lba-XXX` or `LBA-XXX`)
 2. **Replace the placeholder** `LBA-XXX` in the template with the actual ticket number (uppercase)
-3. The JIRA link MUST be the first line: `https://tableaudebord-apprentissage.atlassian.net/browse/LBA-{TICKET_NUMBER}`
+3. The JIRA link MUST be the first line: `https://tableaudebord-apprentissage.atlassian.net/browse/LBA-XXX`
 4. Follow with `## Changes` section describing what was modified
 5. Place content directly in the PR description field (NOT as a comment)
 
