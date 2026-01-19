@@ -259,8 +259,8 @@ export const ZHelloworkApplication = z.object({
   applicant: z.object({
     firstName: z.string(),
     lastName: z.string(),
-    email: z.string(),
-    phoneNumber: z.string(),
+    email: z.string().email(),
+    phoneNumber: extensions.telephone,
     coverLetter: z.string().nullish(),
   }),
   resume: z.object({
