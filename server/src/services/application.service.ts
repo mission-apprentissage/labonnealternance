@@ -54,6 +54,7 @@ const imagePath = `${config.publicUrl}/images/emails/`
 const PARTNER_NAMES = {
   oc: "OpenClassrooms",
   "1jeune1solution": "1jeune1solution",
+  Hellowork: "Hellowork",
 }
 
 const images: object = {
@@ -1158,6 +1159,8 @@ const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
     case "oc":
     case "openclassrooms":
       return " par OpenClassrooms"
+    case "Hellowork":
+      return " via Hellowork"
 
     default:
       return ""
@@ -1515,7 +1518,7 @@ export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHellowo
   const result = await sendApplicationV2({
     newApplication: {
       applicant_attachment_name: resume.file.fileName,
-      applicant_attachment_content: resume.file.data,
+      applicant_attachment_content: `data:application/pdf;base64,${resume.file.data}`,
       applicant_first_name: applicant.firstName,
       applicant_last_name: applicant.lastName,
       applicant_email: applicant.email,
