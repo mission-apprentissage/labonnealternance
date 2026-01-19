@@ -9,6 +9,6 @@ export async function generateMetadata({ params }: { params: Promise<{ name: str
   }
 }
 
-export default async function Page() {
-  return <ProcesseurCronPage />
+export default async function Page({ params }: { params: Promise<{ name: string }> }) {
+  return <ProcesseurCronPage params={params} />
 }
