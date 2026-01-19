@@ -26,7 +26,7 @@ import type { IFormatAPIEntreprise, IReferentiel } from "./etablissement.service
 import { createFormulaire, getFormulaire } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer from "./mailer.service"
-import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, saveOpco } from "./opco.service"
+import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
 import type { UserAndOrganization } from "./organization.service"
 import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.service"
 import { modifyPermissionToUser } from "./roleManagement.service"
@@ -287,17 +287,22 @@ const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opc
     return []
   }
   const results = [] as { opco: OPCOS_LABEL; idcc: null; siret: string }[]
+  const opcoDataToSave = [] as { opco: string; idcc: null; siren: string }[]
   await asyncForEach(sirets, async (siret) => {
     try {
       const result = await getOpcoFromFranceCompetences(siret)
       const opco = parseEnum(OPCOS_LABEL, result?.opco)
       if (opco) {
         results.push({ siret, opco, idcc: null })
+        const siren = siret.substring(0, 9)
+        opcoDataToSave.push({ opco, idcc: null, siren })
       }
     } catch (err) {
       captureException(err)
     }
   })
+  // Save OPCO data to database for future use
+  await insertOpcos(opcoDataToSave)
   return results
 }
 
