@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
-  checksum: 201b856a951927d62ed1d54d98450e2de558a983ce91f6e97798fa3c89a88c66
+  checksum: 1a2feaa92ddfbb274860a193c58a269dff52b7c6f9f9b69a904cfe0a7c18ab55
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
