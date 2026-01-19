@@ -1579,15 +1579,3 @@ const sendApplicationStatusToHellowork = async ({ status, application }: { statu
     })
   }
 }
-
-export const notifyApplicationStatusChangeToHellowork = async (applicationId: ObjectId, status: HELLOWORK_STATUS) => {
-  const application = await getDbCollection("applications").findOne({ _id: applicationId })
-  if (!application) {
-    throw notFound(`Application not found for id=${applicationId}`)
-  }
-  if (!application.foreign_application_status_url) {
-    throw badRequest(`No foreign_application_status_url for application id=${applicationId}`)
-  }
-
-  await sendApplicationStatusToHellowork({ status, application })
-}
