@@ -3,8 +3,11 @@ import { ApplicationIntention } from "shared/constants/application"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
+import { captureException } from "@sentry/node"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import type { Server } from "@/http/server"
 import {
   buildApplicationFromHelloworkAndSaveToDb,
   getApplicationDataForIntentionAndScheduleMessage,
@@ -12,8 +15,6 @@ import {
   sendApplication,
   sendRecruiterIntention,
 } from "@/services/application.service"
-import type { Server } from "@/http/server"
-import config from "@/config"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -183,6 +184,7 @@ export default function (server: Server) {
               code: "Attachment",
             })
           default:
+            captureException(err, { extra: { payload: { applicationId: _req.body?.applicationId, jobId: _req.body?.job?.jobId } } })
             return res.status(500).send({
               message: "Erreur interne du serveur",
               code: "InternalServerError",
