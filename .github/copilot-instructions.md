@@ -11,12 +11,14 @@
 ## Critical Build & Test Requirements
 
 ### Prerequisites - ALWAYS verify these first
+
 - **Node.js**: Version specified in `package.json` `engines` field (check root package.json)
 - **Yarn**: Version automatically enforced via `packageManager` field in package.json
 - **Docker**: Required for MongoDB and local services
 - **MongoDB**: Local instance required for tests via Docker Compose
 
 ### Initial Setup - Run in this exact order
+
 ```bash
 # 1. Install dependencies (REQUIRED first step)
 yarn install --immutable
@@ -34,6 +36,7 @@ yarn setup:mongodb
 ### Build Commands - Critical sequence
 
 **Building the project**:
+
 ```bash
 # Build all workspaces sequentially (server → shared → ui)
 yarn build
@@ -43,6 +46,7 @@ yarn build
 ```
 
 **Important build notes**:
+
 - Server uses `tsup` for bundling, UI uses Next.js
 - Build MUST run sequentially (`yarn foreach:seq`), not in parallel
 - UI prebuild step runs `react-dsfr update-icons` automatically
@@ -68,12 +72,14 @@ yarn dedupe --check
 ```
 
 **ESLint configuration**:
+
 - Uses flat config (`eslint.config.mjs`)
 - Separate rules for server (`server/**`), UI (`ui/**`), and shared
 - TypeScript strict rules enabled: `@typescript-eslint/no-floating-promises`, `switch-exhaustiveness-check`
 - Import alias required: `@` for server/ui source, enforced by `@dword-design/eslint-plugin-import-alias`
 
 **Prettier configuration** (in `package.json`):
+
 - No semicolons (`semi: false`)
 - 2 spaces indentation
 - 180 char print width
@@ -96,6 +102,7 @@ yarn test:watch
 ```
 
 **Important test notes**:
+
 - Tests REQUIRE MongoDB running locally
 - Some tests make external API calls and may fail in isolated environments
 - Sequential test execution for `useMongo` hooks (`sequence.hooks: "stack"`)
@@ -105,6 +112,7 @@ yarn test:watch
 ### Common Build Failures & Solutions
 
 **Issue: MongoDB connection errors in tests**
+
 ```bash
 # Solution: Ensure MongoDB is running and initialized
 docker compose up --build -d --wait mongodb
@@ -113,6 +121,7 @@ yarn setup:mongodb
 ```
 
 **Issue: TypeScript errors about missing modules**
+
 ```bash
 # Solution: Rebuild shared workspace first
 yarn workspace shared build
@@ -120,6 +129,7 @@ yarn typecheck
 ```
 
 **Issue: ESLint cache issues**
+
 ```bash
 # Solution: Clear ESLint cache
 rm -rf .eslintcache
@@ -127,6 +137,7 @@ yarn lint
 ```
 
 **Issue: Next.js build fails with "icons not found"**
+
 ```bash
 # Solution: Icons are auto-generated during prebuild
 cd ui && yarn prebuild
@@ -134,6 +145,7 @@ yarn build
 ```
 
 **Issue: Prettier check fails**
+
 ```bash
 # Some files may currently fail Prettier formatting checks.
 # To auto-fix formatting issues, run:
@@ -143,6 +155,7 @@ yarn prettier:fix
 ## Project Structure & Key Locations
 
 ### Root Directory
+
 ```
 .github/workflows/    # CI/CD workflows (ci.yml is main)
 .husky/              # Git hooks (pre-commit runs lint-staged)
@@ -159,6 +172,7 @@ docker-compose.yml   # Local services (MongoDB, ClamAV, SMTP)
 ```
 
 ### Server Structure (`server/`)
+
 ```
 src/
   http/
@@ -178,12 +192,14 @@ tsup.config.ts       # Build configuration
 ```
 
 **Server key files**:
+
 - Entry: `src/index.ts`
 - API routes: OpenAPI schema-driven via `@fastify/swagger`
 - Build: Uses `tsup` with code splitting
 - CLI: `yarn cli <command>` runs jobs/migrations
 
 ### UI Structure (`ui/`)
+
 ```
 app/                      # Next.js App Router
   (candidat)/            # Job seeker pages
@@ -199,11 +215,13 @@ next.config.mjs          # Next.js configuration
 ```
 
 **UI key files**:
+
 - Config: `next.config.mjs` (includes CSP, Sentry, standalone output)
 - Theme: Uses `@codegouvfr/react-dsfr` (French gov design system)
 - Build: Standalone output mode for Docker deployment
 
 ### Shared Structure (`shared/`)
+
 ```
 src/
   constants/       # Shared constants
@@ -235,6 +253,7 @@ Steps executed in order:
 **Timeout**: 10 minutes for tests job. Note: CI does **not** run `yarn build`; it only validates typecheck, lint, tests, and formatting.
 
 ### Pre-commit Hooks (`.husky/pre-commit`)
+
 ```bash
 yarn lint-staged              # Auto-lint/format staged files
 preventSensibleFilesCommit.sh # Check for secrets
@@ -242,11 +261,13 @@ yarn node-talisman --githook  # Security scan
 ```
 
 **lint-staged** configuration (in `package.json`):
+
 - `*.{js,jsx,ts,tsx}`: ESLint fix + Prettier format
 - All files: Prettier format
 - `yarn.lock`: Run `yarn dedupe`
 
 ### Other Workflows
+
 - `merge_queue.yml`: Runs CI on merge queue
 - `preview.yml`: Creates preview deployments (comment with 🚀)
 - `release.yml`: Automated releases via semantic-release
@@ -255,6 +276,7 @@ yarn node-talisman --githook  # Security scan
 ## Development Workflow
 
 ### Running Locally
+
 ```bash
 # Start all services (MongoDB, ClamAV, SMTP, server, UI)
 yarn dev
@@ -268,6 +290,7 @@ yarn ui:dev           # UI on localhost:3000
 ```
 
 **Port configuration**:
+
 - UI: 3000 (Next.js)
 - Server: 5001 (Fastify API)
 - MongoDB: 27017
@@ -277,11 +300,13 @@ yarn ui:dev           # UI on localhost:3000
 ### Making Changes - Best Practices
 
 **Before making code changes**:
+
 1. Run `yarn typecheck` to establish baseline
 2. Run `yarn lint` to check for existing issues
 3. Start MongoDB if tests needed: `docker compose up -d mongodb`
 
 **After making changes**:
+
 1. Run `yarn typecheck` (must pass)
 2. Run `yarn lint:fix` (auto-fix issues)
 3. Run `yarn prettier:fix` (format code)
@@ -289,6 +314,7 @@ yarn ui:dev           # UI on localhost:3000
 5. Check git diff to ensure only intended files changed
 
 **Code style requirements**:
+
 - Use TypeScript strict mode
 - Prefer type imports: `import type { X } from 'y'`
 - Use path aliases: `@/` for server/UI source dirs
@@ -311,6 +337,7 @@ yarn ui:dev           # UI on localhost:3000
 **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`, `revert`
 
 **Example**:
+
 ```
 feat(lba-1234): add user authentication
 
@@ -324,20 +351,20 @@ Configuration: `.husky/commitlint.config.js` extends `@commitlint/config-convent
 ### Pull Request Requirements
 
 **PR Title Format**: MUST include JIRA ticket reference
+
 ```
 feat(lba-XXX): brief description
 fix(lba-XXX): brief description
 ```
 
-**PR Description**: Place content directly in the PR description field (NOT as a comment)
+**PR Description Generation**:
+When generating a pull request description (using Copilot's summary feature or filling the PR template):
 
-**PR Description Header**: Extract JIRA key from title and prepend link:
-```
-https://tableaudebord-apprentissage.atlassian.net/browse/LBA-XXX
-
-## Changes
-...
-```
+1. **ALWAYS extract the JIRA ticket number** from the PR title (format: `lba-XXX` or `LBA-XXX`)
+2. **Replace the placeholder** `LBA-XXX` in the template with the actual ticket number (uppercase)
+3. The JIRA link MUST be the first line: `https://tableaudebord-apprentissage.atlassian.net/browse/LBA-{TICKET_NUMBER}`
+4. Follow with `## Changes` section describing what was modified
+5. Place content directly in the PR description field (NOT as a comment)
 
 **Code Review Focus Areas**:
 
@@ -381,17 +408,20 @@ yarn migrations:up
 ## Docker & Services
 
 ### Local Services (`docker-compose.yml`)
+
 - **mongodb**: Replica set on port 27017, 5GB memory limit
 - **clamav**: Antivirus scanning on port 3310 (6min startup)
 - **smtp**: Mailpit for email testing on ports 1025/8025
 
 **MongoDB setup notes**:
+
 - Uses custom config at `.infra/local/mongod.conf`
 - Requires `mongo_keyfile` with permissions 440 (macOS) or 400 (Linux)
 - Replica set must be initialized: `yarn setup:mongodb`
 - Health check: `mongosh --eval "db.runCommand('ping').ok"`
 
 ### Service Management
+
 ```bash
 yarn services:start   # Start all services
 yarn services:stop    # Stop all services
@@ -401,29 +431,35 @@ yarn services:clean   # Remove all services & volumes
 ## Common Pitfalls & Workarounds
 
 ### TypeScript Configuration
+
 - 4 separate `tsconfig.json` files (root, server, ui, shared)
 - Build references: shared must build before others
 - Path aliases configured per workspace in `eslint.config.mjs`
 
 ### Workspace Dependencies
+
 - `shared` is a workspace dependency in server/UI
 - Changes to shared require rebuild: `yarn workspace shared build`
 - Server imports shared via `import { X } from 'shared'`
 
 ### Import Patterns
+
 **Server imports**:
+
 ```typescript
 import type { IMyType } from "@/services/myService"
 import { myFunction } from "@/common/utils"
 ```
 
 **UI imports**:
+
 ```typescript
 import type { IProps } from "@/types"
 import { MyComponent } from "@/components/MyComponent"
 ```
 
 ### Security & Validation
+
 - All API inputs validated via Zod schemas
 - OpenAPI auto-generated from Zod schemas
 - Talisman scans for secrets in commits
@@ -447,24 +483,28 @@ yarn seed:update          # Update seed from local DB
 ## TypeScript Best Practices
 
 ### Type System
+
 - **Avoid `any`**: Prefer `unknown` with type narrowing or proper types
 - **Use discriminated unions** for state machines and complex types
 - **Centralize shared contracts**: Define types in `shared/` workspace
 - **Utility types**: Leverage `Readonly`, `Partial`, `Record`, `Pick`, `Omit`
 
 ### Code Organization
+
 - **Single responsibility**: Keep functions focused and extract helpers when logic branches grow
 - **Immutability**: Prefer immutable data and pure functions
 - **ES Modules only**: Never emit `require` or CommonJS - use pure ES modules
 - **TypeScript target/lib**: UI `tsconfig` targets ES2017; `lib` includes `es2022` in shared/UI. Prefer native features over polyfills where supported.
 
 ### Async & Error Handling
+
 - **Use async/await**: Wrap awaits in try/catch with structured errors
 - **Guard early**: Check edge cases at function start to avoid deep nesting
 - **No floating promises**: All promises must be awaited or handled (enforced by ESLint)
 - **Structured logging**: Send errors through Sentry and logging utilities
 
 ### Security Practices
+
 - **Validate inputs**: Use Zod schemas for all external input validation
 - **Sanitize content**: Use `sanitize-html` before rendering user content
 - **No dynamic code**: Avoid `eval()` and dynamic template execution
@@ -474,18 +514,21 @@ yarn seed:update          # Update seed from local DB
 ## GitHub Actions & CI/CD Best Practices
 
 ### Workflow Security
+
 - **Least privilege**: Set explicit `permissions` for `GITHUB_TOKEN` (default: `contents: read`)
 - **Pin action versions**: Use full commit SHA or major version tags (e.g., `@v4`), never `@main`
 - **Secret management**: Use GitHub Secrets, access via `${{ secrets.SECRET_NAME }}`
 - **OIDC authentication**: Prefer OIDC for cloud providers over long-lived credentials
 
 ### Performance Optimization
+
 - **Caching**: Use `actions/cache@v4` with `hashFiles()` for cache keys
 - **Matrix strategies**: Run tests in parallel across Node versions, OS types
 - **Conditional execution**: Use `if` conditions to skip unnecessary jobs
 - **Job dependencies**: Use `needs` to define execution order and data passing via `outputs`
 
 ### Workflow Structure
+
 - **Clear naming**: Descriptive names for workflows, jobs, and steps
 - **Concurrency control**: Use `concurrency` to prevent simultaneous runs
 - **Environment protection**: Use GitHub Environments for deployment approvals
@@ -494,6 +537,7 @@ yarn seed:update          # Update seed from local DB
 ## When Instructions Are Incomplete
 
 **Trust these instructions first**. Only search or explore when:
+
 - Command fails unexpectedly
 - Information is missing for a specific task
 - Instructions appear outdated based on error messages
@@ -502,15 +546,15 @@ yarn seed:update          # Update seed from local DB
 
 ## Quick Reference Card
 
-| Task | Command | Prerequisites |
-|------|---------|---------------|
-| Install | `yarn install --immutable` | Node, Yarn (see package.json) |
-| Typecheck | `yarn typecheck` | Dependencies installed |
-| Lint | `yarn lint` | - |
-| Format | `yarn prettier:fix` | - |
-| Build | `yarn build` | Shared built first |
-| Test | `yarn test:ci` | MongoDB running |
-| Dev mode | `yarn dev` | Docker running |
-| Start MongoDB | `docker compose up -d --wait mongodb && yarn setup:mongodb` | Docker |
+| Task          | Command                                                     | Prerequisites                 |
+| ------------- | ----------------------------------------------------------- | ----------------------------- |
+| Install       | `yarn install --immutable`                                  | Node, Yarn (see package.json) |
+| Typecheck     | `yarn typecheck`                                            | Dependencies installed        |
+| Lint          | `yarn lint`                                                 | -                             |
+| Format        | `yarn prettier:fix`                                         | -                             |
+| Build         | `yarn build`                                                | Shared built first            |
+| Test          | `yarn test:ci`                                              | MongoDB running               |
+| Dev mode      | `yarn dev`                                                  | Docker running                |
+| Start MongoDB | `docker compose up -d --wait mongodb && yarn setup:mongodb` | Docker                        |
 
 **Build times**: typecheck ~10s, lint ~30-90s, build ~2-4min, test ~30-120s
