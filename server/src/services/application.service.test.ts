@@ -9,7 +9,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import type { IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
-import { beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -152,12 +152,13 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
     await getDbCollection("applications").deleteMany({})
+  })
 
-    return async () => {
-      await getDbCollection("jobs_partners").deleteMany({})
-      await getDbCollection("applicants").deleteMany({})
-      await getDbCollection("applications").deleteMany({})
-    }
+  afterEach(async () => {
+    // Clean up collections after each test
+    await getDbCollection("jobs_partners").deleteMany({})
+    await getDbCollection("applicants").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
   })
 
   it("Should successfully create application from Hellowork with valid data", async () => {
