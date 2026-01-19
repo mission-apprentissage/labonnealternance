@@ -5,7 +5,7 @@ export const up = async (db: Db) => {
     await db.collection("recruteurslbalegacies").drop()
   } catch (err) {
     // Collection may not exist, which is acceptable
-    console.log(err)
+    console.error(err)
   }
 }
 

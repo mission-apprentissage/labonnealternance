@@ -1,6 +1,6 @@
 import path from "path"
 
-import { __dirname } from "./esmUtils"
+import { __dirname } from "./dirname"
 
 export function getStaticDirPath(): string {
   // tsup build project into a single file to dist/index.js

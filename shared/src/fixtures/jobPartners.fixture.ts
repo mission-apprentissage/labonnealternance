@@ -157,6 +157,14 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
   }
 }
 
+export function generateComputedJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate> = {}): Partial<IJobsPartnersOfferPrivate> {
+  const base = generateJobsPartnersFull(data)
+
+  const { lba_url, ...rest } = base
+
+  return rest
+}
+
 export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsPartners> = {}): IComputedJobsPartners {
   return {
     errors: [],
@@ -211,7 +219,6 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     apply_email: null,
     offer_multicast: true,
     offer_origin: null,
-    lba_url: null,
 
     created_at: new Date("2021-01-28T15:00:00.000Z"),
     updated_at: new Date("2021-01-28T15:00:00.000Z"),
