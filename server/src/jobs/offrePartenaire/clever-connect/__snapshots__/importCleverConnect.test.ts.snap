@@ -16,7 +16,6 @@ exports[`importCleverConnect > should test the import of clever connect data int
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [
       "débutant à 1 an",
       "1-2 ans",
@@ -89,7 +88,6 @@ Profil: <ul><li><p>Vous êtes organisé, polyvalent, curieux et vous avez le sen
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2025-02-25T03:53:02.912Z,
     "offer_description": "PRÊT À DEVENIR LE RAYON DE SOLEIL DE NOS BÉNÉFICIAIRES ?Vous souhaitez vous former aux métiers du service à la personne pour rendre la vie plus facile à nos bénéficiaires ? Rejoignez notre équipe, nous avons justement un poste d'assistant(e) de vie aux familles en alternance à proposer ! L'ALTERNANCENous vous proposons une formation de 12 mois qui vous permettra de repartir avec un diplôme d'Assistant(e) de vie aux familles. Tout au long de l'alternance, vous êtes formé(e) par notre centre de formation partenaire, spécialiste du service à la personne : * Formation en apprentissage sur 12 mois * Une journée de cours par semaine * Formation à distance ou en présentiel en fonction de votre secteur géographique * Suivi et accompagnement par un tuteur ou une tutrice expérimenté(e) LE QUOTIDIENChez Azaé Aix en Provence nous voyons chaque jour comme l'occasion d'apporter du réconfort et de la joie en facilitant le quotidien ! Entretien du logement, aide aux déplacements et aux soins d'hygiène, à la confection ou à la prise des repas et accompagnement lors des sorties : grâce à vos interventions, nos bénéficiaires et clients évoluent en toute sécurité dans le cadre rassurant de leur maison. La clé de notre métier : avoir vraiment envie d'aider ceux qui en ont besoin ! Notre groupe est labélisé HappyTrainees 2025 par ChooseMyCompany, un label qui atteste que nos alternants se sentent valorisés et bien accompagnés.
@@ -159,7 +157,6 @@ Profil: VOTRE PROFILSi aider les autres est votre mission et la bienveillance vo
     ],
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [
       "débutant à 1 an",
       "1-2 ans",

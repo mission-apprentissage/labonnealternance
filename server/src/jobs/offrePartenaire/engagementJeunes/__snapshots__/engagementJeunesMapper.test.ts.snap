@@ -15,7 +15,6 @@ exports[`engagementJeunesJobToJobsPartners > should convert a job 1`] = `
   "created_at": 2024-07-21T02:49:06.000Z,
   "errors": [],
   "jobs_in_success": [],
-  "lba_url": null,
   "offer_access_conditions": [],
   "offer_creation": 2025-12-10T00:00:00.000Z,
   "offer_description": "<b>Mission :</b><br />L'Activité Recyclage et Valorisation des Déchets de VEOLIA recherche un AGENT DE TRI EN ALTERNANCE pour son centre de tri automatisé de collectes sélectives des ménages (55 000 t/An) .

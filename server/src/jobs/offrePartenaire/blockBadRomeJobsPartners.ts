@@ -1,7 +1,7 @@
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 const sourceFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
@@ -10,7 +10,7 @@ const blacklistedRomes: string[] = ["K2202", "G1605", "I1201", "L1102", "N4104"]
 
 export const blockBadRomeJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.BLOCK_BAD_ROME,
     sourceFields,
     filledFields,

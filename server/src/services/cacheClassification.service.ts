@@ -31,7 +31,7 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   })
 
   if (!notFoundJobs.length) {
-    return cachedClassifications.map((cached) => cached?.classification ?? null)
+    return cachedClassifications.map((cached) => (cached?.human_verification ? cached.human_verification : (cached?.classification ?? null)))
   }
 
   const classificationPayload = notFoundJobs.map((job) => ({

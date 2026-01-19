@@ -1,5 +1,5 @@
 import nock from "nock"
-import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
+import { generateComputedJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
@@ -25,7 +25,7 @@ describe("fillComputedJobsPartners", () => {
 
   it("should validate a valid offer", async () => {
     // given
-    await givenSomeComputedJobPartners([generateJobsPartnersFull()])
+    await givenSomeComputedJobPartners([generateComputedJobsPartnersFull()])
     // when
     await validateComputedJobPartners({ shouldNotifySlack: false })
     // then
@@ -37,7 +37,7 @@ describe("fillComputedJobsPartners", () => {
   it("should invalidate an offer without rome", async () => {
     // given
     await givenSomeComputedJobPartners([
-      generateJobsPartnersFull({
+      generateComputedJobsPartnersFull({
         offer_rome_codes: [],
       }),
     ])

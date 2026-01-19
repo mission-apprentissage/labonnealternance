@@ -195,7 +195,6 @@ describe("decathlonMapper", () => {
       workplace_siret: null,
       workplace_size: null,
       workplace_website: null,
-      lba_url: null,
     })
   })
   it("should format apply_url correctly", () => {

@@ -19,7 +19,7 @@ describe("helloWorkJobToJobsPartners", () => {
     expect(
       helloWorkJobToJobsPartners({
         job_id: "73228597",
-        reference: "1267078/12939556 GPEADPA/69V",
+        guid: "1267078/12939556 GPEADPA/69V",
         cpc: "0",
         title: "Gestionnaire Paie et ADP - Alternance H/F",
         url: "https://www.url.com/redirect?poc=2&op=5989883668&o=1",
@@ -112,7 +112,6 @@ describe("helloWorkJobToJobsPartners", () => {
       validated: false,
       business_error: null,
       jobs_in_success: [],
-      lba_url: null,
     })
   })
 })

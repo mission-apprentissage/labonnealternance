@@ -111,9 +111,8 @@ const config = {
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
   franceCompetences: {
-    baseUrl: "https://api-preprod.francecompetences.fr",
+    baseUrl: "https://api.francecompetences.fr",
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
-    bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
   apiApprentissage: {
     baseUrl: "https://api.apprentissage.beta.gouv.fr/api",
@@ -161,6 +160,11 @@ const config = {
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
+  franceTravailCegidFlux: {
+    url: env.get("FRANCE_TRAVAIL_CEGID_FLUX_URL").required().asString(),
+    clientId: env.get("FRANCE_TRAVAIL_CEGID_FLUX_CLIENT_ID").required().asString(),
+    clientSecret: env.get("FRANCE_TRAVAIL_CEGID_FLUX_CLIENT_SECRET").required().asString(),
+  },
   engagementJeunesFluxUrl: env.get("ENGAGEMENT_JEUNES_FLUX_URL").required().asString(),
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
