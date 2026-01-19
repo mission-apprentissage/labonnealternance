@@ -414,7 +414,8 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       updatedAt: new Date(),
     })
 
-    // Create 3 existing applications for the same job and applicant (max is 3)
+    // Create 3 existing applications for the same job and applicant
+    // This is at the limit, so the next (4th) application should trigger the error (max is 3)
     const applications = Array.from({ length: 3 }, (_, i) => ({
       applicant_id: applicant.insertedId,
       job_id: new ObjectId("6081289803569600282e0017"),
