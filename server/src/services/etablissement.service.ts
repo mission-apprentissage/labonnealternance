@@ -302,7 +302,9 @@ const getOpcosDataFromFranceCompetence = async (sirets: string[]): Promise<{ opc
     }
   })
   // Save OPCO data to database for future use
-  await insertOpcos(opcoDataToSave)
+  if (opcoDataToSave.length > 0) {
+    await insertOpcos(opcoDataToSave)
+  }
   return results
 }
 
