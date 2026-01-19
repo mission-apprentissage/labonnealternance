@@ -232,8 +232,8 @@ const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: stri
   return opcoOpt ? { opco: opcoOpt, idcc: null } : undefined
 }
 
-const getOpcoDataRaw = async (_siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
-  return getOpcoFromFranceCompetences(_siret)
+const getOpcoDataRaw = async (siret: string): Promise<{ opco: string; idcc: number | null } | undefined> => {
+  return getOpcoFromFranceCompetences(siret)
 }
 
 export const getOpcoData = async (siret: string): Promise<{ opco: string; idcc: number | null } | null> => {
