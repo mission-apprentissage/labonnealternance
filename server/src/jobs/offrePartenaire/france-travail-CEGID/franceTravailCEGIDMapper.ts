@@ -99,7 +99,7 @@ export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: I
     contract_type: contractTypes,
     contract_start: beginningDate ? new Date(beginningDate) : null,
 
-    workplace_siret: "13001833800019", // France travail
+    workplace_siret: "13000548123699", // France travail
     workplace_name: organisationName || null,
     workplace_description: organisationDescription || null,
     workplace_website: "https://www.francetravail.fr/",
