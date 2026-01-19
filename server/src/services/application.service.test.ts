@@ -328,4 +328,195 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     expect(savedApplication).toBeTruthy()
     expect(savedApplication?.applicant_file_content).toContain("data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64")
   })
+
+  it("Should throw error when applicant uses burner email", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0015"),
+      partner_job_id: "job_dev_006",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    const helloworkPayload = generateHelloworkApplicationFixture({
+      job: {
+        jobId: "6081289803569600282e0015",
+        jobAtsUrl: "https://ats.company.com/jobs/developer",
+      },
+      applicant: {
+        firstName: "Test",
+        lastName: "User",
+        email: "test@yopmail.com", // yopmail is a known burner email domain
+        phoneNumber: "+33612345678",
+      },
+    })
+
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(badRequest(BusinessErrorCodes.BURNER))
+  })
+
+  it("Should throw error when file type is not supported", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0016"),
+      partner_job_id: "job_dev_007",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    const helloworkPayload = generateHelloworkApplicationFixture({
+      job: {
+        jobId: "6081289803569600282e0016",
+        jobAtsUrl: "https://ats.company.com/jobs/developer",
+      },
+      resume: {
+        file: {
+          fileName: "CV_Test.txt",
+          contentType: "text/plain",
+          data: "VGhpcyBpcyBhIHRleHQgZmlsZQ==", // Base64 for "This is a text file"
+        },
+      },
+    })
+
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED))
+  })
+
+  it("Should throw error when too many applications per offer", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0017"),
+      partner_job_id: "job_dev_008",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+      workplace_siret: "12345678901234",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    const helloworkPayload = generateHelloworkApplicationFixture({
+      job: {
+        jobId: "6081289803569600282e0017",
+        jobAtsUrl: "https://ats.company.com/jobs/developer",
+      },
+      applicant: {
+        firstName: "Repeat",
+        lastName: "Applicant",
+        email: "repeat.applicant@example.com",
+        phoneNumber: "+33612345678",
+      },
+    })
+
+    // Create applicant
+    const applicant = await getDbCollection("applicants").insertOne({
+      firstname: "Repeat",
+      lastname: "Applicant",
+      email: "repeat.applicant@example.com",
+      phone: "+33612345678",
+      last_connection: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    // Create 3 existing applications for the same job and applicant (max is 3)
+    const applications = Array.from({ length: 3 }, (_, i) => ({
+      applicant_id: applicant.insertedId,
+      job_id: new ObjectId("6081289803569600282e0017"),
+      job_origin: "LBA",
+      company_siret: "12345678901234",
+      applicant_message_to_company: "Test application",
+      created_at: new Date(),
+      last_update_at: new Date(),
+    }))
+    await getDbCollection("applications").insertMany(applications)
+
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
+  })
+
+  it("Should throw error when too many applications per day", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0018"),
+      partner_job_id: "job_dev_009",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    const helloworkPayload = generateHelloworkApplicationFixture({
+      job: {
+        jobId: "6081289803569600282e0018",
+        jobAtsUrl: "https://ats.company.com/jobs/developer",
+      },
+      applicant: {
+        firstName: "Spam",
+        lastName: "Applicant",
+        email: "spam.applicant@example.com",
+        phoneNumber: "+33612345678",
+      },
+    })
+
+    // Create applicant
+    const applicant = await getDbCollection("applicants").insertOne({
+      firstname: "Spam",
+      lastname: "Applicant",
+      email: "spam.applicant@example.com",
+      phone: "+33612345678",
+      last_connection: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
+
+    // Create 101 applications for today (max is 100)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const applications = Array.from({ length: 101 }, (_, i) => ({
+      applicant_id: applicant.insertedId,
+      job_id: new ObjectId(),
+      job_origin: "LBA",
+      company_siret: `1234567890123${i}`,
+      applicant_message_to_company: "Test application",
+      created_at: new Date(),
+      last_update_at: new Date(),
+    }))
+    await getDbCollection("applications").insertMany(applications)
+
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
+  })
+
+  it("Should throw error when too many applications per SIRET from caller", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0019"),
+      partner_job_id: "job_dev_010",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+      workplace_siret: "98765432109876",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    const helloworkPayload = generateHelloworkApplicationFixture({
+      job: {
+        jobId: "6081289803569600282e0019",
+        jobAtsUrl: "https://ats.company.com/jobs/developer",
+      },
+      applicant: {
+        firstName: "Caller",
+        lastName: "Applicant",
+        email: "caller.applicant@example.com",
+        phoneNumber: "+33612345678",
+      },
+    })
+
+    // Create 20 applications from Hellowork caller to the same SIRET today (max is 20)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const applications = Array.from({ length: 20 }, (_, i) => ({
+      applicant_id: new ObjectId(),
+      job_id: new ObjectId(),
+      job_origin: "LBA",
+      company_siret: "98765432109876",
+      caller: "Hellowork",
+      applicant_message_to_company: "Test application",
+      created_at: new Date(),
+      last_update_at: new Date(),
+    }))
+    await getDbCollection("applications").insertMany(applications)
+
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
+  })
 })
