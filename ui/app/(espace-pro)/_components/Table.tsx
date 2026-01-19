@@ -7,7 +7,7 @@ import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 
-const Table = ({ caption, data, columns }) => {
+const Table = ({ caption, data, columns }: { caption: string; data: any[]; columns: any }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
