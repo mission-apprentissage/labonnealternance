@@ -98,12 +98,16 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
   if (rechercheResult.status === "disabled") {
     return (
       <>
-        <Box role="main" component="main" id="search-content-container">
+        <Box role="main" tabIndex={-1} component="main" id="search-content-container">
           <RecherchePageEmpty {...props} />
         </Box>
         <Footer />
       </>
     )
   }
-  return <RecherchePageComponentWithParams {...props} />
+  return (
+    <Box role="main" component="main">
+      <RecherchePageComponentWithParams {...props} />
+    </Box>
+  )
 }
