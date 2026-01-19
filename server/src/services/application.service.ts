@@ -21,6 +21,8 @@ import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
+import axios from "axios"
+import { captureException } from "@sentry/node"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -55,6 +57,12 @@ const PARTNER_NAMES = {
   oc: "OpenClassrooms",
   "1jeune1solution": "1jeune1solution",
   Hellowork: "Hellowork",
+}
+
+export const enum HELLOWORK_STATUS {
+  CONTACTED = "CONTACTED",
+  REJECTED = "REJECTED",
+  JOB_CLOSED = "JOB_CLOSED",
 }
 
 const images: object = {
@@ -1515,10 +1523,7 @@ export const processScheduledRecruiterIntentions = async () => {
 export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHelloworkApplication) => {
   const { job, applicant, resume, statusApiUrl } = payload
 
-  const attachmentContentType =
-    typeof resume.file.contentType === "string" && resume.file.contentType.trim().length > 0
-      ? resume.file.contentType.trim()
-      : "application/pdf"
+  const attachmentContentType = typeof resume.file.contentType === "string" && resume.file.contentType.trim().length > 0 ? resume.file.contentType.trim() : "application/pdf"
 
   const result = await sendApplicationV2({
     newApplication: {
@@ -1542,4 +1547,40 @@ export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHellowo
   return {
     atsApplicationId: result._id.toString(),
   }
+}
+
+const sendApplicationStatusToHellowork = async ({ status, application }: { status: HELLOWORK_STATUS; application: IApplication }) => {
+  const now = new Date().toISOString()
+
+  const payload = {
+    status,
+    eventDate: now,
+    created: application?.created_at?.toISOString() ?? now,
+    jobId: application?.job_id ?? "",
+    source: PARTNER_NAMES.Hellowork,
+  }
+
+  const response = await axios.post(application.foreign_application_status_url!, payload)
+
+  if (response.status !== 200) {
+    captureException(new Error("Failed to notify Hellowork about application status change"), {
+      extra: {
+        applicationId: application._id,
+        foreign_application_status_url: application.foreign_application_status_url,
+        payload,
+      },
+    })
+  }
+}
+
+export const notifyApplicationStatusChangeToHellowork = async (applicationId: ObjectId, status: HELLOWORK_STATUS) => {
+  const application = await getDbCollection("applications").findOne({ _id: applicationId })
+  if (!application) {
+    throw notFound(`Application not found for id=${applicationId}`)
+  }
+  if (!application.foreign_application_status_url) {
+    throw badRequest(`No foreign_application_status_url for application id=${applicationId}`)
+  }
+
+  await sendApplicationStatusToHellowork({ status, application })
 }
