@@ -149,6 +149,7 @@ export default function (server: Server) {
     "/application/hellowork",
     {
       schema: zRoutes.post["/application/hellowork"],
+      config: rateLimitConfig,
     },
     async (_req, res) => {
       if (_req.headers["x-api-key"] !== config.helloworkApiKey) {
