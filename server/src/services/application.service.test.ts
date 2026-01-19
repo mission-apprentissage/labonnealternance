@@ -147,13 +147,6 @@ describe("Sending application", () => {
 })
 
 describe("buildApplicationFromHelloworkAndSaveToDb", () => {
-  beforeEach(async () => {
-    // Clean up collections before each test
-    await getDbCollection("jobs_partners").deleteMany({})
-    await getDbCollection("applicants").deleteMany({})
-    await getDbCollection("applications").deleteMany({})
-  })
-
   afterEach(async () => {
     // Clean up collections after each test
     await getDbCollection("jobs_partners").deleteMany({})
