@@ -401,7 +401,7 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: analyzeRemovedRomes,
-    description: "Analyse les romes qui ont changé",
+    description: "Analyse les codes ROME supprimés ou modifiés entre les versions du référentiel",
   },
   {
     fct: fillLbaUrl,
