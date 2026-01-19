@@ -125,7 +125,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">
       {showLinkList && (
-        <nav className="fr-footer__top" role="navigation" aria-label="Informations et liens du site">
+        <nav className="fr-footer__top" role="navigation">
           <h2 className="fr-sr-only">Informations et liens du site</h2>
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--gutters">
