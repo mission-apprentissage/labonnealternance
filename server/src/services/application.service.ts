@@ -1457,6 +1457,13 @@ export const sendRecruiterIntention = async ({
       }
     )
 
+    if (application.foreign_application_status_url && application.caller === PARTNER_NAMES.Hellowork) {
+      await sendApplicationStatusToHellowork({
+        status: company_recruitment_intention === ApplicationIntention.ENTRETIEN ? HELLOWORK_STATUS.CONTACTED : HELLOWORK_STATUS.REJECTED,
+        application,
+      })
+    }
+
     await getDbCollection("applicants_email_logs").insertOne({
       _id: new ObjectId(),
       applicant_id: applicant._id,
