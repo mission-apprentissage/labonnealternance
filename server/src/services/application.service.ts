@@ -1567,10 +1567,10 @@ const sendApplicationStatusToHellowork = async ({ status, application }: { statu
     source: PARTNER_NAMES.Hellowork,
   }
 
-  const response = await axios.post(application.foreign_application_status_url!, payload)
-
-  if (response.status !== 200) {
-    captureException(new Error("Failed to notify Hellowork about application status change"), {
+  try {
+    await axios.post(application.foreign_application_status_url!, payload)
+  } catch (error) {
+    captureException(error, {
       extra: {
         applicationId: application._id,
         foreign_application_status_url: application.foreign_application_status_url,
