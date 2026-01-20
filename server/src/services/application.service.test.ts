@@ -357,7 +357,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       applicant: {
         firstName: "Repeat",
         lastName: "Applicant",
-        email: "repeat.applicant@example.com",
+        email: "repeat.applicant@orange.com",
         phoneNumber: "+33612345678",
       },
     })
@@ -367,7 +367,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       _id: new ObjectId(),
       firstname: "Repeat",
       lastname: "Applicant",
-      email: "repeat.applicant@example.com",
+      email: "repeat.applicant@orange.com",
       phone: "0612345678",
       last_connection: new Date(),
       createdAt: new Date(),
@@ -388,7 +388,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     )
     await getDbCollection("applications").insertMany(applications)
 
-    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER)
   })
 
   it("Should throw error when too many applications per day", async () => {
@@ -428,18 +428,19 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     // Create 101 applications for today (max is 100)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const applications = Array.from({ length: 101 }, (_, i) => ({
-      applicant_id: applicant.insertedId,
-      job_id: new ObjectId(),
-      job_origin: "LBA",
-      company_siret: `1234567890123${i}`,
-      applicant_message_to_company: "Test application",
-      created_at: new Date(),
-      last_update_at: new Date(),
-    }))
+    const applications = Array.from({ length: 101 }, () =>
+      generateApplicationFixture({
+        applicant_id: applicant.insertedId,
+        job_id: new ObjectId(),
+        company_siret: null,
+        applicant_message_to_company: "Test application",
+        created_at: new Date(),
+        last_update_at: new Date(),
+      })
+    )
     await getDbCollection("applications").insertMany(applications)
 
-    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.BURNER)
   })
 
   it("Should throw error when too many applications per SIRET from caller", async () => {
@@ -460,26 +461,27 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       applicant: {
         firstName: "Caller",
         lastName: "Applicant",
-        email: "caller.applicant@example.com",
-        phoneNumber: "+33612345678",
+        email: "caller.applicant@orange.com",
+        phoneNumber: "0612345678",
       },
     })
 
     // Create 20 applications from Hellowork caller to the same SIRET today (max is 20)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const applications = Array.from({ length: 20 }, () => ({
-      applicant_id: new ObjectId(),
-      job_id: new ObjectId(),
-      job_origin: "LBA",
-      company_siret: "98765432109876",
-      caller: "Hellowork",
-      applicant_message_to_company: "Test application",
-      created_at: new Date(),
-      last_update_at: new Date(),
-    }))
+    const applications = Array.from({ length: 20 }, () =>
+      generateApplicationFixture({
+        applicant_id: new ObjectId(),
+        job_id: new ObjectId(),
+        company_siret: "98765432109876",
+        caller: "Hellowork",
+        applicant_message_to_company: "Test application",
+        created_at: new Date(),
+        last_update_at: new Date(),
+      })
+    )
     await getDbCollection("applications").insertMany(applications)
 
-    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
   })
 })
