@@ -182,7 +182,15 @@ function ResultCard({ data, rechercheParams }: { data: ResultCardData; recherche
       return <LbaItemCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} />
     }
     case "ValorisationCandidatureSpontanee": {
-      return <ValorisationCandidatureSpontanee />
+      return (
+        <ValorisationCandidatureSpontanee
+          overridenQueryParams={{
+            utm_source: "lba",
+            utm_medium: "website",
+            utm_campaign: "lba_recherche_promo-candidature-spontanee",
+          }}
+        />
+      )
     }
     default: {
       assertUnreachable(type)

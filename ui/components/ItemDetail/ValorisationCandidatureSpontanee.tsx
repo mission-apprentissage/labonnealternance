@@ -10,7 +10,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 import { classNames } from "@/utils/classNames"
 
-export const ValorisationCandidatureSpontanee = () => {
+export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {} }: { overridenQueryParams?: Record<string, string> }) => {
   const router = useRouter()
 
   const onClick = useMemo(() => {
@@ -19,18 +19,25 @@ export const ValorisationCandidatureSpontanee = () => {
     const recherchePageParams = parseRecherchePageParams(searchParams, IRechercheMode.DEFAULT)
     const isClickable = Boolean(recherchePageParams.romes.length)
     if (!isClickable) return undefined
-    const onClick = () =>
-      router.push(
-        PAGES.dynamic
-          .recherche({
-            ...recherchePageParams,
-            activeItems: null,
-            scrollToRecruteursLba: true,
-          })
-          .getPath()
-      )
+    const onClick = () => {
+      const path = PAGES.dynamic
+        .recherche({
+          ...recherchePageParams,
+          activeItems: null,
+          scrollToRecruteursLba: true,
+        })
+        .getPath()
+      const fakeUrl = new URL("http://localhost" + path)
+      const { searchParams } = fakeUrl
+      Object.entries(overridenQueryParams).forEach(([key, value]) => {
+        searchParams.delete(key)
+        searchParams.append(key, value)
+      })
+
+      router.push(fakeUrl.pathname + fakeUrl.search)
+    }
     return onClick
-  }, [router])
+  }, [router, overridenQueryParams])
 
   return (
     <Box

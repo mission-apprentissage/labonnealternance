@@ -150,7 +150,13 @@ function JobDetail({
             maxWidth: "970px",
           }}
         >
-          <ValorisationCandidatureSpontanee />
+          <ValorisationCandidatureSpontanee
+            overridenQueryParams={{
+              utm_source: "lba",
+              utm_medium: "website",
+              utm_campaign: "lba_fiche-offre_promo-candidature-spontanee",
+            }}
+          />
         </Box>
       )}
       <Box
