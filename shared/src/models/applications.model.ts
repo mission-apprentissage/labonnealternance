@@ -249,7 +249,6 @@ export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   application_url: true,
 })
 
-// Schéma principal
 export const ZHelloworkApplication = z.object({
   applicationId: z.string(),
   job: z.object({
