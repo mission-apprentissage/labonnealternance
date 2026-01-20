@@ -60,14 +60,14 @@ export function generateHelloworkApplicationFixture(data: Partial<IHelloworkAppl
     applicant: {
       firstName: "Marie",
       lastName: "Dupont",
-      email: "marie.dupont@example.com",
+      email: "marie.dupont@orange.com",
       phoneNumber: "+33612345678",
     },
     resume: {
       file: {
-        fileName: "CV_Marie_Dupont.pdf",
+        fileName: "CV_John_Doe.pdf",
         contentType: "application/pdf",
-        data: "JVBERi0xLjQKJeLjz9MKM...",
+        data: "JVBERi0xLjQKJeLjz9MK",
       },
     },
     source: "LinkedIn",

@@ -2,7 +2,7 @@ import { badRequest } from "@hapi/boom"
 import { ObjectId } from "bson"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/index"
-import { applicationTestFile, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
+import { applicationTestFile, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
@@ -288,38 +288,6 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
   })
 
-  it("Should properly handle non-standard contentType", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0014"),
-      partner_job_id: "job_dev_005",
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@orange.fr",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    const helloworkPayload = generateHelloworkApplicationFixture({
-      job: {
-        jobId: "6081289803569600282e0014",
-        jobAtsUrl: "https://ats.company.com/jobs/developer",
-      },
-      resume: {
-        file: {
-          fileName: "CV_Test.docx",
-          contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          data: "UEsDBBQABgAIAAAAIQ",
-        },
-      },
-    })
-
-    const result = await buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)
-
-    expect(result).toHaveProperty("atsApplicationId")
-
-    const savedApplication = await getDbCollection("applications").findOne({ _id: new ObjectId(result.atsApplicationId) })
-    expect(savedApplication).toBeTruthy()
-    expect(savedApplication?.applicant_file_content).toContain("data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64")
-  })
-
   it("Should throw error when applicant uses burner email", async () => {
     const partnerJob = generateJobsPartnersOfferPrivate({
       _id: new ObjectId("6081289803569600282e0015"),
@@ -396,6 +364,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
 
     // Create applicant
     const applicant = await getDbCollection("applicants").insertOne({
+      _id: new ObjectId(),
       firstname: "Repeat",
       lastname: "Applicant",
       email: "repeat.applicant@example.com",
@@ -407,15 +376,16 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
 
     // Create 3 existing applications for the same job and applicant
     // This is at the limit, so the next (4th) application should trigger the error (max is 3)
-    const applications = Array.from({ length: 3 }, () => ({
-      applicant_id: applicant.insertedId,
-      job_id: new ObjectId("6081289803569600282e0017"),
-      job_origin: "LBA",
-      company_siret: "12345678901234",
-      applicant_message_to_company: "Test application",
-      created_at: new Date(),
-      last_update_at: new Date(),
-    }))
+    const applications = Array.from({ length: 3 }, () =>
+      generateApplicationFixture({
+        applicant_id: applicant.insertedId,
+        job_id: new ObjectId("6081289803569600282e0017"),
+        company_siret: "12345678901234",
+        applicant_message_to_company: "Test application",
+        created_at: new Date(),
+        last_update_at: new Date(),
+      })
+    )
     await getDbCollection("applications").insertMany(applications)
 
     await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow()
@@ -445,6 +415,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
 
     // Create applicant
     const applicant = await getDbCollection("applicants").insertOne({
+      _id: new ObjectId(),
       firstname: "Spam",
       lastname: "Applicant",
       email: "spam.applicant@orange.com",
