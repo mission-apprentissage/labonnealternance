@@ -21,7 +21,7 @@ export const CFA = () => {
       </Grid>
 
       <Grid size={{ xs: 12, md: 7 }} sx={{ display: { xs: "none", md: "block" } }}>
-        <Image src="/images/home_pics/illu-entreprisesmandatees.svg" alt="" width={678} height={337} />
+        <Image src="/images/home_pics/illu-entreprisesmandatees.svg" alt="" width={678} height={337} style={{ width: "100%", height: "auto" }} />
       </Grid>
     </Grid>
   )

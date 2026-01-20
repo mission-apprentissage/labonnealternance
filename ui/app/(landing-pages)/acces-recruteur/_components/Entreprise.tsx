@@ -23,7 +23,7 @@ export const Entreprise = () => {
       </Grid>
 
       <Grid size={{ xs: 12, md: 6 }} sx={{ display: { xs: "none", md: "block" } }}>
-        <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" width={600} height={414} />
+        <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" width={600} height={414} style={{ width: "100%", height: "auto" }} />
       </Grid>
     </Grid>
   )
