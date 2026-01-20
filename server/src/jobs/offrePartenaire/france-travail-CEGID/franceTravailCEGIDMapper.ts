@@ -64,7 +64,7 @@ export const ZFranceTravailCEGIDJob = z
 export type IFranceTravailCEGIDJob = z.output<typeof ZFranceTravailCEGIDJob>
 
 export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: IAgenceCEGID[]): IComputedJobsPartners => {
-  const now = new Date()
+  const now = dayjs.tz().toDate()
   const {
     reference,
     title,
@@ -77,8 +77,8 @@ export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: I
     startPublicationDate,
     beginningDate,
   } = job
-  const offerCreation = startPublicationDate ? new Date(startPublicationDate) : now
-  const offerExpiration = dayjs(offerCreation).add(60, "days").toDate()
+  const offerCreation = startPublicationDate ? dayjs.tz(startPublicationDate).toDate() : now
+  const offerExpiration = dayjs.tz(offerCreation).add(60, "days").toDate()
 
   const contractTypes = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
 
@@ -99,7 +99,7 @@ export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: I
     contract_type: contractTypes,
     contract_start: beginningDate ? new Date(beginningDate) : null,
 
-    workplace_siret: "13001833800019", // France travail
+    workplace_siret: "13000548123699", // France travail
     workplace_name: organisationName || null,
     workplace_description: organisationDescription || null,
     workplace_website: "https://www.francetravail.fr/",
