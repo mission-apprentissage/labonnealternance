@@ -1319,24 +1319,33 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   const jobOrCompany = await getJobOrCompanyFromApplication(application)
 
   const { recruiter, job, type } = jobOrCompany ?? {}
-  let recruiter_phone = ""
-  let company_name = ""
+  if (!job) throw notFound("Offre non trouvée")
 
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
+  let recruiter_phone: string
+  let company_name: string
 
-    const { managed_by } = recruiter
-    const { apply_phone, cfa_apply_phone, cfa_legal_name, workplace_brand, workplace_legal_name } = job!
+  switch (type) {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
+      if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
 
-    company_name = cfa_legal_name || workplace_brand || workplace_legal_name || ""
-    await validateUserWithAccountEmail(new ObjectId(managed_by))
-    recruiter_phone = cfa_apply_phone || apply_phone || ""
-  }
+      const { managed_by } = recruiter
+      const { apply_phone, cfa_apply_phone, cfa_legal_name, workplace_brand, workplace_legal_name } = job
 
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    const { apply_phone, workplace_brand, workplace_name, workplace_legal_name } = job!
-    recruiter_phone = apply_phone || ""
-    company_name = workplace_brand || workplace_name || workplace_legal_name || ""
+      company_name = cfa_legal_name || workplace_brand || workplace_legal_name || ""
+      await validateUserWithAccountEmail(new ObjectId(managed_by))
+      recruiter_phone = cfa_apply_phone || apply_phone || ""
+      break
+    }
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
+      const { apply_phone, workplace_brand, workplace_name, workplace_legal_name } = job
+      recruiter_phone = apply_phone || ""
+      company_name = workplace_brand || workplace_name || workplace_legal_name || ""
+      break
+    }
+    default: {
+      assertUnreachable(type)
+    }
   }
 
   await getDbCollection("applications").updateOne(
