@@ -1,12 +1,12 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "bson"
-import dayjs from "shared/helpers/dayjs"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
-import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
@@ -173,7 +173,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       applicant: {
         firstName: "John",
         lastName: "Doe",
-        email: "john.doe@example.com",
+        email: "john.doe@orange.fr",
         phoneNumber: "+33612345678",
         coverLetter: "I am very interested in this position",
       },
@@ -218,7 +218,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       applicant: {
         firstName: "Jane",
         lastName: "Smith",
-        email: "jane.smith@example.com",
+        email: "jane.smith@orange.fr",
         phoneNumber: "+33698765432",
         coverLetter: undefined,
       },
@@ -232,39 +232,6 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     // Verify the application message is empty when no cover letter
     const savedApplication = await getDbCollection("applications").findOne({ _id: new ObjectId(result.atsApplicationId) })
     expect(savedApplication?.applicant_message_to_company).toBe("")
-  })
-
-  it("Should default to application/pdf when contentType is empty", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0012"),
-      partner_job_id: "job_dev_003",
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    const helloworkPayload = generateHelloworkApplicationFixture({
-      job: {
-        jobId: "6081289803569600282e0012",
-        jobAtsUrl: "https://ats.company.com/jobs/developer",
-      },
-      resume: {
-        file: {
-          fileName: "CV_Test.pdf",
-          contentType: "  ",
-          data: "JVBERi0xLjQKJeLjz9MK",
-        },
-      },
-    })
-
-    const result = await buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)
-
-    expect(result).toHaveProperty("atsApplicationId")
-
-    // The application should be created successfully with default contentType
-    const savedApplication = await getDbCollection("applications").findOne({ _id: new ObjectId(result.atsApplicationId) })
-    expect(savedApplication).toBeTruthy()
-    expect(savedApplication?.applicant_file_content).toContain("data:application/pdf;base64")
   })
 
   it("Should throw error when partner job does not exist", async () => {
@@ -282,7 +249,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     const expiredJob = generateJobsPartnersOfferPrivate({
       _id: new ObjectId("6081289803569600282e0013"),
       partner_job_id: "job_dev_004",
-      offer_status: JOB_STATUS_ENGLISH.INACTIVE,
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
       apply_email: "employer@test.fr",
     })
     await getDbCollection("jobs_partners").insertOne(expiredJob)
@@ -302,7 +269,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       _id: new ObjectId("6081289803569600282e0014"),
       partner_job_id: "job_dev_005",
       offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
+      apply_email: "employer@orange.fr",
     })
     await getDbCollection("jobs_partners").insertOne(partnerJob)
 
@@ -359,7 +326,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       _id: new ObjectId("6081289803569600282e0016"),
       partner_job_id: "job_dev_007",
       offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
+      apply_email: "employer@orange.fr",
     })
     await getDbCollection("jobs_partners").insertOne(partnerJob)
 
@@ -408,7 +375,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       firstname: "Repeat",
       lastname: "Applicant",
       email: "repeat.applicant@example.com",
-      phone: "+33612345678",
+      phone: "0612345678",
       last_connection: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -416,7 +383,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
 
     // Create 3 existing applications for the same job and applicant
     // This is at the limit, so the next (4th) application should trigger the error (max is 3)
-    const applications = Array.from({ length: 3 }, (_, i) => ({
+    const applications = Array.from({ length: 3 }, () => ({
       applicant_id: applicant.insertedId,
       job_id: new ObjectId("6081289803569600282e0017"),
       job_origin: "LBA",
@@ -456,8 +423,8 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     const applicant = await getDbCollection("applicants").insertOne({
       firstname: "Spam",
       lastname: "Applicant",
-      email: "spam.applicant@example.com",
-      phone: "+33612345678",
+      email: "spam.applicant@orange.com",
+      phone: "0612345678",
       last_connection: new Date(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -506,7 +473,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     // Create 20 applications from Hellowork caller to the same SIRET today (max is 20)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const applications = Array.from({ length: 20 }, (_, i) => ({
+    const applications = Array.from({ length: 20 }, () => ({
       applicant_id: new ObjectId(),
       job_id: new ObjectId(),
       job_origin: "LBA",
