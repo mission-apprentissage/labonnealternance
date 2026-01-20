@@ -30,7 +30,7 @@ describe("detectClassificationJobsPartners", () => {
         text: "Software Engineer",
       },
     ]
-    nock(config.labonnealternanceLab.baseUrl).post("/scores").reply(200, apiResponse)
+    nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, apiResponse)
     return async () => {
       await getDbCollection("computed_jobs_partners").deleteMany({})
     }
