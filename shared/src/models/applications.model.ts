@@ -271,7 +271,7 @@ export const ZHelloworkApplication = z.object({
     }),
   }),
   source: z.any(),
-  statusApiUrl: z.string(),
+  statusApiUrl: z.string().url(),
   screenerQuestions: z.array(z.any()),
 })
 
