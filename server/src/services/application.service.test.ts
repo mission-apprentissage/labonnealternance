@@ -9,12 +9,36 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
-import { afterEach, beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveRecruiter } from "@tests/utils/user.test.utils"
+
+// Mock S3 operations to avoid actual AWS calls during tests
+vi.mock("@/common/utils/awsUtils", () => {
+  return {
+    s3WriteString: vi.fn().mockResolvedValue(undefined),
+  }
+})
+
+// Mock ClamAV antivirus service to avoid dependency on external service
+vi.mock("@/services/clamav.service", () => {
+  return {
+    isInfected: vi.fn().mockResolvedValue(false),
+  }
+})
+
+// Mock mailer service to avoid sending actual emails during tests
+vi.mock("@/services/mailer.service", () => {
+  return {
+    default: {
+      sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
+      renderEmail: vi.fn().mockResolvedValue("<html>Test Email</html>"),
+    },
+  }
+})
 
 useMongo()
 
