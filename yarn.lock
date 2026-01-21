@@ -6806,12 +6806,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/whatwg-url@npm:^11.0.2":
-  version: 11.0.5
-  resolution: "@types/whatwg-url@npm:11.0.5"
+"@types/whatwg-url@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "@types/whatwg-url@npm:13.0.0"
   dependencies:
     "@types/webidl-conversions": "*"
-  checksum: 23a0c45aff51817807b473a6adb181d6e3bb0d27dde54e84883d5d5bc93358e95204d2188e7ff7fdc2cdaf157e97e1188ef0a22ec79228da300fc30d4a05b56a
+  checksum: 82018c7dc057dd4b5ee6137e54a659d2d043146eaade8afc2dda472773cc66f2abad73525020a2bf399a09b1bf448504f9e519d6b2d7495e6e781bb5de686753
   languageName: node
   linkType: hard
 
@@ -7921,17 +7921,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.10.4":
-  version: 6.10.4
-  resolution: "bson@npm:6.10.4"
-  checksum: 5b0b625ac9b3661497aa1baec58c8e8979cc501a5c490a5740001b3cc415d0d5d51f16bf9da433b28ffd1303b6f98c1427e8192cf4220b13b09a9a4184bfceb2
-  languageName: node
-  linkType: hard
-
-"bson@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "bson@npm:7.0.0"
-  checksum: 124cbff241305ca2aa16c5eaf7ae8da6ef66fa6bf58eebd15992ecb215ab4eb1f1ffe788d2bdf5ed1a8d06459b8636a8f835550def6ee9d2379db8a1da783a77
+"bson@npm:^7.0.0, bson@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "bson@npm:7.1.1"
+  checksum: 3bfda381e03e30d04e1ed89228457c35a2673b0bf450fe638072754b21e382dbac72b484e7d90af44b1913f7ad47537de598783f21ec3baad00d5bcd09f9da72
   languageName: node
   linkType: hard
 
@@ -14707,31 +14700,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb-connection-string-url@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "mongodb-connection-string-url@npm:3.0.2"
+"mongodb-connection-string-url@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "mongodb-connection-string-url@npm:7.0.0"
   dependencies:
-    "@types/whatwg-url": ^11.0.2
-    whatwg-url: ^14.1.0 || ^13.0.0
-  checksum: 382319aa41d381ff4be9370024e3cf765ded14aa581bca7c7a171fcaae618b8d92912329b6b13898334c3b6f3cab12ae8785defad2745ca20226ceeb253ef1ae
+    "@types/whatwg-url": ^13.0.0
+    whatwg-url: ^14.1.0
+  checksum: 07264d687e7c572bf531e6e76409af2500342b187751dd1652c4820bbb474c106195d7bc087134d608d044d34305f93f048c071eede005e6bf8388c6d17dd087
   languageName: node
   linkType: hard
 
-"mongodb@npm:^6.20.0":
-  version: 6.20.0
-  resolution: "mongodb@npm:6.20.0"
+"mongodb@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "mongodb@npm:7.0.0"
   dependencies:
     "@mongodb-js/saslprep": ^1.3.0
-    bson: ^6.10.4
-    mongodb-connection-string-url: ^3.0.2
+    bson: ^7.0.0
+    mongodb-connection-string-url: ^7.0.0
   peerDependencies:
-    "@aws-sdk/credential-providers": ^3.188.0
-    "@mongodb-js/zstd": ^1.1.0 || ^2.0.0
-    gcp-metadata: ^5.2.0
-    kerberos: ^2.0.1
-    mongodb-client-encryption: ">=6.0.0 <7"
+    "@aws-sdk/credential-providers": ^3.806.0
+    "@mongodb-js/zstd": ^7.0.0
+    gcp-metadata: ^7.0.1
+    kerberos: ^7.0.0
+    mongodb-client-encryption: ">=7.0.0 <7.1.0"
     snappy: ^7.3.2
-    socks: ^2.7.1
+    socks: ^2.8.6
   peerDependenciesMeta:
     "@aws-sdk/credential-providers":
       optional: true
@@ -14747,7 +14740,7 @@ __metadata:
       optional: true
     socks:
       optional: true
-  checksum: 7f427ca631cf57ce2a0b835fe8ad61791e21abb4e5ebf8af83115ad782d0266dd574e3e540a741a1f27dd201d7e035f34681dd6dd6aa495af6e4b61457b38bec
+  checksum: 835b2a9c71b4e2a7ca4353d59df63e9c54000e32ecb9e7e6e3a1d19d9e5c48841a5dd94779320cc679eacf5ffcc1e3fc790cc9a5fbe32144dc7c3b707fdf7763
   languageName: node
   linkType: hard
 
@@ -17971,7 +17964,7 @@ __metadata:
     axios: ^1.13.2
     axios-cache-interceptor: ^1.8.3
     basic-ftp: ^5.0.5
-    bson: ^6.10.4
+    bson: ^7.1.1
     bunyan: ^1.8.15
     burner-email-providers: ^1.0.67
     chalk: ^5.6.2
@@ -17999,7 +17992,7 @@ __metadata:
     match-sorter: ^8.1.0
     memoizee: ^0.4.17
     mjml: ^4.16.1
-    mongodb: ^6.20.0
+    mongodb: ^7.0.0
     netmask: ^2.0.2
     nock: 14.0.10
     nodemailer: ^7.0.10
@@ -18082,14 +18075,14 @@ __metadata:
     "@fastify/swagger": ^9.5.2
     "@tsconfig/node24": ^24.0.3
     "@types/node": ^24.10.0
-    bson: ^6.10.4
+    bson: ^7.1.1
     change-case: 5.4.4
     dayjs: ^1.11.19
     i18next: ^25.6.0
     libphonenumber-js: ^1.12.25
     lodash-es: ^4.17.21
     luhn: ^2.4.1
-    mongodb: ^6.20.0
+    mongodb: ^7.0.0
     openapi3-ts: ^4.5.0
     type-fest: ^5.2.0
     typescript: ^5.9.3
@@ -20361,7 +20354,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"whatwg-url@npm:^14.1.0 || ^13.0.0":
+"whatwg-url@npm:^14.1.0":
   version: 14.2.0
   resolution: "whatwg-url@npm:14.2.0"
   dependencies:
