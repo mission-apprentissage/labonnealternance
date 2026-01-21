@@ -4,8 +4,6 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IOpco } from "shared/models/opco.model"
 import { parseEnum } from "shared/utils/index"
 
-import type { ICfaDockOpcoItem } from "./cfadock.service"
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 /**
@@ -91,7 +89,7 @@ export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
  * @returns {Promise<any[]>}
  */
 export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; opco?: string; opcoUrl?: string }): Promise<any[]> => {
-  let sirensToFind: any[] = []
+  const sirensToFind: any[] = []
 
   jobs.forEach((job) => {
     if (job?.company?.siret) {
@@ -104,7 +102,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
     return []
   }
 
-  // STEP 1 identifier les sociétés présentent dans notre base
+  // identifier les sociétés présentent dans notre base
   const searchForOpcoParams: any = { siren: { $in: sirensToFind } }
 
   if (opcoUrl) {
@@ -117,38 +115,7 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
 
   const foundInMongoOpcos = await getDbCollection("opcos").find(searchForOpcoParams).toArray()
 
-  let opcoFilteredSirens: any[] = []
-
-  const foundInMongoOpcoSirens = foundInMongoOpcos.map((opco) => opco.siren)
-
-  opcoFilteredSirens = opcoFilteredSirens.concat(foundInMongoOpcoSirens)
-
-  // STEP 2 identifier des sociétés provenant de CFA DOCK
-  if (sirensToFind.length !== foundInMongoOpcoSirens.length) {
-    const toRemove = new Set(foundInMongoOpcoSirens)
-    sirensToFind = sirensToFind.filter((x) => !toRemove.has(x))
-
-    for (let i = 0; i < sirensToFind.length; i += CFADOCK_FILTER_LIMIT) {
-      const sirenChunk = sirensToFind.slice(i, i + CFADOCK_FILTER_LIMIT)
-      try {
-        const sirenOpcos = await fetchOpcosFromCFADock(new Set(sirenChunk))
-
-        sirenOpcos.forEach(async (sirenOpco) => {
-          if (opcoUrl && sirenOpco.url === opcoUrl) {
-            opcoFilteredSirens.push(sirenOpco.filters.siret)
-          } else if (opco && opco.toUpperCase() === getMemoizedOpcoShortName(sirenOpco.opcoName ?? "")) {
-            opcoFilteredSirens.push(sirenOpco.filters.siret)
-          }
-
-          // enregistrement des retours opcos dans notre base pour réduire les recours à CFADOCK
-          await saveOpco(cfaDockOpcoItemToIOpco(sirenOpco))
-        })
-      } catch (_) {
-        // ne rien faire. 429 probable de l'api CFADOCK dont le rate limiter est trop limitant
-        // les éventuelles sociétés qui auraient pu matcher sont ignorées
-      }
-    }
-  }
+  const opcoFilteredSirens: any[] = foundInMongoOpcos.map((opco) => opco.siren)
 
   // les sociétés n'appartenant pas à l'opco en paramètres ne sont pas retournées
   if (opcoFilteredSirens.length === 0) {
@@ -164,15 +131,4 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
   })
 
   return results
-}
-
-export const cfaDockOpcoItemToIOpco = (opcoItem: ICfaDockOpcoItem) => {
-  const result: Omit<IOpco, "_id"> = {
-    siren: opcoItem.filters.siret,
-    opco: opcoItem.opcoName,
-    opco_short_name: getMemoizedOpcoShortName(opcoItem.opcoName ?? ""),
-    url: opcoItem.url,
-    idcc: opcoItem.idcc,
-  }
-  return result
 }
