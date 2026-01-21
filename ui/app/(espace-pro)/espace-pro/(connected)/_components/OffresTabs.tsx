@@ -167,7 +167,7 @@ export const OffresTabs = ({
       Header: "",
       id: "action",
       maxWidth: "40",
-      srOnly: "Actions sur l'offre",
+      srOnly: "Actions sur les offres",
       disableFilters: true,
       disableSortBy: true,
       // isSticky: true,

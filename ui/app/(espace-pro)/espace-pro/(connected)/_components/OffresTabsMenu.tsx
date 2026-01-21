@@ -33,16 +33,19 @@ export const OffresTabsMenu = ({
   const [copied, setCopied] = useState(false)
 
   const [lat, lon] = (row.geo_coordinates ?? "").split(",")
+
+  const offerTitle = row?.offer_title_custom ?? row?.rome_appellation_label ?? row?.rome_label
+
   const cfaOptionParams =
     user.type === AUTHTYPE.ENTREPRISE
       ? {
           link: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
-          ariaLabel: "Lien vers les mise en relations avec des centres de formations",
+          ariaLabel: `Lien vers les mise en relations avec des centres de formations pour l'offre ${offerTitle}`,
           type: "link",
         }
       : {
           link: `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`,
-          ariaLabel: "Lien vers les formations - nouvelle fenêtre",
+          ariaLabel: `Lien vers les formations pour l'offre ${offerTitle} - nouvelle fenêtre`,
           type: "externalLink",
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
@@ -51,11 +54,13 @@ export const OffresTabsMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Editer l'offre",
+      ariaLabel: `Éditer l'offre ${offerTitle}`,
       onClick: () => router.push(buildOfferEditionUrl(row._id)),
       type: "button",
     },
     {
       label: "Prolonger l'offre",
+      ariaLabel: `Prolonger l'offre ${offerTitle}`,
       onClick: () => {
         extendOffre(row._id)
           .then((job) =>
@@ -73,6 +78,7 @@ export const OffresTabsMenu = ({
     },
     {
       label: "Voir l'offre en ligne",
+      ariaLabel: `Voir l'offre ${offerTitle} en ligne - nouvelle fenêtre`,
       link: directLink,
       type: "link",
     },
@@ -102,7 +108,7 @@ export const OffresTabsMenu = ({
           setCopied(true)
         })
       },
-      ariaLabel: "Copier le lien de partage de l'offre dans le presse papier",
+      ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse papier" : `Partager le lien de l'offre ${offerTitle}`,
       type: "button",
     },
     user.type !== AUTHTYPE.CFA
@@ -115,6 +121,7 @@ export const OffresTabsMenu = ({
       : null,
     {
       label: "Supprimer l'offre",
+      ariaLabel: `Supprimer l'offre ${offerTitle}`,
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -124,5 +131,5 @@ export const OffresTabsMenu = ({
     },
   ]
 
-  return !isDisabled && <PopoverMenu actions={actions} title="Actions sur l'offre" resetFlagsOnClose={[setCopied]} />
+  return !isDisabled && <PopoverMenu actions={actions} title={`Actions sur l'offre ${offerTitle}`} resetFlagsOnClose={[setCopied]} />
 }
