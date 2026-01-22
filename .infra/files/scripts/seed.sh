@@ -31,6 +31,4 @@ cat "$SEED_ARCHIVE" | /opt/app/tools/docker-compose.sh exec -iT mongodb mongores
   --nsTo="$TARGET_DB.*" \
   --drop \
   --gzip \
-  --numInsertionWorkersPerCollection=1 \
-  --numParallelCollections=2 \
   "mongodb://__system:{{vault.MONGODB_KEYFILE}}@localhost:27017/?authSource=local&directConnection=true"
