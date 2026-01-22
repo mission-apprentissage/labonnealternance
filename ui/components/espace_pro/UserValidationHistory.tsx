@@ -12,7 +12,7 @@ const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation
   }
 
   const getStatut = (status: IUserStatusValidationJson["status"]) => {
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (status) {
       case "VALIDÉ":
         return <Badge variant="active">{status}</Badge>
