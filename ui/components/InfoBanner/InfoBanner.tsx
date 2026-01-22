@@ -1,3 +1,4 @@
+"use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
@@ -9,11 +10,21 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
   <Typography>
-    <Typography component="span" sx={{ fontWeight: 700 }}>
-      Souhaiteriez-vous accéder à toutes vos candidatures depuis votre espace connecté ?{" "}
+    <Typography>
+      <Typography component="span" sx={{ fontWeight: 700 }}>
+        Comment pourrions-nous faciliter vos recrutements en alternance ?{" "}
+      </Typography>
+      Partagez vos besoins à l’équipe lors d’un échange de 30 min.{" "}
     </Typography>
-    <Link underline="always" href="https://tally.so/r/3Xq19z" color="inherit" aria-label="Accéder au formulaire - nouvelle fenêtre" target="_blank" rel="noopener noreferrer">
-      Donnez-nous votre avis en 3 clics.
+    <Link
+      underline="always"
+      href="https://calendly.com/camille-jeanblanc-beta/la-bonne-alternance"
+      color="inherit"
+      aria-label="Réserver un créneau pour partager vos besoins avec l'équipe de La bonne alternance - nouvelle fenêtre"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Réserver un créneau
     </Link>
   </Typography>
 )
