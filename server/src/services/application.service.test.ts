@@ -440,7 +440,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     )
     await getDbCollection("applications").insertMany(applications)
 
-    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.BURNER)
+    await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
   })
 
   it("Should throw error when too many applications per SIRET from caller", async () => {
