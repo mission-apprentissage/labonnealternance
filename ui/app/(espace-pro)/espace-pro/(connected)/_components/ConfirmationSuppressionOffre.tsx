@@ -84,7 +84,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
         </Typography>
 
         <Box pb={2}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.</Typography>
+          <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.</Typography>
           <FormikProvider value={formik}>
             <form onSubmit={formik.handleSubmit}>
               <Select
@@ -105,7 +105,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
                 ))}
               </Select>
               {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("6v") }}>
                 <Box sx={{ ml: fr.spacing("3v") }}>
                   <Button type="button" priority="secondary" onClick={() => resetState()}>
                     Annuler

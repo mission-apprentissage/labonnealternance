@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Tab, Tabs } from "@mui/material"
 
 interface TabPanelProps {
@@ -11,7 +12,7 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ pt: fr.spacing("6v") }}>{children}</Box>}
     </div>
   )
 }

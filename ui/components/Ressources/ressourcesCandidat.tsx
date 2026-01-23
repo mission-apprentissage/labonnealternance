@@ -38,7 +38,7 @@ const RessourcesCandidat = () => {
             flexDirection: { xs: "column", md: "row" },
             alignItems: { xs: "center", md: "flex-start" },
             p: fr.spacing("3w"),
-            boxShadow: "0px 0px 12px 6px #79797966",
+            boxShadow: "0px 0px " + fr.spacing("3v") + " " + fr.spacing("1-5v") + " #79797966",
           }}
         >
           <Image src="/images/pages_ressources/tableau de suivi.svg" width={64} height={64} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("3w") }} />
@@ -49,7 +49,7 @@ const RessourcesCandidat = () => {
                 Suivre ses candidatures est essentiel pour penser à relancer à temps les recruteurs et savoir quelles entreprises ont déjà été contactées.
               </Typography>
 
-              <Typography mb={2}>Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :</Typography>
+              <Typography mb={fr.spacing("4v")}>Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :</Typography>
 
               <List disablePadding>
                 {[
@@ -61,7 +61,7 @@ const RessourcesCandidat = () => {
                   <ListItem key={item.href} sx={{ pl: 0 }}>
                     <DsfrLink href={item.href} data-tracking-id="telecharger-fichier-suivi-candid">
                       <Stack direction="row" alignItems="center">
-                        <Image src="/images/icons/download_ico.svg" width={16} height={16} alt="" aria-hidden="true" style={{ marginRight: 8 }} />
+                        <Image src="/images/icons/download_ico.svg" width={16} height={16} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("2v") }} />
                         {item.label}
                       </Stack>
                     </DsfrLink>

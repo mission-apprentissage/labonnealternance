@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
@@ -5,12 +6,12 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export const OffresGratuites = () => {
   return (
-    <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
+    <Grid container spacing={fr.spacing("4v")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 2, md: 1 } }}>
-        <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+        <Typography component="h3" variant="h3" sx={{ mb: fr.spacing("4v") }}>
           Vos offres sont diffusées gratuitement au plus près des candidats
         </Typography>
-        <Typography fontSize="18px" mt={4}>
+        <Typography fontSize="18px" mt={fr.spacing("8v")}>
           Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
           <DsfrLink aria-label="Accès au site un jeune une solution - nouvelle fenêtre" href="https://www.1jeune1solution.gouv.fr">
             1jeune1solution

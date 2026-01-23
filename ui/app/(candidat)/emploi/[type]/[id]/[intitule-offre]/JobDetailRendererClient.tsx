@@ -125,7 +125,7 @@ function JobDetail({
 
           {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
           {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 2, alignItems: "center" }}>
+          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
             <div>
               {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasValidEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
               {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}

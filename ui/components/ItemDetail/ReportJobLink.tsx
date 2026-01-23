@@ -105,7 +105,7 @@ export const ReportJobLink = ({
             <Typography variant="h1" sx={{ fontSize: "24px", fontWeight: 700 }}>
               {content.title}
             </Typography>
-            <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
+            <Typography sx={{ my: fr.spacing("6v"), fontSize: "14px" }}>{content.introductionText}</Typography>
             <Formik
               initialValues={{ reason: "", reason_details: "" }}
               validationSchema={toFormikValidationSchema(ZFormValues)}
@@ -120,8 +120,8 @@ export const ReportJobLink = ({
                         sx: {
                           display: "flex",
                           flexDirection: "column",
-                          gap: 1,
-                          mb: 1,
+                          gap: fr.spacing("2v"),
+                          mb: fr.spacing("2v"),
                         },
                       }}
                       size="small"
@@ -174,7 +174,7 @@ export const ReportJobLink = ({
 const ReportedAcknowledgement = () => {
   return (
     <Box sx={{ justifySelf: "center", p: fr.spacing("4w") }}>
-      <Stack direction="row" spacing={4} alignItems="center" sx={{ mb: 2 }}>
+      <Stack direction="row" spacing={4} alignItems="center" sx={{ mb: fr.spacing("4v") }}>
         <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />
         <Typography variant="h2">Votre signalement a bien été envoyé à notre équipe.</Typography>
       </Stack>

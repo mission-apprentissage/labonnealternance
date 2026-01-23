@@ -50,7 +50,7 @@ export default function PrintableJobPage() {
         {offre.title}
       </Typography>
       {((offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT) || offre.job.jobStartDate) && (
-        <Box sx={{ ...printExactColor, backgroundColor: "#F6F6F6", maxWidth: "500px", mx: "auto", mt: 6, p: 6, textAlign: "center" }}>
+        <Box sx={{ ...printExactColor, backgroundColor: "#F6F6F6", maxWidth: "500px", mx: "auto", mt: fr.spacing("12v"), p: 6, textAlign: "center" }}>
           {offre.job.jobStartDate && (
             <Typography color="#161616" fontSize="16px">
               Date de début :{" "}
@@ -74,7 +74,7 @@ export default function PrintableJobPage() {
       <Typography mt={6} fontWeight={700} mx="auto" color="#161616">
         Pour lire plus de détails sur l’offre et postuler
       </Typography>
-      <Typography sx={{ ...printExactColor, color: "#417DC4", fontWeight: 700, mx: "auto", mb: 2 }}>Rendez-vous sur La bonne alternance</Typography>
+      <Typography sx={{ ...printExactColor, color: "#417DC4", fontWeight: 700, mx: "auto", mb: fr.spacing("4v") }}>Rendez-vous sur La bonne alternance</Typography>
       <QRCode
         value={`${window.location.origin}${PAGES.dynamic
           .jobDetail({
@@ -94,7 +94,7 @@ export default function PrintableJobPage() {
           labonnealternance.apprentissage.beta.gouv.fr
         </Typography>
       </Typography>
-      <LbaNew sx={{ mt: 6, width: "143px", height: "37px" }} />
+      <LbaNew sx={{ mt: fr.spacing("12v"), width: "143px", height: "37px" }} />
     </Box>
   )
 }

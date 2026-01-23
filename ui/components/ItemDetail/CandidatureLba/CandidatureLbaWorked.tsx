@@ -11,9 +11,9 @@ interface Props {
 const CandidatureLbaWorked = ({ email, company }: Props) => {
   return (
     <Box sx={{ px: fr.spacing("4w") }}>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: 4 }}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: fr.spacing("8v") }}>
         <Image src="/images/paperplane2.svg" aria-hidden={true} alt="" width={48} height={48} />
-        <Box sx={{ ml: 2 }}>
+        <Box sx={{ ml: fr.spacing("4v") }}>
           <Typography data-testid="application-success" variant="h2" sx={{ fontSize: "20px", fontWeight: 700 }}>
             Votre candidature a bien été envoyée à{" "}
             <Typography component="span" variant="h2">
@@ -28,7 +28,7 @@ const CandidatureLbaWorked = ({ email, company }: Props) => {
           {email}
         </Typography>
       </Typography>
-      <Typography sx={{ fontSize: "18px", mt: 4, mb: 4 }}>
+      <Typography sx={{ fontSize: "18px", mt: fr.spacing("8v"), mb: fr.spacing("8v") }}>
         Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
       </Typography>
     </Box>

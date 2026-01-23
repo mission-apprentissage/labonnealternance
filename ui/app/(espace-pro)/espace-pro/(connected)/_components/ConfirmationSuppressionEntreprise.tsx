@@ -42,7 +42,7 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
         </Typography>
 
         <Box pb={2}>
-          <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
+          <Typography sx={{ mb: fr.spacing("2v"), color: "#3A3A3A", lineHeight: "24px" }}>
             En supprimant cette entreprise, l’ensemble des offres créées pour celle-ci ne seront plus visibles.
           </Typography>
         </Box>

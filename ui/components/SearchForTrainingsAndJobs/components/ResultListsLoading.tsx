@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, LinearProgress, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
 
@@ -98,8 +99,8 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
         {isLoading ? (
           <Box textAlign="center">
             <Box component="img" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
-            <Typography sx={{ mt: 1 }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
-            <Box sx={{ maxWidth: "400px", mx: "auto", my: 4 }}>
+            <Typography sx={{ mt: fr.spacing("2v") }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
+            <Box sx={{ maxWidth: "400px", mx: "auto", my: fr.spacing("8v") }}>
               <LinearProgress sx={{ borderRadius: "20px" }} />
             </Box>
           </Box>
