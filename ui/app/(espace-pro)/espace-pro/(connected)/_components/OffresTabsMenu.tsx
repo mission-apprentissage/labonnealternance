@@ -40,7 +40,7 @@ export const OffresTabsMenu = ({
     user.type === AUTHTYPE.ENTREPRISE
       ? {
           link: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
-          ariaLabel: `Lien vers les mise en relations avec des centres de formations pour l'offre ${offerTitle}`,
+          ariaLabel: `Lien vers les mises en relation avec des centres de formation pour l'offre ${offerTitle}`,
           type: "link",
         }
       : {
