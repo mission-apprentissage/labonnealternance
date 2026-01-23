@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 52d05262812b46b0b884fb31a942f9c121b9cf1b4bc48c6edeb359ce616589fa
+  checksum: 1d8570617be315cd9a6b423b927431afc05e5f07d76d98edf23550be1259d6b5
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
   ignore_detectors:
@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: server/src/common/utils/awsUtils.ts
   checksum: d7d550a8852127bd6838bd7c3f4aee9bba06731d932cff880ff2c1033578fdbd
 - filename: server/src/config.ts
-  checksum: e0004b8112c17d5cdb1c72164cd1a180f68d914896d9cb2c0292a257a11e176b
+  checksum: 1a2feaa92ddfbb274860a193c58a269dff52b7c6f9f9b69a904cfe0a7c18ab55
 - filename: server/src/db/migrations/20231127120528-remove-password.ts
   checksum: 5c7a2ec4655f0543f42bfbccc759bff4eb10456946885531c91107cac3e8dbc0
 - filename: server/src/db/migrations/202405230000000-migrate-fix-missing-date-blacklist.ts
@@ -68,7 +68,9 @@ fileignoreconfig:
 - filename: server/src/jobs/offrePartenaire/engagementJeunes/__snapshots__/engagementJeunesMapper.test.ts.snap
   checksum: c572ee96ddf9b9b26c58fce45b51cb5806093367c4f55f070a3bcd8d6e72352d
 - filename: server/src/jobs/offrePartenaire/hellowork/__snapshots__/importHelloWork.test.ts.snap
-  checksum: fb15cd047e0decb1e972d9e8be5796f20b73372f0b1d4a3026cce2669d469357
+  checksum: 47c169ac72a346e60b4f7720128a23b00f8c371c9f621c7bb1887592b56c7538
+- filename: server/src/jobs/offrePartenaire/hellowork/importHelloWork.test.input.xml
+  checksum: b1532881a727d065bb67c7f659e537aee6eb77cee598a096d85a9324137326c9
 - filename: server/src/jobs/offrePartenaire/importFromUrlInXml.ts
   checksum: 18bd149922151536ad0e239b082309697cee6046b33512d5eecc54b2d25b465a
 - filename: server/src/jobs/offrePartenaire/importHelloWork.test.input.xml
@@ -158,7 +160,7 @@ fileignoreconfig:
 - filename: server/static/templates/mail-echec-envoi-candidature.mjml.ejs
   checksum: 3bc64c3329e8979bad6cc6e2597d2c1212b9772fae1ee0e0400324f46351062d
 - filename: server/static/templates/mail-relance-opco.mjml.ejs
-  checksum: c9f5fd3e3e7692e376c04fa72a452565472231819989c886a3aa64d46ec04d16
+  checksum: 10eadd2b38ec25c19355802987a7dd182a4521e015bd1f84bcbe9fc5a936d425
 - filename: server/static/templates/mail-reponse-cfa.mjml.ejs
   checksum: a5a36d078b7c75e6da58c06c032b52d0f57d89bf5913065bb1aaab098f3e80af
 - filename: server/tests/fixture/connectedUser.fixture.ts
