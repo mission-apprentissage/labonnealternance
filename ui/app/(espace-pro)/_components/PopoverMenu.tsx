@@ -101,7 +101,13 @@ export const PopoverMenu = ({
                             {action.label}
                           </Link>
                         ) : (
-                          <Link underline="none" component="button" onClick={action.onClick} sx={{ width: "100%", textAlign: "left" }}>
+                          <Link
+                            underline="none"
+                            component="button"
+                            aria-label={action.ariaLabel || (action.label as string)}
+                            onClick={action.onClick}
+                            sx={{ width: "100%", textAlign: "left" }}
+                          >
                             {action.label}
                           </Link>
                         )}
