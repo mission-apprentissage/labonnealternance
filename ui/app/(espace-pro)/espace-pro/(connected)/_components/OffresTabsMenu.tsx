@@ -108,7 +108,7 @@ export const OffresTabsMenu = ({
           setCopied(true)
         })
       },
-      ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse papier" : `Partager le lien de l'offre ${offerTitle}`,
+      ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse-papiers" : `Partager le lien de l'offre ${offerTitle}`,
       type: "button",
     },
     user.type !== AUTHTYPE.CFA
