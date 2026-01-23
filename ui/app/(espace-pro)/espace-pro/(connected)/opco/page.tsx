@@ -49,6 +49,7 @@ function AdministrationOpco() {
   const columns = [
     {
       Header: "",
+      srOnly: "Actions sur l'entreprise",
       id: "action",
       maxWidth: "40",
       disableSortBy: true,
@@ -174,6 +175,7 @@ function AdministrationOpco() {
             title: `En attente de vérification (${data.awaiting.length})`,
             content: (
               <TableWithPagination
+                caption="Entreprises en attente de vérification"
                 columns={columns}
                 data={data.awaiting}
                 description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d'accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu'il s'agit bien d'une entreprise relevant de vos champs de compétences, et qu'il ne s'agit pas d'une tentative d'usurpation de compte."
@@ -185,12 +187,21 @@ function AdministrationOpco() {
           {
             id: "active" as const,
             title: `Actives ${data.active.length}`,
-            content: <TableWithPagination columns={columns} data={data.active} exportable defaultSortBy={[{ id: "createdAt", desc: true }]} />,
+            content: <TableWithPagination caption="Entreprises actives" columns={columns} data={data.active} exportable defaultSortBy={[{ id: "createdAt", desc: true }]} />,
           },
           {
             id: "disabled" as const,
             title: `Désactivés (${data.disable.length})`,
-            content: <TableWithPagination columns={columns} data={data.disable} description={null} exportable={null} defaultSortBy={[{ id: "createdAt", desc: true }]} />,
+            content: (
+              <TableWithPagination
+                caption="Entreprises désactivées"
+                columns={columns}
+                data={data.disable}
+                description={null}
+                exportable={null}
+                defaultSortBy={[{ id: "createdAt", desc: true }]}
+              />
+            ),
           },
         ]}
       />
