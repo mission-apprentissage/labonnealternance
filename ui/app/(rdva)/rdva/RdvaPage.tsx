@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container } from "@mui/material"
+import { Box, Container, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
@@ -9,6 +9,7 @@ import { useState } from "react"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
+import { FormHeaderComponent } from "@/components/espace_pro/Candidat/layout/FormHeaderComponent"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
 import { getPrdvContext } from "@/utils/api"
@@ -23,6 +24,13 @@ export default function PriseDeRendezVous() {
 
   return (
     <Container disableGutters>
+      <FormHeaderComponent>
+        <>
+          Un candidat souhaite <br />
+          être contacté <br />
+          <Typography sx={{ color: "black" }}>par votre centre de formation</Typography>
+        </>
+      </FormHeaderComponent>
       <PageContent cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
     </Container>
   )
