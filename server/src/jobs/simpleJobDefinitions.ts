@@ -7,13 +7,16 @@ import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
+import { buildMappingRomeRNCP } from "./domainesMetiers/buildMappingRomeRNCP"
 import {
   analyzeRemovedRomes,
   classifyRomesForDomainesMetiers,
   classifyRomesForDomainesMetiersAnalyze,
   findDomainesMetiersIncoherents,
 } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { importFichesRncp } from "./domainesMetiers/importFichesRncp"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
+import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -75,6 +78,7 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { up } from "@/migrations/20260122160000-regeneration-rome-label"
 
 type SimpleJobDefinition = {
   fct: (payload?: any) => Promise<unknown>
@@ -420,4 +424,24 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: processEngagementJeunes,
     description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
   },
+  {
+    fct: importFichesRncp,
+    description: "Import des fichers RNCP dans la base de données",
+  },
+  {
+    fct: buildMappingRomeRNCP,
+    description: "Convertit les fiches RNCP en un mapping ROME => RNCP",
+  },
+  {
+    fct: validateDomaineMetiers,
+    description: "Validation des données domainesmetiers",
+  },
+  {
+    fct: testMigration,
+    description: "plop",
+  },
 ]
+
+async function testMigration() {
+  await up()
+}

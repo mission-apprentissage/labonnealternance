@@ -99,6 +99,8 @@ fileignoreconfig:
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
   checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
+- filename: server/src/migrations/20260121150000-fix-domainemetier-sans-solution.ts
+  checksum: 9f4966ca4e5ffc391936b0bd156962b2b0551e184a1e6e017a0f651150e90955
 - filename: server/src/security/accessApiApprentissageService.ts
   checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
@@ -135,6 +137,10 @@ fileignoreconfig:
   checksum: 3fb0d479999b8aa8abe2ba4e56c34ee6e409636b8ade9f10b07e6ca32081b58f
 - filename: server/src/services/userRecruteur.service.ts
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
+- filename: server/static/referentiel/code_rome_sans_domaine_solution_13.01.26.csv
+  checksum: 83def891bb8b680bf9de60a106c5c460d0fd3c682ecdd734d0c1d2f16b531603
+- filename: server/static/referentiel/labonnealternance.referentielromes_classification_new_21.01.26.csv
+  checksum: 5091c900c6ce7bf18cd39f03e4fc30972d3d41b25efd87badddc5d110b7852ad
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
 - filename: server/static/templates/mail-candidat-confirmation-rdv.mjml.ejs

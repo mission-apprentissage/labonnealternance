@@ -1,0 +1,34 @@
+import { ajoutRomesADomaineMetiers } from "@/jobs/domainesMetiers/domaineMetiersFixRomes"
+
+// _id;rome.code_rome;rome.intitule;sous_domaine
+// 67d02f495ae35db62340c523;G1206;Croupier / Croupière;Tourisme : conception de produits touristiques, voyages
+// 67d02f495ae35db62340c523;G1206;Croupier / Croupière;Management, direction d'hôtel, restaurant, loisirs
+// 67d02f4a5ae35db62340c5c8;H2303;Opérateur / Opératrice de fabrication en industrie pharmaceutique;Pharmacie
+// 67d02f4a5ae35db62340c5c8;H2303;Opérateur / Opératrice de fabrication en industrie pharmaceutique;Biologie, santé, sciences physiques
+// 67d02f4a5ae35db62340c5c8;H2303;Opérateur / Opératrice de fabrication en industrie pharmaceutique;Chimie
+// 67d02f4c5ae35db62340c6f0;K2109;Professeur / Professeure d'enseignement professionnel;Enseignement, Recherche
+// 67d02f4c5ae35db62340c6f0;K2109;Professeur / Professeure d'enseignement professionnel;Formation
+// 67d02f4e5ae35db62340c7e3;N3101;Capitaine de port;Transport fluvial et maritime
+// 67d02f4e5ae35db62340c7e4;N3102;Marin;Transport fluvial et maritime
+// 67d02f4e5ae35db62340c7e4;N3102;Marin;Elevage de poissons, produits de la mer
+// 67d02f4e5ae35db62340c7e6;N3201;Agent / Agente de port de plaisance;Transport fluvial et maritime
+// 67d02f4e5ae35db62340c7e6;N3201;Agent / Agente de port de plaisance;Accueil touristique
+
+export const up = async () => {
+  const sousDomaineAjoutRomes: Record<string, string[]> = {
+    "Tourisme : conception de produits touristiques, voyages": ["G1206"],
+    "Management, direction d'hôtel, restaurant, loisirs": ["G1206"],
+    Pharmacie: ["H2303"],
+    "Biologie, santé, sciences physiques": ["H2303"],
+    Chimie: ["H2303"],
+    "Enseignement, Recherche": ["K2109"],
+    Formation: ["K2109"],
+    "Transport fluvial et maritime": ["N3101", "N3102", "N3201"],
+    "Elevage de poissons, produits de la mer": ["N3102"],
+    "Accueil touristique": ["N3201"],
+  }
+  await ajoutRomesADomaineMetiers(sousDomaineAjoutRomes, false)
+}
+
+// set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
+export const requireShutdown: boolean = false
