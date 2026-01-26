@@ -10,16 +10,16 @@ import { PAGES } from "@/utils/routes.utils"
 
 import { classNames } from "@/utils/classNames"
 
-export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {} }: { overridenQueryParams?: Record<string, string> }) => {
+export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {}, onClick }: { overridenQueryParams?: Record<string, string>; onClick?: () => void }) => {
   const router = useRouter()
 
-  const onClick = useMemo(() => {
+  const localOnClick = useMemo(() => {
     if (typeof window === "undefined") return undefined
     const searchParams = new URL(window.location.href).searchParams
     const recherchePageParams = parseRecherchePageParams(searchParams, IRechercheMode.DEFAULT)
     const isClickable = Boolean(recherchePageParams.romes.length)
     if (!isClickable) return undefined
-    const onClick = () => {
+    return () => {
       const path = PAGES.dynamic
         .recherche({
           ...recherchePageParams,
@@ -33,16 +33,15 @@ export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {} }: 
         searchParams.delete(key)
         searchParams.append(key, value)
       })
-
       router.push(fakeUrl.pathname + fakeUrl.search)
+      onClick?.()
     }
-    return onClick
-  }, [router, overridenQueryParams])
+  }, [router, overridenQueryParams, onClick])
 
   return (
     <Box
-      className={classNames({ clickable: Boolean(onClick) })}
-      onClick={onClick}
+      className={classNames({ clickable: Boolean(localOnClick) })}
+      onClick={localOnClick}
       sx={{
         display: "flex",
         gap: "24px",

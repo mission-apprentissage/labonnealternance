@@ -8,14 +8,14 @@ import { assertUnreachable } from "shared/utils/assertUnreachable"
 
 import { LbaItemCard } from "./LbaItemCard"
 import { RechercheResultatsFooter } from "./RechercheResultatsFooter"
+import type { ResultCardData } from "./ResultCardData"
 import { Whisper } from "./Whisper"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useSearchViewNotifier } from "@/app/(candidat)/(recherche)/recherche/_hooks/useSearchViewNotifier"
-import type { IWhisper } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
 import { useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
-import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
@@ -23,22 +23,7 @@ import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/Valori
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 import { getObjectId } from "@/utils/api"
 
-type ResultCardILba = {
-  type: "lba_item"
-  value: ILbaItem
-}
-
-type ResultCardData =
-  | ResultCardILba
-  | {
-      type: "whisper"
-      value: IWhisper
-    }
-  | {
-      type: "ValorisationCandidatureSpontanee"
-    }
-
-export function RechercheResultatsList(props: WithRecherchePageParams) {
+export function RechercheResultatsList(props: { rechercheParams: IRecherchePageParams; scrollToItem: (item: ResultCardData) => void }) {
   const { displayMap } = props.rechercheParams
   const result = useRechercheResults(props.rechercheParams)
   const whispers = useWhispers(props.rechercheParams)
@@ -105,6 +90,13 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
     }
   }
 
+  const onValorisationCandidatureSpontaneeClick = () => {
+    const firstCandidatureSpontanee = items.find((item) => item.type === "lba_item" && item.value.ideaType === LBA_ITEM_TYPE_OLD.LBA)
+    if (firstCandidatureSpontanee) {
+      props.scrollToItem(firstCandidatureSpontanee)
+    }
+  }
+
   return [
     <Box id="search-content-container" key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
@@ -137,7 +129,15 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
     </Box>,
     ...items.map((data, index) => ({
       height: heightEstimation(data.type),
-      render: () => <ResultCardWithContainer key={index} rechercheParams={props.rechercheParams} data={data} displayMap={displayMap} />,
+      render: () => (
+        <ResultCardWithContainer
+          key={index}
+          rechercheParams={props.rechercheParams}
+          data={data}
+          displayMap={displayMap}
+          onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
+        />
+      ),
       onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
       item: data,
     })),
@@ -158,7 +158,17 @@ export function RechercheResultatsList(props: WithRecherchePageParams) {
   ]
 }
 
-function ResultCardWithContainer({ data, rechercheParams, displayMap }: { data: ResultCardData; rechercheParams: IRecherchePageParams; displayMap: boolean }) {
+function ResultCardWithContainer({
+  data,
+  rechercheParams,
+  displayMap,
+  onValorisationCandidatureSpontaneeClick,
+}: {
+  data: ResultCardData
+  rechercheParams: IRecherchePageParams
+  displayMap: boolean
+  onValorisationCandidatureSpontaneeClick: () => void
+}) {
   return (
     <Box
       sx={{
@@ -166,12 +176,20 @@ function ResultCardWithContainer({ data, rechercheParams, displayMap }: { data: 
         px: { md: displayMap ? fr.spacing("1w") : 0, lg: fr.spacing("2w") },
       }}
     >
-      <ResultCard data={data} rechercheParams={rechercheParams} />
+      <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />
     </Box>
   )
 }
 
-function ResultCard({ data, rechercheParams }: { data: ResultCardData; rechercheParams: IRecherchePageParams }) {
+function ResultCard({
+  data,
+  rechercheParams,
+  onValorisationCandidatureSpontaneeClick,
+}: {
+  data: ResultCardData
+  rechercheParams: IRecherchePageParams
+  onValorisationCandidatureSpontaneeClick: () => void
+}) {
   const { type } = data
   switch (type) {
     case "whisper": {
@@ -184,6 +202,7 @@ function ResultCard({ data, rechercheParams }: { data: ResultCardData; recherche
     case "ValorisationCandidatureSpontanee": {
       return (
         <ValorisationCandidatureSpontanee
+          onClick={onValorisationCandidatureSpontaneeClick}
           overridenQueryParams={{
             utm_source: "lba",
             utm_medium: "website",
