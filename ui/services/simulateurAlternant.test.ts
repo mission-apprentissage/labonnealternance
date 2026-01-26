@@ -47,7 +47,7 @@ describe("Tranches d'âge", () => {
         secteur: "privé",
       })
 
-      expect(result[0].tauxSmic).toBe(expectedTaux)
+      expect(result.anneesSimulation[0].tauxSmic).toBe(expectedTaux)
     })
   })
 
@@ -69,7 +69,7 @@ describe("Tranches d'âge", () => {
         secteur: "privé",
       })
 
-      expect(result[0].tauxSmic).toBe(expectedTaux)
+      expect(result.anneesSimulation[0].tauxSmic).toBe(expectedTaux)
     })
   })
 })
@@ -101,7 +101,7 @@ describe("Groupes de niveau de diplôme", () => {
       secteur: "privé",
     })
 
-    expect(result[0].tauxSmic).toBe(tauxAttendu)
+    expect(result.anneesSimulation[0].tauxSmic).toBe(tauxAttendu)
   })
 })
 
@@ -121,10 +121,10 @@ describe("Durée de contrat", () => {
       secteur: "privé",
     })
 
-    expect(result).toHaveLength(3)
-    expect(result[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][1]) // 21 ans, 1ère année
-    expect(result[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][2]) // 22 ans, 2ème année
-    expect(result[2].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][3]) // 23 ans, 3ème année
+    expect(result.anneesSimulation).toHaveLength(3)
+    expect(result.anneesSimulation[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][1]) // 21 ans, 1ère année
+    expect(result.anneesSimulation[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][2]) // 22 ans, 2ème année
+    expect(result.anneesSimulation[2].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][3]) // 23 ans, 3ème année
   })
 
   it("retourne le même taux pour chaque année (professionnalisation)", () => {
@@ -138,8 +138,8 @@ describe("Durée de contrat", () => {
       secteur: "privé",
     })
 
-    expect(result).toHaveLength(2)
-    expect(result[0].tauxSmic).toBe(result[1].tauxSmic)
+    expect(result.anneesSimulation).toHaveLength(2)
+    expect(result.anneesSimulation[0].tauxSmic).toBe(result.anneesSimulation[1].tauxSmic)
   })
 
   it("change de tranche d'âge si l'alternant vieillit (apprentissage 17→18)", () => {
@@ -153,8 +153,8 @@ describe("Durée de contrat", () => {
       secteur: "privé",
     })
 
-    expect(result[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[0][1]) // 17 ans → tranche 14-17
-    expect(result[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[1][2]) // 18 ans → tranche 18-20
+    expect(result.anneesSimulation[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[0][1]) // 17 ans → tranche 14-17
+    expect(result.anneesSimulation[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[1][2]) // 18 ans → tranche 18-20
   })
 
   it("change de tranche d'âge si l'alternant vieillit (apprentissage 20→21)", () => {
@@ -168,8 +168,8 @@ describe("Durée de contrat", () => {
       secteur: "privé",
     })
 
-    expect(result[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[1][1]) // 20 ans → tranche 18-20
-    expect(result[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][2]) // 21 ans → tranche 21-25
+    expect(result.anneesSimulation[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[1][1]) // 20 ans → tranche 18-20
+    expect(result.anneesSimulation[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][2]) // 21 ans → tranche 21-25
   })
 
   it("change de tranche d'âge si l'alternant vieillit (apprentissage 25→26)", () => {
@@ -183,8 +183,8 @@ describe("Durée de contrat", () => {
       secteur: "privé",
     })
 
-    expect(result[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][1]) // 25 ans → tranche 21-25
-    expect(result[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[3][2]) // 26 ans → tranche 26+
+    expect(result.anneesSimulation[0].tauxSmic).toBe(TAUX_APPRENTISSAGE[2][1]) // 25 ans → tranche 21-25
+    expect(result.anneesSimulation[1].tauxSmic).toBe(TAUX_APPRENTISSAGE[3][2]) // 26 ans → tranche 26+
   })
 
   it("change de tranche d'âge si l'alternant vieillit (professionnalisation 20→21)", () => {
@@ -198,8 +198,8 @@ describe("Durée de contrat", () => {
       secteur: "privé",
     })
 
-    expect(result[0].tauxSmic).toBe(TAUX_PROFESSIONNALISATION[0].bacEtPlus) // 20 ans → tranche 14-20
-    expect(result[1].tauxSmic).toBe(TAUX_PROFESSIONNALISATION[1].bacEtPlus) // 21 ans → tranche 21-25
+    expect(result.anneesSimulation[0].tauxSmic).toBe(TAUX_PROFESSIONNALISATION[0].bacEtPlus) // 20 ans → tranche 14-20
+    expect(result.anneesSimulation[1].tauxSmic).toBe(TAUX_PROFESSIONNALISATION[1].bacEtPlus) // 21 ans → tranche 21-25
   })
 })
 
@@ -220,7 +220,7 @@ describe("Calcul du salaire brut", () => {
     })
 
     const salaireHoraireBrutAttendu = SMIC.metropole.brut.horaire
-    expect(result[0].salaireHoraireBrut.max).toBeCloseTo(salaireHoraireBrutAttendu, 2)
+    expect(result.anneesSimulation[0].salaireHoraireBrut.max).toBeCloseTo(salaireHoraireBrutAttendu, 2)
   })
 
   it("calcule correctement le salaire brut Mayotte", () => {
@@ -235,7 +235,7 @@ describe("Calcul du salaire brut", () => {
     })
 
     const salaireHoraireBrutAttendu = SMIC.mayotte.brut.horaire
-    expect(result[0].salaireHoraireBrut.max).toBeCloseTo(salaireHoraireBrutAttendu, 2)
+    expect(result.anneesSimulation[0].salaireHoraireBrut.max).toBeCloseTo(salaireHoraireBrutAttendu, 2)
   })
 
   it("applique la cohérence horaire → mensuel → annuel", () => {
@@ -249,12 +249,12 @@ describe("Calcul du salaire brut", () => {
       secteur: "privé",
     })
 
-    const horaire = result[0].salaireHoraireBrut.max
+    const horaire = result.anneesSimulation[0].salaireHoraireBrut.max
     const annuelAttendu = horaire * 35 * 52
     const mensuelAttendu = annuelAttendu / 12
 
-    expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(annuelAttendu, 0)
-    expect(result[0].salaireMensuelBrut.max).toBeCloseTo(mensuelAttendu, 0)
+    expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(annuelAttendu, 0)
+    expect(result.anneesSimulation[0].salaireMensuelBrut.max).toBeCloseTo(mensuelAttendu, 0)
   })
 })
 
@@ -278,7 +278,7 @@ describe("Calcul du salaire net", () => {
         secteur: "privé",
       })
 
-      expect(result[0].salaireHoraireNet.max).toBeCloseTo(result[0].salaireHoraireBrut.max, 2)
+      expect(result.anneesSimulation[0].salaireHoraireNet.max).toBeCloseTo(result.anneesSimulation[0].salaireHoraireBrut.max, 2)
     })
   })
 
@@ -294,7 +294,7 @@ describe("Calcul du salaire net", () => {
         secteur: "privé",
       })
 
-      expect(result[0].salaireHoraireNet.max).toBeLessThan(result[0].salaireHoraireBrut.max)
+      expect(result.anneesSimulation[0].salaireHoraireNet.max).toBeLessThan(result.anneesSimulation[0].salaireHoraireBrut.max)
     })
   })
 })
@@ -315,8 +315,8 @@ describe("Tranche de salaire", () => {
       secteur: "privé",
     })
 
-    const { min, max } = result[0].salaireMensuelBrut
-    expect(min).toBeCloseTo(max * 0.97, 2)
+    const { min, max } = result.anneesSimulation[0].salaireMensuelBrut
+    expect(min).toBeCloseTo(max * 0.97, 0)
   })
 })
 
@@ -336,7 +336,7 @@ describe("Structure de retour", () => {
       secteur: "privé",
     })
 
-    expect(result[0]).toMatchObject({
+    expect(result.anneesSimulation[0]).toMatchObject({
       tauxSmic: expect.any(Number),
       salaireHoraireBrut: { min: expect.any(Number), max: expect.any(Number) },
       salaireMensuelBrut: { min: expect.any(Number), max: expect.any(Number) },
@@ -344,7 +344,6 @@ describe("Structure de retour", () => {
       salaireHoraireNet: { min: expect.any(Number), max: expect.any(Number) },
       salaireMensuelNet: { min: expect.any(Number), max: expect.any(Number) },
       salaireAnnuelNet: { min: expect.any(Number), max: expect.any(Number) },
-      dateMiseAJour: expect.any(Date),
     })
   })
 })
@@ -416,7 +415,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       secteur: "public",
     })
 
-    expect(result[0].salaireHoraireNet.max).toEqual(result[0].salaireHoraireBrut.max)
+    expect(result.anneesSimulation[0].salaireHoraireNet.max).toEqual(result.anneesSimulation[0].salaireHoraireBrut.max)
   })
 
   it("secteur privé : n'applique pas le taux après exonération partielle car taux > 50%", () => {
@@ -430,7 +429,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       secteur: "privé",
     })
 
-    expect(result[0].salaireHoraireNet.max).toEqual(result[0].salaireHoraireBrut.max)
+    expect(result.anneesSimulation[0].salaireHoraireNet.max).toEqual(result.anneesSimulation[0].salaireHoraireBrut.max)
   })
 
   it("secteur privé : applique le taux après exonération partielle", () => {
@@ -444,7 +443,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       secteur: "privé",
     })
 
-    expect(result[0].salaireHoraireNet.max).toBeLessThan(result[0].salaireHoraireBrut.max)
+    expect(result.anneesSimulation[0].salaireHoraireNet.max).toBeLessThan(result.anneesSimulation[0].salaireHoraireBrut.max)
   })
 
   it("secteur public vs privé : les charges diffèrent", () => {
@@ -468,8 +467,8 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       secteur: "privé",
     })
 
-    expect(resultPublic[0].salaireHoraireBrut.max).toBe(resultPrive[0].salaireHoraireBrut.max)
-    expect(resultPublic[0].salaireHoraireNet.max).not.toBe(resultPrive[0].salaireHoraireNet.max)
+    expect(resultPublic.anneesSimulation[0].salaireHoraireBrut.max).toBe(resultPrive.anneesSimulation[0].salaireHoraireBrut.max)
+    expect(resultPublic.anneesSimulation[0].salaireHoraireNet.max).not.toBe(resultPrive.anneesSimulation[0].salaireHoraireNet.max)
   })
 })
 
@@ -492,7 +491,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       secteur: "privé",
     })
 
-    expect(result[0].salaireHoraireNet.max).toBeCloseTo(result[0].salaireHoraireBrut.max, 2)
+    expect(result.anneesSimulation[0].salaireHoraireNet.max).toBeCloseTo(result.anneesSimulation[0].salaireHoraireBrut.max, 2)
   })
 
   it("taux > 50% : charges calculées sur la part excédentaire", () => {
@@ -506,7 +505,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       secteur: "privé",
     })
 
-    expect(result[0].salaireHoraireNet.max).toBeLessThan(result[0].salaireHoraireBrut.max)
+    expect(result.anneesSimulation[0].salaireHoraireNet.max).toBeLessThan(result.anneesSimulation[0].salaireHoraireBrut.max)
   })
 
   it("taux 43% (< 50%) : pas de charges", () => {
@@ -520,7 +519,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       secteur: "privé",
     })
 
-    expect(result[0].salaireHoraireNet.max).toBeCloseTo(result[0].salaireHoraireBrut.max, 2)
+    expect(result.anneesSimulation[0].salaireHoraireNet.max).toBeCloseTo(result.anneesSimulation[0].salaireHoraireBrut.max, 2)
   })
 
   it("progression des charges avec le taux", () => {
@@ -534,9 +533,9 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       secteur: "privé",
     })
 
-    const ratio1 = result[0].salaireHoraireNet.max / result[0].salaireHoraireBrut.max
-    const ratio2 = result[1].salaireHoraireNet.max / result[1].salaireHoraireBrut.max
-    const ratio3 = result[2].salaireHoraireNet.max / result[2].salaireHoraireBrut.max
+    const ratio1 = result.anneesSimulation[0].salaireHoraireNet.max / result.anneesSimulation[0].salaireHoraireBrut.max
+    const ratio2 = result.anneesSimulation[1].salaireHoraireNet.max / result.anneesSimulation[1].salaireHoraireBrut.max
+    const ratio3 = result.anneesSimulation[2].salaireHoraireNet.max / result.anneesSimulation[2].salaireHoraireBrut.max
 
     expect(ratio1).toBeGreaterThan(ratio2)
     expect(ratio2).toBeGreaterThan(ratio3)
@@ -798,9 +797,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 11118.0
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 2 - apprentissage - 19 ans - niveau 5 - privé", () => {
@@ -818,9 +817,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 9125.0
       const salaireAnnuelNetMaxiAttendu = 9407.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 3 - apprentissage - 18 ans - niveau 5 - privé", () => {
@@ -838,9 +837,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 5730.0
       const salaireAnnuelNetMaxiAttendu = 5907.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 4 - apprentissage - 27 ans - niveau 5 - privé", () => {
@@ -858,9 +857,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 19136.0
       const salaireAnnuelNetMaxiAttendu = 19728.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 5 - apprentissage - 25 ans - niveau 5 - public", () => {
@@ -878,9 +877,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 11118.0
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 6 - apprentissage - 25 ans - niveau 3 - privé", () => {
@@ -898,9 +897,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 11118.0
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 7 - apprentissage - 25 ans - niveau 7 - privé", () => {
@@ -918,9 +917,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 11118.0
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 8 - professionnalisation - 25 ans - niveau 5 - privé", () => {
@@ -939,9 +938,9 @@ describe("Cas de tests", () => {
       // const salaireAnnuelNetMiniAttendu =
       const salaireAnnuelNetMaxiAttendu = 16128.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      // expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
   })
 
@@ -961,9 +960,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 8625.0
       const salaireAnnuelNetMaxiAttendu = 8892.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 2 - apprentissage - 19 ans - niveau 5 - privé", () => {
@@ -981,9 +980,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 7083.0
       const salaireAnnuelNetMaxiAttendu = 7302.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 3 - apprentissage - 17 ans - niveau 5 - privé", () => {
@@ -1001,9 +1000,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 4447.0
       const salaireAnnuelNetMaxiAttendu = 4585.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 4 - apprentissage - 27 ans - niveau 5 - privé", () => {
@@ -1021,9 +1020,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 14790.0
       const salaireAnnuelNetMaxiAttendu = 15217.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 5 - apprentissage - 25 ans - niveau 5 - public", () => {
@@ -1041,9 +1040,9 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMiniAttendu = 8625.0
       const salaireAnnuelNetMaxiAttendu = 8892.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
 
     it("Test 6 - professionnalisation - 25 ans - niveau 5 - privé", () => {
@@ -1062,9 +1061,9 @@ describe("Cas de tests", () => {
       // const salaireAnnuelNetMiniAttendu =
       const salaireAnnuelNetMaxiAttendu = 12528.0
 
-      expect(result[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      // expect(result[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
-      expect(result[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
   })
 })

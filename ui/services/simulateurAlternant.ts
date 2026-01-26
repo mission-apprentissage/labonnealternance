@@ -17,30 +17,34 @@ import type { TrancheAge, AnneeContrat, NiveauDiplomeGroup } from "@/config/simu
 
 import { getAgeAtDate } from "@/utils/dateUtils"
 
-type InputSimulation = {
-  typeContrat: "apprentissage" | "professionnalisation"
-  niveauDiplome: number
-  dureeContrat: number
-  dateSignature: Date
-  dateNaissance: Date
-  isRegionMayotte: boolean
-  secteur: "public" | "privé"
-}
-
-type InputChargesSalariales = {
-  typeContrat: "apprentissage" | "professionnalisation"
-  dateSignature: Date
-  secteur: "public" | "privé"
-  salaireHoraireBrut: number
-  tauxSmic: number
-}
-
 type TrancheSalaire = {
   min: number
   max: number
 }
 
-type SimulationInformation = Array<{
+type Secteur = "public" | "privé" | "nsp"
+
+type TypeContrat = "apprentissage" | "professionnalisation"
+
+type InputChargesSalariales = {
+  typeContrat: TypeContrat
+  dateSignature: Date
+  secteur: Exclude<Secteur, "nsp">
+  salaireHoraireBrut: number
+  tauxSmic: number
+}
+
+export type InputSimulation = {
+  typeContrat: TypeContrat
+  niveauDiplome?: number
+  dureeContrat: number
+  dateSignature?: Date
+  dateNaissance: Date
+  isRegionMayotte?: boolean
+  secteur: Secteur
+}
+
+export type AnneeSimulation = {
   tauxSmic: number
   salaireHoraireBrut: TrancheSalaire
   salaireMensuelBrut: TrancheSalaire
@@ -48,8 +52,12 @@ type SimulationInformation = Array<{
   salaireHoraireNet: TrancheSalaire
   salaireMensuelNet: TrancheSalaire
   salaireAnnuelNet: TrancheSalaire
+}
+
+export type OuputSimulation = {
   dateMiseAJour: Date
-}>
+  anneesSimulation: Array<AnneeSimulation>
+}
 
 const findTrancheAgeIndex = (tranches: readonly TrancheAge[], age: number): number => {
   const index = tranches.findIndex((t) => age >= t.min && (t.max === null || age <= t.max))
@@ -87,8 +95,6 @@ const getTauxProfessionnalisation = (age: number, niveauDiplome: number): number
   const groupe = getNiveauDiplomeGroup(niveauDiplome)
   const taux = TAUX_PROFESSIONNALISATION[trancheIndex]?.[groupe]
 
-  console.log(taux)
-
   if (taux === undefined) {
     throw new Error(`Taux professionnalisation non trouvé pour âge=${age}, niveau=${niveauDiplome}`)
   }
@@ -124,7 +130,7 @@ const getAllTauxSmic = ({
   niveauDiplome: number
   dureeContrat: number
 }): Array<number> => {
-  const anneesContrat = new Array(dureeContrat).fill(0).map((_, index) => index + 1)
+  const anneesContrat = Array.from({ length: dureeContrat }, (_, i) => (i + 1) as AnneeContrat)
   return anneesContrat.map((anneeContrat, index) =>
     getTauxSmic({
       typeContrat,
@@ -203,8 +209,8 @@ const getSalaireNet = ({
 }: {
   salaireHoraireBrut: number
   tauxSmic: number
-  secteur: "public" | "privé"
-  typeContrat: "apprentissage" | "professionnalisation"
+  secteur: Exclude<Secteur, "nsp">
+  typeContrat: TypeContrat
   dateSignature: Date
 }): { salaireHoraireNet: number; salaireMensuelNet: number; salaireAnnuelNet: number } => {
   const chargesSalariales = getChargesSalariales({
@@ -226,10 +232,10 @@ const getSalaireNet = ({
   }
 }
 
-const getTrancheSalaire = (salaire: number): TrancheSalaire => {
+const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSalaire => {
   return {
-    min: salaire * 0.97,
-    max: salaire,
+    min: round ? Math.round(salaire * 0.97) : salaire * 0.97,
+    max: round ? Math.round(salaire) : salaire,
   }
 }
 
@@ -241,8 +247,10 @@ export const getSimulationInformation = ({
   dateNaissance,
   isRegionMayotte,
   secteur,
-}: InputSimulation): SimulationInformation => {
+}: InputSimulation): OuputSimulation => {
   const age = getAgeAtDate(dateNaissance, dateSignature)
+  // Si l'utilisateur ne sait pas, on considère le secteur privé par défaut
+  const formattedSecteur = secteur === "nsp" ? "privé" : (secteur as "public" | "privé")
   const tauxSmicParAnnee = getAllTauxSmic({
     typeContrat,
     age,
@@ -255,7 +263,7 @@ export const getSimulationInformation = ({
     const { salaireHoraireNet, salaireMensuelNet, salaireAnnuelNet } = getSalaireNet({
       salaireHoraireBrut,
       tauxSmic,
-      secteur,
+      secteur: formattedSecteur,
       typeContrat,
       dateSignature,
     })
@@ -263,14 +271,13 @@ export const getSimulationInformation = ({
     return {
       tauxSmic,
       salaireHoraireBrut: getTrancheSalaire(salaireHoraireBrut),
-      salaireMensuelBrut: getTrancheSalaire(salaireMensuelBrut),
-      salaireAnnuelBrut: getTrancheSalaire(salaireAnnuelBrut),
+      salaireMensuelBrut: getTrancheSalaire(salaireMensuelBrut, true),
+      salaireAnnuelBrut: getTrancheSalaire(salaireAnnuelBrut, true),
       salaireHoraireNet: getTrancheSalaire(salaireHoraireNet),
-      salaireMensuelNet: getTrancheSalaire(salaireMensuelNet),
-      salaireAnnuelNet: getTrancheSalaire(salaireAnnuelNet),
-      dateMiseAJour: DATE_DERNIERE_MISE_A_JOUR,
+      salaireMensuelNet: getTrancheSalaire(salaireMensuelNet, true),
+      salaireAnnuelNet: getTrancheSalaire(salaireAnnuelNet, true),
     }
   })
 
-  return simulation
+  return { anneesSimulation: simulation, dateMiseAJour: DATE_DERNIERE_MISE_A_JOUR }
 }

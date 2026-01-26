@@ -243,6 +243,15 @@ export const PAGES = {
       index: false,
       title: "Statut du processeur",
     },
+    simulateur: {
+      getPath: () => `/simulateur` as string,
+      title: "Simulateur",
+      index: true,
+      getMetadata: () => ({
+        title: "Simulateur - La bonne alternance",
+        description: "Simulateur de rémunération alternant.",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
