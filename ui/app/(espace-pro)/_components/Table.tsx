@@ -40,7 +40,12 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                         <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} title={null} scope="col" id={column.id}>
                           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
                             <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
-                            <Box component="span" pl={1}>
+                            <Box
+                              component="span"
+                              sx={{
+                                pl: 1,
+                              }}
+                            >
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
                             </Box>
                           </Box>

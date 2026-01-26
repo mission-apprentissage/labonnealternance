@@ -56,7 +56,11 @@ export const RecruteurLbaNoContactModal = ({
           Pour envoyer votre candidature spontanée :
         </Typography>
         {phone && (
-          <Typography my={fr.spacing("2w")}>
+          <Typography
+            sx={{
+              my: fr.spacing("2w"),
+            }}
+          >
             <span className="fr-icon-phone-line" style={{ marginRight: "8px" }}></span>
             Vous pouvez contacter l'entreprise au <DsfrLink href={`tel:${phone}`}>{phone}</DsfrLink>
           </Typography>

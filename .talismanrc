@@ -144,9 +144,9 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 8c4747be47fcb6facb9ca3b5597653ba01684949483e22f88ff7ebd7ec866e06
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 1b52190fb8a1a5b5a0f4248f64760218448e128417e228c91b9a4472e217169d
+  checksum: 74c5d71e4e85238ddf47a1568c247430b4324724f19474ae6672aea270dfd6d2
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
-  checksum: 12a469e0fbb0a05cecdc155db325e141e5a27b06b4eb4643914d4b4b988babf2
+  checksum: 28f71a911d2f87b15d62ddb5848315b6f9a33bbdf30d0347e29172eb8cc3fca3
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
 - filename: server/static/templates/mail-candidature-spontanee.mjml.ejs

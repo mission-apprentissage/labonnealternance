@@ -130,17 +130,28 @@ function TableWithPagination({
   return (
     <Box className="search-page">
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-        <Box width="90%">
+        <Box
+          sx={{
+            width: "90%",
+          }}
+        >
           <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" } }}>
             <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
           </Box>
           {description && (
-            <Box width="95%">
+            <Box
+              sx={{
+                width: "95%",
+              }}
+            >
               <Typography
-                mt={3}
                 sx={{
+                  mt: 3,
                   display: "-webkit-box",
-                  WebkitLineClamp: 3, // ← number of lines
+
+                  // ← number of lines
+                  WebkitLineClamp: 3,
+
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                 }}
@@ -152,7 +163,6 @@ function TableWithPagination({
         </Box>
         {exportable && <ExportButtonNew data={tableData} />}
       </Box>
-
       <Box className="fr-table">
         <Box className="fr-table__wrapper">
           <Box className="fr-table__container">
@@ -168,7 +178,12 @@ function TableWithPagination({
                         <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
                           <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
                             <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
-                            <Box component="span" pl={1}>
+                            <Box
+                              component="span"
+                              sx={{
+                                pl: 1,
+                              }}
+                            >
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
                             </Box>
                           </Box>

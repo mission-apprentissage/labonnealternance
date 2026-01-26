@@ -58,6 +58,8 @@
     <mj-style inline="inline">
       .column > table { border-collapse: separate; }
     </mj-style>
+    <mj-font href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400&display=swap" name="DM Sans"></mj-font>
+    <mj-font href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@700&display=swap" name="Public Sans"></mj-font>
   </mj-head>
   <mj-body background-color="#f5f5fe" name="Candidat - Confirmation de candidature spontanée" width="800px">
     <mj-column border-radius="0px" css-class="wrapper" padding="32px 100px 32px 100px">
@@ -80,10 +82,13 @@
               Votre candidature a bien été envoyée<%= data.applicationWebsiteOrigin %> à
               <br />
             </mj-text>
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" line-height="24px" padding="10px 0px 10px 0px">
-              <span style="font-weight: 700;"><%= data.company_name %></span>, <%= data.company_address %>.
-              <br /><br />
-              <span style="font-weight: 700;">ℹ️ Il faut en moyenne 30 candidatures pour obtenir un entretien.</span>
+
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+              <span style="font-weight: 700;"><%= data.company_name %></span>, <%= data.company_address %> pour le poste <span style="font-weight: 700;"><%= data.job_title %></span>.
+              <br />
+              <br />
+
+              <span style="font-weight: 700;">ℹ️ Il faut en moyenne 30 candidatures pour obtenir un entretien. </span>
               <br />
               Continuez de postuler à des opportunités en alternance :
               <br />
@@ -93,6 +98,77 @@
               J’envoie d’autres candidatures
             </mj-button>
 
+            
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <% if (data.recruitingCompaniesUrl) { %>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
+              Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée. 
+              <br />
+            </mj-text>
+
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
+              Pour vous aider à trouver un contrat, nous identifions des entreprises susceptibles d'accueillir des alternants. Elles sont étiquetées <span style="font-weight: 700;">'candidatures spontanées' et sont visibles en fin de résultats de recherche.</span>
+              <br /><br />
+              👉 Vous étendez votre champ d'opportunités,<br />
+              👉 Vous choisissez les entreprises qui vous intéressent,<br />
+              👉 Vous augmentez vos chances car il y a moins de concurrence.
+            </mj-text>
+            <mj-button align="center" background-color="#ffffff" border-radius="0px" border="1px solid #000091" color="#000091" css-class="button" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="400" inner-padding="4px 0px 4px 0px" line-height="24px" padding="10px 0px 10px 0px" width="290px" href="<%= data.recruitingCompaniesUrl %>">
+              Découvrir les entreprises qui recrutent
+            </mj-button>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-spacer height="24px">
+
+      </mj-spacer>
+      <% } %>
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+        <mj-group>
+          <mj-column border-radius="0px" css-class="column"  padding="23px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+              Rappel de votre candidature
+              <br /><br />
+            </mj-text>
+
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              Métier :
+              <br />
+              <span style="font-weight: 700;">
+                <%= data.job_title %>
+              </span>
+              <br />
+              <br />
+              
+              Message au responsable du recrutement :
+              <br />
+              <span style="font-weight: 700;">
+                <%- data.applicant_message_to_company %>
+              </span>
+              <br />
+              <br />
+              
+              Pièce jointe envoyée :
+              <br />
+              <span style="font-weight: 700;">
+                <%= data.attachmentName %>
+              </span>
+              <br />
+              <br />
+
+              Lien vers l’offre :
+              <br />
+              <a href="<%= data.urlOfDetailNoUtm %>" style="text-decoration: underline; color: inherit; font-weight: 700;"><%= data.urlOfDetailNoUtm %></a>
+              <br /><br />
+            </mj-text>
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
               <span style="font-weight: 700;">Besoin d’aide dans le suivi de vos candidatures ?
               </span><br />Téléchargez notre <a href="https://mission-apprentissage.notion.site/Tableau-de-suivi-des-candidatures-c82bcabc36b24445a78c9f1eef2f7179?pvs=4" style="text-decoration: underline; color: inherit;">tableau de suivi</a> à compléter.
@@ -104,83 +180,29 @@
       <mj-spacer height="24px">
 
       </mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
+      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section" name="mj-section_group" padding="23px">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px" padding="10px 0px 10px 0px">
-              Vous avez déjà envoyé plus de 30 candidatures ?
-              <br />
-            </mj-text>
-
+          <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="10px 0px 10px 0px">
-              <span style="font-weight: 700;">💡 Profitez de conseils </span>pour trouver votre entreprise grâce à notre outil interactif “<a href="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e" style="text-decoration: underline; color: inherit;">chercher un employeur</a>”.
-              <br />
-              <br />
-              <span style="font-weight: 700;">💡 Contactez la Mission locale de votre secteur. </span>Des conseillers vous aideront dans vos recherches d'entreprise. <a href="https://www.unml.info/les-missions-locales/annuaire/" style="text-decoration: underline; color: inherit;">Trouver ma mission locale</a>.
-              <br />
-              <br />
-              <span style="font-weight: 700;">💡 Diversifiez vos démarches</span> en répondant à des offres d'emploi ainsi qu'en envoyant des candidatures spontanées, car <span style="font-weight: 700;">5 employeurs sur 10 recrutent sans déposer d'offres</span>.
-              <br />
-            </mj-text>
-          </mj-column>
-        </mj-group>
-      </mj-section>
-      <mj-spacer height="24px">
-
-      </mj-spacer>
-      <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
-        <mj-group>
-          <mj-column border-radius="0px" css-class="column"  padding="23px" vertical-align="middle" width="100%">
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
-              Rappel de votre candidature
+              <% if (data.company_phone) { %>
+              📞 Si l'établissement <%= data.company_name %> ne vous a pas répondu le <%= data.reminderDate %>, relancez le par téléphone au <span style="font-weight: 700;"><%= data.company_phone %>.</span>
               <br /><br />
-            </mj-text>
-
-            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
-              Titre :
-              <br />
-              <span style="font-weight: 700;"><%= data.job_title %></span>
-              <br />
-              <br />
-                
-              Message au responsable du recrutement :
-              <br />
-              <span style="font-weight: 700;">
-                <%- data.applicant_message_to_company %></span>
-              <br />
-              <br />
-              
-              Pièce jointe envoyée :
-              <br />
-              <span style="font-weight: 700;">
-                <%= data.attachmentName %></span>
-              <br />
-              <br />
-              
-               <% if (data.company_phone) { %>
-
-              📞 Si l'établissement <%= data.company_name %> ne vous a pas répondu le <%= data.reminderDate %>, relancez le par téléphone au <br /><span style="font-weight: 700;"><%= data.company_phone %>.</span>
-              <br />
-              <br />
               <% } %>
 
-              Exemple de relance :<br /><span style="font-style: italic;">
-              “Bonjour,
-              <br />Je suis <%= data.applicant_first_name %> <%= data.applicant_last_name %>. Je vous appelle car je vous ai envoyé ma candidature par mail le <%= data.applicationDate %> pour un poste d'apprenti <%= data.job_title %>. N'ayant pas reçu de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en détail ma motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m’adresser pour savoir où en est ma candidature et quand puis-je espérer recevoir une réponse ?”</span>
+              <span style="font-weight: 700;">Exemple de relance :</span>
+              <span style="font-style: italic;">
+                <br />
+                “Bonjour,
+                <br />
+                Je suis <%= data.applicant_first_name %> <%= data.applicant_last_name %>. Je vous appelle car je vous ai envoyé ma candidature par mail le <%= data.applicationDate %> pour un poste d'apprenti <%= data.job_title %>. N'ayant pas reçu de réponse, je me permets de vous relancer car je suis vraiment très intéressé·e par votre entreprise. Je serai heureux·se de vous expliquer plus en détail ma motivation lors d'un rendez-vous. Pourriez-vous me dire à qui je dois m’adresser pour savoir où en est ma candidature et quand puis-je espérer recevoir une réponse ?”</span>
               <br />
               <br />
-
-              Lien vers l’offre :
-              <br />
-              <a href="<%= data.urlOfDetailNoUtm %>" style="text-decoration: underline; font-weight: 700;"><%= data.urlOfDetailNoUtm %></a>
-              <br />
-              
             </mj-text>
           </mj-column>
         </mj-group>
       </mj-section>
       <mj-spacer height="24px">
-
+        
       </mj-spacer>
       <mj-section border-radius="4px" css-class="section">
         <mj-group>
