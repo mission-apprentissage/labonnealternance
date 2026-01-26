@@ -34,7 +34,7 @@ export default function PlanDuSite() {
                   Retrouvez ci-dessous l'ensemble des pages principales de La bonne alternance.
                 </Typography>
 
-                <Box component="nav" role="navigation">
+                <Box component="nav" role="navigation" aria-label="Navigation du plan du site">
                   <Box component="ul" sx={{ my: 4, pl: 2, listStyle: "disc", "& > li": { mb: 3 } }}>
                     <li>
                       <DsfrLink href="/">Espace candidat</DsfrLink>
