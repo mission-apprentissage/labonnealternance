@@ -299,8 +299,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         my: 6,
                       }}
                     >
-                      <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
                       <OffresTabs
+                        caption="Offres de recrutement en alternance"
                         recruiter={recruiter}
                         buildOfferEditionUrl={(offerId) => {
                           return PAGES.dynamic

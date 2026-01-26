@@ -60,10 +60,12 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
 }
 
 export const OffresTabs = ({
+  caption,
   recruiter,
   showStats = false,
   buildOfferEditionUrl,
 }: {
+  caption: string
   recruiter: IRecruiterJson
   showStats?: boolean
   buildOfferEditionUrl: (offerId: string) => string
@@ -104,6 +106,7 @@ export const OffresTabs = ({
   const commonColumns = [
     {
       Header: "Métier",
+      id: "job_title",
       accessor: "rome_label",
       Cell: ({
         data,
@@ -171,6 +174,7 @@ export const OffresTabs = ({
       Header: "",
       id: "action",
       maxWidth: "40",
+      srOnly: "Actions sur les offres",
       disableFilters: true,
       disableSortBy: true,
       // isSticky: true,
@@ -185,7 +189,7 @@ export const OffresTabs = ({
   return (
     <>
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
-      <Table columns={columns} data={jobsWithGeoCoords} />
+      <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
   )
 }

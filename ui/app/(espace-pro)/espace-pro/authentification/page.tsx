@@ -10,7 +10,6 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
-import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -102,7 +101,6 @@ export default function Authentification() {
         margin: "auto",
       }}
     >
-      <InfoBanner showInfo={false} showAlert={false} showOK={false} showEnvAlert={false} />
       <Box
         sx={{
           maxWidth: "sm",

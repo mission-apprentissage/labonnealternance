@@ -61,6 +61,7 @@ function TableWithPagination({
   pageIndex = 0,
   onPageChange = null,
   defaultSortBy = [],
+  caption,
 }: {
   data?: any[]
   columns: any
@@ -70,6 +71,7 @@ function TableWithPagination({
   pageIndex?: number
   onPageChange?: (newPageIndex: number) => void
   defaultSortBy?: { id: string; desc: boolean }[]
+  caption: string
 }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
@@ -166,13 +168,16 @@ function TableWithPagination({
           <Box className="fr-table__container">
             <Box className="fr-table__content">
               <Box as="table" {...getTableProps()}>
+                <Box sx={{ fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
+                  {caption}
+                </Box>
                 <Box component="thead">
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                       {headerGroup.headers.map((column, i) => (
-                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
+                        <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
                           <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                            <Typography className="fr-cell__title">{column.render("Header")}</Typography>
+                            <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
                             <Box
                               component="span"
                               sx={{
@@ -194,7 +199,13 @@ function TableWithPagination({
                       <Box key={i} as="tr" {...row.getRowProps()}>
                         {row.cells.map((cell, j) => {
                           return (
-                            <Box key={j} component="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}>
+                            <Box
+                              key={j}
+                              headers={cell.column.id}
+                              component="td"
+                              {...cell.getCellProps()}
+                              sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}
+                            >
                               {cell.render("Cell")}
                             </Box>
                           )
