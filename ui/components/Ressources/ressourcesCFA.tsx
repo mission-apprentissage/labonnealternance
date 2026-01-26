@@ -1,11 +1,10 @@
 import { Typography, Box, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
-import { DsfrLink } from "../dsfr/DsfrLink"
-
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const RessourcesCFA = () => {
   return (
@@ -20,13 +19,24 @@ const RessourcesCFA = () => {
       <MisesEnSituation target="cfa" />
       <Typography sx={{ mb: 2 }}>Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :</Typography>
       <ConseilsEtAstuces />
-      <Box display="flex" alignItems="center" mt={6} mb={6}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mt: 6,
+          mb: 6,
+        }}
+      >
         <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: 16 }} />
         <Typography variant="h3" component="h3">
           Autres liens utiles
         </Typography>
       </Box>
-      <Box ml={4}>
+      <Box
+        sx={{
+          ml: 4,
+        }}
+      >
         <List sx={{ listStyleType: "disc", pl: 2 }}>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
             Pour rechercher une formation en alternance, le{" "}
@@ -51,7 +61,12 @@ const RessourcesCFA = () => {
           </ListItem>
 
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography component="span" fontWeight={700}>
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               Le tableau de bord de l’apprentissage
             </Typography>{" "}
             permet de visualiser en temps réel la situation de l’apprentissage sur un territoire :
@@ -68,10 +83,22 @@ const RessourcesCFA = () => {
           <ListItem sx={{ display: "list-item" }}>Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emploi</ListItem>
         </List>
       </Box>
-      <Box display="flex" alignItems="center" mt={6} mb={6}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mt: 6,
+          mb: 6,
+        }}
+      >
         <Image src="/images/pages_ressources/offres completes.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: 16 }} />
         <Box>
-          <Typography fontWeight={700} mb={2}>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              mb: 2,
+            }}
+          >
             Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
           </Typography>
           <DsfrLink href="/organisme-de-formation" aria-label="Accès à la page d'accueil">

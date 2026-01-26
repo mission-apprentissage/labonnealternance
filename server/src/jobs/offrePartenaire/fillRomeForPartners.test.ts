@@ -1,14 +1,13 @@
 import nock from "nock"
-import { IDiagorienteClassificationResponseSchema } from "shared"
+import type { IDiagorienteClassificationResponseSchema } from "shared"
 import { cacheDiagorienteFixture } from "shared/fixtures/cacheDiagoriente.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { fillRomeForPartners } from "./fillRomeForPartners"
 import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "@/common/apis/diagoriente/diagoriente.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { fillRomeForPartners } from "./fillRomeForPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
@@ -68,13 +67,23 @@ describe("fillRomeForPartners", () => {
       },
     ])
     nock.cleanAll()
-    const apiResponseDiagoriente: IDiagorienteClassificationResponseSchema[] = [
-      {
-        job_offer_id: computedJob[0]._id.toString(),
-        code_rome: romeCode,
-        intitule_rome: "Chef de partie, second de cuisine",
-      },
-    ]
+    const apiResponseDiagoriente: IDiagorienteClassificationResponseSchema = {}
+    apiResponseDiagoriente[computedJob[0]._id.toString()] = {
+      classify_results: [
+        {
+          data: {
+            _key: "key",
+            item_version_id: "version_id",
+            item_id: "item_id",
+            titre: "Chef de partie, second de cuisine",
+            valid_from: "2024-01-01",
+            rome: romeCode,
+            valid_to: null,
+            item_type: "SousDomaine",
+          },
+        },
+      ],
+    }
     nockDiagorienteAccessToken()
     nockDiagorienteRomeClassifier(
       [

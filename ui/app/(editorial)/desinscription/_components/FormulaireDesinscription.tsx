@@ -6,7 +6,7 @@ import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { Form, FormikContext, useFormik } from "formik"
 import { useState } from "react"
-import { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
+import type { IUnsubscribePossibleCompany } from "shared/routes/unsubscribe.routes"
 import * as Yup from "yup"
 
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
@@ -15,6 +15,7 @@ import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
+import { publicConfig } from "@/config.public"
 
 const unsubscribeReasons = [
   "Nous avons déjà trouvé nos alternants pour l’année en cours",
@@ -30,7 +31,7 @@ const unsubscribeReasons = [
 const SupportLink = ({ subject }: { subject: string }) => {
   const fullSubject = `Candidature spontanée - Déréférencement - ${subject}`
   return (
-    <DsfrLink external href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent(fullSubject)}`}>
+    <DsfrLink external href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent(fullSubject)}`}>
       support
     </DsfrLink>
   )
@@ -69,7 +70,7 @@ const ConfirmationDesinscription = ({
   const areAllSelected: boolean = companies.length === selectedSirets.length
 
   const mutation = useMutation({
-    mutationFn: ({ sirets }: { sirets: string[] }) => {
+    mutationFn: async ({ sirets }: { sirets: string[] }) => {
       return onSubmit(sirets)
     },
   })
@@ -222,7 +223,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                   label="Motif *"
                   hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
                   nativeSelectProps={{
-                    onChange: (event) => setFieldValue("reason", event.target.value, true),
+                    onChange: async (event) => setFieldValue("reason", event.target.value, true),
                     name: "reason",
                     required: true,
                   }}
@@ -241,7 +242,13 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
               {errorMessage && (
                 <Box sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("1w") }}>
                   <Warning sx={{ m: 0 }} />
-                  <Box ml={1}>{errorMessage}</Box>
+                  <Box
+                    sx={{
+                      ml: 1,
+                    }}
+                  >
+                    {errorMessage}
+                  </Box>
                 </Box>
               )}
 

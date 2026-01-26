@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import { assertUnreachable, removeUndefinedFields, toKebabCase } from "shared"
-import { ADMIN, AUTHTYPE, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
+import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
+import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
 
-import { buildRecherchePageParams, buildSearchTitle, IRechercheMode, IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildRecherchePageParams, buildSearchTitle, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export interface IPage {
   getPath: (args?: any) => string
@@ -19,7 +21,7 @@ interface INotionPage extends IPage {
 
 interface IPages {
   static: Record<string, IPage>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   dynamic: Record<string, (props: any) => IPage>
   notion: Record<string, INotionPage>
 }
@@ -315,16 +317,16 @@ export const PAGES = {
     successEditionOffre: ({ userType, establishment_id, user_id }: { userType: "OPCO" | "ENTREPRISE" | "CFA" | "ADMIN"; establishment_id?: string; user_id?: string }): IPage => {
       let path = ""
       switch (userType) {
-        case OPCO:
+        case "OPCO":
           path = `/espace-pro/opco/entreprise/${user_id}/entreprise/${establishment_id}`
           break
-        case CFA:
+        case "CFA":
           path = `/espace-pro/cfa`
           break
-        case ADMIN:
+        case "ADMIN":
           path = `/espace-pro/administration/users/${user_id}`
           break
-        case ENTREPRISE:
+        case "ENTREPRISE":
           path = `/espace-pro/entreprise`
           break
         default:
@@ -473,6 +475,18 @@ export const PAGES = {
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
     }),
+    backAdminGestionDesRecruteurs: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
+      const searchParams = new URLSearchParams()
+      Object.entries(props).forEach(([key, value]) => {
+        if (value !== undefined) {
+          searchParams.append(key, value + "")
+        }
+      })
+      return {
+        getPath: () => `/espace-pro/administration/users?${searchParams}` as string,
+        title: "Gestion des recruteurs",
+      }
+    },
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
@@ -499,13 +513,13 @@ export const PAGES = {
     }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {
-        case AUTHTYPE.CFA:
+        case "CFA":
           return PAGES.static.backCfaHome
-        case AUTHTYPE.ENTREPRISE:
+        case "ENTREPRISE":
           return PAGES.static.backHomeEntreprise
-        case AUTHTYPE.ADMIN:
+        case "ADMIN":
           return PAGES.static.backAdminHome
-        case AUTHTYPE.OPCO:
+        case "OPCO":
           return PAGES.static.backOpcoHome
         default:
           throw new Error("user type not supported")
@@ -538,6 +552,10 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/processeur/cron/${props.name}/${props.id}`,
       index: false,
       title: `Tâche CRON ${props.id}`,
+    }),
+    seoVille: (villeSlug: string): IPage => ({
+      getPath: () => `/alternance/ville/${villeSlug}`,
+      title: `Trouver une alternance à ${villeSlug}`,
     }),
   },
   notion: {},

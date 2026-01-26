@@ -1,11 +1,10 @@
 import { JOB_STATUS } from "shared/models/index"
 
+import dayjs from "shared/helpers/dayjs"
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import dayjs from "../../services/dayjs.service"
 
 export const cancelOfferJob = async () => {
   const today = dayjs().startOf("day").utc(true).toDate()

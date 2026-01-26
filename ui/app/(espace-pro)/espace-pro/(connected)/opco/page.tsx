@@ -1,30 +1,32 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Box, Link, Tab, Typography } from "@mui/material"
+import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
-import { IUserRecruteurForAdminJSON } from "shared"
+import type { IUserRecruteurForAdminJSON } from "shared"
 
+import { UserMenu } from "./_component/UserMenu"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
-import { UserMenu } from "@/app/(espace-pro)/espace-pro/(connected)/opco/_component/UserMenu"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur, LoadingEmptySpace } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
+import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { getOpcoUsers } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
+type TabKey = "awaiting" | "active" | "disabled"
+
 function AdministrationOpco() {
   const { newUser } = useSearchParamsRecord()
   const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
-  const [tabIndex, setTabIndex] = useState("0")
+  const [currentTab, setCurrentTab] = useState<TabKey>("awaiting")
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const toast = useToast()
@@ -47,6 +49,7 @@ function AdministrationOpco() {
   const columns = [
     {
       Header: "",
+      srOnly: "Actions sur l'entreprise",
       id: "action",
       maxWidth: "40",
       disableSortBy: true,
@@ -54,7 +57,7 @@ function AdministrationOpco() {
         return (
           <UserMenu
             row={row}
-            tabIndex={tabIndex}
+            tabIndex={currentTab}
             setCurrentEntreprise={setCurrentEntreprise}
             confirmationActivationUtilisateur={confirmationActivationUtilisateur}
             confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur}
@@ -77,7 +80,13 @@ function AdministrationOpco() {
         const { establishment_raison_sociale, establishment_siret, _id } = data[id]
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: _id }).getPath()}>
+            <Link
+              underline="hover"
+              href={PAGES.dynamic.backOpcoInformationEntreprise({ user_id: _id }).getPath()}
+              sx={{
+                fontWeight: "700",
+              }}
+            >
               {establishment_raison_sociale}
             </Link>
             <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
@@ -163,29 +172,45 @@ function AdministrationOpco() {
         <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Entreprises</Typography>
       </Box>
 
-      <TabContext value={tabIndex}>
-        <Box mx={fr.spacing("4w")} className="fr-tabs">
-          <TabList className="fr-tabs__list" onChange={(_, index) => setTabIndex(index)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-            <Tab label={`En attente de vérification (${data.awaiting.length})`} value="0" className="fr-tabs__tab" wrapped />
-            <Tab label={`Actives ${data.active.length}`} value="1" className="fr-tabs__tab" wrapped />
-            <Tab label={`Désactivés (${data.disable.length})`} value="2" className="fr-tabs__tab" wrapped />
-          </TabList>
-        </Box>
-        <TabPanel value="0">
-          {/* @ts-expect-error: TODO */}
-          <TableWithPagination
-            columns={columns}
-            data={data.awaiting}
-            description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
-          />
-        </TabPanel>
-        <TabPanel value="1">{isLoading ? <LoadingEmptySpace /> : <TableWithPagination columns={columns} data={data.active} exportable />}</TabPanel>
-
-        <TabPanel value="2">
-          {/* @ts-expect-error: TODO */}
-          {isLoading ? <LoadingEmptySpace /> : <TableWithPagination columns={columns} data={data.disable} />}
-        </TabPanel>
-      </TabContext>
+      <CustomTabs
+        currentTab={currentTab}
+        onChange={setCurrentTab}
+        panels={[
+          {
+            id: "awaiting" as const,
+            title: `En attente de vérification (${data.awaiting.length})`,
+            content: (
+              <TableWithPagination
+                caption="Entreprises en attente de vérification"
+                columns={columns}
+                data={data.awaiting}
+                description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d'accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu'il s'agit bien d'une entreprise relevant de vos champs de compétences, et qu'il ne s'agit pas d'une tentative d'usurpation de compte."
+                exportable={null}
+                defaultSortBy={[{ id: "createdAt", desc: true }]}
+              />
+            ),
+          },
+          {
+            id: "active" as const,
+            title: `Actives ${data.active.length}`,
+            content: <TableWithPagination caption="Entreprises actives" columns={columns} data={data.active} exportable defaultSortBy={[{ id: "createdAt", desc: true }]} />,
+          },
+          {
+            id: "disabled" as const,
+            title: `Désactivés (${data.disable.length})`,
+            content: (
+              <TableWithPagination
+                caption="Entreprises désactivées"
+                columns={columns}
+                data={data.disable}
+                description={null}
+                exportable={null}
+                defaultSortBy={[{ id: "createdAt", desc: true }]}
+              />
+            ),
+          },
+        ]}
+      />
     </>
   )
 }

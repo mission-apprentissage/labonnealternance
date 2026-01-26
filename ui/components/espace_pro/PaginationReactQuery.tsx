@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 
-import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
+import { ChevronLeft, ChevronRight } from "@/theme/components/icons"
 
 const PageLink = ({ pageNumber, onClick, isActive = false }: { pageNumber: number; onClick: () => unknown; isActive: boolean }) => {
   return (
@@ -39,7 +39,7 @@ interface PaginationReactQueryProps {
   currentPage: number
 }
 
-function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }: PaginationReactQueryProps) {
+export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }: PaginationReactQueryProps) {
   if (Number.isNaN(pageCount) || pageCount <= 1) {
     return null
   }
@@ -52,7 +52,7 @@ function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage:
   const previousPage = () => goToPageIndex(pageIndex - 1)
 
   return (
-    <Box className={"search-pagination"} sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", justifyContent: "center", my: fr.spacing("3v"), mx: fr.spacing("1v") }}>
+    <Box className="search-pagination" sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", margin: 0 }}>
       <PreviousLink previousPage={previousPage} canPreviousPage={canPreviousPage} />
       {
         displayedPages.reduce(
@@ -71,5 +71,3 @@ function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage:
     </Box>
   )
 }
-
-export default PaginationReactQuery

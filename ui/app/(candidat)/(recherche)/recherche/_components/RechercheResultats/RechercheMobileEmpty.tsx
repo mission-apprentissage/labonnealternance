@@ -3,8 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 
-import { RechercheMobileForm } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMobileForm"
-import { IRecherchePageParams, RechercheViewType } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheMobileForm } from "./RechercheMobileForm"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheViewType } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 const titles = {
   default: "Trouvez emploi et formation",
@@ -24,7 +25,12 @@ export function RechercheMobileEmpty(props: { rechercheParams: IRecherchePagePar
         flexDirection: "column",
       }}
     >
-      <Typography variant="h1" marginBottom={fr.spacing("2w")}>
+      <Typography
+        variant="h1"
+        sx={{
+          marginBottom: fr.spacing("2w"),
+        }}
+      >
         {titles[viewType] ?? titles.default}{" "}
         <Box component="span" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
           en alternance

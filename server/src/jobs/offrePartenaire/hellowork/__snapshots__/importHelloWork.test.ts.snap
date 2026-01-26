@@ -13,7 +13,6 @@ exports[`importHelloWork > should test the import of hellowork data into compute
     "contract_type": null,
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:21:39.000Z,
     "offer_description": "Vous développerez l'innovation pour créer les conditions favorables à l'émergence de nouveaux usages dans nos pratiques de conseil et dans le cadre des projets clients. Vous participerez au processus de recrutement et à la montée en compétences des consultants.
@@ -45,7 +44,7 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "offer_title": "Manager en Stratégie Management et Organisation H/F",
     "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68087320",
+    "partner_job_id": "1792883/10218731 MESMEO/94V",
     "partner_label": "Hellowork",
     "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
@@ -74,6 +73,203 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
   },
   {
     "apply_phone": null,
+    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": "hybrid",
+    "contract_start": null,
+    "contract_type": null,
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2024-01-31T22:09:13.000Z,
+    "offer_description": "Nous recherchons notre futur(e) Directeur Marketing.
+
+Vos futures missions : si vous les acceptez
+
+Mission 1 : Élaboration et Développement de la Stratégie Marketing
+
+En tant que Directeur Marketing du Comptoir Général de Robinetterie, vous serez le moteur de notre succès en élaborant et en mettant en oeuvre notre stratégie marketing. Vos responsabilités clés incluront :
+-  Concevoir et mettre en oeuvre une stratégie marketing en alignement avec les objectifs de l'entreprise.
+-  Contribuer à la stratégie omnicanale de l'entreprise, tant en ligne qu'hors ligne.
+-  Superviser le plan de déploiement et d'animation du canal de vente en ligne.
+-  Élaborer et superviser le plan marketing opérationnel de l'entreprise.
+-  Concevoir des plans marketing, y compris la définition des segments de marché, la tarification, la promotion et la distribution.
+-  Surveiller les tendances du marché, la concurrence et les besoins des clients pour adapter la stratégie.
+-  Diriger de nouveaux projets digitaux.
+-  Travailler en étroite collaboration avec les équipes de vente pour développer des outils et des stratégies de vente efficaces.
+-  Proposer des plans d'évolution des produits et services.
+
+Mission 2 : Définition de la Stratégie de Communication Interne et Externe
+
+Vous serez également chargé de définir la stratégie de communication interne et externe pour renforcer la visibilité de l'entreprise. Vos activités comprendront :
+-  Participer à la définition de la stratégie de communication interne et externe pour atteindre les publics cibles.
+-  Élaborer des plans de communication internes et externes.
+-  Mettre en place des indicateurs de performance (KPI) pour évaluer l'efficacité des actions de communication.
+-  Assurer la cohérence des actions de communication avec la stratégie globale.
+-  Gérer le budget de communication et effectuer un reporting à la direction générale.
+-  Optimiser les processus pour améliorer le service de communication.
+
+Mission 3 : Management des Équipes Marketing et Communication
+
+En tant que leader, vous dirigerez les équipes marketing et communication, coordonnerez leurs activités et encouragerez le développement professionnel. Vos activités comprendront :
+-  Superviser les équipes de marketing et de communication.
+-  Recruter et animer les équipes marketing.
+-  Coordonner les collaborations entre les équipes marketing et les équipes commerciales.
+-  Diriger et motiver l'équipe pour atteindre les objectifs fixés.
+-  Évaluer et contribuer au développement professionnel de vos collaborateurs.
+-  Agir pour le développement et l'épanouissement de votre équipe.",
+    "offer_desired_skills": [
+      "Exigences du poste :
+-   Expérience solide en marketing, de préférence dans l'industrie de la robinetterie.
+-   Connaissance des produits de robinetterie et du secteur.
+-   Capacité à élaborer et exécuter des stratégies marketing efficaces.
+-   Excellentes compétences en gestion d'équipe et en coordination.
+-   Fortes compétences en communication, à la fois écrite et orale.
+-   Diplôme en marketing, communication ou domaine connexe (un atout).",
+    ],
+    "offer_expiration": 2024-03-31T22:09:13.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "7",
+      "label": "Master, titre ingénieur, autres formations (Bac+5)",
+    },
+    "offer_title": "Directeur Marketing H/F",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "1793166/10221179 DM/51T",
+    "partner_label": "Hellowork",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "TINQUEUX",
+    "workplace_address_label": "TINQUEUX 51430",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "51430",
+    "workplace_brand": null,
+    "workplace_description": "Distributeur spécialisé en robinetterie et accessoires depuis plus de 40 ans, nous accompagnons les professionnels du Génie Climatique, du Logement et de l'Industrie dans la réussite de leurs projets.
+
+Pour ce faire, nous proposons une gamme élargie de solutions et de services associée à une logistique de pointe et à l'expertise de nos 300 collaborateurs.
+
+Nos valeurs : Respect - Bien-être - Détermination - Innovation
+
+En constante évolution pour satisfaire nos clients, nous recherchons de nouveaux talents passionnés et engagés qui souhaitent s'investir pour révolutionner durablement la distribution.
+
+Prêt à rejoindre la Team CGR ?",
+    "workplace_geopoint": {
+      "coordinates": [
+        3.989532671,
+        49.249622311,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "CGR",
+    "workplace_opco": null,
+    "workplace_siret": "31882776300042",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": "onsite",
+    "contract_start": null,
+    "contract_type": null,
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2024-01-31T22:22:17.000Z,
+    "offer_description": "Prendre en charge plusieurs projets de développement de produits sous la responsabilité d'un responsable de gamme.
+
+Suivre le cahier des charges Marketing pour définir et figer les spécifications du produit.
+
+Travailler avec les achats pour définir un prix produit et le garantir - make or buy.
+
+Etablir le besoin du projet en ressources, budget et son planning et veiller à les respecter.
+
+Rendre compte au responsable de gamme et à la direction des avancées, besoins et risques du projet.
+
+Piloter les actions pluridisciplinaires (électronique, mécanique, logiciel, validation) des équipes internes et fournisseurs qui conditionnent la fabrication industrielle d'un produit, de la conception à la mise en production. Mettre en place les outils de gestion liés aux produits (documents techniques, structures informatiques, bases de données) et tenir à jour ces données (plans, nomenclatures, procédures).
+
+Veiller à la qualification du produit en collaboration avec les équipes validation et également les organismes de certifications extérieurs.
+
+Veiller à la mise en oeuvre des livrables attendus à chaque jalon (spécification, plans, nomenclatures, schémas électroniques, logiciel, procédures).
+
+Être le premier contact des partenaires, fournisseurs et sous-traitants pour toutes les questions liées à l'industrialisation. Assurer les actions nécessaires à la maintenance des produits en vie série (création / validation kits SAV, gestion obsolescence composants, correction bugs, programme de réduction des coûts)
+
+Assurer les actions nécessaires à la maintenance des produits en vie série (création / validation kits SAV, gestion obsolescence composants, correction bugs, programme de réduction des coûts).",
+    "offer_desired_skills": [
+      "FORMATION - Formation d'Ingénieur généraliste ou industriel ou Mécanique,
+
+Electronique.
+
+EXPERIENCE - 3 à 5 ans dans le domaine industriel, plus
+
+particulièrement dans une entreprise de conception, production, commercialisation
+
+de produits assemblés.
+
+QUALITES - Rigueur, capacité à s'organiser, leadership, communication, pragmatisme, autonomie
+
+LANGUES - Anglais courant.
+
+Ref : 1jvie4rokd",
+    ],
+    "offer_expiration": 2024-03-31T22:22:17.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "3",
+      "label": "Cap, autres formations (Infrabac)",
+    },
+    "offer_title": "Chef de Projet Photo H/F",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "1jvie4rokd",
+    "partner_label": "Hellowork",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "ECHIROLLES",
+    "workplace_address_label": "ECHIROLLES 38130",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "38130",
+    "workplace_brand": null,
+    "workplace_description": "ME GROUP (Photomaton) développe et commercialise des distributeurs automatiques en libre-service à valeur ajoutée. Aujourd'hui, nous sommes un acteur majeur dans des secteurs aussi divers que la photographie, l'alimentation et les laveries automatiques.",
+    "workplace_geopoint": {
+      "coordinates": [
+        5.71535600177,
+        45.1471647181,
+      ],
+      "type": "Point",
+    },
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "ME GROUP",
+    "workplace_opco": null,
+    "workplace_siret": "81986335800019",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162036&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F41995446.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D41995446%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -83,7 +279,6 @@ Vous contribuez au développement commercial en concevant des nouvelles offres, 
     "contract_type": null,
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2024-01-30T22:11:59.000Z,
     "offer_description": "Votre futur poste
@@ -146,7 +341,7 @@ Rejoignez-nous et venez goûter à une expérience unique !",
     "offer_title": "Chargé de Communication Btob Laval 53 H/F",
     "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68090104",
+    "partner_job_id": "d055f685ddee38d190934bde50554bb8",
     "partner_label": "Hellowork",
     "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
@@ -176,114 +371,6 @@ Fondé en 1933 par André Besnier à Laval, le Groupe Lactalis est une entrepris
   },
   {
     "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162037&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42014902.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42014902%26utm_content%3Dfluxexample",
-    "business_error": null,
-    "contract_duration": null,
-    "contract_is_disabled_elligible": false,
-    "contract_remote": "hybrid",
-    "contract_start": null,
-    "contract_type": null,
-    "errors": [],
-    "jobs_in_success": [],
-    "lba_url": null,
-    "offer_access_conditions": [],
-    "offer_creation": 2024-01-31T22:09:13.000Z,
-    "offer_description": "Nous recherchons notre futur(e) Directeur Marketing.
-
-Vos futures missions : si vous les acceptez
-
-Mission 1 : Élaboration et Développement de la Stratégie Marketing
-
-En tant que Directeur Marketing du Comptoir Général de Robinetterie, vous serez le moteur de notre succès en élaborant et en mettant en oeuvre notre stratégie marketing. Vos responsabilités clés incluront :
--  Concevoir et mettre en oeuvre une stratégie marketing en alignement avec les objectifs de l'entreprise.
--  Contribuer à la stratégie omnicanale de l'entreprise, tant en ligne qu'hors ligne.
--  Superviser le plan de déploiement et d'animation du canal de vente en ligne.
--  Élaborer et superviser le plan marketing opérationnel de l'entreprise.
--  Concevoir des plans marketing, y compris la définition des segments de marché, la tarification, la promotion et la distribution.
--  Surveiller les tendances du marché, la concurrence et les besoins des clients pour adapter la stratégie.
--  Diriger de nouveaux projets digitaux.
--  Travailler en étroite collaboration avec les équipes de vente pour développer des outils et des stratégies de vente efficaces.
--  Proposer des plans d'évolution des produits et services.
-
-Mission 2 : Définition de la Stratégie de Communication Interne et Externe
-
-Vous serez également chargé de définir la stratégie de communication interne et externe pour renforcer la visibilité de l'entreprise. Vos activités comprendront :
--  Participer à la définition de la stratégie de communication interne et externe pour atteindre les publics cibles.
--  Élaborer des plans de communication internes et externes.
--  Mettre en place des indicateurs de performance (KPI) pour évaluer l'efficacité des actions de communication.
--  Assurer la cohérence des actions de communication avec la stratégie globale.
--  Gérer le budget de communication et effectuer un reporting à la direction générale.
--  Optimiser les processus pour améliorer le service de communication.
-
-Mission 3 : Management des Équipes Marketing et Communication
-
-En tant que leader, vous dirigerez les équipes marketing et communication, coordonnerez leurs activités et encouragerez le développement professionnel. Vos activités comprendront :
--  Superviser les équipes de marketing et de communication.
--  Recruter et animer les équipes marketing.
--  Coordonner les collaborations entre les équipes marketing et les équipes commerciales.
--  Diriger et motiver l'équipe pour atteindre les objectifs fixés.
--  Évaluer et contribuer au développement professionnel de vos collaborateurs.
--  Agir pour le développement et l'épanouissement de votre équipe.",
-    "offer_desired_skills": [
-      "Exigences du poste :
--   Expérience solide en marketing, de préférence dans l'industrie de la robinetterie.
--   Connaissance des produits de robinetterie et du secteur.
--   Capacité à élaborer et exécuter des stratégies marketing efficaces.
--   Excellentes compétences en gestion d'équipe et en coordination.
--   Fortes compétences en communication, à la fois écrite et orale.
--   Diplôme en marketing, communication ou domaine connexe (un atout).",
-    ],
-    "offer_expiration": 2024-03-31T22:09:13.000Z,
-    "offer_multicast": false,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "7",
-      "label": "Master, titre ingénieur, autres formations (Bac+5)",
-    },
-    "offer_title": "Directeur Marketing H/F",
-    "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68110296",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-07-21T02:49:06.000Z,
-    "validated": false,
-    "workplace_address_city": "TINQUEUX",
-    "workplace_address_label": "TINQUEUX 51430",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "51430",
-    "workplace_brand": null,
-    "workplace_description": "Distributeur spécialisé en robinetterie et accessoires depuis plus de 40 ans, nous accompagnons les professionnels du Génie Climatique, du Logement et de l'Industrie dans la réussite de leurs projets.
-
-Pour ce faire, nous proposons une gamme élargie de solutions et de services associée à une logistique de pointe et à l'expertise de nos 300 collaborateurs.
-
-Nos valeurs : Respect - Bien-être - Détermination - Innovation
-
-En constante évolution pour satisfaire nos clients, nous recherchons de nouveaux talents passionnés et engagés qui souhaitent s'investir pour révolutionner durablement la distribution.
-
-Prêt à rejoindre la Team CGR ?",
-    "workplace_geopoint": {
-      "coordinates": [
-        3.989532671,
-        49.249622311,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "CGR",
-    "workplace_opco": null,
-    "workplace_siret": "31882776300042",
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-  {
-    "apply_phone": null,
     "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162038&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42016309.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42016309%26utm_content%3Dfluxexample",
     "business_error": null,
     "contract_duration": null,
@@ -293,7 +380,6 @@ Prêt à rejoindre la Team CGR ?",
     "contract_type": null,
     "errors": [],
     "jobs_in_success": [],
-    "lba_url": null,
     "offer_access_conditions": [],
     "offer_creation": 2024-01-31T22:11:11.000Z,
     "offer_description": "La révolution robotique portée par Exotec ne fait que commencer, vous en êtes ?
@@ -340,7 +426,7 @@ Chez Exotec, nous garantissons l'égalité des chances dans notre processus de r
     "offer_title": "Ingénieur Intégration Software H/F",
     "offer_to_be_acquired_knowledge": [],
     "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68111676",
+    "partner_job_id": "ea63804d309c190db1fd096af1a4da2b32455777",
     "partner_label": "Hellowork",
     "updated_at": 2024-07-21T02:49:06.000Z,
     "validated": false,
@@ -368,97 +454,6 @@ Rejoindre Exotec, c'est l'opportunité de donner du sens à vos compétences. Gr
     "workplace_name": "Exotec",
     "workplace_opco": null,
     "workplace_siret": "81287874200038",
-    "workplace_size": null,
-    "workplace_website": null,
-  },
-  {
-    "apply_phone": null,
-    "apply_url": "https://r.holeest.com/redirect?poc=2&op=4368162039&o=0&from=https%3A%2F%2Fwww.hellowork.com%2Ffr-fr%2Femplois%2F42018480.html%3Futm_medium%3DMetamoteurs-cpc%26utm_source%3Dexample%26utm_campaign%3Dclassique%2B-%2Bmarketing%252ccommunication%252cgraphisme%252caudiovisuel%252cpub%26utm_term%3D42018480%26utm_content%3Dfluxexample",
-    "business_error": null,
-    "contract_duration": null,
-    "contract_is_disabled_elligible": false,
-    "contract_remote": "onsite",
-    "contract_start": null,
-    "contract_type": null,
-    "errors": [],
-    "jobs_in_success": [],
-    "lba_url": null,
-    "offer_access_conditions": [],
-    "offer_creation": 2024-01-31T22:22:17.000Z,
-    "offer_description": "Prendre en charge plusieurs projets de développement de produits sous la responsabilité d'un responsable de gamme.
-
-Suivre le cahier des charges Marketing pour définir et figer les spécifications du produit.
-
-Travailler avec les achats pour définir un prix produit et le garantir - make or buy.
-
-Etablir le besoin du projet en ressources, budget et son planning et veiller à les respecter.
-
-Rendre compte au responsable de gamme et à la direction des avancées, besoins et risques du projet.
-
-Piloter les actions pluridisciplinaires (électronique, mécanique, logiciel, validation) des équipes internes et fournisseurs qui conditionnent la fabrication industrielle d'un produit, de la conception à la mise en production. Mettre en place les outils de gestion liés aux produits (documents techniques, structures informatiques, bases de données) et tenir à jour ces données (plans, nomenclatures, procédures).
-
-Veiller à la qualification du produit en collaboration avec les équipes validation et également les organismes de certifications extérieurs.
-
-Veiller à la mise en oeuvre des livrables attendus à chaque jalon (spécification, plans, nomenclatures, schémas électroniques, logiciel, procédures).
-
-Être le premier contact des partenaires, fournisseurs et sous-traitants pour toutes les questions liées à l'industrialisation. Assurer les actions nécessaires à la maintenance des produits en vie série (création / validation kits SAV, gestion obsolescence composants, correction bugs, programme de réduction des coûts)
-
-Assurer les actions nécessaires à la maintenance des produits en vie série (création / validation kits SAV, gestion obsolescence composants, correction bugs, programme de réduction des coûts).",
-    "offer_desired_skills": [
-      "FORMATION - Formation d'Ingénieur généraliste ou industriel ou Mécanique,
-
-Electronique.
-
-EXPERIENCE - 3 à 5 ans dans le domaine industriel, plus
-
-particulièrement dans une entreprise de conception, production, commercialisation
-
-de produits assemblés.
-
-QUALITES - Rigueur, capacité à s'organiser, leadership, communication, pragmatisme, autonomie
-
-LANGUES - Anglais courant.
-
-Ref : 1jvie4rokd",
-    ],
-    "offer_expiration": 2024-03-31T22:22:17.000Z,
-    "offer_multicast": false,
-    "offer_opening_count": 1,
-    "offer_origin": null,
-    "offer_rome_codes": null,
-    "offer_status": "Active",
-    "offer_status_history": [],
-    "offer_target_diploma": {
-      "european": "3",
-      "label": "Cap, autres formations (Infrabac)",
-    },
-    "offer_title": "Chef de Projet Photo H/F",
-    "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
-    "partner_job_id": "68113693",
-    "partner_label": "Hellowork",
-    "updated_at": 2024-07-21T02:49:06.000Z,
-    "validated": false,
-    "workplace_address_city": "ECHIROLLES",
-    "workplace_address_label": "ECHIROLLES 38130",
-    "workplace_address_street_label": null,
-    "workplace_address_zipcode": "38130",
-    "workplace_brand": null,
-    "workplace_description": "ME GROUP (Photomaton) développe et commercialise des distributeurs automatiques en libre-service à valeur ajoutée. Aujourd'hui, nous sommes un acteur majeur dans des secteurs aussi divers que la photographie, l'alimentation et les laveries automatiques.",
-    "workplace_geopoint": {
-      "coordinates": [
-        5.71535600177,
-        45.1471647181,
-      ],
-      "type": "Point",
-    },
-    "workplace_idcc": null,
-    "workplace_legal_name": null,
-    "workplace_naf_code": null,
-    "workplace_naf_label": null,
-    "workplace_name": "ME GROUP",
-    "workplace_opco": null,
-    "workplace_siret": "81986335800019",
     "workplace_size": null,
     "workplace_website": null,
   },

@@ -7,31 +7,42 @@ on:
         description: Code coverrage token
         required: true
 jobs:
+  npm-packages-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
+        with:
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check
+
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
   tests:
+    if: ${{ success() }}
+    needs: ["npm-packages-check"]
     timeout-minutes: 10
     name: "Tests"
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-            ~/.cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
+          node-version: 24
+          cache: "yarn"
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check

@@ -1,21 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import {
-  Box,
-  Input,
-  Typography,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Select,
-  MenuItem,
-  ListItemText,
-  SelectChangeEvent,
-  Checkbox,
-} from "@mui/material"
+import { Box, Input, Typography, FormControl, FormLabel, FormHelperText, RadioGroup, FormControlLabel, Radio, Checkbox } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
 import { useState } from "react"
@@ -23,12 +8,11 @@ import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
 
+import { RdvReasons } from "./RdvReasons"
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { RdvReasons } from "@/components/RDV/RdvReasons"
 import { apiPost } from "@/utils/api.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
-
-import InfoBanner from "../InfoBanner/InfoBanner"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -103,7 +87,7 @@ export const DemandeDeContactForm = ({
             <FormControl>
               <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("2w") }}>
                 <Typography sx={{ mr: { xs: 0, md: 3 }, mb: { xs: 1, sm: 1, md: 0 } }}>Vous êtes * :</Typography>
-                <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={(_, value) => formik.setFieldValue("applicantType", value)}>
+                <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={async (_, value) => formik.setFieldValue("applicantType", value)}>
                   <FormControlLabel value={EApplicantType.ETUDIANT} label="L'étudiant" control={<Radio />} />
                   <FormControlLabel value={EApplicantType.PARENT} label="Le parent" control={<Radio />} />
                 </RadioGroup>
@@ -156,8 +140,18 @@ export const DemandeDeContactForm = ({
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("2w") }}>
               <ReasonsField formik={formik} />
             </Box>
-            <Box width="95%" fontSize="12px">
-              <Typography sx={{ mb: fr.spacing("2w") }} color="grey.600">
+            <Box
+              sx={{
+                width: "95%",
+                fontSize: "12px",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: fr.colors.decisions.text.mention.grey.default,
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 * Champs obligatoires
               </Typography>
               <Typography sx={{ mb: fr.spacing("2w") }}>
@@ -175,14 +169,22 @@ export const DemandeDeContactForm = ({
               </Typography>
             </Box>
             {error && (
-              <Box pt={4}>
+              <Box
+                sx={{
+                  pt: 4,
+                }}
+              >
                 <Typography data-testid="prdv-submit-error" color="redmarianne">
                   {error}
                 </Typography>
               </Box>
             )}
             <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
-            <Box textAlign="right">
+            <Box
+              sx={{
+                textAlign: "right",
+              }}
+            >
               <Button data-tracking-id="prendre-rdv-cfa" aria-label="Envoyer la demande de contact" type="submit" disabled={formik.isSubmitting}>
                 J'envoie ma demande
               </Button>
@@ -220,8 +222,19 @@ const EmailField = () => {
       <FormLabel htmlFor="email">E-mail *</FormLabel>
       <Input className={fr.cx("fr-input")} data-testid="email" name="email" type="email" onChange={onEmailChange} onBlur={field.onBlur} value={field.value} />
       {suggestedEmails.length > 0 && (
-        <Box mt={2} fontSize="12px" color="grey.600">
-          <Typography component="span" mr={2}>
+        <Box
+          sx={{
+            mt: 2,
+            fontSize: "12px",
+            color: fr.colors.decisions.text.mention.grey.default,
+          }}
+        >
+          <Typography
+            component="span"
+            sx={{
+              mr: 2,
+            }}
+          >
             Voulez vous dire ?
           </Typography>
           {suggestedEmails.map((suggestedEmail) => (
@@ -243,40 +256,30 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   /**
    * On change on applicant reasons, it updates the state.
    */
-  const onChangeApplicantReasons = (event: SelectChangeEvent<EReasonsKey[]>) => {
-    const {
-      target: { value },
-    } = event
-    helper.setValue(typeof value === "string" ? value.split(",") : value, true)
+  const onChangeApplicantReasons = (reasonKey: EReasonsKey, checked: boolean) => {
+    const updatedReasons = checked ? [...applicantReasons, reasonKey] : applicantReasons.filter((key) => key !== reasonKey)
+    helper.setValue(updatedReasons, true)
   }
 
   return (
     <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Select
-        multiple
-        value={field.value}
-        onChange={onChangeApplicantReasons}
-        renderValue={(selected) => {
-          const selectedReasons = RdvReasons.filter((reason) => selected.includes(reason.key))
-          return selectedReasons.map((reason) => reason.title).join(", ")
-        }}
-        input={<Input className={fr.cx("fr-input")} />}
-      >
+      <Box sx={{ display: "flex", flexDirection: "column", mt: 1 }}>
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (
-            <MenuItem key={key} value={key} id={`reason-${index}`}>
-              <Checkbox checked={checked} />
-              <ListItemText primary={title} />
-            </MenuItem>
+            <FormControlLabel
+              key={key}
+              control={<Checkbox checked={checked} onChange={(e) => onChangeApplicantReasons(key, e.target.checked)} id={`reason-${index}`} />}
+              label={title}
+            />
           )
         })}
-      </Select>
+      </Box>
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
         <Box sx={{ mt: fr.spacing("2w") }}>
           <FormControl data-testid="fieldset-applicantMessageToCfa" fullWidth>
-            <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
+            <FormLabel htmlFor="reasons">Autre(s) sujet(s) à aborder :</FormLabel>
             <Input
               id="applicantMessageToCfa"
               data-testid="applicantMessageToCfa"

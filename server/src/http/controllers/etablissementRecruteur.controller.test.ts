@@ -1,9 +1,9 @@
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
-import { z } from "shared/helpers/zodWithOpenApi"
+import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
-import { zRoutes } from "shared/routes/index"
+import type { zRoutes } from "shared/routes/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
@@ -36,10 +36,8 @@ describe("POST /etablissement/creation", () => {
     }
   })
 
-  const bodySchema = zRoutes.post["/etablissement/creation"].body
-  type CreationBody = z.output<typeof bodySchema>
-  const responseSchema = zRoutes.post["/etablissement/creation"].response["200"]
-  type CreationResponse = z.output<typeof responseSchema>
+  type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
+  type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
 
   const defaultCreationEntreprisePayload = {
     email: "email@email.com",
@@ -76,7 +74,7 @@ describe("POST /etablissement/creation", () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
       expect.soft(response.statusCode).toBe(200)
       const { formulaire, user } = response.json() as CreationResponse
-      expect.soft(omit(formulaire, ["_id", "createdAt", "establishment_id", "managed_by", "updatedAt"])).toMatchSnapshot()
+      expect.soft(omit(formulaire, ["_id", "createdAt", "establishment_id", "managed_by", "updatedAt", "geo_coordinates", "geopoint"])).toMatchSnapshot()
       expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
       expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
     }, 10_000)

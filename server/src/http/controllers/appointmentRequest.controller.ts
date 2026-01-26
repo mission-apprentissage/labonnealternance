@@ -4,21 +4,20 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EApplicantRole } from "shared/constants/rdva"
 import { zRoutes } from "shared/index"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import dayjs from "shared/helpers/dayjs"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import { createRdvaShortRecapToken } from "@/services/appLinks.service"
+import * as appointmentService from "@/services/appointment.service"
+import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "@/services/appointment.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif } from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
+import { getReferrerByKeyName } from "@/services/referrers.service"
+import * as users from "@/services/user.service"
+import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { sanitizeTextField } from "../../common/utils/stringUtils"
-import config from "../../config"
-import { createRdvaShortRecapToken } from "../../services/appLinks.service"
-import * as appointmentService from "../../services/appointment.service"
-import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "../../services/appointment.service"
-import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif } from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
-import { getReferrerByKeyName } from "../../services/referrers.service"
-import * as users from "../../services/user.service"
-import { Server } from "../server"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export default (server: Server) => {
   server.post(
@@ -294,6 +293,7 @@ export default (server: Server) => {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
               logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
+            publicEmail: config.publicEmail,
           },
         })
       }

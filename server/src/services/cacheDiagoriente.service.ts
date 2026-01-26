@@ -1,9 +1,8 @@
 import { ObjectId } from "mongodb"
-import { IDiagorienteClassificationSchema } from "shared"
+import type { IDiagorienteClassificationSchema } from "shared"
 
 import { getDiagorienteRomeClassification } from "@/common/apis/diagoriente/diagoriente.client"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const getRomesFromCacheDiagoriente = async (queries: IDiagorienteClassificationSchema[]): Promise<(string | null)[]> => {
   const filteredQueries = queries.flatMap(({ title, sector }) => ({ title, sector }))
@@ -28,12 +27,12 @@ export const getRomesInfosFromDiagoriente = async (queries: IDiagorienteClassifi
   const apiResponse = (await getDiagorienteRomeClassification(notFoundQueries)) ?? []
   const mappedApiResponse = notFoundQueries
     .map((payload) => {
-      const result = apiResponse.find(({ job_offer_id, code_rome, intitule_rome }) => job_offer_id === payload.id && code_rome !== null && intitule_rome !== null)
-      return result ? { id: payload.id, title: payload.title, sector: payload.sector, intitule_rome: result.intitule_rome, code_rome: result.code_rome } : null
+      const result = apiResponse[payload.id]?.classify_results[0]?.data
+      return result ? { id: payload.id, title: payload.title, sector: payload.sector, intitule_rome: result.titre, code_rome: result.rome } : null
     })
     .filter((x) => x !== null)
 
-  if (apiResponse.length) {
+  if (mappedApiResponse.length) {
     await getDbCollection("cache_diagoriente").insertMany(
       mappedApiResponse.map((result) => ({
         _id: new ObjectId(),

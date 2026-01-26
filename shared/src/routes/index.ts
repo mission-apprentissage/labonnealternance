@@ -1,12 +1,14 @@
-import { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
-import z, { ZodType } from "zod"
+import type { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
+import type { ZodType } from "zod"
+import type z from "zod"
 
 import { zProcessorAdminRoutes } from "./_private/admin/processor.admin.routes.js"
 import { zPrivateGeoRoutes } from "./_private/geo.routes.js"
+import { zPrivateSeoRoutes } from "./_private/seo.routes.js"
 import { zApplicationRoutes } from "./application.routes.js"
 import { zAppointmentsRoute } from "./appointments.routes.js"
 import { zClassificationRoute } from "./classification.routes.js"
-import { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
+import type { IRouteSchema, IRouteSchemaWrite } from "./common.routes.js"
 import { zCoreRoutes } from "./core.routes.js"
 import { zEligibleTrainingsForAppointmentRoutes } from "./eligibleTrainingsForAppointment.routes.js"
 import { zEmailsRoutes } from "./emails.routes.js"
@@ -18,7 +20,6 @@ import { zV1JobsRoutes } from "./jobs.routes.js"
 import { zV1JobsEtFormationsRoutes } from "./jobsEtFormations.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
 import { zMetiersRoutes } from "./metiers.routes.js"
-import { zPartnersRoutes } from "./partners.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reportedCompany.routes.js"
 import { zRomeRoutes } from "./rome.routes.js"
@@ -37,6 +38,7 @@ const zRoutesGetP1 = {
   ...zEtablissementRoutes.get,
   ...zMetiersRoutes.get,
   ...zPrivateGeoRoutes.get,
+  ...zPrivateSeoRoutes.get,
   ...zProcessorAdminRoutes.get,
 } as const
 
@@ -57,7 +59,6 @@ const zRoutesGetP4 = {
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
-  ...zPartnersRoutes.get,
   ...zLoginRoutes.get,
 } as const
 
@@ -92,6 +93,7 @@ const zRoutesPost2 = {
   ...zRecruiterRoutes.post,
   ...zApplicationRoutesV2.post,
   ...zAppointmentsRouteV2.post,
+  ...zClassificationRoute.post,
 }
 
 const zRoutesPost3 = {

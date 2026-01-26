@@ -2,10 +2,10 @@ import { ObjectId } from "bson"
 import proj4 from "proj4"
 import { joinNonNullStrings } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IComputedJobsPartners => {
   const {
@@ -27,8 +27,9 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     createdAt,
   } = recruteursLba
 
+  const now = new Date()
   return {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     partner_job_id: siret,

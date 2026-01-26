@@ -1,5 +1,5 @@
-import { IAdresseCFA, IRecruiter, IUserRecruteur } from "shared"
-import { Jsonify } from "type-fest"
+import type { IAdresseCFA, IRecruiter, IUserRecruteur } from "shared"
+import type { Jsonify } from "type-fest"
 
 export interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
@@ -100,21 +100,6 @@ interface IUaiPotentiel {
   uai: string
   sources: string[]
   date_collecte: Date
-}
-export interface ICFADock {
-  filterNAFCode: string
-  filterNAFType: string
-  filters: IFilters
-  idcc: number | null
-  opcoName: string
-  opcoSiren: string
-  searchStatus: string
-  url: string
-}
-
-interface IFilters {
-  idcc: null
-  siret: string
 }
 
 export interface ISIRET2IDCC {

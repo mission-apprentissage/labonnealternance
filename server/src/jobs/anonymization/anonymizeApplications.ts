@@ -1,6 +1,6 @@
-import { logger } from "../../common/logger"
-import { getDbCollection } from "../../common/utils/mongodbUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const anonymizeApplicationProjection = {
   company_recruitment_intention: 1,
@@ -41,6 +41,10 @@ const anonymize = async () => {
   return res.deletedCount
 }
 
+/**
+ * règle métier : vient en complément de anonymizeApplicantAndApplications
+ * on anonymise les candidatures de plus de 2 ans (et pas seulement celles des candidats n'ayant pas eu de connexion depuis 2 ans)
+ */
 export const anonymizeApplications = async function () {
   try {
     logger.info("[START] Anonymisation des candidatures de plus de deux (2) ans")

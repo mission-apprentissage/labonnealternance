@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
-import { ExtendedRecordMap } from "notion-types"
+import type { ExtendedRecordMap } from "notion-types"
 import { useEffect, useRef, useState } from "react"
 import { assertUnreachable } from "shared"
 
@@ -13,7 +13,7 @@ import { useUrlHash } from "@/app/hooks/useUrlHash"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 
-const NotionRenderer = dynamic(() => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
+const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) => mod.NotionRenderer), { ssr: false })
 
 function clickAndscrollToElement(page: HTMLElement, querySelector: string): boolean {
   const childElement = page.querySelector(querySelector)
@@ -99,10 +99,19 @@ function FAQRendererClientGeneric({
   const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
-    <Box ref={pageRef} mb={fr.spacing("3w")}>
+    <Box
+      ref={pageRef}
+      sx={{
+        mb: fr.spacing("3w"),
+      }}
+    >
       <Breadcrumb pages={[PAGES.static.faq]} />
       <DefaultContainer>
-        <Box mb={fr.spacing("1w")}>
+        <Box
+          sx={{
+            mb: fr.spacing("1w"),
+          }}
+        >
           <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
             Questions fréquement posées
           </Typography>

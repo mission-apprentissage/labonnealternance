@@ -3,26 +3,27 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import { Box, Link, Typography } from "@mui/material"
-import { FormikHelpers } from "formik"
+import type { FormikHelpers } from "formik"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
-import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
-import { searchEntreprise } from "@/services/searchEntreprises"
-import { ApiError } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
-
-import { Bandeau, BandeauProps } from "../../../app/(espace-pro)/_components/Bandeau"
-import { AUTHTYPE } from "../../../common/contants"
-import { LogoContext } from "../../../context/contextLogo"
-import { WidgetContext } from "../../../context/contextWidget"
-import { getEntrepriseInformation, validateCfaCreation } from "../../../utils/api"
-import { InformationsSiret } from "../CreationRecruteur/InformationsSiret"
-import { AnimationContainer } from "../index"
-
+import { AnimationContainer } from ".."
 import { SiretAutocomplete } from "./SiretAutocomplete"
+import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
+import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
+import { AUTHTYPE } from "@/common/contants"
+import { LogoContext } from "@/context/contextLogo"
+import { WidgetContext } from "@/context/contextWidget"
+import { getEntrepriseInformation, validateCfaCreation } from "@/utils/api"
+import { InformationsSiret } from "@/components/espace_pro/CreationRecruteur/InformationsSiret"
+
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { PAGES } from "@/utils/routes.utils"
+import { ApiError } from "@/utils/api.utils"
+import type { searchEntreprise } from "@/services/searchEntreprises"
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
+import { publicConfig } from "@/config.public"
 
 type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
@@ -115,7 +116,7 @@ const CreationCompteForm = ({
                         underline="hover"
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
+                        href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Inscription d'un organisme de formation à distance")}`}
                       >
                         Contactez-nous
                       </Link>{" "}
@@ -193,7 +194,11 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
     <AnimationContainer>
       {bandeau && <Bandeau {...bandeau} />}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: { xs: 0, md: fr.spacing("2w") }, mt: 0 }}>
-        <Box mb={4}>
+        <Box
+          sx={{
+            mb: 4,
+          }}
+        >
           <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
             Vous recrutez des alternants ?
           </Typography>

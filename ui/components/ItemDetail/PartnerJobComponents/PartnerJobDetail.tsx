@@ -3,25 +3,24 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography, Link } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
-import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import type { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
-import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
-import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
+import { DisplayContext } from "@/context/DisplayContextProvider"
+import { SendPlausibleEvent } from "@/utils/plausible"
+import { formatDate } from "@/utils/strutils"
+import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "@/components/ItemDetail/ItemDetailServices/ItemDistanceToCenter"
+import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
+import ItemWebsiteLink from "@/components/ItemDetail/ItemDetailServices/ItemWebsiteLink"
+import { JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { notifyJobDetailViewV3 } from "@/utils/api"
-
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { formatDate } from "../../../utils/strutils"
-import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
-import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
-import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
-import ItemWebsiteLink from "../ItemDetailServices/ItemWebsiteLink"
-import { JobDescription } from "../ItemDetailServices/JobDescription"
-import { ReportJobLink } from "../ReportJobLink"
+import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
+import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
+import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -66,9 +65,11 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
                 <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
               </Box>
             )}
-            <Box>
-              <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-            </Box>
+            {job?.job?.type?.length > 0 ? (
+              <Box>
+                <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
+              </Box>
+            ) : null}
 
             {job?.target_diploma_level && (
               <Box>
@@ -103,7 +104,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
         <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
-        <JobAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} />
+        {job?.job?.offer_desired_skills?.length ? <JobAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} /> : null}
 
         <Box sx={{ mt: fr.spacing("2w") }}>
           <ReportJobLink
@@ -127,8 +128,16 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           />
         </Box>
       </Box>
-
-      <Stack spacing={2} direction="row" alignItems="center" sx={{ my: fr.spacing("3w"), maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{
+          alignItems: "center",
+          my: fr.spacing("3w"),
+          maxWidth: "970px",
+          mx: { xs: 0, md: "auto" },
+        }}
+      >
         <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
         <Box>
           <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
@@ -142,7 +151,6 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           </Box>
         </Box>
       </Stack>
-
       {Boolean(job?.job?.offer_to_be_acquired_skills?.length || job?.job?.offer_access_conditions?.length) && (
         <Box sx={{ pb: 0, position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
           <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>

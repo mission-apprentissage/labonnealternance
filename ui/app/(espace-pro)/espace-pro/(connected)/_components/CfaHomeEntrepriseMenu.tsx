@@ -1,6 +1,7 @@
-import { IRecruiterJson } from "shared"
+import type { IRecruiterJson } from "shared"
 
-import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 
 export const CfaHomeEntrepriseMenu = ({
@@ -15,11 +16,13 @@ export const CfaHomeEntrepriseMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les offres",
+      ariaLabel: `Voir les offres de l'entreprise ${row.establishment_raison_sociale}`,
       link: PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath(),
       type: "link",
     },
     {
       label: "Supprimer l'entreprise",
+      ariaLabel: `Supprimer l'entreprise ${row.establishment_raison_sociale}`,
       onClick: () => {
         confirmationSuppression.onOpen()
         setCurrentEntreprise(row)
@@ -27,5 +30,5 @@ export const CfaHomeEntrepriseMenu = ({
       type: "button",
     },
   ]
-  return <PopoverMenu actions={actions} title={"Actions sur l'entreprise"} />
+  return <PopoverMenu actions={actions} title={`Actions sur l'entreprise ${row.establishment_raison_sociale}`} />
 }

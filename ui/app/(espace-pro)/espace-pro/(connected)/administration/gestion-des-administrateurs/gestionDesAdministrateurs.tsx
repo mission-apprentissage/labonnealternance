@@ -7,10 +7,10 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 
+import { AdminUserForm } from "./_components/AdminUserForm"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
-import { AdminUserForm } from "@/app/(espace-pro)/espace-pro/(connected)/administration/gestion-des-administrateurs/_components/AdminUserForm"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableString } from "@/common/utils/dateUtils"
@@ -62,6 +62,7 @@ export default function GestionDesAdministrateurs() {
       </Box>
 
       <TableWithPagination
+        caption="Liste des administrateurs"
         data={users || []}
         columns={[
           {
@@ -71,7 +72,11 @@ export default function GestionDesAdministrateurs() {
             disableSortBy: true,
             accessor: (row) => {
               return (
-                <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
+                <Button
+                  aria-label={`Ouvrir la page de modification de l'administrateur ${row.email}`}
+                  priority="tertiary no outline"
+                  onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}
+                >
                   <ArrowRightLine sx={{ mr: fr.spacing("1w"), width: 16, height: 16 }} />
                 </Button>
               )
@@ -94,14 +99,15 @@ export default function GestionDesAdministrateurs() {
           {
             Header: "Actif",
             id: "last_connection",
-            accessor: ({ last_action_date: date }) => {
-              return date ? dayjs(date).format("DD/MM/YYYY") : "Jamais"
+            accessor: ({ last_action_date }) => {
+              return dayjs(last_action_date).format("DD/MM/YYYY")
             },
           },
         ]}
         searchPlaceholder="Rechercher par email"
         exportable={null}
         description={null}
+        defaultSortBy={[{ id: "createdAt", desc: true }]}
       />
     </AdminLayout>
   )

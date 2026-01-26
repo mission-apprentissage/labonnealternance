@@ -3,7 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography, List, ListItem } from "@mui/material"
 import { useFormik } from "formik"
 import { useState } from "react"
-import { IAppointmentRecapJson } from "shared"
+import type { IAppointmentRecapJson } from "shared"
 import * as Yup from "yup"
 
 import { FormLayoutComponent } from "@/components/espace_pro/Candidat/layout/FormLayoutComponent"
@@ -77,7 +77,13 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
         <>
           Un candidat souhaite <br />
           être contacté <br />
-          <Typography variant="h2" component="span" color="text.secondary">
+          <Typography
+            variant="h2"
+            component="span"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             par votre centre de formation
           </Typography>
         </>

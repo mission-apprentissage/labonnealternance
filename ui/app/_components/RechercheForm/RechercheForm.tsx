@@ -1,12 +1,13 @@
 "use client"
 
 import { Box } from "@mui/material"
-import { Formik, FormikErrors } from "formik"
+import type { FormikErrors } from "formik"
+import { Formik } from "formik"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
-import { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export enum UserItemTypes {
   EMPLOI = "Emplois",
@@ -53,7 +54,6 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
   return {
     displayEntreprises: displayedItemTypes?.includes(UserItemTypes.EMPLOI),
     displayFormations: displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
-    displayPartenariats: displayedItemTypes?.includes(UserItemTypes.EMPLOI) && displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
     romes: metier?.romes ?? [],
     geo: lieu
       ? {

@@ -1,18 +1,17 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
-import { INewSuperUser } from "shared"
+import type { INewSuperUser } from "shared"
 import { ADMIN, OPCO } from "shared/constants/index"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { IUserStatusEvent, IUserWithAccount, UserEventType } from "shared/models/userWithAccount.model"
+import type { IUserStatusEvent, IUserWithAccount } from "shared/models/userWithAccount.model"
+import { UserEventType } from "shared/models/userWithAccount.model"
 import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
 
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { createAdminUser, createOpcoUser } from "@/services/userRecruteur.service"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
-
 import { checkForJobActivations } from "./formulaire.service"
+import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 
 export const createUser2IfNotExist = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
@@ -50,7 +49,7 @@ export const createUser2IfNotExist = async (
       first_name,
       last_name,
       phone: phone ?? "",
-      last_action_date: last_action_date ?? new Date(),
+      last_action_date,
       origin,
       status,
       createdAt: now,
@@ -86,7 +85,7 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], 
     throw internal(`utilisateur avec id=${id} non trouvé`)
   }
   const recruiters = await getDbCollection("recruiters").find({ managed_by: userOpt._id.toString() }).toArray()
-  await asyncForEach(recruiters, (recruiter) => checkForJobActivations(recruiter))
+  await asyncForEach(recruiters, async (recruiter) => checkForJobActivations(recruiter))
   return newUser
 }
 

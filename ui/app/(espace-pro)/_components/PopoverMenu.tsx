@@ -1,7 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper } from "@mui/material"
-import { Dispatch, useEffect, useRef, useState } from "react"
+import type { Dispatch } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export type PopoverMenuAction = {
   label: string | React.JSX.Element
@@ -21,10 +22,12 @@ export const PopoverMenu = ({
   resetFlagsOnClose?: Dispatch<React.SetStateAction<boolean>>[]
 }) => {
   const [open, setOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
   const anchorRef = useRef<HTMLButtonElement>(null)
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen)
+    setAnchorEl(anchorRef.current)
   }
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
@@ -68,7 +71,7 @@ export const PopoverMenu = ({
         iconId="fr-icon-settings-5-line"
         title={title}
       />
-      <Popper sx={{ zIndex: 1000 }} open={open} anchorEl={anchorRef.current} role={undefined} placement="bottom-start" transition disablePortal>
+      <Popper sx={{ zIndex: 1000 }} open={open} anchorEl={anchorEl} role={undefined} placement="bottom-start" transition disablePortal>
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
@@ -98,7 +101,13 @@ export const PopoverMenu = ({
                             {action.label}
                           </Link>
                         ) : (
-                          <Link underline="none" component="button" onClick={action.onClick} sx={{ width: "100%", textAlign: "left" }}>
+                          <Link
+                            underline="none"
+                            component="button"
+                            aria-label={action.ariaLabel || (action.label as string)}
+                            onClick={action.onClick}
+                            sx={{ width: "100%", textAlign: "left" }}
+                          >
                             {action.label}
                           </Link>
                         )}

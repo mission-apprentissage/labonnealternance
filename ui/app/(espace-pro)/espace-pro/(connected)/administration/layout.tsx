@@ -5,7 +5,12 @@ import { DepotSimplifieStyling } from "@/components/espace_pro/common/components
 
 export default async function Layout({ children }: PropsWithChildren) {
   return (
-    <Box maxWidth={1200} marginX="auto">
+    <Box
+      sx={{
+        maxWidth: 1200,
+        marginX: "auto",
+      }}
+    >
       <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
     </Box>
   )

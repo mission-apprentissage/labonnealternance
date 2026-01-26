@@ -1,10 +1,10 @@
-import { Filter } from "mongodb"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { Filter } from "mongodb"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
-import { isCompanyInBlockedCfaList } from "@/jobs/offrePartenaire/isCompanyInBlockedCfaList"
-
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { isCompanyInBlockedCfaList } from "./isCompanyInBlockedCfaList"
 
 const sourceFields = ["workplace_name"] as const satisfies (keyof IComputedJobsPartners)[]
 
@@ -19,7 +19,7 @@ export const blockJobsPartnersFromCfaList = async ({ addedMatchFilter }: FillCom
   ]
   if (addedMatchFilter) filters.push(addedMatchFilter)
 
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.BLOCK_CFA_NAME,
     sourceFields,
     filledFields,

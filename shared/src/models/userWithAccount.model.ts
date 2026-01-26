@@ -1,10 +1,11 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { ADMIN, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 export enum UserEventType {
   ACTIF = "ACTIF",
@@ -37,7 +38,7 @@ export const ZUserWithAccount = z
     last_name: z.string(),
     email: z.string().email(),
     phone: extensions.phone(),
-    last_action_date: z.date().nullish(),
+    last_action_date: z.date(),
     createdAt: z.date(),
     updatedAt: z.date(),
   })

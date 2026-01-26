@@ -3,10 +3,11 @@ import { z } from "zod"
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { IDiplomaParam } from "../routes/_params.js"
+import type { IDiplomaParam } from "../routes/_params.js"
 
 import { ZPointGeometry } from "./address.model.js"
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 import { JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
 import { zOpcoLabel } from "./opco.model.js"
@@ -22,17 +23,22 @@ export enum JOBPARTNERS_LABEL {
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
   FRANCE_TRAVAIL = "France Travail",
+  FRANCE_TRAVAIL_CEGID = "FranceTravail CEGID",
   RH_ALTERNANCE = "RH Alternance",
   PASS = "PASS",
   MONSTER = "Monster",
   METEOJOB = "Meteojob",
   KELIO = "Kelio",
   LAPOSTE = "La Poste",
+  LEBONCOIN = "Le bon coin emploi",
   ATLAS = "annonces Atlas",
   NOS_TALENTS_NOS_EMPLOIS = "Nos Talents Nos Emplois",
   VITE_UN_EMPLOI = "Vite un emploi",
   TOULOUSE_METROPOLE = "Toulouse metropole",
   JOOBLE = "Jooble",
+  DECATHLON = "Décathlon",
+  ENGAGEMENT_JEUNES = "Engagement Jeunes",
+  JOBTEASER = "Jobteaser",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
@@ -289,6 +295,7 @@ export default {
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
+    [{ partner_job_id: 1 }, {}],
     [{ partner_label: 1 }, {}],
     [{ workplace_siret: 1 }, {}],
     [{ workplace_brand: 1 }, {}],

@@ -1,8 +1,7 @@
 import { zRoutes } from "shared/index"
 
+import type { Server } from "@/http/server"
 import { getNearestCommuneByGeoPoint } from "@/services/referentiel/commune/commune.referentiel.service"
-
-import { Server } from "../../server"
 
 export function geoRouteController(server: Server) {
   server.get(

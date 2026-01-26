@@ -3,19 +3,19 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useContext, useEffect } from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { DisplayContext } from "@/context/DisplayContextProvider"
+import { SendPlausibleEvent } from "@/utils/plausible"
+import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/getCompanyGoogleSearchLink"
+import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/getCompanySize"
+import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
-
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { getCompanyGoogleSearchLink } from "../ItemDetailServices/getCompanyGoogleSearchLink"
-import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
-import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
-import { ReportJobLink } from "../ReportJobLink"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { notifyJobDetailViewV3 } from "@/utils/api"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
   useEffect(() => {
@@ -23,7 +23,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
       partner_label: recruteurLba.ideaType,
       info_fiche: `${recruteurLba?.company?.siret}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
-    /* eslint react-hooks/exhaustive-deps: 0 */
+    notifyJobDetailViewV3(recruteurLba)
   }, [recruteurLba?.company?.siret])
 
   useEffect(() => {
@@ -37,9 +37,15 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Comment fonctionne les candidatures spontanées La bonne alternance ?
+          Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
-        <Stack direction={{ xs: "column", md: "row" }} display="flex" alignItems="center">
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <Typography>
             Nous sélectionnons pour vous des entreprises dont nous jugeons qu’il est possible qu’elles recrutent des alternants.
             <br />
@@ -49,38 +55,63 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             <br />
             <strong>Les candidats envoyant des candidatures spontanées ont plus de chance de trouver un employeur.</strong>
           </Typography>
-          <Box px={fr.spacing("2w")} paddingTop={fr.spacing("2w")} paddingBottom={fr.spacing("1w")}>
+          <Box
+            sx={{
+              px: fr.spacing("2w"),
+              paddingTop: fr.spacing("2w"),
+              paddingBottom: fr.spacing("1w"),
+            }}
+          >
             <Image style={{ minWidth: 194 }} src="/images/lba_recruteur_advice.svg" width={194} height={131} alt="" aria-hidden={true} />
           </Box>
         </Stack>
       </Box>
-
       <Box sx={{ mb: fr.spacing("2w") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
-
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment candidater ?
         </Typography>
 
         <Accordion label="1. Renseignez-vous sur l’entreprise" defaultExpanded>
-          <Box bgcolor="#f6f6f6" mb={2} p={2}>
+          <Box
+            sx={{
+              bgcolor: "#f6f6f6",
+              mb: 2,
+              p: 2,
+            }}
+          >
             <Stack spacing={1}>
               <ItemLocalisation item={recruteurLba} />
               <Typography>
-                <Typography component="span" fontWeight={700}>
+                <Typography
+                  component="span"
+                  sx={{
+                    fontWeight: 700,
+                  }}
+                >
                   Taille de l'entreprise :{" "}
                 </Typography>
                 <Typography component="span">{getCompanySize(recruteurLba)}</Typography>
               </Typography>
               <Typography>
-                <Typography component="span" fontWeight={700}>
+                <Typography
+                  component="span"
+                  sx={{
+                    fontWeight: 700,
+                  }}
+                >
                   Secteur d'activité :{" "}
                 </Typography>
                 <Typography component="span">{(recruteurLba?.nafs as ILbaItemNaf[])?.[0].label}</Typography>
               </Typography>
               {recruteurLba?.contact?.phone && (
                 <Typography>
-                  <Typography component="span" fontWeight={700}>
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontWeight: 700,
+                    }}
+                  >
                     Téléphone :{" "}
                   </Typography>
                   <Typography component="span">
@@ -153,7 +184,14 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             <br />
             Voici un exemple de relance par téléphone :
             <br />
-            <Typography component="span" py={4} fontStyle="italic" color="#6A6A6A">
+            <Typography
+              component="span"
+              sx={{
+                py: 4,
+                fontStyle: "italic",
+                color: "#6A6A6A",
+              }}
+            >
               "Bonjour,
               <br />
               Je suis [Prénom Nom]. Je vous appelle car je vous ai envoyé ma candidature par mail le [jour/mois] pour un poste d'apprenti [intitulé du poste visé]. N'ayant pas reçu
@@ -186,7 +224,15 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             linkLabelReported="Entreprise signalée"
             tooltip={
               <Box sx={{ p: 1 }}>
-                <Typography fontSize="16px" lineHeight="24px" fontWeight="700" marginBottom="8px" color="#161616">
+                <Typography
+                  sx={{
+                    fontSize: "16px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginBottom: "8px",
+                    color: "#161616",
+                  }}
+                >
                   Cette entreprise vous semble peu recommandable ? Voici les raisons pour lesquelles vous pouvez nous signaler une entreprise :
                 </Typography>
                 <ul>

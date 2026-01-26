@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import React from "react"
 
-import WidgetLayout from "../../../../app/_components/Layout"
+import WidgetLayout from "@/app/_components/Layout"
 
 export const DepotSimplifieLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -57,9 +57,12 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
         whiteSpace: "normal !important",
         wordWrap: "break-word",
         overflowWrap: "break-word",
+        background: "#F6F6F6",
+        backgroundImage: "none !important",
+        borderBottom: "1px solid #3c3c3c",
       },
-      "& .fr-table": {
-        "--table-offset": "unset",
+      "& .fr-table__wrapper": {
+        "--table-offset": "unset !important",
       },
     }}
   >

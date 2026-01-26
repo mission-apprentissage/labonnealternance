@@ -8,7 +8,8 @@ import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
-import { Message, sendMistralMessages } from "@/services/mistralai/mistralai.service"
+import type { Message } from "@/services/mistralai/mistralai.service"
+import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
 
 type RomeDocumentRaw = {
   rome: {
@@ -132,6 +133,28 @@ export const classifyRomesForDomainesMetiersAnalyze = async () => {
   await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.valid.json", JSON.stringify(validInverted, null, 2))
   const invalidInverted = Object.fromEntries(Object.entries(invertedMappings).filter(([domain]) => !validDomains.includes(domain)))
   await fs.writeFile("./classifyRomesForDomainesMetiers.inverted.invalid.json", JSON.stringify(invalidInverted, null, 2))
+}
+
+export async function findDomainesMetiersIncoherents() {
+  const domainesmetiers = await getDbCollection("domainesmetiers")
+    .find(
+      {
+        $expr: {
+          $ne: [{ $size: "$codes_romes" }, { $size: "$intitules_romes" }],
+        },
+      },
+      {
+        projection: {
+          domaine: 1,
+          sous_domaine: 1,
+          codes_romes: 1,
+          intitules_romes: 1,
+        },
+      }
+    )
+    .toArray()
+  console.info(domainesmetiers.length, "domaines incohérents trouvés")
+  await fs.writeFile("./domainesmetiers.incoherents.json", JSON.stringify(domainesmetiers, null, 2))
 }
 
 const classifyRomeDocuments = async (romeDocuments: LLMInputDocument[], sousDomaines: string[]) => {
@@ -281,7 +304,7 @@ const doesFileExist = async (filename: string): Promise<boolean> => {
   try {
     const stat = await fs.stat(filename)
     return stat.isFile()
-  } catch (err) {
+  } catch (_) {
     return false
   }
 }

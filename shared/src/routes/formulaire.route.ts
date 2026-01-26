@@ -5,7 +5,7 @@ import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const zFormulaireRoute = {
   get: {
@@ -81,6 +81,7 @@ export const zFormulaireRoute = {
           last_name: z.string(),
           first_name: z.string(),
           phone: z.string(),
+          isDeclarationExact: z.boolean().optional(),
         })
         .strict(),
       response: {
@@ -98,7 +99,9 @@ export const zFormulaireRoute = {
       method: "post",
       path: "/formulaire/:establishment_id/informations",
       params: z.object({ establishment_id: z.string() }).strict(),
-      body: ZUserWithAccountFields.partial(),
+      body: ZUserWithAccountFields.partial().extend({
+        isDeclarationExact: z.boolean().optional(),
+      }),
       response: {
         "200": z.object({ ok: z.boolean() }).strict(),
       },

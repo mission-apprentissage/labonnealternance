@@ -6,11 +6,19 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { Warning } from "@/theme/components/icons"
+import { publicConfig } from "@/config.public"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
   return (
-    <Box pb={props.pb ?? 3} sx={props.sx ? { ...props.sx } : {}}>
+    <Box
+      sx={[
+        {
+          pb: props.pb ?? 3,
+        },
+        props.sx ? { ...props.sx } : {},
+      ]}
+    >
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
         {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
         {props.info && (
@@ -23,12 +31,16 @@ const CustomInput = (props) => {
         {meta.error &&
           meta.touched &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
-            <Box ml={1}>
+            <Box
+              sx={{
+                ml: 1,
+              }}
+            >
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Warning sx={{ mr: fr.spacing("1w") }} />
                 <Typography sx={{ color: fr.colors.decisions.text.actionHigh.redMarianne.default }}>Les informations de votre entreprise sont non diffusibles.</Typography>
               </Box>
-              <DsfrLink href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles" external={true}>
+              <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles`} external={true}>
                 Contacter le support pour en savoir plus
               </DsfrLink>
             </Box>

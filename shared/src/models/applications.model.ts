@@ -1,5 +1,5 @@
 import { ObjectId } from "bson"
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
@@ -9,7 +9,8 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { zCallerParam } from "../routes/_params.js"
 import { validateSIRET } from "../validators/siretValidator.js"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 const collectionName = "applications" as const
 
@@ -74,8 +75,7 @@ const ZApplicationOld = z
       .describe(
         `Le titre de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `
       ),
-    job_id: z
-      .string()
+    job_id: zObjectId
       .nullish()
       .describe(
         `L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA} . La valeur est fournie par La bonne alternance. `
@@ -149,6 +149,7 @@ export const ZNewApplication = ZApplicationOld.extend({
   .openapi("ApplicationUi")
 
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
   message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,
@@ -198,7 +199,7 @@ const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
 // KBA 20241011 to remove once V2 is LIVE and V1 support has ended
 export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
 
-export const ZJobCollectionName = z.enum(["partners", "recruiters", "recruteur"])
+export const ZJobCollectionName = z.enum(["partners", "recruiters"])
 export const JobCollectionName = ZJobCollectionName.enum
 export type IJobCollectionName = z.output<typeof ZJobCollectionName>
 

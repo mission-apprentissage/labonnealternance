@@ -1,4 +1,4 @@
-import { Jsonify } from "type-fest"
+import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur.js"

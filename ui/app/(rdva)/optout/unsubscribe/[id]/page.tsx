@@ -4,11 +4,10 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Container, Typography, Box, Stack, TextareaAutosize, Radio, RadioGroup, FormControlLabel, FormControl } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { IEtablissementJson } from "shared"
+import type { IEtablissementJson } from "shared"
 
+import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
-
-import { SuccessCircle } from "../../../../../theme/components/icons"
 
 type IEtablissementPartial = Pick<
   IEtablissementJson,
@@ -64,7 +63,11 @@ export default function OptOutUnsubscribe() {
 
     window.scrollTo(0, 0)
 
-    opt_out_question ? setIsQuestionSent(true) : setHasBeenUnsubscribed(true)
+    if (opt_out_question) {
+      setIsQuestionSent(true)
+    } else {
+      setHasBeenUnsubscribed(true)
+    }
   }
 
   useEffect(() => {
@@ -118,13 +121,23 @@ export default function OptOutUnsubscribe() {
         <>
           <FormControl>
             <RadioGroup onChange={(e) => setRadioValue(e.target.value)} value={radioValue}>
-              <Stack gap={fr.spacing("2w")}>
+              <Stack
+                sx={{
+                  gap: fr.spacing("2w"),
+                }}
+              >
                 <FormControlLabel
                   label="Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :"
                   control={<Radio />}
                   value={radioOptions.UNSUBSCRIBE_NO_DETAILS}
                 />
-                <Stack gap={fr.spacing("1w")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("3w") }}>
+                <Stack
+                  sx={{
+                    gap: fr.spacing("1w"),
+                    backgroundColor: "#E5E5E5",
+                    p: fr.spacing("3w"),
+                  }}
+                >
                   <Typography>
                     Raison sociale : <strong>{etablissement.raison_sociale}</strong>
                   </Typography>

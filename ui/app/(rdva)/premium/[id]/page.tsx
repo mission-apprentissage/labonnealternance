@@ -5,11 +5,11 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Typography, Box, Container, Stack } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
-import { IEtablissementJson } from "shared"
+import type { IEtablissementJson } from "shared"
 
+import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
-
-import { SuccessCircle } from "../../../../theme/components/icons"
+import { publicConfig } from "@/config.public"
 
 type IPremiumEtablissement = {
   raison_sociale: string
@@ -102,8 +102,8 @@ export default function PremiumParcoursup() {
             <Typography sx={{ fontWeight: 700 }}>
               Votre choix a bien été pris en compte Le service RDV Apprentissage ne sera pas activé pour vos formations. <br /> Si vous changez d'avis, merci de nous contacter à
               l'adresse suivante:{" "}
-              <a style={{ textDecoration: "underline" }} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Formulaire%20premium%20-%20Activer%20RDVA">
-                labonnealternance@apprentissage.beta.gouv.fr
+              <a style={{ textDecoration: "underline" }} href={`mailto:${publicConfig.publicEmail}?subject=Formulaire%20premium%20-%20Activer%20RDVA`}>
+                {publicConfig.publicEmail}
               </a>
             </Typography>
           </Box>
@@ -122,15 +122,32 @@ export default function PremiumParcoursup() {
           <>
             <Typography>En activant le service RDV Apprentissage, je m'engage auprès de Parcoursup à :</Typography>
 
-            <Stack sx={{ mt: fr.spacing("2w") }} gap={fr.spacing("1w")}>
+            <Stack
+              sx={{
+                gap: fr.spacing("1w"),
+                mt: fr.spacing("2w"),
+              }}
+            >
               <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
                 <SuccessCircle fillHexaColor="#00AC8C" />
-                <Typography fontWeight="700">Répondre par email ou téléphone à tous les candidats qui me contacteront</Typography>
+                <Typography
+                  sx={{
+                    fontWeight: "700",
+                  }}
+                >
+                  Répondre par email ou téléphone à tous les candidats qui me contacteront
+                </Typography>
               </Box>
 
               <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
                 <SuccessCircle fillHexaColor="#00AC8C" />
-                <Typography fontWeight="700">Dans un délai de 4 jours ouvrés après réception de la demande par e-mail</Typography>
+                <Typography
+                  sx={{
+                    fontWeight: "700",
+                  }}
+                >
+                  Dans un délai de 4 jours ouvrés après réception de la demande par e-mail
+                </Typography>
               </Box>
             </Stack>
 

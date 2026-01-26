@@ -3,10 +3,9 @@ import fs from "node:fs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { importLaposteRaw, importLaposteToComputed } from "./importLaposte"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { importLaposteRaw, importLaposteToComputed } from "./importLaposte"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
@@ -20,7 +19,7 @@ describe("importLaposte", () => {
     return async () => {
       vi.useRealTimers()
       await getDbCollection("computed_jobs_partners").deleteMany({})
-      await getDbCollection("raw_hellowork").deleteMany({})
+      await getDbCollection("raw_laposte").deleteMany({})
     }
   })
 

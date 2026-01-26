@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import dayjs from "shared/helpers/dayjs"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -145,6 +145,7 @@ export const sendMiseEnRelation = async () => {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
               logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
             },
+            publicEmail: config.publicEmail,
           },
         })
         counters.successSent++

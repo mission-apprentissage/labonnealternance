@@ -1,11 +1,12 @@
 import { ObjectId } from "mongodb"
-import { AccessEntityType, IEntreprise, IRoleManagement, IUserWithAccount } from "shared"
+import type { IEntreprise, IRoleManagement, IUserWithAccount } from "shared"
+import { AccessEntityType } from "shared"
 
+import mailer from "./mailer.service"
+import { getEntrepriseHandiEngagement } from "./referentielEngagementEntreprise.service"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import mailer from "@/services/mailer.service"
-import { getEntrepriseHandiEngagement } from "@/services/referentielEngagementEntreprise.service"
 
 export async function sendEngagementHandicapEmailIfNeeded(user: IUserWithAccount, role: IRoleManagement): Promise<void> {
   if (role.authorized_type !== AccessEntityType.ENTREPRISE) return
@@ -65,6 +66,7 @@ async function sendEngagementHandicapEmail(user: IUserWithAccount, entreprise: I
         handiMatch: `${config.publicUrl}/images/emails/handimatch.png?raw=true`,
         franceTravail: `${config.publicUrl}/images/logosPartenaires/minimal/france-travail.svg?raw=true`,
       },
+      publicEmail: config.publicEmail,
     },
   })
   return messageId

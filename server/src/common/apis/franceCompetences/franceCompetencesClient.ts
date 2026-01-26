@@ -3,32 +3,20 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { z } from "shared/helpers/zodWithOpenApi"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
-import { sentryCaptureException } from "../../utils/sentryUtils"
-
-const { baseUrl, apiKey, bearerToken } = config.franceCompetences
-
-// exemple de réponse
-// {
-// 	"code": "01",
-// 	"siret": "XXXXXXXXXX",
-// 	"opcoRattachement": {
-// 		"code": "06",
-// 		"nom": "OPCO"
-// 	},
-// 	"opcoGestion": {
-// 		"code": "06",
-// 		"nom": "OPCO"
-// 	}
-// }
+const { baseUrl, apiKey } = config.franceCompetences
 
 const ZOpcoResponse = z.union([
   z.object({
     code: z.literal("99").describe("correspond à un siret non trouvé"),
+    siret: z.string(),
   }),
   z.object({
     code: z.enum(["01", "02"]).describe("01: siret trouvé. 02: siret non trouvé mais préempté par un OPCO via l'application des déclarations"),
+    siret: z.string(),
+    idcc: z.string(),
     opcoRattachement: z.object({
       code: z.string(),
       nom: z.string(),
@@ -61,9 +49,8 @@ export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS_LABEL => {
 
 export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null> => {
   try {
-    const response = await axios.get(`${baseUrl}/siropartfc/${encodeURIComponent(siret)}`, {
+    const response = await axios.get(`${baseUrl}/siro/v1/public/${encodeURIComponent(siret)}`, {
       headers: {
-        Authorization: `Bearer ${bearerToken}`,
         "X-Gravitee-Api-Key": apiKey,
       },
     })

@@ -1,13 +1,12 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import dayjs from "shared/helpers/dayjs"
+import { logger } from "@/common/logger"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
+import mailer from "@/services/mailer.service"
 import { createRdvaPremiumParcoursupPageLink } from "@/services/appLinks.service"
-
-import { logger } from "../../common/logger"
-import { isValidEmail } from "../../common/utils/isValidEmail"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import mailer from "../../services/mailer.service"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 interface IEtablissementsToInviteToPremium {
   _id: {
@@ -17,6 +16,10 @@ interface IEtablissementsToInviteToPremium {
   gestionnaire_email: string
   optout_activation_scheduled_date: string
   count: number
+}
+
+export const inviteEtablissementParcoursupToPremiumFollowUpCli = async () => {
+  await inviteEtablissementParcoursupToPremiumFollowUp(true)
 }
 
 export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate: boolean = false) => {
@@ -72,20 +75,26 @@ export const inviteEtablissementParcoursupToPremiumFollowUp = async (bypassDate:
     // Invite all etablissements only in production environment
     const emailEtablissement = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
+      subject: `Rappel: Trouvez et recrutez vos candidats sur Parcoursup`,
       template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
       data: {
         isParcoursup: true,
         images: {
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-          integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.webp?raw=true`,
+          logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+          optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
+          logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
         },
         etablissement: {
-          email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM/YYYY"),
+          name: hasOneAvailableFormation.etablissement_formateur_raison_sociale,
+          formateur_address: hasOneAvailableFormation.etablissement_formateur_street,
+          formateur_zip_code: hasOneAvailableFormation.etablissement_formateur_zip_code,
+          formateur_city: hasOneAvailableFormation.etablissement_formateur_city,
+          siret: hasOneAvailableFormation.etablissement_formateur_siret,
           linkToForm: createRdvaPremiumParcoursupPageLink(etablissement.gestionnaire_email, etablissement._id.gestionnaire_siret, etablissement.id.toString()),
         },
+        publicEmail: config.publicEmail,
+        utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-parcoursup-followup",
       },
     })
 

@@ -2,19 +2,21 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Alert, Box, CircularProgress, Typography } from "@mui/material"
+import { Alert, Box, Checkbox, CircularProgress, FormControlLabel, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
-import { INewSuperUser, IUserStatusValidationJson } from "shared"
-import { AUTHTYPE, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
+import type { INewSuperUser, IUserStatusValidationJson } from "shared"
+import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
+import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
 
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
+import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
+import { OffresTabs } from "./OffresTabs"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
-import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
-import { OffresTabs } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabs"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
@@ -26,7 +28,7 @@ import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-type Variables = { userId: string; values: INewSuperUser; siret: string }
+type Variables = { userId: string; values: INewSuperUser; siret: string; setFieldError: (field: string, message: string) => void }
 
 export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter?: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
   const router = useRouter()
@@ -35,6 +37,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
 
   const toast = useToast()
   const { user } = useConnectedSessionClient()
+  const isDeclarationExactField = user.type === AUTHTYPE.CFA ? { isDeclarationExact: true } : {}
+  const isDeclarationExactValidation = user.type === AUTHTYPE.CFA ? { isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations") } : {}
 
   const ActivateUserButton = ({ userId }: { userId: string }) => {
     const { activate } = useUserPermissionsActions(userId)
@@ -93,22 +97,30 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const userMutation = useMutation({
-    mutationFn: async (variables: Variables) => {
-      const { userId, values, siret } = variables
+    mutationFn: async (props: Variables) => {
+      const { userId, values, siret, setFieldError } = props
       const { type, ...value } = values
 
-      if (user.type === AUTHTYPE.CFA) {
-        const { email, first_name, last_name, phone } = values
-        await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
-      } else {
-        await updateEntrepriseAdmin(userId, value, siret)
+      try {
+        if (user.type === AUTHTYPE.CFA) {
+          const { email, first_name, last_name, phone } = values
+          await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
+        } else {
+          await updateEntrepriseAdmin(userId, value, siret)
+        }
+        onChange?.({ opco: "opco" in values ? values.opco : undefined })
+        toast({
+          title: "Mise à jour enregistrée avec succès",
+        })
+      } catch (err: any) {
+        if (err.message === EntrepriseErrorCodes.PHONE_SAME_AS_CFA) {
+          setFieldError("phone", err.message)
+        } else if (err.message === EntrepriseErrorCodes.EMAIL_SAME_AS_CFA) {
+          setFieldError("email", err.message)
+        } else {
+          throw err
+        }
       }
-      onChange?.({ opco: "opco" in values ? values.opco : undefined })
-    },
-    onSuccess: () => {
-      toast({
-        title: "Mise à jour enregistrée avec succès",
-      })
     },
   })
 
@@ -118,7 +130,6 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
-
       <Box sx={{ px: fr.spacing("2w"), borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
         {user.type !== "CFA" && (
           <>
@@ -156,6 +167,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             email: userRecruteur.email,
             opco: userRecruteur.opco,
             type: userRecruteur.type,
+            ...isDeclarationExactField,
           }}
           validationSchema={Yup.object().shape({
             last_name: Yup.string().required("champ obligatoire"),
@@ -167,13 +179,13 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
               .required("champ obligatoire"),
             email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
             type: Yup.string().default(userRecruteur.type),
-            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
+            opco: Yup.string().when("type", { is: (v: unknown) => v === AUTHTYPE.ENTREPRISE, then: (schema) => schema.min(1, "champ obligatoire").required("champ obligatoire") }),
+            ...isDeclarationExactValidation,
           })}
-          onSubmit={async (values, { setSubmitting }) => {
+          onSubmit={async (values, { setFieldError, setSubmitting }) => {
             setSubmitting(true)
             // For companies we update the User Collection and the Formulaire collection at the same time
-            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret })
-
+            userMutation.mutate({ userId: userRecruteur._id, values, siret: userRecruteur.establishment_siret, setFieldError })
             setSubmitting(false)
           }}
         >
@@ -201,7 +213,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     <Typography component="h2" sx={{ fontSize: "20px", fontWeight: "700" }}>
                       Informations de contact
                     </Typography>
-                    <Box mt={4}>
+                    <Box
+                      sx={{
+                        mt: 4,
+                      }}
+                    >
                       <Form>
                         <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
                         <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
@@ -218,6 +234,31 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                               confirmationModificationOpco.onOpen()
                             }}
                           />
+                        )}
+                        {user.type === AUTHTYPE.CFA && (
+                          <>
+                            <Typography sx={{ color: "#0063CB" }}>
+                              <strong>Important :</strong> Ces informations restent confidentielles et ne sont pas visibles par les candidats. Elles sont uniquement utilisées par
+                              nos équipes à des fins de contrôles.
+                            </Typography>
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  onChange={(event) => {
+                                    setFieldValue("isDeclarationExact", event.target.checked)
+                                  }}
+                                  checked={values.isDeclarationExact}
+                                />
+                              }
+                              label={
+                                <Typography>
+                                  Je certifie que les informations relatives à l’entreprise partenaire sont exactes et vérifiables, et j’accepte que ces données puissent faire
+                                  l’objet de contrôles par La bonne alternance.
+                                </Typography>
+                              }
+                              sx={{ mt: fr.spacing("3w") }}
+                            />
+                          </>
                         )}
                         {userMutation.error && (
                           <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
@@ -240,7 +281,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                   <Box>
                     <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
                     {user.type !== "CFA" && (
-                      <Box my={4}>
+                      <Box
+                        sx={{
+                          my: 4,
+                        }}
+                      >
                         <FieldWithValue title="Origine" value={userRecruteur.origin} />
                       </Box>
                     )}
@@ -249,9 +294,13 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                   <>
                     <hr style={{ marginTop: 24 }} />
-                    <Box my={6}>
-                      <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
+                    <Box
+                      sx={{
+                        my: 6,
+                      }}
+                    >
                       <OffresTabs
+                        caption="Offres de recrutement en alternance"
                         recruiter={recruiter}
                         buildOfferEditionUrl={(offerId) => {
                           return PAGES.dynamic
@@ -266,7 +315,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         }}
                       />
                     </Box>
-                    <Box mb={12}>
+                    <Box
+                      sx={{
+                        mb: 12,
+                      }}
+                    >
                       <UserValidationHistory histories={userRecruteur.status} />
                     </Box>
                   </>

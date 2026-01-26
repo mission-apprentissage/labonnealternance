@@ -3,15 +3,8 @@ import { z } from "zod"
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
-import {
-  IJobsPartnersOfferApi,
-  IJobsPartnersRecruiterApi,
-  JOBPARTNERS_LABEL,
-  ZJobsPartnersOfferApi,
-  ZJobsPartnersOfferPrivate,
-  ZJobsPartnersRecruiterApi,
-  zDiplomaEuropeanLevel,
-} from "../../../models/jobsPartners.model.js"
+import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi } from "../../../models/jobsPartners.model.js"
+import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobsPartners.model.js"
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
@@ -258,7 +251,7 @@ function convertToJobWorkplaceReadV3(input: IJobsPartnersOfferApi | IJobsPartner
     brand: input.is_delegated ? null : input.workplace_brand,
     legal_name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name) || null,
     website: input.workplace_website,
-    name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name || input.workplace_brand) || null,
+    name: (input.is_delegated ? input.cfa_legal_name : input.workplace_legal_name || input.workplace_brand || input.workplace_name) || null,
     description: input.workplace_description,
     size: input.workplace_size,
     location: {

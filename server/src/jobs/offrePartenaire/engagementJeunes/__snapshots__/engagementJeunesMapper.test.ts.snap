@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`engagementJeunesJobToJobsPartners > should convert a job 1`] = `
+{
+  "apply_phone": null,
+  "apply_url": "https://www.engagement-jeunes.com/fr/detail-offre/34161720/contrat-d-apprentissage-veolia-agent-de-tri-en-alternance-f-h.html",
+  "business_error": null,
+  "contract_duration": 12,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_start": null,
+  "contract_type": [
+    "Apprentissage",
+  ],
+  "created_at": 2024-07-21T02:49:06.000Z,
+  "errors": [],
+  "jobs_in_success": [],
+  "offer_access_conditions": [],
+  "offer_creation": 2025-12-10T00:00:00.000Z,
+  "offer_description": "<b>Mission :</b><br />L'Activité Recyclage et Valorisation des Déchets de VEOLIA recherche un AGENT DE TRI EN ALTERNANCE pour son centre de tri automatisé de collectes sélectives des ménages (55 000 t/An) .
+
+Sous la responsabilité du conducteur de ligne, l'agent de tri en alternance assure les missions suivantes :
+
+	* il effectue les opérations de tri de la collecte sélective selon les consignes d'exploitation de la ligne de tri et les prescriptions techniques minimales, en veillant à la qualité du tri et à la productivité de la ligne
+	* il assure le nettoyage de son poste de travail et des installations de tri
+	* il fait part au conducteur de ligne de toutes les informations concernant l'exploitation, la sécurité et, de manière générale, tout événement particulier
+	* il informe son supérieur hiérarchique de toute anomalie détectée sur site
+	* il participe au nettoyage des machines
+
+<br /><br /><b>Profil :</b><br />Vous préparez un CAP d'agent de propreté.
+
+Vous êtes sérieux et rigoureux. Vous avez le sens des responsabilités et du travail en équipe.
+
+Vous savez faire preuve d'adaptabilité et d'autonomie.
+",
+  "offer_desired_skills": [],
+  "offer_expiration": 2026-02-10T00:00:00.000Z,
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": null,
+  "offer_rome_codes": null,
+  "offer_status": "Active",
+  "offer_target_diploma": {
+    "european": "3",
+    "label": "Cap, autres formations (Infrabac)",
+  },
+  "offer_title": "Agent de tri en alternance (F/H)",
+  "offer_to_be_acquired_knowledge": [],
+  "offer_to_be_acquired_skills": [],
+  "partner_job_id": "34161720",
+  "partner_label": "Engagement Jeunes",
+  "updated_at": 2024-07-21T02:49:06.000Z,
+  "validated": false,
+  "workplace_address_city": "Bègles",
+  "workplace_address_label": "33130 Bègles",
+  "workplace_address_street_label": null,
+  "workplace_address_zipcode": "33130",
+  "workplace_brand": null,
+  "workplace_description": "Le groupe Veolia est la référence mondiale de la gestion optimisée des ressources. Présent sur les 5 continents avec 220 000 salariés, le Groupe conçoit et déploie des solutions utiles et concrètes pour la gestion de l'eau, des déchets et de l'énergie.  L'économie des   ressources est un enjeu majeur des prochaines années.  La gestion des déchets, aujourd’hui, c'est   46 millions d'habitants desservis, 61 millions de tonnes de déchets traités, 533 759 entreprises clientes, 823 unités de traitement exploitées. Notre expertise dans la  gestion des déchets nous permet de collecter, trier, traiter et valoriser chaque année des   millions   de tonnes de déchets ménagers et industriels. Nous développons des filières de valorisation qui permettent de réintroduire ces déchets dans de nouveaux cycles de consommation ou de production devenant ainsi de nouvelles ressources.
+",
+  "workplace_geopoint": null,
+  "workplace_idcc": null,
+  "workplace_legal_name": null,
+  "workplace_naf_code": null,
+  "workplace_naf_label": null,
+  "workplace_name": "Veolia",
+  "workplace_opco": null,
+  "workplace_siret": null,
+  "workplace_size": null,
+  "workplace_website": null,
+}
+`;

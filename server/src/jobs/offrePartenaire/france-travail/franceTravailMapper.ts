@@ -1,24 +1,20 @@
 import { ObjectId } from "bson"
-import { IFTJobRaw } from "shared"
+import type { IFTJobRaw } from "shared"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
   const now = new Date()
-  const jobType = job._metadata?.openai?.type || ""
-  const expirationDate = dayjs.tz(job.dateCreation).add(2, "months").toDate()
+  const expirationDate = dayjs(job.dateCreation).tz().add(2, "months").toDate()
   let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
 
   if (expirationDate <= now) {
     businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
-  }
-
-  if (["cfa", "entreprise_cfa"].includes(jobType)) {
-    businessError = JOB_PARTNER_BUSINESS_ERROR.CFA
   }
 
   const workplace_address_label = getAddressLabel(job.lieuTravail)
@@ -27,10 +23,8 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
   }
 
   return {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at: now,
-    updated_at: now,
     partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
     partner_job_id: job.id,
     contract_start: null,

@@ -1,11 +1,11 @@
-import { ReadonlyURLSearchParams } from "next/navigation"
+import type { ReadonlyURLSearchParams } from "next/navigation"
 import { typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
 import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
 
-import { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { PAGES } from "@/utils/routes.utils"
 
 const zIdeaType = z.nativeEnum(LBA_ITEM_TYPE_OLD)
@@ -33,7 +33,7 @@ function deserializeItemReference(item: string): ItemReference | null {
   try {
     const [ideaType, ...rest] = item.split(":")
     return { ideaType: newItemTypeToOldItemType(zIdeaType.parse(ideaType)), id: rest.join(",") }
-  } catch (e) {
+  } catch (_e) {
     return null
   }
 }
@@ -58,6 +58,7 @@ export enum RechercheViewType {
   FORMATION = "FORMATION",
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const zRecherchePageParams = z.object({
   romes: z.array(z.string()),
   geo: z
@@ -74,7 +75,6 @@ const zRecherchePageParams = z.object({
   displayMap: z.boolean().optional(),
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
-  displayPartenariats: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
   displayMobileForm: z.boolean().optional(),
   elligibleHandicapFilter: z.boolean().optional(),
@@ -87,6 +87,7 @@ const zRecherchePageParams = z.object({
     .optional(),
   opco: z.string().nullish(),
   rncp: z.string().nullish(),
+  scrollToRecruteursLba: z.boolean().nullish(),
 })
 
 export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams>> & { viewType?: RechercheViewType }
@@ -150,9 +151,6 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
     if (rechercheParams.displayFormations === false) {
       query.set("displayFormations", "false")
     }
-    if (rechercheParams.displayPartenariats === false) {
-      query.set("displayPartenariats", "false")
-    }
     if (rechercheParams.displayFilters === false) {
       query.set("displayFilters", "false")
     }
@@ -163,6 +161,9 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   }
   if (rechercheParams.elligibleHandicapFilter === true) {
     query.set("elligibleHandicapFilter", "true")
+  }
+  if (rechercheParams.scrollToRecruteursLba) {
+    query.set("scrollToRecruteursLba", "true")
   }
 
   return query.toString()
@@ -213,6 +214,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const displayMobileForm = search.get("displayMobileForm") === "true"
   const elligibleHandicapFilter = search.get("elligibleHandicapFilter") === "true"
+  const scrollToRecruteursLba = search.get("scrollToRecruteursLba") === "true"
 
   const commonProps = {
     romes,
@@ -227,14 +229,14 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     opco,
     rncp,
     radius,
-  }
+    scrollToRecruteursLba,
+  } satisfies Partial<IRecherchePageParams>
 
   if (mode === IRechercheMode.FORMATIONS_ONLY) {
     return {
       ...commonProps,
       displayEntreprises: false,
       displayFormations: true,
-      displayPartenariats: false,
       displayFilters: false,
     }
   }
@@ -244,35 +246,32 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
       ...commonProps,
       displayEntreprises: true,
       displayFormations: false,
-      displayPartenariats: false,
       displayFilters: false,
     }
   }
 
   const displayEntreprises = search.get("displayEntreprises") !== "false"
   const displayFormations = search.get("displayFormations") !== "false"
-  const displayPartenariats = search.get("displayPartenariats") !== "false"
   const displayFilters = search.get("displayFilters") !== "false"
 
   return {
     ...commonProps,
     displayEntreprises,
     displayFormations,
-    displayPartenariats,
     displayFilters,
   }
 }
 
-export function detectModeFromParams({ displayFilters, displayEntreprises, displayPartenariats, displayFormations }: IRecherchePageParams): IRechercheMode {
+export function detectModeFromParams({ displayFilters, displayEntreprises, displayFormations }: IRecherchePageParams): IRechercheMode {
   if (displayFilters) {
     return IRechercheMode.DEFAULT
   }
 
-  if (!displayEntreprises && !displayPartenariats && displayFormations) {
+  if (!displayEntreprises && displayFormations) {
     return IRechercheMode.FORMATIONS_ONLY
   }
 
-  if (displayEntreprises && displayPartenariats && !displayFormations) {
+  if (displayEntreprises && !displayFormations) {
     return IRechercheMode.JOBS_ONLY
   }
 

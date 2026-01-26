@@ -5,13 +5,13 @@ import { generateUserFixture } from "shared/fixtures/user.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { BrevoEventStatus } from "./brevo.service"
+import type { IBrevoWebhookEvent } from "./emails.service"
+import { processHardBounceWebhookEvent } from "./emails.service"
+import { BlackListOrigins } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
-import { BlackListOrigins } from "@/services/application.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { BrevoEventStatus } from "./brevo.service"
-import { IBrevoWebhookEvent, processHardBounceWebhookEvent } from "./emails.service"
 
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})
@@ -59,7 +59,7 @@ describe("email blaklist events", () => {
 
   it("Non 'blocked' event shoud throw an error", async () => {
     baseWebHookPayload.event = BrevoEventStatus.DELIVRE
-    await expect.soft(processHardBounceWebhookEvent(baseWebHookPayload)).rejects.toThrow("Non hardbounce event received on hardbounce webhook route")
+    expect.soft(await processHardBounceWebhookEvent(baseWebHookPayload)).toEqual(false)
   })
 
   it("Unidentified hardbounce should register campaign origin", async () => {

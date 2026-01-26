@@ -1,11 +1,12 @@
 import http from "http"
 import https from "https"
 
-import axios, { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
-import { FastifyRequest } from "fastify"
-import { ITrackingCookies } from "shared/models/index"
+import type { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
+import axios from "axios"
+import type { FastifyRequest } from "fastify"
+import type { ITrackingCookies } from "shared/models/index"
 
-import { logger } from "../logger"
+import { logger } from "@/common/logger"
 
 // https://github.com/axios/axios/issues/3845#issuecomment-1040819908
 class BufferedHttpAgent extends http.Agent {
@@ -18,7 +19,6 @@ class BufferedHttpAgent extends http.Agent {
   }
 
   createConnection(options, callback) {
-    // @ts-expect-error
     return super.createConnection({ ...options, highWaterMark: this.highWaterMark }, callback)
   }
 }
@@ -32,7 +32,6 @@ class BufferedHttpsAgent extends https.Agent {
   }
 
   createConnection(options, callback) {
-    // @ts-expect-error
     return super.createConnection({ ...options, highWaterMark: this.highWaterMark }, callback)
   }
 }

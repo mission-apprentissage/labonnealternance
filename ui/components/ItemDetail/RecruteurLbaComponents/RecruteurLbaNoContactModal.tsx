@@ -2,10 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { useToast } from "@/app/hooks/useToast"
-import { useDisclosure } from "@/common/hooks/useDisclosure"
+import type { useDisclosure } from "@/common/hooks/useDisclosure"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -56,7 +56,11 @@ export const RecruteurLbaNoContactModal = ({
           Pour envoyer votre candidature spontanée :
         </Typography>
         {phone && (
-          <Typography my={fr.spacing("2w")}>
+          <Typography
+            sx={{
+              my: fr.spacing("2w"),
+            }}
+          >
             <span className="fr-icon-phone-line" style={{ marginRight: "8px" }}></span>
             Vous pouvez contacter l'entreprise au <DsfrLink href={`tel:${phone}`}>{phone}</DsfrLink>
           </Typography>
@@ -107,10 +111,10 @@ export const RecruteurLbaNoContactModal = ({
             },
           }}
         >
-          <Button onClick={() => onAnswer(false)} priority="secondary" aria-label="Je ne vais pas la contacter">
+          <Button onClick={async () => onAnswer(false)} priority="secondary" aria-label="Je ne vais pas la contacter">
             👎 Non, je ne vais pas la contacter
           </Button>
-          <Button onClick={() => onAnswer(true)} aria-label="Je vais la contacter">
+          <Button onClick={async () => onAnswer(true)} aria-label="Je vais la contacter">
             👍 Oui, je vais la contacter
           </Button>
         </Box>

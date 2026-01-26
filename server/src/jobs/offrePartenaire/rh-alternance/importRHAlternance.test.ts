@@ -2,19 +2,15 @@ import omit from "lodash-es/omit"
 import { generateRawRHAlternanceJobFixture } from "shared/fixtures/rawRHAlternanceJob.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
-
-const now = new Date("2024-07-21T04:49:06.000+02:00")
 
 describe("import RH Alternance", () => {
   useMongo()
 
   beforeEach(() => {
     vi.useFakeTimers()
-    vi.setSystemTime(now)
 
     return async () => {
       vi.useRealTimers()
@@ -25,12 +21,12 @@ describe("import RH Alternance", () => {
 
   describe("rawRhAlternanceToComputedMapper", () => {
     it("should test that the mapper works", async () => {
-      const mapped = rawRhAlternanceToComputedMapper(now)(generateRawRHAlternanceJobFixture())
+      const mapped = rawRhAlternanceToComputedMapper()(generateRawRHAlternanceJobFixture())
       expect.soft(mapped.business_error).toBeFalsy()
-      expect.soft(omit(mapped, "_id")).toMatchSnapshot()
+      expect.soft(omit(mapped, ["_id", "created_at", "updated_at"])).toMatchSnapshot()
     })
     it("should detect a business error", async () => {
-      const mapped = rawRhAlternanceToComputedMapper(now)(
+      const mapped = rawRhAlternanceToComputedMapper()(
         generateRawRHAlternanceJobFixture({
           jobType: "invalid",
         })

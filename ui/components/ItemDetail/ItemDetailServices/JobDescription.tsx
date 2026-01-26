@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography, Box } from "@mui/material"
 import React, { useMemo } from "react"
-import { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 export const BAD_DESCRIPTION_LENGTH = 50

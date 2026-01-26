@@ -16,6 +16,7 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
   const isLoading = isTrainingSearchLoading || isJobSearchLoading
 
   const getNextLoadingIllustration = (currentIllustrationIndex: number | null) => {
+    // eslint-disable-next-line react-hooks/purity
     const initialIndex = currentIllustrationIndex ?? Math.floor(Math.random() * loadingIllustrations.length)
 
     // filtered relevant illustrations
@@ -37,6 +38,7 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
     }
 
     // Select a random index from the filtered indexes
+    // eslint-disable-next-line react-hooks/purity
     const randomIndex = Math.floor(Math.random() * filteredIllustrationIndexes.length)
 
     // Return the original array's index corresponding to the random filtered index
@@ -91,10 +93,18 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
   }
 
   return (
-    <Box pt="0">
+    <Box
+      sx={{
+        pt: "0",
+      }}
+    >
       <Box sx={resultListProperties}>
         {isLoading ? (
-          <Box textAlign="center">
+          <Box
+            sx={{
+              textAlign: "center",
+            }}
+          >
             <Box component="img" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
             <Typography sx={{ mt: 1 }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
             <Box sx={{ maxWidth: "400px", mx: "auto", my: 4 }}>

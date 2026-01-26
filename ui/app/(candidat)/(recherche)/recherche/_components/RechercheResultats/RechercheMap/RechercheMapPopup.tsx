@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-import { Map, Popup } from "mapbox-gl"
+import type { Map } from "mapbox-gl"
+import { Popup } from "mapbox-gl"
 import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 import { createPortal } from "react-dom"
@@ -30,6 +31,7 @@ function RechercheMapPopupLink(props: WithRecherchePageParams<{ item: ILbaItem }
         size="sm"
         style={{
           color: fr.colors.decisions.text.title.grey.default,
+          fontFamily: "Marianne",
         }}
       >
         {props.item.title}
@@ -106,7 +108,6 @@ export function RechercheMapPopup(props: WithRecherchePageParams<RechercheMapPop
       }).setDOMContent(popupElement)
     )
     // popupElement instance will change on dev mode reload
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.map, popupElement])
 
   const onClose = useCallback(() => {

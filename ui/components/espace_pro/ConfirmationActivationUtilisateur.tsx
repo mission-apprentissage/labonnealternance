@@ -5,20 +5,14 @@ import { Box, Typography } from "@mui/material"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
-interface ConfirmationActivationUtilisateurProps {
-  isOpen: boolean
-  onClose: () => void
-  establishment_raison_sociale: string
-  _id: string
-}
-
-const ConfirmationActivationUtilisateur = (props: ConfirmationActivationUtilisateurProps) => {
+const ConfirmationActivationUtilisateur = (props: { isOpen: boolean; onClose: () => void; onConfirmation?: () => void; establishment_raison_sociale: string; _id: string }) => {
   const { isOpen, onClose, establishment_raison_sociale, _id } = props
   const { activate } = useUserPermissionsActions(_id)
 
   const activateUser = async () => {
     await activate()
     onClose()
+    props.onConfirmation?.()
   }
 
   return (
@@ -36,12 +30,16 @@ const ConfirmationActivationUtilisateur = (props: ConfirmationActivationUtilisat
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
-          <Box mr={fr.spacing("3v")}>
+          <Box
+            sx={{
+              mr: fr.spacing("3v"),
+            }}
+          >
             <Button priority="secondary" onClick={() => onClose()}>
               Annuler
             </Button>
           </Box>
-          <Button onClick={() => activateUser()}>Activer le compte</Button>
+          <Button onClick={async () => activateUser()}>Activer le compte</Button>
         </Box>
       </Box>
     </ModalReadOnly>

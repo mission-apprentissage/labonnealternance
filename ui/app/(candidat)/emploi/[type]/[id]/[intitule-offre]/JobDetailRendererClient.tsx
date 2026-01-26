@@ -3,19 +3,19 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
 import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
-import { IUseRechercheResults, useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { Footer } from "@/app/_components/Footer"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
-import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
@@ -27,6 +27,7 @@ import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents
 import { RecruteurLbaCandidater } from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaCandidater"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
+import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
@@ -136,16 +137,33 @@ function JobDetail({
           </Box>
         </Box>
       </Box>
-
       <Box id="detail-content-container" />
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-
       <AideApprentissage />
-
-      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && <DidYouKnow />}
-      <Box mt={fr.spacing("6w")} />
+      {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && (
+        <Box
+          sx={{
+            mx: { xs: 0, lg: "auto" },
+            my: fr.spacing("3w"),
+            maxWidth: "970px",
+          }}
+        >
+          <ValorisationCandidatureSpontanee
+            overridenQueryParams={{
+              utm_source: "lba",
+              utm_medium: "website",
+              utm_campaign: "lba_fiche-offre_promo-candidature-spontanee",
+            }}
+          />
+        </Box>
+      )}
+      <Box
+        sx={{
+          mt: fr.spacing("6w"),
+        }}
+      />
       <Footer />
     </Box>
   )

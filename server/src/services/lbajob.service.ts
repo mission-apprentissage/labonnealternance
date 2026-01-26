@@ -1,25 +1,28 @@
 import { internal } from "@hapi/boom"
-import dayjs from "dayjs"
-import { Document, Filter, ObjectId } from "mongodb"
-import { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob, JOB_STATUS } from "shared"
+import dayjs from "shared/helpers/dayjs"
+import type { Document, Filter } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"
+import { JOB_STATUS, JobCollectionName } from "shared"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { encryptMailWithIV } from "../common/utils/encryptString"
-import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { roundDistance } from "../common/utils/geolib"
-import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-
-import { IApplicationCount, getApplicationByJobCount } from "./application.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
 import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
-import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
+import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { roundDistance } from "@/common/utils/geolib"
+import type { IApiError } from "@/common/utils/errorManager"
+import { manageApiError } from "@/common/utils/errorManager"
+import { encryptMailWithIV } from "@/common/utils/encryptString"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const JOB_SEARCH_LIMIT = 250
 /**
@@ -165,7 +168,7 @@ export const getLbaJobs = async ({
 
     const jobs = await getJobs(params)
 
-    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id.toString()) : []))
+    const ids = jobs.flatMap((recruiter) => (recruiter?.jobs ? recruiter.jobs.map(({ _id }) => _id) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -223,7 +226,7 @@ export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: str
       trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
     }
 
-    const applicationCountByJob = await getApplicationByJobCount([id.toString()])
+    const applicationCountByJob = await getApplicationByJobCount([id])
     const job = transformLbaJob({
       recruiter: rawJob.recruiter,
       applicationCountByJob,
@@ -331,7 +334,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
-      recipient_id: `recruiters_${offre._id.toString()}`,
+      recipient_id: getRecipientID(JobCollectionName.recruiters, offre._id.toString()),
     }
 
     //TODO: remove when 1j1s switch to api V2
@@ -382,7 +385,7 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       },
       applicationCount: applicationCountForCurrentJob?.count || 0,
       token: generateApplicationToken({ jobId: offre._id.toString() }),
-      recipient_id: `recruiters_${offre._id.toString()}`,
+      recipient_id: getRecipientID(JobCollectionName.recruiters, offre._id.toString()),
     }
 
     return resultJob

@@ -39,6 +39,7 @@ export const AUTHTYPE = {
   ADMIN,
 } as const
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const authTypeValues = Object.values(AUTHTYPE)
 export type AUTHTYPE = (typeof authTypeValues)[0]
 

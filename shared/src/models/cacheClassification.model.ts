@@ -1,6 +1,7 @@
 import { z } from "zod"
 
-import { IModelDescriptor, zObjectId } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
+import { zObjectId } from "./common.js"
 
 const collectionName = "cache_classification" as const
 
@@ -45,6 +46,9 @@ export type IClassificationLabVersionResponse = z.output<typeof ZClassificationL
 
 export default {
   zod: ZClassitifationJobsPartners,
-  indexes: [[{ partner_job_id: 1, partner_label: 1 }, {}]],
+  indexes: [
+    [{ partner_job_id: 1, partner_label: 1 }, {}],
+    [{ human_verification: 1 }, {}],
+  ],
   collectionName,
 } as const satisfies IModelDescriptor

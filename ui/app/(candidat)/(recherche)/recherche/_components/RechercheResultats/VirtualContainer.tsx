@@ -1,8 +1,11 @@
 "use client"
 
-import { Box, SxProps, Theme } from "@mui/material"
+import type { SxProps, Theme } from "@mui/material"
+import { Box } from "@mui/material"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { RefObject, useEffect, useMemo, useRef } from "react"
+import type { Virtualizer } from "@tanstack/react-virtual"
+import type { RefObject } from "react"
+import { useEffect, useMemo, useRef } from "react"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }
 
@@ -13,6 +16,7 @@ export function VirtualContainer({
   containerStyle,
   scrollToElementIndex = 0,
   ref,
+  virtualizerRef,
 }: {
   defaultHeight: number
   elements: (VirtualElement | React.ReactNode)[]
@@ -20,11 +24,18 @@ export function VirtualContainer({
   containerStyle?: SxProps<Theme>
   scrollToElementIndex?: number
   ref?: RefObject<HTMLElement>
+  virtualizerRef?: RefObject<Virtualizer<any, Element>>
 }) {
   const parentRef = useRef(null)
-  ref.current = parentRef.current
+
+  useEffect(() => {
+    if (ref) {
+      ref.current = parentRef.current
+    }
+  }, [ref])
 
   const elements: VirtualElement[] = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
   }, [rawElements])
 
@@ -38,8 +49,12 @@ export function VirtualContainer({
   })
 
   useEffect(() => {
-    columnVirtualizer.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
-  }, [scrollToElementIndex, columnVirtualizer])
+    virtualizerRef.current = columnVirtualizer
+  })
+
+  useEffect(() => {
+    virtualizerRef.current.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
+  }, [scrollToElementIndex])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
   return (
@@ -80,7 +95,7 @@ export function VirtualContainer({
               item.onRender?.()
 
               return [
-                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement}>
+                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement} className="virtual-container-item">
                   {item.render()}
                 </Box>,
               ]

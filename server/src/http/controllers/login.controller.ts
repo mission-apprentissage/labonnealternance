@@ -2,22 +2,21 @@ import { forbidden, unauthorized } from "@hapi/boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { createAuthMagicLink } from "@/services/appLinks.service"
-import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { startSession, stopSession } from "@/common/utils/session.service"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import { sendUserConfirmationEmail } from "@/services/etablissement.service"
+import { controlUserState } from "@/services/login.service"
+import mailer from "@/services/mailer.service"
+import { updateLastConnectionDate } from "@/services/userRecruteur.service"
+import type { Server } from "@/http/server"
 import { getUserWithAccountByEmail, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
-
-import { startSession, stopSession } from "../../common/utils/session.service"
-import { sanitizeTextField } from "../../common/utils/stringUtils"
-import config from "../../config"
-import { sendUserConfirmationEmail } from "../../services/etablissement.service"
-import { controlUserState } from "../../services/login.service"
-import mailer from "../../services/mailer.service"
-import { updateLastConnectionDate } from "../../services/userRecruteur.service"
-import { Server } from "../server"
+import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { createAuthMagicLink } from "@/services/appLinks.service"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export default (server: Server) => {
   server.post(
@@ -82,6 +81,7 @@ export default (server: Server) => {
           last_name: sanitizeTextField(removeUrlsFromText(last_name)),
           first_name: sanitizeTextField(removeUrlsFromText(first_name)),
           connexion_url: createAuthMagicLink(userWithAccountToUserForToken(user)),
+          publicEmail: config.publicEmail,
         },
       })
       return res.status(200).send({})

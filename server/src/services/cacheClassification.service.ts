@@ -1,5 +1,5 @@
 import { ObjectId } from "bson"
-import { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
+import type { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
 
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -31,7 +31,7 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   })
 
   if (!notFoundJobs.length) {
-    return cachedClassifications.map((cached) => cached?.classification ?? null)
+    return cachedClassifications.map((cached) => (cached?.human_verification ? cached.human_verification : (cached?.classification ?? null)))
   }
 
   const classificationPayload = notFoundJobs.map((job) => ({

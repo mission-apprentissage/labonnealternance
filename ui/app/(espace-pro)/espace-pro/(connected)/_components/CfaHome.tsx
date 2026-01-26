@@ -8,11 +8,11 @@ import dayjs from "dayjs"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { IRecruiter, IRecruiterJson } from "shared"
+import type { IRecruiter, IRecruiterJson } from "shared"
 
+import { CfaHomeEntrepriseMenu } from "./CfaHomeEntrepriseMenu"
+import { ConfirmationSuppressionEntreprise } from "./ConfirmationSuppressionEntreprise"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
-import { CfaHomeEntrepriseMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/CfaHomeEntrepriseMenu"
-import { ConfirmationSuppressionEntreprise } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useToast } from "@/app/hooks/useToast"
@@ -100,12 +100,14 @@ function ListeEntreprise() {
       accessor: (row: IRecruiterJson) => {
         return <CfaHomeEntrepriseMenu row={row} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
       },
+      srOnly: "Actions sur l'entreprise",
     },
     {
       Header: "Entreprise",
       id: "establishment_raison_sociale",
-      width: "500",
-      maxWidth: "500",
+      width: "350",
+      maxWidth: "350",
+      accessor: ({ establishment_raison_sociale, establishment_siret, opco }) => [establishment_raison_sociale, establishment_siret, opco].join(" "),
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
         data,
@@ -117,13 +119,27 @@ function ListeEntreprise() {
         const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
+            <Link
+              underline="hover"
+              href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
+              aria-label="voir les informations"
+              sx={{
+                fontWeight: "700",
+              }}
+            >
               {establishment_raison_sociale}
             </Link>
             {establishment_raison_sociale ? (
               siretText
             ) : (
-              <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
+              <Link
+                underline="hover"
+                href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
+                aria-label="voir les informations"
+                sx={{
+                  fontWeight: "700",
+                }}
+              >
                 {siretText}
               </Link>
             )}
@@ -133,16 +149,41 @@ function ListeEntreprise() {
       },
     },
     {
-      Header: "Ajoutée le",
-      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
-      id: "createdAt",
-      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
+      Header: "Contact entreprise",
+      id: "contact_entreprise",
+      width: "350",
+      maxWidth: "350",
+      accessor: "contact_entreprise",
+      sortType: (a, b) => sortReactTableString(`${a.original.last_name} ${a.original.first_name}`, `${b.original.last_name} ${b.original.first_name}`),
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => {
+        const { last_name, first_name, email, phone } = data[id]
+        return (
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography sx={{ fontWeight: 700 }}>
+              {last_name} {first_name}
+            </Typography>
+            <Typography sx={{ color: "#666666", fontSize: "14px" }}>{email}</Typography>
+            <Typography sx={{ color: "#666666", fontSize: "14px" }}>{phone}</Typography>
+          </Box>
+        )
+      },
     },
     {
       Header: "Offres",
       id: "nombre_offres",
       sortType: "basic",
       accessor: ({ jobs }: IRecruiterJson) => jobs.length,
+    },
+    {
+      Header: "Ajoutée le",
+      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
+      id: "createdAt",
+      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
     {
       Header: "Dernière offre créée le",
@@ -159,35 +200,40 @@ function ListeEntreprise() {
       },
     },
   ]
+
   return (
-    <>
-      <AnimationContainer>
-        {currentEntreprise && (
-          <ConfirmationSuppressionEntreprise
-            establishment_id={currentEntreprise.establishment_id}
-            onClose={confirmationSuppression.onClose}
-            isOpen={confirmationSuppression.isOpen}
-            establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
-          />
-        )}
-        <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
+    <AnimationContainer>
+      {currentEntreprise && (
+        <ConfirmationSuppressionEntreprise
+          establishment_id={currentEntreprise.establishment_id}
+          onClose={confirmationSuppression.onClose}
+          isOpen={confirmationSuppression.isOpen}
+          establishment_raison_sociale={currentEntreprise.establishment_raison_sociale}
+        />
+      )}
+      <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
+        <Breadcrumb pages={[PAGES.static.backCfaHome]} />
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
           <Box>
-            <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
-              <Box>
-                <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
-              </Box>
-              <Box mr={3}>
-                <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-                  Nouvelle entreprise
-                </Button>
-              </Box>
-            </Box>
+            <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
           </Box>
-          {data?.length ? <TableWithPagination columns={columns} data={data} exportable={false} /> : <EmptySpace />}
+          <Box
+            sx={{
+              mr: 3,
+            }}
+          >
+            <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
+              Nouvelle entreprise
+            </Button>
+          </Box>
         </Box>
-      </AnimationContainer>
-    </>
+        {data?.length ? (
+          <TableWithPagination caption="Liste des entreprises" columns={columns} data={data} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} />
+        ) : (
+          <EmptySpace />
+        )}
+      </Box>
+    </AnimationContainer>
   )
 }
 

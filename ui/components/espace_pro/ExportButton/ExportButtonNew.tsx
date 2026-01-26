@@ -4,10 +4,11 @@ import { omit } from "lodash-es"
 import { useMemo } from "react"
 import { CSVLink } from "react-csv"
 
+import { Box } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { AUTHTYPE } from "@/common/contants"
+import { DownloadLine } from "@/theme/components/icons"
 import { useAuth } from "@/context/UserContext"
-
-import { AUTHTYPE } from "../../../common/contants"
-import { DownloadLine } from "../../../theme/components/icons"
 
 const formatDate = (date: string | number | Date) => dayjs(date).format("YYYY-MM-DD")
 
@@ -67,9 +68,11 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
   const fileName = `${datasetName}_${new Date().toJSON()}.csv`
 
   return (
-    <CSVLink className="fr-link" data={csvData} filename={fileName}>
-      <DownloadLine sx={{ mr: 2, mb: 1, width: "0.75rem", height: "0.75rem" }} />
-      Exporter
-    </CSVLink>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <CSVLink className="fr-link" data={csvData} filename={fileName}>
+        <DownloadLine sx={{ mr: fr.spacing("1w"), width: "0.75rem", height: "0.75rem" }} />
+        Exporter
+      </CSVLink>
+    </Box>
   )
 }

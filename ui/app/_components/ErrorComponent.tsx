@@ -5,7 +5,8 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
-import { useEffect, type PropsWithChildren } from "react"
+import { useEffect } from "react"
+import type { PropsWithChildren } from "react"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
@@ -66,13 +67,21 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
             </Typography>
             {details && <Typography gutterBottom>{details}</Typography>}
 
-            <Box mt={2}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <Button onClick={() => reset()} type="button">
                 Essayer à nouveau
               </Button>
             </Box>
 
-            <Box mt={2}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <DsfrLink href="/" locale="fr">
                 Retourner à la page d'accueil
               </DsfrLink>

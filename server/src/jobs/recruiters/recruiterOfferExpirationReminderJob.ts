@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS } from "shared/models/index"
 
+import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -14,7 +15,6 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
-import dayjs from "@/services/dayjs.service"
 import mailer from "@/services/mailer.service"
 
 export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirationDate: number /* number of days to expiration for the reminder email to be sent */) => {
@@ -97,6 +97,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
           })),
           threshold: numberOfDaysToExpirationDate,
           connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
+          publicEmail: config.publicEmail,
         },
       })
       if (dateRelanceFieldName) {

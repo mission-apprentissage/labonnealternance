@@ -4,16 +4,15 @@ import { pipeline } from "node:stream/promises"
 import { ObjectId } from "mongodb"
 import { zFormationCatalogueSchemaNew } from "shared/models/index"
 import streamJson from "stream-json"
-// eslint-disable-next-line import/extensions
+
 import streamers from "stream-json/streamers/StreamArray.js"
 
-import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
+import { logger } from "@/common/logger"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { countFormations, getAllFormationsFromCatalogue } from "@/services/catalogue.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { notifyToSlack } from "../../common/utils/slackUtils"
-import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service"
+import { convertStringCoordinatesToGeoPoint } from "@/common/utils/geolib"
 
 export const importCatalogueFormationJob = async () => {
   logger.info(" -- Import formations catalogue -- ")
@@ -64,7 +63,7 @@ export const importCatalogueFormationJob = async () => {
 
             stats.created++
           } catch (e) {
-            logger.error("Erreur enregistrement de formation", e)
+            logger.error(e, "Erreur enregistrement de formation")
             stats.failed++
           }
 

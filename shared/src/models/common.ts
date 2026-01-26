@@ -1,5 +1,5 @@
-import { CreateIndexesOptions, IndexSpecification } from "mongodb"
-import { ZodType } from "zod"
+import type { CreateIndexesOptions, IndexSpecification } from "mongodb"
+import type { ZodType } from "zod"
 
 export interface IModelDescriptor<CollectionName = string, LocalZodType = ZodType> {
   zod: LocalZodType

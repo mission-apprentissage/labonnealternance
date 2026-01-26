@@ -1,15 +1,13 @@
 import Button from "@codegouvfr/react-dsfr/Button"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import { SyntheticEvent, useEffect, useState } from "react"
-import { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { SyntheticEvent } from "react"
+import { useState } from "react"
+import type { ILbaItemFormationJson, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
-const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
+const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
   const [copied, setCopied] = useState(false)
-
-  useEffect(() => {
-    setCopied(false)
-  }, [item.id])
 
   const copyLink = (e: SyntheticEvent) => {
     e.preventDefault()
@@ -25,16 +23,32 @@ const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson |
       {copied ? (
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
-          <Typography color="#18753C">Lien copié !</Typography>
+          <Typography
+            sx={{
+              color: "#18753C",
+            }}
+          >
+            Lien copié !
+          </Typography>
         </Box>
       ) : (
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
-          <Typography color="bluefrance.500">Partager</Typography>
+          <Typography
+            sx={{
+              color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+            }}
+          >
+            Partager
+          </Typography>
         </Box>
       )}
     </Button>
   )
+}
+
+const ShareLink = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJson | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson }) => {
+  return <ShareLinkInner key={item.id} item={item} />
 }
 
 export default ShareLink

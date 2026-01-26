@@ -1,67 +1,61 @@
-import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
-import { updateDiplomeMetier } from "@/jobs/diplomesMetiers/updateDiplomesMetiers"
-import { updateRomesForDomainesMetiers } from "@/jobs/domainesMetiers/updateRomesForDomainesMetiers"
-import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
-import {
-  processAtlas,
-  processMeteojob,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-  processViteUnEmploi,
-} from "@/jobs/offrePartenaire/clever-connect/processCleverConnect"
-import { importRecruteursLbaFromComputedToJobsPartners } from "@/jobs/offrePartenaire/fillComputedRecruteursLba"
-import { classifyFranceTravailJobs } from "@/jobs/offrePartenaire/france-travail/classifyJobsFranceTravail"
-import { processFranceTravail } from "@/jobs/offrePartenaire/france-travail/processFranceTravail"
-import { processHellowork } from "@/jobs/offrePartenaire/hellowork/processHellowork"
-import { processJooble } from "@/jobs/offrePartenaire/jooble/processJooble"
-import { processLaposte } from "@/jobs/offrePartenaire/laposte/processLaposte"
-import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "@/jobs/offrePartenaire/lbaJobToJobsPartners"
-import { processPass } from "@/jobs/offrePartenaire/pass/processPass"
-import { processFillRomeStandalone } from "@/jobs/offrePartenaire/processFillRomeStandalone"
-import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
-import { processRhAlternance } from "@/jobs/offrePartenaire/rh-alternance/processRhAlternance"
-import { analyzeClosedCompanies } from "@/jobs/oneTimeJob/analyzeClosedCompanies"
-import { renvoiMailCreationCompte } from "@/jobs/oneTimeJob/renvoiMailCreationCompte"
-import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
-import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
-import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
-import { exportJobsToFranceTravail } from "@/jobs/partenaireExport/exportToFranceTravail"
-import { repriseEnvoiEmailsPRDV } from "@/jobs/rdv/repriseEnvoiPRDV"
-import { processScheduledRecruiterIntentions } from "@/services/application.service"
-import { generateSitemap } from "@/services/sitemap.service"
-
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
+import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
+import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
-import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
+import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze, findDomainesMetiersIncoherents } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
-import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
+import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
+import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
+import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
+import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
+import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
+import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
+import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
+import { processJooble } from "./offrePartenaire/jooble/processJooble"
 import { processKelio } from "./offrePartenaire/kelio/processKelio"
-import { processMonster } from "./offrePartenaire/monster/processMonster"
+import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
+import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "./offrePartenaire/lbaJobToJobsPartners"
+import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
+import { processPass } from "./offrePartenaire/pass/processPass"
+import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
 import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
+import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
+import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
+import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
+import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
+import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
+import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
+import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
-import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
-import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
+import { inviteEtablissementAffelnetToPremium, inviteEtablissementAffelnetToPremiumBypassDate } from "./rdv/inviteEtablissementAffelnetToPremium"
+import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
+import { inviteEtablissementParcoursupToPremium, inviteEtablissementParcoursupToPremiumBypassDate } from "./rdv/inviteEtablissementParcoursupToPremium"
+import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
-import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
@@ -72,9 +66,13 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
+import { updateSEO } from "./seo/updateSEO"
+import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
+import { generateSitemap } from "@/services/sitemap.service"
+import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
 type SimpleJobDefinition = {
-  fct: () => Promise<unknown>
+  fct: (payload?: any) => Promise<unknown>
   description: string
 }
 
@@ -134,6 +132,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Invite les établissements (via email décisionnaire) au premium (Parcoursup)",
   },
   {
+    fct: inviteEtablissementParcoursupToPremiumBypassDate,
+    description: "Invite les établissements (via email décisionnaire) au premium (Parcoursup) sans tenir compte de la période d'invitation",
+  },
+  {
     fct: inviteEtablissementAffelnetToPremium,
     description: "Invite les établissements (via email décisionnaire) au premium (Affelnet)",
   },
@@ -142,8 +144,16 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup",
   },
   {
-    fct: premiumInviteOneShot,
-    description: "Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau",
+    fct: inviteEtablissementParcoursupToPremiumFollowUpCli,
+    description: "Relance les établissements (via email décisionnaire) au premium (Parcoursup) sans tenir compte de la date d'invitation",
+  },
+  {
+    fct: inviteEtablissementAffelnetToPremiumBypassDate,
+    description: "Invite les établissements (via email décisionnaire) au premium (Affelnet) sans tenir compte de la période d'invitation",
+  },
+  {
+    fct: inviteEtablissementAffelnetToPremiumFollowUpCli,
+    description: "Relance les établissements (via email décisionnaire) au premium (Affelnet) sans tenir compte de la date d'invitation",
   },
   {
     fct: syncEtablissementsAndFormations,
@@ -182,6 +192,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées",
   },
   {
+    fct: anonymizeReportedReasons,
+    description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
+  },
+  {
     fct: fixJobExpirationDate,
     description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
   },
@@ -215,16 +229,20 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Importe les offres France Travail dans la collection raw & computed",
   },
   {
-    fct: processMonster,
-    description: "Importe les offres Monster dans la collection raw & computed",
-  },
-  {
     fct: processKelio,
     description: "Importe les offres Kelio dans la collection raw & computed",
   },
   {
     fct: processLaposte,
     description: "Importe les offres La Poste dans la collection raw & computed",
+  },
+  {
+    fct: processLeboncoin,
+    description: "Importe les offres Le Bon Coin dans la collection raw & computed",
+  },
+  {
+    fct: processJobteaser,
+    description: "Importe les offres Jobteaser dans la collection raw & computed",
   },
   {
     fct: processJooble,
@@ -270,11 +288,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: importFromComputedToJobsPartners,
     description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners",
   },
-  // IMPORT COMPUTED RECRUTEURS_LBA TO JOBS PARTNERS
-  {
-    fct: importRecruteursLbaFromComputedToJobsPartners,
-    description: "Met à jour la collection jobs_partners à partir de computed_jobs_partners pour les recruteurs_lba",
-  },
   {
     fct: processRecruteursLba,
     description: "Chaîne complète de traitement des entreprises issues de l'algo pour jobs_partners",
@@ -284,16 +297,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Chaîne complète de traitement des jobs_partners déposés par API",
   },
   {
-    fct: cancelRemovedJobsPartners,
-    description: "Met à jour la collection jobs_partners en mettant à 'Annulé' les offres qui ne sont plus dans computed_jobs_partners",
-  },
-  {
     fct: removeMissingRecruteursLbaFromComputedJobPartners,
     description: "Met à jour la collection computed_jobs_partners en supprimant les entreprises qui ne sont plus dans raw_recruteurslba",
-  },
-  {
-    fct: classifyFranceTravailJobs,
-    description: "Classifie les offres France Travail en fonction de leur contenu",
   },
   {
     fct: processApplications,
@@ -335,6 +340,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: classifyRomesForDomainesMetiersAnalyze,
     description: "Analyse les fichiers de sortie de classifyRomesForDomainesMetiers",
+  },
+  {
+    fct: findDomainesMetiersIncoherents,
+    description: "Analyse les incohérences dans la collection domainesmetiers",
   },
   {
     fct: exportJobsToFranceTravail,
@@ -380,5 +389,26 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
+  },
+  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
+  {
+    fct: processDecathlon,
+    description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: fillLbaUrl,
+    description: "Remplit le champ lba_url dans la collection jobs_partners",
+  },
+  {
+    fct: processRecruteursLbaRawToEnd,
+    description: "Import des recruteurs LBA de la collection raw à la collection jobs_partners",
+  },
+  {
+    fct: processFranceTravailCEGID,
+    description: "Import du flux France Travail CEGID jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEngagementJeunes,
+    description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
   },
 ]

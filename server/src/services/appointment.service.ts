@@ -1,20 +1,19 @@
-import dayjs from "dayjs"
-import { Filter, ObjectId } from "mongodb"
-import { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
+import type { Filter } from "mongodb"
+import { ObjectId } from "mongodb"
+import dayjs from "shared/helpers/dayjs"
+import type { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 import { mailType } from "shared/constants/appointment"
-import { ReferrerObject } from "shared/constants/referers"
-
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import config from "@/config"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
+import type { ReferrerObject } from "shared/constants/referers"
 
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer from "./mailer.service"
 import { getReferrerByKeyName } from "./referrers.service"
 import { getLBALink } from "./trainingLinks.service"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }
@@ -26,9 +25,9 @@ const findById = async (id: ObjectId | string): Promise<IAppointment | null> => 
 
 const find = (conditions: Filter<IAppointment>) => getDbCollection("appointments").find(conditions)
 
-const findOne = (conditions: Filter<IAppointment>) => getDbCollection("appointments").findOne(conditions)
+const findOne = async (conditions: Filter<IAppointment>) => getDbCollection("appointments").findOne(conditions)
 
-const findOneAndUpdate = (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { returnDocument: "after" })
+const findOneAndUpdate = async (conditions: Filter<IAppointment>, values) => getDbCollection("appointments").findOneAndUpdate(conditions, values, { returnDocument: "after" })
 
 export { createAppointment, find, findById, findOne, findOneAndUpdate }
 
@@ -83,7 +82,7 @@ export const sendCandidateAppointmentEmail = async (
     to: candidate.email,
     subject: `${subjectPrefix ?? ""}Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`,
     template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
-    data: await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj),
+    data: { ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)), publicEmail: config.publicEmail },
   })
   await findOneAndUpdate(
     { _id: appointment._id },
@@ -109,7 +108,8 @@ export const sendFormateurAppointmentEmail = async (
     template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
     data: {
       ...(await getMailData(candidate, appointment, eligibleTrainingsForAppointment, referrerObj)),
-      link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, etablissement._id.toString(), appointment._id.toString()),
+      link: createRdvaAppointmentIdPageLink(appointment.cfa_recipient_email, etablissement.formateur_siret, appointment._id.toString()),
+      publicEmail: config.publicEmail,
     },
   })
   await findOneAndUpdate(
@@ -204,7 +204,7 @@ export const sendCandidateAppointmentHardbounceEmail = async (appointment: IAppo
     to: user.email,
     subject: `Le centre de formation ${training?.etablissement_formateur_raison_sociale} n’a pas reçu votre demande`,
     template: getStaticFilePath("./templates/mail-cfa-notification-hardbounce-cfa.mjml.ejs"),
-    data: { phone: formation.num_tel, ...(await getMailData(user, appointment, training, getReferrerByKeyName(appointment.appointment_origin))) },
+    data: { phone: formation.num_tel, ...(await getMailData(user, appointment, training, getReferrerByKeyName(appointment.appointment_origin))), publicEmail: config.publicEmail },
   })
 
   await findOneAndUpdate(

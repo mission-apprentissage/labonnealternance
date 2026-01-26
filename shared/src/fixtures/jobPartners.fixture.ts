@@ -2,8 +2,9 @@ import { ObjectId } from "bson"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { JOB_STATUS_ENGLISH } from "../models/job.model.js"
-import { IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "../models/jobsPartners.model.js"
-import { IComputedJobsPartners } from "../models/jobsPartnersComputed.model.js"
+import type { IJobsPartnersOfferPrivate } from "../models/jobsPartners.model.js"
+import { JOBPARTNERS_LABEL } from "../models/jobsPartners.model.js"
+import type { IComputedJobsPartners } from "../models/jobsPartnersComputed.model.js"
 
 export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOfferPrivate> = {}): IJobsPartnersOfferPrivate {
   const offer_expiration = new Date("2050-01-01")
@@ -156,6 +157,14 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
   }
 }
 
+export function generateComputedJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate> = {}): Partial<IJobsPartnersOfferPrivate> {
+  const base = generateJobsPartnersFull(data)
+
+  const { lba_url, ...rest } = base
+
+  return rest
+}
+
 export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsPartners> = {}): IComputedJobsPartners {
   return {
     errors: [],
@@ -210,7 +219,6 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     apply_email: null,
     offer_multicast: true,
     offer_origin: null,
-    lba_url: null,
 
     created_at: new Date("2021-01-28T15:00:00.000Z"),
     updated_at: new Date("2021-01-28T15:00:00.000Z"),

@@ -6,10 +6,11 @@ import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
+import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
-import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
+import type { Server } from "@/http/server"
 import {
   archiveFormulaireByEstablishmentId,
   cancelOffre,
@@ -23,13 +24,13 @@ import {
   getJob,
   getJobWithRomeDetail,
   getOffre,
-  updateJobDelegation,
   patchOffre,
   provideOffre,
-  validateUserEmailFromJobId,
   updateCfaManagedRecruiter,
-} from "../../services/formulaire.service"
-import { Server } from "../server"
+  updateJobDelegation,
+  validateDelegatedCompanyPhoneAndEmail,
+  validateUserEmailFromJobId,
+} from "@/services/formulaire.service"
 
 export default (server: Server) => {
   /**
@@ -105,6 +106,8 @@ export default (server: Server) => {
       if (!userRecruteurOpt.establishment_siret) {
         throw internal("unexpected: userRecruteur without establishment_siret")
       }
+      validateDelegatedCompanyPhoneAndEmail(userRecruteurOpt, phone, email)
+
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
         last_name,
@@ -315,13 +318,19 @@ export default (server: Server) => {
   )
 
   server.post(
+    // this route is for CFA only
     "/formulaire/:establishment_id/informations",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/informations"],
       onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/informations"])],
     },
     async (req, res) => {
+      const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/informations"]).value
       const { establishment_id } = req.params
+      const { email, phone } = req.body
+
+      validateDelegatedCompanyPhoneAndEmail(user, phone, email)
+
       await updateCfaManagedRecruiter(establishment_id, req.body)
 
       return res.status(200).send({ ok: true })

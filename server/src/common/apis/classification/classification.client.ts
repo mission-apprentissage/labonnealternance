@@ -1,12 +1,6 @@
 import { internal } from "@hapi/boom"
-import {
-  IClassificationLabBatchResponse,
-  IClassificationLabResponse,
-  IClassificationLabVersionResponse,
-  ZClassificationLabBatchResponse,
-  ZClassificationLabResponse,
-  ZClassificationLabVersionResponse,
-} from "shared/models/cacheClassification.model"
+import type { IClassificationLabBatchResponse, IClassificationLabResponse, IClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
+import { ZClassificationLabBatchResponse, ZClassificationLabResponse, ZClassificationLabVersionResponse } from "shared/models/cacheClassification.model"
 
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -36,7 +30,7 @@ export type IGetLabClassificationBatch = {
 
 export const getLabClassificationBatch = async (jobs: IGetLabClassificationBatch): Promise<IClassificationLabBatchResponse> => {
   try {
-    const response = await client.post("/scores", { items: jobs }, { timeout: 30_000 })
+    const response = await client.post("/model/scores", { items: jobs }, { timeout: 30_000 })
     const validation = ZClassificationLabBatchResponse.safeParse(response.data)
     if (!validation.success) {
       throw internal("getLabClassificationBatch: format de réponse non valide", { error: validation.error })

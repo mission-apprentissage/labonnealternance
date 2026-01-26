@@ -5,7 +5,7 @@ import { pipeline } from "node:stream/promises"
 
 import axios from "axios"
 import { ObjectId } from "mongodb"
-import { IReferentielOnisep } from "shared/models/index"
+import type { IReferentielOnisep } from "shared/models/index"
 
 import { logger } from "@/common/logger"
 import { parseCsv } from "@/common/utils/fileUtils"

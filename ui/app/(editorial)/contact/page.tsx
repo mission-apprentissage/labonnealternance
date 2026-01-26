@@ -1,12 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Typography, Box, Grid } from "@mui/material"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
+import { publicConfig } from "@/config.public"
 
 export const metadata: Metadata = {
   title: PAGES.static.contact.getMetadata().title,
@@ -40,8 +41,8 @@ export default function Contact() {
             <Typography component="p" sx={{ mb: 2 }}>
               Si jamais vous ne trouvez pas votre réponse dans notre FAQ, ou souhaitez nous partager votre avis ou une suggestion d'amélioration sur nos outils, contactez nous par
               email à<br />
-              <DsfrLink aria-label="Envoi d'un email au service candidat de La bonne alternance" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact">
-                labonnealternance@apprentissage.beta.gouv.fr
+              <DsfrLink aria-label="Envoi d'un email au service candidat de La bonne alternance" href={`mailto:${publicConfig.publicEmail}?subject=Page%20Contact`}>
+                {publicConfig.publicEmail}
               </DsfrLink>
             </Typography>
           </Grid>

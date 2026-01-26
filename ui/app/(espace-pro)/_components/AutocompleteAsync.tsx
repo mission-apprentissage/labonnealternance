@@ -47,10 +47,9 @@ export default function AutocompleteAsync<T>({
   const [inputItems, setInputJobItems] = useState([])
   const debouncedSearch = useMemo(() => {
     return debounce(handleSearch, debounceDelayInMs)
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [])
 
-  const { isOpen, getMenuProps, getInputProps, getComboboxProps, getItemProps, highlightedIndex } = useCombobox<T>({
+  const { isOpen, getMenuProps, getInputProps, getItemProps, highlightedIndex, openMenu } = useCombobox<T>({
     itemToString,
     onInputValueChange: ({ inputValue }) => {
       if (!inputValue || (error && !allowHealFromError)) {
@@ -92,15 +91,20 @@ export default function AutocompleteAsync<T>({
 
   return (
     <Box data-testid={dataTestId} sx={{ width: "100%", position: "relative" }}>
-      <Box
-        {...getComboboxProps()}
-        sx={{
-          display: "block",
-          boxSizing: "border-box",
+      <CustomInput
+        pb="0"
+        required={false}
+        name={name}
+        placeholder={placeholder}
+        {...{
+          ...getInputProps({
+            onFocus() {
+              openMenu()
+            },
+          }),
+          ref: undefined,
         }}
-      >
-        <CustomInput pb="0" required={false} name={name} placeholder={placeholder} {...{ ...getInputProps(), ref: undefined }} />
-      </Box>
+      />
       <Box
         sx={{
           width: "100%",

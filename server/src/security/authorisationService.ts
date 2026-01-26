@@ -1,24 +1,24 @@
 import { forbidden, internal } from "@hapi/boom"
-import { IApiAlternanceTokenData } from "api-alternance-sdk"
-import { FastifyRequest } from "fastify"
+import type { IApiAlternanceTokenData } from "api-alternance-sdk"
+import type { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import { ICFA } from "shared/models/cfa.model"
-import { IEntreprise } from "shared/models/entreprise.model"
-import { ComputedUserAccess, IApplication, IJob, IRecruiter, IUserWithAccount } from "shared/models/index"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { AccessEntityType, IRoleManagement } from "shared/models/roleManagement.model"
-import { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
-import { AccessPermission, AccessResourcePath } from "shared/security/permissions"
+import type { ICFA } from "shared/models/cfa.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
+import type { ComputedUserAccess, IApplication, IJob, IRecruiter, IUserWithAccount } from "shared/models/index"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IRoleManagement } from "shared/models/roleManagement.model"
+import { AccessEntityType } from "shared/models/roleManagement.model"
+import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import type { AccessPermission, AccessResourcePath } from "shared/security/permissions"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
-import { Primitive } from "type-fest"
+import type { Primitive } from "type-fest"
 
+import { getUserFromRequest } from "./authenticationService"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getApplicantFromDB } from "@/services/applicant.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
-
-import { getUserFromRequest } from "./authenticationService"
 
 type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }
@@ -237,7 +237,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!recruiter) {
           return { application }
         }
-        const job = recruiter.jobs.find((job) => job._id.toString() === job_id)
+        const job = recruiter.jobs.find((job) => job._id === job_id)
         if (!job) {
           return { application }
         }
@@ -272,7 +272,7 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
         const id = getAccessResourcePathValue(entrepriseDef._id, req)
         try {
           new ObjectId(id)
-        } catch (e) {
+        } catch (_) {
           return null
         }
         const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(id.toString()) })

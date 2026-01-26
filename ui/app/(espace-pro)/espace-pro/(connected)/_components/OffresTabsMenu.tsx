@@ -10,7 +10,8 @@ import { AUTHTYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrl } from "shared/metier/lbaitemutils"
 
-import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { useToast } from "@/app/hooks/useToast"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
@@ -32,16 +33,19 @@ export const OffresTabsMenu = ({
   const [copied, setCopied] = useState(false)
 
   const [lat, lon] = (row.geo_coordinates ?? "").split(",")
+
+  const offerTitle = row?.offer_title_custom ?? row?.rome_appellation_label ?? row?.rome_label
+
   const cfaOptionParams =
     user.type === AUTHTYPE.ENTREPRISE
       ? {
           link: `${publicConfig.baseUrl}/espace-pro/entreprise/offre/${row._id}/mise-en-relation`,
-          ariaLabel: "Lien vers les mise en relations avec des centres de formations",
+          ariaLabel: `Lien vers les mises en relation avec des centres de formation pour l'offre ${offerTitle}`,
           type: "link",
         }
       : {
           link: `${publicConfig.baseUrl}/recherche-formation?romes=${row.rome_code}&lon=${lon}&lat=${lat}`,
-          ariaLabel: "Lien vers les formations - nouvelle fenêtre",
+          ariaLabel: `Lien vers les formations pour l'offre ${offerTitle} - nouvelle fenêtre`,
           type: "externalLink",
         }
   const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
@@ -50,11 +54,13 @@ export const OffresTabsMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Editer l'offre",
+      ariaLabel: `Éditer l'offre ${offerTitle}`,
       onClick: () => router.push(buildOfferEditionUrl(row._id)),
       type: "button",
     },
     {
       label: "Prolonger l'offre",
+      ariaLabel: `Prolonger l'offre ${offerTitle}`,
       onClick: () => {
         extendOffre(row._id)
           .then((job) =>
@@ -62,7 +68,7 @@ export const OffresTabsMenu = ({
               title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
             })
           )
-          .finally(() =>
+          .finally(async () =>
             client.invalidateQueries({
               queryKey: ["offre-liste"],
             })
@@ -72,6 +78,7 @@ export const OffresTabsMenu = ({
     },
     {
       label: "Voir l'offre en ligne",
+      ariaLabel: `Voir l'offre ${offerTitle} en ligne - nouvelle fenêtre`,
       link: directLink,
       type: "link",
     },
@@ -87,7 +94,15 @@ export const OffresTabsMenu = ({
       label: copied ? (
         <Box sx={{ display: "flex" }}>
           <Image width="17" height="24" src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-          <Typography component="span" ml={fr.spacing("1w")} fontSize="14px" mb={0} color="#18753C">
+          <Typography
+            component="span"
+            sx={{
+              ml: fr.spacing("1w"),
+              fontSize: "14px",
+              mb: 0,
+              color: "#18753C",
+            }}
+          >
             Lien copié !
           </Typography>
         </Box>
@@ -101,7 +116,7 @@ export const OffresTabsMenu = ({
           setCopied(true)
         })
       },
-      ariaLabel: "Copier le lien de partage de l'offre dans le presse papier",
+      ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse-papiers" : `Partager le lien de l'offre ${offerTitle}`,
       type: "button",
     },
     user.type !== AUTHTYPE.CFA
@@ -114,6 +129,7 @@ export const OffresTabsMenu = ({
       : null,
     {
       label: "Supprimer l'offre",
+      ariaLabel: `Supprimer l'offre ${offerTitle}`,
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -123,5 +139,5 @@ export const OffresTabsMenu = ({
     },
   ]
 
-  return !isDisabled && <PopoverMenu actions={actions} title="Actions sur l'offre" resetFlagsOnClose={[setCopied]} />
+  return !isDisabled && <PopoverMenu actions={actions} title={`Actions sur l'offre ${offerTitle}`} resetFlagsOnClose={[setCopied]} />
 }

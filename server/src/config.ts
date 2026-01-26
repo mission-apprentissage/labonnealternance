@@ -8,7 +8,7 @@ const config = {
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
-  publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
+  publicEmail: "contact@labonnealternance.apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   transactionalEmailSender: "La bonne alternance",
   disable_processors: env.get("LBA_DISABLE_PROCESSORS").required().asBool(),
@@ -74,8 +74,7 @@ const config = {
   franceTravailDepotOffres: {
     login: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_LOGIN").required().asString(),
     password: env.get("LBA_FRANCE_TRAVAIL_DEPOT_OFFRES_PASSWORD").required().asString(),
-    // nomFlux: "HACOFILE", A ACTIVER LE 24 NOVEMBRE 2025 - RAPPEL ENVOYE PAR PATRICIA UNE SEMAINE AVANT
-    nomFlux: "LABONATA",
+    nomFlux: "HACOFILE",
   },
   franceTravailIO: {
     baseUrl: "https://api.francetravail.io/partenaire",
@@ -112,9 +111,8 @@ const config = {
     simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
   franceCompetences: {
-    baseUrl: "https://api-preprod.francecompetences.fr",
+    baseUrl: "https://api.francecompetences.fr",
     apiKey: env.get("LBA_FRANCE_COMPETENCE_API_KEY").required().asString(),
-    bearerToken: env.get("LBA_FRANCE_COMPETENCE_TOKEN").required().asString(),
   },
   apiApprentissage: {
     baseUrl: "https://api.apprentissage.beta.gouv.fr/api",
@@ -132,8 +130,8 @@ const config = {
   },
   affelnetPeriods: {
     start: {
-      startMonth: 2, // January = 0
-      startDay: 4,
+      startMonth: 0, // January = 0
+      startDay: 15,
     },
     end: {
       endMonth: 7,
@@ -154,9 +152,19 @@ const config = {
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
+  leboncoinUrl: env.get("LEBONCOIN_FLUX_URL").required().asString(),
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
+  jobteaserUserName: env.get("JOBTEASER_FLUX_USERNAME").required().asString(),
+  jobteaserPassword: env.get("JOBTEASER_FLUX_PASSWORD").required().asString(),
 
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
+  decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
+  franceTravailCegidFlux: {
+    url: env.get("FRANCE_TRAVAIL_CEGID_FLUX_URL").required().asString(),
+    clientId: env.get("FRANCE_TRAVAIL_CEGID_FLUX_CLIENT_ID").required().asString(),
+    clientSecret: env.get("FRANCE_TRAVAIL_CEGID_FLUX_CLIENT_SECRET").required().asString(),
+  },
+  engagementJeunesFluxUrl: env.get("ENGAGEMENT_JEUNES_FLUX_URL").required().asString(),
   openai: {
     apiKey: env.get("OPENAI_API_KEY").required().asString(),
   },

@@ -2,10 +2,11 @@ import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZJoobleJob = z
   .object({
@@ -44,9 +45,8 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
   const business_error = regex.test(job.description) || regex.test(job.title) ? JOB_PARTNER_BUSINESS_ERROR.FULL_TIME : null
 
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(updatedDate ?? publicationDate),
     _id: new ObjectId(),
-    created_at: updatedDate ?? publicationDate,
     partner_label: JOBPARTNERS_LABEL.JOOBLE,
     partner_job_id: job.referencenumber,
     offer_title: job.title,
@@ -55,8 +55,8 @@ export const joobleJobToJobsPartners = (job: IJoobleJob): IComputedJobsPartners 
     workplace_address_label: job.region.city.split(",")[0],
     offer_description: job.description,
     offer_creation: updatedDate ?? publicationDate,
-    offer_expiration: dayjs
-      .tz(updatedDate ?? publicationDate)
+    offer_expiration: dayjs(updatedDate ?? publicationDate)
+      .tz()
       .add(2, "months")
       .toDate(),
     apply_url: job.url,

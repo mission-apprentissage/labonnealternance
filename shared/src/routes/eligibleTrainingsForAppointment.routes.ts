@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { zObjectId } from "../models/common.js"
 import { ZEligibleTrainingsForAppointmentSchema, ZETFAParameters } from "../models/elligibleTraining.model.js"
 
-import { IRoutesDef } from "./common.routes.js"
+import type { IRoutesDef } from "./common.routes.js"
 
 export const zEligibleTrainingsForAppointmentRoutes = {
   get: {

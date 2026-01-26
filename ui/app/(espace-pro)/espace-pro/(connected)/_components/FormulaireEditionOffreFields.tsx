@@ -8,10 +8,10 @@ import { Box, FormControl, FormLabel, Link } from "@mui/material"
 import dayjs from "dayjs"
 import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
-import { IAppellationsRomes } from "shared"
+import type { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 
-import { ChampNombre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ChampNombre"
+import { ChampNombre } from "./ChampNombre"
 import CustomInput from "@/app/_components/CustomInput"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
@@ -68,16 +68,28 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         />
       </FormControl>
       {values.rome_label && (
-        <Box mt={2}>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
           <Input
             label="Intitulé de l'offre"
             hintText="Personnalisez le titre du poste (Facultatif)"
-            nativeInputProps={{ value: values.offer_title_custom, type: "text", name: "offer_title_custom", onChange: (e) => setFieldValue("offer_title_custom", e.target.value) }}
+            nativeInputProps={{
+              value: values.offer_title_custom,
+              type: "text",
+              name: "offer_title_custom",
+              onChange: async (e) => setFieldValue("offer_title_custom", e.target.value),
+            }}
           />
         </Box>
       )}
-
-      <Box mt={2}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <Checkbox
           orientation="horizontal"
           state={values.job_type.length === 0 ? "error" : "default"}
@@ -112,7 +124,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           }
         />
       </Box>
-
       <Select
         state={errors.job_level_label && touched.job_level_label ? "error" : "default"}
         stateRelatedMessage={errors.job_level_label as string}
@@ -126,8 +137,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         <option value="Licence, Maîtrise, autres formations (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations (Bac+3 à Bac+4)</option>
         <option value="Master, titre ingénieur, autres formations (Bac+5)">Master, titre ingénieur, autres formations (Bac+5)</option>
       </Select>
-
-      <Box mt={2}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <CustomInput
           required={true}
           name="job_start_date"
@@ -150,14 +164,19 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
             nativeInputProps={{
               name: "job_duration",
               value: values.job_duration,
-              onChange: (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
+              onChange: async (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
             }}
           />
         </Box>
         {errors.job_duration && (
           <Box sx={{ color: fr.colors.decisions.text.default.error.default, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Warning sx={{ m: 0 }} />
-            <Box sx={{ display: "flex" }} ml={1}>
+            <Box
+              sx={{
+                ml: 1,
+                display: "flex",
+              }}
+            >
               {errors.job_duration as string}
             </Box>
           </Box>

@@ -1,10 +1,9 @@
-import OpenAI from "openai"
+import type OpenAI from "openai"
 import z from "zod"
 
+import { logger } from "@/common/logger"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
-
-import { logger } from "../../common/logger"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const openAiApiUrl = "https://api.openai.com/v1/chat/completions"
 
@@ -55,7 +54,7 @@ export const sendOpenAIMessages = async ({
 
     const json: OpenAI.Chat.Completions.ChatCompletion = (await response.json()) as any
     if ("error" in json) {
-      logger.error("Error from OpenAI", json.error)
+      logger.error(json.error, "Error from OpenAI")
       return null
     }
     if (!json.choices.length || !json.choices[0].message || !json.choices[0].message) {

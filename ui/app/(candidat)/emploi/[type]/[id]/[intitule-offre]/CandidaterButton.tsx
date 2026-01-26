@@ -1,10 +1,11 @@
 "use client"
 
 import Button from "@codegouvfr/react-dsfr/Button"
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useState } from "react"
-import { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 
 import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
@@ -27,7 +28,7 @@ export function CandidaterButton({
     submitControls: ReturnType<typeof useSubmitCandidature>
   }) => React.ReactNode
 }) {
-  const [modalId, setModalId] = useState<number>(Math.random())
+  const [modalId, setModalId] = useState<number>(() => Math.random())
   const modalControls = useDisclosure()
   const submitControls = useSubmitCandidature(item)
   const { applicationDate } = submitControls
@@ -53,17 +54,23 @@ export function CandidaterButton({
           <ItemDetailApplicationsStatus item={item} />
         ) : isOfferActive(item) ? (
           <>
-            <Box sx={{ my: 2 }}>
+            <Box sx={{ my: fr.spacing("4w") }}>
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>
             </Box>
             {item.company?.mandataire && (
-              <Stack direction="row" alignItems="center" sx={{ my: 4 }}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  my: fr.spacing("8w"),
+                }}
+              >
                 <Box component="span">
                   <Image width={16} height={16} src="/images/icons/small_info.svg" alt="" />
                 </Box>
-                <Typography component="span" variant="body2" sx={{ ml: 2, fontSize: "12px", fontStyle: "italic" }}>
+                <Typography component="span" variant="body2" sx={{ ml: fr.spacing("4w"), fontSize: "12px", fontStyle: "italic" }}>
                   Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l'entreprise.{" "}
                 </Typography>
               </Stack>

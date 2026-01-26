@@ -5,12 +5,14 @@ import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
 
+import { fr } from "@codegouvfr/react-dsfr"
+import ExportButtonNew from "@/components/espace_pro/ExportButton/ExportButtonNew"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
 
-import ExportButtonNew from "../../../components/espace_pro/ExportButton/ExportButtonNew"
-import PaginationReactQuery from "../../../components/espace_pro/PaginationReactQuery"
+import { PaginationReactQuery } from "@/components/espace_pro/PaginationReactQuery"
+import { SelectField } from "@/app/_components/FormComponents/SelectField"
 
 interface GlobalFilterProps {
   globalFilter: string
@@ -50,7 +52,27 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-function TableWithPagination({ data = [], columns, description = undefined, exportable, searchPlaceholder = "Rechercher par raison sociale, email ou téléphone..." }) {
+function TableWithPagination({
+  data = [],
+  columns,
+  description = undefined,
+  exportable,
+  searchPlaceholder = "Rechercher par raison sociale, email ou téléphone...",
+  pageIndex = 0,
+  onPageChange = null,
+  defaultSortBy = [],
+  caption,
+}: {
+  data?: any[]
+  columns: any
+  description?: any
+  exportable?: boolean
+  searchPlaceholder?: string
+  pageIndex?: number
+  onPageChange?: (newPageIndex: number) => void
+  defaultSortBy?: { id: string; desc: boolean }[]
+  caption: string
+}) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -61,6 +83,7 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
       // Or, override the default text filter to use
       // "startWith"
       text: (rows, id, filterValue) => {
+        if (!filterValue) return rows
         return rows.filter((row) => {
           const rowValue = row.values[id]
           return rowValue !== undefined ? String(rowValue).toLowerCase().startsWith(String(filterValue).toLowerCase()) : true
@@ -70,22 +93,12 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
     []
   )
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    pageCount,
-    gotoPage,
-    prepareRow,
-    setGlobalFilter,
-    state: { globalFilter, pageIndex },
-  } = useTable(
+  const useTableResult = useTable(
     {
       columns: tableColumns,
       data: tableData,
       defaultColumn: { width: 150 },
-      initialState: { sortBy: [{ id: "createdAt", desc: true }], pageIndex: 0, pageSize: 8 },
+      initialState: { sortBy: defaultSortBy, pageIndex, pageSize: 8 },
       filterTypes,
     },
     useFilters,
@@ -94,21 +107,51 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
     useSortBy,
     usePagination
   )
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    pageCount,
+    page,
+    gotoPage,
+    prepareRow,
+    setGlobalFilter,
+    state: { globalFilter },
+  } = useTableResult
+  const finalPageIndex = useTableResult.state.pageIndex
+
+  function localOnPageChange(newIndex: number) {
+    gotoPage(newIndex)
+    onPageChange?.(newIndex)
+  }
+
+  const hasMultiplePages = Boolean(!Number.isNaN(pageCount) && pageCount > 1)
 
   return (
     <Box className="search-page">
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
-        <Box width="90%">
+        <Box
+          sx={{
+            width: "90%",
+          }}
+        >
           <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" } }}>
             <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
           </Box>
           {description && (
-            <Box width="95%">
+            <Box
+              sx={{
+                width: "95%",
+              }}
+            >
               <Typography
-                mt={3}
                 sx={{
+                  mt: 3,
                   display: "-webkit-box",
-                  WebkitLineClamp: 3, // ← number of lines
+
+                  // ← number of lines
+                  WebkitLineClamp: 3,
+
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                 }}
@@ -120,20 +163,27 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
         </Box>
         {exportable && <ExportButtonNew data={tableData} />}
       </Box>
-
       <Box className="fr-table">
         <Box className="fr-table__wrapper">
           <Box className="fr-table__container">
             <Box className="fr-table__content">
               <Box as="table" {...getTableProps()}>
+                <Box sx={{ fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
+                  {caption}
+                </Box>
                 <Box component="thead">
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                       {headerGroup.headers.map((column, i) => (
-                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} role="hack">
+                        <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
                           <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                            <Typography className="fr-cell__title">{column.render("Header")}</Typography>
-                            <Box component="span" pl={1}>
+                            <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                            <Box
+                              component="span"
+                              sx={{
+                                pl: 1,
+                              }}
+                            >
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
                             </Box>
                           </Box>
@@ -149,7 +199,13 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
                       <Box key={i} as="tr" {...row.getRowProps()}>
                         {row.cells.map((cell, j) => {
                           return (
-                            <Box key={j} component="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}>
+                            <Box
+                              key={j}
+                              headers={cell.column.id}
+                              component="td"
+                              {...cell.getCellProps()}
+                              sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}
+                            >
                               {cell.render("Cell")}
                             </Box>
                           )
@@ -163,9 +219,32 @@ function TableWithPagination({ data = [], columns, description = undefined, expo
           </Box>
         </Box>
       </Box>
-      <Box>
-        <PaginationReactQuery gotoPage={gotoPage} pageCount={pageCount} currentPage={pageIndex} />
-      </Box>
+      {hasMultiplePages && (
+        <Box sx={{ display: "flex", justifyContent: "center", my: fr.spacing("3v"), mx: fr.spacing("1v"), position: "relative" }}>
+          <PaginationReactQuery gotoPage={localOnPageChange} pageCount={pageCount} currentPage={finalPageIndex} />
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              right: 0,
+              maxWidth: "78px",
+            }}
+          >
+            <SelectField
+              id="page-selector"
+              label=""
+              options={[...new Array(pageCount)].map((_, index) => (index + 1).toString()).map((value) => ({ value, label: value }))}
+              nativeSelectProps={{
+                value: (finalPageIndex + 1).toString(),
+                onChange: (event) => {
+                  const { value: newValue } = event.target
+                  localOnPageChange(parseInt(newValue, 10) - 1)
+                },
+              }}
+            />
+          </Box>
+        </Box>
+      )}
     </Box>
   )
 }

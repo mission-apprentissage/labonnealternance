@@ -4,16 +4,15 @@ import { ObjectId } from "mongodb"
 import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import dayjs from "shared/helpers/dayjs"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
+import mailer from "@/services/mailer.service"
+import type { Server } from "@/http/server"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
-
-import { sanitizeTextField } from "../../common/utils/stringUtils"
-import config from "../../config"
-import dayjs from "../../services/dayjs.service"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import mailer from "../../services/mailer.service"
-import { Server } from "../server"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Etablissement server.
@@ -101,11 +100,11 @@ export default (server: Server) => {
       emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
       await Promise.all(
-        emailsAffelnet.map((email) =>
+        emailsAffelnet.map(async (email) =>
           mailer.sendEmail({
             // TODO string | null
             to: email as string,
-            subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
+            subject: `Le formulaire de contact La bonne alternance est activé pour votre CFA sur Choisir son affectation après la 3e`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isAffelnet: true,
@@ -113,8 +112,7 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
               },
               etablissement: {
                 email,
@@ -129,6 +127,8 @@ export default (server: Server) => {
               user: {
                 destinataireEmail: email,
               },
+              publicEmail: config.publicEmail,
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-confirmation-activation",
             },
           })
         )
@@ -193,11 +193,11 @@ export default (server: Server) => {
       emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement!.gestionnaire_email))]
 
       await Promise.all(
-        emailsParcoursup.map((email) =>
+        emailsParcoursup.map(async (email) =>
           mailer.sendEmail({
             // TODO string | null
             to: email as string,
-            subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
+            subject: `Le formulaire de contact La bonne alternance est activé pour votre CFA sur Parcoursup`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isParcoursup: true,
@@ -205,8 +205,9 @@ export default (server: Server) => {
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
                 logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
-                peopleLaptop: `${config.publicUrl}/assets/people-laptop.webp?raw=true`,
+                logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+                logoParcoursup: `${config.publicUrl}/images/emails/logo_parcoursup.png`,
+                optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
               },
               etablissement: {
                 email,
@@ -222,6 +223,8 @@ export default (server: Server) => {
               user: {
                 destinataireEmail: email,
               },
+              publicEmail: config.publicEmail,
+              utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-parcoursup-notif-formateur",
             },
           })
         )
@@ -268,24 +271,23 @@ export default (server: Server) => {
 
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
+        subject: `Le formulaire de contact La bonne alternance ne sera pas activé pour votre CFA sur Choisir son affectation après la 3e`,
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isAffelnet: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           etablissement: {
-            raison_sociale: etablissement.raison_sociale,
+            name: etablissement.raison_sociale,
             formateur_address: etablissement.formateur_address,
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
-            email: etablissement.gestionnaire_email,
           },
-          activationDate: dayjs().format("DD/MM/YYYY"),
+          publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-affelnet-confirmation-desactivation",
         },
       })
 
@@ -332,24 +334,23 @@ export default (server: Server) => {
 
       await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `La prise de RDV ne sera pas activée pour votre CFA sur Parcoursup`,
+        subject: `Le formulaire de contact La bonne alternance ne sera pas activé pour votre CFA sur Parcoursup`,
         template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isParcoursup: true,
           images: {
-            informationIcon: `${config.publicUrl}/assets/icon-information-blue.webp?raw=true`,
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           etablissement: {
-            raison_sociale: etablissement.raison_sociale,
+            name: etablissement.raison_sociale,
             formateur_address: etablissement.formateur_address,
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
-            email: etablissement.gestionnaire_email,
           },
-          activationDate: dayjs().format("DD/MM/YYYY"),
+          publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-parcoursup-confirmation-desactivation",
         },
       })
 
@@ -399,6 +400,7 @@ export default (server: Server) => {
               formateur_city: etablissement.formateur_city,
               opt_out_question: sanitizeTextField(req.body.opt_out_question),
             },
+            publicEmail: config.publicEmail,
           },
           from: config.transactionalEmail,
         })
@@ -443,12 +445,12 @@ export default (server: Server) => {
 
       await mailer.sendEmail({
         to: etablissement!.gestionnaire_email,
-        subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
+        subject: "Le formulaire de contact ne sera pas activé pour votre CFA sur La bonne alternance",
         template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
         data: {
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.webp?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
           },
           etablissement: {
             name: etablissement!.raison_sociale,
@@ -457,6 +459,8 @@ export default (server: Server) => {
             formateur_city: etablissement!.formateur_city,
             siret: etablissement!.formateur_siret,
           },
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-optout-confirmation-desinscription",
+          publicEmail: config.publicEmail,
         },
       })
 

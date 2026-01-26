@@ -1,4 +1,4 @@
-import User from "@/app/(espace-pro)/espace-pro/(connected)/administration/users/[userId]/User"
+import User from "./User"
 
 export default async function AdministrationUserPage() {
   return <User />

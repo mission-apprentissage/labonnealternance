@@ -46,7 +46,7 @@ Avant d'installer le projet, assurez-vous d'avoir les éléments suivants :
 - **yq**
 - **shred**
 - **sshpass**
-- **NodeJS** 20+
+- **NodeJS** 24+
 - **Ansible** 2.7+
 
 #### Installation des pré-requis sur un environnement **MacOS** :
@@ -117,10 +117,11 @@ Voici les étapes pour créer votre clé GPG :
 
 ### Gettting started
 
-Avant de lancer l'application, assurez-vous d'installer toutes les dépendances nécessaires en exécutant la commande suivante :
+Avant de lancer l'application, assurez-vous d'avoir Docker actif et d'avoir installer toutes les dépendances nécessaires en exécutant la commande suivante :
 
 ```bash
 yarn
+yarn typecheck
 yarn setup
 ```
 

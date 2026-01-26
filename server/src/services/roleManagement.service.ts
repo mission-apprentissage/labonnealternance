@@ -1,24 +1,23 @@
 import { badRequest, internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { ICFA } from "shared/models/cfa.model"
-import { IEntreprise } from "shared/models/entreprise.model"
-import { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models/index"
-import { AccessEntityType, AccessStatus, IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import type { ICFA } from "shared/models/cfa.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
+import type { ComputedUserAccess, IUserRecruteurPublic, IUserWithAccount } from "shared/models/index"
+import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
-
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import config from "@/config"
-import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
-
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
 
 import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
+import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -270,11 +269,10 @@ export const sendDeactivatedRecruteurMail = async ({
 }) => {
   await mailer.sendEmail({
     to: email,
-    subject: "Votre compte a été désactivé sur La bonne alternance",
+    subject: "Mise à jour de votre compte sur La bonne alternance",
     template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
     data: {
       images: {
-        accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
         logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
       },
@@ -285,7 +283,8 @@ export const sendDeactivatedRecruteurMail = async ({
       siret: sanitizeTextField(establishment_siret),
       raison_sociale: sanitizeTextField(establishment_raison_sociale),
       phone: sanitizeTextField(phone),
-      emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+      publicEmail: config.publicEmail,
+      utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_compte-recruteur_desactivation",
     },
   })
 }

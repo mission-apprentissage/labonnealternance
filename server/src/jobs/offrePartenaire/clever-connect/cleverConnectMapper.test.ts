@@ -2,7 +2,7 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { cleverConnectJobToJobsPartners } from "@/jobs/offrePartenaire/clever-connect/cleverConnectMapper"
+import { cleverConnectJobToJobsPartners } from "./cleverConnectMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
@@ -144,7 +144,7 @@ describe("cleverConnectJobToJobsPartners", () => {
       //_id: expect.any(ObjectId),
       apply_phone: null,
       created_at: now,
-      updated_at: new Date("2025-02-25T02:46:50.131Z"),
+      updated_at: new Date("2024-07-21T02:49:06.000Z"),
       partner_label: "Meteojob",
       partner_job_id: "43954570",
       contract_start: null,
@@ -320,7 +320,7 @@ describe("cleverConnectJobToJobsPartners", () => {
       //_id: expect.any(ObjectId),
       apply_phone: null,
       created_at: now,
-      updated_at: new Date("2025-02-25T02:46:50.131Z"),
+      updated_at: new Date("2024-07-21T02:49:06.000Z"),
       partner_label: "Meteojob",
       partner_job_id: "43954570",
       contract_start: null,

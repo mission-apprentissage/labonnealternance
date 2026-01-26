@@ -2,18 +2,18 @@ import fs from "node:fs"
 
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
+import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixture"
+import { processRecruteursLba } from "./processRecruteursLba"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { stringToStream } from "@/common/utils/streamUtils"
-import { processRecruteursLba } from "@/jobs/offrePartenaire/recruteur-lba/processRecruteursLba"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { generateRecruiterRawFixture } from "../../../../../shared/src/fixtures/recruiterRaw.fixture"
 
 useMongo()
 
@@ -65,7 +65,7 @@ describe("importRecruteursLbaRaw", () => {
 
   it("should process all recruteurs", async () => {
     await processRecruteursLbaFromFile(`${testDir}/processRecruteursLba.test.1.json`)
-    const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
+    const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).sort({ partner_job_id: 1 }).toArray()
     expect.soft(publishedJobPartners.map((job) => omit(job, "_id"))).toMatchSnapshot()
   })
 
@@ -79,8 +79,15 @@ describe("importRecruteursLbaRaw", () => {
     // when
     await processRecruteursLbaFromFile(`${testDir}/processRecruteursLba.test.1.json`)
     // then
-    const publishedJobPartners = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
-    expect.soft(publishedJobPartners.length).toBe(2)
+    const jobs = await getDbCollection("jobs_partners").find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }).toArray()
+
+    const activeJobs = jobs.filter((x) => x.offer_status === JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(activeJobs.length).toBe(2)
+
+    const canceledJobs = jobs.filter((x) => x.offer_status === JOB_STATUS_ENGLISH.ANNULEE)
+    expect.soft(canceledJobs.length).toBe(1)
+    const [canceledJob] = canceledJobs
+    expect.soft(canceledJob.offer_status_history.map(({ status }) => ({ status }))).toEqual([{ status: JOB_STATUS_ENGLISH.ANNULEE }])
   })
   it("should remove email contact when it is blacklisted", async () => {
     // given

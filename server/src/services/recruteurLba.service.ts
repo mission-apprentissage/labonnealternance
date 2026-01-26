@@ -1,25 +1,28 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import { Document, Filter, ObjectId } from "mongodb"
-import { ERecruteurLbaUpdateEventType, IApplication, IRecruteurLbaUpdateEvent, JobCollectionName } from "shared"
+import type { Document, Filter } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
+import { ERecruteurLbaUpdateEventType, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
+import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
 
-import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
-import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
-
-import { encryptMailWithIV } from "../common/utils/encryptString"
-import { IApiError, manageApiError } from "../common/utils/errorManager"
-import { isAllowedSource } from "../common/utils/isAllowedSource"
-import { getDbCollection } from "../common/utils/mongodbUtils"
-import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-
-import { getApplicationByCompanyCount, IApplicationCount } from "./application.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByCompanyCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
-import { TLbaItemResult } from "./jobOpportunity.service.types"
-import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
+import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { isAllowedSource } from "@/common/utils/isAllowedSource"
+import type { IApiError } from "@/common/utils/errorManager"
+import { manageApiError } from "@/common/utils/errorManager"
+import { encryptMailWithIV } from "@/common/utils/encryptString"
+import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
 
 const setDistance = (distance: number | null | undefined) => {
   if (distance != null && distance != undefined && distance >= 0) {
@@ -88,7 +91,7 @@ const transformCompany = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
+    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
   }
 
   return resultCompany
@@ -133,7 +136,7 @@ const transformCompanyWithMinimalData = ({
     ],
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: getRecipientID(JobCollectionName.recruteur, company.workplace_siret!),
+    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
   }
 
   return resultCompany
@@ -187,7 +190,7 @@ const transformCompanyV2 = ({
     applicationCount: applicationCount?.count || 0,
     url: null,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
-    recipient_id: `partners_${company._id.toString()}`,
+    recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
   }
 
   return resultCompany
@@ -236,9 +239,14 @@ type IRecruteursLbaSearchParams = {
   romes: string[] | null
   departements?: string[] | null
   opco: OPCOS_LABEL | null
+  partners_to_exclude?: JOBPARTNERS_LABEL[] | null
 }
 
-export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements, partners_to_exclude }: IRecruteursLbaSearchParams): Promise<IJobsPartnersOfferPrivate[]> => {
+  if (partners_to_exclude?.includes(JOBPARTNERS_LABEL.RECRUTEURS_LBA)) {
+    return []
+  }
+
   const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
 
   if (romes) {
@@ -495,7 +503,7 @@ export const getRecruteurLbaFromDB = async (siret: string): Promise<ILbaItemLbaC
   })) as IJobsPartnersRecruteurAlgoPrivate
 
   if (!lbaCompany) {
-    throw badRequest("Company not found")
+    throw notFound("Company not found")
   }
 
   const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
@@ -575,7 +583,9 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
       })
     }
 
-    fieldUpdates.length && (await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates))
+    if (fieldUpdates.length) {
+      await getDbCollection("recruteurlbaupdateevents").insertMany(fieldUpdates)
+    }
 
     return { enseigne: application?.company_name || recruteurLba?.workplace_brand || recruteurLba?.workplace_legal_name, phone, email, siret, active: recruteurLba ? true : false }
   } catch (err) {

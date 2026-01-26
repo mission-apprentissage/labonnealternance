@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Grid, Typography } from "@mui/material"
-import { Metadata } from "next"
+import type { Metadata } from "next"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -15,7 +15,11 @@ export const metadata: Metadata = {
 
 export default function EspaceDeveloppeurs() {
   return (
-    <Box mb={fr.spacing("3w")}>
+    <Box
+      sx={{
+        mb: fr.spacing("3w"),
+      }}
+    >
       <Breadcrumb pages={[PAGES.static.EspaceDeveloppeurs]} />
       <DefaultContainer>
         <Box sx={{ p: { xs: fr.spacing("2w"), md: fr.spacing("5w") }, borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
@@ -30,11 +34,19 @@ export default function EspaceDeveloppeurs() {
               />
             </Grid>
             <Grid size={{ xs: 12, md: 7 }}>
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 La bonne alternance propose un point d’entrée unique et documenté pour faciliter l’accès à toutes les données relatives à l’apprentissage.
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 L’espace développeur est un site dédié{" "}
                 <DsfrLink aria-label="Accès au site api.apprentissage - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr">
                   API Apprentissage
@@ -42,7 +54,14 @@ export default function EspaceDeveloppeurs() {
                 , sur lequel vous pourrez utiliser les différents jeux de données proposés, une fois votre compte créé :
               </Typography>
 
-              <Grid mb={fr.spacing("12v")} display="flex" justifyContent="center" gap={4}>
+              <Grid
+                sx={{
+                  mb: fr.spacing("12v"),
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: 4,
+                }}
+              >
                 <Button priority="secondary" size="large">
                   <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/explorer">Explorer l'API</DsfrLink>
                 </Button>
@@ -50,22 +69,46 @@ export default function EspaceDeveloppeurs() {
                   <DsfrLink href="https://api.apprentissage.beta.gouv.fr/fr/documentation-technique">Voir la documentation technique</DsfrLink>
                 </Button>
               </Grid>
-              <Typography variant="h4" mb={fr.spacing("2w")}>
+              <Typography
+                variant="h4"
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Obtenir des données
               </Typography>
-              <Typography mb={fr.spacing("2w")} fontWeight={700}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                  fontWeight: 700,
+                }}
+              >
                 API
               </Typography>
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Les opportunités d'emplois et de formation exposées sur le site La bonne alternance sont accessibles à tous via notre API.
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Utilisée dans sa globalité cette API permet la mise en relation des candidats à l’alternance avec des entreprises accueillant des alternants d’une part et/ou avec
                 des organismes de formation en alternance d’autre part.
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>Documentation des différentes routes API</Typography>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
+                Documentation des différentes routes API
+              </Typography>
 
               <Box
                 component="ul"
@@ -88,19 +131,36 @@ export default function EspaceDeveloppeurs() {
                 <li>Envoi de candidatures à une opportunités d'emploi : à venir</li>
                 <li>Envoi de prise de contact à une opportunité de formation : à venir</li>
               </Box>
-              <Typography mb={fr.spacing("2w")} fontWeight={700}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                  fontWeight: 700,
+                }}
+              >
                 Widget
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Pour une intégration rapide et simplifiée, les données présentées ci-dessus sont également disponibles sous forme de widget.
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Disponible en marque blanche ce widget est proposé en plusieurs tailles. Par ailleurs, différents filtres peuvent être appliqués aux données qu’il restitue.
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Pour exploiter le widget,{" "}
                 <DsfrLink
                   aria-label="Exposez tout ou partie de l'offre de formation et d'emploi en alternance - nouvelle fenêtre"
@@ -110,35 +170,68 @@ export default function EspaceDeveloppeurs() {
                 </DsfrLink>
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Pour tester le widget,{" "}
                 <DsfrLink aria-label="Testez le widget - nouvelle fenêtre" href="https://labonnealternance.apprentissage.beta.gouv.fr/test-widget">
                   consultez cette page.
                 </DsfrLink>
               </Typography>
 
-              <Typography variant="h4" mb={fr.spacing("2w")}>
+              <Typography
+                variant="h4"
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Envoyer des données
               </Typography>
 
-              <Typography mb={fr.spacing("2w")} fontWeight={700}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                  fontWeight: 700,
+                }}
+              >
                 API
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Par ailleurs, collectez et partagez les besoins en recrutement en alternance de vos entreprises, afin d’améliorer leur visibilité auprès des candidats à
                 l’alternance via cette API :{" "}
                 <DsfrLink aria-label="Dépôt d'offre" href="https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre">
                   https://api.apprentissage.beta.gouv.fr/fr/explorer/depot-offre
                 </DsfrLink>
               </Typography>
-              <Typography mb={fr.spacing("2w")} fontWeight={700}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                  fontWeight: 700,
+                }}
+              >
                 Widget
               </Typography>
 
-              <Typography mb={fr.spacing("2w")}>Pour une intégration rapide et simplifiée, cette fonctionnalité est également disponible sous forme de widget.</Typography>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
+                Pour une intégration rapide et simplifiée, cette fonctionnalité est également disponible sous forme de widget.
+              </Typography>
 
-              <Typography mb={fr.spacing("2w")}>
+              <Typography
+                sx={{
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 Pour exploiter le widget, utilisez l’adresse suivante au sein d’une balise HTML en remplaçant "ORIGINE" par le nom de votre établissement.
               </Typography>
 

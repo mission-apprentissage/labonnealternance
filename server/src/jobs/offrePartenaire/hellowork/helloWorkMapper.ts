@@ -4,10 +4,10 @@ import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZHelloWorkJob = z
   .object({
@@ -33,6 +33,7 @@ export const ZHelloWorkJob = z
     country: z.string().nullish(),
     geoloc: z.string().nullish(),
     url: extensions.url(),
+    guid: z.string(),
   })
   .passthrough()
 
@@ -70,7 +71,6 @@ function getDiplomaLevel(job: IHelloWorkJob): IComputedJobsPartners["offer_targe
 export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPartners => {
   const {
     contract,
-    job_id,
     contract_start_date,
     remote,
     title,
@@ -84,8 +84,8 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     city,
     geoloc,
     url,
-    updated_date,
     postal_code,
+    guid,
   } = job
   const contractDuration: number | null = parseContractDuration(job)
   const { latitude, longitude } = geolocToLatLon(geoloc)
@@ -94,14 +94,12 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
   const urlParsing = extensions.url().safeParse(url)
   const creationDate = parseDate(publication_date)
 
-  const created_at = new Date()
+  const now = new Date()
   const partnerJob: IComputedJobsPartners = {
-    ...blankComputedJobPartner(),
+    ...blankComputedJobPartner(now),
     _id: new ObjectId(),
-    created_at,
-    updated_at: updated_date ? parseDate(updated_date) : created_at,
     partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-    partner_job_id: job_id,
+    partner_job_id: guid,
     contract_start: parseDate(contract_start_date),
     contract_type: contract.toLowerCase() === "alternance" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: remote ? (teletravailMapping[remote] ?? null) : null,
@@ -116,7 +114,7 @@ export const helloWorkJobToJobsPartners = (job: IHelloWorkJob): IComputedJobsPar
     offer_rome_codes: codeRomeParsing.success ? [codeRomeParsing.data] : undefined,
     offer_creation: creationDate,
     offer_expiration: dayjs
-      .tz(creationDate || created_at)
+      .tz(creationDate || now)
       .add(2, "months")
       .toDate(),
     workplace_siret: siretParsing.success ? siretParsing.data : null,

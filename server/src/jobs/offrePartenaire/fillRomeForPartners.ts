@@ -1,11 +1,12 @@
-import { Filter } from "mongodb"
-import { COMPUTED_ERROR_SOURCE, IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { Filter } from "mongodb"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { MAX_DIAGORIENTE_PAYLOAD_SIZE } from "@/common/apis/diagoriente/diagoriente.client"
-import { defaultFillComputedJobsPartnersContext, FillComputedJobsPartnersContext } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import { getRomesInfosFromDiagoriente } from "@/services/cacheDiagoriente.service"
-
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
@@ -20,7 +21,7 @@ export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobs
     ],
   }
 
-  return fillFieldsForPartnersFactory({
+  return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.API_DIAGORIENTE,
     sourceFields: ["offer_title", "workplace_naf_label", "offer_description"],
     filledFields,

@@ -1,40 +1,35 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
-import { removeBrevoContacts } from "@/jobs/anonymization/removeBrevoContacts"
-import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
-import { sendMiseEnRelation } from "@/jobs/miseEnRelation/sendMiseEnRelation"
-import { importers } from "@/jobs/offrePartenaire/jobsPartners.importer"
-import { exportFileForAlgo } from "@/jobs/partenaireExport/exportBlacklistAlgo"
-import { exportJobsToS3V2 } from "@/jobs/partenaireExport/exportJobsToS3V2"
-import { exportRecruteursToBrevo } from "@/jobs/partenaireExport/exportRecrutersToBrevo"
-import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
-import { generateSitemap } from "@/services/sitemap.service"
-
-import { getLoggerWithContext, logger } from "../common/logger"
-import { getDatabase } from "../common/utils/mongodbUtils"
-import config from "../config"
-
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
 import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
+import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
+import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { recreateIndexes } from "./database/recreateIndexes"
 import { validateModels } from "./database/schemaValidation"
+import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
+import { create as createMigration, status as statusMigration, up as upMigration } from "./migrations/migrations"
+import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
+import { importers } from "./offrePartenaire/jobsPartners.importer"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { processRecruteursLba } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
+import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
+import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
@@ -55,10 +50,17 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
+import { updateSEO } from "./seo/updateSEO"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
+import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
+import { generateSitemap } from "@/services/sitemap.service"
+import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
+import config from "@/config"
+import { getDatabase } from "@/common/utils/mongodbUtils"
+import { getLoggerWithContext, logger } from "@/common/logger"
 
 export async function setupJobProcessor() {
   logger.info("Setup job processor")
@@ -77,7 +79,7 @@ export async function setupJobProcessor() {
           },
           "Scan et envoi des candidatures": {
             cron_string: "*/10 * * * *",
-            handler: () => processApplications(),
+            handler: async () => processApplications(),
             tag: "main",
           },
           "Traitement complet des jobs_partners par API": {
@@ -92,7 +94,7 @@ export async function setupJobProcessor() {
           },
           "Mise à jour des adresses emails bloquées": {
             cron_string: "5 0 * * *",
-            handler: () => updateBrevoBlockedEmails({}),
+            handler: async () => updateBrevoBlockedEmails({}),
             tag: "main",
           },
           "Anonymisation des candidats & leurs candidatures de plus de deux (2) ans": {
@@ -122,15 +124,20 @@ export async function setupJobProcessor() {
           },
           "Envoi des mails de relance pour l'expiration des offres à J+7": {
             cron_string: "20 9 * * *",
-            handler: () => addJob({ name: "recruiterOfferExpirationReminderJob", payload: { threshold: "7" } }),
+            handler: async () => addJob({ name: "recruiterOfferExpirationReminderJob", payload: { threshold: "7" } }),
           },
           "Envoi des mails de relance pour l'expiration des offres à J+1": {
             cron_string: "25 9 * * *",
-            handler: () => addJob({ name: "recruiterOfferExpirationReminderJob", payload: { threshold: "1" } }),
+            handler: async () => addJob({ name: "recruiterOfferExpirationReminderJob", payload: { threshold: "1" } }),
           },
           "Envoi du rappel de validation des utilisateurs en attente aux OPCOs": {
             cron_string: "30 0 * * 1,3,5",
             handler: opcoReminderJob,
+            tag: "main",
+          },
+          "Anonymisation des reasons de plus de (1) an": {
+            cron_string: "35 0 * * *",
+            handler: anonymizeReportedReasons,
             tag: "main",
           },
           "Active tous les établissements qui ont souscrits à l'opt-out": {
@@ -185,7 +192,7 @@ export async function setupJobProcessor() {
           },
           "Export des offres sur S3 v2": {
             cron_string: "0 3 * * *",
-            handler: () => exportJobsToS3V2(),
+            handler: async () => exportJobsToS3V2(),
           },
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
             cron_string: "30 3 * * *",
@@ -208,12 +215,12 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: config.env === "production" ? () => exportJobsToFranceTravail() : () => Promise.resolve(0),
+            handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
             tag: "main",
           },
           "export des offres LBA sur S3": {
             cron_string: "30 6 * * 1",
-            handler: config.env === "production" ? () => exportLbaJobsToS3() : () => Promise.resolve(0),
+            handler: config.env === "production" ? async () => exportLbaJobsToS3() : async () => Promise.resolve(0),
             tag: "main",
           },
           "Invite les établissements (via email gestionnaire) à l'opt-out": {
@@ -223,22 +230,27 @@ export async function setupJobProcessor() {
           },
           "Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
             cron_string: "0 9 * * *",
-            handler: inviteEtablissementParcoursupToPremium,
+            handler: async () => inviteEtablissementParcoursupToPremium(false),
             tag: "main",
           },
           "Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
             cron_string: "15 9 * * *",
-            handler: inviteEtablissementAffelnetToPremium,
+            handler: async () => inviteEtablissementAffelnetToPremium(false),
             tag: "main",
           },
           "(Relance) Invite les établissements (via email gestionnaire) au premium (Parcoursup)": {
             cron_string: "30 9 * * *",
-            handler: () => inviteEtablissementParcoursupToPremiumFollowUp(),
+            handler: async () => inviteEtablissementParcoursupToPremiumFollowUp(),
             tag: "main",
           },
           "(Relance) Invite les établissements (via email gestionnaire) au premium (Affelnet)": {
             cron_string: "45 9 * * *",
-            handler: () => inviteEtablissementAffelnetToPremiumFollowUp(),
+            handler: async () => inviteEtablissementAffelnetToPremiumFollowUp(),
+            tag: "main",
+          },
+          "Rappel aux établissements que le premium est activé (Parcoursup)": {
+            cron_string: "0 6 8 1 *",
+            handler: async () => premiumActivatedReminder(),
             tag: "main",
           },
           "Creation de la collection rolemanagement360": {
@@ -248,12 +260,12 @@ export async function setupJobProcessor() {
           },
           "Contrôle quotidien des candidatures": {
             cron_string: "0 10-19/1 * * 1-5",
-            handler: config.env === "production" ? () => controlApplications() : () => Promise.resolve(0),
+            handler: config.env === "production" ? async () => controlApplications() : async () => Promise.resolve(0),
             tag: "main",
           },
           "Contrôle quotidien des prises de rendez-vous": {
             cron_string: "0 11-19/2 * * 1-5",
-            handler: config.env === "production" ? () => controlAppointments() : () => Promise.resolve(0),
+            handler: config.env === "production" ? async () => controlAppointments() : async () => Promise.resolve(0),
             tag: "main",
           },
           "Mise à jour du référentiel commune": {
@@ -285,14 +297,22 @@ export async function setupJobProcessor() {
             cron_string: "0 10 * * FRI",
             handler: exportFileForAlgo,
           },
+          "Mise à jour des données calculées pour les pages SEO": {
+            cron_string: "0 4 * * SAT",
+            handler: updateSEO,
+          },
           "Traitement des recruteur LBA par la pipeline jobs partners": {
             cron_string: "0 10 * * SUN",
-            handler: () => processRecruteursLba(),
+            handler: async () => processRecruteursLba(),
             tag: "main",
           },
           "Suppression des contacts Brevo de plus de deux ans": {
             cron_string: "0 8 * * SUN",
             handler: removeBrevoContacts,
+          },
+          "maj-diplome-metier": {
+            cron_string: "0 8 * * SUN",
+            handler: updateDiplomeMetier,
           },
         },
     jobs: {
@@ -378,7 +398,7 @@ export async function setupJobProcessor() {
           return [
             command,
             {
-              handler: async () => fct(),
+              handler: async (job) => fct(job.payload),
             },
           ]
         })

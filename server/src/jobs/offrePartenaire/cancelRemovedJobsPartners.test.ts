@@ -3,11 +3,11 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
+import { jobPartnersByFlux } from "./processJobPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-
-import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 
 useMongo()
 
@@ -52,7 +52,8 @@ describe("Canceling jobs_partners that have been removed from computed_jobs_part
   })
 
   it("L'annulation dans jobs_partners fonctionne comme attendue : \n- les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé\n- les éléments de jobs_partners qui sont également dans computed sont toujours présents\n-  aucun éléments de jobs_partners n'a été retiré de la collection", async () => {
-    await cancelRemovedJobsPartners()
+    const filter = { partner_label: { $in: jobPartnersByFlux } }
+    await cancelRemovedJobsPartners(filter)
 
     // les éléments de jobs_partners qui ne sont plus dans computed doivent être taggés Annulé
     const countCanceledJobsPartners = await getDbCollection("jobs_partners").countDocuments({

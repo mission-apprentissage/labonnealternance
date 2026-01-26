@@ -3,14 +3,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
-import { ILbaItemPartnerJobJson } from "shared"
+import type { ILbaItemPartnerJobJson } from "shared"
 
+import CandidatureParTelephone from "@/components/ItemDetail/CandidatureParTelephone"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
-
-import CandidatureParTelephone from "../CandidatureParTelephone"
 
 const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE"]
 

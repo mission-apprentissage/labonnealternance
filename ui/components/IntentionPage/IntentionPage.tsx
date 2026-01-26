@@ -5,16 +5,15 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import React, { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 
+import { IntensionPageNavigation } from "./IntensionPageNavigation"
+import { IntentionPageForm } from "./IntentionPageForm"
+import { IntensionPageResult } from "./IntensionPageResult"
+import type { IntentionPageFormValues } from "./IntentionPageForm"
+import { LoadingEmptySpace } from "@/components/espace_pro"
 import { DsfrIcon } from "@/components/DsfrIcon"
-import { IntentionPageForm, IntentionPageFormValues } from "@/components/IntentionPage/IntentionPageForm"
 import { MailCard } from "@/components/MailCard"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
-
-import { LoadingEmptySpace } from "../espace_pro"
-
-import { IntensionPageNavigation } from "./IntensionPageNavigation"
-import { IntensionPageResult } from "./IntensionPageResult"
 
 export type IntentionPageProps = {
   company_recruitment_intention: ApplicationIntention
@@ -90,10 +89,21 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         </Button>
       </Box>
       <Box sx={{ my: "24px" }}>
-        <Typography fontSize="16px" lineHeight="24px" fontWeight={700}>
+        <Typography
+          sx={{
+            fontSize: "16px",
+            lineHeight: "24px",
+            fontWeight: 700,
+          }}
+        >
           Voici votre réponse {positiveNegative} à {applicant_first_name} {applicant_last_name} :
         </Typography>
-        <Typography fontSize="12px" lineHeight="20px">
+        <Typography
+          sx={{
+            fontSize: "12px",
+            lineHeight: "20px",
+          }}
+        >
           {company_recruitment_intention === ApplicationIntention.ENTRETIEN ? (
             <>Le candidat recevra le message suivant ainsi que vos coordonnées par courriel. Vérifiez vos coordonnées, afin que le candidat puisse vous recontacter.</>
           ) : (

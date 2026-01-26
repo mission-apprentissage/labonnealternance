@@ -1,6 +1,7 @@
-import { IUserRecruteurForAdminJSON } from "shared"
+import type { IUserRecruteurForAdminJSON } from "shared"
 
-import { PopoverMenu, PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
+import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PAGES } from "@/utils/routes.utils"
 
 export const UserMenu = ({
@@ -19,12 +20,14 @@ export const UserMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
+      ariaLabel: `Voir les informations de l'entreprise ${row.establishment_raison_sociale}`,
       link: PAGES.dynamic.backOpcoInformationEntreprise({ user_id: row._id as string }).getPath(),
       type: "link",
     },
-    tabIndex !== "1"
+    tabIndex === "disabled" || tabIndex === "awaiting"
       ? {
           label: "Activer le compte",
+          ariaLabel: `Activer le compte de l'entreprise ${row.establishment_raison_sociale}`,
           onClick: () => {
             confirmationActivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -32,9 +35,10 @@ export const UserMenu = ({
           type: "button",
         }
       : null,
-    tabIndex !== "2"
+    tabIndex === "active" || tabIndex === "awaiting"
       ? {
           label: "Désactiver le compte",
+          ariaLabel: `Désactiver le compte de l'entreprise ${row.establishment_raison_sociale}`,
           onClick: () => {
             confirmationDesactivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -44,5 +48,5 @@ export const UserMenu = ({
       : null,
   ]
 
-  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={"Actions sur les comptes de l'entreprise"} />
+  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={`Actions sur les comptes de l'entreprise ${row.establishment_raison_sociale}`} />
 }

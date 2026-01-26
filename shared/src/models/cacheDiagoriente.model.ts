@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { zObjectId } from "zod-mongodb-schema"
 
-import { IModelDescriptor } from "./common.js"
+import type { IModelDescriptor } from "./common.js"
 
 const collectionName = "cache_diagoriente" as const
 
@@ -13,11 +13,24 @@ export const ZDiagorienteClassificationSchema = z.object({
 })
 export type IDiagorienteClassificationSchema = z.output<typeof ZDiagorienteClassificationSchema>
 
-export const ZDiagorienteClassificationResponseSchema = z.object({
-  job_offer_id: z.string(),
-  code_rome: z.string().nullable(),
-  intitule_rome: z.string().nullable(),
-})
+export const ZDiagorienteClassificationResponseSchema = z.record(
+  z.object({
+    classify_results: z.array(
+      z.object({
+        data: z.object({
+          _key: z.string(),
+          item_version_id: z.string(),
+          item_id: z.string(),
+          titre: z.string(),
+          valid_from: z.string(),
+          valid_to: z.string().nullable(),
+          item_type: z.string(),
+          rome: z.string(),
+        }),
+      })
+    ),
+  })
+)
 export type IDiagorienteClassificationResponseSchema = z.output<typeof ZDiagorienteClassificationResponseSchema>
 
 const ZCacheDiagoriente = z
@@ -26,7 +39,8 @@ const ZCacheDiagoriente = z
   })
   .extend({
     ...ZDiagorienteClassificationSchema.pick({ title: true, sector: true }).shape,
-    ...ZDiagorienteClassificationResponseSchema.omit({ job_offer_id: true }).shape,
+    intitule_rome: z.string(),
+    code_rome: z.string(),
   })
 
 export type ICacheDiagoriente = z.output<typeof ZCacheDiagoriente>

@@ -2,15 +2,15 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
-import { Form, Formik, FormikHelpers } from "formik"
+import type { FormikHelpers } from "formik"
+import { Form, Formik } from "formik"
 import { useState } from "react"
 import { validateSIRET } from "shared/validators/siretValidator"
 import * as Yup from "yup"
 
+import AutocompleteAsync from "@/app/(espace-pro)/_components/AutocompleteAsync"
+import { SIRETValidation } from "@/common/validation/fieldValidations"
 import { searchEntreprise } from "@/services/searchEntreprises"
-
-import AutocompleteAsync from "../../../app/(espace-pro)/_components/AutocompleteAsync"
-import { SIRETValidation } from "../../../common/validation/fieldValidations"
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 

@@ -1,22 +1,22 @@
-import { Transform } from "stream"
 import { pipeline } from "stream/promises"
 
 import { internal } from "@hapi/boom"
-import { Filter } from "mongodb"
+import type { Filter } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { limitStream } from "@/common/utils/streamUtils"
 import config from "@/config"
 
-export const buildUrlLba = (type: string, id: string, siret: string | null, title: string) => {
+export const buildUrlLba = (type: string, id: string, siret: string | null, title?: string) => {
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
       return `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, id, title)}`
@@ -34,15 +34,21 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     filters.push(addedMatchFilter)
   }
 
-  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).project({ _id: 1, validated: 0, business_error: 0, errors: 0 }).stream()
+  const stream = await getDbCollection("computed_jobs_partners").find({ $and: filters }).stream()
 
   const counters = { total: 0, success: 0, error: 0 }
   const importDate = new Date()
-  const transform = new Transform({
-    objectMode: true,
-    async transform(computedJobPartner: Omit<IJobsPartnersOfferPrivate, "created_at">, encoding, callback: (error?: Error | null, data?: any) => void) {
+
+  const transform = limitStream<Omit<IJobsPartnersOfferPrivate, "created_at">>({
+    concurrency: 1_000,
+    processItem: async (computedJobPartner) => {
       try {
         counters.total++
+
+        if (counters.total % 10000 === 0) {
+          logger.info(`import progression: ${counters.total} documents traités`)
+        }
+
         const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
           updated_at: importDate,
           partner_label: computedJobPartner.partner_label,
@@ -91,7 +97,6 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           cfa_address_label: null,
           cfa_legal_name: null,
           cfa_apply_phone: null,
-          lba_url: computedJobPartner.lba_url ?? "",
         }
 
         await getDbCollection("jobs_partners").updateOne(
@@ -118,17 +123,15 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           )
         }
         counters.success++
-        callback(null)
       } catch (err: unknown) {
         counters.error++
 
         const newError = internal(
           `error converting computed_job_partner to job_partner, partner_label=${computedJobPartner.partner_label} partner_job_id=${computedJobPartner.partner_job_id}`
         )
-        logger.error(newError.message, err)
+        logger.error(err, newError.message)
         newError.cause = err
         sentryCaptureException(newError)
-        callback(null)
       }
     },
   })

@@ -3,12 +3,11 @@ import { isEnum } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import config from "@/config"
+import mailer from "@/services/mailer.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { asyncForEach } from "../../common/utils/asyncUtils"
-import config from "../../config"
-import mailer from "../../services/mailer.service"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description send mail to ocpo with awaiting validation user number
@@ -62,9 +61,12 @@ export const opcoReminderJob = async () => {
           template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
           data: {
             images: {
-              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png`,
+              logoRf: `${config.publicUrl}/images/emails/logo_rf.png`,
             },
             count,
+            publicEmail: config.publicEmail,
+            utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_opco_notif-comptes-a-valider",
           },
         })
       })

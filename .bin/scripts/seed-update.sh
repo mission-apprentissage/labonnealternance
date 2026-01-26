@@ -45,6 +45,6 @@ yarn build:dev
 yarn cli migrations:up
 yarn cli recreate:indexes
 
-docker compose -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$TARGET_DB" --gzip --archive > "$SEED_GZ" 
+docker compose -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$TARGET_DB" --numParallelCollections=2 --gzip --archive > "$SEED_GZ" 
 rm -f "$SEED_GPG"
 gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o "$SEED_GPG" "$SEED_GZ"

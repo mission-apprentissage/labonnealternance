@@ -1,4 +1,4 @@
-import { PropositionOffreId } from "@/app/(espace-pro)/espace-pro/(from-mail)/proposition/formulaire/[idFormulaire]/offre/[jobId]/siret/[siretFormateur]/PropositionOffreId"
+import { PropositionOffreId } from "./PropositionOffreId"
 
 export default async function Page({ params, searchParams }) {
   const { idFormulaire, jobId, siretFormateur } = (await params) as { idFormulaire: string; jobId: string; siretFormateur: string }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { IJobJson } from "shared"
+import type { IJobJson } from "shared"
 
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"

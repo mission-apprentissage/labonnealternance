@@ -11,27 +11,30 @@ const accordions = [
       <Box>
         <List sx={{ listStyleType: "disc", pl: 2 }}>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               Vous ne savez pas vers quel métier vous orienter ?{" "}
               <Typography component="span">
-                Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation professionnelle.{" "}
+                Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation professionnelle.{"  "}
                 <DsfrLink href="https://diagoriente.beta.gouv.fr/">C'est parti !</DsfrLink>
               </Typography>
             </Typography>
           </ListItem>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               L’alternance augmente d'environ 10% vos chances de trouver un emploi en sortie de formation
             </Typography>
             , par rapport à une formation scolaire. Et ce, car l'alternance vous permet d'acquérir une première expérience professionnelle. En contrepartie, c’est un mode de
             formation exigeant qui implique un rythme de travail professionnel, avec des congés limités et non plus de vacances scolaires.
-          </ListItem>
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
-              Des doutes sur votre orientation ?
-            </Typography>{" "}
-            Pensez à la Prépa-apprentissage : un dispositif qui vous permet de découvrir un ou plusieurs métiers !{" "}
-            <DsfrLink href="https://travail-emploi.gouv.fr/le-ministere-en-action/pic/prepa-apprentissage-pic">En savoir plus</DsfrLink>
           </ListItem>
         </List>
       </Box>
@@ -43,7 +46,12 @@ const accordions = [
       <Box>
         <List sx={{ listStyleType: "disc", pl: 2 }}>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               Contactez la Mission locale de votre secteur.
             </Typography>{" "}
             Des conseillers vous aideront dans vos recherches d'entreprise.{" "}
@@ -53,7 +61,12 @@ const accordions = [
           </ListItem>
 
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               L'ANAF (Association Nationale des Apprentis de France)
             </Typography>{" "}
             peut vous aider à tout moment de votre parcours et pour toute question que vous vous posez !{" "}
@@ -62,7 +75,12 @@ const accordions = [
             </DsfrLink>
           </ListItem>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               Un mentor (ancien alternant ou adulte actif inséré dans la vie professionnelle)
             </Typography>{" "}
             peut vous épauler tout au long de votre parcours et suivant vos besoins !{" "}
@@ -89,7 +107,12 @@ const accordions = [
       <Box>
         <List sx={{ listStyleType: "disc", pl: 2 }}>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <Typography fontWeight={700} component="span">
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               La plupart des organismes de formations font des journées portes ouvertes :
             </Typography>{" "}
             vous y trouverez l'occasion d'échanger avec des alternants !

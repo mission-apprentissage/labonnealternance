@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Checkout project
         if: ${{ inputs.app_version == 'latest' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -67,8 +67,27 @@ jobs:
         env:
           APP_VERSION: ${{ inputs.app_version }}
 
+  npm-packages-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
+        with:
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check
+
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
   deploy:
-    needs: version
+    if: ${{ success() }}
+    needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
@@ -85,7 +104,15 @@ jobs:
         run: curl -4 ifconfig.me
 
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -145,22 +172,6 @@ jobs:
           notify_when: "success"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
-
-      - name: Install dependencies
-        run: yarn install
 
       - name: notify sentry that a new version has been deployed
         run: .bin/mna-lba sentry:deploy ${{ inputs.environment }} ${{ needs.version.outputs.VERSION }}

@@ -3,19 +3,22 @@ import axios from "axios"
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import rawRHAlternanceModel, { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import type { IRawRHAlternance } from "shared/models/rawRHAlternance.model"
+import rawRHAlternanceModel from "shared/models/rawRHAlternance.model"
 import { joinNonNullStrings } from "shared/utils/index"
 import { z } from "zod"
+
+import dayjs from "shared/helpers/dayjs"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import dayjs from "@/services/dayjs.service"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
-import { blankComputedJobPartner } from "../fillComputedJobsPartners"
-import { rawToComputedJobsPartners } from "../rawToComputedJobsPartners"
+import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 
 const ZRawRHAlternanceJob = rawRHAlternanceModel.zod.shape.job
 
@@ -74,18 +77,17 @@ export const importRHAlternanceRaw = async () => {
 }
 
 export const importRHAlternanceToComputed = async () => {
-  const now = new Date()
   await rawToComputedJobsPartners({
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.RH_ALTERNANCE,
     zodInput: ZRawRHAlternanceJob,
-    mapper: rawRhAlternanceToComputedMapper(now),
+    mapper: rawRhAlternanceToComputedMapper(),
     documentJobRoot: "job",
   })
 }
 
 export const rawRhAlternanceToComputedMapper =
-  (now: Date) =>
+  () =>
   ({
     jobCode,
     companyName,
@@ -99,12 +101,13 @@ export const rawRhAlternanceToComputedMapper =
     jobCity,
     jobPostalCode,
   }: IRawRHAlternance["job"]): IComputedJobsPartners => {
+    const now = new Date()
     const offer_creation = jobSubmitDateTime ? dayjs.tz(jobSubmitDateTime).toDate() : now
 
     const business_error = jobType === "Alternance" ? null : JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
 
     const computedJob: IComputedJobsPartners = {
-      ...blankComputedJobPartner(),
+      ...blankComputedJobPartner(now),
       _id: new ObjectId(),
       partner_job_id: jobCode,
       partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
@@ -127,7 +130,6 @@ export const rawRhAlternanceToComputedMapper =
       workplace_address_zipcode: jobPostalCode,
       apply_url: jobUrl,
       business_error,
-      updated_at: now,
     }
     return computedJob
   }

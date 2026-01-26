@@ -1,4 +1,4 @@
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 export const jobPartnersRankDefaultFactor = 0.5
 
@@ -8,7 +8,9 @@ const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = 
   "France Travail": 0.5,
   "RH Alternance": 0.4,
   "La Poste": 0.7,
+  Jobteaser: 0.61,
   Jooble: 0.58,
+  Meteojob: 0.6,
   "annonces Atlas": 0.5,
   "Vite un emploi": 0.5,
   "Nos Talents Nos Emplois": 0.5,

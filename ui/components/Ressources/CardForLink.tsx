@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Card, CardContent, Typography } from "@mui/material"
 import Image from "next/image"
 
-import { DsfrLink } from "../dsfr/DsfrLink"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: { imageUrl: string; text: string; link: string; linkTitle: string; linkAriaLabel?: string }) => {
   return (
@@ -18,7 +18,12 @@ export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: 
         <Image src={imageUrl} alt="" width={120} height={90} />
       </Box>
       <CardContent sx={{ p: 0 }}>
-        <Typography fontWeight="bold" gutterBottom>
+        <Typography
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+          }}
+        >
           {text}
         </Typography>
         <DsfrLink href={link} aria-label={linkAriaLabel}>

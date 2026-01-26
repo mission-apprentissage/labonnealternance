@@ -2,49 +2,28 @@ import { randomUUID } from "node:crypto"
 
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, ObjectId, UpdateFilter } from "mongodb"
-import {
-  assertUnreachable,
-  IDelegation,
-  IJob,
-  IJobCreate,
-  IJobWithRomeDetail,
-  IRecruiter,
-  IRecruiterWithApplicationCount,
-  ITrackingCookies,
-  IUserRecruteur,
-  JOB_STATUS,
-  JOB_STATUS_ENGLISH,
-  removeAccents,
-} from "shared"
+import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, UpdateFilter } from "mongodb"
+import { ObjectId } from "mongodb"
+import type { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur } from "shared"
+import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import type { OPCOS_LABEL } from "shared/constants/recruteur"
+import { NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
-import { EntrepriseStatus, IEntreprise } from "shared/models/entreprise.model"
-import { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
+import type { IEntreprise } from "shared/models/entreprise.model"
+import { EntrepriseStatus } from "shared/models/entreprise.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import type { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { IUserWithAccount } from "shared/models/userWithAccount.model"
+import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import { logger } from "@/common/logger"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
-import { anonymizeLbaJobsPartners } from "@/services/partnerJob.service"
-import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
-import { getResumeToken, storeResumeToken } from "@/services/resumeToken.service"
-
-import { asyncForEach } from "../common/utils/asyncUtils"
-import { changeStreams, getDbCollection } from "../common/utils/mongodbUtils"
-import { sanitizeTextField } from "../common/utils/stringUtils"
-import config from "../config"
-
+import dayjs from "shared/helpers/dayjs"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
-import dayjs from "./dayjs.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
@@ -52,6 +31,18 @@ import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
+import { anonymizeLbaJobsPartners } from "./partnerJob.service"
+import { getResumeToken, storeResumeToken } from "./resumeToken.service"
+import { getEntrepriseEngagementFranceTravail } from "./referentielEngagementEntreprise.service"
+import config from "@/config"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { logger } from "@/common/logger"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -82,19 +73,18 @@ const romeDetailAndCandidatureCountAggregateStage = [
         },
         { $unwind: { path: "$referentielrome", preserveNullAndEmptyArrays: true } },
         { $set: { "jobs.rome_detail": "$referentielrome" } },
-        { $addFields: { "jobs.jobIdStr": { $toString: "$jobs._id" } } },
         {
           $lookup: {
             from: "applications",
-            let: { jobIdStr: "$jobs.jobIdStr" },
-            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobIdStr"] } } }, { $project: { _id: 1 } }],
+            let: { jobId: "$jobs._id" },
+            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobId"] } } }, { $project: { _id: 1 } }],
             as: "applications",
           },
         },
         { $set: { "jobs.candidatures": { $size: "$applications" } } },
         { $group: { _id: "$_id", recruiters: { $first: "$$ROOT" }, jobs: { $push: { $mergeObjects: ["$jobs"] } } } },
         { $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } } },
-        { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0, "jobs.jobIdStr": 0, applications: 0 } },
+        { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0, applications: 0 } },
       ],
     },
   },
@@ -223,8 +213,6 @@ export const createJob = async ({
     throw internal("unexpected: no job found after job creation")
   }
 
-  console.log("ICICIICIICIC : ", jobs.length, is_delegated, entrepriseStatus)
-
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
     if (!entrepriseStatus) {
@@ -232,8 +220,6 @@ export const createJob = async ({
     }
     const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
     const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
-
-    console.log("ENTERPRISE MAIL : ", roleStatus)
 
     await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
 
@@ -350,6 +336,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
           logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
         },
+        publicEmail: config.publicEmail,
       },
     })
   }
@@ -744,6 +731,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
       policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -774,6 +762,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_title: job.offer_title_custom,
       },
       lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
+      publicEmail: config.publicEmail,
     },
   })
 }
@@ -881,6 +870,15 @@ export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
   const recruiterOpt = await getOffre(jobId)
   const { managed_by } = recruiterOpt ?? {}
   await validateUserWithAccountEmail(new ObjectId(managed_by))
+}
+
+export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | IUserRecruteur, phone?: string, email?: string) => {
+  if (user.phone === phone) {
+    throw badRequest(EntrepriseErrorCodes.PHONE_SAME_AS_CFA)
+  }
+  if (!email || user.email?.toLocaleLowerCase() === email?.toLocaleLowerCase() || (isEmailFromPrivateCompany(email) && isEmailSameDomain(user.email, email))) {
+    throw badRequest(EntrepriseErrorCodes.EMAIL_SAME_AS_CFA)
+  }
 }
 
 export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {

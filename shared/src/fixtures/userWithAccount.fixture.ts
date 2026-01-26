@@ -1,7 +1,8 @@
 import { ObjectId } from "bson"
 
 import { VALIDATION_UTILISATEUR } from "../constants/recruteur.js"
-import { IUserStatusEvent, IUserWithAccount, UserEventType } from "../models/userWithAccount.model.js"
+import type { IUserStatusEvent, IUserWithAccount } from "../models/userWithAccount.model.js"
+import { UserEventType } from "../models/userWithAccount.model.js"
 
 export function generateUserWithAccountFixture(data: Partial<IUserWithAccount> = {}): IUserWithAccount {
   return {
@@ -21,6 +22,7 @@ export function generateUserWithAccountFixture(data: Partial<IUserWithAccount> =
 
     createdAt: new Date("2021-01-28T15:00:00.000Z"),
     updatedAt: new Date("2021-01-28T15:00:00.000Z"),
+    last_action_date: new Date("2021-01-28T15:00:00.000Z"),
 
     ...data,
   }

@@ -1,9 +1,8 @@
 import jobsModel from "shared/models/jobs.model"
 
+import { logger } from "@/common/logger"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
-import { logger } from "../../common/logger"
-import { notifyToSlack } from "../../common/utils/slackUtils"
 
 export const createJobsCollectionForMetabase = async () => {
   const initialCount = await getDbCollection("jobs").estimatedDocumentCount({})
@@ -26,7 +25,7 @@ export const createJobsCollectionForMetabase = async () => {
       {
         $project: {
           // Champs générés ou supprimés
-          jobId: { $toString: "$jobs._id" },
+          jobId: "$jobs._id",
           recruiterId: "$_id",
           recruiterStatus: "$status",
           _id: 0,

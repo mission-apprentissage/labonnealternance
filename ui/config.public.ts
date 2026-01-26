@@ -14,9 +14,11 @@ interface PublicConfig {
   version: string
   plausibleDomain: string
   disableRobots?: boolean
+  publicEmail: string
 }
 
 const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
+const PUBLIC_EMAIL = "contact@labonnealternance.apprentissage.beta.gouv.fr"
 
 function getProductionPublicConfig(): PublicConfig {
   const host = "labonnealternance.apprentissage.beta.gouv.fr"
@@ -35,6 +37,7 @@ function getProductionPublicConfig(): PublicConfig {
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
     plausibleDomain: "labonnealternance.apprentissage.beta.gouv.fr",
+    publicEmail: PUBLIC_EMAIL,
   }
 }
 
@@ -56,6 +59,7 @@ function getRecettePublicConfig(): PublicConfig {
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
+    publicEmail: PUBLIC_EMAIL,
   }
 }
 
@@ -77,6 +81,7 @@ function getPentestPublicConfig(): PublicConfig {
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
+    publicEmail: PUBLIC_EMAIL,
   }
 }
 
@@ -105,6 +110,7 @@ function getPreviewPublicConfig(): PublicConfig {
     version,
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
+    publicEmail: PUBLIC_EMAIL,
   }
 }
 
@@ -127,6 +133,7 @@ function getLocalPublicConfig(): PublicConfig {
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
+    publicEmail: PUBLIC_EMAIL,
   }
 }
 

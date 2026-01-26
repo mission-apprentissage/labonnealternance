@@ -1,19 +1,18 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import { Filter, ObjectId } from "mongodb"
-import { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
+import type { Filter, ObjectId } from "mongodb"
+import type { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import { IAppointmentContextAPI, IAppointMentResponseAvailable, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
-
-import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
-
-import { isValidEmail } from "../common/utils/isValidEmail"
+import type { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
+import type { IAppointmentContextAPI, IAppointMentResponseAvailable, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
 
 import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
 import { getReferrerByKeyName } from "./referrers.service"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import config from "@/config"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { logger } from "@/common/logger"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 
 export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
   getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()
@@ -98,6 +97,9 @@ export const findElligibleTrainingForAppointment = async ({
 }): Promise<IAppointmentRequestContextCreateResponseSchema> => {
   const referrerObj = getReferrerByKeyName(referrer)
   let eligibleTrainingsForAppointment: IEligibleTrainingsForAppointment | null
+
+  // tracking v1 pour décommissionnement
+  await trackApiCall({ caller: referrerObj.name, api_path: "v1:/appointment-request/context/create", response: "tracking-v1" })
 
   if (idCleMinistereEducatif) {
     eligibleTrainingsForAppointment = await findEligibleTrainingByMinisterialKey(idCleMinistereEducatif)

@@ -1,23 +1,23 @@
-import { IApplication } from "shared/models/index"
+import type { IApplication } from "shared/models/index"
 
+import { BrevoEventStatus } from "./brevo.service"
+import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
+import { isHardbounceEventFromEtablissement } from "./etablissement.service"
+import { cleanHardbouncedAppointmentUser } from "./user.service"
 import {
   addEmailToBlacklist,
   BlackListOrigins,
   processApplicationCandidateHardbounceEvent,
   processApplicationHardbounceEvent,
   removeEmailFromLbaCompanies,
-} from "@/services/application.service"
+} from "./application.service"
 import {
   isHardbounceEventFromAppointmentApplicant,
   isHardbounceEventFromAppointmentCfa,
   processAppointmentToApplicantWebhookEvent,
   processAppointmentToCfaWebhookEvent,
-} from "@/services/appointment.service"
-
-import { BrevoEventStatus } from "./brevo.service"
-import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
-import { isHardbounceEventFromEtablissement } from "./etablissement.service"
-import { cleanHardbouncedAppointmentUser } from "./user.service"
+} from "./appointment.service"
+import { logger } from "@/common/logger"
 
 // webhook events excluding hardbounce
 export const processWebhookEvent = async (payload) => {
@@ -46,7 +46,7 @@ export type IBrevoWebhookEvent = {
 export const processHardBounceWebhookEvent = async (
   payload: IBrevoWebhookEvent,
   _mockedFn?: ({ application, payload }: { application: IApplication; payload: any }) => Promise<void>
-) => {
+): Promise<boolean> => {
   const { event, email } = payload
 
   let origin = BlackListOrigins.CAMPAIGN
@@ -65,8 +65,10 @@ export const processHardBounceWebhookEvent = async (
     }
 
     await processBlacklistedEmail(email, origin, event)
+    return true
   } else {
-    throw new Error("Non hardbounce event received on hardbounce webhook route")
+    logger.warn("Non hardbounce event received on hardbounce webhook route")
+    return false
   }
 }
 

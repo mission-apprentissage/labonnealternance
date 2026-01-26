@@ -3,13 +3,14 @@ import { Box, Typography } from "@mui/material"
 import dayjs from "dayjs"
 import Image from "next/image"
 import { useState } from "react"
-import { IJobJson, IRecruiterJson, JOB_STATUS } from "shared"
+import type { IJobJson, IRecruiterJson } from "shared"
+import { JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
 
+import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
+import { OffresTabsMenu } from "./OffresTabsMenu"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
-import ConfirmationSuppressionOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionOffre"
-import { OffresTabsMenu } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffresTabsMenu"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate } from "@/common/utils/dateUtils"
 
@@ -59,10 +60,12 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
 }
 
 export const OffresTabs = ({
+  caption,
   recruiter,
   showStats = false,
   buildOfferEditionUrl,
 }: {
+  caption: string
   recruiter: IRecruiterJson
   showStats?: boolean
   buildOfferEditionUrl: (offerId: string) => string
@@ -78,7 +81,14 @@ export const OffresTabs = ({
       <Box sx={{ py: fr.spacing("3w"), backgroundColor: "#F5F5FE" }}>
         <Box sx={{ display: "flex", width: "fit-content", m: "auto", alignItems: "center" }}>
           <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} width="118" height="70" />
-          <Typography component="span" ml={fr.spacing("1w")} fontWeight={700} color="#161616">
+          <Typography
+            component="span"
+            sx={{
+              ml: fr.spacing("1w"),
+              fontWeight: 700,
+              color: "#161616",
+            }}
+          >
             Aucune offre déposée
           </Typography>
         </Box>
@@ -96,6 +106,7 @@ export const OffresTabs = ({
   const commonColumns = [
     {
       Header: "Métier",
+      id: "job_title",
       accessor: "rome_label",
       Cell: ({
         data,
@@ -163,6 +174,7 @@ export const OffresTabs = ({
       Header: "",
       id: "action",
       maxWidth: "40",
+      srOnly: "Actions sur les offres",
       disableFilters: true,
       disableSortBy: true,
       // isSticky: true,
@@ -177,7 +189,7 @@ export const OffresTabs = ({
   return (
     <>
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
-      <Table columns={columns} data={jobsWithGeoCoords} />
+      <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
   )
 }

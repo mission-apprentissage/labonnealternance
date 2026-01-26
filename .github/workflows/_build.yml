@@ -15,10 +15,7 @@ on:
           - pentest
 
 jobs:
-  build:
-    concurrency:
-      group: "build-${{ github.workflow }}-${{ github.ref }}"
-    permissions: write-all
+  npm-packages-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
@@ -27,21 +24,36 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - uses: actions/setup-node@v4
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
         with:
-          node-version: 20
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check
 
-      - uses: actions/cache@v4
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
+  build:
+    if: ${{ success() }}
+    needs: ["npm-packages-check"]
+    concurrency:
+      group: "build-${{ github.workflow }}-${{ github.ref }}"
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v5
         with:
-          path: |
-            **/node_modules
-            .yarn/install-state.gz
-            .yarn/cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: "yarn"
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

@@ -3,7 +3,7 @@ import { Box, CircularProgress } from "@mui/material"
 import { useField } from "formik"
 import { assertUnreachable } from "shared"
 
-import { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 
 export const RechercheResultTypeCheckboxFormik = ({

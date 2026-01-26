@@ -1,12 +1,12 @@
 import { existsSync, mkdirSync } from "node:fs"
 import path from "node:path"
 
-import { Options as CsvParseOptions, parse } from "csv-parse"
+import type { Options as CsvParseOptions } from "csv-parse"
+import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 
-import __dirname from "@/common/dirname"
-
 import { FTPClient } from "./ftpUtils"
+import { __dirname } from "./dirname"
 
 export const CURRENT_DIR_PATH = __dirname(import.meta.url)
 
@@ -25,9 +25,47 @@ export const parseCsv = (options: CsvParseOptions = {}) => {
     on_record: (record) => {
       return pickBy(record, (v) => {
         return !isEmpty(v) && v !== "NULL" && v.trim().length
-      })
+      }) as any
     },
     ...options,
+  })
+}
+
+export async function parseCsvContent(content: string): Promise<Record<string, string>[]> {
+  return new Promise((resolve, reject) => {
+    const records: Record<string, string>[] = []
+
+    // Initialize the parser
+    const parser = parse({
+      trim: true,
+      delimiter: ",",
+      columns: true,
+    })
+    // Use the readable stream api to consume records
+    parser.on("readable", function () {
+      let record
+      while ((record = parser.read()) !== null) {
+        records.push(record)
+      }
+    })
+
+    const errors: Error[] = []
+    // Catch any error
+    parser.on("error", function (err) {
+      errors.push(err)
+    })
+
+    // Test that the parsed records matched the expected records
+    parser.on("end", function () {
+      if (errors.length) {
+        reject(errors)
+      } else {
+        resolve(records)
+      }
+    })
+
+    parser.write(content)
+    parser.end()
   })
 }
 

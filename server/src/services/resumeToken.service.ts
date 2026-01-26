@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
-import { CollectionName } from "shared/models/models"
-import { IResumeTokenData } from "shared/models/resumeTokens.model"
+import type { CollectionName } from "shared/models/models"
+import type { IResumeTokenData } from "shared/models/resumeTokens.model"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 

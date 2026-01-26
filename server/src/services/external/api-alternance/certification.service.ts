@@ -1,9 +1,9 @@
 import { internal } from "@hapi/boom"
 import axios from "axios"
 
-import { sentryCaptureException } from "../../../common/utils/sentryUtils"
-import config from "../../../config"
-import { CertificationAPIApprentissage } from "../../queryValidator.service.types"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import config from "@/config"
+import type { CertificationAPIApprentissage } from "@/services/queryValidator.service.types"
 
 const getFirstCertificationFromAPIApprentissage = async (rncp: string, throwOnError: boolean): Promise<CertificationAPIApprentissage | null> => {
   try {

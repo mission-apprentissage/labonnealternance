@@ -1,30 +1,29 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Stack, Typography, Link } from "@mui/material"
+import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
-import { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
+import type { IJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
-import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
-
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { notifyLbaJobDetailView } from "../../../utils/api"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { formatDate } from "../../../utils/strutils"
-import { getCompanySize } from "../ItemDetailServices/getCompanySize"
-import ItemDistanceToCenter from "../ItemDetailServices/ItemDistanceToCenter"
-import ItemGoogleSearchLink from "../ItemDetailServices/ItemGoogleSearchLink"
-import ItemLocalisation from "../ItemDetailServices/ItemLocalisation"
-import { BAD_DESCRIPTION_LENGTH, JobDescription } from "../ItemDetailServices/JobDescription"
-import { ReportJobLink } from "../ReportJobLink"
 
 import LbaJobAcces from "./LbaJobAcces"
 import LbaJobCompetences from "./LbaJobCompetences"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
+import { LbaJobEngagement } from "./LbaJobEngagement"
+import { DisplayContext } from "@/context/DisplayContextProvider"
+import { notifyJobDetailViewV3, notifyLbaJobDetailView } from "@/utils/api"
+import { SendPlausibleEvent } from "@/utils/plausible"
+import { formatDate } from "@/utils/strutils"
+import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/getCompanySize"
+import ItemDistanceToCenter from "@/components/ItemDetail/ItemDetailServices/ItemDistanceToCenter"
+import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
+import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
+
+import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -34,6 +33,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
     notifyLbaJobDetailView(job?.job?.id)
+    notifyJobDetailViewV3(job)
   }, [job?.job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
@@ -60,9 +60,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
               <strong>Durée du contrat : </strong> {job?.job?.dureeContrat}
             </div>
           )}
-          <div>
-            <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
-          </div>
+          {job?.job?.type?.length > 0 ? (
+            <Box>
+              <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.type)}
+            </Box>
+          ) : null}
           {job?.job?.quantiteContrat > 1 && (
             <div>
               <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
@@ -73,10 +75,20 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
               <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
             </div>
           )}
-          <Stack direction="row" flexWrap="wrap">
+          <Stack
+            direction="row"
+            sx={{
+              flexWrap: "wrap",
+            }}
+          >
             <strong>Niveau visé en fin d&apos;études : </strong>{" "}
             {job?.target_diploma_level ? (
-              <Stack direction="row" flexWrap="wrap">
+              <Stack
+                direction="row"
+                sx={{
+                  flexWrap: "wrap",
+                }}
+              >
                 {job?.target_diploma_level.split(", ").map(function (d, idx) {
                   return (
                     <Typography
@@ -144,8 +156,16 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           />
         </Box>
       </Box>
-
-      <Stack spacing={2} direction="row" alignItems="center" sx={{ my: fr.spacing("3w"), maxWidth: "970px", mx: { xs: 2, sm: 2, md: "auto" } }}>
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{
+          alignItems: "center",
+          my: fr.spacing("3w"),
+          maxWidth: "970px",
+          mx: { xs: 2, sm: 2, md: "auto" },
+        }}
+      >
         <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
         <Box>
           <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
@@ -159,7 +179,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Stack>
-
       <Box sx={{ position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>
         <Box data-testid="lbb-component">
@@ -170,7 +189,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Box>
-
       <Box sx={{ mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
@@ -226,7 +244,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
 
         {!job?.company?.mandataire && <ItemGoogleSearchLink item={job} />}
       </Box>
-
       {job?.company?.mandataire && (
         <Box sx={{ pb: "0px", mt: 6, position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: ["0", "30px", "30px", "auto"] }}>
           <Typography variant="h2" sx={{ mt: 2 }}>
