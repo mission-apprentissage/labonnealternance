@@ -6,7 +6,7 @@ readonly TARGET_DB=${1:?"Merci de préciser le nom de la base de donnée cible"}
 shift
 readonly PASSPHRASE=$(mktemp passphrase.XXXXXXXXXX)
 # Decrypt to mounted volume so MongoDB container can access it directly
-readonly SEED_ARCHIVE="/opt/app/configs/mongodb/seed_archive_$(date +%s)"
+readonly SEED_ARCHIVE="$(mktemp -p /opt/app/configs/mongodb/ seed-XXXXXXXXXX)"
 readonly CONTAINER_SEED_PATH="/etc/mongod/$(basename "$SEED_ARCHIVE")"
 
 cleanup() {
