@@ -248,9 +248,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
           </Box>
         </Box>
       </Box>
-
       {IJStats.isFetched && <StatsInserJeunes stats={IJStats.data} />}
-
       <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations l'établissement
@@ -259,8 +257,17 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         <ItemLocalisation item={training} />
 
         {training?.contact?.phone && (
-          <Typography mt={1}>
-            <Typography component="span" fontWeight={700}>
+          <Typography
+            sx={{
+              mt: 1,
+            }}
+          >
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               Téléphone :{" "}
             </Typography>
             <Typography component="span">
@@ -286,7 +293,6 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
           </Box>
         )}
       </Box>
-
       {isCfaDEntreprise && (
         <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
           <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
@@ -301,13 +307,23 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
           <Box sx={{ my: fr.spacing("2w") }}>
             <Box>
               &bull;{" "}
-              <Typography component="span" ml={4}>
+              <Typography
+                component="span"
+                sx={{
+                  ml: 4,
+                }}
+              >
                 Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
               </Typography>
             </Box>
             <Box>
               &bull;{" "}
-              <Typography component="span" ml={4}>
+              <Typography
+                component="span"
+                sx={{
+                  ml: 4,
+                }}
+              >
                 Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
               </Typography>
             </Box>
@@ -315,7 +331,11 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
           <Typography>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</Typography>
 
-          <Box my={2}>
+          <Box
+            sx={{
+              my: 2,
+            }}
+          >
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
             <DsfrLink
               href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
@@ -337,7 +357,12 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
       {training.description && training.description.length > 30 && (
         <Box sx={{ display: "flex", alignItems: "flex-start" }}>
           <Image width={24} height={24} src="/images/icons/traning-clipboard-list.svg" alt="" />
-          <Box pl={4} whiteSpace="pre-wrap">
+          <Box
+            sx={{
+              pl: 4,
+              whiteSpace: "pre-wrap",
+            }}
+          >
             <Typography sx={{ fontWeight: "700" }}>Description de la formation</Typography>
             <Typography component="span" sx={dontBreakOutCssParameters}>
               {training.description}
@@ -348,7 +373,12 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
       {training.objectif && training.objectif.length > 20 && (
         <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("2w") }}>
           <Image width={24} height={24} src="/images/icons/training-target.svg" alt="" />
-          <Box pl={4} whiteSpace="pre-wrap">
+          <Box
+            sx={{
+              pl: 4,
+              whiteSpace: "pre-wrap",
+            }}
+          >
             <Typography sx={{ fontWeight: "700" }}>Objectifs</Typography>
             <Typography component="span" sx={dontBreakOutCssParameters}>
               {training.objectif}

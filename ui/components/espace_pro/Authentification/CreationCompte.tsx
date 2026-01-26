@@ -194,7 +194,11 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
     <AnimationContainer>
       {bandeau && <Bandeau {...bandeau} />}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: { xs: 0, md: fr.spacing("2w") }, mt: 0 }}>
-        <Box mb={4}>
+        <Box
+          sx={{
+            mb: 4,
+          }}
+        >
           <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
             Vous recrutez des alternants ?
           </Typography>

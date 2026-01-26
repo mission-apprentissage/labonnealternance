@@ -89,10 +89,21 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         </Button>
       </Box>
       <Box sx={{ my: "24px" }}>
-        <Typography fontSize="16px" lineHeight="24px" fontWeight={700}>
+        <Typography
+          sx={{
+            fontSize: "16px",
+            lineHeight: "24px",
+            fontWeight: 700,
+          }}
+        >
           Voici votre réponse {positiveNegative} à {applicant_first_name} {applicant_last_name} :
         </Typography>
-        <Typography fontSize="12px" lineHeight="20px">
+        <Typography
+          sx={{
+            fontSize: "12px",
+            lineHeight: "20px",
+          }}
+        >
           {company_recruitment_intention === ApplicationIntention.ENTRETIEN ? (
             <>Le candidat recevra le message suivant ainsi que vos coordonnées par courriel. Vérifiez vos coordonnées, afin que le candidat puisse vous recontacter.</>
           ) : (

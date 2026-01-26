@@ -16,7 +16,6 @@ import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
-import DidYouKnow from "@/components/ItemDetail/DidYouKnow"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
@@ -28,6 +27,7 @@ import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents
 import { RecruteurLbaCandidater } from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaCandidater"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
+import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
@@ -150,7 +150,23 @@ function JobDetail({
 
         <AideApprentissage />
 
-        {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && <DidYouKnow />}
+        {[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind as LBA_ITEM_TYPE) && (
+          <Box
+            sx={{
+              mx: { xs: 0, lg: "auto" },
+              my: fr.spacing("3w"),
+              maxWidth: "970px",
+            }}
+          >
+            <ValorisationCandidatureSpontanee
+              overridenQueryParams={{
+                utm_source: "lba",
+                utm_medium: "website",
+                utm_campaign: "lba_fiche-offre_promo-candidature-spontanee",
+              }}
+            />
+          </Box>
+        )}
       </Box>
       <Footer />
     </Box>

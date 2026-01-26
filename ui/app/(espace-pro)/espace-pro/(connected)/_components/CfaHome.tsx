@@ -119,13 +119,27 @@ function ListeEntreprise() {
         const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
+            <Link
+              underline="hover"
+              href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
+              aria-label="voir les informations"
+              sx={{
+                fontWeight: "700",
+              }}
+            >
               {establishment_raison_sociale}
             </Link>
             {establishment_raison_sociale ? (
               siretText
             ) : (
-              <Link underline="hover" fontWeight="700" href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()} aria-label="voir les informations">
+              <Link
+                underline="hover"
+                href={PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()}
+                aria-label="voir les informations"
+                sx={{
+                  fontWeight: "700",
+                }}
+              >
                 {siretText}
               </Link>
             )}
@@ -203,7 +217,11 @@ function ListeEntreprise() {
           <Box>
             <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
           </Box>
-          <Box mr={3}>
+          <Box
+            sx={{
+              mr: 3,
+            }}
+          >
             <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
               Nouvelle entreprise
             </Button>

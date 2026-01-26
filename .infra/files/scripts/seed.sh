@@ -18,6 +18,7 @@ trap cleanup EXIT
 echo "{{ vault.SEED_GPG_PASSPHRASE }}" > "$PASSPHRASE"
 chmod 600 "$PASSPHRASE"
 
+rm "$SEED_ARCHIVE"
 gpg -d --batch --passphrase-file "$PASSPHRASE" -o "$SEED_ARCHIVE" "/opt/app/configs/mongodb/seed.gpg"
 chmod 600 "$SEED_ARCHIVE"
 

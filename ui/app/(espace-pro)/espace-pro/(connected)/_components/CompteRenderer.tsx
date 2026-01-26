@@ -101,7 +101,13 @@ export default function CompteRenderer() {
                   <Typography component="h2" sx={{ fontWeight: 700 }}>
                     Vos informations de contact
                   </Typography>
-                  <Typography sx={{ fontSize: "20px", textAlign: "justify" }} mt={fr.spacing("1w")}>
+                  <Typography
+                    sx={{
+                      mt: fr.spacing("1w"),
+                      fontSize: "20px",
+                      textAlign: "justify",
+                    }}
+                  >
                     {user.type === AUTHTYPE.ENTREPRISE
                       ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
                       : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}

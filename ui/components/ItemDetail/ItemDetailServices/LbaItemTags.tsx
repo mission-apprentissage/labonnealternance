@@ -27,7 +27,13 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
         relativePosX={81}
         width={383}
         tooltipContent={
-          <Typography sx={{ padding: fr.spacing("1w") }} fontSize="12px" lineHeight="21px">
+          <Typography
+            sx={{
+              fontSize: "12px",
+              lineHeight: "21px",
+              padding: fr.spacing("1w"),
+            }}
+          >
             Cette entreprise recrute peut-être des alternants. <strong>Tentez votre chance en envoyant votre candidature spontanée !</strong>
           </Typography>
         }
@@ -45,12 +51,12 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
     tags.push(<TagOffreEmploi key="offre emploi" />)
   }
   if (company?.mandataire) {
-    tags.push(<TagEcole />)
-    tags.push(<TagFormationAssociee />)
+    tags.push(<TagEcole key="tag école" />)
+    tags.push(<TagFormationAssociee key="tag formation associée" />)
   } else if (ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    tags.push(<TagLaBonneAlternance />)
+    tags.push(<TagLaBonneAlternance key="tag la bonne alternance" />)
   } else if (ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
-    tags.push(<TagPartenaire />)
+    tags.push(<TagPartenaire key="tag partenaire" />)
   }
 
   if ("company" in item && item?.company?.elligibleHandicap) {
