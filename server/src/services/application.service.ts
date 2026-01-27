@@ -254,7 +254,7 @@ function hasValidAttachmentHeader(content: string): string | null {
 async function validateApplicationFileType(base64String: string) {
   if (!hasValidAttachmentHeader(base64String)) {
     throw badRequest(
-      `Attachment file should start by one of the following formats: ${JSON.stringify(Object.values(acceptedAttachmentFormatHeaders))}. See https://api.apprentissage.beta.gouv.fr/fr/explorer/candidature-offre for more information.`
+      "Attachment file must be a base64 data URL string starting with a supported MIME type prefix (format: data:<mime>;base64,). Supported MIME types are: application/pdf (pdf) and application/vnd.openxmlformats-officedocument.wordprocessingml.document (docx). See https://api.apprentissage.beta.gouv.fr/fr/explorer/candidature-offre for more information."
     )
   }
   const type = await identifyFileType(base64String)
