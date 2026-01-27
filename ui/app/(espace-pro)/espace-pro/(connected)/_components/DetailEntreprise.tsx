@@ -130,7 +130,6 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
-
       <Box sx={{ px: fr.spacing("2w"), borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
         {user.type !== "CFA" && (
           <>
@@ -214,7 +213,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     <Typography component="h2" sx={{ fontSize: "20px", fontWeight: "700" }}>
                       Informations de contact
                     </Typography>
-                    <Box mt={4}>
+                    <Box
+                      sx={{
+                        mt: 4,
+                      }}
+                    >
                       <Form>
                         <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
                         <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
@@ -278,7 +281,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                   <Box>
                     <InformationLegaleEntreprise siret={userRecruteur.establishment_siret} type={userRecruteur.type as typeof CFA | typeof ENTREPRISE} viewerType={user.type} />
                     {user.type !== "CFA" && (
-                      <Box my={4}>
+                      <Box
+                        sx={{
+                          my: 4,
+                        }}
+                      >
                         <FieldWithValue title="Origine" value={userRecruteur.origin} />
                       </Box>
                     )}
@@ -287,9 +294,13 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                 {(user.type === AUTHTYPE.ADMIN || user.type === AUTHTYPE.OPCO) && (
                   <>
                     <hr style={{ marginTop: 24 }} />
-                    <Box my={6}>
-                      <Typography sx={{ fontSize: "20px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3w") }}>Offres de recrutement en alternance</Typography>
+                    <Box
+                      sx={{
+                        my: 6,
+                      }}
+                    >
                       <OffresTabs
+                        caption="Offres de recrutement en alternance"
                         recruiter={recruiter}
                         buildOfferEditionUrl={(offerId) => {
                           return PAGES.dynamic
@@ -304,7 +315,11 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         }}
                       />
                     </Box>
-                    <Box mb={12}>
+                    <Box
+                      sx={{
+                        mb: 12,
+                      }}
+                    >
                       <UserValidationHistory histories={userRecruteur.status} />
                     </Box>
                   </>

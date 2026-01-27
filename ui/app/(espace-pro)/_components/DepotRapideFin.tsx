@@ -120,7 +120,16 @@ function FinComponent(props: ComponentProps) {
       >
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
         <Box>
-          <Typography sx={{ backgroundColor: "white", fontSize: "32px", fontWeight: "bold", lineHeight: "32px" }} component="h1" mb={3}>
+          <Typography
+            component="h1"
+            sx={{
+              mb: 3,
+              backgroundColor: "white",
+              fontSize: "32px",
+              fontWeight: "bold",
+              lineHeight: "32px",
+            }}
+          >
             {shouldDisplayAccountInformation ? <>Encore une étape avant la publication de votre offre...</> : <>Félicitations, votre offre est créée.</>}
           </Typography>
           {shouldDisplayAccountInformation ? (
@@ -142,7 +151,11 @@ function FinComponent(props: ComponentProps) {
             )
           ) : null}
 
-          <Box mt={2}>
+          <Box
+            sx={{
+              mt: 2,
+            }}
+          >
             <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
           </Box>
         </Box>
@@ -210,7 +223,11 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
   const [disableLink, setDisableLink] = useState(false)
 
   return (
-    <Box mt={{ xs: 1, lg: 2 }}>
+    <Box
+      sx={{
+        mt: { xs: 1, lg: 2 },
+      }}
+    >
       <Box
         sx={{
           "& > *": {
@@ -244,7 +261,11 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
 
 const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated: boolean }) => {
   return (
-    <Box mb={fr.spacing("1w")}>
+    <Box
+      sx={{
+        mb: fr.spacing("1w"),
+      }}
+    >
       <Box sx={{ mb: fr.spacing("3v") }}>
         <DsfrLink
           href={PAGES.dynamic.jobDetail({ type: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, jobId }).getPath()}
@@ -255,7 +276,12 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         </DsfrLink>
       </Box>
       {userIsValidated && (
-        <Box mb={1} mt={2}>
+        <Box
+          sx={{
+            mb: 1,
+            mt: 2,
+          }}
+        >
           <PrintJobLink jobId={jobId} />
         </Box>
       )}

@@ -83,7 +83,11 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
           Êtes-vous certain de vouloir supprimer votre offre ?
         </Typography>
 
-        <Box pb={2}>
+        <Box
+          sx={{
+            pb: 2,
+          }}
+        >
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.</Typography>
           <FormikProvider value={formik}>
             <form onSubmit={formik.handleSubmit}>

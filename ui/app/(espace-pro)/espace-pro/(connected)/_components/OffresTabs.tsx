@@ -60,10 +60,12 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
 }
 
 export const OffresTabs = ({
+  caption,
   recruiter,
   showStats = false,
   buildOfferEditionUrl,
 }: {
+  caption: string
   recruiter: IRecruiterJson
   showStats?: boolean
   buildOfferEditionUrl: (offerId: string) => string
@@ -79,7 +81,14 @@ export const OffresTabs = ({
       <Box sx={{ py: fr.spacing("3w"), backgroundColor: "#F5F5FE" }}>
         <Box sx={{ display: "flex", width: "fit-content", m: "auto", alignItems: "center" }}>
           <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} width="118" height="70" />
-          <Typography component="span" ml={fr.spacing("1w")} fontWeight={700} color="#161616">
+          <Typography
+            component="span"
+            sx={{
+              ml: fr.spacing("1w"),
+              fontWeight: 700,
+              color: "#161616",
+            }}
+          >
             Aucune offre déposée
           </Typography>
         </Box>
@@ -97,6 +106,7 @@ export const OffresTabs = ({
   const commonColumns = [
     {
       Header: "Métier",
+      id: "job_title",
       accessor: "rome_label",
       Cell: ({
         data,
@@ -164,6 +174,7 @@ export const OffresTabs = ({
       Header: "",
       id: "action",
       maxWidth: "40",
+      srOnly: "Actions sur les offres",
       disableFilters: true,
       disableSortBy: true,
       // isSticky: true,
@@ -178,7 +189,7 @@ export const OffresTabs = ({
   return (
     <>
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
-      <Table columns={columns} data={jobsWithGeoCoords} />
+      <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>
   )
 }

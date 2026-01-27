@@ -26,11 +26,18 @@ export default function Ressources() {
   const displayedTab = tabs.find((x) => x.tabId === selectedTabId) ?? firstTab
 
   return (
-    <Box mb={fr.spacing("3w")}>
+    <Box
+      sx={{
+        mb: fr.spacing("3w"),
+      }}
+    >
       <Breadcrumb pages={[PAGES.static.ressources]} />
-
       <DefaultContainer>
-        <Box mb={fr.spacing("3w")}>
+        <Box
+          sx={{
+            mb: fr.spacing("3w"),
+          }}
+        >
           <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
             Ressources
           </Typography>

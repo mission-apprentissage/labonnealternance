@@ -1,3 +1,4 @@
+"use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
@@ -9,11 +10,21 @@ import { DisplayContext } from "@/context/DisplayContextProvider"
 
 const blueBannerText = (
   <Typography>
-    <Typography component="span" sx={{ fontWeight: 700 }}>
-      Souhaiteriez-vous accéder à toutes vos candidatures depuis votre espace connecté ?{" "}
+    <Typography>
+      <Typography component="span" sx={{ fontWeight: 700 }}>
+        Comment pourrions-nous faciliter vos recrutements en alternance ?{" "}
+      </Typography>
+      Partagez vos besoins à l’équipe lors d’un échange de 30 min.{" "}
     </Typography>
-    <Link underline="always" href="https://tally.so/r/3Xq19z" color="inherit" aria-label="Accéder au formulaire - nouvelle fenêtre" target="_blank" rel="noopener noreferrer">
-      Donnez-nous votre avis en 3 clics.
+    <Link
+      underline="always"
+      href="https://calendly.com/camille-jeanblanc-beta/la-bonne-alternance"
+      color="inherit"
+      aria-label="Réserver un créneau pour partager vos besoins avec l'équipe de La bonne alternance - nouvelle fenêtre"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Réserver un créneau
     </Link>
   </Typography>
 )
@@ -91,10 +102,21 @@ const InfoBanner = ({
   return (
     <>
       {showEnvAlert && env !== "production" && (forceEnvBanner || !isEnvClosed) && (
-        <Box sx={{ backgroundColor: "#FFE9E6" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#FFE9E6",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#B34000" }}>
             <Typography className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {envBannerText}
             </Box>
             {!forceEnvBanner && getCloseButton(setBannerContext, "isEnvClosed", "#B34000")}
@@ -102,10 +124,21 @@ const InfoBanner = ({
         </Box>
       )}
       {!isAlertClosed && showAlert && (
-        <Box sx={{ backgroundColor: "#FFE9E6" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#FFE9E6",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#B34000" }}>
             <Typography className={fr.cx("ri-error-warning-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {redBannerText}
             </Box>
             {getCloseButton(setBannerContext, "isAlertClosed", "#B34000")}
@@ -113,10 +146,21 @@ const InfoBanner = ({
         </Box>
       )}
       {!isOKClosed && showOK && (
-        <Box sx={{ backgroundColor: "#B8FEC9" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#B8FEC9",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#18753C" }}>
             <Typography className={fr.cx("ri-checkbox-circle-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {greenBannerText}
             </Box>
             {getCloseButton(setBannerContext, "isOKClosed", "#18753C")}
@@ -124,10 +168,21 @@ const InfoBanner = ({
         </Box>
       )}
       {!isInfoClosed && showInfo && (
-        <Box sx={{ backgroundColor: "#E8EDFF" }} p={2} mb={1}>
+        <Box
+          sx={{
+            p: 2,
+            mb: 1,
+            backgroundColor: "#E8EDFF",
+          }}
+        >
           <Box style={{ display: "flex", alignItems: "center-start", maxWidth: "1310px", margin: "auto", color: "#0063CB" }}>
             <Typography className={fr.cx("ri-information-fill", "fr-icon--sm")} />
-            <Box sx={{ ml: fr.spacing("2w") }} flexGrow={1}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                ml: fr.spacing("2w"),
+              }}
+            >
               {blueBannerText}
             </Box>
             {getCloseButton(setBannerContext, "isInfoClosed", "#0063CB")}
