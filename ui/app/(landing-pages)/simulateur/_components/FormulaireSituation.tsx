@@ -14,10 +14,6 @@ import dayjs from "dayjs"
 import { getSimulationInformation } from "@/services/simulateurAlternant"
 import { useSimulateur } from "@/app/(landing-pages)/simulateur/context/SimulateurContext"
 
-type TypeContrat = "apprentissage" | "professionnalisation"
-type NiveauDiplome = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
-type Secteur = "public" | "privé"
-
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 
 const minDateDebutContrat = dayjs().add(1, "month").startOf("month")
@@ -25,7 +21,7 @@ const minDateNaissance = dayjs().subtract(77, "years")
 const maxDateNaissance = dayjs().subtract(14, "years")
 
 const inputSchema = Yup.object().shape({
-  typeContrat: Yup.string().required("Le type de contrat est requis"),
+  typeContrat: Yup.string().oneOf(["apprentissage", "professionnalisation"]).required("Le type de contrat est requis"),
   dateNaissance: Yup.date()
     .min(minDateNaissance, "Votre âge n'est pas éligible à l'apprentissage. Veuillez renseigner un âge entre 14 et 77 ans.")
     .max(maxDateNaissance, "Votre âge n'est pas éligible à l'apprentissage. Veuillez renseigner un âge entre 14 et 77 ans.")
@@ -33,7 +29,7 @@ const inputSchema = Yup.object().shape({
   isDateDebutContratConnue: Yup.boolean().required("Champ obligatoire"),
   dateDebutContrat: Yup.date()
     .when("isDateDebutContratConnue", {
-      is: false,
+      is: true,
       then: (schema) => schema.required("Champ obligatoire"),
       otherwise: (schema) => schema.notRequired(),
     })
@@ -105,9 +101,9 @@ export const FormulaireSituation = () => {
   const onSubmit = (values: InputSchemaType) => {
     const formValues = {
       ...values,
-      typeContrat: values.typeContrat as TypeContrat,
-      niveauDiplome: values.niveauDiplome as NiveauDiplome,
-      secteur: values.secteur as Secteur,
+      typeContrat: values.typeContrat,
+      niveauDiplome: values.niveauDiplome,
+      secteur: values.secteur,
       dureeContrat: values.dureeContrat,
       dateNaissance: dayjs(values.dateNaissance).toDate(),
       dateDebutContrat: dayjs(values.dateDebutContrat).toDate(),
@@ -153,7 +149,7 @@ export const FormulaireSituation = () => {
                     <Tooltip title={"Votre âge détermine votre éligibilité au contrat et vos conditions salariales."} kind="click" />
                   </Box>
                 }
-                hintText="Format attendu : JJ/MM/AAAA."
+                hintText="Format attendu : JJ/MM/AAAA"
                 nativeInputProps={{
                   name: "dateNaissance",
                   type: "date",
@@ -193,6 +189,7 @@ export const FormulaireSituation = () => {
                   style={{
                     marginTop: fr.spacing("2v"),
                   }}
+                  legend="Date de début de contrat"
                   options={isDateDebutContratConnueOptions.map((option) => ({
                     label: option.label,
                     nativeInputProps: {
@@ -214,8 +211,8 @@ export const FormulaireSituation = () => {
                     style={{
                       marginTop: fr.spacing("2v"),
                     }}
-                    label="Date de début de contrat :"
-                    hintText="Format attendu : JJ/MM/AAAA."
+                    label="Date de signature du contrat"
+                    hintText="Format attendu : JJ/MM/AAAA"
                     nativeInputProps={{
                       name: "dateDebutContrat",
                       type: "date",
@@ -295,7 +292,7 @@ export const FormulaireSituation = () => {
                       <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
                         <Typography mt={"auto"}>Le contrat s'exécute à Mayotte</Typography>
                         <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} mt={"auto"}>
-                          (optionel)
+                          (optionnel)
                         </Typography>
                         <Tooltip
                           style={{

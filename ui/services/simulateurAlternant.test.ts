@@ -404,7 +404,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
   const dateApresExoneration = new Date(DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE)
   dateApresExoneration.setDate(dateApresExoneration.getDate() + 1)
 
-  it("secteur public : exhonération totale", () => {
+  it("secteur public : exonération totale", () => {
     const result = getSimulationInformation({
       typeContrat: "apprentissage",
       niveauDiplome: 4,

@@ -4,9 +4,8 @@ import Image from "next/image"
 import { useSimulateur } from "@/app/(landing-pages)/simulateur/context/SimulateurContext"
 import type { AnneeSimulation } from "@/services/simulateurAlternant"
 
-const AnneeSimulation = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
-  const annee: string = `${index === 0 ? "1ère" : index === 1 ? "2è" : "3è"} année`
-
+const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
+  const annee: string = index === 0 ? "1ère année" : `${index}è année`
   return (
     <Grid container border={`1px solid ${fr.colors.decisions.border.actionLow.blueFrance.default}`} borderRadius={2} spacing={0} mb={3}>
       <Grid
@@ -130,7 +129,7 @@ export const ResultatSimulation = () => {
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 12 }}>
               {simulation.anneesSimulation.map((anneeSimulation, index) => (
-                <AnneeSimulation key={index} simulation={anneeSimulation} index={index} />
+                <AnneeSimulationCard key={index} simulation={anneeSimulation} index={index} />
               ))}
             </Grid>
             <Grid size={{ xs: 12, md: 12 }}>
@@ -140,7 +139,7 @@ export const ResultatSimulation = () => {
         ) : (
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 4 }}>
-              <Image width={200} height={130} src="/images/calculatrice_simulateur.svg" alt="" />
+              <Image width={200} height={130} src="/images/calculatrice_simulateur.svg" alt="" aria-hidden="true" />
             </Grid>
             <Grid size={{ xs: 12, md: 8 }} my={"auto"}>
               <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>

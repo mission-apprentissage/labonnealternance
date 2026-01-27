@@ -40,7 +40,7 @@ export const AllerPlusLoin = () => (
       />
       <CardItem
         title="Toutes nos ressources sur l'alternance"
-        description="Découvrez de nombres informations, outils et liens utilies pour bien préparer votre alternance"
+        description="Découvrez de nombreuses informations, outils et liens utiles pour bien préparer votre alternance"
         href="/ressources"
       />
     </Grid>
