@@ -3,6 +3,7 @@
 import type { SxProps, Theme } from "@mui/material"
 import { Box } from "@mui/material"
 import { useVirtualizer } from "@tanstack/react-virtual"
+import type { Virtualizer } from "@tanstack/react-virtual"
 import type { RefObject } from "react"
 import { useEffect, useMemo, useRef } from "react"
 
@@ -15,6 +16,7 @@ export function VirtualContainer({
   containerStyle,
   scrollToElementIndex = 0,
   ref,
+  virtualizerRef,
 }: {
   defaultHeight: number
   elements: (VirtualElement | React.ReactNode)[]
@@ -22,6 +24,7 @@ export function VirtualContainer({
   containerStyle?: SxProps<Theme>
   scrollToElementIndex?: number
   ref?: RefObject<HTMLElement>
+  virtualizerRef?: RefObject<Virtualizer<any, Element>>
 }) {
   const parentRef = useRef(null)
 
@@ -36,7 +39,6 @@ export function VirtualContainer({
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
   }, [rawElements])
 
-  // eslint-disable-next-line react-hooks/incompatible-library
   const columnVirtualizer = useVirtualizer({
     count: elements.length + 1,
     getScrollElement: () => parentRef.current,
@@ -45,8 +47,6 @@ export function VirtualContainer({
     },
     overscan: 10,
   })
-
-  const virtualizerRef = useRef(columnVirtualizer)
 
   useEffect(() => {
     virtualizerRef.current = columnVirtualizer
@@ -95,7 +95,7 @@ export function VirtualContainer({
               item.onRender?.()
 
               return [
-                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement}>
+                <Box key={virtualRow.key} data-index={virtualRow.index} ref={columnVirtualizer.measureElement} className="virtual-container-item">
                   {item.render()}
                 </Box>,
               ]

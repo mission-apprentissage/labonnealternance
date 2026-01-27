@@ -9,16 +9,31 @@ const RessourcesRecruteur = () => {
   return (
     <Box>
       <Typography variant="body1">La bonne alternance vous propose un ensemble d’outils et de liens pour faciliter vos démarches liées à l’alternance.</Typography>
-
-      <Typography variant="h2" fontSize={32} fontWeight={700} my={2}>
+      <Typography
+        variant="h2"
+        sx={{
+          fontSize: 32,
+          fontWeight: 700,
+          my: 2,
+        }}
+      >
         Testez vos connaissances
       </Typography>
-
-      <Typography variant="body1" mb={6}>
+      <Typography
+        variant="body1"
+        sx={{
+          mb: 6,
+        }}
+      >
         Entraînez-vous avec notre premier parcours de mise en situation à destination des recruteurs :
       </Typography>
-
-      <Grid container spacing={2} my={6}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          my: 6,
+        }}
+      >
         <Grid size={{ xs: 12, md: 6 }}>
           <CardForLink
             imageUrl="/images/serrage-main.svg"
@@ -29,17 +44,30 @@ const RessourcesRecruteur = () => {
           />
         </Grid>
       </Grid>
-
-      <Box display="flex" alignItems="center" my={6}>
-        <Box mr={2}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          my: 6,
+        }}
+      >
+        <Box
+          sx={{
+            mr: 2,
+          }}
+        >
           <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={60} height={60} aria-hidden="true" />
         </Box>
         <Typography variant="h2">Liens utiles</Typography>
       </Box>
-
       <List sx={{ listStyleType: "disc", pl: 2 }}>
         <ListItem sx={{ display: "list-item" }}>
-          <Typography component="span" fontWeight={700}>
+          <Typography
+            component="span"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Estimez le coût d’un alternant
           </Typography>{" "}
           pour votre entreprise avec le simulateur du Portail de l'alternance.{" "}
@@ -52,14 +80,24 @@ const RessourcesRecruteur = () => {
         </ListItem>
 
         <ListItem sx={{ display: "list-item" }}>
-          <Typography component="span" fontWeight={700}>
+          <Typography
+            component="span"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Retrouvez les informations légales de votre entreprise
           </Typography>{" "}
           sur l’annuaire des entreprises, à partir de votre SIRET. <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/">En savoir plus</DsfrLink>
         </ListItem>
 
         <ListItem sx={{ display: "list-item" }}>
-          <Typography component="span" fontWeight={700}>
+          <Typography
+            component="span"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Chaque entreprise est rattachée à un Opérateur de compétences (OPCO).
           </Typography>{" "}
           Il s’agit de votre interlocuteur de proximité pour vos démarches liées à l’alternance (financement des contrats, formation, ...). Votre OPCO peut vous aider à affiner vos
@@ -70,7 +108,12 @@ const RessourcesRecruteur = () => {
         </ListItem>
 
         <ListItem sx={{ display: "list-item" }}>
-          <Typography component="span" fontWeight={700}>
+          <Typography
+            component="span"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Quelle est la différence entre un contrat en apprentissage et un contrat de professionnalisation ?
           </Typography>{" "}
           Le portail de l’alternance vous explique les différences.{" "}
@@ -90,13 +133,27 @@ const RessourcesRecruteur = () => {
 
         <ListItem sx={{ display: "list-item" }}>En tant qu’employeur, vous devez conserver le contrat signé pendant 5 ans en cas de contrôle.</ListItem>
       </List>
-
-      <Box display="flex" alignItems="center" my={8}>
-        <Box mr={2}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          my: 8,
+        }}
+      >
+        <Box
+          sx={{
+            mr: 2,
+          }}
+        >
           <Image src="/images/pages_ressources/recruteur.svg" alt="" width={189} height={119} aria-hidden="true" />
         </Box>
         <Stack>
-          <Typography fontWeight={700} mb={1}>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              mb: 1,
+            }}
+          >
             Diffusez simplement et gratuitement vos offres en alternance
           </Typography>
           <Box>
@@ -104,7 +161,6 @@ const RessourcesRecruteur = () => {
           </Box>
         </Stack>
       </Box>
-
       <FonctionnementPlateforme />
     </Box>
   )

@@ -94,7 +94,15 @@ export const OffresTabsMenu = ({
       label: copied ? (
         <Box sx={{ display: "flex" }}>
           <Image width="17" height="24" src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-          <Typography component="span" ml={fr.spacing("1w")} fontSize="14px" mb={0} color="#18753C">
+          <Typography
+            component="span"
+            sx={{
+              ml: fr.spacing("1w"),
+              fontSize: "14px",
+              mb: 0,
+              color: "#18753C",
+            }}
+          >
             Lien copié !
           </Typography>
         </Box>

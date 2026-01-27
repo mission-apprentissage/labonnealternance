@@ -19,9 +19,9 @@ export default async function Page() {
       <body>
         <PublicHeader user={user} />
         <Box
-          maxWidth="xl"
-          margin="auto"
           sx={{
+            maxWidth: "xl",
+            margin: "auto",
             marginTop: fr.spacing("4v"),
           }}
         >

@@ -140,8 +140,18 @@ export const DemandeDeContactForm = ({
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("2w") }}>
               <ReasonsField formik={formik} />
             </Box>
-            <Box width="95%" fontSize="12px">
-              <Typography sx={{ mb: fr.spacing("2w") }} color="grey.600">
+            <Box
+              sx={{
+                width: "95%",
+                fontSize: "12px",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: fr.colors.decisions.text.mention.grey.default,
+                  mb: fr.spacing("2w"),
+                }}
+              >
                 * Champs obligatoires
               </Typography>
               <Typography sx={{ mb: fr.spacing("2w") }}>
@@ -159,14 +169,22 @@ export const DemandeDeContactForm = ({
               </Typography>
             </Box>
             {error && (
-              <Box pt={4}>
+              <Box
+                sx={{
+                  pt: 4,
+                }}
+              >
                 <Typography data-testid="prdv-submit-error" color="redmarianne">
                   {error}
                 </Typography>
               </Box>
             )}
             <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
-            <Box textAlign="right">
+            <Box
+              sx={{
+                textAlign: "right",
+              }}
+            >
               <Button data-tracking-id="prendre-rdv-cfa" aria-label="Envoyer la demande de contact" type="submit" disabled={formik.isSubmitting}>
                 J'envoie ma demande
               </Button>
@@ -204,8 +222,19 @@ const EmailField = () => {
       <FormLabel htmlFor="email">E-mail *</FormLabel>
       <Input className={fr.cx("fr-input")} data-testid="email" name="email" type="email" onChange={onEmailChange} onBlur={field.onBlur} value={field.value} />
       {suggestedEmails.length > 0 && (
-        <Box mt={2} fontSize="12px" color="grey.600">
-          <Typography component="span" mr={2}>
+        <Box
+          sx={{
+            mt: 2,
+            fontSize: "12px",
+            color: fr.colors.decisions.text.mention.grey.default,
+          }}
+        >
+          <Typography
+            component="span"
+            sx={{
+              mr: 2,
+            }}
+          >
             Voulez vous dire ?
           </Typography>
           {suggestedEmails.map((suggestedEmail) => (

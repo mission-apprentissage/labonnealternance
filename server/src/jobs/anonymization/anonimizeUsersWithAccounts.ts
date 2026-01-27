@@ -4,6 +4,7 @@ import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 import userWithAccountModel from "shared/models/userWithAccount.model"
 
+import { ObjectId } from "mongodb"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -66,6 +67,11 @@ const anonymize = async () => {
       },
     ])
     .toArray()
+
+  await getDbCollection("rolemanagements").deleteMany({
+    user_id: { $in: userIds.map((id) => new ObjectId(id)) },
+  })
+
   const { deletedCount: recruiterCount } = await getDbCollection("recruiters").deleteMany(recruiterQuery)
   const { deletedCount: userWithAccountCount } = await getDbCollection("userswithaccounts").deleteMany(userWithAccountQuery)
   return { userWithAccountCount, recruiterCount }

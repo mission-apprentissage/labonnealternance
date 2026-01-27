@@ -99,7 +99,11 @@ const Formulaire = ({
                         : "Privilégiez votre adresse professionnelle"
                     }
                   />
-                  <Box mb={fr.spacing("2w")}>
+                  <Box
+                    sx={{
+                      mb: fr.spacing("2w"),
+                    }}
+                  >
                     <Box className={fr.cx("fr-messages-group")}>
                       <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
                         Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
@@ -146,9 +150,14 @@ const Formulaire = ({
 const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right: React.ReactNode; type: string }) => {
   return (
     <Box
-      sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }, gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" }, mt: 0 }}
-      rowGap={4}
-      columnGap={4}
+      sx={{
+        rowGap: 4,
+        columnGap: 4,
+        display: "grid",
+        gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
+        gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },
+        mt: 0,
+      }}
     >
       <Box>
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>

@@ -65,7 +65,12 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
           <Typography component="p" sx={{ mb: 2 }}>
             Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :
           </Typography>
-          <Stack spacing={1} alignItems="flex-start">
+          <Stack
+            spacing={1}
+            sx={{
+              alignItems: "flex-start",
+            }}
+          >
             <Typography>
               Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{relatedMetier.name}</i>
             </Typography>

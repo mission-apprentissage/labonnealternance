@@ -43,7 +43,12 @@ export default function User() {
       <Box component="header">
         <NavigationAdmin currentPage="GESTION_RECRUTEURS" />
       </Box>
-      <Box maxWidth={1200} marginX="auto">
+      <Box
+        sx={{
+          maxWidth: 1200,
+          marginX: "auto",
+        }}
+      >
         <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: establishmentLabel })]} />
         <DetailEntreprise
           userRecruteur={userRecruteur}
