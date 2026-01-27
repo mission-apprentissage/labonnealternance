@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Grid, List, ListItem, Typography } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
 import Image from "next/image"
