@@ -5,7 +5,7 @@ import { useSimulateur } from "@/app/(landing-pages)/simulateur/context/Simulate
 import type { AnneeSimulation } from "@/services/simulateurAlternant"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
-  const annee: string = index === 0 ? "1ère année" : `${index}è année`
+  const annee: string = index === 0 ? "1ère année" : `${index + 1}e année`
   return (
     <Grid container border={`1px solid ${fr.colors.decisions.border.actionLow.blueFrance.default}`} borderRadius={2} spacing={0} mb={3}>
       <Grid
@@ -76,35 +76,35 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
 const ExplicationsSalaire = () => {
   return (
     <Box>
-      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"}>
+      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
         Les données du simulateur sont présentées à des fins d'illustration. Elles ne prennent pas en compte :
       </Typography>
       <List sx={{ listStyleType: "disc", pl: 2, mb: 2 }} disablePadding dense>
         <ListItem sx={{ display: "list-item" }} disableGutters>
-          <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"}>
+          <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default}>
             La succession avec un précédent contrat en alternance
           </Typography>
         </ListItem>
         <ListItem sx={{ display: "list-item" }} disableGutters>
-          <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"}>
+          <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default}>
             Un éventuel changement de tranche d'âge en cours d'année
           </Typography>
         </ListItem>
         <ListItem sx={{ display: "list-item" }} disableGutters>
-          <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"}>
+          <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default}>
             Des primes versées par l'employeur par-delà le salaire réglementaire, tickets restaurants, remboursement domicile-travail, ... qui augmenteraient le salaire présenté
           </Typography>
         </ListItem>
       </List>
-      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"} gutterBottom>
+      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
         L'apprenti est exonéré de la totalité des cotisations salariales d'origine légale et conventionnelle pour la part de sa rémunération à 50% dans le privé et 100% dans le
         public.
       </Typography>
-      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"} gutterBottom>
+      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
         Dans cette simulation, le salaire de référence utilisé est le minimum réglementaire en vigueur au jour de la simulation. Certaines conventions collectives peuvent prévoir
         un revenu minimum plus élevé pour l’alternant.
       </Typography>
-      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} fontSize={"12px"} gutterBottom>
+      <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
         L'employeur reste libre de proposer un salaire supérieur à celui-ci.
       </Typography>
     </Box>
@@ -116,7 +116,7 @@ export const ResultatSimulation = () => {
 
   return (
     <Box py={2}>
-      <Box sx={{ display: "flex", direction: "row", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
         <Box display={{ md: "flex", xs: "none" }}>
           <Image width={10} height={25} src="/images/triangle.svg" alt="" />
         </Box>

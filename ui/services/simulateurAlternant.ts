@@ -38,9 +38,9 @@ export type InputSimulation = {
   typeContrat: TypeContrat
   niveauDiplome?: number
   dureeContrat: number
-  dateDebutContrat?: Date
+  dateDebutContrat: Date
   dateNaissance: Date
-  isRegionMayotte?: boolean
+  isRegionMayotte: boolean
   secteur: Secteur
 }
 
@@ -59,6 +59,9 @@ export type OutputSimulation = {
   anneesSimulation: Array<AnneeSimulation>
 }
 
+/**
+ * Trouve l'index de la tranche d'âge correspondant à l'âge donné
+ */
 const findTrancheAgeIndex = (tranches: readonly TrancheAge[], age: number): number => {
   const index = tranches.findIndex((t) => age >= t.min && (t.max === null || age <= t.max))
 
@@ -69,6 +72,10 @@ const findTrancheAgeIndex = (tranches: readonly TrancheAge[], age: number): numb
   return index
 }
 
+/**
+ * Déduit le groupe de niveau de diplôme à partir du niveau de diplôme
+ * (1-3 : inférieur au bac, 4-8 : bac et plus)
+ */
 const getNiveauDiplomeGroup = (niveauDiplome: number): NiveauDiplomeGroup => {
   const group = NIVEAU_DIPLOME_TO_GROUP[niveauDiplome]
 
@@ -79,7 +86,10 @@ const getNiveauDiplomeGroup = (niveauDiplome: number): NiveauDiplomeGroup => {
   return group
 }
 
-const getTauxApprentissage = (age: number, anneeContrat: AnneeContrat): number => {
+/**
+ * Récupère le taux SMIC pour un contrat en apprentissage
+ */
+const getTauxSmicApprentissage = (age: number, anneeContrat: AnneeContrat): number => {
   const trancheIndex = findTrancheAgeIndex(TRANCHES_AGE_APPRENTISSAGE, age)
   const taux = TAUX_APPRENTISSAGE[trancheIndex]?.[anneeContrat]
 
@@ -90,7 +100,10 @@ const getTauxApprentissage = (age: number, anneeContrat: AnneeContrat): number =
   return taux
 }
 
-const getTauxProfessionnalisation = (age: number, niveauDiplome: number): number => {
+/**
+ * Récupère le taux SMIC pour un contrat de professionnalisation
+ */
+const getTauxSmicProfessionnalisation = (age: number, niveauDiplome: number): number => {
   const trancheIndex = findTrancheAgeIndex(TRANCHES_AGE_PROFESSIONNALISATION, age)
   const groupe = getNiveauDiplomeGroup(niveauDiplome)
   const taux = TAUX_PROFESSIONNALISATION[trancheIndex]?.[groupe]
@@ -102,23 +115,19 @@ const getTauxProfessionnalisation = (age: number, niveauDiplome: number): number
   return taux
 }
 
-const getTauxSmic = ({
-  typeContrat,
-  age,
-  anneeContrat,
-  niveauDiplome,
-}: {
-  typeContrat: "apprentissage" | "professionnalisation"
-  age: number
-  anneeContrat: AnneeContrat
-  niveauDiplome: number
-}): number => {
+/**
+ * Récupère le taux SMIC en fonction du type de contrat
+ */
+const getTauxSmic = ({ typeContrat, age, anneeContrat, niveauDiplome }: { typeContrat: TypeContrat; age: number; anneeContrat: AnneeContrat; niveauDiplome: number }): number => {
   if (typeContrat === "apprentissage") {
-    return getTauxApprentissage(age, anneeContrat)
+    return getTauxSmicApprentissage(age, anneeContrat)
   }
-  return getTauxProfessionnalisation(age, niveauDiplome)
+  return getTauxSmicProfessionnalisation(age, niveauDiplome)
 }
 
+/**
+ * Récupère le taux SMIC pour chaque année simulée (durée du contrat)
+ */
 const getAllTauxSmic = ({
   typeContrat,
   age,
@@ -141,10 +150,16 @@ const getAllTauxSmic = ({
   )
 }
 
+/**
+ * Récupère la valeur du SMIC en fonction de la région
+ */
 const getSmic = (isRegionMayotte: boolean) => {
   return isRegionMayotte ? SMIC.mayotte : SMIC.metropole
 }
 
+/**
+ * Récupère la valeur de salaire brut en fonction du taux SMIC et de la région
+ */
 const getSalaireBrut = (tauxSmic: number, isRegionMayotte: boolean): { salaireHoraireBrut: number; salaireMensuelBrut: number; salaireAnnuelBrut: number } => {
   const smic = getSmic(isRegionMayotte)
   const salaireHoraireBrut = smic.brut.horaire * tauxSmic
@@ -200,6 +215,10 @@ export const getChargesSalariales = ({ typeContrat, dateDebutContrat, secteur, t
   return 0
 }
 
+/**
+ *
+ * Déduit le salaire net à partir du salaire brut en fonction des charges salariales
+ */
 const getSalaireNet = ({
   salaireHoraireBrut,
   tauxSmic,
@@ -232,6 +251,10 @@ const getSalaireNet = ({
   }
 }
 
+/**
+ *
+ * Crée une tranche de salaire (min, max) à partir d'un salaire donné
+ */
 const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSalaire => {
   return {
     min: round ? Math.round(salaire * 0.97) : salaire * 0.97,
@@ -239,6 +262,12 @@ const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSala
   }
 }
 
+/**
+ *
+ * Calcul d'une rémunération d'alternant en fonction des paramètres fournis
+ * Détermine année par année les rémunérations brute et nette journalières, mensuelles et annuelles
+ *
+ */
 export const getSimulationInformation = ({
   typeContrat,
   dateNaissance,

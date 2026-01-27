@@ -798,6 +798,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -858,6 +859,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 19728.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -878,6 +880,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -898,6 +901,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -918,6 +922,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 11462.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -934,12 +939,10 @@ describe("Cas de tests", () => {
       })
 
       const salaireAnnuelBrutAttendu = 17501.0
-      // TODO: pas dans la liste des cas de test fournie
-      // const salaireAnnuelNetMiniAttendu =
       const salaireAnnuelNetMaxiAttendu = 16128.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      // expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      // TODO : en attente du retour du métier pour la valeur de test
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
   })
@@ -961,6 +964,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 8892.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -1021,6 +1025,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 15217.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -1041,6 +1046,7 @@ describe("Cas de tests", () => {
       const salaireAnnuelNetMaxiAttendu = 8892.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
+      // Valeurs comprises dans la marge d'erreur acceptable (vu avec le métier le 27/01/2025)
       expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
@@ -1057,12 +1063,10 @@ describe("Cas de tests", () => {
       })
 
       const salaireAnnuelBrutAttendu = 13584.0
-      // TODO: pas dans la liste des cas de test fournie
-      // const salaireAnnuelNetMiniAttendu =
       const salaireAnnuelNetMaxiAttendu = 12528.0
 
       expect(result.anneesSimulation[0].salaireAnnuelBrut.max).toBeCloseTo(salaireAnnuelBrutAttendu, 0)
-      // expect(result.anneesSimulation[0].salaireAnnuelNet.min).toBeCloseTo(salaireAnnuelNetMiniAttendu, 0)
+      // TODO : en attente du retour du métier pour la valeur de test
       expect(result.anneesSimulation[0].salaireAnnuelNet.max).toBeCloseTo(salaireAnnuelNetMaxiAttendu, 0)
     })
   })
