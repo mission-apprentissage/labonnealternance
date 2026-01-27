@@ -1,6 +1,8 @@
 services:
   mongodb:
-    build: ./.infra/local/
+    build:
+      context: ./.infra/local/
+      dockerfile: Dockerfile.mongod
     restart: unless-stopped
     hostname: mongodb
     mem_limit: 5g
@@ -14,6 +16,24 @@ services:
       timeout: 5s
       retries: 12
       start_period: 10s
+
+  mongot:
+    build:
+      context: ./.infra/local/
+      dockerfile: Dockerfile.mongot
+    restart: unless-stopped
+    hostname: mongot
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - lba_mongot_data:/var/lib/mongot
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   clamav:
     image: clamav/clamav:stable
@@ -45,6 +65,9 @@ volumes:
   lba_mongodb_data:
     driver: local
     name: lba_mongodb_data
+  lba_mongot_data:
+    driver: local
+    name: lba_mongot_data
   lba_smtp_data:
     driver: local
     name: lba_smtp_data

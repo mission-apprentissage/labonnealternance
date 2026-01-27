@@ -24,6 +24,7 @@
     # seed.gpg should not be template replaced
     - item.path | basename != 'seed.gpg'
     - item.path | basename != 'mongo_keyfile.txt'
+    - item.path | basename != 'mongot_password.txt'
     - item.path | basename != 'seed.gz'
     # /app/tools is managed by infra
     - item.path | regex_search('^tools/?') == none
@@ -54,6 +55,15 @@
   ansible.builtin.template:
     src: "{{inventory_dir}}/files/configs/mongodb/mongo_keyfile.txt"
     dest: "/opt/app/configs/mongodb/mongo_keyfile.txt"
+    mode: "400"
+    owner: 999
+    group: 999
+  when: env_type == 'preview'
+
+- name: Copie du fichier mongot password
+  ansible.builtin.template:
+    src: "{{inventory_dir}}/files/configs/mongodb/mongot_password.txt"
+    dest: "/opt/app/configs/mongodb/mongot_password.txt"
     mode: "400"
     owner: 999
     group: 999

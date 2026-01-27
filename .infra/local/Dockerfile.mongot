@@ -1,0 +1,11 @@
+FROM mongodb/mongodb-community-search:0.60.1
+
+# Create secrets directory
+RUN mkdir -p /etc/mongot/secrets
+
+# Copy config and password files
+COPY mongot.yml /mongot-community/config.default.yml
+COPY mongot_password /etc/mongot/secrets/passwordFile
+
+# Set correct permissions for password file
+RUN chmod 400 /etc/mongot/secrets/passwordFile
