@@ -242,6 +242,9 @@ async function identifyFileType(base64String: string) {
 }
 
 async function validateApplicationFileType(base64String: string) {
+  if (!base64String.startsWith("data:application/pdf;base64,")) {
+    throw badRequest("Attachment file should have the following format: data:application/pdf;base64,<contenu_encodé_base64>")
+  }
   const type = await identifyFileType(base64String)
   if (!type) {
     sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
@@ -1103,7 +1106,7 @@ export const processApplicationEmails = {
       attachments: [
         {
           filename: application.applicant_attachment_name,
-          content: attachmentContent,
+          content: removeDataUrlPrefix(attachmentContent),
           encoding: "base64",
         },
       ],
@@ -1145,6 +1148,13 @@ export const processApplicationEmails = {
       throw internal("Email candidat destinataire rejeté.")
     }
   },
+}
+
+function removeDataUrlPrefix(attachmentData: string) {
+  if (attachmentData.startsWith("data:application/pdf;base64,")) {
+    return attachmentData.substring("data:application/pdf;base64,".length)
+  }
+  return attachmentData
 }
 
 function buildRecruitingCompaniesUrl(application: IApplication) {
