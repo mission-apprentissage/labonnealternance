@@ -1103,7 +1103,8 @@ export const processApplicationEmails = {
       attachments: [
         {
           filename: application.applicant_attachment_name,
-          path: attachmentContent,
+          content: attachmentContent,
+          encoding: "base64",
         },
       ],
     })
