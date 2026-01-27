@@ -241,9 +241,21 @@ async function identifyFileType(base64String: string) {
   }
 }
 
+const acceptedAttachmentFormatHeaders = {
+  docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+  pdf: "data:application/pdf;base64,",
+}
+
+function hasValidAttachmentHeader(content: string): string | null {
+  const headerFound = Object.values(acceptedAttachmentFormatHeaders).find((header) => content.startsWith(header))
+  return headerFound ?? null
+}
+
 async function validateApplicationFileType(base64String: string) {
-  if (!base64String.startsWith("data:application/pdf;base64,")) {
-    throw badRequest("Attachment file should have the following format: data:application/pdf;base64,<contenu_encodé_base64>")
+  if (!hasValidAttachmentHeader(base64String)) {
+    throw badRequest(
+      `Attachment file should start by one of the following formats: ${JSON.stringify(Object.values(acceptedAttachmentFormatHeaders))}. See https://api.apprentissage.beta.gouv.fr/fr/explorer/candidature-offre for more information.`
+    )
   }
   const type = await identifyFileType(base64String)
   if (!type) {
@@ -1151,8 +1163,9 @@ export const processApplicationEmails = {
 }
 
 function removeDataUrlPrefix(attachmentData: string) {
-  if (attachmentData.startsWith("data:application/pdf;base64,")) {
-    return attachmentData.substring("data:application/pdf;base64,".length)
+  const headerFound = hasValidAttachmentHeader(attachmentData)
+  if (headerFound) {
+    return attachmentData.substring(headerFound.length)
   }
   return attachmentData
 }
