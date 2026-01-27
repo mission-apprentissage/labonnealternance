@@ -304,7 +304,12 @@ describe("POST /v2/application", () => {
       headers: { authorization: `Bearer ${token}` },
     })
     expect.soft(response.statusCode).toEqual(400)
-    expect.soft(response.json()).toEqual({ statusCode: 400, error: "Bad Request", message: "File type is not supported" })
+    expect.soft(response.json()).toEqual({
+      statusCode: 400,
+      error: "Bad Request",
+      message:
+        'Attachment file should start by one of the following formats: ["data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,","data:application/pdf;base64,"]. See https://api.apprentissage.beta.gouv.fr/fr/explorer/candidature-offre for more information.',
+    })
   })
 
   it("save scheduled intention when link in email is followed", async () => {
