@@ -31,7 +31,7 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
 
   const onSubmit = useCallback(
     (rechercheForm: IRechercheForm) => {
-      navigateToRecherchePage(rechercheFormToRechercheParams(rechercheForm))
+      navigateToRecherchePage({ ...rechercheFormToRechercheParams(rechercheForm), scrollToRecruteursLba: false })
     },
     [navigateToRecherchePage]
   )
