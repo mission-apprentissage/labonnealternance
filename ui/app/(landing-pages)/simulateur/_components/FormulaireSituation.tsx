@@ -26,7 +26,11 @@ const inputSchema = Yup.object().shape({
     .min(minDateNaissance, "Votre âge n'est pas éligible à l'apprentissage. Veuillez renseigner un âge entre 14 et 77 ans.")
     .max(maxDateNaissance, "Votre âge n'est pas éligible à l'apprentissage. Veuillez renseigner un âge entre 14 et 77 ans.")
     .required("La date de naissance est requise"),
-  isDateDebutContratConnue: Yup.boolean().required("Champ obligatoire"),
+  isDateDebutContratConnue: Yup.boolean().when("typeContrat", {
+    is: "apprentissage",
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   dateDebutContrat: Yup.date()
     .when("isDateDebutContratConnue", {
       is: true,
