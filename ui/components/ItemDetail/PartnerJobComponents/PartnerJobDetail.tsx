@@ -122,6 +122,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
                   <li>Offre inexacte ou expirée</li>
                   <li>Fausse offre provenant d'un centre de formation</li>
                   <li>Tentative d'escroquerie</li>
+                  <li>Offre ne relevant pas du champ de l’alternance (CDI, stage, etc.)</li>
                 </ul>
               </Box>
             }
