@@ -227,44 +227,59 @@ export const sendApplication = async ({
   }
 }
 
-async function identifyFileType(base64String: string) {
+async function identifyFileType(base64Data: string): Promise<string | undefined> {
   try {
-    // Remove the data URL part if it's present
-    const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
     // Convert base64 string to a buffer
     const buffer = Buffer.from(base64Data, "base64")
     // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
-    return type
+    return type?.ext
   } catch (_) {
     return undefined
   }
 }
 
-const acceptedAttachmentFormatHeaders = {
-  docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
-  pdf: "data:application/pdf;base64,",
+enum AcceptedFileType {
+  docx = "docx",
+  pdf = "pdf",
 }
 
+const mappingFileTypeToHeader = {
+  docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+  pdf: "data:application/pdf;base64,",
+} as const
+
 function hasValidAttachmentHeader(content: string): string | null {
-  const headerFound = Object.values(acceptedAttachmentFormatHeaders).find((header) => content.startsWith(header))
+  const headerFound = Object.values(mappingFileTypeToHeader).find((header) => content.startsWith(header))
   return headerFound ?? null
 }
 
-async function validateApplicationFileType(base64String: string) {
-  if (!hasValidAttachmentHeader(base64String)) {
-    throw badRequest(
-      "Attachment file must be a base64 data URL string starting with a supported MIME type prefix (format: data:<mime>;base64,). Supported MIME types are: application/pdf (pdf) and application/vnd.openxmlformats-officedocument.wordprocessingml.document (docx). See https://api.apprentissage.beta.gouv.fr/fr/explorer/candidature-offre for more information."
-    )
+function getFiletype(filename: string): string {
+  const pointIndex = filename.lastIndexOf(".")
+  if (pointIndex === -1) {
+    return filename
   }
-  const type = await identifyFileType(base64String)
-  if (!type) {
+  return filename.substring(pointIndex + 1)
+}
+
+async function validateApplicationFileType(filename: string, base64String: string) {
+  const filenameFileType = getFiletype(filename)
+  const acceptedFileType = parseEnum(AcceptedFileType, filenameFileType)
+  if (!acceptedFileType) {
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  const expectedHeader = mappingFileTypeToHeader[acceptedFileType]
+  if (!base64String.startsWith(expectedHeader)) {
+    throw badRequest(`Bad header. Expected: ${expectedHeader}`)
+  }
+  const content = base64String.substring(expectedHeader.length)
+  const detectedFileType = await identifyFileType(content)
+  if (!detectedFileType) {
     sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
-
-  if (!["pdf", "docx"].includes(type?.ext)) {
-    sentryCaptureException("Application file type not supported", { extra: { responseData: type } })
+  if (detectedFileType !== acceptedFileType) {
+    sentryCaptureException("Application file type not matching data", { extra: { detectedFileType, filenameFileType } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
 }
@@ -285,13 +300,14 @@ export const sendApplicationV2 = async ({
   const {
     recipient_id: { collectionName, jobId },
     applicant_attachment_content,
+    applicant_attachment_name,
     applicant_email,
     applicant_first_name,
     applicant_last_name,
     applicant_phone,
   } = newApplication
 
-  await validateApplicationFileType(applicant_attachment_content)
+  await validateApplicationFileType(applicant_attachment_name, applicant_attachment_content)
 
   if (isEmailBurner(applicant_email)) {
     throw badRequest(BusinessErrorCodes.BURNER)

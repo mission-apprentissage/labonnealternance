@@ -307,8 +307,7 @@ describe("POST /v2/application", () => {
     expect.soft(response.json()).toEqual({
       statusCode: 400,
       error: "Bad Request",
-      message:
-        'Attachment file should start by one of the following formats: ["data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,","data:application/pdf;base64,"]. See https://api.apprentissage.beta.gouv.fr/fr/explorer/candidature-offre for more information.',
+      message: "Bad header. Expected: data:application/pdf;base64,",
     })
   })
 
