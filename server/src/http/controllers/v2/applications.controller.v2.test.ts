@@ -307,7 +307,7 @@ describe("POST /v2/application", () => {
     expect.soft(response.json()).toEqual({
       statusCode: 400,
       error: "Bad Request",
-      message: "Bad header. Expected: data:application/pdf;base64,",
+      message: "File type is not supported",
     })
   })
 
