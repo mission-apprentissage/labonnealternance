@@ -270,7 +270,13 @@ async function validateApplicationFileType(filename: string, base64String: strin
   }
   const expectedHeader = mappingFileTypeToHeader[acceptedFileType]
   if (!base64String.startsWith(expectedHeader)) {
-    throw badRequest(`Bad header. Expected: ${expectedHeader}`)
+    sentryCaptureException("Application file header does not match expected MIME type", {
+      extra: {
+        expectedHeader,
+        receivedHeaderSample: base64String.substring(0, expectedHeader.length + 20),
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
   const content = base64String.substring(expectedHeader.length)
   const detectedFileType = await identifyFileType(content)
