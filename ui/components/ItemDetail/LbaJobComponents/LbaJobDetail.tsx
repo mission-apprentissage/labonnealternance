@@ -11,6 +11,7 @@ import LbaJobCompetences from "./LbaJobCompetences"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 import { LbaJobEngagement } from "./LbaJobEngagement"
+import LbaJobReportTooltip from "./LbaJobReportTooltip"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3, notifyLbaJobDetailView } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -140,20 +141,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
-            tooltip={
-              <Box sx={{ p: 1 }}>
-                <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: "700", marginBottom: "8px", color: "#161616" }}>
-                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
-                </Typography>
-                <ul>
-                  <li>Offre offensante ou discriminatoire</li>
-                  <li>Offre inexacte ou expirée</li>
-                  <li>Fausse offre provenant d'un centre de formation</li>
-                  <li>Tentative d'escroquerie</li>
-                  <li>Offre ne relevant pas du champ de l’alternance (CDI, stage, etc.)</li>
-                </ul>
-              </Box>
-            }
+            tooltip={<LbaJobReportTooltip />}
           />
         </Box>
       </Box>
