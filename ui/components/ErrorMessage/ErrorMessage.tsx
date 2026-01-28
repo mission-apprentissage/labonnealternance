@@ -12,7 +12,18 @@ const ErrorMessage = ({ type = undefined, message }: Props) => {
   return (
     <Box sx={{ alignItems: "center", display: "flex", flexDirection: "column" }}>
       {type === "column" && <Image width={256} height={256} src="/images/icons/searchingPeople.svg" alt="" />}
-      <Box sx={{ display: "flex", alignItems: "center", background: "#fff1e5", borderRadius: "10px", fontWeight: 700, margin: "10px", padding: "5px" }} color="grey.650">
+      <Box
+        sx={{
+          color: "grey.650",
+          display: "flex",
+          alignItems: "center",
+          background: "#fff1e5",
+          borderRadius: "10px",
+          fontWeight: 700,
+          margin: "10px",
+          padding: "5px",
+        }}
+      >
         <Image width={32} height={32} src="/images/icons/errorAlert.svg" alt="" />
         {message}
       </Box>

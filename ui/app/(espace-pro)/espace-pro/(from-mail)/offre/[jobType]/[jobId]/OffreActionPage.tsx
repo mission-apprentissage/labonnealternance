@@ -74,7 +74,11 @@ export function OffreActionPage({
   }
 
   return (
-    <Box margin="auto">
+    <Box
+      sx={{
+        margin: "auto",
+      }}
+    >
       {actionName === "cancel" && (
         <Typography component="h1" sx={homeEditorialH1}>
           Annulation de l'offre déposée sur La bonne alternance
@@ -85,7 +89,6 @@ export function OffreActionPage({
           Modification de l'offre déposée sur La bonne alternance
         </Typography>
       )}
-
       {!result && <LoadingEmptySpace label="Chargement en cours..." />}
       {result && result !== "ok" && (
         <Box sx={{ display: "flex", alignItems: "center", color: "#4a4a4a", ...cssParameters }}>
@@ -98,16 +101,27 @@ export function OffreActionPage({
           Votre offre a été modifiée
         </Typography>
       )}
-
       <Box sx={{ mt: fr.spacing("4w") }}>
         Aller sur le site{" "}
-        <Link href={PAGES.static.home.getPath()} aria-label="Accès au site La bonne alternace" fontWeight={700}>
+        <Link
+          href={PAGES.static.home.getPath()}
+          aria-label="Accès au site La bonne alternace"
+          sx={{
+            fontWeight: 700,
+          }}
+        >
           La bonne alternance
         </Link>
         <br />
         <br />
         Se connecter à votre{" "}
-        <Link href={PAGES.static.authentification.getPath()} aria-label="Accès à la page de connexion" fontWeight={700}>
+        <Link
+          href={PAGES.static.authentification.getPath()}
+          aria-label="Accès à la page de connexion"
+          sx={{
+            fontWeight: 700,
+          }}
+        >
           espace recruteur
         </Link>
         <br />
@@ -115,7 +129,13 @@ export function OffreActionPage({
         {jobId && (
           <>
             Voir{" "}
-            <Link href={PAGES.dynamic.jobDetail({ type: jobType, jobId }).getPath()} aria-label="Visualiser l'offre en ligne" fontWeight={700}>
+            <Link
+              href={PAGES.dynamic.jobDetail({ type: jobType, jobId }).getPath()}
+              aria-label="Visualiser l'offre en ligne"
+              sx={{
+                fontWeight: 700,
+              }}
+            >
               l'offre
             </Link>{" "}
             sur le site La bonne alternance

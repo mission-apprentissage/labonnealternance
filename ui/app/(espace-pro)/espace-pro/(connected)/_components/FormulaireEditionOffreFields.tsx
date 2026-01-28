@@ -68,7 +68,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         />
       </FormControl>
       {values.rome_label && (
-        <Box mt={2}>
+        <Box
+          sx={{
+            mt: 2,
+          }}
+        >
           <Input
             label="Intitulé de l'offre"
             hintText="Personnalisez le titre du poste (Facultatif)"
@@ -81,8 +85,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           />
         </Box>
       )}
-
-      <Box mt={2}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <Checkbox
           orientation="horizontal"
           state={values.job_type.length === 0 ? "error" : "default"}
@@ -117,7 +124,6 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           }
         />
       </Box>
-
       <Select
         state={errors.job_level_label && touched.job_level_label ? "error" : "default"}
         stateRelatedMessage={errors.job_level_label as string}
@@ -131,8 +137,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         <option value="Licence, Maîtrise, autres formations (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations (Bac+3 à Bac+4)</option>
         <option value="Master, titre ingénieur, autres formations (Bac+5)">Master, titre ingénieur, autres formations (Bac+5)</option>
       </Select>
-
-      <Box mt={2}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <CustomInput
           required={true}
           name="job_start_date"
@@ -162,7 +171,12 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         {errors.job_duration && (
           <Box sx={{ color: fr.colors.decisions.text.default.error.default, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Warning sx={{ m: 0 }} />
-            <Box sx={{ display: "flex" }} ml={1}>
+            <Box
+              sx={{
+                ml: 1,
+                display: "flex",
+              }}
+            >
               {errors.job_duration as string}
             </Box>
           </Box>

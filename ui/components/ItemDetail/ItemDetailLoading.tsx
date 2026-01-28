@@ -47,22 +47,40 @@ const ItemDetailLoading = ({ type }: Props) => {
   }
 
   return (
-    <Box pt={0}>
+    <Box
+      sx={{
+        pt: 0,
+      }}
+    >
       <Box sx={resultListProperties}>
-        <Box textAlign="center">
+        <Box
+          sx={{
+            textAlign: "center",
+          }}
+        >
           <Paper elevation={1} sx={{ padding: 6, backgroundColor: "white" }}>
             <Box className="loading-animation">
               {loadingIllustrations.map((item, index) => (
                 <div key={index} className="loading-item">
                   <Box component="img" src={item.src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
-                  <Typography variant="body1" mt={1}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mt: 1,
+                    }}
+                  >
                     {item.text}
                   </Typography>
                 </div>
               ))}
               <div className="loading-item">
                 <Box component="img" src="/images/loading/hourglass.svg" aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
-                <Typography variant="body1" mt={1}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    mt: 1,
+                  }}
+                >
                   Hum... Ce chargement semble plus long que prévu
                 </Typography>
               </div>

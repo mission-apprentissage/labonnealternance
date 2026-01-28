@@ -125,15 +125,29 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
       >
         {({ values }) => (
           <Box
-            sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" }, gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" } }}
-            rowGap={4}
-            columnGap={4}
+            sx={{
+              rowGap: 4,
+              columnGap: 4,
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
+              gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },
+            }}
           >
             <Box>
-              <Typography className="big" fontWeight={700} component="h2">
+              <Typography
+                className="big"
+                component="h2"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 Votre offre
               </Typography>
-              <Box mt={2}>
+              <Box
+                sx={{
+                  mt: 2,
+                }}
+              >
                 <FormulaireEditionOffreFields onRomeChange={onRomeChange} />
               </Box>
             </Box>
@@ -150,12 +164,20 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
                   onChange={onSelectedCompetencesChange}
                 />
               ) : (
-                <Box display={["none", "block"]}>
+                <Box
+                  sx={{
+                    display: ["none", "block"],
+                  }}
+                >
                   <InfosDiffusionOffre />
                 </Box>
               )}
             </Box>
-            <Box mt={8}>
+            <Box
+              sx={{
+                mt: 8,
+              }}
+            >
               <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
             </Box>
           </Box>

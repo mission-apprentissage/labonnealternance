@@ -18,7 +18,12 @@ export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: 
         <Image src={imageUrl} alt="" width={120} height={90} />
       </Box>
       <CardContent sx={{ p: 0 }}>
-        <Typography fontWeight="bold" gutterBottom>
+        <Typography
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+          }}
+        >
           {text}
         </Typography>
         <DsfrLink href={link} aria-label={linkAriaLabel}>

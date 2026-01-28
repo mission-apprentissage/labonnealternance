@@ -93,10 +93,18 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
   }
 
   return (
-    <Box pt="0">
+    <Box
+      sx={{
+        pt: "0",
+      }}
+    >
       <Box sx={resultListProperties}>
         {isLoading ? (
-          <Box textAlign="center">
+          <Box
+            sx={{
+              textAlign: "center",
+            }}
+          >
             <Box component="img" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
             <Typography sx={{ mt: 1 }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
             <Box sx={{ maxWidth: "400px", mx: "auto", my: 4 }}>
