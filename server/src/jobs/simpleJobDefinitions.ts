@@ -78,7 +78,6 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
-import { up } from "@/migrations/20260122160000-regeneration-rome-label"
 
 type SimpleJobDefinition = {
   fct: (payload?: any) => Promise<unknown>
@@ -436,12 +435,4 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: validateDomaineMetiers,
     description: "Validation des données domainesmetiers",
   },
-  {
-    fct: testMigration,
-    description: "plop",
-  },
 ]
-
-async function testMigration() {
-  await up()
-}
