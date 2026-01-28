@@ -5,7 +5,13 @@ import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName
 import { ApplicationIntention } from "shared/constants/application"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
+import {
+  applicationTestFile,
+  generateApplicantFixture,
+  generateApplicationFixture,
+  mismatchedHeaderContentTestFile,
+  wrongApplicationTestFile,
+} from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -308,6 +314,32 @@ describe("POST /v2/application", () => {
       statusCode: 400,
       error: "Bad Request",
       message: "Bad header. Expected: data:application/pdf;base64,",
+    })
+  })
+
+  it("return 400 when header matches filename but content type is different", async () => {
+    const job = recruiter.jobs[0]
+    const body: IApplicationApiPublic = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: mismatchedHeaderContentTestFile,
+      applicant_email: "jeam.dupont@mail.com",
+      applicant_first_name: "Jean",
+      applicant_last_name: "Dupont",
+      applicant_phone: "0101010101",
+      recipient_id: `recruiters_${job._id.toString()}`,
+    }
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/application",
+      body,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect.soft(response.statusCode).toEqual(400)
+    expect.soft(response.json()).toEqual({
+      statusCode: 400,
+      error: "Bad Request",
+      message: "File type is not supported",
     })
   })
 
