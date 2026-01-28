@@ -254,7 +254,7 @@ function findAttachmentHeader(content: string): string | null {
   return headerFound ?? null
 }
 
-function getFiletype(filename: string): string {
+function getFiletypeFromFilename(filename: string): string {
   const pointIndex = filename.lastIndexOf(".")
   if (pointIndex === -1) {
     return filename
@@ -263,7 +263,7 @@ function getFiletype(filename: string): string {
 }
 
 async function validateApplicationFileType(filename: string, base64String: string) {
-  const filenameFileType = getFiletype(filename)
+  const filenameFileType = getFiletypeFromFilename(filename)
   const acceptedFileType = parseEnum(AcceptedFileType, filenameFileType)
   if (!acceptedFileType) {
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
