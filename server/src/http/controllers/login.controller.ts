@@ -11,7 +11,7 @@ import mailer from "@/services/mailer.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 import type { Server } from "@/http/server"
 import { getUserWithAccountByEmail, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
-import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
+import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurProps, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
@@ -135,7 +135,11 @@ export default (server: Server) => {
         throw forbidden()
       }
       const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
-      return response.status(200).send(toPublicUser(userFromRequest, await getPublicUserRecruteurPropsOrError(userFromRequest._id)))
+      const userRecruteurOpt = await getPublicUserRecruteurProps(userFromRequest._id)
+      if ("error" in userRecruteurOpt) {
+        throw forbidden()
+      }
+      return response.status(200).send(toPublicUser(userFromRequest, userRecruteurOpt))
     }
   )
 

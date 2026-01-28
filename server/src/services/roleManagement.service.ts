@@ -116,21 +116,21 @@ const roleToStatus = (role: IRoleManagement) => {
   }
 }
 
-export const getPublicUserRecruteurPropsOrError = async (
+export const getPublicUserRecruteurProps = async (
   userId: ObjectId,
   includeUserAwaitingValidation: boolean = false
-): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
+): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current"> | { error: string }> => {
   const mainRole = await getMainRoleManagement(userId, includeUserAwaitingValidation)
   if (!mainRole) {
-    throw internal(`inattendu : aucun role trouvé pour user id=${userId}`)
+    return { error: `inattendu : aucun role trouvé pour user id=${userId}` }
   }
   const type = roleToUserType(mainRole)
   if (!type) {
-    throw internal(`inattendu : aucun type trouvé pour user id=${userId}`)
+    return { error: `inattendu : aucun type trouvé pour user id=${userId}` }
   }
   const status_current = roleToStatus(mainRole)
   if (!status_current) {
-    throw internal(`inattendu : aucun status trouvé pour user id=${userId}`)
+    return { error: `inattendu : aucun status trouvé pour user id=${userId}` }
   }
   const commonFields = {
     type,
@@ -139,7 +139,7 @@ export const getPublicUserRecruteurPropsOrError = async (
   if (type === CFA) {
     const cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
     if (!cfa) {
-      throw internal(`inattendu : cfa non trouvé pour user id=${userId}`)
+      return { error: `inattendu : cfa non trouvé pour user id=${userId}` }
     }
     const { siret } = cfa
     return { ...commonFields, establishment_siret: siret }
@@ -147,12 +147,12 @@ export const getPublicUserRecruteurPropsOrError = async (
   if (type === ENTREPRISE) {
     const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(mainRole.authorized_id.toString()) })
     if (!entreprise) {
-      throw internal(`inattendu : entreprise non trouvée pour user id=${userId}`)
+      return { error: `inattendu : entreprise non trouvée pour user id=${userId}` }
     }
     const { siret } = entreprise
     const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
     if (!user) {
-      throw internal(`inattendu : user non trouvé`, { userId })
+      return { error: `inattendu : user non trouvé` }
     }
     const recruiter = await getFormulaireFromUserIdOrError(user._id.toString())
     return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
@@ -161,6 +161,17 @@ export const getPublicUserRecruteurPropsOrError = async (
     return { ...commonFields, scope: parseEnumOrError(OPCOS_LABEL, mainRole.authorized_id) }
   }
   return commonFields
+}
+
+export const getPublicUserRecruteurPropsOrError = async (
+  userId: ObjectId,
+  includeUserAwaitingValidation: boolean = false
+): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current">> => {
+  const result = await getPublicUserRecruteurProps(userId, includeUserAwaitingValidation)
+  if ("error" in result) {
+    throw internal(result.error)
+  }
+  return result
 }
 
 export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagement[]) => {
