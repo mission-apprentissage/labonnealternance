@@ -3,7 +3,6 @@ import { pipeline } from "stream/promises"
 
 import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
-import dayjs from "shared/helpers/dayjs"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
 import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
@@ -14,6 +13,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
+import dayjs from "shared/helpers/dayjs"
 import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -30,18 +30,18 @@ import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
-import config from "@/config"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { manageApiError } from "@/common/utils/errorManager"
 import { logger } from "@/common/logger"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import type { UserForAccessToken } from "@/security/accessTokenService"
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
+import { manageApiError } from "@/common/utils/errorManager"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { createToken, getTokenValue } from "@/common/utils/jwtUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import type { UserForAccessToken } from "@/security/accessTokenService"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
@@ -94,8 +94,8 @@ export enum BlackListOrigins {
 }
 
 const emailCandidatTemplateMap = {
-  [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "mail-candidat-offre-emploi-lba",
-  [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "mail-candidat-offre-emploi-partenaire",
+  [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "mail-candidat-offre-emploi",
+  [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "mail-candidat-offre-emploi",
   [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "mail-candidat-recruteur-lba",
 }
 
@@ -227,29 +227,73 @@ export const sendApplication = async ({
   }
 }
 
-async function identifyFileType(base64String: string) {
+async function identifyFileType(base64Data: string): Promise<string | undefined> {
   try {
-    // Remove the data URL part if it's present
-    const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
     // Convert base64 string to a buffer
     const buffer = Buffer.from(base64Data, "base64")
     // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
-    return type
+    return type?.ext
   } catch (_) {
     return undefined
   }
 }
 
-async function validateApplicationFileType(base64String: string) {
-  const type = await identifyFileType(base64String)
-  if (!type) {
-    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
+enum AcceptedFileType {
+  docx = "docx",
+  pdf = "pdf",
+}
+
+const mappingFileTypeToHeader = {
+  docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+  pdf: "data:application/pdf;base64,",
+} as const
+
+function findAttachmentHeader(content: string): string | null {
+  const headerFound = Object.values(mappingFileTypeToHeader).find((header) => content.startsWith(header))
+  return headerFound ?? null
+}
+
+function getFiletypeFromFilename(filename: string): string {
+  const pointIndex = filename.lastIndexOf(".")
+  if (pointIndex === -1) {
+    return filename
+  }
+  return filename.substring(pointIndex + 1)
+}
+
+async function validateApplicationFileType(filename: string, base64String: string) {
+  const filenameFileType = getFiletypeFromFilename(filename)
+  const acceptedFileType = parseEnum(AcceptedFileType, filenameFileType)
+  if (!acceptedFileType) {
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
-
-  if (!["pdf", "docx"].includes(type?.ext)) {
-    sentryCaptureException("Application file type not supported", { extra: { responseData: type } })
+  const expectedHeader = mappingFileTypeToHeader[acceptedFileType]
+  if (!base64String.startsWith(expectedHeader)) {
+    sentryCaptureException("Application file header does not match expected MIME type", {
+      extra: {
+        expectedHeader,
+        receivedHeaderSample: base64String.substring(0, expectedHeader.length + 20),
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  const content = base64String.substring(expectedHeader.length)
+  const detectedFileType = await identifyFileType(content)
+  if (!detectedFileType) {
+    const base64Length = base64String.length
+    sentryCaptureException("Application file type could not be determined", {
+      extra: {
+        attachmentMetadata: {
+          base64Length,
+          expectedHeader,
+        },
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  if (detectedFileType !== acceptedFileType) {
+    sentryCaptureException("Application file type not matching data", { extra: { detectedFileType, filenameFileType } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
 }
@@ -270,13 +314,14 @@ export const sendApplicationV2 = async ({
   const {
     recipient_id: { collectionName, jobId },
     applicant_attachment_content,
+    applicant_attachment_name,
     applicant_email,
     applicant_first_name,
     applicant_last_name,
     applicant_phone,
   } = newApplication
 
-  await validateApplicationFileType(applicant_attachment_content)
+  await validateApplicationFileType(applicant_attachment_name, applicant_attachment_content)
 
   if (isEmailBurner(applicant_email)) {
     throw badRequest(BusinessErrorCodes.BURNER)
@@ -1103,7 +1148,8 @@ export const processApplicationEmails = {
       attachments: [
         {
           filename: application.applicant_attachment_name,
-          path: attachmentContent,
+          content: removeDataUrlPrefix(attachmentContent),
+          encoding: "base64",
         },
       ],
     })
@@ -1134,6 +1180,7 @@ export const processApplicationEmails = {
         reminderDate: dayjs(application.created_at).add(10, "days").format("DD/MM/YYYY"),
         attachmentName: application.applicant_attachment_name,
         sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, job_origin ?? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+        recruitingCompaniesUrl: buildRecruitingCompaniesUrl(application),
       },
     })
     if (emailCandidat?.accepted?.length) {
@@ -1143,6 +1190,34 @@ export const processApplicationEmails = {
       throw internal("Email candidat destinataire rejeté.")
     }
   },
+}
+
+function removeDataUrlPrefix(attachmentData: string) {
+  const headerFound = findAttachmentHeader(attachmentData)
+  if (headerFound) {
+    return attachmentData.substring(headerFound.length)
+  }
+  return attachmentData
+}
+
+function buildRecruitingCompaniesUrl(application: IApplication) {
+  const { application_url } = application
+  if (!application_url) {
+    logger.warn("no application_url")
+    return
+  }
+  const searchParams = new URL(application_url).searchParams
+  searchParams.delete("utm_source")
+  searchParams.delete("utm_medium")
+  searchParams.delete("utm_campaign")
+  searchParams.delete("activeItems")
+  searchParams.delete("scrollToRecruteursLba")
+  searchParams.append("scrollToRecruteursLba", "true")
+  searchParams.append("utm_source", "lba-brevo")
+  searchParams.append("utm_medium", "email")
+  searchParams.append("utm_campaign", "confirmation-envoi-candidature-offre_promo-candidature-spontanee")
+  const result = `${config.publicUrl}/recherche?${searchParams}`
+  return result
 }
 
 const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {

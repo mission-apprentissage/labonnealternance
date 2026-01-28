@@ -3,7 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useRef } from "react"
+import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 
+import type { Virtualizer } from "@tanstack/react-virtual"
 import { CandidatRechercheFilters } from "./CandidatRechercheFilters"
 import { RechercheBackToTopButton } from "./RechercheResultats/RechercheBackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
@@ -13,28 +15,56 @@ import { RechercheMobileToggleMapButton } from "./RechercheResultats/RechercheMo
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsList"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
+import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, displayMobileForm, activeItems = [] } = props.rechercheParams
+  const { displayMap, displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
   const rechercheResult = useRechercheResults(props.rechercheParams)
-
-  const elements = [
-    {
-      height: 122,
-      render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
-    },
-    ...RechercheResultatsList(props),
-  ] satisfies Parameters<typeof VirtualContainer>[0]["elements"]
+  const virtualizerRef = useRef<Virtualizer<any, Element>>(null)
 
   if (displayMobileForm) {
     return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
   }
 
-  const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item.ideaType !== "whisper" && isItemReferenceInList(element.item, activeItems))
+  const elements: ReturnType<typeof RechercheResultatsList> = []
+
+  const scrollToItem = (item: ResultCardData) => {
+    const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
+    if (scolledElementIndex !== -1) {
+      virtualizerRef.current.scrollToIndex(scolledElementIndex, { align: "start" })
+    }
+  }
+
+  elements.push(
+    {
+      height: 122,
+      render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
+      onRender: undefined,
+      item: undefined,
+    },
+    ...RechercheResultatsList({ ...props, scrollToItem })
+  )
+
+  const getScolledElementIndex = () => {
+    return elements.findIndex((element) => {
+      if (!("item" in element && element.item)) return false
+      const { item } = element
+      const { type } = item
+      if (activeItems.length) {
+        return type === "lba_item" && isItemReferenceInList(item.value, activeItems)
+      }
+      if (scrollToRecruteursLba) {
+        return type === "lba_item" && item.value.ideaType === LBA_ITEM_TYPE_OLD.LBA
+      }
+      return false
+    })
+  }
+
+  const scolledElementIndex = getScolledElementIndex()
 
   return (
     <Box
@@ -59,6 +89,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
       >
         <VirtualContainer
           ref={scrollElement}
+          virtualizerRef={virtualizerRef}
           defaultHeight={270}
           elements={elements}
           scrollToElementIndex={scolledElementIndex}

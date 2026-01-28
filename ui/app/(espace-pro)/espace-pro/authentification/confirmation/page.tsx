@@ -8,10 +8,13 @@ export default function ConfirmationCreationCompte() {
       <Typography component="h1" sx={{ fontSize: { sx: "32px", sm: "40px" }, lineHeight: { sx: "40px", sm: "48px" }, fontWeight: "bold" }} data-testid="validation-email-title">
         Vérifiez votre messagerie
       </Typography>
-      <Box mt={4}>
+      <Box
+        sx={{
+          mt: 4,
+        }}
+      >
         <Typography>Nous vous avons envoyé un email renseigné précédement avec un lien de confirmation. Celui-ci sera valide pour les 60 prochaines minutes.</Typography>
       </Box>
-
       <Box sx={{ mt: 4 }}>
         <Typography component="h2" sx={{ fontSize: { sx: "18px", sm: "32px" }, mb: 3, lineHeight: { sx: "24px", sm: "32px" }, fontWeight: "bold" }}>
           Vous n'avez rien reçu ?

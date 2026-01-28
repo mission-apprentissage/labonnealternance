@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 52d05262812b46b0b884fb31a942f9c121b9cf1b4bc48c6edeb359ce616589fa
+  checksum: 1d8570617be315cd9a6b423b927431afc05e5f07d76d98edf23550be1259d6b5
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
   ignore_detectors:
@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 34f48066ce67e232050488329e48646411c61343d7e70c5d65223fc1dd07039a
+  checksum: 114fa9d897dd519cbe7ab0892ad9f60002fafd82605ba2c1d75f909577d1f858
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -150,9 +150,9 @@ fileignoreconfig:
 - filename: server/static/templates/mail-candidat-offre-emploi-lba.mjml.ejs
   checksum: 8c4747be47fcb6facb9ca3b5597653ba01684949483e22f88ff7ebd7ec866e06
 - filename: server/static/templates/mail-candidat-offre-emploi-partenaire.mjml.ejs
-  checksum: 1b52190fb8a1a5b5a0f4248f64760218448e128417e228c91b9a4472e217169d
+  checksum: 74c5d71e4e85238ddf47a1568c247430b4324724f19474ae6672aea270dfd6d2
 - filename: server/static/templates/mail-candidat-recruteur-lba.mjml.ejs
-  checksum: 12a469e0fbb0a05cecdc155db325e141e5a27b06b4eb4643914d4b4b988babf2
+  checksum: 28f71a911d2f87b15d62ddb5848315b6f9a33bbdf30d0347e29172eb8cc3fca3
 - filename: server/static/templates/mail-candidat-refus.mjml.ejs
   checksum: 3fcfa9586df3283a3f50cf6751b735b646d3f3ac64e8e4a8453999e9e5aea881
 - filename: server/static/templates/mail-candidature-spontanee.mjml.ejs
@@ -194,7 +194,9 @@ fileignoreconfig:
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
-  checksum: 5f77b1127060f10911006a797590a7ff36f81ca61dbc0567049bc4e866e17c89
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
+- filename: shared/src/fixtures/application.fixture.ts
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts

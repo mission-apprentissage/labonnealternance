@@ -41,14 +41,22 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
           Supprimer {establishment_raison_sociale ?? ""}
         </Typography>
 
-        <Box pb={2}>
+        <Box
+          sx={{
+            pb: 2,
+          }}
+        >
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
             En supprimant cette entreprise, l’ensemble des offres créées pour celle-ci ne seront plus visibles.
           </Typography>
         </Box>
 
         <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", mt: fr.spacing("3v") }}>
-          <Box mr={fr.spacing("3v")}>
+          <Box
+            sx={{
+              mr: fr.spacing("3v"),
+            }}
+          >
             <Button priority="secondary" onClick={() => onClose()}>
               Annuler
             </Button>

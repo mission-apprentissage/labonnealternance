@@ -62,6 +62,7 @@ export default function GestionDesAdministrateurs() {
       </Box>
 
       <TableWithPagination
+        caption="Liste des administrateurs"
         data={users || []}
         columns={[
           {
@@ -71,7 +72,11 @@ export default function GestionDesAdministrateurs() {
             disableSortBy: true,
             accessor: (row) => {
               return (
-                <Button priority="tertiary no outline" onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}>
+                <Button
+                  aria-label={`Ouvrir la page de modification de l'administrateur ${row.email}`}
+                  priority="tertiary no outline"
+                  onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}
+                >
                   <ArrowRightLine sx={{ mr: fr.spacing("1w"), width: 16, height: 16 }} />
                 </Button>
               )
