@@ -249,7 +249,7 @@ const mappingFileTypeToHeader = {
   pdf: "data:application/pdf;base64,",
 } as const
 
-function hasValidAttachmentHeader(content: string): string | null {
+function findAttachmentHeader(content: string): string | null {
   const headerFound = Object.values(mappingFileTypeToHeader).find((header) => content.startsWith(header))
   return headerFound ?? null
 }
@@ -1179,7 +1179,7 @@ export const processApplicationEmails = {
 }
 
 function removeDataUrlPrefix(attachmentData: string) {
-  const headerFound = hasValidAttachmentHeader(attachmentData)
+  const headerFound = findAttachmentHeader(attachmentData)
   if (headerFound) {
     return attachmentData.substring(headerFound.length)
   }
