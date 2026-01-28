@@ -34,7 +34,7 @@ export default defineConfig({
         test: {
           name: "ui",
           root: "./ui",
-          include: ["./**/*.test.(js|jsx)"],
+          include: ["./**/*.test.(js|jsx|ts|tsx)"],
           setupFiles: ["./tests/setup.ts"],
         },
       },

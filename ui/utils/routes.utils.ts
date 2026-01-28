@@ -243,6 +243,15 @@ export const PAGES = {
       index: false,
       title: "Statut du processeur",
     },
+    simulateur: {
+      getPath: () => `/simulateur` as string,
+      title: "Simulateur",
+      index: true,
+      getMetadata: () => ({
+        title: "Simulateur de rémunération alternant - La bonne alternance",
+        description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
