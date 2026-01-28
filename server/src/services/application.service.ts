@@ -281,7 +281,15 @@ async function validateApplicationFileType(filename: string, base64String: strin
   const content = base64String.substring(expectedHeader.length)
   const detectedFileType = await identifyFileType(content)
   if (!detectedFileType) {
-    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
+    const base64Length = base64String.length
+    sentryCaptureException("Application file type could not be determined", {
+      extra: {
+        attachmentMetadata: {
+          base64Length,
+          expectedHeader,
+        },
+      },
+    })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
   if (detectedFileType !== acceptedFileType) {
