@@ -16,6 +16,13 @@ Modifier les valeurs pour chacune des tranches d'âge et des niveaux de diplôme
 
 Pour modifier les taux de cotisations qui déterminent les charges salariales impactant le salaire brut, accéder au fichier [taux-de-cotisation.ts](./taux-de-cotisation.ts)
 
-## Date de mise à jour
+## Dates
+
+### Limites
+
+Pour modifier les limites temporelles pour la validité des champs date du formulaire et du moteur de calcul, accéder au fichier [dates.ts](./dates.ts).
+_Note : ces valeurs sont générées dynamiquement avec `dayjs` (année civile en cours, âge en fonction de la date de simulation)_
+
+### Date de mise à jour
 
 En cas de mise à jour de n'importe laquelle de ces valeurs, accéder au fichier [dates.ts](./dates.ts) et modifier la valeur de `DATE_DERNIERE_MISE_A_JOUR` en la remplacant par la date du jour au format _AAAA-MM-JJ_

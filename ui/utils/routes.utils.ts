@@ -248,8 +248,8 @@ export const PAGES = {
       title: "Simulateur",
       index: true,
       getMetadata: () => ({
-        title: "Simulateur - La bonne alternance",
-        description: "Simulateur de rémunération alternant.",
+        title: "Simulateur de rémunération alternant - La bonne alternance",
+        description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
       }),
     },
   },

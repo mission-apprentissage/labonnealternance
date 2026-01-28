@@ -14,32 +14,26 @@ import dayjs from "dayjs"
 import type { InputSimulation } from "@/services/simulateurAlternant"
 import { getSimulationInformation } from "@/services/simulateurAlternant"
 import { useSimulateur } from "@/app/(landing-pages)/simulateur/context/SimulateurContext"
+import { MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
-
-const minDateDebutContrat = dayjs().startOf("year")
-const nextStartOfMonth = dayjs().add(1, "month").startOf("month")
-const minDateNaissance = dayjs().subtract(77, "years")
-const maxDateNaissance = dayjs().subtract(14, "years")
 
 const inputSchema = Yup.object().shape({
   typeContrat: Yup.string().oneOf(["apprentissage", "professionnalisation"]).required("Champ obligatoire"),
   dateNaissance: Yup.date()
-    .min(minDateNaissance, "Votre âge n'est pas éligible à l'apprentissage. Veuillez renseigner un âge entre 14 et 77 ans.")
-    .max(maxDateNaissance, "Votre âge n'est pas éligible à l'apprentissage. Veuillez renseigner un âge entre 14 et 77 ans.")
+    .min(MIN_DATE_NAISSANCE, "Votre âge n'est pas éligible à l'alternance. Veuillez renseigner un âge entre 14 et 77 ans.")
+    .max(MAX_DATE_NAISSANCE, "Votre âge n'est pas éligible à l'alternance. Veuillez renseigner un âge entre 14 et 77 ans.")
     .required("Champ obligatoire"),
   isDateDebutContratConnue: Yup.boolean().when("typeContrat", {
     is: "apprentissage",
     then: (schema) => schema.required("Champ obligatoire"),
     otherwise: (schema) => schema.notRequired(),
   }),
-  dateDebutContrat: Yup.date()
-    .when("isDateDebutContratConnue", {
-      is: true,
-      then: (schema) => schema.required("Champ obligatoire"),
-      otherwise: (schema) => schema.notRequired(),
-    })
-    .min(minDateDebutContrat, `La date de début de contrat doit être dans l'année civile en cours ou ultérieure.`),
+  dateDebutContrat: Yup.date().when("isDateDebutContratConnue", {
+    is: true,
+    then: (schema) => schema.required("Champ obligatoire").min(MIN_DEBUT_CONTRAT, `La date de début de contrat doit être dans l'année civile en cours ou ultérieure.`),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   niveauDiplome: Yup.number().when("typeContrat", {
     is: "professionnalisation",
     then: (schema) => schema.required("Champ obligatoire").min(1).max(8),
@@ -114,7 +108,7 @@ export const FormulaireSituation = () => {
       secteur: values.secteur,
       dureeContrat: Number(values.dureeContrat),
       dateNaissance: dayjs(values.dateNaissance).toDate(),
-      dateDebutContrat: dayjs(values.dateDebutContrat ?? nextStartOfMonth).toDate(),
+      dateDebutContrat: dayjs(values.dateDebutContrat ?? NEXT_START_OF_MONTH).toDate(),
       isRegionMayotte: values.isRegionMayotte,
     }
 
@@ -162,7 +156,7 @@ export const FormulaireSituation = () => {
                       <Tooltip title={"Votre âge détermine votre éligibilité au contrat et vos conditions salariales."} kind="click" />
                     </Box>
                   }
-                  hintText="Format attendu : JJ/MM/AAAA"
+                  hintText="Format attendu : JJ/MM/AAAA exemple 24/12/2004"
                   nativeInputProps={{
                     name: "dateNaissance",
                     type: "date",
@@ -187,7 +181,9 @@ export const FormulaireSituation = () => {
                     state={touched.niveauDiplome && errors.niveauDiplome ? "error" : "default"}
                     stateRelatedMessage={touched.niveauDiplome && errors.niveauDiplome ? `${errors.niveauDiplome}` : undefined}
                   >
-                    <option value="">Sélectionnez une option</option>
+                    <option value="" selected disabled hidden>
+                      Sélectionnez une option
+                    </option>
                     {niveauDiplomeOptions.map((option) => (
                       <option key={`${option.label}-${option.value}`} value={option.value}>
                         {option.label}
@@ -213,7 +209,7 @@ export const FormulaireSituation = () => {
                           setValues((values) => ({
                             ...values,
                             isDateDebutContratConnue: option.value,
-                            dateDebutContrat: option.value ? undefined : nextStartOfMonth.toDate(),
+                            dateDebutContrat: option.value ? undefined : NEXT_START_OF_MONTH.toDate(),
                           }))
                         },
                       },
@@ -226,7 +222,7 @@ export const FormulaireSituation = () => {
                   <Input
                     id="dateDebutContrat"
                     label="Date de signature du contrat"
-                    hintText="Format attendu : JJ/MM/AAAA"
+                    hintText="Format attendu : JJ/MM/AAAA exemple 01/09/2026"
                     nativeInputProps={{
                       name: "dateDebutContrat",
                       type: "date",
@@ -263,7 +259,9 @@ export const FormulaireSituation = () => {
                   state={touched.dureeContrat && errors.dureeContrat ? "error" : "default"}
                   stateRelatedMessage={touched.dureeContrat && errors.dureeContrat ? `${errors.dureeContrat}` : undefined}
                 >
-                  <option value="">Sélectionnez une durée</option>
+                  <option value="" selected disabled hidden>
+                    Sélectionnez une durée
+                  </option>
                   {dureeContratOptions.map((option) => (
                     <option key={`${option.label}-${option.value}`} value={option.value}>
                       {option.label}

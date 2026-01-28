@@ -16,8 +16,8 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
           backgroundColor: fr.colors.decisions.background.open.blueFrance.default,
           borderBottom: `1px solid ${fr.colors.decisions.border.actionLow.blueFrance.default}`,
         }}
-        p={"12px"}
-        py={"4px"}
+        p={fr.spacing("3v")}
+        py={fr.spacing("1v")}
       >
         <Typography variant="body1" color={fr.colors.decisions.text.title.grey.default} fontWeight={700}>
           {annee}
@@ -26,8 +26,8 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
       <Grid
         container
         size={{ xs: 12, md: 12 }}
-        p={"12px"}
-        py={"4px"}
+        p={fr.spacing("3v")}
+        py={fr.spacing("1v")}
         spacing={0}
         sx={{
           backgroundColor: "white",
@@ -52,7 +52,7 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
           </Grid>
         </Grid>
       </Grid>
-      <Grid container size={{ xs: 12, md: 12 }} p={"12px"} py={"4px"} spacing={0} sx={{ backgroundColor: "white" }}>
+      <Grid container size={{ xs: 12, md: 12 }} p={fr.spacing("3v")} py={fr.spacing("1v")} spacing={0} sx={{ backgroundColor: "white" }}>
         <Grid size={{ xs: 12, md: 6 }} my={"auto"}>
           <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
             Salaire net après exonération
@@ -120,7 +120,7 @@ export const ResultatSimulation = () => {
     <Box py={2}>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
         <Box display={{ md: "flex", xs: "none" }}>
-          <Image width={10} height={25} src="/images/triangle.svg" alt="" />
+          <Image width={10} height={25} src="/images/triangle.svg" alt="" aria-hidden="true" />
         </Box>
         <Typography variant="h2" color={fr.colors.decisions.text.title.blueFrance.default} gutterBottom p={{ xs: 2, md: 0 }}>
           Votre simulation :

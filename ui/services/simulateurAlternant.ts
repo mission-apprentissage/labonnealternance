@@ -12,6 +12,9 @@ import {
   TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PUBLIC,
   TAUX_COTISATIONS_SALARIALES_CONTRAT_PROFESSIONNALISATION,
   TAUX_EXONERATION_CHARGES_SALARIALES_APPRENTISSAGE_PUBLIC,
+  MIN_DEBUT_CONTRAT,
+  MIN_DATE_NAISSANCE,
+  MAX_DATE_NAISSANCE,
 } from "@/config/simulateur-alternant"
 
 import type { TrancheAge, AnneeContrat, NiveauDiplomeGroup } from "@/config/simulateur-alternant"
@@ -261,6 +264,22 @@ const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSala
   }
 }
 
+const checkDataValidity = (input: Partial<InputSimulation>) => {
+  const { typeContrat, niveauDiplome, dateDebutContrat, dateNaissance, dureeContrat } = input
+  if (typeContrat === "professionnalisation") {
+    if (niveauDiplome === undefined) throw new Error("Le niveau de diplôme est requis pour un contrat de professionnalisation")
+    if (niveauDiplome < 1 || niveauDiplome > 8) throw new Error("Niveau de diplôme invalide")
+  }
+  if (typeContrat === "apprentissage") {
+    if (dateDebutContrat === undefined) throw new Error("La date de début de contrat est requise pour un contrat d'apprentissage")
+    if (dateDebutContrat < MIN_DEBUT_CONTRAT.toDate()) throw new Error(`La date de début de contrat doit être postérieure au ${MIN_DEBUT_CONTRAT.format("DD/MM/YYYY")}`)
+  }
+  if (dateNaissance < MIN_DATE_NAISSANCE.toDate()) throw new Error(`La date de naissance doit être postérieure au ${MIN_DATE_NAISSANCE.format("DD/MM/YYYY")}`)
+  if (dateNaissance > MAX_DATE_NAISSANCE.toDate()) throw new Error(`La date de naissance doit être antérieure au ${MAX_DATE_NAISSANCE.format("DD/MM/YYYY")}`)
+  if (dureeContrat === undefined) throw new Error("La durée du contrat est requise")
+  if (dureeContrat < 1 || dureeContrat > 4) throw new Error("La durée du contrat doit être comprise entre 1 et 4 ans")
+}
+
 /**
  * Calcul d'une rémunération d'alternant en fonction des paramètres fournis
  * Détermine année par année les rémunérations brute et nette journalières, mensuelles et annuelles
@@ -274,17 +293,19 @@ export const getSimulationInformation = ({
   secteur,
   isRegionMayotte,
 }: InputSimulation): OutputSimulation => {
+  checkDataValidity({ typeContrat, dateNaissance, dureeContrat, dateDebutContrat, niveauDiplome })
+
   const age = dayjs(dateDebutContrat).diff(dayjs(dateNaissance), "year")
   // Si l'utilisateur ne sait pas, on considère le secteur privé par défaut
   const formattedSecteur = secteur === "nsp" ? "privé" : secteur
   if (typeContrat === "professionnalisation" && niveauDiplome === undefined) {
     throw new Error("Le niveau de diplôme est requis pour un contrat de professionnalisation")
   }
-  const niveauDiplomeForTauxSmic: number = typeContrat === "apprentissage" ? 0 : (niveauDiplome as number)
   const tauxSmicParAnnee = getAllTauxSmic({
     typeContrat,
     age,
-    niveauDiplome: niveauDiplomeForTauxSmic,
+    // Pour un contrat d'apprentissage, le niveau de diplôme n'influence pas le taux SMIC
+    niveauDiplome: typeContrat === "apprentissage" ? 0 : niveauDiplome,
     dureeContrat,
   })
 

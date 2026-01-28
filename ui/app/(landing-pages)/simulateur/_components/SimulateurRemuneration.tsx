@@ -13,7 +13,7 @@ export const SimulateurRemuneration = () => (
       <Typography variant="h1" color={fr.colors.decisions.text.default.info.default} fontWeight={700}>
         Simulateur de rémunération
       </Typography>
-      <Grid container spacing={0} border={"2px solid"} borderColor={fr.colors.decisions.border.default.blueFrance.default}>
+      <Grid container spacing={0} border={`2px solid ${fr.colors.decisions.border.default.blueFrance.default}`}>
         <Grid size={{ xs: 12, md: 5 }}>
           <FormulaireSituation />
         </Grid>
