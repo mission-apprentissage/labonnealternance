@@ -163,6 +163,18 @@ export const getPublicUserRecruteurPropsOrError = async (
   return commonFields
 }
 
+export const getPublicUserRecruteurProps = async (
+  userId: ObjectId,
+  includeUserAwaitingValidation: boolean = false
+): Promise<Pick<IUserRecruteurPublic, "type" | "establishment_id" | "establishment_siret" | "scope" | "status_current"> | null> => {
+  try {
+    const userRecruteur = await getPublicUserRecruteurPropsOrError(userId, includeUserAwaitingValidation)
+    return userRecruteur
+  } catch (_err) {
+    return null
+  }
+}
+
 export const getComputedUserAccess = (userId: string, grantedRoles: IRoleManagement[]) => {
   const userAccess: ComputedUserAccess = {
     admin: grantedRoles.some((role) => role.authorized_type === AccessEntityType.ADMIN),
