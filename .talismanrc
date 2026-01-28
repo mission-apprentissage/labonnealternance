@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 34f48066ce67e232050488329e48646411c61343d7e70c5d65223fc1dd07039a
+  checksum: 114fa9d897dd519cbe7ab0892ad9f60002fafd82605ba2c1d75f909577d1f858
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -188,7 +188,9 @@ fileignoreconfig:
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
-  checksum: 5f77b1127060f10911006a797590a7ff36f81ca61dbc0567049bc4e866e17c89
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
+- filename: shared/src/fixtures/application.fixture.ts
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
