@@ -12,7 +12,7 @@ Le projet a migré de MongoDB 7.0 vers MongoDB 8.2.3. Cette documentation expliq
 
 ## Impact pour les développeurs
 
-Après un `git pull`, le Dockerfile MongoDB local ([.infra/local/Dockerfile](../../.infra/local/Dockerfile)) sera mis à jour vers `mongo:8.2.3`. Votre environnement local nécessite une mise à jour.
+Après un `git pull`, le Dockerfile MongoDB local ([.infra/local/Dockerfile.mongod](../../.infra/local/Dockerfile.mongod)) utilisera désormais l’image `mongodb/mongodb-community-server:8.2.3-ubuntu2204`. Votre environnement local nécessite une mise à jour.
 
 ---
 
