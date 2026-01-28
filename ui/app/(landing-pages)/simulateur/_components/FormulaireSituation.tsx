@@ -114,7 +114,7 @@ export const FormulaireSituation = () => {
       secteur: values.secteur,
       dureeContrat: Number(values.dureeContrat),
       dateNaissance: dayjs(values.dateNaissance).toDate(),
-      dateDebutContrat: dayjs(values.dateDebutContrat).toDate(),
+      dateDebutContrat: dayjs(values.dateDebutContrat ?? nextStartOfMonth).toDate(),
       isRegionMayotte: values.isRegionMayotte,
     }
 

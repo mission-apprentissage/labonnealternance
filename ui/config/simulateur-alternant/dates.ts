@@ -1,2 +1,2 @@
-export const DATE_DERNIERE_MISE_A_JOUR: Date = new Date("2024-05-01")
+export const DATE_DERNIERE_MISE_A_JOUR: Date = new Date("2026-01-27")
 export const DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE: Date = new Date("2025-03-01")

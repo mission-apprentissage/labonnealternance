@@ -1,3 +1,4 @@
+import dayjs from "dayjs"
 import {
   TRANCHES_AGE_APPRENTISSAGE,
   TRANCHES_AGE_PROFESSIONNALISATION,
@@ -14,8 +15,6 @@ import {
 } from "@/config/simulateur-alternant"
 
 import type { TrancheAge, AnneeContrat, NiveauDiplomeGroup } from "@/config/simulateur-alternant"
-
-import { getAgeAtDate } from "@/utils/dateUtils"
 
 type TrancheSalaire = {
   min: number
@@ -263,10 +262,8 @@ const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSala
 }
 
 /**
- *
  * Calcul d'une rémunération d'alternant en fonction des paramètres fournis
  * Détermine année par année les rémunérations brute et nette journalières, mensuelles et annuelles
- *
  */
 export const getSimulationInformation = ({
   typeContrat,
@@ -277,7 +274,7 @@ export const getSimulationInformation = ({
   secteur,
   isRegionMayotte,
 }: InputSimulation): OutputSimulation => {
-  const age = getAgeAtDate(dateNaissance, dateDebutContrat)
+  const age = dayjs(dateDebutContrat).diff(dayjs(dateNaissance), "year")
   // Si l'utilisateur ne sait pas, on considère le secteur privé par défaut
   const formattedSecteur = secteur === "nsp" ? "privé" : secteur
   if (typeContrat === "professionnalisation" && niveauDiplome === undefined) {
