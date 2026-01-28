@@ -21,6 +21,7 @@ import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJo
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import LbaJobReportTooltip from "@/components/ItemDetail/LbaJobComponents/LbaJobReportTooltip"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -112,19 +113,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
-            tooltip={
-              <Box sx={{ p: 1 }}>
-                <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, marginBottom: "8px", color: "#161616" }}>
-                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
-                </Typography>
-                <ul>
-                  <li>Offre offensante ou discriminatoire</li>
-                  <li>Offre inexacte ou expirée</li>
-                  <li>Fausse offre provenant d'un centre de formation</li>
-                  <li>Tentative d'escroquerie</li>
-                </ul>
-              </Box>
-            }
+            tooltip={<LbaJobReportTooltip />}
           />
         </Box>
       </Box>

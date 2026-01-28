@@ -22,6 +22,7 @@ const additionalMessageByMotif = {
   "Offre inexacte ou expirée": "Précisez les informations obsolètes (numéro de téléphone, adresse postale, etc)",
   "Tentative d’escroquerie": "Pouvez-vous préciser ce qui vous a laissé penser qu'il s'agissait d'une escroquerie (demande de coordonnées bancaires, etc.) ?",
   "Informations erronées": "Précisez les informations erronées (numéro de téléphone, adresse postale, etc)",
+  "Offre ne relevant pas du champ de l’alternance (CDI, stage, etc.)": "Pouvez-vous préciser ce qui vous a laissé penser qu'il ne s'agissait pas d'une offre d'alternance ?",
 } as Record<string, string>
 
 const noAdditionalMessage = ["Entreprise fermée"]
@@ -100,7 +101,7 @@ export const ReportJobLink = ({
         </Button>
       )}
       <InfoTooltipOrModal tooltipContent={tooltip}>
-        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="label" />
+        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="Voir les raisons pour lesquelles vous pouvez signaler cette offre" />
       </InfoTooltipOrModal>
       <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
         {storedValue ? (
