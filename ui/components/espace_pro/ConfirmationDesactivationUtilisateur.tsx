@@ -78,7 +78,7 @@ const ConfirmationDesactivationUtilisateur = ({
             <option value="Compte créé par un étudiant">Compte créé par un étudiant</option>
             <option value="Compte entreprise créé par un CFA">Compte entreprise créé par un CFA</option>
             <option value="Compte en doublon">Compte en doublon</option>
-            {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue</option>}
+            {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue du Réseau des Carif-Oref</option>}
             <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
             <option value="Besoin de recrutement pourvu">Besoin de recrutement pourvu</option>
             <option value="Injoignable">Injoignable</option>
