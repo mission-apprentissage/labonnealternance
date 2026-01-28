@@ -227,29 +227,73 @@ export const sendApplication = async ({
   }
 }
 
-async function identifyFileType(base64String: string) {
+async function identifyFileType(base64Data: string): Promise<string | undefined> {
   try {
-    // Remove the data URL part if it's present
-    const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
     // Convert base64 string to a buffer
     const buffer = Buffer.from(base64Data, "base64")
     // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
-    return type
+    return type?.ext
   } catch (_) {
     return undefined
   }
 }
 
-async function validateApplicationFileType(base64String: string) {
-  const type = await identifyFileType(base64String)
-  if (!type) {
-    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
+enum AcceptedFileType {
+  docx = "docx",
+  pdf = "pdf",
+}
+
+const mappingFileTypeToHeader = {
+  docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+  pdf: "data:application/pdf;base64,",
+} as const
+
+function findAttachmentHeader(content: string): string | null {
+  const headerFound = Object.values(mappingFileTypeToHeader).find((header) => content.startsWith(header))
+  return headerFound ?? null
+}
+
+function getFiletypeFromFilename(filename: string): string {
+  const pointIndex = filename.lastIndexOf(".")
+  if (pointIndex === -1) {
+    return filename
+  }
+  return filename.substring(pointIndex + 1)
+}
+
+async function validateApplicationFileType(filename: string, base64String: string) {
+  const filenameFileType = getFiletypeFromFilename(filename)
+  const acceptedFileType = parseEnum(AcceptedFileType, filenameFileType)
+  if (!acceptedFileType) {
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
-
-  if (!["pdf", "docx"].includes(type?.ext)) {
-    sentryCaptureException("Application file type not supported", { extra: { responseData: type } })
+  const expectedHeader = mappingFileTypeToHeader[acceptedFileType]
+  if (!base64String.startsWith(expectedHeader)) {
+    sentryCaptureException("Application file header does not match expected MIME type", {
+      extra: {
+        expectedHeader,
+        receivedHeaderSample: base64String.substring(0, expectedHeader.length + 20),
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  const content = base64String.substring(expectedHeader.length)
+  const detectedFileType = await identifyFileType(content)
+  if (!detectedFileType) {
+    const base64Length = base64String.length
+    sentryCaptureException("Application file type could not be determined", {
+      extra: {
+        attachmentMetadata: {
+          base64Length,
+          expectedHeader,
+        },
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  if (detectedFileType !== acceptedFileType) {
+    sentryCaptureException("Application file type not matching data", { extra: { detectedFileType, filenameFileType } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
 }
@@ -270,13 +314,14 @@ export const sendApplicationV2 = async ({
   const {
     recipient_id: { collectionName, jobId },
     applicant_attachment_content,
+    applicant_attachment_name,
     applicant_email,
     applicant_first_name,
     applicant_last_name,
     applicant_phone,
   } = newApplication
 
-  await validateApplicationFileType(applicant_attachment_content)
+  await validateApplicationFileType(applicant_attachment_name, applicant_attachment_content)
 
   if (isEmailBurner(applicant_email)) {
     throw badRequest(BusinessErrorCodes.BURNER)
@@ -1103,7 +1148,7 @@ export const processApplicationEmails = {
       attachments: [
         {
           filename: application.applicant_attachment_name,
-          content: attachmentContent,
+          content: removeDataUrlPrefix(attachmentContent),
           encoding: "base64",
         },
       ],
@@ -1145,6 +1190,14 @@ export const processApplicationEmails = {
       throw internal("Email candidat destinataire rejeté.")
     }
   },
+}
+
+function removeDataUrlPrefix(attachmentData: string) {
+  const headerFound = findAttachmentHeader(attachmentData)
+  if (headerFound) {
+    return attachmentData.substring(headerFound.length)
+  }
+  return attachmentData
 }
 
 function buildRecruitingCompaniesUrl(application: IApplication) {
