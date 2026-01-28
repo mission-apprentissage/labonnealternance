@@ -110,9 +110,9 @@ fileignoreconfig:
 - filename: server/src/services/__snapshots__/partnerJob.service.test.ts.snap
   checksum: 6f190e19172481706181e0a13ed7de5f0f6c699f86d35d9b08071ece445920b1
 - filename: server/src/services/application.service.test.ts
-  checksum: 2b61fd4ed86f14a39b8c86531b13690bc586954829dd0c8df277516a500dca2d
+  checksum: 9a5d1ca56fa473ad1da4276ebc5307404253c60aadd6a7951d4af2e099756b43
 - filename: server/src/services/application.service.ts
-  checksum: 38021ae663db3a146c848a8d691c0c1bc9bb262a80a6f2dedf9fcdb372eef3ac
+  checksum: 6568fff8f0b2e14328b0b8d8564686504d38299907bf78eca417ba0513071768
 - filename: server/src/services/eligibleTrainingsForAppointment.service.ts
   checksum: 45f0984c6a79320da8aa2fa03c8ea001de0176b88c7ca05e35e385da8f98e218
 - filename: server/src/services/emails.service.test.ts
@@ -223,6 +223,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/fixtures/application.fixture.ts
+  checksum: 20dd65050bc9440c1194d5f640839ea66d63f72aea98ae6fc16a137ab9fe706e
 - filename: shared/src/fixtures/jobPartners.fixture.ts
   checksum: e280d6b82495cae5cfba648c9f4c250d1ad4039cfc1fe650a31d2cc410abbc64
 - filename: shared/src/fixtures/recruiterRaw.fixture.ts
