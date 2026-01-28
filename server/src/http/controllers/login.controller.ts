@@ -136,7 +136,7 @@ export default (server: Server) => {
       }
       const userFromRequest = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
       const userRecruteurOpt = await getPublicUserRecruteurProps(userFromRequest._id)
-      if (!userRecruteurOpt) {
+      if ("error" in userRecruteurOpt) {
         throw forbidden()
       }
       return response.status(200).send(toPublicUser(userFromRequest, userRecruteurOpt))
