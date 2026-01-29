@@ -98,7 +98,7 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
   }
 
   return [
-    <Box id="search-content-container" key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
+    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
       {jobQuery.errorMessage && <ErrorMessage message={jobQuery.errorMessage} />}
 

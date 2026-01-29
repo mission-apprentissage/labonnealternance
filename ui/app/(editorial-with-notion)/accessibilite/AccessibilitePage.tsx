@@ -16,7 +16,7 @@ const NotionRenderer = dynamic(async () => import("react-notion-x").then((mod) =
 
 export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap }) => {
   return (
-    <Box component="main">
+    <Box>
       <Breadcrumb pages={[PAGES.static.accessibilite]} />
       <DefaultContainer>
         <Box

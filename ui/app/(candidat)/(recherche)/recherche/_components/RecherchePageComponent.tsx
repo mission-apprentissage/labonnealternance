@@ -19,6 +19,7 @@ import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { Footer } from "@/app/_components/Footer"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMap, displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
@@ -127,10 +128,17 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
   const rechercheResult = useRechercheResults(props.rechercheParams)
   if (rechercheResult.status === "disabled") {
     return (
-      <Box id="search-content-container">
-        <RecherchePageEmpty {...props} />
-      </Box>
+      <>
+        <Box role="main" tabIndex={-1} component="main" id="search-content-container">
+          <RecherchePageEmpty {...props} />
+        </Box>
+        <Footer />
+      </>
     )
   }
-  return <RecherchePageComponentWithParams {...props} />
+  return (
+    <Box role="main" component="main">
+      <RecherchePageComponentWithParams {...props} />
+    </Box>
+  )
 }
