@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 1d8570617be315cd9a6b423b927431afc05e5f07d76d98edf23550be1259d6b5
+  checksum: d58f1caf709a1bb8fe802d02aa53402d68cb141020b82009eba4529680130a0f
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
   ignore_detectors:
@@ -195,8 +195,6 @@ fileignoreconfig:
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
   checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
-- filename: shared/src/fixtures/application.fixture.ts
-  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
@@ -229,6 +227,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/fixtures/application.fixture.ts
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
 - filename: shared/src/fixtures/jobPartners.fixture.ts
   checksum: e280d6b82495cae5cfba648c9f4c250d1ad4039cfc1fe650a31d2cc410abbc64
 - filename: shared/src/fixtures/recruiterRaw.fixture.ts
