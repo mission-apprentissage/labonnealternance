@@ -6,15 +6,16 @@ Ce dossier contient la documentation complète pour la migration de la collectio
 
 ## Documents
 
-| Document                                             | Description                                    |
-| ---------------------------------------------------- | ---------------------------------------------- |
-| [01-overview.md](./01-overview.md)                   | Vue d'ensemble du projet, contexte et timeline |
-| [02-schema-migration.md](./02-schema-migration.md)   | Modifications du schéma jobs_partners          |
-| [03-file-changes.md](./03-file-changes.md)           | Liste détaillée des 57 fichiers à modifier     |
-| [04-background-jobs.md](./04-background-jobs.md)     | Migration des jobs background                  |
-| [05-feature-migration.md](./05-feature-migration.md) | Migration des fonctionnalités métier           |
-| [06-testing-rollback.md](./06-testing-rollback.md)   | Stratégie de tests et plan de rollback         |
-| [07-feature-flags.md](./07-feature-flags.md)         | Feature flags pour la transition progressive   |
+| Document                                                 | Description                                      |
+| -------------------------------------------------------- | ------------------------------------------------ |
+| [01-overview.md](./01-overview.md)                       | Vue d'ensemble du projet, contexte et timeline   |
+| [02-schema-migration.md](./02-schema-migration.md)       | Modifications du schéma jobs_partners            |
+| [03-file-changes.md](./03-file-changes.md)               | Liste détaillée des 57 fichiers à modifier       |
+| [04-background-jobs.md](./04-background-jobs.md)         | Migration des jobs background                    |
+| [05-feature-migration.md](./05-feature-migration.md)     | Migration des fonctionnalités métier             |
+| [06-testing-rollback.md](./06-testing-rollback.md)       | Stratégie de tests et plan de rollback           |
+| [07-feature-flags.md](./07-feature-flags.md)             | Feature flags pour la transition progressive     |
+| [08-ai-prompts-timeline.md](./08-ai-prompts-timeline.md) | Prompts IA pour tests/cleanup + timeline révisée |
 
 ## Analyses Complémentaires
 
@@ -35,7 +36,7 @@ Ce dossier contient la documentation complète pour la migration de la collectio
 
 - **57 fichiers** impactés
 - **8 phases** de migration
-- **16 semaines** estimées
+- **6-7 semaines** estimées (tests et cleanup générés par IA)
 - Synchronisation existante via `stream_processor` Docker service
 - Migration progressive avec feature flags et dual-read
 
