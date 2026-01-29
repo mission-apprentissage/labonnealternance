@@ -1,9 +1,12 @@
-"use client"
+import type { Metadata } from "next"
+import FinPage from "./FinPage"
 
-import { DepotRapideFin } from "@/app/(espace-pro)/_components/DepotRapideFin"
-
-export const WidgetEntrepriseMiseEnRelation = () => {
-  return <DepotRapideFin />
+export const metadata: Metadata = {
+  title: "Fin de création d'offre - La bonne alternance",
 }
 
-export default WidgetEntrepriseMiseEnRelation
+const Page = async () => {
+  return <FinPage />
+}
+
+export default Page
