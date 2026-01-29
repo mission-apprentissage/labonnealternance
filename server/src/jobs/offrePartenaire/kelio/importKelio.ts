@@ -16,7 +16,7 @@ export const importKelioRaw = async (sourceStream?: NodeJS.ReadableStream) => {
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
-      partnerLabel: JOBPARTNERS_LABEL.KELIO,
+      importName: JOBPARTNERS_LABEL.KELIO,
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
