@@ -47,13 +47,13 @@ export const importFromStreamInXml = async ({
   stream,
   destinationCollection,
   offerXmlTag,
-  partnerLabel,
+  importName,
   conflictingOpeningTagWithoutAttributes = false,
 }: {
   stream: NodeJS.ReadableStream
   destinationCollection: CollectionName
   offerXmlTag: string
-  partnerLabel: string
+  importName: string
   conflictingOpeningTagWithoutAttributes?: boolean
 }) => {
   logger.info("deleting old data")
@@ -116,10 +116,10 @@ export const importFromStreamInXml = async ({
         reject(err)
       } else {
         logger.info("Pipeline succeeded.")
-        const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées. ${offerErrorCount} offres en erreur.`
+        const message = `import ${importName} terminé : ${offerInsertCount} offres importées. ${offerErrorCount} offres en erreur.`
         logger.info(message)
         notifyToSlack({
-          subject: `import des offres ${partnerLabel} dans raw`,
+          subject: `import des offres ${importName} dans raw`,
           message,
           error: offerErrorCount > 0,
         })
