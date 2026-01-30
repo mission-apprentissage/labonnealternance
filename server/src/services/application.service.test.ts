@@ -408,7 +408,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
       applicant: {
         firstName: "Spam",
         lastName: "Applicant",
-        email: "spam.applicant@example.com",
+        email: "spam.applicant@orange.com",
         phoneNumber: "+33612345678",
       },
     })
