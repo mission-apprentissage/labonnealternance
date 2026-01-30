@@ -1,3 +1,3 @@
 yarn lint-staged
 ./.husky/preventSensibleFilesCommit.sh
-yarn node-talisman --githook pre-commit
+npx gitleaks-secret-scanner

@@ -1,0 +1,72 @@
+title = "Gitleaks config for La Bonne Alternance"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowed patterns and paths for La Bonne Alternance"
+
+# Paths to ignore (converted from .talismanrc fileignoreconfig)
+paths = [
+  # Infrastructure and config files
+  '''\.infra/files/configs/mongodb/seed\.gpg''',
+  '''\.infra/vault/vault\.yml''',
+  '''\.vault''',
+  '''docker-compose\.yml''',
+
+  # Environment files
+  '''server/\.env\.test''',
+  '''\.env\.example''',
+
+  # Test files and fixtures
+  '''\.test\.ts$''',
+  '''\.spec\.ts$''',
+  '''\.test\.tsx$''',
+  '''\.spec\.tsx$''',
+  '''__snapshots__/''',
+  '''tests/''',
+  '''\.fixture\.ts$''',
+  '''server/sample\.json''',
+
+  # Migrations
+  '''migrations/''',
+
+  # Seed data
+  '''server/src/db/seed''',
+
+  # Static templates and referentiels
+  '''server/static/templates/''',
+  '''server/static/referentiel/''',
+
+  # UI public assets
+  '''ui/public/''',
+
+  # Shared fixtures
+  '''shared/fixtures/''',
+  '''shared/src/fixtures/''',
+
+  # Yarn patches
+  '''\.yarn/patches/''',
+]
+
+regexes = [
+  # Domain patterns (allowed in code)
+  '''labonnealternance\.apprentissage\.beta\.gouv\.fr''',
+  '''mission\.apprentissage\.beta\.gouv\.fr''',
+  '''apprentissage\.beta\.gouv\.fr''',
+  '''@apprentissage\.beta\.gouv\.fr''',
+  '''labonnealternance@beta\.gouv\.fr''',
+
+  # Allowed variable names that trigger false positives
+  '''versionKey''',
+  '''apiKey["\']?\s*[:=]''',
+  '''ApiKey["\']?\s*[:=]''',
+  '''APIKey["\']?\s*[:=]''',
+
+  # DSFR/Didask URLs
+  '''https://dinum\.didask\.com/.*''',
+
+  # Common false positives in code
+  '''adminusersview''',
+]
+
