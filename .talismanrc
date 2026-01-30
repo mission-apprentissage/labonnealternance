@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 1d8570617be315cd9a6b423b927431afc05e5f07d76d98edf23550be1259d6b5
+  checksum: d58f1caf709a1bb8fe802d02aa53402d68cb141020b82009eba4529680130a0f
 - filename: .infra/vault/vault.yml
   checksum: 2cbdca4d4f6934e1564eca6b153bf8a68ec4a0d54e37036cf4e406f20cb6829b
   ignore_detectors:
@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 34f48066ce67e232050488329e48646411c61343d7e70c5d65223fc1dd07039a
+  checksum: 960f1cef7902145fadbc4d94e44fa5c36e78ec59907d131dd08e1898681e173f
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
@@ -99,6 +99,8 @@ fileignoreconfig:
   checksum: a807c70a69c4c8bfc2a0568b466a7f274fd3840169ef3ef4792885d63cb75217
 - filename: server/src/migrations/20251009152814-fix-user-role-mgt.ts
   checksum: 026dde4a22ca86292f3cf6d554324d2b1dc38822b81c2c67024b4cae37da9854
+- filename: server/src/migrations/20260121150000-fix-domainemetier-sans-solution.ts
+  checksum: 9f4966ca4e5ffc391936b0bd156962b2b0551e184a1e6e017a0f651150e90955
 - filename: server/src/security/accessApiApprentissageService.ts
   checksum: ab427834ccbb6bb3798b0c3a299d1ecea236705187df86eececae7b68218e8bd
 - filename: server/src/security/accessTokenService.ts
@@ -135,6 +137,10 @@ fileignoreconfig:
   checksum: 3fb0d479999b8aa8abe2ba4e56c34ee6e409636b8ade9f10b07e6ca32081b58f
 - filename: server/src/services/userRecruteur.service.ts
   checksum: 5fbdf21310d8dfaf259eb39a5ca1e72a53b15493cf3a59ed42c4cb5c8f3a62ab
+- filename: server/static/referentiel/code_rome_sans_domaine_solution_13.01.26.csv
+  checksum: 83def891bb8b680bf9de60a106c5c460d0fd3c682ecdd734d0c1d2f16b531603
+- filename: server/static/referentiel/labonnealternance.referentielromes_classification_new_21.01.26.csv
+  checksum: 5091c900c6ce7bf18cd39f03e4fc30972d3d41b25efd87badddc5d110b7852ad
 - filename: server/static/templates/mail-bienvenue.mjml.ejs
   checksum: 34eb30b463153df565aa89f8e42f08eb77633b6bfa4673f4d6ef5f40633c6101
 - filename: server/static/templates/mail-candidat-confirmation-rdv.mjml.ejs
@@ -188,7 +194,7 @@ fileignoreconfig:
 - filename: shared/constants/recruteur.ts
   checksum: af4631fe998b78b13691dbc821a8ffa71ffc2f4cb6967361cb5ef19965dc95cb
 - filename: shared/fixtures/application.fixture.ts
-  checksum: 5f77b1127060f10911006a797590a7ff36f81ca61dbc0567049bc4e866e17c89
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
 - filename: shared/fixtures/appointment.fixture.ts
   checksum: 8b894b4059d8f7531e26f249901b83dbec433d4e660c0eca193c8e61572b3ae0
 - filename: shared/fixtures/recruiter.fixture.ts
@@ -221,6 +227,8 @@ fileignoreconfig:
   checksum: f4f3e429e6a7871a218f19eead273c0477636ed3c19b9e4dfd9e55bde1bc7dc8
 - filename: shared/routes/v3/jobs/jobs.routes.v3.model.ts
   checksum: 94f2736d7791571d7888a50f53e36e2af246f22c1c832b85477c34cb5328af0d
+- filename: shared/src/fixtures/application.fixture.ts
+  checksum: 41d25a319e7cb58b39fb9a1556742f83870006c1e9d33617428589fb135a3b05
 - filename: shared/src/fixtures/jobPartners.fixture.ts
   checksum: e280d6b82495cae5cfba648c9f4c250d1ad4039cfc1fe650a31d2cc410abbc64
 - filename: shared/src/fixtures/recruiterRaw.fixture.ts

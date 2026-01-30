@@ -16,7 +16,7 @@ export const importHelloWorkRaw = async (sourceStream?: NodeJS.ReadableStream) =
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
-      partnerLabel: JOBPARTNERS_LABEL.HELLOWORK,
+      importName: JOBPARTNERS_LABEL.HELLOWORK,
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {

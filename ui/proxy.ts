@@ -73,26 +73,27 @@ const isUnallowedPathForUser = (user: IUserRecruteurPublic, pathname: string) =>
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
-  const requestHeaders = new Headers(request.headers)
-  const session = await getSession(request)
-  const user = session?.user
-  const query = new URLSearchParams(search)
-  const token = query.get("token")
 
   if (pathname === "/espace-pro/authentification") {
+    const query = new URLSearchParams(search)
+    const token = query.get("token")
     if (token) {
       return await verifyAuthentication(token, request)
     }
+    const session = await getSession(request)
+    const user = session?.user
     if (user) {
       return redirectAfterAuthentication(user, request)
     }
     return
   }
-
+  const session = await getSession(request)
+  const user = session?.user
   if (isConnectionRequired(pathname) && (!user || isUnallowedPathForUser(user, pathname))) {
     return NextResponse.redirect(new URL("/espace-pro/authentification", request.url))
   }
 
+  const requestHeaders = new Headers(request.headers)
   if (session) {
     requestHeaders.set("x-session", JSON.stringify(session))
   }
