@@ -1,26 +1,16 @@
-"use client"
+import type { Metadata } from "next"
+import { CFA } from "shared/constants/recruteur"
 
-import { useParams, useRouter } from "next/navigation"
-import { CFA } from "shared/constants/index"
-
-import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
-import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import CfaOffrePage from "./CfaOffrePage"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function Page() {
-  const router = useRouter()
-  const { establishment_id, jobId } = useParams() as { establishment_id: string; jobId: string }
+export async function generateMetadata({ params }: { params: Promise<{ establishment_id: string; jobId: string }> }): Promise<Metadata> {
+  const { establishment_id, jobId } = await params
+  return {
+    title: PAGES.dynamic.offreUpsert({ establishment_id, offerId: jobId, userType: CFA }).getMetadata().title,
+  }
+}
 
-  return (
-    <>
-      <Breadcrumb
-        pages={[PAGES.static.backCfaHome, PAGES.dynamic.backCfaPageEntreprise(establishment_id), PAGES.dynamic.offreUpsert({ establishment_id, offerId: jobId, userType: CFA })]}
-      />
-      <UpsertOffre
-        establishment_id={establishment_id}
-        job_id={jobId}
-        onSuccess={() => setTimeout(() => router.push(PAGES.dynamic.backCfaPageEntreprise(establishment_id).getPath()), 2000)}
-      />
-    </>
-  )
+export default async function Page() {
+  return <CfaOffrePage />
 }

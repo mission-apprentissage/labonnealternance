@@ -84,7 +84,7 @@ export const PAGES = {
     },
     politiqueConfidentialite: {
       getPath: () => `/politique-de-confidentialite` as string,
-      title: "Politique de confidentialité",
+      title: "Politique de confidentialité - La bonne alternance",
       index: false,
       getMetadata: () => ({
         title: "Politique de confidentialité - Protection de vos données",
@@ -96,7 +96,7 @@ export const PAGES = {
       title: "Métiers",
       index: false,
       getMetadata: () => ({
-        title: "Métiers en alternance - Découvrez les opportunités",
+        title: "Métiers en alternance - Découvrez les opportunités sur La bonne alternance",
         description: "Explorez les différents métiers accessibles en alternance et trouvez celui qui correspond à votre projet professionnel.",
       }),
     },
@@ -123,7 +123,7 @@ export const PAGES = {
       title: "Ressources",
       index: false,
       getMetadata: () => ({
-        title: "Ressources pour réussir votre alternance",
+        title: "Ressources pour réussir votre alternance - La bonne alternance",
         description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
       }),
     },
@@ -132,7 +132,7 @@ export const PAGES = {
       title: "Espace développeurs",
       index: false,
       getMetadata: () => ({
-        title: "Espace developpeurs - Transparence et qualité des offres",
+        title: "Espace développeurs - Transparence et qualité des offres - La bonne alternance",
         description: "En savoir plus sur notre API et nos données pour développer vos propres outils et services d’alternance.",
       }),
     },
@@ -168,64 +168,102 @@ export const PAGES = {
       title: "Organisme de formation",
       index: false,
       getMetadata: () => ({
-        title: "Accès recruteur - La bonne alternance",
+        title: "Accès Organisme de formation - La bonne alternance",
         description: "Diffusez simplement et gratuitement vos offres en alternance.",
       }),
     },
     espaceProCreationEntreprise: {
       getPath: () => `/espace-pro/creation/entreprise` as string,
       title: "Créer un compte entreprise",
+      getMetadata: () => ({
+        title: "Créer un compte recruteur - La bonne alternance",
+        description: "Créer un compte recruteur pour diffuser simplement et gratuitement vos offres en alternance.",
+      }),
     },
     espaceProCreationCfa: {
       getPath: () => `/espace-pro/creation/cfa` as string,
       title: "Créer un compte d'organisme de formation",
+      getMetadata: () => ({
+        title: "Créer un compte d'organisme de formation - La bonne alternance",
+        description: "Créer un compte d'organisme de formation pour diffuser simplement et gratuitement les offres en alternance de vos entreprises partenaires.",
+      }),
     },
     backCfaHome: {
       getPath: () => `/espace-pro/cfa` as string,
       title: "Accueil CFA",
+      getMetadata: () => ({
+        title: "Accueil espace CFA - La bonne alternance",
+      }),
     },
     backCfaCreationEntreprise: {
       getPath: () => `/espace-pro/cfa/creation-entreprise` as string,
       title: "Création d'entreprise",
+      getMetadata: () => ({
+        title: "Création d'entreprise partenaire - La bonne alternance",
+      }),
     },
     backAdminHome: {
       getPath: () => `/espace-pro/administration/users` as string,
       title: "Accueil administration",
+      getMetadata: () => ({
+        title: "Accueil espace administration - La bonne alternance",
+      }),
     },
     backAdminGestionDesEntreprises: {
       getPath: () => `/espace-pro/administration/gestion-des-entreprises` as string,
       title: "Gestion des entreprises",
+      getMetadata: () => ({
+        title: "Gestion des entreprises - La bonne alternance",
+      }),
     },
     backAdminGestionDesAdministrateurs: {
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs` as string,
       title: "Gestion des administrateurs",
+      getMetadata: () => ({
+        title: "Gestion des administrateurs - La bonne alternance",
+      }),
     },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
+      getMetadata: () => ({
+        title: "Accueil espace OPCO - La bonne alternance",
+      }),
     },
     backHomeEntreprise: {
       getPath: () => `/espace-pro/entreprise` as string,
       title: "Accueil entreprise",
+      getMetadata: () => ({
+        title: "Accueil espace recruteur - La bonne alternance",
+      }),
     },
     backEntrepriseCreationOffre: {
       getPath: () => `/espace-pro/entreprise/creation-offre` as string,
       title: "Nouvelle offre",
+      getMetadata: () => ({
+        title: "Nouvelle offre - La bonne alternance",
+      }),
     },
     rendezVousApprentissageRecherche: {
       getPath: () => `/espace-pro/administration/rendez-vous-apprentissage` as string,
       title: "Recherche etablissement rendez-vous apprentissage",
+      getMetadata: () => ({
+        title: "Recherche etablissement rendez-vous apprentissage - La bonne alternance",
+      }),
     },
     backCreateCFAEnAttente: {
       getPath: () => "/espace-pro/authentification/en-attente" as string,
       title: "Création de compte CFA en attente",
+      getMetadata: () => ({
+        title: "Création de compte CFA en attente - La bonne alternance",
+      }),
     },
     desinscription: {
       getPath: () => `/desinscription` as string,
       title: "Désinscription candidatures spontanées",
       index: false,
       getMetadata: () => ({
-        title: "Désinscription candidatures spontanées",
+        title: "Désinscription candidatures spontanées - La bonne alternance",
         description: "Désinscrivez vous de l'envoi de candidatures spontanées.",
       }),
     },
@@ -234,7 +272,7 @@ export const PAGES = {
       title: "Déclaration d'accessibilité",
       index: true,
       getMetadata: () => ({
-        title: "Déclaration d'accessibilité",
+        title: "Déclaration d'accessibilité - La bonne alternance",
         description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
       }),
     },
@@ -242,6 +280,25 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/processeur` as string,
       index: false,
       title: "Statut du processeur",
+      getMetadata: () => ({
+        title: "Statut du processeur - La bonne alternance",
+      }),
+    },
+    postuler: {
+      getPath: () => `/postuler` as string,
+      title: "Postuler",
+      index: false,
+      getMetadata: () => ({
+        title: "Postuler à l'offre - La bonne alternance",
+      }),
+    },
+    detailRendezVousApprentissage: {
+      title: "Détail du rendez-vous d'apprentissage",
+      getPath: () => `/detail-rendez-vous` as string,
+      index: false,
+      getMetadata: () => ({
+        title: "Détail du rendez-vous d'apprentissage - La bonne alternance",
+      }),
     },
   },
   dynamic: {
@@ -261,7 +318,7 @@ export const PAGES = {
         }
       },
       index: false,
-      getMetadata: () => ({ title: "Informations de contact" }),
+      getMetadata: () => ({ title: "Informations de contact - La bonne alternance" }),
       title: "Informations de contact",
     }),
     metierJobById: (metier: string): IPage => ({
@@ -276,7 +333,7 @@ export const PAGES = {
     modificationEntreprise: (userType: string, establishment_id?: string): IPage => ({
       getPath: () => (userType === "CFA" ? `/espace-pro/cfa/entreprise/${establishment_id}/informations` : "/espace-pro/entreprise/compte"),
       index: false,
-      getMetadata: () => ({ title: "Modification entreprise" }),
+      getMetadata: () => ({ title: "Modification entreprise - La bonne alternance" }),
       title: "Modification entreprise",
     }),
     offreUpsert: ({
@@ -310,7 +367,7 @@ export const PAGES = {
           }
         },
         index: false,
-        getMetadata: () => ({ title: isCreation ? "Création d'une offre" : "Edition d'une offre" }),
+        getMetadata: () => ({ title: `${isCreation ? "Création d'une offre" : "Edition d'une offre"} - La bonne alternance` }),
         title: isCreation ? "Création d'une offre" : "Edition d'une offre",
       }
     },
@@ -462,18 +519,30 @@ export const PAGES = {
     backCfaEntrepriseCreationDetail: (siret: string): IPage => ({
       getPath: () => `/espace-pro/cfa/creation-entreprise/${siret}` as string,
       title: siret,
+      getMetadata: () => ({
+        title: `Création entreprise ${siret} - La bonne alternance`,
+      }),
     }),
     backCfaPageEntreprise: (establishment_id: string, establishmentLabel?: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}` as string,
       title: establishmentLabel ?? "Entreprise",
+      getMetadata: () => ({
+        title: `${establishmentLabel ?? "Entreprise"} - La bonne alternance`,
+      }),
     }),
     backCfaPageInformations: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/informations` as string,
       title: "Informations de contact",
+      getMetadata: () => ({
+        title: "Informations de contact entreprise - La bonne alternance",
+      }),
     }),
     backCfaEntrepriseCreationOffre: (establishment_id: string): IPage => ({
       getPath: () => `/espace-pro/cfa/entreprise/${establishment_id}/creation-offre` as string,
       title: "Création d'une offre",
+      getMetadata: () => ({
+        title: "Création d'une offre - La bonne alternance",
+      }),
     }),
     backAdminGestionDesRecruteurs: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
       const searchParams = new URLSearchParams()
@@ -485,31 +554,52 @@ export const PAGES = {
       return {
         getPath: () => `/espace-pro/administration/users?${searchParams}` as string,
         title: "Gestion des recruteurs",
+        getMetadata: () => ({
+          title: "Gestion des recruteurs - La bonne alternance",
+        }),
       }
     },
     backAdminRecruteurOffres: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/administration/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
+      getMetadata: () => ({
+        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      }),
     }),
     backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
+      getMetadata: () => ({
+        title: `${job_id ? "Edition d'une offre" : "Création d'une offre"} - La bonne alternance`,
+      }),
     }),
     backEntrepriseMiseEnRelation: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}/mise-en-relation` as string,
       title: "Mise en relation avec des organismes de formation",
+      getMetadata: () => ({
+        title: "Mise en relation avec des organismes de formation - La bonne alternance",
+      }),
     }),
     backOpcoInformationEntreprise: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
       getPath: () => `/espace-pro/opco/users/${user_id}` as string,
       title: user_label ?? "Entreprise",
+      getMetadata: () => ({
+        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      }),
     }),
     backEditAdministrator: ({ userId }: { userId: string }): IPage => ({
       getPath: () => `/espace-pro/administration/gestion-des-administrateurs/user/${userId}` as string,
       title: "Modification d'administrateur",
+      getMetadata: () => ({
+        title: "Modification d'administrateur - La bonne alternance",
+      }),
     }),
     backCreateCFAConfirmation: ({ email }: { email: string }): IPage => ({
       getPath: () => `/espace-pro/authentification/confirmation?email=${email}` as string,
       title: "Confirmation de création de compte",
+      getMetadata: () => ({
+        title: "Confirmation de création de compte - La bonne alternance",
+      }),
     }),
     backHome: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "ADMIN" | "OPCO" }): IPage => {
       switch (userType) {
@@ -528,6 +618,9 @@ export const PAGES = {
     rendezVousApprentissageDetail: ({ siret }: { siret: string }): IPage => ({
       getPath: () => `/espace-pro/administration/rendez-vous-apprentissage/${siret}` as string,
       title: `Détail etablissement ${siret}`,
+      getMetadata: () => ({
+        title: `Détail etablissement ${siret} - La bonne alternance`,
+      }),
     }),
     prdvUnsubscribeOptout: ({ id }: { id: string }): IPage => ({
       getPath: () => `/optout/unsubscribe/${id}` as string,
@@ -537,21 +630,33 @@ export const PAGES = {
       getPath: () => `/espace-pro/administration/processeur/job/${name}`,
       index: false,
       title: `Job ${name}`,
+      getMetadata: () => ({
+        title: `Job ${name} - La bonne alternance`,
+      }),
     }),
     adminProcessorJobInstance: (props: { name: string; id: string }): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/job/${props.name}/${props.id}`,
       index: false,
       title: `Tâche Job ${props.id}`,
+      getMetadata: () => ({
+        title: `Tâche Job ${props.id} - La bonne alternance`,
+      }),
     }),
     adminProcessorCron: (name: string): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/cron/${name}`,
       index: false,
       title: `CRON ${name}`,
+      getMetadata: () => ({
+        title: `CRON ${name} - La bonne alternance`,
+      }),
     }),
     adminProcessorCronTask: (props: { name: string; id: string }): IPage => ({
       getPath: () => `/espace-pro/administration/processeur/cron/${props.name}/${props.id}`,
       index: false,
       title: `Tâche CRON ${props.id}`,
+      getMetadata: () => ({
+        title: `Tâche CRON ${props.id} - La bonne alternance`,
+      }),
     }),
     seoVille: (villeSlug: string): IPage => ({
       getPath: () => `/alternance/ville/${villeSlug}`,
