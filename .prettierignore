@@ -3,3 +3,6 @@
 .infra/files/configs/mongodb/seed.gpg
 .infra/.env_server
 .infra/local/mongo_keyfile
+.infra/env.*.yml
+.infra/authorizations/*
+.infra/inventories/*
