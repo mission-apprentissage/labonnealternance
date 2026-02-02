@@ -46,6 +46,7 @@ const getContractDuration = (duration: string | null): number | null => {
   switch (duration) {
     case "12 ou 24":
     case "12 à 24":
+    case "VARIABLE":
       return null
     default:
       return duration ? parseInt(duration) : null
