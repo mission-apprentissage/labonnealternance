@@ -28,15 +28,15 @@ export const ZKelioJob = z
     company: z.object({
       name: z.string(),
       slug: z.string(),
-      company_description: z.string(),
+      company_description: z.string().nullable(),
     }),
     address: z.object({
       city: z.string().nullable(),
       street: z.string().nullable(),
-      country: z.string(),
+      country: z.string().nullable(),
       latitude: z.string(),
       longitude: z.string(),
-      postal_code: z.string(),
+      postal_code: z.string().nullable(),
       street_number: z.string().nullable(),
     }),
     id: z.string(),
