@@ -12,7 +12,7 @@ export const ZLaposteJob = z
   .object({
     "intitule-du-poste": z.string(),
     reference: z.string(),
-    "date-de-mise-a-jour": z.string(),
+    "date-de-mise-a-jour": z.string().nullable(),
     "type-de-contrat": z.string(),
     "duree-du-contrat": z.string().nullable(),
     company: z.string(),
@@ -123,12 +123,15 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
   const descriptionComputed = getDescription(job)
 
   const publicationDate = new Date()
-  const [day, month, yearAndTime] = job["date-de-mise-a-jour"].split("-")
+  const now = new Date()
+
+  const [day, month, yearAndTime] = job["date-de-mise-a-jour"]
+    ? job["date-de-mise-a-jour"].split("-")
+    : [String(now.getDate()).padStart(2, "0"), String(now.getMonth() + 1).padStart(2, "0"), String(now.getFullYear()) + " 00:00:00"]
   const [year, _] = yearAndTime.split(" ")
   const isoString = `${year}-${month}-${day}`
 
   const updatedDate = new Date(isoString)
-  const now = new Date()
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(now),
