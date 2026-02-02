@@ -17,7 +17,7 @@ export const ZLaposteJob = z
     "duree-du-contrat": z.string().nullable(),
     company: z.string(),
     "region-du-poste": z.string(),
-    "departement-du-poste": z.string().describe("ex: Var (83)"),
+    "departement-du-poste": z.string().nullable().describe("ex: Var (83)"),
     "localisation-du-poste": z.string().describe("ville"),
     localite: z.string().nullable().describe("ex : 83126 LA SEYNE SUR MER"),
     longitude: z.coerce.number(),
