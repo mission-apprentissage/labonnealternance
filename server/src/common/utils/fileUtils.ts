@@ -31,7 +31,7 @@ export const parseCsv = (options: CsvParseOptions = {}) => {
   })
 }
 
-export async function parseCsvContent(content: string): Promise<Record<string, string>[]> {
+export async function parseCsvContent(content: string, options: CsvParseOptions = {}): Promise<Record<string, string>[]> {
   return new Promise((resolve, reject) => {
     const records: Record<string, string>[] = []
 
@@ -40,6 +40,7 @@ export async function parseCsvContent(content: string): Promise<Record<string, s
       trim: true,
       delimiter: ",",
       columns: true,
+      ...options,
     })
     // Use the readable stream api to consume records
     parser.on("readable", function () {

@@ -7,8 +7,16 @@ import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
-import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze, findDomainesMetiersIncoherents } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { buildMappingRomeRNCP } from "./domainesMetiers/buildMappingRomeRNCP"
+import {
+  analyzeRemovedRomes,
+  classifyRomesForDomainesMetiers,
+  classifyRomesForDomainesMetiersAnalyze,
+  findDomainesMetiersIncoherents,
+} from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { importFichesRncp } from "./domainesMetiers/importFichesRncp"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
+import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -16,6 +24,7 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
+import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
@@ -67,7 +76,6 @@ import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
-import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -396,6 +404,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
   },
   {
+    fct: analyzeRemovedRomes,
+    description: "Analyse les codes ROME supprimés ou modifiés entre les versions du référentiel",
+  },
+  {
     fct: fillLbaUrl,
     description: "Remplit le champ lba_url dans la collection jobs_partners",
   },
@@ -410,5 +422,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processEngagementJeunes,
     description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: importFichesRncp,
+    description: "Import des fichers RNCP dans la base de données",
+  },
+  {
+    fct: buildMappingRomeRNCP,
+    description: "Convertit les fiches RNCP en un mapping ROME => RNCP",
+  },
+  {
+    fct: validateDomaineMetiers,
+    description: "Validation des données domainesmetiers",
   },
 ]

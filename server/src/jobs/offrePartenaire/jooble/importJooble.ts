@@ -16,7 +16,7 @@ export const importJoobleRaw = async (sourceStream?: NodeJS.ReadableStream) => {
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
-      partnerLabel: JOBPARTNERS_LABEL.JOOBLE,
+      importName: JOBPARTNERS_LABEL.JOOBLE,
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {

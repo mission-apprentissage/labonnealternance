@@ -2,7 +2,7 @@ import path from "path"
 
 import { __dirname } from "./dirname"
 
-export function getStaticDirPath(): string {
+function getStaticDirPath(): string {
   // tsup build project into a single file to dist/index.js
   // Hence import.meta.url references dist/index.js
   if (process.env.IS_BUILT === "true") {

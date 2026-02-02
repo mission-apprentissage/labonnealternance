@@ -16,7 +16,7 @@ export const importLaposteRaw = async (sourceStream?: NodeJS.ReadableStream) => 
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
-      partnerLabel: JOBPARTNERS_LABEL.LAPOSTE,
+      importName: JOBPARTNERS_LABEL.LAPOSTE,
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
