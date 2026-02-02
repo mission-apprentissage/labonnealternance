@@ -127,7 +127,16 @@ export const FormulaireSituation = () => {
         {({ values, errors, touched, isValid, dirty, handleChange, handleBlur, setValues }) => (
           <Form>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Box my={fr.spacing("2v")}>
+              <Box
+                py={fr.spacing("3v")}
+                sx={{
+                  "& .fr-label": {
+                    padding: "0 !important",
+                    paddingTop: `${fr.spacing("3v")} !important`,
+                    paddingLeft: `${fr.spacing("8v")} !important`,
+                  },
+                }}
+              >
                 <RadioButtons
                   style={{
                     marginTop: 0,
@@ -147,11 +156,11 @@ export const FormulaireSituation = () => {
                   stateRelatedMessage={touched.typeContrat && errors.typeContrat ? `${errors.typeContrat}` : undefined}
                 />
               </Box>
-              <Box my={fr.spacing("2v")}>
+              <Box py={fr.spacing("3v")}>
                 <Input
                   id="dateNaissance"
                   label={
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                       <Typography variant="body1">Date de naissance</Typography>
                       <Tooltip title={"Votre âge détermine votre éligibilité au contrat et vos conditions salariales."} kind="click" />
                     </Box>
@@ -169,19 +178,20 @@ export const FormulaireSituation = () => {
                   }
                 />
               </Box>
-              <Collapse in={isProfessionnalisation(values.typeContrat)}>
-                <Box my={fr.spacing("2v")}>
+              <Collapse in={isProfessionnalisation(values.typeContrat)} style={{ margin: 0 }}>
+                <Box py={fr.spacing("3v")}>
                   <Select
                     label="Votre niveau de diplôme actuel :"
                     nativeSelectProps={{
                       name: "niveauDiplome",
                       value: values.niveauDiplome,
                       onChange: handleChange,
+                      defaultValue: "",
                     }}
                     state={touched.niveauDiplome && errors.niveauDiplome ? "error" : "default"}
                     stateRelatedMessage={touched.niveauDiplome && errors.niveauDiplome ? `${errors.niveauDiplome}` : undefined}
                   >
-                    <option value="" selected disabled hidden>
+                    <option value="" disabled hidden>
                       Sélectionnez une option
                     </option>
                     {niveauDiplomeOptions.map((option) => (
@@ -192,13 +202,18 @@ export const FormulaireSituation = () => {
                   </Select>
                 </Box>
               </Collapse>
-              <Collapse in={isApprentissage(values.typeContrat)}>
-                <Box my={fr.spacing("2v")}>
+              <Collapse in={isApprentissage(values.typeContrat)} style={{ margin: 0 }}>
+                <Box
+                  py={fr.spacing("3v")}
+                  sx={{
+                    "& .fr-label": {
+                      padding: "0 !important",
+                      paddingTop: `${fr.spacing("3v")} !important`,
+                      paddingLeft: `${fr.spacing("8v")} !important`,
+                    },
+                  }}
+                >
                   <RadioButtons
-                    style={{
-                      marginTop: 0,
-                      marginBottom: 0,
-                    }}
                     name="isDateDebutContratConnue"
                     legend="Date de début de contrat"
                     options={isDateDebutContratConnueOptions.map((option) => ({
@@ -218,10 +233,10 @@ export const FormulaireSituation = () => {
                     stateRelatedMessage={touched.isDateDebutContratConnue && errors.isDateDebutContratConnue ? `${errors.isDateDebutContratConnue}` : undefined}
                   />
                 </Box>
-                <Box my={fr.spacing("2v")}>
+                <Box py={fr.spacing("3v")}>
                   <Input
                     id="dateDebutContrat"
-                    label="Date de signature du contrat"
+                    label="Date de début de contrat"
                     hintText="Format attendu : JJ/MM/AAAA exemple 01/09/2026"
                     nativeInputProps={{
                       name: "dateDebutContrat",
@@ -235,16 +250,24 @@ export const FormulaireSituation = () => {
                       onBlur: handleBlur,
                     }}
                     disabled={values.isDateDebutContratConnue === false}
-                    state={touched.dateDebutContrat && errors.dateDebutContrat ? "error" : "default"}
-                    stateRelatedMessage={touched.dateDebutContrat && errors.dateDebutContrat ? `${errors.dateDebutContrat}` : undefined}
+                    state={values.isDateDebutContratConnue === false ? "info" : touched.dateDebutContrat && errors.dateDebutContrat ? "error" : "default"}
+                    stateRelatedMessage={
+                      values.isDateDebutContratConnue === false
+                        ? "Par défaut pour la simulation, nous sélectionnons le 1er du mois à venir"
+                        : touched.dateDebutContrat && errors.dateDebutContrat
+                          ? `${errors.dateDebutContrat}`
+                          : undefined
+                    }
                   />
                 </Box>
               </Collapse>
-              <Box my={fr.spacing("2v")}>
+              <Box py={fr.spacing("3v")}>
                 <Select
                   label={
-                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
-                      <Typography variant="body1">Durée du contrat</Typography>
+                    <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                      <Typography variant="body1" mr={0}>
+                        Durée du contrat
+                      </Typography>
                       <Tooltip
                         title={"La durée de votre contrat varie en fonction de la formation choisie. Votre rémunération augmentera à chaque nouvelle année d’exécution du contrat."}
                         kind="click"
@@ -255,11 +278,12 @@ export const FormulaireSituation = () => {
                     name: "dureeContrat",
                     value: values.dureeContrat,
                     onChange: handleChange,
+                    defaultValue: "",
                   }}
                   state={touched.dureeContrat && errors.dureeContrat ? "error" : "default"}
                   stateRelatedMessage={touched.dureeContrat && errors.dureeContrat ? `${errors.dureeContrat}` : undefined}
                 >
-                  <option value="" selected disabled hidden>
+                  <option value="" disabled hidden>
                     Sélectionnez une durée
                   </option>
                   {dureeContratOptions.map((option) => (
@@ -269,16 +293,18 @@ export const FormulaireSituation = () => {
                   ))}
                 </Select>
               </Box>
-              <Collapse in={isApprentissage(values.typeContrat) || isProfessionnalisation(values.typeContrat)}>
-                <Box my={fr.spacing("2v")}>
+              <Collapse in={isApprentissage(values.typeContrat) || isProfessionnalisation(values.typeContrat)} style={{ margin: 0 }}>
+                <Box py={fr.spacing("3v")}>
                   <RadioButtons
                     style={{
                       marginTop: 0,
                       marginBottom: 0,
                     }}
                     legend={
-                      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
-                        <Typography variant="body1">Secteur de l'entreprise</Typography>
+                      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <Typography variant="body1" mr={0}>
+                          Secteur de l'entreprise
+                        </Typography>
                         <Tooltip
                           title={
                             "Le niveau de cotisation salariale diffère entre le secteur privé et public (mairies, administrations, ...) impactant le salaire net. Le secteur public à caractère industriel et commercial doit être considéré comme du privé. Si vous n'avez pas ces informations, le salaire obtenu pourra être supérieur mais jamais inférieur."
@@ -302,22 +328,17 @@ export const FormulaireSituation = () => {
                   />
                 </Box>
               </Collapse>
-              <Box my={fr.spacing("2v")}>
+              <Box mt={fr.spacing("4v")}>
                 <Checkbox
                   options={[
                     {
                       label: (
-                        <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
-                          <Typography mt={"auto"}>Le contrat s'exécute à Mayotte</Typography>
-                          <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} mt={"auto"}>
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                          <Typography mb={"auto"}>Le contrat s'exécute à Mayotte</Typography>
+                          <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} m={fr.spacing("1v")} mb={"auto"} mr={0}>
                             (optionnel)
                           </Typography>
-                          <Tooltip
-                            style={{
-                              margin: "auto",
-                            }}
-                            title={"À Mayotte, le SMIC horaire diffère du reste de la France, ce qui impacte la rémunération de l'alternant."}
-                          />
+                          <Tooltip title={"À Mayotte, le SMIC horaire diffère du reste de la France, ce qui impacte la rémunération de l'alternant."} kind="click" />
                         </Box>
                       ),
                       nativeInputProps: {

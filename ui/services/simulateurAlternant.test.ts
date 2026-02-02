@@ -528,7 +528,7 @@ describe("getChargesSalariales", () => {
   })
 
   describe("Apprentissage - Exonération totale (avant date limite)", () => {
-    it("retourne 0 si date signature <= date fin exonération", () => {
+    it("retourne 0 si date de début de contrat <= date fin exonération", () => {
       const charges = getChargesSalariales({
         typeContrat: "apprentissage",
         dateDebutContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,

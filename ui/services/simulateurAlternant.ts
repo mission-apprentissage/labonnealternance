@@ -192,7 +192,7 @@ export const getChargesSalariales = ({ typeContrat, dateDebutContrat, secteur, t
     return salaireHoraireBrut * TAUX_COTISATIONS_SALARIALES_CONTRAT_PROFESSIONNALISATION
   }
 
-  // Apprentissage : exonération totale si date signature <= date fin exonération
+  // Apprentissage : exonération totale si date de début de contrat <= date fin exonération
   if (dateDebutContrat <= DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE) {
     return 0
   }
