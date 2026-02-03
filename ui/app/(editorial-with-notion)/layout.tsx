@@ -1,13 +1,12 @@
-import { fr } from "@codegouvfr/react-dsfr"
-import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
-import { Box } from "@mui/material"
+import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import type { PropsWithChildren } from "react"
 
+import { Box } from "@mui/material"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/getSession"
 
-export default async function PublicLayout({ children }: PropsWithChildren) {
+export default async function HomeLayout({ children }: PropsWithChildren) {
   const { user } = await getSession()
 
   return (
@@ -15,14 +14,12 @@ export default async function PublicLayout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#home-pro-content" },
+          { label: "Contenu", anchor: "#editorial-content-container" },
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <PublicHeader user={user} />
-      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("4w") }}>
-        {children}
-      </Box>
+      <PublicHeader user={user} hideConnectionButton={true} />
+      <Box>{children}</Box>
       <Footer />
     </>
   )

@@ -40,29 +40,64 @@ export default function PrintableJobPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("3w"), px: fr.spacing("3w") }}>
+    <Box component="main" role="main" sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("3w"), px: fr.spacing("3w") }}>
       <Image style={{ margin: "auto" }} src="/images/espace_pro/images/illustration-impression.svg" width="209" height="95" alt="" aria-hidden={true} />
       <Typography sx={{ mx: "auto", fontSize: "24px", mt: fr.spacing("4w") }}>{offre.company.name}</Typography>
-      <Typography mx="auto" fontSize="28px" fontWeight={700}>
+      <Typography
+        sx={{
+          mx: "auto",
+          fontSize: "28px",
+          fontWeight: 700,
+        }}
+      >
         recrute en alternance !
       </Typography>
-      <Typography sx={{ ...printExactColor }} mx="auto" fontSize="32px" mt={7} color="#417DC4" fontWeight={700}>
+      <Typography
+        sx={{
+          mx: "auto",
+          fontSize: "32px",
+          mt: 7,
+          color: "#417DC4",
+          fontWeight: 700,
+          ...printExactColor,
+        }}
+      >
         {offre.title}
       </Typography>
       {((offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT) || offre.job.jobStartDate) && (
         <Box sx={{ ...printExactColor, backgroundColor: "#F6F6F6", maxWidth: "500px", mx: "auto", mt: 6, p: 6, textAlign: "center" }}>
           {offre.job.jobStartDate && (
-            <Typography color="#161616" fontSize="16px">
+            <Typography
+              sx={{
+                color: "#161616",
+                fontSize: "16px",
+              }}
+            >
               Date de début :{" "}
-              <Typography component="span" fontWeight={700}>
+              <Typography
+                component="span"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {dayjs(offre.job.jobStartDate).format("DD/MM/YYYY")}
               </Typography>
             </Typography>
           )}
           {offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT ? (
-            <Typography color="#161616" fontSize="16px">
+            <Typography
+              sx={{
+                color: "#161616",
+                fontSize: "16px",
+              }}
+            >
               Niveau visé en fin d'études :{" "}
-              <Typography component="span" fontWeight={700}>
+              <Typography
+                component="span"
+                sx={{
+                  fontWeight: 700,
+                }}
+              >
                 {offre.target_diploma_level}
               </Typography>
             </Typography>
@@ -71,7 +106,14 @@ export default function PrintableJobPage() {
           )}
         </Box>
       )}
-      <Typography mt={6} fontWeight={700} mx="auto" color="#161616">
+      <Typography
+        sx={{
+          mt: 6,
+          fontWeight: 700,
+          mx: "auto",
+          color: "#161616",
+        }}
+      >
         Pour lire plus de détails sur l’offre et postuler
       </Typography>
       <Typography sx={{ ...printExactColor, color: "#417DC4", fontWeight: 700, mx: "auto", mb: 2 }}>Rendez-vous sur La bonne alternance</Typography>
@@ -86,11 +128,23 @@ export default function PrintableJobPage() {
         style={{ margin: "auto", height: "auto", maxWidth: "128x", width: "128px" }}
         viewBox={`0 0 128 128`}
       />
-      <Typography mt={6} fontSize="12px" mx="auto" color="#161616">
+      <Typography
+        sx={{
+          mt: 6,
+          fontSize: "12px",
+          mx: "auto",
+          color: "#161616",
+        }}
+      >
         Scannez ce QR Code pour voir le détail de l'offre
         <br />
         ou rendez-vous sur{" "}
-        <Typography component="span" fontWeight={700}>
+        <Typography
+          component="span"
+          sx={{
+            fontWeight: 700,
+          }}
+        >
           labonnealternance.apprentissage.beta.gouv.fr
         </Typography>
       </Typography>

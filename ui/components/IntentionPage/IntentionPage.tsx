@@ -5,12 +5,11 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import React, { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 
-import { IntensionPageNavigation } from "./IntensionPageNavigation"
-import { IntentionPageForm } from "./IntentionPageForm"
 import { IntensionPageResult } from "./IntensionPageResult"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
-import { LoadingEmptySpace } from "@/components/espace_pro"
+import { IntentionPageForm } from "./IntentionPageForm"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { LoadingEmptySpace } from "@/components/espace_pro"
 import { MailCard } from "@/components/MailCard"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
@@ -171,13 +170,10 @@ export function IntentionPage(props: IntentionPageProps) {
   const [displayMode, setDisplayMode] = useState<"form" | "canceled" | "sent_now">("form")
 
   return (
-    <Box sx={{ marginBottom: "110px" }}>
-      <IntensionPageNavigation />
-      <Box sx={{ paddingTop: fr.spacing("5w") }}>
-        {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
-        {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
-        {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
-      </Box>
+    <Box sx={{ mY: fr.spacing("10v") }}>
+      {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
+      {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
+      {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
     </Box>
   )
 }

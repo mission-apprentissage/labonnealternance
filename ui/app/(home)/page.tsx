@@ -29,6 +29,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         px: { xs: 0, lg: fr.spacing("2w") },
       }}
       maxWidth="xl"
+      role="main"
     >
       <Box
         component="section"
