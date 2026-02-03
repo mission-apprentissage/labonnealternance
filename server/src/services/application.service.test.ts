@@ -223,6 +223,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     expect(savedApplication?.caller).toBe("Hellowork")
     expect(savedApplication?.foreign_application_id).toBe("hw_app_123")
     expect(savedApplication?.foreign_application_status_url).toBe("https://api.hellowork.com/status/hw_app_123")
+    expect(savedApplication).toMatchSnapshot()
   })
 
   it("Should successfully create application with missing coverLetter", async () => {
