@@ -178,7 +178,7 @@ export default function APropos() {
                   }}
                 >
                   Vous pouvez consulter nos{" "}
-                  <DsfrLink href="/stats" aria-label="Accès aux statistiques">
+                  <DsfrLink href="/statistiques" aria-label="Accès aux statistiques">
                     statistiques
                   </DsfrLink>
                 </Typography>

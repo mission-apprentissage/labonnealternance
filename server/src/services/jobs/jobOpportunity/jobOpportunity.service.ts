@@ -1058,7 +1058,7 @@ export const getApplyUrl = (job: IJobsPartnersOfferPrivate): string => {
   }
   const jobType = getJobTypeFromPartnerLabel(job.partner_label as JOBPARTNERS_LABEL)
 
-  return `${config.publicUrl}/emploi/${jobType}/${job._id}/${encodeURIComponent(job.offer_title)}`
+  return `${config.publicUrl}/emploi/${jobType}/${jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_siret : job._id}/${encodeURIComponent(jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_naf_label! : job.offer_title)}`
 }
 
 export const getRecipientID = (type: IJobCollectionName, id: string) => {

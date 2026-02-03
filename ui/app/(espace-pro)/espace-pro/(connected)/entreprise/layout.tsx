@@ -13,7 +13,7 @@ export default function Layout({ children }: PropsWithChildren) {
         marginTop: fr.spacing("4v"),
       }}
     >
-      <InfoBanner showInfo={true} showAlert={false} showOK={false} showEnvAlert={false} />
+      <InfoBanner showInfo={false} showAlert={false} showOK={false} showEnvAlert={false} />
       <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
     </Container>
   )

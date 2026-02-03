@@ -31,12 +31,12 @@ const WHISPERS: IWhisper[] = [
     ideaType: "whisper",
     message:
       "Vous allez avoir besoin de matériel pour votre apprentissage (couteaux de cuisine, ciseaux de coiffure, ...) ? Il existe des aides financières au premier équipement !",
-    lien: "https://www.service-public.fr/particuliers/vosdroits/F32915",
+    lien: "https://service-public.gouv.fr/particuliers/vosdroits/F32915",
   },
   {
     ideaType: "whisper",
     message: "Vous devez quitter le domicile familial pour vos études ? Action Logement vous aide à vous installer.",
-    lien: "https://www.actionlogement.fr/aide-logement-apprentis",
+    lien: "https://www.actionlogement.fr/moment-de-vie/trouver-un-logement",
   },
   {
     ideaType: "whisper",
@@ -55,7 +55,7 @@ const WHISPERS: IWhisper[] = [
   },
   {
     ideaType: "whisper",
-    message: "Entre 4 et 7 employeurs sur 10 recrutent sans déposer d'offre d'emploi : optimisez vos chances en adressant aussi des candidatures spontanées !",
+    message: "Plus de 50% des recrutements se font sans qu'aucune offre n'ait été diffusée : maximisez vos chances en réalisant des candidatures spontanées !",
     lien: null,
   },
   {
@@ -66,23 +66,13 @@ const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
     message: "Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur Diagoriente.",
-    lien: "https://web-app.diagoriente.beta.gouv.fr/#/inscription?utm_source=lba&utm_campaign=lba-dec2021",
+    lien: "https://diagoriente.fr/",
   },
   {
     ideaType: "whisper",
     message:
       "Les employeurs qui embauchent des alternants reçoivent des aides : c'est un bon argument pour convaincre une entreprise qui ne connaît pas l'alternance de vous embaucher !",
     lien: null,
-  },
-  {
-    ideaType: "whisper",
-    message: "La loi « Avenir professionnel » a étendu les possibilités de faire un contrat en alternance à l’étranger, dans ou hors de l’Union européenne.",
-    lien: "https://ec.europa.eu/eures/portal/jv-se/search?page=1&resultsPerPage=10&orderBy=BEST_MATCH&positionOfferingCodes=apprenticeship",
-  },
-  {
-    ideaType: "whisper",
-    message: "Le secteur public (mairies, ministères, départements, régions, ...) recrute aussi des alternants, pensez-y !",
-    lien: "https://www.pass.fonction-publique.gouv.fr/",
   },
   {
     ideaType: "whisper",
@@ -97,7 +87,7 @@ const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
     message:
-      "Les recruteurs font attention à de petits détails ! Professionnalisez vos candidatures en utilisant une adresse email adaptée aux contacts professionnels (par exemple : nom.prenom@email.fr)",
+      "Les recruteurs font attention aux petits détails ! Professionnalisez vos candidatures en utilisant une adresse email adaptée aux contacts professionnels (par exemple : nom.prenom@email.fr)",
     lien: null,
   },
   {
@@ -143,7 +133,7 @@ const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
     message: "Identifiez les métiers qui vous correspondent avec Diagoriente ! Inscrivez-vous gratuitement.",
-    lien: "https://web-app.diagoriente.beta.gouv.fr/#/inscription?utm_campaign=lba-jan2022-orientation",
+    lien: "https://diagoriente.fr/",
   },
   {
     ideaType: "whisper",
@@ -163,12 +153,17 @@ const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
     message: "Des doutes sur votre orientation ? Pensez à la Prépa-apprentissage : un dispositif qui vous permet de découvrir un ou plusieurs métiers !",
-    lien: "https://travail-emploi.gouv.fr/le-ministere-en-action/pic/prepa-apprentissage-pic",
+    lien: "https://travail-emploi.gouv.fr/la-prepa-apprentissage",
   },
   {
     ideaType: "whisper",
     message: "Découvrez le quotidien et les métiers des apprentis en vidéo.",
     lien: "https://www.filmetonjob.com/videos",
+  },
+  {
+    ideaType: "whisper",
+    message: "Echangez avec des professionnels, découvrez leur quotidien et créer des liens qui pourraient vous aider à trouver un employeur avec My job glasses !",
+    lien: "https://www.myjobglasses.com/",
   },
 ]
 
