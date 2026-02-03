@@ -25,7 +25,7 @@ export const ZHelloWorkJob = z
     publication_date: z.string().nullish(),
     updated_date: z.string().nullish(),
     siret: z.string().nullish(),
-    company_title: z.string().nullable(),
+    company_title: z.string().nullish(),
     company_description: z.string().nullish(),
     address: z.string().nullish(),
     postal_code: z.string().nullish(),
