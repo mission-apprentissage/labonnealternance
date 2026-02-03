@@ -47,7 +47,14 @@ const contentByItemType: Partial<
     title: "Signaler l’offre",
     introductionText:
       "Des contrôles sont réalisés pour vérifier la légalité et la conformité des offres exposées. Si malgré ces contrôles vous constatez des contenus inappropriés, signalez cette opportunité et une attention particulière y sera apportée.",
-    motifs: ["Offre offensante ou discriminatoire", "Offre inexacte ou expirée", "Fausse offre provenant d’un centre de formation", "Tentative d’escroquerie", "Autre"],
+    motifs: [
+      "Offre offensante ou discriminatoire",
+      "Offre inexacte ou expirée",
+      "Fausse offre provenant d’un centre de formation",
+      "Tentative d’escroquerie",
+      "Offre ne relevant pas du champ de l’alternance (CDI, stage, etc.)",
+      "Autre",
+    ],
   },
 }
 
