@@ -22,7 +22,10 @@ export const ZRecruteursLbaRaw = z.object({
   coordonneeLambertAbscisseEtablissement: z.number().nullable(),
   coordonneeLambertOrdonneeEtablissement: z.number().nullable(),
   rome_codes: z.array(z.object({ rome_code: z.string(), normalized_score: z.number() })),
+  handiengagee: z.string().nullish(),
+  site_web: z.string().nullish(),
 })
+
 export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>
 
 export default {
