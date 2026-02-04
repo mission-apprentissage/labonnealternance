@@ -276,6 +276,15 @@ export const PAGES = {
         description: "Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance.",
       }),
     },
+    planDuSite: {
+      getPath: () => `/plan-du-site` as string,
+      title: "Plan du site",
+      index: false,
+      getMetadata: () => ({
+        title: "Plan du site - La bonne alternance",
+        description: "Découvrez l'ensemble des pages et services disponibles sur La bonne alternance.",
+      }),
+    },
     adminProcessor: {
       getPath: () => `/espace-pro/administration/processeur` as string,
       index: false,

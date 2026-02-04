@@ -18,7 +18,9 @@ export default async function EspaceProConnecteLayout({ children }: PropsWithChi
   return (
     <UserContextProvider user={user} access={access}>
       <ConnectedHeader user={user} />
-      <Box sx={{ marginBottom: fr.spacing("4w") }}>{children}</Box>
+      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("4w") }}>
+        {children}
+      </Box>
       <Footer />
       <AuthWatcher user={user} />
     </UserContextProvider>

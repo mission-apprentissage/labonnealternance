@@ -1,6 +1,6 @@
+import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
-import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
@@ -51,7 +51,6 @@ import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
-import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -381,10 +380,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: analyzeClosedCompanies,
     description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
-  },
-  {
-    fct: exportJobsToS3V2,
-    description: "export des offres sur S3 (V2)",
   },
   {
     fct: removeBrevoContacts,

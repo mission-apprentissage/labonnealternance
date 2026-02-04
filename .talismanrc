@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/user.controller.test.ts
   checksum: e01d1b9c54d1e6d0c98fd7984f32c3a93f3e9bde92887bdab320cb7af91fdd92
 - filename: server/src/http/controllers/v2/applications.controller.v2.test.ts
-  checksum: 114fa9d897dd519cbe7ab0892ad9f60002fafd82605ba2c1d75f909577d1f858
+  checksum: 960f1cef7902145fadbc4d94e44fa5c36e78ec59907d131dd08e1898681e173f
 - filename: server/src/http/controllers/v2/appointment.controller.v2.test.ts
   checksum: bbbf100d65bae0d840c715f4b1d893986df7423f470f3ee300545959105f6ca4
 - filename: server/src/http/controllers/v2/jobs.controller.v2.test.ts
