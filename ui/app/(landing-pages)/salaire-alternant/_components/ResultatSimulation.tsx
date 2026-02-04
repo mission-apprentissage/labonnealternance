@@ -1,10 +1,11 @@
 "use client"
 
-import { Box, Grid, List, ListItem, Typography } from "@mui/material"
+import { Box, Grid, List, ListItem, Typography, Skeleton } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
 import Image from "next/image"
-import { useSimulateur } from "@/app/(landing-pages)/simulateur/context/SimulateurContext"
-import type { AnneeSimulation } from "@/services/simulateurAlternant"
+import { useEffect, useState } from "react"
+import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
+import type { AnneeSimulation, OutputSimulation } from "@/services/simulateurAlternant"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
   const annee: string = index === 0 ? "1ère année" : `${index + 1}e année`
@@ -113,8 +114,39 @@ const ExplicationsSalaire = () => {
   )
 }
 
+const Loader = ({ simulation }: { simulation: OutputSimulation }) => {
+  return (
+    <>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 12 }}>
+          {simulation.anneesSimulation.map((_anneeSimulation, index) => (
+            <Skeleton key={index} variant="rectangular" height={146} sx={{ my: fr.spacing("2w") }} />
+          ))}
+        </Grid>
+        <Grid size={{ xs: 12, md: 12 }}>
+          <Skeleton variant="rectangular" height={300} />
+        </Grid>
+      </Grid>
+    </>
+  )
+}
+
 export const ResultatSimulation = () => {
   const { simulation } = useSimulateur()
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Affichage d'un loader lors d'une nouvelle simulation
+  useEffect(() => {
+    if (simulation) {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+      setIsLoading(true)
+      // Simulation d'un temps de chargement
+      const timer = setTimeout(() => {
+        setIsLoading(false)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [simulation])
 
   return (
     <Box py={2}>
@@ -128,16 +160,24 @@ export const ResultatSimulation = () => {
       </Box>
       <Box p={2}>
         {simulation ? (
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 12 }}>
-              {simulation.anneesSimulation.map((anneeSimulation, index) => (
-                <AnneeSimulationCard key={index} simulation={anneeSimulation} index={index} />
-              ))}
+          isLoading ? (
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <Loader simulation={simulation} />
+              </Grid>
             </Grid>
-            <Grid size={{ xs: 12, md: 12 }}>
-              <ExplicationsSalaire />
+          ) : (
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 12 }}>
+                {simulation.anneesSimulation.map((anneeSimulation, index) => (
+                  <AnneeSimulationCard key={index} simulation={anneeSimulation} index={index} />
+                ))}
+              </Grid>
+              <Grid size={{ xs: 12, md: 12 }}>
+                <ExplicationsSalaire />
+              </Grid>
             </Grid>
-          </Grid>
+          )
         ) : (
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, md: 4 }}>

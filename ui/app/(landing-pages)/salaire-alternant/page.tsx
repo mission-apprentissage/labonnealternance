@@ -5,14 +5,14 @@ import { PAGES } from "@/utils/routes.utils"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 
 export const metadata: Metadata = {
-  title: PAGES.static.simulateur.getMetadata().title,
-  description: PAGES.static.simulateur.getMetadata().description,
+  title: PAGES.static.salaireAlternant.getMetadata().title,
+  description: PAGES.static.salaireAlternant.getMetadata().description,
 }
 
 export default async function Simulateur() {
   return (
     <div>
-      <Breadcrumb pages={[PAGES.static.simulateur]} />
+      <Breadcrumb pages={[PAGES.static.salaireAlternant]} />
       <DefaultContainer>
         <SimulateurRemuneration />
       </DefaultContainer>

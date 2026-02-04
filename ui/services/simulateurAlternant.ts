@@ -30,7 +30,7 @@ type TypeContrat = "apprentissage" | "professionnalisation"
 
 type InputChargesSalariales = {
   typeContrat: TypeContrat
-  dateDebutContrat: Date
+  dateSignatureContrat: Date
   secteur: Exclude<Secteur, "nsp">
   salaireHoraireBrut: number
   tauxSmic: number
@@ -40,7 +40,7 @@ export type InputSimulation = {
   typeContrat: TypeContrat
   niveauDiplome?: number
   dureeContrat: number
-  dateDebutContrat: Date
+  dateSignatureContrat: Date
   dateNaissance: Date
   isRegionMayotte: boolean
   secteur: Secteur
@@ -186,14 +186,14 @@ const getSalaireBrut = (tauxSmic: number, isRegionMayotte: boolean): { salaireHo
  *   - Si tauxSmic <= 50% : exonération totale (0)
  *   - Si tauxSmic > 50% : cotisations sur la part excédant 50% du SMIC
  */
-export const getChargesSalariales = ({ typeContrat, dateDebutContrat, secteur, tauxSmic, salaireHoraireBrut }: InputChargesSalariales): number => {
+export const getChargesSalariales = ({ typeContrat, dateSignatureContrat, secteur, tauxSmic, salaireHoraireBrut }: InputChargesSalariales): number => {
   // Professionnalisation : pas d'exonération
   if (typeContrat === "professionnalisation") {
     return salaireHoraireBrut * TAUX_COTISATIONS_SALARIALES_CONTRAT_PROFESSIONNALISATION
   }
 
-  // Apprentissage : exonération totale si date de début de contrat <= date fin exonération
-  if (dateDebutContrat <= DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE) {
+  // Apprentissage : exonération totale si date de signature de contrat <= date fin exonération
+  if (dateSignatureContrat <= DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE) {
     return 0
   }
 
@@ -226,17 +226,17 @@ const getSalaireNet = ({
   tauxSmic,
   secteur,
   typeContrat,
-  dateDebutContrat,
+  dateSignatureContrat,
 }: {
   salaireHoraireBrut: number
   tauxSmic: number
   secteur: Exclude<Secteur, "nsp">
   typeContrat: TypeContrat
-  dateDebutContrat: Date
+  dateSignatureContrat: Date
 }): { salaireHoraireNet: number; salaireMensuelNet: number; salaireAnnuelNet: number } => {
   const chargesSalariales = getChargesSalariales({
     typeContrat,
-    dateDebutContrat,
+    dateSignatureContrat,
     secteur,
     salaireHoraireBrut,
     tauxSmic,
@@ -265,14 +265,14 @@ const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSala
 }
 
 const checkDataValidity = (input: Partial<InputSimulation>) => {
-  const { typeContrat, niveauDiplome, dateDebutContrat, dateNaissance, dureeContrat } = input
+  const { typeContrat, niveauDiplome, dateSignatureContrat, dateNaissance, dureeContrat } = input
   if (typeContrat === "professionnalisation") {
     if (niveauDiplome === undefined) throw new Error("Le niveau de diplôme est requis pour un contrat de professionnalisation")
     if (niveauDiplome < 1 || niveauDiplome > 8) throw new Error("Niveau de diplôme invalide")
   }
   if (typeContrat === "apprentissage") {
-    if (dateDebutContrat === undefined) throw new Error("La date de début de contrat est requise pour un contrat d'apprentissage")
-    if (dateDebutContrat < MIN_DEBUT_CONTRAT.toDate()) throw new Error(`La date de début de contrat doit être postérieure au ${MIN_DEBUT_CONTRAT.format("DD/MM/YYYY")}`)
+    if (dateSignatureContrat === undefined) throw new Error("La date de signature de contrat est requise pour un contrat d'apprentissage")
+    if (dateSignatureContrat < MIN_DEBUT_CONTRAT.toDate()) throw new Error(`La date de signature de contrat doit être postérieure au ${MIN_DEBUT_CONTRAT.format("DD/MM/YYYY")}`)
   }
   if (dateNaissance < MIN_DATE_NAISSANCE.toDate()) throw new Error(`La date de naissance doit être postérieure au ${MIN_DATE_NAISSANCE.format("DD/MM/YYYY")}`)
   if (dateNaissance > MAX_DATE_NAISSANCE.toDate()) throw new Error(`La date de naissance doit être antérieure au ${MAX_DATE_NAISSANCE.format("DD/MM/YYYY")}`)
@@ -288,14 +288,14 @@ export const getSimulationInformation = ({
   typeContrat,
   dateNaissance,
   dureeContrat,
-  dateDebutContrat,
+  dateSignatureContrat,
   niveauDiplome,
   secteur,
   isRegionMayotte,
 }: InputSimulation): OutputSimulation => {
-  checkDataValidity({ typeContrat, dateNaissance, dureeContrat, dateDebutContrat, niveauDiplome })
+  checkDataValidity({ typeContrat, dateNaissance, dureeContrat, dateSignatureContrat, niveauDiplome })
 
-  const age = dayjs(dateDebutContrat).diff(dayjs(dateNaissance), "year")
+  const age = dayjs(dateSignatureContrat).diff(dayjs(dateNaissance), "year")
   // Si l'utilisateur ne sait pas, on considère le secteur privé par défaut
   const formattedSecteur = secteur === "nsp" ? "privé" : secteur
   if (typeContrat === "professionnalisation" && niveauDiplome === undefined) {
@@ -316,7 +316,7 @@ export const getSimulationInformation = ({
       tauxSmic,
       secteur: formattedSecteur,
       typeContrat,
-      dateDebutContrat,
+      dateSignatureContrat,
     })
 
     return {

@@ -13,7 +13,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import dayjs from "dayjs"
 import type { InputSimulation } from "@/services/simulateurAlternant"
 import { getSimulationInformation } from "@/services/simulateurAlternant"
-import { useSimulateur } from "@/app/(landing-pages)/simulateur/context/SimulateurContext"
+import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import { MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
@@ -24,14 +24,14 @@ const inputSchema = Yup.object().shape({
     .min(MIN_DATE_NAISSANCE, "Votre âge n'est pas éligible à l'alternance. Veuillez renseigner un âge entre 14 et 77 ans.")
     .max(MAX_DATE_NAISSANCE, "Votre âge n'est pas éligible à l'alternance. Veuillez renseigner un âge entre 14 et 77 ans.")
     .required("Champ obligatoire"),
-  isDateDebutContratConnue: Yup.boolean().when("typeContrat", {
+  isDateSignatureContratConnue: Yup.boolean().when("typeContrat", {
     is: "apprentissage",
     then: (schema) => schema.required("Champ obligatoire"),
     otherwise: (schema) => schema.notRequired(),
   }),
-  dateDebutContrat: Yup.date().when("isDateDebutContratConnue", {
+  dateSignatureContrat: Yup.date().when("isDateSignatureContratConnue", {
     is: true,
-    then: (schema) => schema.required("Champ obligatoire").min(MIN_DEBUT_CONTRAT, `La date de début de contrat doit être dans l'année civile en cours ou ultérieure.`),
+    then: (schema) => schema.required("Champ obligatoire").min(MIN_DEBUT_CONTRAT, `La date de signature de contrat doit être dans l'année civile en cours ou ultérieure.`),
     otherwise: (schema) => schema.notRequired(),
   }),
   niveauDiplome: Yup.number().when("typeContrat", {
@@ -66,8 +66,8 @@ const niveauDiplomeOptions = [
 ]
 
 const isDateDebutContratConnueOptions = [
-  { value: true, label: "Je connais la date de début de contrat" },
-  { value: false, label: "Je ne connais pas la date de début de contrat" },
+  { value: true, label: "Je connais la date de signature de contrat" },
+  { value: false, label: "Je ne connais pas la date de signature de contrat" },
 ]
 
 const dureeContratOptions = [
@@ -92,8 +92,8 @@ export const FormulaireSituation = () => {
   const initialValues: InputSchemaType = {
     typeContrat: undefined,
     dateNaissance: undefined,
-    isDateDebutContratConnue: undefined,
-    dateDebutContrat: undefined,
+    isDateSignatureContratConnue: undefined,
+    dateSignatureContrat: undefined,
     dureeContrat: undefined,
     niveauDiplome: undefined,
     secteur: undefined,
@@ -108,7 +108,7 @@ export const FormulaireSituation = () => {
       secteur: values.secteur,
       dureeContrat: Number(values.dureeContrat),
       dateNaissance: dayjs(values.dateNaissance).toDate(),
-      dateDebutContrat: dayjs(values.dateDebutContrat ?? NEXT_START_OF_MONTH).toDate(),
+      dateSignatureContrat: dayjs(values.dateSignatureContrat ?? NEXT_START_OF_MONTH).toDate(),
       isRegionMayotte: values.isRegionMayotte,
     }
 
@@ -125,7 +125,7 @@ export const FormulaireSituation = () => {
       </Typography>
       <Formik validateOnMount={true} enableReinitialize={true} initialValues={initialValues} validationSchema={inputSchema} onSubmit={onSubmit}>
         {({ values, errors, touched, isValid, dirty, handleChange, handleBlur, setValues }) => (
-          <Form>
+          <Form autoComplete="off">
             <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Box
                 py={fr.spacing("3v")}
@@ -214,48 +214,48 @@ export const FormulaireSituation = () => {
                   }}
                 >
                   <RadioButtons
-                    name="isDateDebutContratConnue"
-                    legend="Date de début de contrat"
+                    name="isDateSignatureContratConnue"
+                    legend="Date de signature de contrat"
                     options={isDateDebutContratConnueOptions.map((option) => ({
                       label: option.label,
                       nativeInputProps: {
-                        checked: values.isDateDebutContratConnue === option.value,
+                        checked: values.isDateSignatureContratConnue === option.value,
                         onChange: () => {
                           setValues((values) => ({
                             ...values,
-                            isDateDebutContratConnue: option.value,
-                            dateDebutContrat: option.value ? undefined : NEXT_START_OF_MONTH.toDate(),
+                            isDateSignatureContratConnue: option.value,
+                            dateSignatureContrat: option.value ? undefined : NEXT_START_OF_MONTH.toDate(),
                           }))
                         },
                       },
                     }))}
-                    state={touched.isDateDebutContratConnue && errors.isDateDebutContratConnue ? "error" : "default"}
-                    stateRelatedMessage={touched.isDateDebutContratConnue && errors.isDateDebutContratConnue ? `${errors.isDateDebutContratConnue}` : undefined}
+                    state={touched.isDateSignatureContratConnue && errors.isDateSignatureContratConnue ? "error" : "default"}
+                    stateRelatedMessage={touched.isDateSignatureContratConnue && errors.isDateSignatureContratConnue ? `${errors.isDateSignatureContratConnue}` : undefined}
                   />
                 </Box>
                 <Box py={fr.spacing("3v")}>
                   <Input
-                    id="dateDebutContrat"
-                    label="Date de début de contrat"
+                    id="dateSignatureContrat"
+                    label="Date de signature de contrat"
                     hintText="Format attendu : JJ/MM/AAAA exemple 01/09/2026"
                     nativeInputProps={{
-                      name: "dateDebutContrat",
+                      name: "dateSignatureContrat",
                       type: "date",
-                      value: values.dateDebutContrat
-                        ? typeof values.dateDebutContrat === "string"
-                          ? values.dateDebutContrat
-                          : dayjs(values.dateDebutContrat).format(ISO_DATE_FORMAT)
+                      value: values.dateSignatureContrat
+                        ? typeof values.dateSignatureContrat === "string"
+                          ? values.dateSignatureContrat
+                          : dayjs(values.dateSignatureContrat).format(ISO_DATE_FORMAT)
                         : "",
                       onChange: handleChange,
                       onBlur: handleBlur,
                     }}
-                    disabled={values.isDateDebutContratConnue === false}
-                    state={values.isDateDebutContratConnue === false ? "info" : touched.dateDebutContrat && errors.dateDebutContrat ? "error" : "default"}
+                    disabled={values.isDateSignatureContratConnue === false}
+                    state={values.isDateSignatureContratConnue === false ? "info" : touched.dateSignatureContrat && errors.dateSignatureContrat ? "error" : "default"}
                     stateRelatedMessage={
-                      values.isDateDebutContratConnue === false
+                      values.isDateSignatureContratConnue === false
                         ? "Par défaut pour la simulation, nous sélectionnons le 1er du mois à venir"
-                        : touched.dateDebutContrat && errors.dateDebutContrat
-                          ? `${errors.dateDebutContrat}`
+                        : touched.dateSignatureContrat && errors.dateSignatureContrat
+                          ? `${errors.dateSignatureContrat}`
                           : undefined
                     }
                   />

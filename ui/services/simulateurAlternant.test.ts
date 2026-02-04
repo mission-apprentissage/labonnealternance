@@ -47,7 +47,7 @@ describe("Tranches d'âge", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 4,
         dureeContrat: 1,
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         dateNaissance: createDateNaissance(age),
         isRegionMayotte: false,
         secteur: "privé",
@@ -69,7 +69,7 @@ describe("Tranches d'âge", () => {
         typeContrat: "professionnalisation",
         niveauDiplome: niveau,
         dureeContrat: 1,
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         dateNaissance: createDateNaissance(age),
         isRegionMayotte: false,
         secteur: "privé",
@@ -101,7 +101,7 @@ describe("Groupes de niveau de diplôme", () => {
       typeContrat: "professionnalisation",
       niveauDiplome: niveau,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(18),
       isRegionMayotte: false,
       secteur: "privé",
@@ -121,7 +121,7 @@ describe("Durée de contrat", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 3,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(21), // reste dans la même tranche 21-25
       isRegionMayotte: false,
       secteur: "privé",
@@ -138,7 +138,7 @@ describe("Durée de contrat", () => {
       typeContrat: "professionnalisation",
       niveauDiplome: 5,
       dureeContrat: 2,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(22), // reste dans la même tranche 21-25
       isRegionMayotte: false,
       secteur: "privé",
@@ -153,7 +153,7 @@ describe("Durée de contrat", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 2,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(17),
       isRegionMayotte: false,
       secteur: "privé",
@@ -168,7 +168,7 @@ describe("Durée de contrat", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 2,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "privé",
@@ -183,7 +183,7 @@ describe("Durée de contrat", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 2,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(25),
       isRegionMayotte: false,
       secteur: "privé",
@@ -198,7 +198,7 @@ describe("Durée de contrat", () => {
       typeContrat: "professionnalisation",
       niveauDiplome: 5,
       dureeContrat: 2,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "privé",
@@ -219,7 +219,7 @@ describe("Calcul du salaire brut", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(26),
       isRegionMayotte: false,
       secteur: "privé",
@@ -234,7 +234,7 @@ describe("Calcul du salaire brut", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(26),
       isRegionMayotte: true,
       secteur: "privé",
@@ -249,7 +249,7 @@ describe("Calcul du salaire brut", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "privé",
@@ -279,7 +279,7 @@ describe("Calcul du salaire net", () => {
         typeContrat: "professionnalisation",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         dateNaissance: createDateNaissance(22),
         isRegionMayotte: false,
         secteur: "privé",
@@ -300,7 +300,7 @@ describe("Tranche de salaire", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "privé",
@@ -321,7 +321,7 @@ describe("Structure de retour", () => {
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "privé",
@@ -352,7 +352,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "public",
@@ -366,7 +366,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(20),
       isRegionMayotte: false,
       secteur: "privé",
@@ -380,7 +380,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(22),
       isRegionMayotte: false,
       secteur: "privé",
@@ -394,7 +394,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(22),
       isRegionMayotte: false,
       secteur: "public",
@@ -404,7 +404,7 @@ describe("Calcul charges salariales par secteur (après date exonération)", () 
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(22),
       isRegionMayotte: false,
       secteur: "privé",
@@ -428,7 +428,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(15),
       isRegionMayotte: false,
       secteur: "privé",
@@ -442,7 +442,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(22),
       isRegionMayotte: false,
       secteur: "privé",
@@ -456,7 +456,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 1,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(18),
       isRegionMayotte: false,
       secteur: "privé",
@@ -470,7 +470,7 @@ describe("Règle du seuil 50% SMIC (secteur privé, après exonération)", () =>
       typeContrat: "apprentissage",
       niveauDiplome: 4,
       dureeContrat: 3,
-      dateDebutContrat: DATE_REFERENCE_TEST,
+      dateSignatureContrat: DATE_REFERENCE_TEST,
       dateNaissance: createDateNaissance(22),
       isRegionMayotte: false,
       secteur: "privé",
@@ -496,7 +496,7 @@ describe("getChargesSalariales", () => {
     it("applique le taux de cotisations salariales sur le salaire brut", () => {
       const charges = getChargesSalariales({
         typeContrat: "professionnalisation",
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.7,
@@ -509,7 +509,7 @@ describe("getChargesSalariales", () => {
     it("ignore le secteur pour la professionnalisation", () => {
       const chargesPublic = getChargesSalariales({
         typeContrat: "professionnalisation",
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         secteur: "public",
         salaireHoraireBrut,
         tauxSmic: 0.7,
@@ -517,7 +517,7 @@ describe("getChargesSalariales", () => {
 
       const chargesPrive = getChargesSalariales({
         typeContrat: "professionnalisation",
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.7,
@@ -528,10 +528,10 @@ describe("getChargesSalariales", () => {
   })
 
   describe("Apprentissage - Exonération totale (avant date limite)", () => {
-    it("retourne 0 si date de début de contrat <= date fin exonération", () => {
+    it("retourne 0 si date de signature de contrat <= date fin exonération", () => {
       const charges = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
+        dateSignatureContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.6,
@@ -543,7 +543,7 @@ describe("getChargesSalariales", () => {
     it("exonération totale indépendante du secteur et du tauxSmic", () => {
       const chargesPublic = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
+        dateSignatureContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
         secteur: "public",
         salaireHoraireBrut,
         tauxSmic: 0.8,
@@ -551,7 +551,7 @@ describe("getChargesSalariales", () => {
 
       const chargesPrive = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
+        dateSignatureContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.3,
@@ -569,7 +569,7 @@ describe("getChargesSalariales", () => {
     it("applique le taux avec exonération partielle", () => {
       const charges = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "public",
         salaireHoraireBrut,
         tauxSmic: 0.6,
@@ -584,7 +584,7 @@ describe("getChargesSalariales", () => {
     it("ignore le tauxSmic pour le secteur public", () => {
       const charges30 = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "public",
         salaireHoraireBrut,
         tauxSmic: 0.3,
@@ -592,7 +592,7 @@ describe("getChargesSalariales", () => {
 
       const charges80 = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "public",
         salaireHoraireBrut,
         tauxSmic: 0.8,
@@ -609,7 +609,7 @@ describe("getChargesSalariales", () => {
     it("retourne 0 si tauxSmic <= 50%", () => {
       const charges = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.43,
@@ -621,7 +621,7 @@ describe("getChargesSalariales", () => {
     it("retourne 0 si tauxSmic = 50% exactement", () => {
       const charges = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.5,
@@ -634,7 +634,7 @@ describe("getChargesSalariales", () => {
       const tauxSmic = 0.53
       const charges = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic,
@@ -650,7 +650,7 @@ describe("getChargesSalariales", () => {
     it("les charges augmentent avec le tauxSmic (à salaire brut égal)", () => {
       const charges53 = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.53,
@@ -658,7 +658,7 @@ describe("getChargesSalariales", () => {
 
       const charges78 = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.78,
@@ -666,7 +666,7 @@ describe("getChargesSalariales", () => {
 
       const charges100 = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 1.0,
@@ -684,7 +684,7 @@ describe("getChargesSalariales", () => {
     it("charges public != charges privé pour apprentissage (tauxSmic > 50%)", () => {
       const chargesPublic = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "public",
         salaireHoraireBrut,
         tauxSmic: 0.6,
@@ -692,7 +692,7 @@ describe("getChargesSalariales", () => {
 
       const chargesPrive = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: dateApresExoneration,
+        dateSignatureContrat: dateApresExoneration,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.6,
@@ -704,7 +704,7 @@ describe("getChargesSalariales", () => {
     it("charges professionnalisation > charges apprentissage exonéré", () => {
       const chargesPro = getChargesSalariales({
         typeContrat: "professionnalisation",
-        dateDebutContrat: DATE_REFERENCE_TEST,
+        dateSignatureContrat: DATE_REFERENCE_TEST,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.7,
@@ -712,7 +712,7 @@ describe("getChargesSalariales", () => {
 
       const chargesApprentissageExonere = getChargesSalariales({
         typeContrat: "apprentissage",
-        dateDebutContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
+        dateSignatureContrat: DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
         secteur: "privé",
         salaireHoraireBrut,
         tauxSmic: 0.7,
@@ -731,8 +731,8 @@ describe("Test de la fonction de validation des données entrante", () => {
     return date
   }
 
-  // Date de début de contrat valide (après MIN_DEBUT_CONTRAT)
-  const dateDebutContratValide = MIN_DEBUT_CONTRAT.add(1, "month").toDate()
+  // Date de signature de contrat valide (après MIN_DEBUT_CONTRAT)
+  const dateSignatureContratValide = MIN_DEBUT_CONTRAT.add(1, "month").toDate()
 
   describe("Validation du niveau de diplôme (professionnalisation)", () => {
     it("lève une erreur si le niveau de diplôme est manquant pour un contrat de professionnalisation", () => {
@@ -741,7 +741,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "professionnalisation",
           niveauDiplome: undefined,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
@@ -755,7 +755,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "professionnalisation",
           niveauDiplome: 0,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
@@ -769,7 +769,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "professionnalisation",
           niveauDiplome: 9,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
@@ -784,7 +784,7 @@ describe("Test de la fonction de validation des données entrante", () => {
             typeContrat: "professionnalisation",
             niveauDiplome: niveau,
             dureeContrat: 1,
-            dateDebutContrat: dateDebutContratValide,
+            dateSignatureContrat: dateSignatureContratValide,
             dateNaissance: createValidDateNaissance(20),
             isRegionMayotte: false,
             secteur: "privé",
@@ -801,7 +801,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 0,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
@@ -815,7 +815,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 5,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
@@ -830,7 +830,7 @@ describe("Test de la fonction de validation des données entrante", () => {
             typeContrat: "apprentissage",
             niveauDiplome: 4,
             dureeContrat: duree,
-            dateDebutContrat: dateDebutContratValide,
+            dateSignatureContrat: dateSignatureContratValide,
             dateNaissance: createValidDateNaissance(20),
             isRegionMayotte: false,
             secteur: "privé",
@@ -849,7 +849,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: dateNaissanceTropRecente,
           isRegionMayotte: false,
           secteur: "privé",
@@ -865,7 +865,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: dateNaissanceTropAncienne,
           isRegionMayotte: false,
           secteur: "privé",
@@ -879,7 +879,7 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(25),
           isRegionMayotte: false,
           secteur: "privé",
@@ -888,8 +888,8 @@ describe("Test de la fonction de validation des données entrante", () => {
     })
   })
 
-  describe("Validation de la date de début de contrat (apprentissage)", () => {
-    it("lève une erreur si la date de début de contrat est trop ancienne", () => {
+  describe("Validation de la date de signature de contrat (apprentissage)", () => {
+    it("lève une erreur si la date de signature de contrat est trop ancienne", () => {
       const dateTropAncienne = MIN_DEBUT_CONTRAT.subtract(1, "day").toDate()
 
       expect(() => {
@@ -897,21 +897,21 @@ describe("Test de la fonction de validation des données entrante", () => {
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 1,
-          dateDebutContrat: dateTropAncienne,
+          dateSignatureContrat: dateTropAncienne,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
         })
-      }).toThrow(/date de début de contrat/i)
+      }).toThrow(/date de signature de contrat/i)
     })
 
-    it("accepte une date de début de contrat valide", () => {
+    it("accepte une date de signature de contrat valide", () => {
       expect(() => {
         getSimulationInformation({
           typeContrat: "apprentissage",
           niveauDiplome: 4,
           dureeContrat: 1,
-          dateDebutContrat: dateDebutContratValide,
+          dateSignatureContrat: dateSignatureContratValide,
           dateNaissance: createValidDateNaissance(20),
           isRegionMayotte: false,
           secteur: "privé",
@@ -928,7 +928,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -949,7 +949,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2006-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -969,7 +969,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2008-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -989,7 +989,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("1998-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -1010,7 +1010,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: false,
         secteur: "public",
@@ -1031,7 +1031,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 3,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -1052,7 +1052,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 7,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -1073,7 +1073,7 @@ describe("Cas de tests", () => {
         typeContrat: "professionnalisation",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: false,
         secteur: "privé",
@@ -1094,7 +1094,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: true,
         secteur: "privé",
@@ -1115,7 +1115,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2006-05-15"),
         isRegionMayotte: true,
         secteur: "privé",
@@ -1135,7 +1135,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2008-05-15"),
         isRegionMayotte: true,
         secteur: "privé",
@@ -1155,7 +1155,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("1998-05-15"),
         isRegionMayotte: true,
         secteur: "privé",
@@ -1176,7 +1176,7 @@ describe("Cas de tests", () => {
         typeContrat: "apprentissage",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: true,
         secteur: "public",
@@ -1197,7 +1197,7 @@ describe("Cas de tests", () => {
         typeContrat: "professionnalisation",
         niveauDiplome: 5,
         dureeContrat: 1,
-        dateDebutContrat: new Date("2026-01-12"),
+        dateSignatureContrat: new Date("2026-01-12"),
         dateNaissance: new Date("2000-05-15"),
         isRegionMayotte: true,
         secteur: "privé",

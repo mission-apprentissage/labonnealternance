@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { FormulaireSituation } from "./FormulaireSituation"
 import { AllerPlusLoin } from "./AllerPlusLoin"
 import { ResultatSimulation } from "./ResultatSimulation"
-import { SimulateurProvider } from "@/app/(landing-pages)/simulateur/context/SimulateurContext"
+import { SimulateurProvider } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 
 export const SimulateurRemuneration = () => (
   <SimulateurProvider>
@@ -13,11 +13,11 @@ export const SimulateurRemuneration = () => (
       <Typography variant="h1" color={fr.colors.decisions.text.default.info.default} fontWeight={700}>
         Simulateur de rémunération
       </Typography>
-      <Grid container spacing={0} border={`2px solid ${fr.colors.decisions.border.default.blueFrance.default}`}>
+      <Grid container spacing={0} border={`2px solid ${fr.colors.decisions.border.default.blueFrance.default}`} width={"100%"}>
         <Grid size={{ xs: 12, md: 5 }}>
           <FormulaireSituation />
         </Grid>
-        <Grid size={{ xs: 12, md: 7 }} sx={{ backgroundColor: fr.colors.decisions.background.contrast.info.default }}>
+        <Grid size={{ xs: 12, md: 7 }} sx={{ backgroundColor: fr.colors.decisions.background.contrast.info.default }} width={"100%"}>
           <ResultatSimulation />
         </Grid>
       </Grid>

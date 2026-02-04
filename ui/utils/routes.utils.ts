@@ -309,8 +309,8 @@ export const PAGES = {
         title: "Détail du rendez-vous d'apprentissage - La bonne alternance",
       }),
     },
-    simulateur: {
-      getPath: () => `/simulateur` as string,
+    salaireAlternant: {
+      getPath: () => `/salaire-alternant` as string,
       title: "Simulateur",
       index: true,
       getMetadata: () => ({
