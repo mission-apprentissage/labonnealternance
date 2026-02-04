@@ -14,7 +14,7 @@ const ZOpcoResponse = z.union([
     siret: z.string(),
   }),
   z.object({
-    code: z.enum(["01", "02"]).describe("01: siret trouvé. 02: siret non trouvé mais préempté par un OPCO via l'application des déclarations"),
+    code: z.enum(["01", "02", "03"]).describe("01: siret trouvé. 02, 03 : siret non trouvé mais préempté par un OPCO via l'application des déclarations"),
     siret: z.string(),
     idcc: z.string(),
     opcoRattachement: z.object({
@@ -57,7 +57,7 @@ export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null>
     if (response.status === 200) {
       const data = ZOpcoResponse.parse(response.data)
       const { code } = data
-      if (code === "99" || code === "02") {
+      if (code === "99" || code === "02" || code === "03") {
         return null
       } else if (code === "01") {
         const {
