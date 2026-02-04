@@ -397,6 +397,12 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:commune:import"))
 
+program
+  .command("exportJobsToS3V2")
+  .description("export les offres dans un json")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("exportJobsToS3V2"))
+
 simpleJobDefinitions.forEach((jobDef) => {
   const { description } = jobDef
   const command = SimpleJobDefinition.getFctName(jobDef)
