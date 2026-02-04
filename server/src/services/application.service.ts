@@ -397,8 +397,7 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   const { job_id, company_siret, job_origin, job_title } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
-  const idInUrl = job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!.toString()
-  const urlWithoutUtm = buildLbaUrl(job_origin, idInUrl, job_title ?? null)
+  const urlWithoutUtm = buildLbaUrl(job_origin, job_id!, company_siret, job_title ?? undefined)
 
   const searchParams = new URLSearchParams()
   searchParams.append("utm_source", utm_source)

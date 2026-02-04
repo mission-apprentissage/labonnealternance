@@ -17,7 +17,7 @@ describe("lbautils", () => {
     })
   })
 
-  describe("getDirectJobPath", () => {
+  describe("buildJobUrlPath", () => {
     it("should build a direct job path", () => {
       expect(buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, "123")).toBe("/emploi/offres_emploi_lba/123/offre")
     })

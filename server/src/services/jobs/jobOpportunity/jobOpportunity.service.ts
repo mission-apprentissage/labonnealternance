@@ -1061,7 +1061,7 @@ export const buildLbaUrl = (type: LBA_ITEM_TYPE, objectId: string | ObjectId, si
   }
 }
 
-export const builLbaUrlFromJob = (job: Pick<IJobsPartnersOfferPrivate, "partner_label" | "_id" | "workplace_siret" | "offer_title" | "workplace_naf_label">): string => {
+export const buildLbaUrlFromJob = (job: Pick<IJobsPartnersOfferPrivate, "partner_label" | "_id" | "workplace_siret" | "offer_title" | "workplace_naf_label">): string => {
   const jobType = getJobTypeFromPartnerLabel(job.partner_label as JOBPARTNERS_LABEL)
   const title = jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_naf_label : job.offer_title
   return buildLbaUrl(jobType, job._id, job.workplace_siret, title ?? undefined)
@@ -1073,7 +1073,7 @@ export const buildApplyUrlFromJob = (
   if (job.apply_url) {
     return job.apply_url
   }
-  return builLbaUrlFromJob(job)
+  return buildLbaUrlFromJob(job)
 }
 
 export const getRecipientID = (type: IJobCollectionName, id: string) => {
