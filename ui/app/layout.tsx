@@ -45,6 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             //"Spectral-Regular",
             //"Spectral-ExtraBold"
           ]}
+          doDisableFavicon={true}
         />
         <PlausibleProvider domain={publicConfig.host} />
         <Matomo />
