@@ -8,7 +8,7 @@ import { useState } from "react"
 import { JOB_STATUS } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { buildJobUrl } from "shared/metier/lbaitemutils"
+import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
@@ -48,7 +48,7 @@ export const OffresTabsMenu = ({
           ariaLabel: `Lien vers les formations pour l'offre ${offerTitle} - nouvelle fenêtre`,
           type: "externalLink",
         }
-  const directLink = `${publicConfig.baseUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
+  const directLink = `${publicConfig.baseUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, row._id, row.rome_appellation_label || undefined)}`
   const isDisabled = row.job_status === "Annulée" || row.job_status === "Pourvue"
 
   const actions: PopoverMenuAction[] = [
