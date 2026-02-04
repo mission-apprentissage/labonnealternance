@@ -18,7 +18,7 @@ export default function GlobalError({ error }: ErrorProps) {
     <html lang="fr">
       <head>
         <link rel="icon" href="/images/logo-violet-seul.svg" />
-        <title>Le service est temporairement indisponible</title>
+        <title>Le service La bonne alternance est temporairement indisponible</title>
       </head>
       <body>
         <div id="global_error_container">

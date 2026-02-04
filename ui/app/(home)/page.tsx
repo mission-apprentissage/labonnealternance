@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container } from "@mui/material"
 
+import type { Metadata } from "next"
 import { AlgoHome } from "./_components/AlgoHome"
 import { AmeliorerLBA } from "./_components/AmeliorerLBA"
 import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
@@ -8,6 +9,10 @@ import { HomeRechercheForm } from "./_components/HomeRechercheForm"
 import { HowTo } from "./_components/HowTo"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+
+export const metadata: Metadata = {
+  title: "La bonne alternance - Trouvez votre alternance",
+}
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
@@ -24,6 +29,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         px: { xs: 0, lg: fr.spacing("2w") },
       }}
       maxWidth="xl"
+      role="main"
     >
       <Box
         component="section"

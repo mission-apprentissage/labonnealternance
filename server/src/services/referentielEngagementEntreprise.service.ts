@@ -1,5 +1,6 @@
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
+import { ObjectId } from "mongodb"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const getEntrepriseEngagementFranceTravail = async (siret: string): Promise<boolean> => {
@@ -15,4 +16,29 @@ export const getEntrepriseEngagementFranceTravail = async (siret: string): Promi
 
 export const getEntrepriseHandiEngagement = async (siret: string) => {
   return getDbCollection("referentiel_engagement_entreprise").findOne({ siret, engagement: "handicap" })
+}
+
+export const upsertEntrepriseHandiEngagement = async ({ siret, sources }: { siret: string; sources: EntrepriseEngagementSources[] }) => {
+  const now = new Date()
+  await getDbCollection("referentiel_engagement_entreprise").updateOne(
+    {
+      siret,
+      engagement: "handicap",
+    },
+    {
+      $set: {
+        sources,
+        updated_at: now,
+      },
+      $setOnInsert: {
+        _id: new ObjectId(),
+        created_at: now,
+        siret,
+        engagement: "handicap",
+      },
+    },
+    {
+      upsert: true,
+    }
+  )
 }
