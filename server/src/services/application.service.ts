@@ -8,7 +8,7 @@ import { ObjectId } from "mongodb"
 import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IHelloworkApplication, IJob, INewApplicationV1, IRecruiter } from "shared"
 import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import type { RefusalReasons } from "shared/constants/application"
-import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -57,12 +57,6 @@ const PARTNER_NAMES = {
   oc: "OpenClassrooms",
   "1jeune1solution": "1jeune1solution",
   Hellowork: "Hellowork",
-}
-
-export const enum HELLOWORK_STATUS {
-  CONTACTED = "CONTACTED",
-  REJECTED = "REJECTED",
-  JOB_CLOSED = "JOB_CLOSED",
 }
 
 const images: object = {
@@ -1113,7 +1107,6 @@ export const deleteApplicationCvFile = async (application: IApplication) => {
 const getRecruteurEmailSubject = (application: IApplication, applicant: IApplicant) => {
   const { job_origin } = application
 
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (job_origin) {
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
       return `Candidature spontanée en alternance ${application.company_name}`
@@ -1350,7 +1343,6 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
   let job: IJobsPartnersOfferPrivate | null = null
   const { job_id, company_siret } = application
 
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
@@ -1396,7 +1388,6 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   let recruiter_phone: string
   let company_name: string
 
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (type) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
       if (!recruiter) throw internal(`Société pour ${application.job_origin} introuvable`)
