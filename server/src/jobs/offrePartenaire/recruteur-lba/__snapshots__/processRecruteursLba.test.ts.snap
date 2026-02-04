@@ -24,7 +24,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "offer_description": "recruteurs_lba",
     "offer_desired_skills": [],
     "offer_expiration": null,
-    "offer_multicast": false, //TODO: replace by true when ready
+    "offer_multicast": false,
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": [
@@ -88,7 +88,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "offer_description": "recruteurs_lba",
     "offer_desired_skills": [],
     "offer_expiration": null,
-    "offer_multicast": false, //TODO: replace by true when ready
+    "offer_multicast": false,
     "offer_opening_count": 1,
     "offer_origin": null,
     "offer_rome_codes": [
