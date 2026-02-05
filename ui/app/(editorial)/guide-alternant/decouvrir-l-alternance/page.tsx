@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
@@ -7,6 +8,8 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
+
+export const metadata: Metadata = PAGES.static.guideAlternantDecouvrirLAlternance.getMetadata()
 
 const DecouvrirLAlternancePage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantDecouvrirLAlternance]

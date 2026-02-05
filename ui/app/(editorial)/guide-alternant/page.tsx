@@ -1,10 +1,9 @@
-"use client"
-
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Divider, Grid, Typography } from "@mui/material"
 
 import Image from "next/image"
 import Card from "@codegouvfr/react-dsfr/Card"
+import type { Metadata } from "next"
 import { ARTICLES } from "./const"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -16,6 +15,8 @@ import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHeaderIllustration"
+
+export const metadata: Metadata = PAGES.static.guideAlternant.getMetadata()
 
 const GuideAlternant = () => {
   return (
@@ -104,7 +105,7 @@ const GuideAlternant = () => {
           </Grid>
           <Grid size={12} my={fr.spacing("6v")}>
             <Typography component="h2" variant="h2">
-              Encore plus de conseils et astuce
+              Encore plus de conseils et astuces
             </Typography>
             <Divider
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}

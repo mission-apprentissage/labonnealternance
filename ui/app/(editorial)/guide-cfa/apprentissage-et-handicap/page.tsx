@@ -1,8 +1,11 @@
+import type { Metadata } from "next"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { PAGES } from "@/utils/routes.utils"
+
+export const metadata: Metadata = PAGES.static.guideCFAApprentissageEtHandicap.getMetadata()
 
 const ApprentissageEtHandicapPage = () => {
   const pages = [PAGES.static.guideCFA, PAGES.static.guideCFAApprentissageEtHandicap]

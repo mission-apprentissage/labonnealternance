@@ -1,10 +1,9 @@
-"use client"
-
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Divider, Grid, List, ListItem, Typography } from "@mui/material"
 
 import Image from "next/image"
 import Card from "@codegouvfr/react-dsfr/Card"
+import type { Metadata } from "next"
 import { ARTICLES } from "./const"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -14,6 +13,8 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHeaderIllustration"
 import { DocumentGridItem } from "@/app/(editorial)/_components/DocumentGridItem"
+
+export const metadata: Metadata = PAGES.static.guideCFA.getMetadata()
 
 const GuideCFA = () => {
   return (

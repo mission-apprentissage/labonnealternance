@@ -23,7 +23,7 @@ export const QuizItem = ({ title, desc, href }: { title: string; desc: string; h
       </Badge>
     }
     title={
-      <Typography variant="h6" gutterBottom>
+      <Typography component={"h3"} variant="h6" gutterBottom>
         {title}
       </Typography>
     }
