@@ -33,4 +33,4 @@ yarn services:start
 yarn setup:mongodb
 yarn build:dev
 yarn cli migrations:up
-yarn cli recreate:indexes
+yarn cli indexes:recreate
