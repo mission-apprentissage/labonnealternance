@@ -37,7 +37,17 @@ interface FCOpcoResponseCode02 {
   }
 }
 
-type FCOpcoResponse = FCOpcoResponseCode99 | FCOpcoResponseCode01 | FCOpcoResponseCode02
+interface FCOpcoResponseCode03 {
+  code: "03"
+  siret: string
+  idcc: string
+  opcoRattachement: {
+    code: string
+    nom: string
+  }
+}
+
+type FCOpcoResponse = FCOpcoResponseCode99 | FCOpcoResponseCode01 | FCOpcoResponseCode02 | FCOpcoResponseCode03
 
 export function generateFCOpcoResponseFixture(data: Partial<FCOpcoResponseCode01>): FCOpcoResponseCode01 {
   return {
