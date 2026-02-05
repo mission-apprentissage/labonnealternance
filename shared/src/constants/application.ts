@@ -17,3 +17,9 @@ export enum RefusalReasons {
   CONTRAT_INADAPTE = "Type de contrat inadapté",
   METIER_RECHERCHE = "Notre entreprise ne recrute pas sur le métier recherché",
 }
+
+export enum HELLOWORK_STATUS {
+  CONTACTED = "CONTACTED",
+  REJECTED = "REJECTED",
+  JOB_CLOSED = "JOB_CLOSED",
+}

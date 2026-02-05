@@ -5,10 +5,10 @@ import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
-import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IHelloworkApplication, IJob, INewApplicationV1, IRecruiter } from "shared"
+import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import type { RefusalReasons } from "shared/constants/application"
-import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -21,6 +21,8 @@ import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
+import axios from "axios"
+import { captureException } from "@sentry/node"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -54,6 +56,7 @@ const imagePath = `${config.publicUrl}/images/emails/`
 const PARTNER_NAMES = {
   oc: "OpenClassrooms",
   "1jeune1solution": "1jeune1solution",
+  Hellowork: "Hellowork",
 }
 
 const images: object = {
@@ -351,6 +354,9 @@ export const sendApplicationV2 = async ({
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
     }
+    if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      throw badRequest(BusinessErrorCodes.EXPIRED)
+    }
     lbaJob = { type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
   }
 
@@ -624,6 +630,8 @@ const newApplicationToApplicationDocumentV2 = async (
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
     application_url: "application_url" in newApplication ? newApplication.application_url : null,
+    foreign_application_status_url: "foreign_application_status_url" in newApplication ? newApplication.foreign_application_status_url : null,
+    foreign_application_id: "foreign_application_id" in newApplication ? newApplication.foreign_application_id : null,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
@@ -1227,6 +1235,8 @@ const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
     case "oc":
     case "openclassrooms":
       return " par OpenClassrooms"
+    case "Hellowork":
+      return " via Hellowork"
 
     default:
       return ""
@@ -1513,6 +1523,13 @@ export const sendRecruiterIntention = async ({
       }
     )
 
+    if (application.foreign_application_status_url && application.caller === PARTNER_NAMES.Hellowork) {
+      await sendApplicationStatusToHellowork({
+        status: company_recruitment_intention === ApplicationIntention.ENTRETIEN ? HELLOWORK_STATUS.CONTACTED : HELLOWORK_STATUS.REJECTED,
+        application,
+      })
+    }
+
     await getDbCollection("applicants_email_logs").insertOne({
       _id: new ObjectId(),
       applicant_id: applicant._id,
@@ -1573,5 +1590,58 @@ export const processScheduledRecruiterIntentions = async () => {
       error: true,
     })
     throw err
+  }
+}
+
+export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHelloworkApplication) => {
+  const { job, applicant, resume, statusApiUrl } = payload
+
+  const attachmentContentType = typeof resume.file.contentType === "string" && resume.file.contentType.trim().length > 0 ? resume.file.contentType.trim() : "application/pdf"
+
+  const result = await sendApplicationV2({
+    newApplication: {
+      applicant_attachment_name: resume.file.fileName,
+      applicant_attachment_content: `data:${attachmentContentType};base64,${resume.file.data}`,
+      applicant_first_name: applicant.firstName,
+      applicant_last_name: applicant.lastName,
+      applicant_email: applicant.email,
+      applicant_phone: applicant.phoneNumber,
+      recipient_id: {
+        collectionName: "partners",
+        jobId: job.jobId,
+      },
+      applicant_message: applicant.coverLetter || "",
+      foreign_application_id: payload.applicationId,
+      foreign_application_status_url: statusApiUrl,
+    },
+    caller: "Hellowork",
+  })
+
+  return {
+    atsApplicationId: result._id.toString(),
+  }
+}
+
+const sendApplicationStatusToHellowork = async ({ status, application }: { status: HELLOWORK_STATUS; application: IApplication }) => {
+  const now = new Date().toISOString()
+
+  const payload = {
+    status,
+    eventDate: now,
+    created: application?.created_at?.toISOString() ?? now,
+    jobId: application?.job_id ?? "",
+    source: PARTNER_NAMES.Hellowork,
+  }
+
+  try {
+    await axios.post(application.foreign_application_status_url!, payload)
+  } catch (error) {
+    captureException(error, {
+      extra: {
+        applicationId: application._id,
+        foreign_application_status_url: application.foreign_application_status_url,
+        payload,
+      },
+    })
   }
 }

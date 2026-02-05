@@ -87,6 +87,11 @@ const ZApplicationOld = z
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
     scan_status: extensions.buildEnum(ApplicationScanStatus).describe("Status du processus de scan de virus"),
     application_url: z.string().nullish().describe("URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA."),
+    foreign_application_id: z.string().nullish().describe("Identifiant de la candidature dans un système tiers."),
+    foreign_application_status_url: z
+      .string()
+      .nullish()
+      .describe("URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status"),
   })
   .strict()
   .openapi("Application")
@@ -212,6 +217,8 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
   job_searched_by_user: true,
   caller: true,
   application_url: true,
+  foreign_application_status_url: true,
+  foreign_application_id: true,
 }).extend({
   applicant_message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),
@@ -242,12 +249,38 @@ export const ZApplicationApiPublic = ZApplicationApiPrivate.omit({
   application_url: true,
 })
 
+export const ZHelloworkApplication = z.object({
+  applicationId: z.string(),
+  job: z.object({
+    jobId: z.string(),
+    jobAtsUrl: z.string(),
+  }),
+  applicant: z.object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string().email(),
+    phoneNumber: extensions.telephone,
+    coverLetter: z.string().nullish(),
+  }),
+  resume: z.object({
+    file: z.object({
+      fileName: z.string(),
+      contentType: z.string(),
+      data: z.string(),
+    }),
+  }),
+  source: z.any(),
+  statusApiUrl: z.string().url(),
+  screenerQuestions: z.array(z.any()),
+})
+
 export type IApplicationApiPublicOutput = z.output<typeof ZApplicationApiPublic>
 export type IApplicationApiPrivateOutput = z.output<typeof ZApplicationApiPrivate>
 export type IApplicationApiPublic = z.input<typeof ZApplicationApiPublic>
 export type IApplicationApiPrivate = z.input<typeof ZApplicationApiPrivate>
 export type IApplicationApiPrivateJSON = Jsonify<z.input<typeof ZApplicationApiPrivate>>
 export type IApplicationApiPublicJSON = Jsonify<z.input<typeof ZApplicationApiPublic>>
+export type IHelloworkApplication = Jsonify<z.input<typeof ZHelloworkApplication>>
 
 export default {
   zod: ZApplication,

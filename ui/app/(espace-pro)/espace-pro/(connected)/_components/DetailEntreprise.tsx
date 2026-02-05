@@ -64,6 +64,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string) => {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return (
@@ -83,6 +84,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   }
 
   const getUserBadge = (userHistory: IUserStatusValidationJson) => {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return <Badge variant="awaiting">À VERIFIER</Badge>
