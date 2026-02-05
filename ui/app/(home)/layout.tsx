@@ -18,7 +18,7 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <PublicHeader user={user} hideConnectionButton={true} />
+      <PublicHeader user={user} hideConnectionButton={false} />
       {children}
       <Footer />
     </>

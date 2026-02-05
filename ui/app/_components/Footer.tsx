@@ -37,9 +37,21 @@ const linkListContent: LinkCategory[] = [
       },
       {
         linkProps: {
-          href: PAGES.static.ressources.getPath(),
+          href: PAGES.static.guideAlternant.getPath(),
         },
-        text: "Ressources",
+        text: "Guide alternant",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.guideRecruteur.getPath(),
+        },
+        text: "Guide recruteur",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.guideCFA.getPath(),
+        },
+        text: "Guide CFA",
       },
       {
         linkProps: {
