@@ -127,6 +127,168 @@ export const PAGES = {
         description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
       }),
     },
+    guideAlternant: {
+      getPath: () => `/guide-alternant` as string,
+      title: "Je m'informe sur l'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Je m'informe sur l'alternance",
+        description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
+      }),
+    },
+    guideAlternantDecouvrirLAlternance: {
+      getPath: () => `/guide-alternant/decouvrir-l-alternance` as string,
+      title: "Découvrir l'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Découvrir l'alternance | Guide alternant",
+        description: "Introduction sur le fonctionnement de l'alternance",
+      }),
+    },
+    guideAlternantPreparerSonProjetEnAlternance: {
+      getPath: () => `/guide-alternant/preparer-son-projet-en-alternance` as string,
+      title: "Préparer son projet en alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Préparer son projet en alternance | Guide alternant",
+        description: "Découvrez les étapes clés d’un projet en alternance",
+      }),
+    },
+    guideAlternantSeFaireAccompagner: {
+      getPath: () => `/guide-alternant/preparer-son-projet-en-alternance` as string,
+      title: "Des professionels pour vous accompagner",
+      index: true,
+      getMetadata: () => ({
+        title: "Des professionels pour vous accompagner | Guide alternant",
+        description: "Des acteurs locaux pour accompagner les jeunes dans la recherche d’une formation ou d’un employeur",
+      }),
+    },
+    guideAlternantLaRuptureDeContrat: {
+      getPath: () => `/guide-alternant/la-rupture-de-contrat` as string,
+      title: "Rupture d'un contrat d'alternance : guide complet",
+      index: true,
+      getMetadata: () => ({
+        title: "La rupture d'un contrat d'alternance : guide complet | Guide alternant",
+        description: "Découvrez comment fonctionne la rupture (contrat en apprentissage et contrat de professionnalisation)",
+      }),
+    },
+    guideAlternantComprendreLaRemuneration: {
+      getPath: () => `/guide-alternant/comprendre-la-remuneration` as string,
+      title: "Comprendre la rémunération en alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Comprendre la rémunération en alternance | Guide alternant",
+        description: "Comprendre le calcul de la rémunération pour les alternants",
+      }),
+    },
+    guideAlternantApprentissageEtHandicap: {
+      getPath: () => `/guide-alternant/apprentissage-et-handicap` as string,
+      title: "Apprentissage & handicap",
+      index: true,
+      getMetadata: () => ({
+        title: "Apprentissage & handicap | Guide alternant",
+        description: "Pour faciliter la formation du travailleur en situation de handicap",
+      }),
+    },
+    guideAlternantCommentSignerUnContratEnAlternance: {
+      getPath: () => `/guide-alternant/apprentissage-et-handicap` as string,
+      title: "Comment signer un contrat en alternance ?",
+      index: true,
+      getMetadata: () => ({
+        title: "Comment signer un contrat en alternance ? | Guide alternant",
+        description: "Démarches administratives pour les alternants : le guide",
+      }),
+    },
+    guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur: {
+      getPath: () => `/guide-alternant/role-et-missions-du-maitre-d-apprentissage-ou-tuteur` as string,
+      title: "Le rôle et les missions du maître d'apprentissage ou tuteur",
+      index: true,
+      getMetadata: () => ({
+        title: "Le rôle et les missions du maître d'apprentissage ou tuteur | Guide alternant",
+        description: "Votre guide en entreprise pour monter en compétences ",
+      }),
+    },
+    guideAlternantPreventionDesRisquesProfessionnelsPourLesApprentis: {
+      getPath: () => `/guide-alternant/prevention-des-risques-professionnels-pour-les-apprentis` as string,
+      title: "La prévention des risques professionnels pour les apprentis",
+      index: true,
+      getMetadata: () => ({
+        title: "La prévention des risques professionnels pour les apprentis | Guide alternant",
+        description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
+      }),
+    },
+    guideCFA: {
+      getPath: () => `/guide-cfa` as string,
+      title: "Je m'informe sur l'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Je m'informe sur l'alternance",
+        description: "",
+      }),
+    },
+    guideCFALaCarteEtudiantDesMetiers: {
+      getPath: () => `/guide-cfa/la-carte-etudiant-des-metiers` as string,
+      title: "La carte étudiant des métiers",
+      index: true,
+      getMetadata: () => ({
+        title: "La carte étudiant des métiers | Guide CFA",
+        description: "La carte d'étudiant des métiers permet d'ouvrir droit à de nombreuses réductions",
+      }),
+    },
+    guideRecruteur: {
+      getPath: () => `/guide-recruteur` as string,
+      title: "Je m'informe sur l'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Je m'informe sur l'alternance",
+        description: "",
+      }),
+    },
+    guideRecruteurJeSuisEmployeurPublic: {
+      getPath: () => `/guide-recruteur/je-suis-employeur-public` as string,
+      title: "Je suis employeur public",
+      index: true,
+      getMetadata: () => ({
+        title: "Je suis employeur public | Guide recruteur",
+        description: "La prise en charge financière et les démarches  administratives diffèrent du secteur privé.",
+      }),
+    },
+    guideRecruteurCerfaApprentissageEtProfessionnalisation: {
+      getPath: () => `/guide-recruteur/cerfa-apprentissage-et-professionnalisation` as string,
+      title: "Cerfa apprentissage et professionnalisation : le guide complet",
+      index: true,
+      getMetadata: () => ({
+        title: "Cerfa apprentissage et professionnalisation | Guide recruteur",
+        description: "Guide des démarches administratives pour les employeurs",
+      }),
+    },
+    guideRecruteurAidesALEmbaucheEnAlternance: {
+      getPath: () => `/guide-recruteur/aides-a-l-embauche-en-alternance` as string,
+      title: "Aides à l'embauche en alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Aides à l'embauche en alternance | Guide recruteur",
+        description: "Le guide complet pour les employeurs",
+      }),
+    },
+    guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis: {
+      getPath: () => `/guide-recruteur/prevention-des-risques-professionnels-pour-les-apprentis` as string,
+      title: "Prévention des risques professionnels pour les apprentis",
+      index: true,
+      getMetadata: () => ({
+        title: "Prévention des risques professionnels pour les apprentis | Guide recruteur",
+        description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
+      }),
+    },
+    salaireAlternant: {
+      getPath: () => `/salaire-alternant` as string,
+      title: "Salaire alternant",
+      index: true,
+      getMetadata: () => ({
+        title: "Salaire alternant : simulateur de rémunération - La bonne alternance",
+        description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
+      }),
+    },
     EspaceDeveloppeurs: {
       getPath: () => `/espace-developpeurs` as string,
       title: "Espace développeurs",

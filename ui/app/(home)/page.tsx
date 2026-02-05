@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container } from "@mui/material"
+import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
 import { AlgoHome } from "./_components/AlgoHome"
@@ -7,6 +7,8 @@ import { AmeliorerLBA } from "./_components/AmeliorerLBA"
 import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
 import { HomeRechercheForm } from "./_components/HomeRechercheForm"
 import { HowTo } from "./_components/HowTo"
+import { CalculRemuneration } from "./_components/CalculRemuneration"
+import { InformationsAlternance } from "./_components/InformationsAlternance"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
@@ -54,6 +56,14 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <HowTo />
         </Box>
       </Box>
+      <Grid container spacing={fr.spacing("6v")}>
+        <Grid size={{ md: 6, xs: 12 }}>
+          <InformationsAlternance />
+        </Grid>
+        <Grid size={{ md: 6, xs: 12 }}>
+          <CalculRemuneration />
+        </Grid>
+      </Grid>
 
       <AlgoHome />
       <AmeliorerLBA />
