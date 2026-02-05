@@ -537,7 +537,12 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
         },
       },
       apply: {
-        url: buildLbaUrl(LBA_ITEM_TYPE.RECRUTEURS_LBA, recruteurLba._id, recruteurLba.workplace_siret, recruteurLba.workplace_legal_name!),
+        url: buildLbaUrl(
+          LBA_ITEM_TYPE.RECRUTEURS_LBA,
+          recruteurLba._id,
+          recruteurLba.workplace_siret,
+          recruteurLba.workplace_legal_name ?? recruteurLba.workplace_brand ?? undefined
+        ),
         phone: recruteurLba.apply_phone,
         recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.partners, recruteurLba._id.toString()) : null,
       },
