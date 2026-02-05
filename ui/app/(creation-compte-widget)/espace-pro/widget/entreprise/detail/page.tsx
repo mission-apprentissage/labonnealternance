@@ -1,12 +1,12 @@
-"use client"
+import type { Metadata } from "next"
+import DetailPage from "./DetailPage"
 
-import { InformationCreationCompte } from "@/app/(espace-pro-creation-compte)/_components/InformationCreationCompte/InformationCreationCompte"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
-
-export const WidgetEntrepriseDetail = () => {
-  const { siret, type, origin } = useSearchParamsRecord()
-
-  return <InformationCreationCompte isWidget={true} establishment_siret={siret} type={type as "CFA" | "ENTREPRISE"} origin={origin} />
+export const metadata: Metadata = {
+  title: "Formulaire de dépôt d'offre - Informations de compte - La bonne alternance",
 }
 
-export default WidgetEntrepriseDetail
+const Page = async () => {
+  return <DetailPage />
+}
+
+export default Page

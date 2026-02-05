@@ -19,17 +19,8 @@ import "@/public/styles/notion.css"
 import "@/styles/search.css"
 
 export const metadata: Metadata = {
-  title: "La bonne alternance",
-  description: "Trouvez votre alternance",
   metadataBase: new URL(publicConfig.baseUrl),
   manifest: "/favicon/site.webmanifest",
-  icons: { icon: "/favicon.ico", shortcut: "/favicon.ico", apple: "/favicon/apple-touch-icon.png", other: { rel: "icon", url: "/favicon/favicon.svg", type: "image/svg+xml" } },
-  openGraph: {
-    title: "La bonne alternance",
-    type: "website",
-    description: "Trouvez votre alternance",
-    images: "/favicon/apple-touch-icon.png", // to test
-  },
 }
 
 setupZodErrorMap()
@@ -54,6 +45,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             //"Spectral-Regular",
             //"Spectral-ExtraBold"
           ]}
+          doDisableFavicon={true}
         />
         <PlausibleProvider domain={publicConfig.host} />
         <Matomo />

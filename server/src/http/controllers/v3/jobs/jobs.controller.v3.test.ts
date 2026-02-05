@@ -307,7 +307,7 @@ describe("POST /jobs", async () => {
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
 
-    nock("https://api-adresse.data.gouv.fr:443")
+    nock("https://data.geopf.fr:443/geocodage")
       .get("/search")
       .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
       .reply(200, {
@@ -470,7 +470,7 @@ describe("PUT /jobs/:id", async () => {
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
 
-    nock("https://api-adresse.data.gouv.fr:443")
+    nock("https://data.geopf.fr:443/geocodage")
       .get("/search")
       .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
       .reply(200, {

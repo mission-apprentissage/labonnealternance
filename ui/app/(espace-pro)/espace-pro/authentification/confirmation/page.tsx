@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { publicConfig } from "@/config.public"
+import { PAGES } from "@/utils/routes.utils"
+
+export const metadata: Metadata = {
+  title: PAGES.dynamic.backCreateCFAConfirmation({ email: "" }).getMetadata().title,
+}
 
 export default function ConfirmationCreationCompte() {
   return (

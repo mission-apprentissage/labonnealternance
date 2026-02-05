@@ -347,6 +347,9 @@ export async function setupJobProcessor() {
           return
         },
       },
+      exportJobsToS3V2: {
+        handler: async () => exportJobsToS3V2(),
+      },
       "etablissement:invite:premium:follow-up": {
         handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),
       },

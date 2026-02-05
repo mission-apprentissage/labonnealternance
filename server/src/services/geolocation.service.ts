@@ -9,7 +9,7 @@ import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocat
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
-const API_ADRESSE_URL = "https://api-adresse.data.gouv.fr"
+const API_ADRESSE_URL = "https://data.geopf.fr/geocodage"
 
 const client = getApiClient({ timeout: 2_000 })
 const startCharRegex = () => new RegExp("[0-9a-zA-Z]")
@@ -174,7 +174,7 @@ export const addressDetailToStreetLabel = (address: IAdresseV3): string | null =
 }
 
 export const getBulkGeoLocation = async (form: FormData) => {
-  return await client.post("https://api-adresse.data.gouv.fr/search/csv/", form, {
+  return await client.post("https://data.geopf.fr/geocodage/search/csv/", form, {
     headers: {
       ...form.getHeaders(),
     },
