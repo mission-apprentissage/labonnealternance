@@ -18,7 +18,7 @@
       - [Hydratation du projet en local](#hydratation-du-projet-en-local)
       - [Deploiement depuis l'environnement local](#deploiement-depuis-lenvironnement-local)
       - [Gestion des migrations](#gestion-des-migrations)
-      - [Talisman](#talisman)
+      - [Gitleaks](#gitleaks)
       - [Vault](#vault)
       - [Linter](#linter)
       - [Release depuis l'environnement local](#release-depuis-lenvironnement-local)
@@ -249,13 +249,15 @@ Cli pour créer une migration
   yarn migration:create -d <name>
 ```
 
-#### Talisman
+#### Gitleaks
 
-Ajouter une exception à talisman
+Scanner les secrets dans le repo
 
 ```bash
-  yarn talisman:add-exception
+  yarn gitleaks:check
 ```
+
+Pour ajouter une exception, éditer le fichier `.gitleaks.toml` et ajouter le chemin ou le pattern regex dans la section `[allowlist]`.
 
 #### Vault
 

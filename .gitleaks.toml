@@ -1,0 +1,80 @@
+title = "Gitleaks config for La Bonne Alternance"
+
+[extend]
+useDefault = true
+
+# Custom rules for secrets that gitleaks doesn't detect by default
+
+# MongoDB connection string with password
+[[rules]]
+id = "mongodb-connection-string"
+description = "MongoDB connection string with credentials"
+regex = '''mongodb(?:\+srv)?:\/\/[^:]+:[^@]+@[^\s"']+'''
+keywords = ["mongodb"]
+
+# Generic password in variable assignment
+[[rules]]
+id = "generic-password-assignment"
+description = "Password assigned to a variable"
+regex = '''(?i)(password|passwd|pwd)\s*[:=]\s*["'][^"']{8,}["']'''
+keywords = ["password", "passwd", "pwd"]
+
+# Generic secret in variable assignment
+[[rules]]
+id = "generic-secret-assignment"
+description = "Secret assigned to a variable"
+regex = '''(?i)(secret|secret_key|secretkey)\s*[:=]\s*["'][^"']{8,}["']'''
+keywords = ["secret"]
+
+# Generic API key in variable assignment
+[[rules]]
+id = "generic-api-key-assignment"
+description = "API key assigned to a variable"
+regex = '''(?i)(api_key|apikey|api_secret)\s*[:=]\s*["'][^"']{16,}["']'''
+keywords = ["api_key", "apikey", "api_secret"]
+
+# Generic token in variable assignment
+[[rules]]
+id = "generic-token-assignment"
+description = "Token assigned to a variable"
+regex = '''(?i)(token|auth_token|access_token|bearer)\s*[:=]\s*["'][^"']{16,}["']'''
+keywords = ["token", "auth_token", "access_token", "bearer"]
+
+# Private key content (not just header)
+[[rules]]
+id = "private-key-content"
+description = "Private key content detected"
+regex = '''-----BEGIN\s+(?:RSA|DSA|EC|OPENSSH|PGP)?\s*PRIVATE\s+KEY-----'''
+keywords = ["BEGIN", "PRIVATE", "KEY"]
+
+[allowlist]
+description = "Allowed patterns and paths for La Bonne Alternance"
+
+# Paths to ignore - only those that contain actual secret-like content
+paths = [
+  # Encrypted files
+  '''\.infra/files/configs/mongodb/seed\.gpg''',
+  '''\.infra/vault/vault\.yml''',
+
+  # Test environment with test credentials
+  '''server/\.env\.test''',
+
+  # Test files (may contain test tokens/credentials)
+  '''\.test\.ts$''',
+  '''\.spec\.ts$''',
+  '''\.test\.tsx$''',
+  '''\.spec\.tsx$''',
+  '''tests/''',
+]
+
+regexes = [
+  # Domain patterns (used throughout codebase in URLs/emails)
+  '''apprentissage\.beta\.gouv\.fr''',
+
+  # Variable names that trigger false positives with custom rules
+  '''apiKey["\']?\s*[:=]''',
+  '''ApiKey["\']?\s*[:=]''',
+
+  # Training resource URLs with long IDs
+  '''https://dinum\.didask\.com/.*''',
+]

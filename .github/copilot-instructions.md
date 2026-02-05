@@ -255,9 +255,9 @@ Steps executed in order:
 ### Pre-commit Hooks (`.husky/pre-commit`)
 
 ```bash
-yarn lint-staged              # Auto-lint/format staged files
-preventSensibleFilesCommit.sh # Check for secrets
-yarn node-talisman --githook  # Security scan
+yarn lint-staged                  # Auto-lint/format staged files
+preventSensibleFilesCommit.sh     # Check for secrets
+yarn gitleaks:check      # Gitleaks security scan
 ```
 
 **lint-staged** configuration (in `package.json`):
@@ -492,7 +492,7 @@ import { MyComponent } from "@/components/MyComponent"
 
 - All API inputs validated via Zod schemas
 - OpenAPI auto-generated from Zod schemas
-- Talisman scans for secrets in commits
+- Gitleaks scans for secrets in commits
 - TODO_SECURITY_FIX comments mark known issues to avoid
 
 ## Additional Commands
