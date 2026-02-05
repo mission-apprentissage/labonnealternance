@@ -10,8 +10,8 @@ const JeSuisEmployeurPublicPage = () => {
   return (
     <LayoutArticle
       pages={pages}
-      title={ARTICLES["guide-recruteur-cerfa-apprentissage-et-professionnalisation"].title}
-      updatedAt={<UpdatedAtSection date={ARTICLES["guide-recruteur-cerfa-apprentissage-et-professionnalisation"].updatedAt} />}
+      title={ARTICLES["cerfa-apprentissage-et-professionnalisation"].title}
+      updatedAt={<UpdatedAtSection date={ARTICLES["cerfa-apprentissage-et-professionnalisation"].updatedAt} />}
       description={<></>}
       allerPlusLoinItems={[]}
     >

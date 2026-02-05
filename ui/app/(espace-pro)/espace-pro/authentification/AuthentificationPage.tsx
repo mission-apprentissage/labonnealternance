@@ -149,9 +149,6 @@ export default function Authentification() {
         <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
         </Typography>
-        <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
-          Vous n'avez pas de compte ?
-        </Typography>
         <Button linkProps={{ href: PAGES.static.espaceProCreationEntreprise.getPath() }} priority="secondary" style={{ width: "100%" }}>
           <Box
             sx={{

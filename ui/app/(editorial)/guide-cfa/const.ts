@@ -5,18 +5,18 @@ export const IMAGE_BASE_PATH = "/images/guides/guide-cfa/"
 export const ARTICLES: Record<string, { id: string; title: string; description: string; imageUrl: string; path: string; updatedAt: string }> = {
   ["decouvrir-l-alternance"]: {
     id: "decouvrir-l-alternance",
-    title: PAGES.static.guideAlternantDecouvrirLAlternance.title,
-    description: PAGES.static.guideAlternantDecouvrirLAlternance.getMetadata().description,
+    title: PAGES.static.guideCFADecouvrirLAlternance.title,
+    description: PAGES.static.guideCFADecouvrirLAlternance.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}decouvrir-l-alternance.svg`,
-    path: PAGES.static.guideAlternantDecouvrirLAlternance.getPath(),
+    path: PAGES.static.guideCFADecouvrirLAlternance.getPath(),
     updatedAt: "30/01/2026",
   },
   ["apprentissage-et-handicap"]: {
     id: "apprentissage-et-handicap",
-    title: PAGES.static.guideAlternantApprentissageEtHandicap.title,
-    description: PAGES.static.guideAlternantApprentissageEtHandicap.getMetadata().description,
+    title: PAGES.static.guideCFAApprentissageEtHandicap.title,
+    description: PAGES.static.guideCFAApprentissageEtHandicap.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}apprentissage-et-handicap.svg`,
-    path: PAGES.static.guideAlternantApprentissageEtHandicap.getPath(),
+    path: PAGES.static.guideCFAApprentissageEtHandicap.getPath(),
     updatedAt: "30/01/2026",
   },
   ["la-carte-etudiant-des-metiers"]: {

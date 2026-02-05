@@ -9,7 +9,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
 const DecouvrirLAlternancePage = () => {
-  const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantDecouvrirLAlternance]
+  const pages = [PAGES.static.guideCFA, PAGES.static.guideCFADecouvrirLAlternance]
 
   const descriptionParts = [
     "L’alternance est une modalité de formation qui repose sur un temps de formation en organisme de formation et un temps de formation en entreprise.",

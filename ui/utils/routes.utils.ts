@@ -155,11 +155,11 @@ export const PAGES = {
       }),
     },
     guideAlternantSeFaireAccompagner: {
-      getPath: () => `/guide-alternant/preparer-son-projet-en-alternance` as string,
-      title: "Des professionels pour vous accompagner",
+      getPath: () => `/guide-alternant/se-faire-accompagner` as string,
+      title: "Des professionnels pour vous accompagner",
       index: true,
       getMetadata: () => ({
-        title: "Des professionels pour vous accompagner | Guide alternant",
+        title: "Des professionnels pour vous accompagner | Guide alternant",
         description: "Des acteurs locaux pour accompagner les jeunes dans la recherche d’une formation ou d’un employeur",
       }),
     },
@@ -191,7 +191,7 @@ export const PAGES = {
       }),
     },
     guideAlternantCommentSignerUnContratEnAlternance: {
-      getPath: () => `/guide-alternant/apprentissage-et-handicap` as string,
+      getPath: () => `/guide-alternant/comment-signer-un-contrat-en-alternance` as string,
       title: "Comment signer un contrat en alternance ?",
       index: true,
       getMetadata: () => ({
@@ -323,6 +323,14 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Salaire alternant : simulateur de rémunération - La bonne alternance",
         description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
+      }),
+    },
+    carteEtudiantDesMetiers: {
+      getPath: () => `/carte-etudiant-des-metiers` as string,
+      title: "Carte étudiant des métiers",
+      index: true,
+      getMetadata: () => ({
+        title: "Carte étudiant des métiers - La bonne alternance",
       }),
     },
     EspaceDeveloppeurs: {
