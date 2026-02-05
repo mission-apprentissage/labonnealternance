@@ -311,10 +311,10 @@ export const PAGES = {
     },
     salaireAlternant: {
       getPath: () => `/salaire-alternant` as string,
-      title: "Simulateur",
+      title: "Salaire alternant",
       index: true,
       getMetadata: () => ({
-        title: "Simulateur de rémunération alternant - La bonne alternance",
+        title: "Salaire alternant : simulateur de rémunération - La bonne alternance",
         description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
       }),
     },

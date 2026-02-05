@@ -921,6 +921,23 @@ describe("Test de la fonction de validation des données entrante", () => {
   })
 })
 
+describe("Retour de l'input de simulation", () => {
+  it("Retour de l'input de simulation qui correspond aux valeurs envoyées", () => {
+    const inputSimulation = {
+      typeContrat: "apprentissage" as const,
+      niveauDiplome: 5,
+      dureeContrat: 1,
+      dateSignatureContrat: new Date("2026-01-12"),
+      dateNaissance: new Date("2000-05-15"),
+      isRegionMayotte: false,
+      secteur: "privé" as const,
+    }
+    const result = getSimulationInformation(inputSimulation)
+
+    expect(result.inputSimulation).toEqual(inputSimulation)
+  })
+})
+
 describe("Cas de tests", () => {
   describe("Cas de tests hors Mayotte", () => {
     it("Test 1 - apprentissage - 25 ans - niveau 5 - privé", () => {

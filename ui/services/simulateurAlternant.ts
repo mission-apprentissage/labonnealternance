@@ -6,7 +6,6 @@ import {
   TAUX_PROFESSIONNALISATION,
   NIVEAU_DIPLOME_TO_GROUP,
   SMIC,
-  DATE_DERNIERE_MISE_A_JOUR,
   DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
   TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PRIVE,
   TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PUBLIC,
@@ -57,7 +56,7 @@ export type AnneeSimulation = {
 }
 
 export type OutputSimulation = {
-  dateMiseAJour: Date
+  inputSimulation: InputSimulation
   anneesSimulation: Array<AnneeSimulation>
 }
 
@@ -284,15 +283,8 @@ const checkDataValidity = (input: Partial<InputSimulation>) => {
  * Calcul d'une rémunération d'alternant en fonction des paramètres fournis
  * Détermine année par année les rémunérations brute et nette journalières, mensuelles et annuelles
  */
-export const getSimulationInformation = ({
-  typeContrat,
-  dateNaissance,
-  dureeContrat,
-  dateSignatureContrat,
-  niveauDiplome,
-  secteur,
-  isRegionMayotte,
-}: InputSimulation): OutputSimulation => {
+export const getSimulationInformation = (inputSimulation: InputSimulation): OutputSimulation => {
+  const { typeContrat, dateNaissance, dureeContrat, dateSignatureContrat, niveauDiplome, secteur, isRegionMayotte } = inputSimulation
   checkDataValidity({ typeContrat, dateNaissance, dureeContrat, dateSignatureContrat, niveauDiplome })
 
   const age = dayjs(dateSignatureContrat).diff(dayjs(dateNaissance), "year")
@@ -330,5 +322,5 @@ export const getSimulationInformation = ({
     }
   })
 
-  return { anneesSimulation: simulation, dateMiseAJour: DATE_DERNIERE_MISE_A_JOUR }
+  return { inputSimulation, anneesSimulation: simulation }
 }

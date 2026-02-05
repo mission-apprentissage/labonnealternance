@@ -14,7 +14,7 @@ import dayjs from "dayjs"
 import type { InputSimulation } from "@/services/simulateurAlternant"
 import { getSimulationInformation } from "@/services/simulateurAlternant"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
-import { MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
+import { DATE_DERNIERE_MISE_A_JOUR, MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
@@ -43,7 +43,13 @@ const inputSchema = Yup.object().shape({
     .min(1, "La durée du contrat doit être comprise entre 1 et 4 ans")
     .max(4, "La durée du contrat doit être comprise entre 1 et 4 ans")
     .required("Champ obligatoire"),
-  secteur: Yup.string().oneOf(["public", "privé", "nsp"]).required("Champ obligatoire"),
+  secteur: Yup.string()
+    .oneOf(["public", "privé", "nsp"])
+    .when("typeContrat", {
+      is: "apprentissage",
+      then: (schema) => schema.required("Champ obligatoire"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   isRegionMayotte: Yup.boolean().default(false),
 })
 
@@ -293,7 +299,7 @@ export const FormulaireSituation = () => {
                   ))}
                 </Select>
               </Box>
-              <Collapse in={isApprentissage(values.typeContrat) || isProfessionnalisation(values.typeContrat)} style={{ margin: 0 }}>
+              <Collapse in={isApprentissage(values.typeContrat)} style={{ margin: 0 }}>
                 <Box py={fr.spacing("3v")}>
                   <RadioButtons
                     style={{
@@ -363,6 +369,7 @@ export const FormulaireSituation = () => {
           </Form>
         )}
       </Formik>
+      <Typography variant="caption">Dernière mise à jour : {DATE_DERNIERE_MISE_A_JOUR.toLocaleDateString("fr-FR")}</Typography>
     </Box>
   )
 }

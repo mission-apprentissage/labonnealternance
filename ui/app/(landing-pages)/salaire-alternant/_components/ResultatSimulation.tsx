@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
-import type { AnneeSimulation, OutputSimulation } from "@/services/simulateurAlternant"
+import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateurAlternant"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
   const annee: string = index === 0 ? "1ère année" : `${index + 1}e année`
@@ -43,12 +43,12 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
         <Grid container size={{ xs: 12, md: 6 }}>
           <Grid size={{ xs: 12, md: 12 }}>
             <Typography variant="body1" fontWeight={700} color={fr.colors.decisions.text.default.grey.default}>
-              {simulation.salaireAnnuelBrut.max} €
+              {simulation.salaireAnnuelBrut.max.toLocaleString("fr-FR")} €
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 12 }}>
             <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
-              Soit {simulation.salaireMensuelBrut.max} €/mois
+              Soit {simulation.salaireMensuelBrut.max.toLocaleString("fr-FR")} €/mois
             </Typography>
           </Grid>
         </Grid>
@@ -62,12 +62,12 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
         <Grid container size={{ xs: 12, md: 6 }}>
           <Grid size={{ xs: 12, md: 12 }}>
             <Typography variant="body1" fontWeight={700} color={fr.colors.decisions.text.default.grey.default}>
-              Entre {simulation.salaireAnnuelNet.min} et {simulation.salaireAnnuelNet.max} €
+              Entre {simulation.salaireAnnuelNet.min.toLocaleString("fr-FR")} et {simulation.salaireAnnuelNet.max.toLocaleString("fr-FR")} €
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 12 }}>
             <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
-              Soit entre {simulation.salaireMensuelNet.min} et {simulation.salaireMensuelNet.max} €/mois
+              Soit entre {simulation.salaireMensuelNet.min.toLocaleString("fr-FR")} et {simulation.salaireMensuelNet.max.toLocaleString("fr-FR")} €/mois
             </Typography>
           </Grid>
         </Grid>
@@ -76,7 +76,7 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
   )
 }
 
-const ExplicationsSalaire = () => {
+const ExplicationsSalaire = ({ inputSimulation }: { inputSimulation: InputSimulation }) => {
   return (
     <Box>
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
@@ -99,13 +99,17 @@ const ExplicationsSalaire = () => {
           </Typography>
         </ListItem>
       </List>
+      {inputSimulation.typeContrat === "apprentissage" && (
+        <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
+          L'apprenti est exonéré de la totalité des cotisations salariales d'origine légale et conventionnelle pour la part de sa rémunération à 50% dans le privé et 100% dans le
+          public.
+        </Typography>
+      )}
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
-        L'apprenti est exonéré de la totalité des cotisations salariales d'origine légale et conventionnelle pour la part de sa rémunération à 50% dans le privé et 100% dans le
-        public.
+        Dans cette simulation, le salaire de référence utilisé est le minimum réglementaire en vigueur au jour de la simulation.
       </Typography>
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
-        Dans cette simulation, le salaire de référence utilisé est le minimum réglementaire en vigueur au jour de la simulation. Certaines conventions collectives peuvent prévoir
-        un revenu minimum plus élevé pour l’alternant.
+        Certaines conventions collectives peuvent prévoir un revenu minimum plus élevé pour l’alternant.
       </Typography>
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
         L'employeur reste libre de proposer un salaire supérieur à celui-ci.
@@ -174,7 +178,7 @@ export const ResultatSimulation = () => {
                 ))}
               </Grid>
               <Grid size={{ xs: 12, md: 12 }}>
-                <ExplicationsSalaire />
+                <ExplicationsSalaire inputSimulation={simulation.inputSimulation} />
               </Grid>
             </Grid>
           )

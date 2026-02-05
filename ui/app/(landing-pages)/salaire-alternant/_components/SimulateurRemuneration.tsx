@@ -11,7 +11,7 @@ export const SimulateurRemuneration = () => (
   <SimulateurProvider>
     <Grid container spacing={6}>
       <Typography variant="h1" color={fr.colors.decisions.text.default.info.default} fontWeight={700}>
-        Simulateur de rémunération
+        Salaire alternant : simulateur de rémunération
       </Typography>
       <Grid container spacing={0} border={`2px solid ${fr.colors.decisions.border.default.blueFrance.default}`} width={"100%"}>
         <Grid size={{ xs: 12, md: 5 }}>
