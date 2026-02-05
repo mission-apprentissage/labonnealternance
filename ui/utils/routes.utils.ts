@@ -226,6 +226,24 @@ export const PAGES = {
         description: "",
       }),
     },
+    guideCFADecouvrirLAlternance: {
+      getPath: () => `/guide-cfa/decouvrir-l-alternance` as string,
+      title: "Découvrir l'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Découvrir l'alternance | Guide CFA",
+        description: "",
+      }),
+    },
+    guideCFAApprentissageEtHandicap: {
+      getPath: () => `/guide-cfa/apprentissage-et-handicap` as string,
+      title: "Apprentissage & handicap",
+      index: true,
+      getMetadata: () => ({
+        title: "Apprentissage & handicap | Guide CFA",
+        description: "",
+      }),
+    },
     guideCFALaCarteEtudiantDesMetiers: {
       getPath: () => `/guide-cfa/la-carte-etudiant-des-metiers` as string,
       title: "La carte étudiant des métiers",
@@ -241,6 +259,24 @@ export const PAGES = {
       index: true,
       getMetadata: () => ({
         title: "Je m'informe sur l'alternance",
+        description: "",
+      }),
+    },
+    guideRecruteurDecouvrirLAlternance: {
+      getPath: () => `/guide-recruteur/decouvrir-l-alternance` as string,
+      title: "Découvrir l'alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Découvrir l'alternance | Guide recruteur",
+        description: "La prise en charge financière et les démarches  administratives diffèrent du secteur privé.",
+      }),
+    },
+    guideRecruteurApprentissageEtHandicap: {
+      getPath: () => `/guide-recruteur/apprentissage-et-handicap` as string,
+      title: "Apprentissage & handicap",
+      index: true,
+      getMetadata: () => ({
+        title: "Apprentissage & handicap | Guide recruteur",
         description: "",
       }),
     },
