@@ -3,8 +3,6 @@ import { pipeline } from "stream/promises"
 import { internal } from "@hapi/boom"
 import type { Filter } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -14,18 +12,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { limitStream } from "@/common/utils/streamUtils"
-import config from "@/config"
-
-export const buildUrlLba = (type: string, id: string, siret: string | null, title?: string) => {
-  switch (type) {
-    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-      return `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, id, title)}`
-    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
-      return `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.RECRUTEURS_LBA, siret!, title)}`
-    default:
-      return `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, id, title)}`
-  }
-}
 
 export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter<IComputedJobsPartners>, shouldNotifySlack = true) => {
   logger.info(`import dans jobs_partners commencé`)

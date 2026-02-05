@@ -9,7 +9,6 @@ import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -19,30 +18,30 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import dayjs from "shared/helpers/dayjs"
 import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
+import dayjs from "shared/helpers/dayjs"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
+import { anonymizeLbaJobsPartners } from "./partnerJob.service"
+import { getEntrepriseEngagementFranceTravail } from "./referentielEngagementEntreprise.service"
+import { getResumeToken, storeResumeToken } from "./resumeToken.service"
 import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
-import { anonymizeLbaJobsPartners } from "./partnerJob.service"
-import { getResumeToken, storeResumeToken } from "./resumeToken.service"
-import { getEntrepriseEngagementFranceTravail } from "./referentielEngagementEntreprise.service"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { buildUrlLba } from "@/jobs/offrePartenaire/importFromComputedToJobsPartners"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { logger } from "@/common/logger"
+import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { logger } from "@/common/logger"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -761,7 +760,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
         job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
         job_title: job.offer_title_custom,
       },
-      lba_url: `${config.publicUrl}${getDirectJobPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString())}`,
+      lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, recruiter.establishment_siret, job.custom_job_title ?? job.rome_detail?.rome.intitule),
       publicEmail: config.publicEmail,
     },
   })
@@ -1038,7 +1037,7 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_name: null,
     workplace_website: null,
 
-    lba_url: buildUrlLba(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id.toString(), recruiter.establishment_siret, offer_title),
+    lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, recruiter.establishment_siret, offer_title),
 
     ...delegatedFields,
   }
