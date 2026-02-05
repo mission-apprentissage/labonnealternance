@@ -257,7 +257,7 @@ Steps executed in order:
 ```bash
 yarn lint-staged                  # Auto-lint/format staged files
 preventSensibleFilesCommit.sh     # Check for secrets
-npx gitleaks-secret-scanner       # Gitleaks security scan
+yarn gitleaks:check      # Gitleaks security scan
 ```
 
 **lint-staged** configuration (in `package.json`):
