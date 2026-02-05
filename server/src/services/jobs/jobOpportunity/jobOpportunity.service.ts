@@ -695,7 +695,7 @@ async function findLbaJobOpportunities({ romes, geo, target_diploma_level, depar
 }
 
 export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
-  const { romes, rncp, latitude, longitude, radius, ...rest } = query
+  const { romes, rncp, latitude, longitude, radius, partners_to_exclude, ...rest } = query
 
   const geo = latitude === null || longitude === null ? null : { latitude, longitude, radius }
 
@@ -721,6 +721,7 @@ export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSea
 
   return {
     ...rest,
+    partners_to_exclude: partners_to_exclude ?? [],
     geo,
     romes: romeCriteria,
   }
