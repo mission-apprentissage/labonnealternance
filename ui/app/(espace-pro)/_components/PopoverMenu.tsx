@@ -71,7 +71,17 @@ export const PopoverMenu = ({
         iconId="fr-icon-settings-5-line"
         title={title}
       />
-      <Popper sx={{ zIndex: 1000 }} open={open} anchorEl={anchorEl} role={undefined} placement="bottom-start" transition disablePortal>
+      <Popper
+        sx={{
+          zIndex: 1000,
+        }}
+        open={open}
+        anchorEl={anchorEl}
+        role={undefined}
+        placement="bottom-start"
+        transition
+        disablePortal
+      >
         {({ TransitionProps, placement }) => (
           <Grow
             {...TransitionProps}
@@ -79,7 +89,14 @@ export const PopoverMenu = ({
               transformOrigin: placement === "bottom-start" ? "left top" : "left bottom",
             }}
           >
-            <Paper sx={{ border: "1px solid", width: "max-content", minWidth: "200px", maxWidth: "300px" }}>
+            <Paper
+              sx={{
+                border: "1px solid",
+                width: "100%",
+                minWidth: "200px",
+                maxWidth: "300px",
+              }}
+            >
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList sx={{ py: 0, mt: "0 !important" }} autoFocusItem={open} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
                   {actions.map((action, idx) =>
@@ -88,12 +105,30 @@ export const PopoverMenu = ({
                         key={idx}
                         onClick={handleClose}
                         disableGutters
-                        sx={{ py: fr.spacing("3v"), mx: `0 !important`, px: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                        sx={{
+                          py: fr.spacing("3v"),
+                          mx: `0 !important`,
+                          px: `${fr.spacing("1w")} !important`,
+                          mb: `0 !important`,
+                          fontSize: "14px !important",
+                          minHeight: "24px",
+
+                          color: "#161616 !important",
+                          borderLeft: "4px solid transparent",
+                          ":hover": {
+                            backgroundColor: "#e3f2fd",
+                            borderLeft: "4px solid #6A6AF4",
+                          },
+                          ":focus": {
+                            backgroundColor: "#e3f2fd",
+                            borderLeft: "4px solid #6A6AF4",
+                          },
+                        }}
                       >
                         {action.type === "link" || action.type === "externalLink" ? (
                           <Link
                             underline="none"
-                            sx={{ width: "100%", textAlign: "left" }}
+                            sx={{ width: "100%", textAlign: "left", color: "#161616 !important" }}
                             href={action.link}
                             aria-label={action.ariaLabel || (action.label as string)}
                             {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -106,7 +141,7 @@ export const PopoverMenu = ({
                             component="button"
                             aria-label={action.ariaLabel || (action.label as string)}
                             onClick={action.onClick}
-                            sx={{ width: "100%", textAlign: "left" }}
+                            sx={{ width: "100%", textAlign: "left", color: "#161616 !important" }}
                           >
                             {action.label}
                           </Link>
