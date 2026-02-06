@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Tab, Tabs } from "@mui/material"
 
 interface TabPanelProps {
@@ -17,17 +18,46 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const tabSx = {
-  color: "#161616",
-  backgroundColor: "#E3E3FD",
-  "&.Mui-selected": {
-    color: "#000091",
-    backgroundColor: "white",
-    borderBottom: "none",
-    borderLeft: "1px solid #ddd",
-    borderRight: "1px solid #ddd",
+  "& .MuiTabs-flexContainer": {
+    gap: 1,
+  },
+
+  // Style des tabs individuels
+  "& .MuiTab-root": {
+    // Normal
+    backgroundColor: "#E3E3FD",
+    color: "#161616",
+    fontWeight: "bold",
+    paddingY: fr.spacing("2v"),
+    paddingX: fr.spacing("4v"),
+    outline: "none",
+
+    // Hover
+    "&:hover": {
+      backgroundColor: "#C1C1FB",
+    },
+
+    // Focus
+    "&.Mui-focusVisible": {
+      backgroundColor: "#C1C1FB",
+    },
+
+    // Selected
+    "&.Mui-selected": {
+      color: "primary.main",
+      backgroundColor: "#fff",
+      // Hover
+      ":hover": {
+        backgroundColor: "#C1C1FB",
+      },
+    },
+    // Selected
+    "&.Mui-selected.Mui-focusVisible": {
+      color: "primary.main",
+      backgroundColor: "#C1C1FB",
+    },
   },
 }
-
 export const CustomTabs = <Name extends string>({
   panels,
   currentTab,

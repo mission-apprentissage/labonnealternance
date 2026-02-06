@@ -33,12 +33,26 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
 
   return (
     <Box sx={{ mt: fr.spacing("3w") }}>
-      <Tabs value={selectedIndex} onChange={handleTabsChange}>
-        <Tab sx={tabSx} label="Gestion des recruteurs" data-testid="recruiter_management_tab" />
-        <Tab sx={tabSx} label="Entreprises de l'algorithme" data-testid="algo_company_tab" />
-        <Tab sx={tabSx} label="Rendez-vous apprentissage" data-testid="recherche_rendez_vous_apprentissage_tab" />
-        <Tab sx={tabSx} label="Gestion des administrateurs" data-testid="administrator_management_tab" />
-        <Tab sx={tabSx} label="Gestion des jobs" data-testid="administrator_processeur_tab" />
+      <Tabs
+        value={selectedIndex}
+        onChange={handleTabsChange}
+        slotProps={{
+          indicator: {
+            sx: {
+              top: 0, // ← Indicateur en haut
+              bottom: "auto",
+              height: "3px",
+              backgroundColor: "primary.main",
+            },
+          },
+        }}
+        sx={tabSx}
+      >
+        <Tab disableRipple label="Gestion des recruteurs" data-testid="recruiter_management_tab" />
+        <Tab disableRipple label="Entreprises de l'algorithme" data-testid="algo_company_tab" />
+        <Tab disableRipple label="Rendez-vous apprentissage" data-testid="recherche_rendez_vous_apprentissage_tab" />
+        <Tab disableRipple label="Gestion des administrateurs" data-testid="administrator_management_tab" />
+        <Tab disableRipple label="Gestion des jobs" data-testid="administrator_processeur_tab" />
       </Tabs>
     </Box>
   )
