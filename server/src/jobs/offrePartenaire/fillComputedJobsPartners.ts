@@ -7,7 +7,7 @@ import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
 import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
 import { detectDuplicateJobPartners } from "./detectDuplicateJobPartners"
-import { fillEntrepriseEngagementJobsPartners } from "./fillEntrepriseEngagementJobsPartners"
+import { fillEntrepriseEngagementComputedJobsPartners } from "./fillEntrepriseEngagementComputedJobsPartners"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
 import { fillRomeForPartners } from "./fillRomeForPartners"
@@ -30,7 +30,7 @@ export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersCon
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
-  await fillEntrepriseEngagementJobsPartners(context)
+  await fillEntrepriseEngagementComputedJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
   await blockJobsPartnersFromCfaList(context)
   await detectClassificationJobsPartners(context)
