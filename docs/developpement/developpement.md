@@ -184,7 +184,7 @@ git push -u origin hotfix/correction-bug-critique
 Hotfix: fix(auth): correction authentification SSO
   ↓ merge sur main
   ↓ Release v1.5.1 créée automatiquement
-  ↓ PR automatique créée: "sync: fix(auth): correction authentification SSO"
+  ↓ PR automatique créée: "sync(main -> recette): fix(auth): correction authentification SSO"
   ↓ Review + merge manuel
   ↓ recette synchronisée avec le hotfix
 ```
