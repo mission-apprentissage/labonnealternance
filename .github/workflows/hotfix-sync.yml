@@ -1,0 +1,66 @@
+name: Hotfix Sync to Recette
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  sync-hotfix:
+    # Ne s'exécute que si :
+    # 1. La PR a été mergée (pas juste fermée)
+    # 2. La branche source commence par "hotfix/"
+    if: |
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'hotfix/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create sync PR from main to recette
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOTFIX_BRANCH: ${{ github.event.pull_request.head.ref }}
+          HOTFIX_PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          # Créer une PR main → recette
+          gh pr create \
+            --base recette \
+            --head main \
+            --title "sync(main -> recette): ${HOTFIX_PR_TITLE}" \
+            --body "$(cat <<'EOF'
+          ## 🔄 Synchronisation automatique de hotfix
+
+          Cette PR synchronise le hotfix de \`main\` vers \`recette\` après le merge de la branche \`${HOTFIX_BRANCH}\`.
+
+          **Hotfix original** : #${{ github.event.pull_request.number }}
+          **Merged by** : @${{ github.event.pull_request.merged_by.login }}
+
+          ### ⚠️ Action requise
+          - [ ] Revoir les changements
+          - [ ] Merger cette PR pour que recette inclue le hotfix
+
+          ---
+          🤖 PR créée automatiquement par le workflow hotfix-sync
+          EOF
+          )" \
+            --label "sync" \
+            --label "hotfix"
+
+      - name: Notify on Slack
+        if: always()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notification_title: "🔄 Hotfix sync: PR créée pour synchroniser main → recette"
+          message_format: "Le hotfix *${{ github.event.pull_request.title }}* a été mergé sur main. Une PR de synchronisation vers recette a été créée automatiquement."
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
