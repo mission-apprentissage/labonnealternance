@@ -227,6 +227,26 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
             },
             boxShadow: "rgba(0, 0, 0, 0.2) 1px 1px 10px 0px",
             fontSize: "0.875rem",
+
+            "& .MuiAutocomplete-option": {
+              // Style normal
+              backgroundColor: "#fff",
+              color: "#161616",
+              borderLeft: "4px solid transparent",
+
+              // Option focalisée (hover ou navigation clavier)
+              "&.Mui-focused": {
+                backgroundColor: "#e3f2fd",
+                color: "#161616",
+                borderLeft: "4px solid #6A6AF4",
+              },
+
+              // Option sélectionnée
+              '&[aria-selected="true"]': {
+                backgroundColor: "#fff",
+                borderLeft: "4px solid #6A6AF4",
+              },
+            },
           },
           elevation: 6,
         },
