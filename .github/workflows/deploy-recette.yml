@@ -134,7 +134,7 @@ jobs:
     uses: "./.github/workflows/_deploy.yml"
     with:
       environment: pentest
-      app_version: pentest-${{ github.sha }}
+      app_version: recette-${{ github.sha }}
     secrets:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
