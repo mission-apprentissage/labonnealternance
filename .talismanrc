@@ -345,6 +345,8 @@ fileignoreconfig:
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
 - filename: ui/app/(editorial)/guide-cfa/page.tsx
   checksum: 3cd8cce155eb16d8483b7f919e072a163c57f4beb65bd8aea275520179020955
+- filename: ui/app/(editorial)/guide-alternant/se-faire-accompagner/page.tsx
+  checksum: 19e9847206e87da96d16195ad18e025d59e771338e9294e3f3348e4295802462
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 scopeconfig:
