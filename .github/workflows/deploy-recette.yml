@@ -1,0 +1,139 @@
+name: Deploy to recette and pentest
+on:
+  push:
+    branches: [recette]
+
+jobs:
+  tests:
+    uses: "./.github/workflows/ci.yml"
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  npm-packages-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Clone mna-npm-check repository
+        uses: actions/checkout@v4
+        with:
+          repository: mission-apprentissage/mna-npm-check
+          path: mna-npm-check
+
+      - name: Analyze NPM dependancies
+        run: mna-npm-check/npm-check.sh -p .
+
+  build-server:
+    needs: ["npm-packages-check"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push server image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: server
+          push: true
+          tags: ghcr.io/mission-apprentissage/mna_lba_server:recette-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-ui-recette:
+    needs: ["npm-packages-check"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push UI recette image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: ui
+          build-args: |
+            ENV_TYPE=recette
+          push: true
+          tags: ghcr.io/mission-apprentissage/mna_lba_ui:recette-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-ui-pentest:
+    if: false # Désactivé pour l'instant, à réactiver quand on voudra déployer sur pentest
+    needs: ["npm-packages-check"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push UI pentest image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: ui
+          build-args: |
+            ENV_TYPE=pentest
+          push: true
+          tags: ghcr.io/mission-apprentissage/mna_lba_ui:pentest-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-recette:
+    needs: ["build-ui-recette", "build-server"]
+    uses: "./.github/workflows/_deploy.yml"
+    with:
+      environment: recette
+      app_version: recette-${{ github.sha }}
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+      DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}
+
+  deploy-pentest:
+    if: false # Désactivé pour l'instant, à réactiver quand on voudra déployer sur pentest
+    needs: ["build-ui-pentest", "build-server"]
+    uses: "./.github/workflows/_deploy.yml"
+    with:
+      environment: pentest
+      app_version: pentest-${{ github.sha }}
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+      DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      VAULT_PWD: ${{ secrets.VAULT_PWD }}
