@@ -36,6 +36,10 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
       <Tabs
         value={selectedIndex}
         onChange={handleTabsChange}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
+        aria-label="Choix des écrans d'administration"
         slotProps={{
           indicator: {
             sx: {

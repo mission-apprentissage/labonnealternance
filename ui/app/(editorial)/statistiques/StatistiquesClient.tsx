@@ -74,7 +74,10 @@ export default function StatistiquesClient() {
             <Tabs
               value={value}
               onChange={handleChange}
-              aria-label="statistiques tabs"
+              aria-label="Onglets de choix des écrans statistiques"
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
               slotProps={{
                 indicator: {
                   sx: {

@@ -31,6 +31,7 @@ export const tabSx = {
     paddingY: fr.spacing("2v"),
     paddingX: fr.spacing("4v"),
     outline: "none",
+    textTransform: "none",
 
     // Hover
     "&:hover": {
@@ -79,9 +80,17 @@ export const CustomTabs = <Name extends string>({
   return (
     <>
       <Box>
-        <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          slotProps={{ indicator: { sx: { top: 0, bottom: "auto", height: "3px", backgroundColor: "primary.main" } } }}
+          sx={tabSx}
+        >
           {panels.map(({ title, id }) => (
-            <Tab sx={tabSx} key={id} label={title} />
+            <Tab disableRipple key={id} label={title} />
           ))}
         </Tabs>
       </Box>
