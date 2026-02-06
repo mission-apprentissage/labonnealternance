@@ -36,7 +36,7 @@ jobs:
             --base recette \
             --head main \
             --title "sync(main -> recette): ${HOTFIX_PR_TITLE}" \
-            --body "$(cat <<'EOF'
+            --body "$(cat <<EOF
           ## 🔄 Synchronisation automatique de hotfix
 
           Cette PR synchronise le hotfix de \`main\` vers \`recette\` après le merge de la branche \`${HOTFIX_BRANCH}\`.
