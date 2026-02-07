@@ -309,6 +309,15 @@ export const PAGES = {
         title: "Détail du rendez-vous d'apprentissage - La bonne alternance",
       }),
     },
+    salaireAlternant: {
+      getPath: () => `/salaire-alternant` as string,
+      title: "Salaire alternant",
+      index: true,
+      getMetadata: () => ({
+        title: "Salaire alternant : simulateur de rémunération - La bonne alternance",
+        description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
+      }),
+    },
   },
   dynamic: {
     compte: ({ userType }: { userType: "CFA" | "ENTREPRISE" | "OPCO" | "ADMIN" }): IPage => ({
