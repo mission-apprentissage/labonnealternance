@@ -80,7 +80,7 @@ jobs:
           context: .
           target: ui
           build-args: |
-            ENV_TYPE=recette
+            PUBLIC_ENV=recette
           push: true
           tags: ghcr.io/mission-apprentissage/mna_lba_ui:recette-${{ github.sha }}
           cache-from: type=gha
@@ -110,9 +110,9 @@ jobs:
           context: .
           target: ui
           build-args: |
-            ENV_TYPE=pentest
+            PUBLIC_ENV=pentest
           push: true
-          tags: ghcr.io/mission-apprentissage/mna_lba_ui:pentest-${{ github.sha }}
+          tags: ghcr.io/mission-apprentissage/mna_lba_ui:recette-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
