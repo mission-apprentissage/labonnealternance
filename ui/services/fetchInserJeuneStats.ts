@@ -1,6 +1,6 @@
 import type { ILbaItemFormation2Json } from "shared"
 
-import { inserJeuneApiUrl } from "@/config/config"
+import { baseUrl } from "@/config/config"
 import { logError } from "@/utils/tools"
 
 export default async function fetchInserJeuneStats(training: ILbaItemFormation2Json) {
@@ -8,7 +8,11 @@ export default async function fetchInserJeuneStats(training: ILbaItemFormation2J
     return null
   }
   try {
-    const response = await fetch(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.training.cfd}`)
+    const response = await fetch(`${baseUrl}/api/inserjeune/${training.place.zipCode}/${training.training.cfd}`)
+
+    if (response.status === 404) {
+      return null
+    }
 
     return response.json()
   } catch (error) {
