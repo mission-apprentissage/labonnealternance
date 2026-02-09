@@ -14,8 +14,8 @@ export function RechercheMobileFormUpdate(props: { rechercheParams: IRecherchePa
   return (
     <Box
       sx={{
-        py: fr.spacing("2w"),
-        px: fr.spacing("1w"),
+        py: fr.spacing("4v"),
+        px: fr.spacing("2v"),
         backgroundColor: fr.colors.decisions.background.default.grey.default,
       }}
     >
@@ -27,8 +27,8 @@ export function RechercheMobileFormUpdate(props: { rechercheParams: IRecherchePa
           fontSize: "18px",
           fontWeight: 700,
           lineHeight: "24px",
-          marginTop: fr.spacing("3w"),
-          marginBottom: fr.spacing("1w"),
+          marginTop: fr.spacing("6v"),
+          marginBottom: fr.spacing("2v"),
         }}
       >
         Que recherchez-vous ?

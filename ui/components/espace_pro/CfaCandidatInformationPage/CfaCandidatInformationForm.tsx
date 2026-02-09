@@ -7,7 +7,7 @@ export const CfaCandidatInformationForm = (props) => {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <Box sx={{ mt: 1, p: 4, backgroundColor: "#F5F5FE" }}>
+      <Box sx={{ mt: fr.spacing("2v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
         <Typography variant="h2" sx={{ fontWeight: 700, color: "#000091", fontSize: "22px", lineHeight: "36px" }}>
           Votre réponse au candidat
         </Typography>
@@ -15,7 +15,7 @@ export const CfaCandidatInformationForm = (props) => {
         <Typography sx={{ fontWeight: 400, color: "#666666", fontSize: "12px", lineHeight: "20px", mt: 1 }}>
           Le candidat recevra votre réponse directement dans sa boîte mail.
         </Typography>
-        <FormControl error={formik.touched.message && Boolean(formik.errors.message)} fullWidth sx={{ pb: fr.spacing("2w") }}>
+        <FormControl error={formik.touched.message && Boolean(formik.errors.message)} fullWidth sx={{ pb: fr.spacing("4v") }}>
           <TextareaAutosize
             className={fr.cx("fr-input")}
             id="message"
@@ -33,12 +33,12 @@ export const CfaCandidatInformationForm = (props) => {
             Envoyer ma réponse
           </Button>
         </Box>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Button priority="secondary" onClick={props.otherClicked}>
             J'ai répondu au candidat par un autre canal (mail ou téléphone)
           </Button>
         </Box>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Button priority="secondary" onClick={props.unreachableClicked}>
             Le candidat n'est pas joignable
           </Button>

@@ -3,6 +3,7 @@ import Image from "next/image"
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 import { UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { getCompanyGoogleSearchLink } from "./getCompanyGoogleSearchLink"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
@@ -13,7 +14,7 @@ export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation
         direction="row"
         sx={{
           alignItems: "center",
-          mt: 4,
+          mt: fr.spacing("8v"),
         }}
       >
         <Image src="/images/icons/magnifyingglass.svg" alt="" aria-hidden={true} width={24} height={24} style={{ marginRight: "16px" }} />

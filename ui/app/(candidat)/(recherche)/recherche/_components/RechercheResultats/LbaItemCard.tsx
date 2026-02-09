@@ -180,7 +180,7 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
 
               <Box
                 component="span"
-                sx={{ alignItems: { xs: "left", sm: "left", md: "center" }, display: "flex", gap: fr.spacing("2w"), flexDirection: { xs: "column", sm: "column", md: "row" } }}
+                sx={{ alignItems: { xs: "left", sm: "left", md: "center" }, display: "flex", gap: fr.spacing("4v"), flexDirection: { xs: "column", sm: "column", md: "row" } }}
               >
                 <DatePublication item={item} />
                 <CandidatureCount item={item} />

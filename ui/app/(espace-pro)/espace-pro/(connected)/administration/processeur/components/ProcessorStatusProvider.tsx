@@ -32,7 +32,7 @@ export function ProcessorStatusProvider(props: ProcessorStatusProviderProps): Re
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          my: fr.spacing("8w"),
+          my: fr.spacing("16v"),
         }}
       >
         <CircularProgress />

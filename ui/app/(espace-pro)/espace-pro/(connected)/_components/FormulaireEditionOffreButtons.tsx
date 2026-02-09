@@ -15,13 +15,13 @@ export const FormulaireEditionOffreButtons = ({ offre, competencesDirty }: { off
   const { isValid, isSubmitting, dirty, submitForm } = useFormikContext<any>()
   return (
     <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-      <Box sx={{ mr: fr.spacing("2w") }}>
+      <Box sx={{ mr: fr.spacing("4v") }}>
         <Button className="fr-btn--secondary" onClick={() => router.back()}>
           Annuler
         </Button>
       </Box>
       <Button disabled={!(isValid && (dirty || competencesDirty)) || isSubmitting} onClick={submitForm} data-testid="creer-offre">
-        <ArrowRightLine sx={{ mr: fr.spacing("1w") }} />
+        <ArrowRightLine sx={{ mr: fr.spacing("2v") }} />
         {offre?._id ? "Mettre à jour" : "Créer l'offre"}
       </Button>
     </Box>

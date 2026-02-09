@@ -90,17 +90,17 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
       }
     >
       {appointment?.user && (
-        <Box sx={{ my: fr.spacing("2w") }}>
+        <Box sx={{ my: fr.spacing("4v") }}>
           <Typography component="span" color="primary" variant="h6">
             Voici les coordonnées du contact :{" "}
           </Typography>
-          <Box sx={{ my: fr.spacing("2w") }}>
+          <Box sx={{ my: fr.spacing("4v") }}>
             {appointment.user?.type && (
               <Typography component={"span"} variant="h6">
                 {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
               </Typography>
             )}
-            <Typography sx={{ mt: fr.spacing("3w") }}>
+            <Typography sx={{ mt: fr.spacing("6v") }}>
               Nom :{" "}
               <Typography component="span">
                 <strong>{appointment.user.lastname}</strong>
@@ -112,7 +112,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
                 <b>{appointment.user.firstname}</b>
               </Typography>
             </Typography>
-            <Typography sx={{ mt: fr.spacing("3w") }}>
+            <Typography sx={{ mt: fr.spacing("6v") }}>
               Numéro de téléphone :{" "}
               <Typography component="span">
                 <b>{appointment.user.phone.match(/.{1,2}/g).join(".")}</b>
@@ -126,12 +126,12 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             </Typography>
           </Box>
           <hr />
-          <Box sx={{ mb: fr.spacing("2w") }}>
-            <Typography component="p" sx={{ mt: 1 }}>
+          <Box sx={{ mb: fr.spacing("4v") }}>
+            <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Typography>
             <Typography component="p">
-              <List sx={{ listStyleType: "disc", pl: 2 }}>
+              <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
                 {(appointment.appointment?.applicant_reasons || []).map((reason, i) => {
                   return (
                     <ListItem key={i} sx={{ display: "list-item" }}>
@@ -150,10 +150,10 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             )}
             {appointment.formation && (
               <>
-                <Typography component="p" sx={{ mt: 2 }}>
+                <Typography component="p" sx={{ mt: fr.spacing("4v") }}>
                   à propos de la formation : <strong>{appointment.formation.training_intitule_long}</strong>
                 </Typography>
-                <Typography component="p" sx={{ mt: 1 }}>
+                <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
                   dispensée par :{" "}
                   <strong>
                     {appointment.formation.etablissement_formateur_raison_sociale}, {appointment.formation.lieu_formation_street}, {appointment.formation.lieu_formation_zip_code},{" "}

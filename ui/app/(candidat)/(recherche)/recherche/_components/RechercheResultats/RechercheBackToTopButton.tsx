@@ -9,7 +9,7 @@ export function RechercheBackToTopButton({ onClick }: { onClick?: () => void }) 
     <Box
       sx={{
         position: "absolute",
-        bottom: fr.spacing("4w"),
+        bottom: fr.spacing("8v"),
         width: "100%",
         "& button": {
           width: 44,
@@ -38,7 +38,7 @@ export function RechercheBackToTopButton({ onClick }: { onClick?: () => void }) 
           iconId="fr-icon-arrow-up-line"
           style={{
             float: "right",
-            marginRight: `calc(-46px - ${fr.spacing("4w")})`,
+            marginRight: `calc(-46px - ${fr.spacing("8v")})`,
             fontSize: "16px",
           }}
         >

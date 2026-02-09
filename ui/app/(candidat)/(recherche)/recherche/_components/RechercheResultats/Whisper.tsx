@@ -15,12 +15,12 @@ export function Whisper({ whisper }: WhisperProps) {
       sx={{
         display: "grid",
         gridTemplateColumns: "max-content 1fr",
-        gap: fr.spacing("2w"),
-        my: fr.spacing("3w"),
+        gap: fr.spacing("4v"),
+        my: fr.spacing("6v"),
       }}
     >
       <Image width={34} height={39} src="/images/whisper.svg" alt="" unoptimized />
-      <Box sx={{ display: "grid", gap: fr.spacing("1w") }}>
+      <Box sx={{ display: "grid", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--lead", "fr-text--bold")}>
           Psst, nous avons une{" "}
           <Box component="span" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>

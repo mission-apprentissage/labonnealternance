@@ -1,6 +1,7 @@
 import { Typography, Box, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"
@@ -12,19 +13,21 @@ const RessourcesCFA = () => {
       <Typography>
         La bonne alternance vous propose un ensemble d’outils pour soutenir vos démarches d’accompagnement auprès des jeunes et de vos entreprises partenaires.
       </Typography>
-      <Typography component={"h3"} variant="h3" sx={{ my: 2 }}>
+      <Typography component={"h3"} variant="h3" sx={{ my: fr.spacing("4v") }}>
         Liens utiles pour accompagner vos candidats
       </Typography>
       <Typography>Proposez-leur de s’entraîner avec nos 3 parcours de mise en situation :</Typography>
       <MisesEnSituation target="cfa" />
-      <Typography sx={{ mb: 2 }}>Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :</Typography>
+      <Typography sx={{ mb: fr.spacing("4v") }}>
+        Partagez-leurs des conseils et astuces pour les aider dans leurs démarches de recherche de formation et d’emploi en alternance :
+      </Typography>
       <ConseilsEtAstuces />
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          mt: 6,
-          mb: 6,
+          mt: fr.spacing("12v"),
+          mb: fr.spacing("12v"),
         }}
       >
         <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: 16 }} />
@@ -34,11 +37,11 @@ const RessourcesCFA = () => {
       </Box>
       <Box
         sx={{
-          ml: 4,
+          ml: fr.spacing("8v"),
         }}
       >
-        <List sx={{ listStyleType: "disc", pl: 2 }}>
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
+        <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
+          <ListItem sx={{ display: "list-item", mb: fr.spacing("4v") }}>
             Pour rechercher une formation en alternance, le{" "}
             <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Accéder au catalogue des offres de formation en apprentissage">
               Catalogue des offres de formations en apprentissage
@@ -46,21 +49,21 @@ const RessourcesCFA = () => {
             du Réseau des Carif-Oref centralise nationalement l'ensemble des offres collectées régionalement.
           </ListItem>
 
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
+          <ListItem sx={{ display: "list-item", mb: fr.spacing("4v") }}>
             <DsfrLink href="https://travail-emploi.gouv.fr/IMG/pdf/precis-apprentissage.pdf" aria-label="Accéder au précis de l'apprentissage">
               Le Précis de l’apprentissage
             </DsfrLink>{" "}
             vous présente des repères sur l’apprentissage, issus des travaux de la DGEFP. Il vise à harmoniser les pratiques des acteurs de l’apprentissage.
           </ListItem>
 
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
+          <ListItem sx={{ display: "list-item", mb: fr.spacing("4v") }}>
             <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf" aria-label="Accéder au vade-mecum CFA">
               Le “Vade-mecum CFA”
             </DsfrLink>{" "}
             précise les modalités pratiques de gestion des contrats d’apprentissage, en concertation avec les têtes de réseau CFA et la DGEFP.
           </ListItem>
 
-          <ListItem sx={{ display: "list-item", mb: 2 }}>
+          <ListItem sx={{ display: "list-item", mb: fr.spacing("4v") }}>
             <Typography
               component="span"
               sx={{
@@ -87,8 +90,8 @@ const RessourcesCFA = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          mt: 6,
-          mb: 6,
+          mt: fr.spacing("12v"),
+          mb: fr.spacing("12v"),
         }}
       >
         <Image src="/images/pages_ressources/offres completes.svg" alt="" width={64} height={64} aria-hidden="true" style={{ marginRight: 16 }} />
@@ -96,7 +99,7 @@ const RessourcesCFA = () => {
           <Typography
             sx={{
               fontWeight: 700,
-              mb: 2,
+              mb: fr.spacing("4v"),
             }}
           >
             Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois

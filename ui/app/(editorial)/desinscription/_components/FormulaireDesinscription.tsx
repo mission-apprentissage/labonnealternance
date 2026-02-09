@@ -97,17 +97,17 @@ const ConfirmationDesinscription = ({
 
   return (
     <ModalReadOnly isOpen={true} onClose={onClose}>
-      <Box sx={{ p: fr.spacing("3w") }}>
-        <Typography variant="h3" sx={{ mb: fr.spacing("3w") }}>
+      <Box sx={{ p: fr.spacing("6v") }}>
+        <Typography variant="h3" sx={{ mb: fr.spacing("6v") }}>
           Plusieurs établissements correspondent à cet email
         </Typography>
         <Box>
-          <Typography sx={{ mb: fr.spacing("3w") }}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Typography>
+          <Typography sx={{ mb: fr.spacing("6v") }}>Veuillez sélectionner les établissements pour lesquels vous ne souhaitez plus recevoir de candidatures spontanées.</Typography>
 
           {companies.map((company) => (
-            <Box sx={{ display: "flex", alignItems: "center", border: "1px solid #E5E5E5", mb: fr.spacing("2w"), px: fr.spacing("2w"), py: fr.spacing("2v") }} key={company.siret}>
+            <Box sx={{ display: "flex", alignItems: "center", border: "1px solid #E5E5E5", mb: fr.spacing("4v"), px: fr.spacing("4v"), py: fr.spacing("2v") }} key={company.siret}>
               <Checkbox onChange={() => toggleSiretSelection(company.siret)} checked={isSiretSelected(company.siret)} value={company.siret} />
-              <Stack spacing={fr.spacing("1w")} sx={{ ml: fr.spacing("3w") }}>
+              <Stack spacing={fr.spacing("2v")} sx={{ ml: fr.spacing("6v") }}>
                 <Typography>SIRET: {company.siret}</Typography>
                 <Typography>
                   {company.enseigne}
@@ -193,12 +193,12 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
   return (
     <Box>
       {possibleCompanies && <ConfirmationDesinscription onClose={() => setPossibleCompanies(null)} companies={possibleCompanies} onSubmit={onUnsubscribeSiretsSubmit} />}
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, gap: fr.spacing("3w"), mb: fr.spacing("3w") }}>
+      <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "column", md: "row" }, gap: fr.spacing("6v"), mb: fr.spacing("6v") }}>
         <Box>
-          <Typography variant="h1" sx={{ mb: fr.spacing("3w"), color: fr.colors.decisions.text.active.blueFrance.default }}>
+          <Typography variant="h1" sx={{ mb: fr.spacing("6v"), color: fr.colors.decisions.text.active.blueFrance.default }}>
             Vous êtes une entreprise
           </Typography>
-          <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
+          <Typography variant="h2" sx={{ mb: fr.spacing("6v") }}>
             Vous souhaitez ne plus recevoir de candidatures spontanées de La bonne alternance
           </Typography>
           <Typography variant="h2">Veuillez remplir le formulaire ci-contre.</Typography>
@@ -218,7 +218,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                 }}
               />
 
-              <Box sx={{ mt: fr.spacing("3w") }}>
+              <Box sx={{ mt: fr.spacing("6v") }}>
                 <Select
                   label="Motif *"
                   hint="Indiquez la raison pour laquelle vous ne souhaitez plus recevoir de candidature"
@@ -240,11 +240,11 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
               </Box>
 
               {errorMessage && (
-                <Box sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("1w") }}>
+                <Box sx={{ display: "flex", alignItems: "center", color: fr.colors.decisions.text.actionHigh.redMarianne.default, mt: fr.spacing("2v") }}>
                   <Warning sx={{ m: 0 }} />
                   <Box
                     sx={{
-                      ml: 1,
+                      ml: fr.spacing("2v"),
                     }}
                   >
                     {errorMessage}
@@ -252,7 +252,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                 </Box>
               )}
 
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: fr.spacing("3w") }}>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: fr.spacing("6v") }}>
                 <Typography>Tous les champs sont obligatoires</Typography>
 
                 {!isSubmitting ? (

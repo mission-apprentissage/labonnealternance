@@ -48,7 +48,7 @@ function InformationsEntreprise() {
       </Typography>
       <Box sx={{ display: "flex", alignItems: "flex-start" }}>
         <span style={{ color: "#000091" }}>
-          <InfoCircle sx={{ mr: fr.spacing("1w") }} />
+          <InfoCircle sx={{ mr: fr.spacing("2v") }} />
         </span>
         <Typography component="span">
           Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
@@ -63,7 +63,7 @@ function InformationsEntreprise() {
           Vous avez déjà déposé une offre en alternance par le passé ?
         </Typography>
         <Typography>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Typography>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Button priority="primary" onClick={() => router.push("/espace-pro/authentification")}>
             Me connecter
           </Button>
@@ -86,10 +86,10 @@ function InformationsCfa() {
           <ListItem
             sx={{
               m: "0 !important",
-              ml: `${fr.spacing("4w")} !important`,
-              pl: `${fr.spacing("3w")} !important`,
-              pr: `${fr.spacing("5w")} !important`,
-              pb: fr.spacing("3w"),
+              ml: `${fr.spacing("8v")} !important`,
+              pl: `${fr.spacing("6v")} !important`,
+              pr: `${fr.spacing("10v")} !important`,
+              pb: fr.spacing("6v"),
               listStyleType: "disc",
               display: "list-item",
             }}
@@ -105,10 +105,10 @@ function InformationsCfa() {
           <ListItem
             sx={{
               m: "0 !important",
-              ml: `${fr.spacing("4w")} !important`,
-              pl: `${fr.spacing("3w")} !important`,
-              pr: `${fr.spacing("5w")} !important`,
-              pb: fr.spacing("3w"),
+              ml: `${fr.spacing("8v")} !important`,
+              pl: `${fr.spacing("6v")} !important`,
+              pr: `${fr.spacing("10v")} !important`,
+              pb: fr.spacing("6v"),
               listStyleType: "disc",
               display: "list-item",
             }}
@@ -132,7 +132,7 @@ function InformationsCfa() {
       </Typography>
       <Box sx={{ display: "flex", alignItems: "flex-start" }}>
         <span style={{ color: "#000091" }}>
-          <InfoCircle sx={{ mr: fr.spacing("1w") }} />
+          <InfoCircle sx={{ mr: fr.spacing("2v") }} />
         </span>
         <Typography>
           Le numéro d’identification de votre organisme peut être trouvé sur le site Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
@@ -147,14 +147,14 @@ function InformationsCfa() {
       </Box>
       <Box
         sx={{
-          mt: 5,
+          mt: fr.spacing("10v"),
         }}
       >
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
           Vous avez déjà déposé une offre en alternance par le passé ?
         </Typography>
         <Typography>Connectez-vous à votre compte CFA pour publier de nouvelles offres et administrer vos offres existantes.</Typography>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Button priority="primary" onClick={() => router.push("/espace-pro/authentification")}>
             Me connecter
           </Button>

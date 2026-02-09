@@ -7,6 +7,7 @@ import { JobCollectionName } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import WidgetCandidatureLba from "@/components/ItemDetail/CandidatureLba/WidgetCandidatureLba"
 import { WidgetPostulerError } from "@/components/ItemDetail/CandidatureLba/WidgetPostulerError"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
@@ -61,7 +62,7 @@ export default function WidgetPostuler() {
   if (!isError && (isLoading || isFetching)) {
     return (
       <Box sx={{ display: "flex", alignItems: "center", m: "auto", width: "250px", my: 8 }}>
-        <CircularProgress sx={{ mr: 4 }} />
+        <CircularProgress sx={{ mr: fr.spacing("8v") }} />
         <Typography>Veuillez patienter</Typography>
       </Box>
     )

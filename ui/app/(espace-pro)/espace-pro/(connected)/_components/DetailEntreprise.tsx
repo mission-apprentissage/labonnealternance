@@ -130,7 +130,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
-      <Box sx={{ px: fr.spacing("2w"), borderBottom: "1px solid #E3E3FD", mb: fr.spacing("5w") }}>
+      <Box sx={{ px: fr.spacing("4v"), borderBottom: "1px solid #E3E3FD", mb: fr.spacing("10v") }}>
         {user.type !== "CFA" && (
           <>
             <Typography component="h2" sx={{ fontSize: "32px", ...webkitLineClamp }}>
@@ -156,7 +156,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
           </Box>
         )}
       </Box>
-      <Box sx={{ px: fr.spacing("2w") }}>
+      <Box sx={{ px: fr.spacing("4v") }}>
         <Formik
           validateOnMount={true}
           enableReinitialize={true}
@@ -215,7 +215,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     </Typography>
                     <Box
                       sx={{
-                        mt: 4,
+                        mt: fr.spacing("8v"),
                       }}
                     >
                       <Form>
@@ -256,21 +256,21 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                                   l’objet de contrôles par La bonne alternance.
                                 </Typography>
                               }
-                              sx={{ mt: fr.spacing("3w") }}
+                              sx={{ mt: fr.spacing("6v") }}
                             />
                           </>
                         )}
                         {userMutation.error && (
-                          <Alert sx={{ marginTop: fr.spacing("2w") }} severity="error">
+                          <Alert sx={{ marginTop: fr.spacing("4v") }} severity="error">
                             {userMutation.error + ""}
                           </Alert>
                         )}
                         <Box sx={{ display: "flex", justifyContent: "flex-end", my: fr.spacing("5v") }}>
                           <Button type="submit" disabled={!isValid || isSubmitting}>
                             {isSubmitting ? (
-                              <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                              <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
                             ) : (
-                              <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                              <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
                             )}
                             Enregistrer
                           </Button>
@@ -283,7 +283,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     {user.type !== "CFA" && (
                       <Box
                         sx={{
-                          my: 4,
+                          my: fr.spacing("8v"),
                         }}
                       >
                         <FieldWithValue title="Origine" value={userRecruteur.origin} />
@@ -296,7 +296,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     <hr style={{ marginTop: 24 }} />
                     <Box
                       sx={{
-                        my: 6,
+                        my: fr.spacing("12v"),
                       }}
                     >
                       <OffresTabs
@@ -317,7 +317,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     </Box>
                     <Box
                       sx={{
-                        mb: 12,
+                        mb: fr.spacing("24v"),
                       }}
                     >
                       <UserValidationHistory histories={userRecruteur.status} />

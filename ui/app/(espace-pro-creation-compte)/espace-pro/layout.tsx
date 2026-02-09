@@ -24,12 +24,12 @@ export default async function Layout({ children }: PropsWithChildren) {
         <Box
           sx={{
             maxWidth: 1200,
-            paddingTop: fr.spacing("4w"),
-            paddingBottom: fr.spacing("8w"),
+            paddingTop: fr.spacing("8v"),
+            paddingBottom: fr.spacing("16v"),
 
             marginX: {
-              xs: fr.spacing("2w"),
-              md: fr.spacing("4w"),
+              xs: fr.spacing("4v"),
+              md: fr.spacing("8v"),
             },
           }}
         >

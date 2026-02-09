@@ -17,15 +17,15 @@ export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
         <Box
           sx={{
             flex: 1,
-            ml: { xs: 0, sm: 0, md: fr.spacing("12w") },
+            ml: { xs: 0, sm: 0, md: fr.spacing("24v") },
           }}
         >
           <Box
             sx={{
               display: "flex",
               flexDirection: { xs: "column", sm: "column", md: "row" },
-              mt: fr.spacing("2w"),
-              mx: { xs: fr.spacing("2w"), sm: fr.spacing("2w"), md: 0 },
+              mt: fr.spacing("4v"),
+              mx: { xs: fr.spacing("4v"), sm: fr.spacing("4v"), md: 0 },
             }}
           >
             <Typography
@@ -40,7 +40,7 @@ export const FormHeaderComponent = ({ children }: PropsWithChildren) => {
             </Typography>
           </Box>
         </Box>
-        <Box sx={{ mr: fr.spacing("4w") }}>
+        <Box sx={{ mr: fr.spacing("8v") }}>
           <IconeLogo sx={{ width: { xs: "0px", md: "300px" }, height: { xs: "0px", md: "174px" } }} />
         </Box>
       </Box>

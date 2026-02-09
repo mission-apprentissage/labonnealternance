@@ -1,19 +1,20 @@
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export const OffresGratuites = () => {
   return (
     <Grid container spacing={2} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 6 }} sx={{ order: { xs: 2, md: 1 } }}>
-        <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+        <Typography component="h3" variant="h3" sx={{ mb: fr.spacing("4v") }}>
           Vos offres sont diffusées gratuitement au plus près des candidats
         </Typography>
         <Typography
           sx={{
             fontSize: "18px",
-            mt: 4,
+            mt: fr.spacing("8v"),
           }}
         >
           Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}

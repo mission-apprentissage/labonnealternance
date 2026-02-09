@@ -28,9 +28,9 @@ const EmptySpace = () => (
     sx={{
       display: "flex",
       flexDirection: { xs: "column", lg: "row" },
-      mt: fr.spacing("3w"),
-      px: fr.spacing("3w"),
-      py: fr.spacing("3w"),
+      mt: fr.spacing("6v"),
+      px: fr.spacing("6v"),
+      py: fr.spacing("6v"),
       border: "1px solid",
       borderColor: "grey.400",
       gap: "32px",
@@ -49,7 +49,7 @@ const EmptySpace = () => (
     </Box>
 
     <Box sx={{ width: { xs: "100%", lg: "600px" } }}>
-      <Typography component="h2" sx={{ fontSize: { xs: "4rem", md: "2rem" }, pb: fr.spacing("3w") }} datatest-id="header-ajouter-entreprise">
+      <Typography component="h2" sx={{ fontSize: { xs: "4rem", md: "2rem" }, pb: fr.spacing("6v") }} datatest-id="header-ajouter-entreprise">
         Ajoutez votre première entreprise partenaire
       </Typography>
       <Typography sx={{ fontSize: "1.375rem" }}>Une entreprise partenaire vous fait confiance pour gérer ses offres d’emploi ?</Typography>
@@ -213,13 +213,13 @@ function ListeEntreprise() {
       )}
       <Box sx={{ maxWidth: 1200, mx: "auto", mt: fr.spacing("5v") }}>
         <Breadcrumb pages={[PAGES.static.backCfaHome]} />
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("4w"), justifyContent: "space-between", mb: fr.spacing("3w") }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, gap: fr.spacing("8v"), justifyContent: "space-between", mb: fr.spacing("6v") }}>
           <Box>
             <Typography sx={{ fontSize: "2rem !important", fontWeight: 700 }}>Mes entreprises</Typography>
           </Box>
           <Box
             sx={{
-              mr: 3,
+              mr: fr.spacing("6v"),
             }}
           >
             <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>

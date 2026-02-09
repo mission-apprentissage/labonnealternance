@@ -28,7 +28,7 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
       sx={{
         backgroundColor: fr.colors.decisions.background.contrast.info.default,
         color: fr.colors.decisions.background.actionHigh.info.default,
-        px: fr.spacing("1w"),
+        px: fr.spacing("2v"),
         fontStyle: "italic",
       }}
       className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--sm")}

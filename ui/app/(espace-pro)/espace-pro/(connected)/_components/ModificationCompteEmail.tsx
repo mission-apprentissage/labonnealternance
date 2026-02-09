@@ -17,13 +17,13 @@ export default function ModificationCompteEmail(props) {
 
   return (
     <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: 2 }} component="h2">
+      <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("4v") }} component="h2">
           Changement d'email détecté
         </Typography>
         <Box
           sx={{
-            pb: fr.spacing("1w"),
+            pb: fr.spacing("2v"),
           }}
         >
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>

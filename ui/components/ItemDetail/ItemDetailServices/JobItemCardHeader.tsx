@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { fr } from "@codegouvfr/react-dsfr"
 
 const detailActivityProperties = {
   fontSize: "1rem",
@@ -25,7 +26,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
   if (!isCollapsedHeader) {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) {
       res = (
-        <Typography component="p" sx={{ ...detailActivityProperties, my: 1 }}>
+        <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           <Typography component="span" sx={{ fontWeight: 400 }}>
             Le centre de formation&nbsp;
           </Typography>
@@ -39,7 +40,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
 
     if ([LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA].includes(kind) && !isMandataire) {
       res = (
-        <Typography component="p" sx={{ ...detailActivityProperties, my: 1 }}>
+        <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           {companyName ? (
             <>
               <Typography component="span">{companyName}</Typography>
@@ -67,7 +68,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
 
     if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
       res = (
-        <Typography component="p" sx={{ ...detailActivityProperties, my: 1 }}>
+        <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           <Typography component="span">{companyName}</Typography>
           <Typography component="span" sx={{ fontWeight: 400 }}>
             &nbsp;a des salariés qui exercent le métier auquel vous vous destinez. Envoyez votre candidature spontanée !

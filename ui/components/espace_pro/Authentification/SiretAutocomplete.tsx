@@ -78,16 +78,16 @@ export const SiretAutocomplete = ({
               }
             />
             {selectedEntreprise && (
-              <Box sx={{ marginTop: fr.spacing("4w") }}>
+              <Box sx={{ marginTop: fr.spacing("8v") }}>
                 <Typography sx={{ fontSize: "16px", lineHeight: "24px" }}>Établissement sélectionné :</Typography>
-                <Box sx={{ border: "solid 1px #000091", marginTop: fr.spacing("1w") }}>
+                <Box sx={{ border: "solid 1px #000091", marginTop: fr.spacing("2v") }}>
                   <EntrepriseCard {...selectedEntreprise} />
                 </Box>
               </Box>
             )}
-            <Box sx={{ display: "flex", justifyItems: "flex-start", mt: fr.spacing("4w") }}>
+            <Box sx={{ display: "flex", justifyItems: "flex-start", mt: fr.spacing("8v") }}>
               <Button type="submit" disabled={!isValid || isSubmitting}>
-                {isSubmitting && <CircularProgress size={24} thickness={4} sx={{ color: "inherit", mr: fr.spacing("1w") }} />}Continuer
+                {isSubmitting && <CircularProgress size={24} thickness={4} sx={{ color: "inherit", mr: fr.spacing("2v") }} />}Continuer
               </Button>
             </Box>
           </Form>
@@ -99,7 +99,7 @@ export const SiretAutocomplete = ({
 
 const EntrepriseCard = ({ adresse, raison_sociale, siret, highlighted }: { highlighted?: boolean; raison_sociale: string; siret: string; adresse: string }) => {
   return (
-    <Box sx={{ backgroundColor: highlighted ? "#F6F6F6" : "white", py: fr.spacing("1w"), px: fr.spacing("2w") }}>
+    <Box sx={{ backgroundColor: highlighted ? "#F6F6F6" : "white", py: fr.spacing("2v"), px: fr.spacing("4v") }}>
       <Typography sx={{ fontWeight: 700, color: "#161616" }}>{raison_sociale}</Typography>
       <Typography sx={{ color: "#161616" }}>{siret}</Typography>
       <Typography sx={{ color: "#666666" }}>{adresse}</Typography>

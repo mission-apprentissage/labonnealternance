@@ -23,7 +23,7 @@ const valueWithEllipsis = {
   backgroundColor: "#F9F8F6",
   px: "8px",
   py: "2px",
-  marginRight: fr.spacing("1w"),
+  marginRight: fr.spacing("2v"),
   fontWeight: 700,
 }
 
@@ -70,12 +70,12 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
   return (
     <DepotSimplifieStyling>
       <Box>
-        <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, mt: fr.spacing("4w"), mb: fr.spacing("3w") }}>
+        <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, mt: fr.spacing("8v"), mb: fr.spacing("6v") }}>
           Détails de la demande
         </Typography>
         <hr />
       </Box>
-      <Box sx={{ backgroundColor: "#F2F2F9", mt: fr.spacing("5w"), p: fr.spacing("3w") }}>
+      <Box sx={{ backgroundColor: "#F2F2F9", mt: fr.spacing("10v"), p: fr.spacing("6v") }}>
         <Typography component="h3" sx={{ fontSize: "20px", fontWeight: 700 }}>
           Souhaitez-vous proposer des candidats à cette entreprise ?
         </Typography>
@@ -93,9 +93,9 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
           Copier l'url
         </Button>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: fr.spacing("5w"), my: fr.spacing("5w") }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: fr.spacing("10v"), my: fr.spacing("10v") }}>
         <Box>
-          <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("5w"), fontWeight: 700 }}>
+          <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
             Offre d’alternance
           </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("7v") }}>
@@ -125,8 +125,8 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
             </Box>
           </Box>
         </Box>
-        <Box sx={{ border: "solid 1px #000091", p: fr.spacing("5w") }}>
-          <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("5w"), fontWeight: 700 }}>
+        <Box sx={{ border: "solid 1px #000091", p: fr.spacing("10v") }}>
+          <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
             Informations de contact
           </Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("7v") }}>
@@ -139,7 +139,7 @@ export function PropositionOffreId({ idFormulaire, jobId, siretFormateur, token 
               <Typography sx={valueWithEllipsis}>{formulaire.phone}</Typography>
             </Box>
             <hr />
-            <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("5w"), fontWeight: 700 }}>
+            <Typography component="h2" sx={{ fontSize: "24px", mb: fr.spacing("10v"), fontWeight: 700 }}>
               Informations légales
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -1,6 +1,7 @@
 import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material"
 import { useField } from "formik"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { Warning } from "@/theme/components/icons"
 
 export const CustomFormControl = (props) => {
@@ -21,7 +22,7 @@ export const CustomFormControl = (props) => {
         {meta.error && (
           <Box
             sx={{
-              pb: 3,
+              pb: fr.spacing("6v"),
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
@@ -30,7 +31,7 @@ export const CustomFormControl = (props) => {
             <Warning sx={{ m: 0 }} />
             <Box
               sx={{
-                ml: 1,
+                ml: fr.spacing("2v"),
                 display: "flex",
               }}
             >
