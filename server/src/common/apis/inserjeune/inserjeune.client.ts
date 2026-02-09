@@ -17,43 +17,63 @@ const ZOmogenAuthApi = z.object({
 const axiosClient = getApiClient({})
 
 let omogenToken: string | null = null
+let tokenRefreshTimeout: NodeJS.Timeout | null = null
+let tokenFetchPromise: Promise<string> | null = null
 
 const getOmogenToken = async (): Promise<string> => {
   if (omogenToken) return omogenToken
 
-  try {
-    logger.info(`Récupération du token pour l'API Omogen InserJeune`)
-    const requestBody = new URLSearchParams({
-      grant_type: "client_credentials",
-      client_id: config.inserjeune.clientId,
-      client_secret: config.inserjeune.clientSecret,
-    })
+  // If a token fetch is already in progress, wait for it
+  if (tokenFetchPromise) return tokenFetchPromise
 
-    const { data } = await axiosClient.post(`${OMOGEN_BASE_URL}/auth/token`, requestBody.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "x-Omogen-api-key": config.inserjeune.apiKey,
-      },
-    })
+  // Start a new token fetch
+  tokenFetchPromise = (async () => {
+    try {
+      logger.info(`Récupération du token pour l'API Omogen InserJeune`)
+      const requestBody = new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: config.inserjeune.clientId,
+        client_secret: config.inserjeune.clientSecret,
+      })
 
-    const validation = ZOmogenAuthApi.safeParse(data)
-    if (!validation.success) {
-      throw internal("Format de retour de l'api d'authentification Omogen non valide", { error: validation.error })
+      const { data } = await axiosClient.post(`${OMOGEN_BASE_URL}/auth/token`, requestBody.toString(), {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "x-Omogen-api-key": config.inserjeune.apiKey,
+        },
+      })
+
+      const validation = ZOmogenAuthApi.safeParse(data)
+      if (!validation.success) {
+        throw internal("Format de retour de l'api d'authentification Omogen non valide", { error: validation.error })
+      }
+
+      omogenToken = validation.data.access_token
+
+      // Clear any existing timeout
+      if (tokenRefreshTimeout) {
+        clearTimeout(tokenRefreshTimeout)
+      }
+
+      // Refresh token before it expires (90% of expiration time)
+      tokenRefreshTimeout = setTimeout(
+        () => {
+          omogenToken = null
+          tokenFetchPromise = null
+        },
+        validation.data.expires_in * 1000 * 0.9
+      )
+
+      return validation.data.access_token
+    } catch (error: any) {
+      sentryCaptureException(error, { extra: { responseData: error.response?.data } })
+      throw internal("impossible d'obtenir un token pour l'API Omogen")
+    } finally {
+      tokenFetchPromise = null
     }
+  })()
 
-    omogenToken = validation.data.access_token
-    // Refresh token before it expires (90% of expiration time)
-    setTimeout(
-      () => {
-        omogenToken = null
-      },
-      validation.data.expires_in * 1000 * 0.9
-    )
-    return validation.data.access_token
-  } catch (error: any) {
-    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-    throw internal("impossible d'obtenir un token pour l'API Omogen")
-  }
+  return tokenFetchPromise
 }
 
 /**

@@ -66,23 +66,20 @@ describe("InserJeune Controller", () => {
     })
 
     it("should handle rate limiting", async () => {
-      const mockToken = "mock-access-token"
-      const mockStats = { millesime: "2023" }
-
       // Mock token request
       nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, {
-        access_token: mockToken,
+        access_token: "mock-token",
         expires_in: 3600,
         token_type: "Bearer",
       })
 
-      // Mock multiple stats requests
-      for (let i = 0; i < 15; i++) {
-        nock(OMOGEN_BASE_URL).get(`/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/1234567${i}`).reply(200, mockStats)
+      // Mock multiple stats requests (test rate limit of 50 req/s)
+      for (let i = 0; i < 55; i++) {
+        nock(OMOGEN_BASE_URL).get(`/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/1234567${i}`).reply(200, { millesime: "2023" })
       }
 
-      // Make 10 requests (within rate limit)
-      for (let i = 0; i < 10; i++) {
+      // Make 50 requests (within rate limit)
+      for (let i = 0; i < 50; i++) {
         const response = await httpClient().inject({
           method: "GET",
           path: `/api/inserjeune/75001/1234567${i}`,
@@ -90,7 +87,7 @@ describe("InserJeune Controller", () => {
         expect(response.statusCode).toBe(200)
       }
 
-      // 11th request should be rate limited
+      // 51st request should be rate limited
       const rateLimitedResponse = await httpClient().inject({
         method: "GET",
         path: "/api/inserjeune/75001/12345670",

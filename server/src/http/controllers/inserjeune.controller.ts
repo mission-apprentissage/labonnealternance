@@ -5,7 +5,7 @@ import type { Server } from "@/http/server"
 
 const config = {
   rateLimit: {
-    max: 10,
+    max: 50,
     timeWindow: "1s",
   },
 }
