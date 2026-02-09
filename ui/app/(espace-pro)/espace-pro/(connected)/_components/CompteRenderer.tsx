@@ -96,7 +96,7 @@ export default function CompteRenderer() {
           return (
             <>
               <ModificationCompteEmail {...ModificationEmailPopup} />
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: 2, marginBottom: fr.spacing("4v") }}>
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: fr.spacing("4v"), marginBottom: fr.spacing("4v") }}>
                 <Box>
                   <Typography component="h2" sx={{ fontWeight: 700 }}>
                     Vos informations de contact

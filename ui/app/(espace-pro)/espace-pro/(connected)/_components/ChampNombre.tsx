@@ -6,7 +6,7 @@ import { Minus, Plus } from "@/theme/components/icons"
 
 export const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }} data-testid={dataTestId}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), width: "100%" }} data-testid={dataTestId}>
       <FormLabel sx={{ flexGrow: 2 }}>{label}</FormLabel>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v") }}>
