@@ -15,7 +15,7 @@ export const AlgoRecruteur = ({ withLinks = false }: { withLinks?: boolean }) =>
     >
       <Grid container spacing={fr.spacing("16v")} sx={{ alignItems: "center", justifyContent: "center" }}>
         <Grid size={{ xs: 12, md: 7 }}>
-          <Typography component="h2" variant="h2" sx={{ mb: 2 }}>
+          <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v") }}>
             La bonne alternance révèle
             <br />
             <Typography component="h2" variant="h2" sx={{ color: "#0063BC" }}>

@@ -21,7 +21,7 @@ export default function PlanDuSite() {
           <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
             <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
-                <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+                <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
                   Plan du site
                 </Typography>
                 <Box
@@ -35,7 +35,7 @@ export default function PlanDuSite() {
                 </Typography>
 
                 <Box component="nav" role="navigation" aria-label="Navigation du plan du site">
-                  <Box component="ul" sx={{ my: 4, pl: 2, listStyle: "disc", "& > li": { mb: 3 } }}>
+                  <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
                     <li>
                       <DsfrLink href="/">Espace candidat</DsfrLink>
                     </li>

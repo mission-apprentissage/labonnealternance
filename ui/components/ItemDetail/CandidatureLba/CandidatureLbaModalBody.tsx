@@ -58,7 +58,7 @@ export const CandidatureLbaModalBody = ({
       <Box sx={{ display: { xs: "none", sm: "none", md: "none", lg: "block" } }}>
         <CandidatureTasksChecklist kind={kind} />
       </Box>
-      <Box sx={{ mx: { xs: 6, sm: 8, md: 8, lg: 8, xl: "69px" }, my: 4 }}>
+      <Box sx={{ mx: { xs: 6, sm: 8, md: 8, lg: 8, xl: "69px" }, my: fr.spacing("8v") }}>
         {!fromWidget && (
           <>
             <Box sx={{ display: "flex", justifyContent: "flex-end", mr: -6, mb: fr.spacing("4v") }}>
@@ -77,16 +77,16 @@ export const CandidatureLbaModalBody = ({
         </Typography>
 
         <CandidatureLbaMessage formik={formik} />
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: fr.spacing("8v") }}>
           <CandidatureLbaFileDropzone formik={formik} setFileValue={setFileValue} />
         </Box>
         <UserFields formik={formik} />
 
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: fr.spacing("8v") }}>
           <CandidatureLbaMandataireMessage item={item} />
         </Box>
 
-        <Box sx={{ my: 4 }}>
+        <Box sx={{ my: fr.spacing("8v") }}>
           <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600" }}>* Champs obligatoires</Typography>
           <Typography>
             En remplissant ce formulaire, vous acceptez les{" "}
@@ -104,10 +104,10 @@ export const CandidatureLbaModalBody = ({
         </Box>
 
         <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
-        <Box sx={{ display: "flex", my: 4, justifyContent: "flex-end" }}>
+        <Box sx={{ display: "flex", my: fr.spacing("8v"), justifyContent: "flex-end" }}>
           {isLoading ? (
             <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }} data-testid="candidature-currently-sending">
-              <CircularProgress sx={{ mr: 4 }} />
+              <CircularProgress sx={{ mr: fr.spacing("8v") }} />
               <Typography>Veuillez patienter</Typography>
             </Box>
           ) : isOffre ? (
@@ -140,7 +140,7 @@ const UserFields = ({ formik }: { formik: any }) => {
   }
 
   return (
-    <Grid container spacing={2} sx={{ mt: 4 }}>
+    <Grid container spacing={2} sx={{ mt: fr.spacing("8v") }}>
       <Grid size={{ xs: 12, md: 6 }}>
         <FormControl error={formik.touched.applicant_last_name && Boolean(formik.errors.applicant_last_name)} fullWidth>
           <FormLabel required>Nom</FormLabel>
@@ -192,7 +192,7 @@ const UserFields = ({ formik }: { formik: any }) => {
           />
           {suggestedEmails.length > 0 && (
             <Box sx={{ mt: 2, fontSize: "12px", color: "grey.600" }}>
-              <Typography component="span" sx={{ mr: 2 }}>
+              <Typography component="span" sx={{ mr: fr.spacing("4v") }}>
                 Voulez vous dire ?
               </Typography>
               {suggestedEmails.map((suggestedEmail) => (

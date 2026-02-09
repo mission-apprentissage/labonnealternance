@@ -21,11 +21,11 @@ const StatsInserJeunes = ({ stats }: Props) => {
   return (
     stats.taux_en_formation && (
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h2" sx={{ mt: 2 }}>
+        <Typography variant="h2" sx={{ mt: fr.spacing("4v") }}>
           Que deviennent les étudiants après cette formation ?
         </Typography>
         <Typography sx={{ mt: 3, fontWeight: 700 }}>Les chiffres pour la région {stats.region.nom}</Typography>
-        <Box sx={{ mt: 3, display: "flex", flexDirection: { xs: "column", lg: "row" }, alignItems: "stretch" }}>
+        <Box sx={{ mt: fr.spacing("6v"), display: "flex", flexDirection: { xs: "column", lg: "row" }, alignItems: "stretch" }}>
           <Box sx={{ mb: 3, mr: 3, textAlign: "center", backgroundColor: "#F6F6F6", width: "100%", maxWidth: "330px", p: 4 }}>
             <Typography sx={{ mb: 3, fontSize: "40px", fontWeight: 700 }}>{stats.taux_en_formation}%</Typography>
             <Typography sx={{ mb: 0 }}>sont inscrits en formation</Typography>
@@ -33,7 +33,7 @@ const StatsInserJeunes = ({ stats }: Props) => {
           </Box>
           <Box sx={{ mb: 3, mr: 3, textAlign: "center", backgroundColor: "#F6F6F6", width: "100%", maxWidth: "330px", p: 4 }}>
             {stats.taux_en_emploi_6_mois === undefined ? (
-              <Typography sx={{ pt: 3 }}>Nous sommes désolés mais le taux d'emploi au bout de 6 mois n'est pas disponible pour le moment.</Typography>
+              <Typography sx={{ pt: fr.spacing("6v") }}>Nous sommes désolés mais le taux d'emploi au bout de 6 mois n'est pas disponible pour le moment.</Typography>
             ) : (
               <>
                 <Typography sx={{ mb: 3, fontSize: "40px", fontWeight: 700 }}>{stats.taux_en_emploi_6_mois}%</Typography>
@@ -44,7 +44,7 @@ const StatsInserJeunes = ({ stats }: Props) => {
           </Box>
           <Box sx={{ mb: 3, textAlign: "center", backgroundColor: "#F6F6F6", width: "100%", maxWidth: "330px", p: 4 }}>
             {stats.taux_autres_6_mois === undefined ? (
-              <Typography sx={{ pt: 3 }}>Nous sommes désolés mais le taux concernant les autres cas n'est pas disponible pour le moment.</Typography>
+              <Typography sx={{ pt: fr.spacing("6v") }}>Nous sommes désolés mais le taux concernant les autres cas n'est pas disponible pour le moment.</Typography>
             ) : (
               <>
                 <Typography sx={{ mb: 3, fontSize: "40px", fontWeight: 700 }}>{stats.taux_autres_6_mois}%</Typography>
@@ -54,7 +54,7 @@ const StatsInserJeunes = ({ stats }: Props) => {
             )}
           </Box>
         </Box>
-        <Typography sx={{ mt: 3, color: "grey.425" }}>
+        <Typography sx={{ mt: fr.spacing("6v"), color: "grey.425" }}>
           *Données issues du{" "}
           <DsfrLink href="https://documentation.exposition.inserjeunes.beta.gouv.fr/" aria-label="Site inserjeunes.beta.gouv.fr - nouvelle fenêtre">
             dispositif InserJeunes promotion {stats.millesime.replace("_", "/")}

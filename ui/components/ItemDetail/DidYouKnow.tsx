@@ -16,7 +16,7 @@ const DidYouKnow = () => {
         my: fr.spacing("6v"),
       }}
     >
-      <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
         Le saviez-vous ?
       </Typography>
       <Typography>
@@ -24,7 +24,7 @@ const DidYouKnow = () => {
         résultats <TagCandidatureSpontanee />
       </Typography>
 
-      <Typography sx={{ pt: 2 }}>
+      <Typography sx={{ pt: fr.spacing("4v") }}>
         Un employeur vous a proposé un entretien ?
         <br />
         <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" aria-label="Conseils de préparation à un entretien - nouvelle fenêtre">

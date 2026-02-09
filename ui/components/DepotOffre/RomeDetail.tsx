@@ -55,7 +55,7 @@ export const RomeDetail = ({
         component="h2"
         sx={{
           fontWeight: 700,
-          mb: 4,
+          mb: fr.spacing("8v"),
         }}
       >
         {title}

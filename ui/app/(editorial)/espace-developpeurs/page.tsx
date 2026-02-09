@@ -59,7 +59,7 @@ export default function EspaceDeveloppeurs() {
                   mb: fr.spacing("12v"),
                   display: "flex",
                   justifyContent: "center",
-                  gap: 4,
+                  gap: fr.spacing("8v"),
                 }}
               >
                 <Button priority="secondary" size="large">
@@ -113,11 +113,11 @@ export default function EspaceDeveloppeurs() {
               <Box
                 component="ul"
                 sx={{
-                  mb: 4,
-                  pl: 2,
+                  mb: fr.spacing("8v"),
+                  pl: fr.spacing("4v"),
                   listStyle: "disc",
                   "& > li": {
-                    mb: 1.5, // ou `mb: 2` si tu veux plus d'espacement
+                    mb: fr.spacing("3v"), // ou `mb: 2` si tu veux plus d'espacement
                   },
                 }}
               >

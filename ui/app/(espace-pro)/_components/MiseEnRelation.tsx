@@ -297,13 +297,13 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     display: "flex",
                     boxShadow: "0px -16px 16px -16px rgba(0, 0, 0, 0.32)",
                     width: "100%",
-                    my: 1,
+                    my: fr.spacing("2v"),
                     position: "sticky",
                     bottom: 0,
                     left: 0,
                     backgroundColor: "white",
                     zIndex: 1000,
-                    p: 5,
+                    p: fr.spacing("10v"),
                   }}
                 >
                   <Button disabled={checkedEtablissements.length === 0 || isSubmitting} onClick={submit} data-testid="submit-delegation">

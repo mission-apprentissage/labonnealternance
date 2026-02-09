@@ -49,7 +49,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
     <>
       <JobPostingSchema title={title} description={validCustomDescription || romeDescription || null} id={job?.job?.id} job={job} />
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
         </Typography>
         <Stack spacing={1} sx={{ p: 2, mb: fr.spacing("4v"), borderRadius: "8px", background: "#f6f6f6" }}>
@@ -100,11 +100,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
                         textAlign: "center",
                         color: "bluefrance.500",
                         background: "#e3e3fd",
-                        py: 0.5,
-                        px: 2,
+                        py: fr.spacing("1v"),
+                        px: fr.spacing("4v"),
                         borderRadius: "40px",
-                        ml: 2,
-                        mb: 1,
+                        ml: fr.spacing("4v"),
+                        mb: fr.spacing("2v"),
                       }}
                     >
                       {d}
@@ -113,7 +113,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
                 })}
               </Stack>
             ) : (
-              <Typography component="span" sx={{ ml: 2, mb: 1 }}>
+              <Typography component="span" sx={{ ml: fr.spacing("4v"), mb: fr.spacing("2v") }}>
                 Indifférent
               </Typography>
             )}
@@ -169,9 +169,12 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         </Box>
       </Stack>
       <Box sx={{ position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>
+        <Typography
+          variant="h4"
+          sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}
+        >{`En savoir plus sur le métier ${job.title}`}</Typography>
         <Box data-testid="lbb-component">
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: fr.spacing("8v") }}>
             <LbaJobCompetences job={job} />
             <LbaJobTechniques job={job} />
             <LbaJobAcces job={job} />
@@ -179,11 +182,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         </Box>
       </Box>
       <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
         </Typography>
 
-        <Typography sx={{ my: 3 }}>
+        <Typography sx={{ my: fr.spacing("6v") }}>
           {job?.company?.mandataire
             ? "Le centre de formation peut vous renseigner sur l'entreprise."
             : "Renseignez-vous sur l'entreprise, ses activités et ses valeurs pour préparer votre candidature. Vous pouvez rechercher leur site internet et leur présence sur les réseaux sociaux."}
@@ -192,7 +195,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         {!job?.company?.mandataire ? (
           <ItemLocalisation item={job} />
         ) : (
-          <Typography sx={{ mt: 1 }}>
+          <Typography sx={{ mt: fr.spacing("2v") }}>
             <Typography component="span" sx={{ fontWeight: 700 }}>
               Localisation :{" "}
             </Typography>
@@ -202,7 +205,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Typography>
         )}
 
-        <Typography sx={{ mt: 1 }}>
+        <Typography sx={{ mt: fr.spacing("2v") }}>
           <Typography component="span" sx={{ fontWeight: 700 }}>
             Taille de l'entreprise :{" "}
           </Typography>
@@ -210,7 +213,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         </Typography>
 
         {(job.nafs as ILbaItemNaf[])[0]?.label && (
-          <Typography sx={{ mt: 1 }}>
+          <Typography sx={{ mt: fr.spacing("2v") }}>
             <Typography component="span" sx={{ fontWeight: 700 }}>
               Secteur d'activité :{" "}
             </Typography>
@@ -219,7 +222,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         )}
 
         {!job?.company?.mandataire && job?.contact?.phone && (
-          <Typography sx={{ mt: 1 }}>
+          <Typography sx={{ mt: fr.spacing("2v") }}>
             <Typography component="span" sx={{ fontWeight: 700 }}>
               Téléphone :{" "}
             </Typography>
@@ -235,15 +238,15 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
       </Box>
       {job?.company?.mandataire && (
         <Box sx={{ pb: "0px", mt: 6, position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: ["0", "30px", "30px", "auto"] }}>
-          <Typography variant="h2" sx={{ mt: 2 }}>
+          <Typography variant="h2" sx={{ mt: fr.spacing("4v") }}>
             Contactez le CFA pour avoir plus d'informations
           </Typography>
 
-          <Typography sx={{ my: 2 }}>Le centre de formation peut vous renseigner sur les formations qu'il propose.</Typography>
+          <Typography sx={{ my: fr.spacing("4v") }}>Le centre de formation peut vous renseigner sur les formations qu'il propose.</Typography>
           <ItemLocalisation item={job} />
 
           {job?.contact?.phone && (
-            <Stack direction="row" sx={{ mt: 2, mb: 4 }}>
+            <Stack direction="row" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("8v") }}>
               <Box sx={{ fontWeight: 700, pl: "2px", mr: 2 }}>Téléphone :</Box>
               <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
                 {job.contact.phone}

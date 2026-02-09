@@ -24,7 +24,7 @@ export const ContactCfaSummary = (props: Props) => {
       {adresse && codePostal && (
         <Box
           sx={{
-            mt: 1,
+            mt: fr.spacing("2v"),
           }}
         >
           <MapPin2Fill sx={{ color: "#3a55d1", mb: fr.spacing("1v") }} />
@@ -43,7 +43,7 @@ export const ContactCfaSummary = (props: Props) => {
       )}
       <Box
         sx={{
-          mt: 8,
+          mt: fr.spacing("16v"),
           borderBottom: "1px solid #D0C9C4",
         }}
       />

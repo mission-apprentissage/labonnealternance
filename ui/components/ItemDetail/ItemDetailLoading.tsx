@@ -66,7 +66,7 @@ const ItemDetailLoading = ({ type }: Props) => {
                   <Typography
                     variant="body1"
                     sx={{
-                      mt: 1,
+                      mt: fr.spacing("2v"),
                     }}
                   >
                     {item.text}
@@ -78,7 +78,7 @@ const ItemDetailLoading = ({ type }: Props) => {
                 <Typography
                   variant="body1"
                   sx={{
-                    mt: 1,
+                    mt: fr.spacing("2v"),
                   }}
                 >
                   Hum... Ce chargement semble plus long que prévu

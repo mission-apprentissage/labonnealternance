@@ -196,7 +196,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: { xs: 0, md: fr.spacing("4v") }, mt: 0 }}>
         <Box
           sx={{
-            mb: 4,
+            mb: fr.spacing("8v"),
           }}
         >
           <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>

@@ -244,7 +244,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
                   <Warning sx={{ m: 0 }} />
                   <Box
                     sx={{
-                      ml: 1,
+                      ml: fr.spacing("2v"),
                     }}
                   >
                     {errorMessage}

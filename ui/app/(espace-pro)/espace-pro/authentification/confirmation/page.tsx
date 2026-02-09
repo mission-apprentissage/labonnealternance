@@ -10,18 +10,18 @@ export const metadata: Metadata = {
 
 export default function ConfirmationCreationCompte() {
   return (
-    <Box sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
+    <Box sx={{ px: { xs: 2, sm: 3 }, py: fr.spacing("4v") }}>
       <Typography component="h1" sx={{ fontSize: { sx: "32px", sm: "40px" }, lineHeight: { sx: "40px", sm: "48px" }, fontWeight: "bold" }} data-testid="validation-email-title">
         Vérifiez votre messagerie
       </Typography>
       <Box
         sx={{
-          mt: 4,
+          mt: fr.spacing("8v"),
         }}
       >
         <Typography>Nous vous avons envoyé un email renseigné précédement avec un lien de confirmation. Celui-ci sera valide pour les 60 prochaines minutes.</Typography>
       </Box>
-      <Box sx={{ mt: 4 }}>
+      <Box sx={{ mt: fr.spacing("8v") }}>
         <Typography component="h2" sx={{ fontSize: { sx: "18px", sm: "32px" }, mb: 3, lineHeight: { sx: "24px", sm: "32px" }, fontWeight: "bold" }}>
           Vous n'avez rien reçu ?
         </Typography>

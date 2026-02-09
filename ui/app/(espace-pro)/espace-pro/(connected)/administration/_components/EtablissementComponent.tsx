@@ -177,7 +177,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
               defaultValue={etablissement?.gestionnaire_email}
               type="email"
             />
-            <Box sx={{ ml: 1 }}>
+            <Box sx={{ ml: fr.spacing("2v") }}>
               {/*  @ts-expect-error: TODO */}
               <Button onClick={async () => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
                 <Disquette sx={{ width: "16px", height: "16px" }} />

@@ -72,7 +72,7 @@ export default function Authentification() {
       {errorMessage && (
         <Box
           sx={{
-            mb: 2,
+            mb: fr.spacing("4v"),
           }}
         >
           <Alert
@@ -85,7 +85,7 @@ export default function Authentification() {
       {magicLinkSent && !loading && !errorMessage && (
         <Box
           sx={{
-            mb: 2,
+            mb: fr.spacing("4v"),
           }}
         >
           <Alert severity="success" title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />

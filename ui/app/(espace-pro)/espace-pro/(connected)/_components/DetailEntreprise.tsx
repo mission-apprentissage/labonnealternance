@@ -215,7 +215,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     </Typography>
                     <Box
                       sx={{
-                        mt: 4,
+                        mt: fr.spacing("8v"),
                       }}
                     >
                       <Form>
@@ -283,7 +283,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     {user.type !== "CFA" && (
                       <Box
                         sx={{
-                          my: 4,
+                          my: fr.spacing("8v"),
                         }}
                       >
                         <FieldWithValue title="Origine" value={userRecruteur.origin} />
@@ -296,7 +296,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     <hr style={{ marginTop: 24 }} />
                     <Box
                       sx={{
-                        my: 6,
+                        my: fr.spacing("12v"),
                       }}
                     >
                       <OffresTabs
@@ -317,7 +317,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                     </Box>
                     <Box
                       sx={{
-                        mb: 12,
+                        mb: fr.spacing("24v"),
                       }}
                     >
                       <UserValidationHistory histories={userRecruteur.status} />

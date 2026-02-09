@@ -43,7 +43,7 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
 
         <Box
           sx={{
-            pb: 2,
+            pb: fr.spacing("4v"),
           }}
         >
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>

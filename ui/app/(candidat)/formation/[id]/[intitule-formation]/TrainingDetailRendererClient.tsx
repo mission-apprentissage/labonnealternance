@@ -163,7 +163,7 @@ function TrainingDetailPage({
             {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
 
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
               <Box sx={{ flex: 1 }}>
                 {Boolean(appliedDate) && (
                   <div>
@@ -171,7 +171,7 @@ function TrainingDetailPage({
                       component="span"
                       className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
                       sx={{
-                        px: 2,
+                        px: fr.spacing("4v"),
                         fontStyle: "italic",
                         backgroundColor: fr.colors.decisions.background.contrast.info.default,
                         color: fr.colors.decisions.background.actionHigh.info.default,
@@ -237,7 +237,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
               </Typography>
             </div>
           )}
-          <Box sx={{ my: 2 }}>
+          <Box sx={{ my: fr.spacing("4v") }}>
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
             <DsfrLink
               href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
@@ -250,7 +250,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
       </Box>
       {IJStats.isFetched && <StatsInserJeunes stats={IJStats.data} />}
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur l'établissement
         </Typography>
 
@@ -259,7 +259,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         {training?.contact?.phone && (
           <Typography
             sx={{
-              mt: 1,
+              mt: fr.spacing("2v"),
             }}
           >
             <Typography
@@ -295,7 +295,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
       </Box>
       {isCfaDEntreprise && (
         <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
-          <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+          <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
             Cet établissement est un CFA d&apos;entreprise
           </Typography>
 
@@ -310,7 +310,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
               <Typography
                 component="span"
                 sx={{
-                  ml: 4,
+                  ml: fr.spacing("8v"),
                 }}
               >
                 Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
@@ -321,7 +321,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
               <Typography
                 component="span"
                 sx={{
-                  ml: 4,
+                  ml: fr.spacing("8v"),
                 }}
               >
                 Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
@@ -333,7 +333,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
           <Box
             sx={{
-              my: 2,
+              my: fr.spacing("4v"),
             }}
           >
             Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
@@ -359,7 +359,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
           <Image width={24} height={24} src="/images/icons/traning-clipboard-list.svg" alt="" />
           <Box
             sx={{
-              pl: 4,
+              pl: fr.spacing("8v"),
               whiteSpace: "pre-wrap",
             }}
           >
@@ -375,7 +375,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
           <Image width={24} height={24} src="/images/icons/training-target.svg" alt="" />
           <Box
             sx={{
-              pl: 4,
+              pl: fr.spacing("8v"),
               whiteSpace: "pre-wrap",
             }}
           >
@@ -389,7 +389,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
       {training.sessions.length ? (
         <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("4v") }}>
           <Image width={24} height={24} src="/images/icons/training-academic-cap.svg" alt="" />
-          <Box sx={{ pl: 4, whiteSpace: "pre-wrap" }}>
+          <Box sx={{ pl: fr.spacing("8v"), whiteSpace: "pre-wrap" }}>
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>
             {isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."

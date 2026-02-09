@@ -22,7 +22,7 @@ const CustomInput = (props) => {
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
         {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
         {props.info && (
-          <Box className={fr.cx("fr-hint-text")} sx={{ pb: 1 }}>
+          <Box className={fr.cx("fr-hint-text")} sx={{ pb: fr.spacing("2v") }}>
             {props.info}
           </Box>
         )}
@@ -33,7 +33,7 @@ const CustomInput = (props) => {
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box
               sx={{
-                ml: 1,
+                ml: fr.spacing("2v"),
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -147,7 +147,7 @@ function InformationsCfa() {
       </Box>
       <Box
         sx={{
-          mt: 5,
+          mt: fr.spacing("10v"),
         }}
       >
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>

@@ -12,7 +12,7 @@ export const InfosDiffusionOffre = () => {
       <Typography variant="h4" sx={{ mb: fr.spacing("6v") }}>
         Profitez d'une visibilité accrue
       </Typography>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
         <InfoCircle sx={{ color: "#000091", width: "20px", height: "20px" }} />
         <Typography sx={{ mb: fr.spacing("6v") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
       </Box>
@@ -31,7 +31,7 @@ export const InfosDiffusionOffre = () => {
         sx={{
           display: "grid",
           gridTemplateColumns: ["repeat(2, 1fr)", "repeat(2, 1fr)", "repeat(3, 1fr)", "repeat(3, 1fr)"],
-          gap: 2,
+          gap: fr.spacing("4v"),
           mt: fr.spacing("6v"),
           "& > *": {
             border: "solid 1px #DDDDDD",

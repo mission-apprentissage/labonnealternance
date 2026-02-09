@@ -133,8 +133,8 @@ export const ReportJobLink = ({
                         sx: {
                           display: "flex",
                           flexDirection: "column",
-                          gap: 1,
-                          mb: 1,
+                          gap: fr.spacing("2v"),
+                          mb: fr.spacing("2v"),
                         },
                       }}
                       size="small"
@@ -192,7 +192,7 @@ const ReportedAcknowledgement = () => {
         spacing={4}
         sx={{
           alignItems: "center",
-          mb: 2,
+          mb: fr.spacing("4v"),
         }}
       >
         <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />

@@ -36,7 +36,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
   return (
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
         <Stack
@@ -68,7 +68,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
       </Box>
       <Box sx={{ mb: fr.spacing("4v") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment candidater ?
         </Typography>
 
@@ -76,8 +76,8 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           <Box
             sx={{
               bgcolor: "#f6f6f6",
-              mb: 2,
-              p: 2,
+              mb: fr.spacing("4v"),
+              p: fr.spacing("4v"),
             }}
           >
             <Stack spacing={1}>
@@ -132,7 +132,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             </DsfrLink>{" "}
             et visitez son site internet. Posez-vous les questions suivantes :
           </Typography>
-          <List sx={{ pl: 3, listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
+          <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>Est-ce que les activités de l’entreprise correspondent au métier que je souhaite exercer, en lien avec ma formation ?</ListItem>
             <ListItem>Pourquoi cette entreprise plutôt que ses concurrents ?</ListItem>
             <ListItem>Quelles compétences souhaiteriez-vous développer en intégrant cette entreprise ?</ListItem>
@@ -157,7 +157,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             <br />
             Pour rendre votre CV plus beau et professionnel, vous pouvez utiliser ces outils gratuits :
           </Typography>
-          <List sx={{ pl: 3, listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
+          <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>
               <DsfrLink href="https://cv.clicnjob.fr/" aria-label="Accéder au site cv.clicnjob.fr">
                 https://cv.clicnjob.fr/
@@ -187,7 +187,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             <Typography
               component="span"
               sx={{
-                py: 4,
+                py: fr.spacing("8v"),
                 fontStyle: "italic",
                 color: "#6A6A6A",
               }}
@@ -204,7 +204,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             <br />
             Préparez-vous avec ce quizz interactif :
           </Typography>
-          <List sx={{ pl: 3, listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
+          <List sx={{ pl: fr.spacing("6v"), listStyleType: "disc", "& .MuiListItem-root": { display: "list-item" } }}>
             <ListItem>
               <DsfrLink
                 href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
@@ -223,7 +223,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
             linkLabelNotReported="Signaler l’entreprise"
             linkLabelReported="Entreprise signalée"
             tooltip={
-              <Box sx={{ p: 1 }}>
+              <Box sx={{ p: fr.spacing("2v") }}>
                 <Typography
                   sx={{
                     fontSize: "16px",

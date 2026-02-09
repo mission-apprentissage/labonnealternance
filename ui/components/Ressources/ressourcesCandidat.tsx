@@ -51,7 +51,7 @@ const RessourcesCandidat = () => {
 
               <Typography
                 sx={{
-                  mb: 2,
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :

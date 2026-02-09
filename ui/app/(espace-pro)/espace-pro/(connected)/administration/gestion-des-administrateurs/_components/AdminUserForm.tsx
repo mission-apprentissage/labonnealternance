@@ -108,7 +108,7 @@ export const AdminUserForm = ({
           </Box>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", mb: fr.spacing("2v") }}>
             <Box sx={{ width: "300px" }}>Statut du compte </Box>
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", gap: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", gap: fr.spacing("6v") }}>
               <Box> {accessStatus}</Box>
               {accessStatus !== AccessStatus.GRANTED && (
                 <ActivateUserButton

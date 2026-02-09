@@ -26,11 +26,11 @@ export const BientotCFA = () => {
           </Box>
         </Grid>
         <Grid>
-          <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ mb: fr.spacing("4v") }}>
             Gérez vos offres de manière collaborative
           </Typography>
           <Typography>Un accès multi-comptes permettra à plusieurs personnes de votre entreprise d’accéder et de gérer vos offres d&apos;emploi.</Typography>
-          <Typography component="h3" variant="h3" sx={{ my: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ my: fr.spacing("4v") }}>
             Administrez les demandes de RDV des candidats sur vos formations
           </Typography>
           <Typography>Gérez dans votre espace personnel les demandes de rendez-vous envoyées par les candidats intérressés par vos offres d’emploi et de formation.</Typography>

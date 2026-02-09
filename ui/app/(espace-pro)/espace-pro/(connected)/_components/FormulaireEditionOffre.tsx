@@ -11,6 +11,7 @@ import { JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
@@ -145,7 +146,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
               </Typography>
               <Box
                 sx={{
-                  mt: 2,
+                  mt: fr.spacing("4v"),
                 }}
               >
                 <FormulaireEditionOffreFields onRomeChange={onRomeChange} />
@@ -175,7 +176,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
             </Box>
             <Box
               sx={{
-                mt: 8,
+                mt: fr.spacing("16v"),
               }}
             >
               <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />

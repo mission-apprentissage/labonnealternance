@@ -70,7 +70,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       {values.rome_label && (
         <Box
           sx={{
-            mt: 2,
+            mt: fr.spacing("4v"),
           }}
         >
           <Input
@@ -87,7 +87,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       )}
       <Box
         sx={{
-          mt: 2,
+          mt: fr.spacing("4v"),
         }}
       >
         <Checkbox
@@ -108,7 +108,9 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
           })}
           legend={
             <>
-              <FormLabel sx={{ ...(values.job_type.length === 0 ? { color: fr.colors.decisions.text.default.error.default } : {}), display: "inline-block", mb: 0, mr: 1 }}>
+              <FormLabel
+                sx={{ ...(values.job_type.length === 0 ? { color: fr.colors.decisions.text.default.error.default } : {}), display: "inline-block", mb: 0, mr: fr.spacing("2v") }}
+              >
                 Type de contrat en alternance *
               </FormLabel>
               <Link
@@ -139,7 +141,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
       </Select>
       <Box
         sx={{
-          mt: 2,
+          mt: fr.spacing("4v"),
         }}
       >
         <CustomInput
@@ -156,7 +158,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>
       <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v") }}>
           <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois) *</FormLabel>
           <Input
             label=""
@@ -173,7 +175,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange }: { onRomeChange: (
             <Warning sx={{ m: 0 }} />
             <Box
               sx={{
-                ml: 1,
+                ml: fr.spacing("2v"),
                 display: "flex",
               }}
             >

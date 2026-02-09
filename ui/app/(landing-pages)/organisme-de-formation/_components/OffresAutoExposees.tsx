@@ -1,6 +1,7 @@
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -11,7 +12,7 @@ export const OffresAutoExposees = () => {
         <Image src="/images/home_pics/illu-offreformation.svg" width={586} height={298} alt="" style={{ width: "100%", height: "auto" }} />
       </Grid>
       <Grid size={{ xs: 12, md: 6 }}>
-        <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+        <Typography component="h3" variant="h3" sx={{ mb: fr.spacing("4v") }}>
           Vos formations en alternance sont automatiquement exposées
         </Typography>
         <Typography>

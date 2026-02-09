@@ -219,7 +219,7 @@ function ListeEntreprise() {
           </Box>
           <Box
             sx={{
-              mr: 3,
+              mr: fr.spacing("6v"),
             }}
           >
             <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>

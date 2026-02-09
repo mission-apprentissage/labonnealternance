@@ -23,9 +23,9 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
   const ideaType = item.ideaType
   return (
     <Box sx={{ px: fr.spacing("8v"), pb: fr.spacing("8v") }}>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: 4 }}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
-        <Box sx={{ ml: 2 }}>
+        <Box sx={{ ml: fr.spacing("4v") }}>
           <Typography data-testid="application-success" variant="h2" sx={{ fontSize: "20px", fontWeight: 700 }}>
             Votre candidature a bien été envoyée à{" "}
             <Typography component="span" variant="h2">

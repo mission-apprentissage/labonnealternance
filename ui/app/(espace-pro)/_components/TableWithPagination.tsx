@@ -129,7 +129,7 @@ function TableWithPagination({
 
   return (
     <Box className="search-page">
-      <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: fr.spacing("8v") }}>
         <Box
           sx={{
             width: "90%",
@@ -146,7 +146,7 @@ function TableWithPagination({
             >
               <Typography
                 sx={{
-                  mt: 3,
+                  mt: fr.spacing("6v"),
                   display: "-webkit-box",
 
                   // ← number of lines
@@ -181,7 +181,7 @@ function TableWithPagination({
                             <Box
                               component="span"
                               sx={{
-                                pl: 1,
+                                pl: fr.spacing("2v"),
                               }}
                             >
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}

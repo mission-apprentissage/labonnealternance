@@ -43,7 +43,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                             <Box
                               component="span"
                               sx={{
-                                pl: 1,
+                                pl: fr.spacing("2v"),
                               }}
                             >
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}

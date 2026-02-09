@@ -171,7 +171,7 @@ export const DemandeDeContactForm = ({
             {error && (
               <Box
                 sx={{
-                  pt: 4,
+                  pt: fr.spacing("8v"),
                 }}
               >
                 <Typography data-testid="prdv-submit-error" color="redmarianne">
@@ -224,7 +224,7 @@ const EmailField = () => {
       {suggestedEmails.length > 0 && (
         <Box
           sx={{
-            mt: 2,
+            mt: fr.spacing("4v"),
             fontSize: "12px",
             color: fr.colors.decisions.text.mention.grey.default,
           }}
@@ -232,7 +232,7 @@ const EmailField = () => {
           <Typography
             component="span"
             sx={{
-              mr: 2,
+              mr: fr.spacing("4v"),
             }}
           >
             Voulez vous dire ?
@@ -264,7 +264,7 @@ const ReasonsField = ({ formik }: { formik: any }) => {
   return (
     <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
       <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
-      <Box sx={{ display: "flex", flexDirection: "column", mt: 1 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", mt: fr.spacing("2v") }}>
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (

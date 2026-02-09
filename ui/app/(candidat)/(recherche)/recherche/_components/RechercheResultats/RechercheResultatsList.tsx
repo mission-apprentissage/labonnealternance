@@ -105,9 +105,9 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
       {formationQuery.status === "success" && formationQuery.formations.length === 0 && (
         <Box
           sx={{
-            mx: 6,
+            mx: fr.spacing("12v"),
             textAlign: "center",
-            my: 2,
+            my: fr.spacing("4v"),
             fontWeight: 700,
           }}
         >
@@ -119,8 +119,8 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
           sx={{
             fontWeight: 700,
             textAlign: "center",
-            mx: 4,
-            my: 2,
+            mx: fr.spacing("8v"),
+            my: fr.spacing("4v"),
           }}
         >
           Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches

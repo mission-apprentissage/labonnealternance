@@ -44,8 +44,8 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
         li: {
           fontSize: ["12px", "12px", "12px", "16px"],
           lineHeight: ["20px", "20px", "20px", "24px"],
-          mx: 10,
-          mb: 5,
+          mx: fr.spacing("20v"),
+          mb: fr.spacing("10v"),
         },
       },
       "& .fr-table td": {
