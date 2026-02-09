@@ -48,7 +48,7 @@ export const tabSx = {
       color: "primary.main",
       backgroundColor: "#fff",
       // Hover
-      ":hover": {
+      "&:hover": {
         backgroundColor: "#C1C1FB",
       },
     },
