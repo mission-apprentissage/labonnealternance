@@ -21,6 +21,7 @@ import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJo
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import LbaJobReportTooltip from "@/components/ItemDetail/LbaJobComponents/LbaJobReportTooltip"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -112,24 +113,20 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
-            tooltip={
-              <Box sx={{ p: 1 }}>
-                <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, marginBottom: "8px", color: "#161616" }}>
-                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
-                </Typography>
-                <ul>
-                  <li>Offre offensante ou discriminatoire</li>
-                  <li>Offre inexacte ou expirée</li>
-                  <li>Fausse offre provenant d'un centre de formation</li>
-                  <li>Tentative d'escroquerie</li>
-                </ul>
-              </Box>
-            }
+            tooltip={<LbaJobReportTooltip />}
           />
         </Box>
       </Box>
-
-      <Stack spacing={2} direction="row" alignItems="center" sx={{ my: fr.spacing("3w"), maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{
+          alignItems: "center",
+          my: fr.spacing("3w"),
+          maxWidth: "970px",
+          mx: { xs: 0, md: "auto" },
+        }}
+      >
         <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
         <Box>
           <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
@@ -143,7 +140,6 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           </Box>
         </Box>
       </Stack>
-
       {Boolean(job?.job?.offer_to_be_acquired_skills?.length || job?.job?.offer_access_conditions?.length) && (
         <Box sx={{ pb: 0, position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
           <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>

@@ -39,7 +39,7 @@ const contentSecurityPolicy = `
   script-src-attr 'none';
   connect-src 'self'
               https://catalogue-apprentissage.intercariforef.org
-              https://api-adresse.data.gouv.fr
+              https://data.geopf.fr
               https://api.mapbox.com
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr

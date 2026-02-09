@@ -5,12 +5,11 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import React, { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
 
-import { IntensionPageNavigation } from "./IntensionPageNavigation"
-import { IntentionPageForm } from "./IntentionPageForm"
 import { IntensionPageResult } from "./IntensionPageResult"
 import type { IntentionPageFormValues } from "./IntentionPageForm"
-import { LoadingEmptySpace } from "@/components/espace_pro"
+import { IntentionPageForm } from "./IntentionPageForm"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { LoadingEmptySpace } from "@/components/espace_pro"
 import { MailCard } from "@/components/MailCard"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
@@ -89,10 +88,21 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         </Button>
       </Box>
       <Box sx={{ my: "24px" }}>
-        <Typography fontSize="16px" lineHeight="24px" fontWeight={700}>
+        <Typography
+          sx={{
+            fontSize: "16px",
+            lineHeight: "24px",
+            fontWeight: 700,
+          }}
+        >
           Voici votre réponse {positiveNegative} à {applicant_first_name} {applicant_last_name} :
         </Typography>
-        <Typography fontSize="12px" lineHeight="20px">
+        <Typography
+          sx={{
+            fontSize: "12px",
+            lineHeight: "20px",
+          }}
+        >
           {company_recruitment_intention === ApplicationIntention.ENTRETIEN ? (
             <>Le candidat recevra le message suivant ainsi que vos coordonnées par courriel. Vérifiez vos coordonnées, afin que le candidat puisse vous recontacter.</>
           ) : (
@@ -160,13 +170,10 @@ export function IntentionPage(props: IntentionPageProps) {
   const [displayMode, setDisplayMode] = useState<"form" | "canceled" | "sent_now">("form")
 
   return (
-    <Box sx={{ marginBottom: "110px" }}>
-      <IntensionPageNavigation />
-      <Box sx={{ paddingTop: fr.spacing("5w") }}>
-        {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
-        {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
-        {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
-      </Box>
+    <Box sx={{ mY: fr.spacing("10v") }}>
+      {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
+      {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
+      {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
     </Box>
   )
 }

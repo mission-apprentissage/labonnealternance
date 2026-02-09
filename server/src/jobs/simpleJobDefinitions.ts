@@ -1,14 +1,22 @@
+import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
-import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
 import { processRecruiterIntentions } from "./applications/processRecruiterIntentions"
 import { obfuscateCollections } from "./database/obfuscateCollections"
 import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
-import { classifyRomesForDomainesMetiers, classifyRomesForDomainesMetiersAnalyze, findDomainesMetiersIncoherents } from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { buildMappingRomeRNCP } from "./domainesMetiers/buildMappingRomeRNCP"
+import {
+  analyzeRemovedRomes,
+  classifyRomesForDomainesMetiers,
+  classifyRomesForDomainesMetiersAnalyze,
+  findDomainesMetiersIncoherents,
+} from "./domainesMetiers/classifyRomesForDomainesMetiers"
+import { importFichesRncp } from "./domainesMetiers/importFichesRncp"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
+import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -16,6 +24,7 @@ import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollecti
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
+import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
@@ -42,7 +51,6 @@ import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
-import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
@@ -67,7 +75,6 @@ import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
-import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -375,10 +382,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
   },
   {
-    fct: exportJobsToS3V2,
-    description: "export des offres sur S3 (V2)",
-  },
-  {
     fct: removeBrevoContacts,
     description: "Anonymise les contacts Brevo dont la date de creation est supérieure à 2 ans",
   },
@@ -396,6 +399,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
   },
   {
+    fct: analyzeRemovedRomes,
+    description: "Analyse les codes ROME supprimés ou modifiés entre les versions du référentiel",
+  },
+  {
     fct: fillLbaUrl,
     description: "Remplit le champ lba_url dans la collection jobs_partners",
   },
@@ -410,5 +417,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processEngagementJeunes,
     description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: importFichesRncp,
+    description: "Import des fichers RNCP dans la base de données",
+  },
+  {
+    fct: buildMappingRomeRNCP,
+    description: "Convertit les fiches RNCP en un mapping ROME => RNCP",
+  },
+  {
+    fct: validateDomaineMetiers,
+    description: "Validation des données domainesmetiers",
   },
 ]

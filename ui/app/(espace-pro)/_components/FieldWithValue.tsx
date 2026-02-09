@@ -19,7 +19,12 @@ export const FieldWithValue = ({
   }
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Typography mr={1} sx={{ minWidth: "fit-content" }}>
+      <Typography
+        sx={{
+          mr: 1,
+          minWidth: "fit-content",
+        }}
+      >
         {title} :
       </Typography>
       {!isValueEmpty ? (

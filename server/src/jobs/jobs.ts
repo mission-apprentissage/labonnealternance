@@ -6,7 +6,7 @@ import { anonymizeApplications } from "./anonymization/anonymizeApplications"
 import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
-import { anonimizeUsersWithAccounts } from "./anonymization/anonymizeUserRecruteurs"
+import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
@@ -316,7 +316,7 @@ export async function setupJobProcessor() {
           },
         },
     jobs: {
-      "recreate:indexes": {
+      "indexes:recreate": {
         handler: async (job) => {
           const { drop } = job.payload as any
           await recreateIndexes({ drop })
@@ -346,6 +346,9 @@ export async function setupJobProcessor() {
           await recruiterOfferExpirationReminderJob(parseInt(threshold))
           return
         },
+      },
+      exportJobsToS3V2: {
+        handler: async () => exportJobsToS3V2(),
       },
       "etablissement:invite:premium:follow-up": {
         handler: async (job) => inviteEtablissementParcoursupToPremiumFollowUp(job.payload?.bypassDate as any),

@@ -20,7 +20,9 @@ export default async function PublicLayout({ children }: PropsWithChildren) {
         ]}
       />
       <PublicHeader user={user} />
-      <Box sx={{ marginBottom: fr.spacing("4w") }}>{children}</Box>
+      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("4w") }}>
+        {children}
+      </Box>
       <Footer />
     </>
   )

@@ -22,6 +22,7 @@ const additionalMessageByMotif = {
   "Offre inexacte ou expirée": "Précisez les informations obsolètes (numéro de téléphone, adresse postale, etc)",
   "Tentative d’escroquerie": "Pouvez-vous préciser ce qui vous a laissé penser qu'il s'agissait d'une escroquerie (demande de coordonnées bancaires, etc.) ?",
   "Informations erronées": "Précisez les informations erronées (numéro de téléphone, adresse postale, etc)",
+  "Offre ne relevant pas du champ de l’alternance (CDI, stage, etc.)": "Pouvez-vous préciser ce qui vous a laissé penser qu'il ne s'agissait pas d'une offre d'alternance ?",
 } as Record<string, string>
 
 const noAdditionalMessage = ["Entreprise fermée"]
@@ -46,7 +47,14 @@ const contentByItemType: Partial<
     title: "Signaler l’offre",
     introductionText:
       "Des contrôles sont réalisés pour vérifier la légalité et la conformité des offres exposées. Si malgré ces contrôles vous constatez des contenus inappropriés, signalez cette opportunité et une attention particulière y sera apportée.",
-    motifs: ["Offre offensante ou discriminatoire", "Offre inexacte ou expirée", "Fausse offre provenant d’un centre de formation", "Tentative d’escroquerie", "Autre"],
+    motifs: [
+      "Offre offensante ou discriminatoire",
+      "Offre inexacte ou expirée",
+      "Fausse offre provenant d’un centre de formation",
+      "Tentative d’escroquerie",
+      "Offre ne relevant pas du champ de l’alternance (CDI, stage, etc.)",
+      "Autre",
+    ],
   },
 }
 
@@ -84,7 +92,12 @@ export const ReportJobLink = ({
   const content = contentByItemType[type] ?? contentByItemType.offres_emploi_lba
 
   return (
-    <Stack direction="row" alignItems="center">
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: "center",
+      }}
+    >
       {storedValue ? (
         <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
           {linkLabelReported}
@@ -95,7 +108,7 @@ export const ReportJobLink = ({
         </Button>
       )}
       <InfoTooltipOrModal tooltipContent={tooltip}>
-        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="label" />
+        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="Voir les raisons pour lesquelles vous pouvez signaler cette offre" />
       </InfoTooltipOrModal>
       <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
         {storedValue ? (
@@ -174,7 +187,14 @@ export const ReportJobLink = ({
 const ReportedAcknowledgement = () => {
   return (
     <Box sx={{ justifySelf: "center", p: fr.spacing("4w") }}>
-      <Stack direction="row" spacing={4} alignItems="center" sx={{ mb: 2 }}>
+      <Stack
+        direction="row"
+        spacing={4}
+        sx={{
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
         <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />
         <Typography variant="h2">Votre signalement a bien été envoyé à notre équipe.</Typography>
       </Stack>

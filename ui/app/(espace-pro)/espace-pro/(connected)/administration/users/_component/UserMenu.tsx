@@ -23,6 +23,7 @@ export const UserMenu = ({
   const actions: PopoverMenuAction[] = [
     {
       label: "Voir les informations",
+      ariaLabel: `Voir les informations de l'entreprise ${row.establishment_raison_sociale}`,
       type: "link",
       link: `/espace-pro/administration/users/${row._id}`,
     },
@@ -30,6 +31,7 @@ export const UserMenu = ({
       ? {
           label: "Activer le compte",
           type: "button",
+          ariaLabel: `Activer le compte de l'entreprise ${row.establishment_raison_sociale}`,
           onClick: () => {
             confirmationActivationUtilisateur.onOpen()
             setCurrentEntreprise(row)
@@ -39,6 +41,7 @@ export const UserMenu = ({
     canDeactivate
       ? {
           label: "Désactiver le compte",
+          ariaLabel: `Désactiver le compte de l'entreprise ${row.establishment_raison_sociale}`,
           type: "button",
           onClick: () => {
             confirmationDesactivationUtilisateur.onOpen()
@@ -48,5 +51,5 @@ export const UserMenu = ({
       : null,
   ]
 
-  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={"Actions sur le compte de l'entreprise"} />
+  return <PopoverMenu actions={actions.filter((action) => action !== null)} title={`Actions sur le compte de l'entreprise ${row.establishment_raison_sociale}`} />
 }

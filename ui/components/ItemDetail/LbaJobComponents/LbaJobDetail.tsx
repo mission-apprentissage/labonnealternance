@@ -11,6 +11,7 @@ import LbaJobCompetences from "./LbaJobCompetences"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 import { LbaJobEngagement } from "./LbaJobEngagement"
+import LbaJobReportTooltip from "./LbaJobReportTooltip"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3, notifyLbaJobDetailView } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -75,10 +76,20 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
               <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
             </div>
           )}
-          <Stack direction="row" flexWrap="wrap">
+          <Stack
+            direction="row"
+            sx={{
+              flexWrap: "wrap",
+            }}
+          >
             <strong>Niveau visé en fin d&apos;études : </strong>{" "}
             {job?.target_diploma_level ? (
-              <Stack direction="row" flexWrap="wrap">
+              <Stack
+                direction="row"
+                sx={{
+                  flexWrap: "wrap",
+                }}
+              >
                 {job?.target_diploma_level.split(", ").map(function (d, idx) {
                   return (
                     <Typography
@@ -130,24 +141,20 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
             linkLabelNotReported="Signaler l'offre"
             linkLabelReported="Offre signalée"
-            tooltip={
-              <Box sx={{ p: 1 }}>
-                <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: "700", marginBottom: "8px", color: "#161616" }}>
-                  Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
-                </Typography>
-                <ul>
-                  <li>Offre offensante ou discriminatoire</li>
-                  <li>Offre inexacte ou expirée</li>
-                  <li>Fausse offre provenant d'un centre de formation</li>
-                  <li>Tentative d'escroquerie</li>
-                </ul>
-              </Box>
-            }
+            tooltip={<LbaJobReportTooltip />}
           />
         </Box>
       </Box>
-
-      <Stack spacing={2} direction="row" alignItems="center" sx={{ my: fr.spacing("3w"), maxWidth: "970px", mx: { xs: 2, sm: 2, md: "auto" } }}>
+      <Stack
+        spacing={2}
+        direction="row"
+        sx={{
+          alignItems: "center",
+          my: fr.spacing("3w"),
+          maxWidth: "970px",
+          mx: { xs: 2, sm: 2, md: "auto" },
+        }}
+      >
         <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
         <Box>
           <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>
@@ -161,7 +168,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Stack>
-
       <Box sx={{ position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{`En savoir plus sur le métier ${job.title}`}</Typography>
         <Box data-testid="lbb-component">
@@ -172,7 +178,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Box>
-
       <Box sx={{ mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
@@ -228,7 +233,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
 
         {!job?.company?.mandataire && <ItemGoogleSearchLink item={job} />}
       </Box>
-
       {job?.company?.mandataire && (
         <Box sx={{ pb: "0px", mt: 6, position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: ["0", "30px", "30px", "auto"] }}>
           <Typography variant="h2" sx={{ mt: 2 }}>

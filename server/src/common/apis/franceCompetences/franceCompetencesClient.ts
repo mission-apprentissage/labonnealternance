@@ -14,7 +14,7 @@ const ZOpcoResponse = z.union([
     siret: z.string(),
   }),
   z.object({
-    code: z.enum(["01", "02"]).describe("01: siret trouvé. 02: siret non trouvé mais préempté par un OPCO via l'application des déclarations"),
+    code: z.enum(["01", "02", "03"]).describe("01: siret trouvé. 02, 03 : siret non trouvé mais préempté par un OPCO via l'application des déclarations"),
     siret: z.string(),
     idcc: z.string(),
     opcoRattachement: z.object({
@@ -29,6 +29,43 @@ const ZOpcoResponse = z.union([
       .optional(),
   }),
 ])
+
+/**
+ * Spécification Fonctionnelle — Règles de Retour OPCO / IDCC selon SIRET
+Cas 1 — SIRET trouvé dans le référentiel FC
+Nom du champ          Optionnel      Type               Description
+code                  Non            Alphanumérique     01
+SIRET                 Non            Alphanumérique     SIRET de l’établissement
+CODE IDCC             Oui            Alphanumérique     Code IDCC s’il existe
+opcoRattachement      Non            Objet              OPCO propriétaire (Code, Nom)
+opcoGestion           Oui            Objet              OPCO gestion (Code, Nom)  
+
+Cas 2 — Recherche dans les établissements chiffrés
+Nom du champ          Optionnel      Type               Description
+code                  Non            Alphanumérique     02
+SIRET                 Non            Alphanumérique     SIRET de l’établissement
+CODE IDCC             Oui            Alphanumérique     Code IDCC s’il existe
+opcoRattachement      Non            Objet              OPCO revendicateur (Code, Nom)
+opcoGestion           Non            Objet              OPCO gestion (Code, Nom)
+
+Cas 3 — API Déclaration
+Nom du champ          Optionnel      Type               Description
+code                  Non            Alphanumérique     03
+SIRET                 Non            Alphanumérique     SIRET de l’établissement
+CODE IDCC             Oui            Alphanumérique     Code IDCC s’il existe
+opcoRattachement      Non            Objet              OPCO revendicateur (Code, Nom)
+
+Cas 99 — SIRET inconnu
+Nom du champ          Optionnel     Type                Description
+code                  Non           Alphanumérique      99
+SIRET                 Non           Alphanumérique      SIRET demandé
+
+Notes sur l’IDCC
+S’il existe, il doit être renvoyé.
+S’il n’existe pas, champ vide.
+Aucun traitement bloquant en cas d’absence d’IDCC.
+
+ */
 
 const mappingOpcoNames: Record<string, OPCOS_LABEL> = {
   AKTO: OPCOS_LABEL.AKTO,
@@ -57,7 +94,7 @@ export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null>
     if (response.status === 200) {
       const data = ZOpcoResponse.parse(response.data)
       const { code } = data
-      if (code === "99" || code === "02") {
+      if (code === "99" || code === "02" || code === "03") {
         return null
       } else if (code === "01") {
         const {

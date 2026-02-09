@@ -3,7 +3,7 @@ import { promisify } from "util"
 import type { Data } from "ejs"
 import ejs from "ejs"
 import mjml from "mjml"
-import type { Transporter } from "nodemailer"
+import type { Transporter, SendMailOptions } from "nodemailer"
 import nodemailer from "nodemailer"
 import type { Address } from "nodemailer/lib/mailer"
 import type SMTPTransport from "nodemailer/lib/smtp-transport"
@@ -11,6 +11,8 @@ import nodemailerHtmlToText from "nodemailer-html-to-text"
 
 import config from "@/config"
 import { startSentryPerfRecording } from "@/common/utils/sentryUtils"
+
+type Attachment = Exclude<SendMailOptions["attachments"], undefined>[number]
 
 const htmlToText = nodemailerHtmlToText.htmlToText
 const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
@@ -60,13 +62,13 @@ const createMailer = () => {
       cc = undefined,
       attachments,
     }: {
+      from?: string | Address
       to: string
       subject: string
       template: string
       data: object
-      from?: string | Address
       cc?: string
-      attachments?: object[]
+      attachments?: Attachment[]
     }): Promise<{ messageId: string; accepted?: string[] }> => {
       const html = await renderEmail(template, data)
       let mail

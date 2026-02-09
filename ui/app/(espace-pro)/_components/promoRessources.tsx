@@ -26,7 +26,15 @@ export const PromoRessources = ({ target }: { target: Target }) => (
     }}
   >
     <Image fetchPriority="low" src="/images/pages_ressources/outils.svg" aria-hidden={true} alt="" width={212} height={145} />
-    <Typography textAlign="center" sx={{ fontWeight: 700, fontSize: "1.5rem", lineHeight: "2rem", textWrap: "balance" }}>
+    <Typography
+      sx={{
+        textAlign: "center",
+        fontWeight: 700,
+        fontSize: "1.5rem",
+        lineHeight: "2rem",
+        textWrap: "balance",
+      }}
+    >
       {textes[target]}
     </Typography>
 

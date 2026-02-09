@@ -65,7 +65,7 @@
     "iconv-lite": "^0.7.0",
     "is-semver": "^1.0.12",
     "job-processor": "^1.10.3",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
     "lil-http-terminator": "^1.2.3",
     "lodash-es": "^4.17.21",
     "match-sorter": "^8.1.0",
