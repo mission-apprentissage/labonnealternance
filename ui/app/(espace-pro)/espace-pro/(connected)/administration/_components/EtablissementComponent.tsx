@@ -79,7 +79,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
       <Box sx={{ borderBottom: "1px solid #E0E5ED" }}>
         <Typography sx={{ fontSize: "20px", fontWeight: 700, p: fr.spacing("4v") }}>Etablissement</Typography>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("4v") }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
         <Box sx={{ width: "100%" }}>
           <Typography sx={{ fontWeight: 700 }}>
             Raison sociale <br />
@@ -108,7 +108,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("4v") }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
         <Box sx={{ width: "100%" }}>
           <Typography sx={{ fontWeight: 700 }}>
             Adresse
@@ -129,7 +129,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("4v") }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
         {etablissement?.optout_invitation_date && (
           <Box sx={{ width: "100%" }}>
             <Typography sx={{ fontWeight: 700 }}>
@@ -151,7 +151,7 @@ const EtablissementComponent = ({ id }: { id?: string }) => {
         )}
       </Box>
       {etablissement?.optout_refusal_date && (
-        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: 2, p: fr.spacing("4v") }}>
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v"), p: fr.spacing("4v") }}>
           <Box sx={{ width: "100%" }}>
             <Typography sx={{ fontWeight: 700 }}>
               Date de refus de l'opt-out

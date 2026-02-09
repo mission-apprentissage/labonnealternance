@@ -151,8 +151,8 @@ const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right:
   return (
     <Box
       sx={{
-        rowGap: 4,
-        columnGap: 4,
+        rowGap: fr.spacing("8v"),
+        columnGap: fr.spacing("8v"),
         display: "grid",
         gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
         gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },

@@ -93,7 +93,7 @@ export const DemandeDeContactForm = ({
                 </RadioGroup>
               </Box>
             </FormControl>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("4v") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
               <FormControl data-testid="fieldset-lastname" error={formik.touched.lastname && Boolean(formik.errors.lastname)} fullWidth>
                 <FormLabel htmlFor="lastname">Nom *</FormLabel>
                 <Input
@@ -121,7 +121,7 @@ export const DemandeDeContactForm = ({
                 <FormHelperText>{formik.touched.firstname && formik.errors.firstname}</FormHelperText>
               </FormControl>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("4v") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
               <EmailField />
               <FormControl data-testid="fieldset-phone" error={formik.touched.phone && Boolean(formik.errors.phone)} fullWidth>
                 <FormLabel htmlFor="email">Téléphone *</FormLabel>
