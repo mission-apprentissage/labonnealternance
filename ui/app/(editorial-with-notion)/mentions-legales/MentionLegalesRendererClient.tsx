@@ -20,7 +20,7 @@ export default function MentionLegalesRendererClient({ mentionsLegales }: { ment
       <DefaultContainer>
         <Box
           sx={{
-            p: { xs: fr.spacing("2w"), md: fr.spacing("5w") },
+            p: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
             marginBottom: fr.spacing("5w"),
             borderRadius: "10px",
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
