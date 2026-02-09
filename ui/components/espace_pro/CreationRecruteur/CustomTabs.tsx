@@ -41,6 +41,7 @@ export const tabSx = {
     // Focus
     "&.Mui-focusVisible": {
       backgroundColor: "#C1C1FB",
+      outline: "2px solid #6A6AF4",
     },
 
     // Selected
@@ -48,7 +49,7 @@ export const tabSx = {
       color: "primary.main",
       backgroundColor: "#fff",
       // Hover
-      ":hover": {
+      "&:hover": {
         backgroundColor: "#C1C1FB",
       },
     },

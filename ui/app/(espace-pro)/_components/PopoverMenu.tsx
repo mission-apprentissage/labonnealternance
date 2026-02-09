@@ -119,7 +119,7 @@ export const PopoverMenu = ({
                             backgroundColor: "#e3f2fd",
                             borderLeft: "4px solid #6A6AF4",
                           },
-                          ":focus": {
+                          "&.Mui-focusVisible, & .MuiButtonBase-root.Mui-focusVisible": {
                             backgroundColor: "#e3f2fd",
                             borderLeft: "4px solid #6A6AF4",
                           },
