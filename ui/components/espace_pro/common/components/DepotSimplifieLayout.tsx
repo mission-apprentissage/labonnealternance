@@ -15,7 +15,7 @@ export const DepotSimplifieLayout = ({ children }: { children: React.ReactNode }
 export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode }) => (
   <Box
     sx={{
-      my: fr.spacing("5w"),
+      my: fr.spacing("10v"),
       "& p": {
         fontSize: ["12px", "12px", "12px", "16px"],
         lineHeight: ["20px", "20px", "20px", "24px"],
@@ -30,10 +30,10 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
         lineHeight: ["24px", "24px", "24px", "32px"],
       },
       "& .bandeau": {
-        marginBottom: fr.spacing("4w"),
+        marginBottom: fr.spacing("8v"),
       },
       "& .bandeau h2": {
-        marginBottom: fr.spacing("1w"),
+        marginBottom: fr.spacing("2v"),
       },
       "& h2.big": {
         fontSize: ["18px", "20px", "20px", "32px"],

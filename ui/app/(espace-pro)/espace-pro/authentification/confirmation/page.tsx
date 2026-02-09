@@ -27,7 +27,7 @@ export default function ConfirmationCreationCompte() {
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <div className="ri-mail-line" style={{ color: fr.colors.decisions.text.active.blueFrance.default }} />
-          <Link sx={{ marginLeft: fr.spacing("1w") }} href={`mailto:${publicConfig.publicEmail}?subject=Creation%20compte%20LBAR%20-%20Mail%20non%20recu`} underline="hover">
+          <Link sx={{ marginLeft: fr.spacing("2v") }} href={`mailto:${publicConfig.publicEmail}?subject=Creation%20compte%20LBAR%20-%20Mail%20non%20recu`} underline="hover">
             Contacter l'équipe La bonne alternance
           </Link>
         </Box>

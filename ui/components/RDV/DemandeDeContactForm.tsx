@@ -85,7 +85,7 @@ export const DemandeDeContactForm = ({
         return (
           <form onSubmit={formik.handleSubmit}>
             <FormControl>
-              <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("2w") }}>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("4v") }}>
                 <Typography sx={{ mr: { xs: 0, md: 3 }, mb: { xs: 1, sm: 1, md: 0 } }}>Vous êtes * :</Typography>
                 <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={async (_, value) => formik.setFieldValue("applicantType", value)}>
                   <FormControlLabel value={EApplicantType.ETUDIANT} label="L'étudiant" control={<Radio />} />
@@ -93,7 +93,7 @@ export const DemandeDeContactForm = ({
                 </RadioGroup>
               </Box>
             </FormControl>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("2w") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("4v") }}>
               <FormControl data-testid="fieldset-lastname" error={formik.touched.lastname && Boolean(formik.errors.lastname)} fullWidth>
                 <FormLabel htmlFor="lastname">Nom *</FormLabel>
                 <Input
@@ -121,7 +121,7 @@ export const DemandeDeContactForm = ({
                 <FormHelperText>{formik.touched.firstname && formik.errors.firstname}</FormHelperText>
               </FormControl>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("2w") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: fr.spacing("4v") }}>
               <EmailField />
               <FormControl data-testid="fieldset-phone" error={formik.touched.phone && Boolean(formik.errors.phone)} fullWidth>
                 <FormLabel htmlFor="email">Téléphone *</FormLabel>
@@ -137,7 +137,7 @@ export const DemandeDeContactForm = ({
                 <FormHelperText>{formik.touched.phone && formik.errors.phone}</FormHelperText>
               </FormControl>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("2w") }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("4v") }}>
               <ReasonsField formik={formik} />
             </Box>
             <Box
@@ -149,12 +149,12 @@ export const DemandeDeContactForm = ({
               <Typography
                 sx={{
                   color: fr.colors.decisions.text.mention.grey.default,
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 * Champs obligatoires
               </Typography>
-              <Typography sx={{ mb: fr.spacing("2w") }}>
+              <Typography sx={{ mb: fr.spacing("4v") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
                 <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
                   Conditions générales d&apos;utilisation
@@ -277,7 +277,7 @@ const ReasonsField = ({ formik }: { formik: any }) => {
         })}
       </Box>
       {applicantReasons.includes(EReasonsKey.AUTRE) && (
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <FormControl data-testid="fieldset-applicantMessageToCfa" fullWidth>
             <FormLabel htmlFor="reasons">Autre(s) sujet(s) à aborder :</FormLabel>
             <Input

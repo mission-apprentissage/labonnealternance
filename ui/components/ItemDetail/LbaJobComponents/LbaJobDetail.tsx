@@ -48,11 +48,11 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
   return (
     <>
       <JobPostingSchema title={title} description={validCustomDescription || romeDescription || null} id={job?.job?.id} job={job} />
-      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
         </Typography>
-        <Stack spacing={1} sx={{ p: 2, mb: fr.spacing("2w"), borderRadius: "8px", background: "#f6f6f6" }}>
+        <Stack spacing={1} sx={{ p: 2, mb: fr.spacing("4v"), borderRadius: "8px", background: "#f6f6f6" }}>
           <div>
             <strong>Début du contrat le : </strong> {jobStartDate}
           </div>
@@ -130,12 +130,12 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
             </Box>
           )}
         </Stack>
-        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
+        <Box sx={{ mb: fr.spacing("4v") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
         <LbaJobQualites job={job} />
 
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <ReportJobLink
             itemId={job?.job?.id}
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}
@@ -150,7 +150,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         direction="row"
         sx={{
           alignItems: "center",
-          my: fr.spacing("3w"),
+          my: fr.spacing("6v"),
           maxWidth: "970px",
           mx: { xs: 2, sm: 2, md: "auto" },
         }}
@@ -178,7 +178,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Box>
-      <Box sx={{ mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
         </Typography>

@@ -160,7 +160,7 @@ export default function Authentification() {
             Je suis une entreprise
           </Box>
         </Button>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationCfa.getPath())} style={{ width: "100%" }}>
             <Box
               sx={{
@@ -171,11 +171,11 @@ export default function Authentification() {
             </Box>
           </Button>
         </Box>
-        <Typography sx={{ mt: fr.spacing("2w") }}>
+        <Typography sx={{ mt: fr.spacing("4v") }}>
           <strong>Vous êtes candidat ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
           offres d’emploi et de formation sans vous créer de compte.
         </Typography>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.home.getPath())} style={{ width: "100%" }}>
             <Box
               sx={{

@@ -13,13 +13,13 @@ const RessourcesCandidat = () => {
       <Typography>
         La bonne alternance vous propose un ensemble d’outils et de liens pour vous aider dans vos démarches de recherche de formation et d’emploi en alternance.
       </Typography>
-      <Typography component="h2" variant="h4" sx={{ my: fr.spacing("3w") }}>
+      <Typography component="h2" variant="h4" sx={{ my: fr.spacing("6v") }}>
         Testez vos connaissances
       </Typography>
       <Typography>Entraînez-vous avec nos 4 parcours de mise en situation :</Typography>
       <MisesEnSituation target="candidat" />
-      <Stack direction="row" sx={{ alignItems: "center", my: fr.spacing("3w") }}>
-        <Image src="/images/pages_ressources/conseils et astuces.svg" width={32} height={32} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("2w") }} />
+      <Stack direction="row" sx={{ alignItems: "center", my: fr.spacing("6v") }}>
+        <Image src="/images/pages_ressources/conseils et astuces.svg" width={32} height={32} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("4v") }} />
         <Typography
           component="h2"
           variant="h4"
@@ -31,21 +31,21 @@ const RessourcesCandidat = () => {
         </Typography>
       </Stack>
       <ConseilsEtAstuces />
-      <Box sx={{ my: fr.spacing("5w") }}>
+      <Box sx={{ my: fr.spacing("10v") }}>
         <Box
           sx={{
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             alignItems: { xs: "center", md: "flex-start" },
-            p: fr.spacing("3w"),
+            p: fr.spacing("6v"),
             boxShadow: "0px 0px 12px 6px #79797966",
           }}
         >
-          <Image src="/images/pages_ressources/tableau de suivi.svg" width={64} height={64} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("3w") }} />
+          <Image src="/images/pages_ressources/tableau de suivi.svg" width={64} height={64} alt="" aria-hidden="true" style={{ marginRight: fr.spacing("6v") }} />
 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box>
-              <Typography variant="h6" sx={{ mb: fr.spacing("3w") }}>
+              <Typography variant="h6" sx={{ mb: fr.spacing("6v") }}>
                 Suivre ses candidatures est essentiel pour penser à relancer à temps les recruteurs et savoir quelles entreprises ont déjà été contactées.
               </Typography>
 

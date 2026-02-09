@@ -114,8 +114,8 @@ function FinComponent(props: ComponentProps) {
           gap: { xs: 1, lg: 2 },
           justifyContent: "center",
           width: "100%",
-          mt: fr.spacing("1w"),
-          pt: `${fr.spacing("2w")} !important`,
+          mt: fr.spacing("2v"),
+          pt: `${fr.spacing("4v")} !important`,
         }}
       >
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
@@ -235,7 +235,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
           },
         }}
       >
-        <Typography sx={{ mr: fr.spacing("1w") }}>Vous n’avez pas reçu le mail ? </Typography>
+        <Typography sx={{ mr: fr.spacing("2v") }}>Vous n’avez pas reçu le mail ? </Typography>
         <Button
           type="button"
           style={{
@@ -263,7 +263,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
   return (
     <Box
       sx={{
-        mb: fr.spacing("1w"),
+        mb: fr.spacing("2v"),
       }}
     >
       <Box sx={{ mb: fr.spacing("3v") }}>

@@ -93,7 +93,7 @@ function JobDetail({
       {...swipeHandlers}
     >
       <InfoBanner />
-      <Box role="main" component="main" sx={{ mb: fr.spacing("6w") }}>
+      <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
         <Box
           sx={{
             filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
@@ -112,7 +112,7 @@ function JobDetail({
               }
             : {})}
         >
-          <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("1w") }}>
+          <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("2v") }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <LbaItemTags item={selectedItem} />
               <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
@@ -154,7 +154,7 @@ function JobDetail({
           <Box
             sx={{
               mx: { xs: 0, lg: "auto" },
-              my: fr.spacing("3w"),
+              my: fr.spacing("6v"),
               maxWidth: "970px",
             }}
           >

@@ -78,8 +78,8 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
 
   return (
     <ModalReadOnly isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+      <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Êtes-vous certain de vouloir supprimer votre offre ?
         </Typography>
 

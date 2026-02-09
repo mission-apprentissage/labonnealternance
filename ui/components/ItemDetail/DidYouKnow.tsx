@@ -13,7 +13,7 @@ const DidYouKnow = () => {
         padding: "16px 24px",
         maxWidth: "970px",
         mx: { xs: 0, sm: "30px", md: "30px", lg: "auto" },
-        my: fr.spacing("3w"),
+        my: fr.spacing("6v"),
       }}
     >
       <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>

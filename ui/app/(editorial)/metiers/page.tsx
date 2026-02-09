@@ -23,7 +23,7 @@ export default async function Metiers() {
     <Box>
       <Breadcrumb pages={[PAGES.static.metiers]} />
       <DefaultContainer>
-        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: 2 }}>
             Tous les emplois
             <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default }}>
@@ -38,7 +38,7 @@ export default async function Metiers() {
               borderBottom: "none",
               borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
               opacity: 1,
-              my: fr.spacing("3w"),
+              my: fr.spacing("6v"),
             }}
           />
           <Typography component="p" sx={{ mb: 2 }}>

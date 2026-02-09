@@ -65,8 +65,8 @@ export const RomeDetailWithQuery = ({
   return isLoading || fakeLoading.isLoading ? (
     <LoadingBox />
   ) : error ? (
-    <Box sx={{ border: "1px solid #000091", p: fr.spacing("3w") }}>
-      <Typography variant="h4" sx={{ mb: fr.spacing("3w") }}>
+    <Box sx={{ border: "1px solid #000091", p: fr.spacing("6v") }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("6v") }}>
         {title}
       </Typography>
       <Typography>
@@ -91,8 +91,8 @@ const LoadingBox = () => {
     <Box sx={{ border: "solid 1px #000091", height: "430px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <Box sx={{ display: "flex", alignItems: "center", flexDirection: "column", width: "100%" }}>
         <Image src={image} width={80} alt="" />
-        <Typography sx={{ fontWeight: 700, my: fr.spacing("3w") }}>Génération du descriptif de l’offre</Typography>
-        <CircularProgress sx={{ mt: fr.spacing("3w") }} />
+        <Typography sx={{ fontWeight: 700, my: fr.spacing("6v") }}>Génération du descriptif de l’offre</Typography>
+        <CircularProgress sx={{ mt: fr.spacing("6v") }} />
       </Box>
     </Box>
   )

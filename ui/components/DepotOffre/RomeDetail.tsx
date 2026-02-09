@@ -60,7 +60,7 @@ export const RomeDetail = ({
       >
         {title}
       </Typography>
-      <Box sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("3w") }}>
+      <Box sx={{ backgroundColor: "#F5F5FE", padding: fr.spacing("3v"), color: "#000091", mt: fr.spacing("3v"), mb: fr.spacing("6v") }}>
         Voici la description de l’offre qui sera consultable par les candidats.
         <br />
         <b>
@@ -118,7 +118,7 @@ export const RomeDetail = ({
           isSelected={(competence) => isSelected("savoirs", competence)}
         />
       )}
-      <Accordion style={{ marginBottom: fr.spacing("2w") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
+      <Accordion style={{ marginBottom: fr.spacing("4v") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
         <Typography>{acces_metier}</Typography>
       </Accordion>
       <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px" }}>La fiche métier se base sur la classification ROME de France Travail</Typography>
@@ -179,7 +179,7 @@ const RequiredCompetenceAccordion = ({
       id={id}
       label={
         <>
-          <Typography component="span" sx={{ mr: fr.spacing("1w") }}>
+          <Typography component="span" sx={{ mr: fr.spacing("2v") }}>
             {title}
           </Typography>
           <Badge className="count-badge">{totalSelected}</Badge>

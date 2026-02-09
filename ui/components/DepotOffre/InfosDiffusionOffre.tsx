@@ -9,12 +9,12 @@ import { InfoCircle } from "@/theme/components/icons"
 export const InfosDiffusionOffre = () => {
   return (
     <BorderedBox>
-      <Typography variant="h4" sx={{ mb: fr.spacing("3w") }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("6v") }}>
         Profitez d'une visibilité accrue
       </Typography>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <InfoCircle sx={{ color: "#000091", width: "20px", height: "20px" }} />
-        <Typography sx={{ mb: fr.spacing("3w") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
+        <Typography sx={{ mb: fr.spacing("6v") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
       </Box>
       <br />
       <Typography>
@@ -32,7 +32,7 @@ export const InfosDiffusionOffre = () => {
           display: "grid",
           gridTemplateColumns: ["repeat(2, 1fr)", "repeat(2, 1fr)", "repeat(3, 1fr)", "repeat(3, 1fr)"],
           gap: 2,
-          mt: fr.spacing("3w"),
+          mt: fr.spacing("6v"),
           "& > *": {
             border: "solid 1px #DDDDDD",
             borderRadius: "3px",

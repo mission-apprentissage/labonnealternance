@@ -146,10 +146,10 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("3w"),
-        my: fr.spacing("3w"),
+        gap: fr.spacing("6v"),
+        my: fr.spacing("6v"),
         alignItems: "center",
-        paddingX: fr.spacing("4w"),
+        paddingX: fr.spacing("8v"),
       }}
     >
       <RechercheResultatsFooter jobStatus={jobQuery.status} searchParams={props.rechercheParams} jobCount={jobQuery.status === "loading" ? 0 : jobsCount} />
@@ -172,8 +172,8 @@ function ResultCardWithContainer({
   return (
     <Box
       sx={{
-        my: fr.spacing("1w"),
-        px: { md: displayMap ? fr.spacing("1w") : 0, lg: fr.spacing("2w") },
+        my: fr.spacing("2v"),
+        px: { md: displayMap ? fr.spacing("2v") : 0, lg: fr.spacing("4v") },
       }}
     >
       <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />

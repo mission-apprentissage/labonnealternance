@@ -18,7 +18,7 @@ export const ContactCfaSummary = (props: Props) => {
   const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 
   return (
-    <Box sx={{ py: { xs: 0, sm: fr.spacing("7v"), mt: fr.spacing("1w") } }}>
+    <Box sx={{ py: { xs: 0, sm: fr.spacing("7v"), mt: fr.spacing("2v") } }}>
       <Typography sx={{ fontWeight: "700", color: "#2a2a2a" }}>{entrepriseRaisonSociale}</Typography>
       <Typography sx={{ fontWeight: "400", color: "#2a2a2a" }}>{intitule}</Typography>
       {adresse && codePostal && (
@@ -31,7 +31,7 @@ export const ContactCfaSummary = (props: Props) => {
           <Typography
             component="span"
             sx={{
-              ml: fr.spacing("1w"),
+              ml: fr.spacing("2v"),
             }}
           >
             {adresse},{" "}

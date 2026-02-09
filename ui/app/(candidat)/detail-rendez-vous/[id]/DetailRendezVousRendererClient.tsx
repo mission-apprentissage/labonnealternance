@@ -90,17 +90,17 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
       }
     >
       {appointment?.user && (
-        <Box sx={{ my: fr.spacing("2w") }}>
+        <Box sx={{ my: fr.spacing("4v") }}>
           <Typography component="span" color="primary" variant="h6">
             Voici les coordonnées du contact :{" "}
           </Typography>
-          <Box sx={{ my: fr.spacing("2w") }}>
+          <Box sx={{ my: fr.spacing("4v") }}>
             {appointment.user?.type && (
               <Typography component={"span"} variant="h6">
                 {appointment.user.type === "parent" ? "Le parent" : "L'étudiant"}
               </Typography>
             )}
-            <Typography sx={{ mt: fr.spacing("3w") }}>
+            <Typography sx={{ mt: fr.spacing("6v") }}>
               Nom :{" "}
               <Typography component="span">
                 <strong>{appointment.user.lastname}</strong>
@@ -112,7 +112,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
                 <b>{appointment.user.firstname}</b>
               </Typography>
             </Typography>
-            <Typography sx={{ mt: fr.spacing("3w") }}>
+            <Typography sx={{ mt: fr.spacing("6v") }}>
               Numéro de téléphone :{" "}
               <Typography component="span">
                 <b>{appointment.user.phone.match(/.{1,2}/g).join(".")}</b>
@@ -126,7 +126,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             </Typography>
           </Box>
           <hr />
-          <Box sx={{ mb: fr.spacing("2w") }}>
+          <Box sx={{ mb: fr.spacing("4v") }}>
             <Typography component="p" sx={{ mt: 1 }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Typography>

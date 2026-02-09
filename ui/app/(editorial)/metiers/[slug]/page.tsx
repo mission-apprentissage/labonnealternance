@@ -43,7 +43,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
     <Box>
       <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />
       <DefaultContainer>
-        <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
             Tous les emplois et formations en alternance en
             <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
@@ -58,7 +58,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
               borderBottom: "none",
               borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
               opacity: 1,
-              my: fr.spacing("3w"),
+              my: fr.spacing("6v"),
             }}
           />
 

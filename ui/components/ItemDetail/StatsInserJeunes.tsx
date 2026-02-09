@@ -20,7 +20,7 @@ interface Props {
 const StatsInserJeunes = ({ stats }: Props) => {
   return (
     stats.taux_en_formation && (
-      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h2" sx={{ mt: 2 }}>
           Que deviennent les étudiants après cette formation ?
         </Typography>

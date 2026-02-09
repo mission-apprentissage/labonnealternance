@@ -46,12 +46,12 @@ const DemandeDeContactBody = ({
   }
 
   return (
-    <Box sx={{ p: fr.spacing("4w") }}>
+    <Box sx={{ p: fr.spacing("8v") }}>
       {confirmation ? (
         <DemandeDeContactConfirmation {...confirmation} />
       ) : (
         <>
-          <Typography variant="h4" data-testid="DemandeDeContactFormTitle" sx={{ mb: fr.spacing("2w") }}>
+          <Typography variant="h4" data-testid="DemandeDeContactFormTitle" sx={{ mb: fr.spacing("4v") }}>
             Contacter {etablissement_formateur_entreprise_raison_sociale}
           </Typography>
           <DemandeDeContactForm context={context} onRdvSuccess={localOnSuccess} referrer={referrer} />

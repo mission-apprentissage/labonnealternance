@@ -37,7 +37,7 @@ const CustomInput = (props) => {
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Warning sx={{ mr: fr.spacing("1w") }} />
+                <Warning sx={{ mr: fr.spacing("2v") }} />
                 <Typography sx={{ color: fr.colors.decisions.text.actionHigh.redMarianne.default }}>Les informations de votre entreprise sont non diffusibles.</Typography>
               </Box>
               <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles`} external={true}>
@@ -46,7 +46,7 @@ const CustomInput = (props) => {
             </Box>
           ) : (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ display: "flex", ml: fr.spacing("1w") }}>
+              <Box sx={{ display: "flex", ml: fr.spacing("2v") }}>
                 <Typography className={fr.cx("fr-message--error")}>{parse(meta.error || "")}</Typography>
                 {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
               </Box>

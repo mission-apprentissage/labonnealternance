@@ -13,7 +13,7 @@ const NotFound = () => (
         xs: "1fr",
         md: "1fr 1fr",
       },
-      gap: fr.spacing("4w"),
+      gap: fr.spacing("8v"),
       height: "100%",
       alignItems: "center",
       justifyContent: "center",
@@ -28,7 +28,7 @@ const NotFound = () => (
       </Typography>
       <Box
         sx={{
-          mt: fr.spacing("2w"),
+          mt: fr.spacing("4v"),
         }}
       >
         <DsfrLink href="/" size="lg" arrow="right">

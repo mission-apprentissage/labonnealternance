@@ -43,7 +43,7 @@ const ItemDetailLoading = ({ type }: Props) => {
     color: "#666666",
     fontWeight: 500,
     fontSize: "18px",
-    marginTop: { xs: 0, md: fr.spacing("2w") },
+    marginTop: { xs: 0, md: fr.spacing("4v") },
   }
 
   return (
@@ -86,7 +86,7 @@ const ItemDetailLoading = ({ type }: Props) => {
               </div>
             </Box>
 
-            <Box sx={{ maxWidth: "400pw", mx: "auto", my: fr.spacing("3w") }}>
+            <Box sx={{ maxWidth: "400pw", mx: "auto", my: fr.spacing("6v") }}>
               <LinearProgress
                 color={type === LBA_ITEM_TYPE.FORMATION ? "secondary" : "warning"}
                 sx={{
@@ -100,7 +100,7 @@ const ItemDetailLoading = ({ type }: Props) => {
             </Box>
 
             <Skeleton variant="circular" width={40} height={40} />
-            <Box sx={{ mt: fr.spacing("3w"), "& > *": { mb: fr.spacing("1w") } }}>
+            <Box sx={{ mt: fr.spacing("6v"), "& > *": { mb: fr.spacing("2v") } }}>
               <Skeleton variant="text" height={16} />
               <Skeleton variant="text" height={16} />
               <Skeleton variant="text" height={16} />

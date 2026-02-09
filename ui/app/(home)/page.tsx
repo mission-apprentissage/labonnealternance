@@ -23,10 +23,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("8w"),
-        marginTop: { xs: 0, lg: fr.spacing("4w") },
-        marginBottom: fr.spacing("8w"),
-        px: { xs: 0, lg: fr.spacing("2w") },
+        gap: fr.spacing("16v"),
+        marginTop: { xs: 0, lg: fr.spacing("8v") },
+        marginBottom: fr.spacing("16v"),
+        px: { xs: 0, lg: fr.spacing("4v") },
       }}
       maxWidth="xl"
       role="main"
@@ -35,7 +35,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         component="section"
         sx={{
           position: "relative",
-          borderRadius: { xs: 0, lg: fr.spacing("1w") },
+          borderRadius: { xs: 0, lg: fr.spacing("2v") },
           backgroundColor: fr.colors.decisions.background.alt.grey.default,
         }}
       >
@@ -49,7 +49,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         >
           <HomeCircleImageDecoration size="high" />
         </Box>
-        <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("6w") }, gap: fr.spacing("4w"), gridTemplateColumns: "1fr" }}>
+        <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("12v") }, gap: fr.spacing("8v"), gridTemplateColumns: "1fr" }}>
           <HomeRechercheForm rechercheParams={rechercheParams} />
           <HowTo />
         </Box>

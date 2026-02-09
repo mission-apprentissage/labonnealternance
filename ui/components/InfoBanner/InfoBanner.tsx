@@ -114,7 +114,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {envBannerText}
@@ -136,7 +136,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {redBannerText}
@@ -158,7 +158,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {greenBannerText}
@@ -180,7 +180,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {blueBannerText}

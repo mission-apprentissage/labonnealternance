@@ -39,8 +39,8 @@ export const RecruteurLbaNoContactModal = ({
       <Box
         sx={{
           px: "32px",
-          pt: fr.spacing("2w"),
-          pb: fr.spacing("4w"),
+          pt: fr.spacing("4v"),
+          pb: fr.spacing("8v"),
           maxWidth: 620,
         }}
       >
@@ -50,7 +50,7 @@ export const RecruteurLbaNoContactModal = ({
             fontWeight: 700,
             fontSize: "24px",
             lineHeight: "32px",
-            mb: fr.spacing("2w"),
+            mb: fr.spacing("4v"),
           }}
         >
           Pour envoyer votre candidature spontanée :
@@ -58,7 +58,7 @@ export const RecruteurLbaNoContactModal = ({
         {phone && (
           <Typography
             sx={{
-              my: fr.spacing("2w"),
+              my: fr.spacing("4v"),
             }}
           >
             <span className="fr-icon-phone-line" style={{ marginRight: "8px" }}></span>
@@ -68,7 +68,7 @@ export const RecruteurLbaNoContactModal = ({
         <Typography>
           Nous ne disposons pas de contact mail{!phone && " ni de numéro de téléphone"} pour cette entreprise, mais peut-être que vous en trouverez un sur internet !
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: "6px", mt: fr.spacing("2w") }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "6px", mt: fr.spacing("4v") }}>
           <Image style={{ display: "inline-block" }} width={24} height={24} src="/images/icons/search-eye-line.svg" alt="" />
           <Typography>
             Lancer une recherche Google sur{" "}
@@ -84,7 +84,7 @@ export const RecruteurLbaNoContactModal = ({
             fontWeight: 700,
             fontSize: "24px",
             lineHeight: "32px",
-            my: fr.spacing("2w"),
+            my: fr.spacing("4v"),
           }}
         >
           Allez-vous contacter cette entreprise ?

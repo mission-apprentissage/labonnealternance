@@ -74,7 +74,7 @@ const CandidatureLbaFailed = ({ error }: { error: string }) => {
   const { dataTestId, title, text } = errorData
 
   return (
-    <Box sx={{ px: fr.spacing("4w") }}>
+    <Box sx={{ px: fr.spacing("8v") }}>
       <Typography variant="h1" sx={{ mb: 5, fontSize: "1.5rem", fontWeight: 700 }}>
         Erreur
       </Typography>

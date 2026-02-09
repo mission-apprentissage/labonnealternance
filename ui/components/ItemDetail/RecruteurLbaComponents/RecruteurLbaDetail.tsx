@@ -35,7 +35,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
 
   return (
     <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
-      <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
+      <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment fonctionnent les candidatures spontanées La bonne alternance ?
         </Typography>
@@ -57,17 +57,17 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           </Typography>
           <Box
             sx={{
-              px: fr.spacing("2w"),
-              paddingTop: fr.spacing("2w"),
-              paddingBottom: fr.spacing("1w"),
+              px: fr.spacing("4v"),
+              paddingTop: fr.spacing("4v"),
+              paddingBottom: fr.spacing("2v"),
             }}
           >
             <Image style={{ minWidth: 194 }} src="/images/lba_recruteur_advice.svg" width={194} height={131} alt="" aria-hidden={true} />
           </Box>
         </Stack>
       </Box>
-      <Box sx={{ mb: fr.spacing("2w") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
-      <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("3w") }}>
+      <Box sx={{ mb: fr.spacing("4v") }}>{recruteurLba?.company?.elligibleHandicap && <LbaJobEngagement />}</Box>
+      <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment candidater ?
         </Typography>
@@ -216,7 +216,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
           </List>
         </Accordion>
 
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <ReportJobLink
             itemId={recruteurLba?.company?.siret}
             type={LBA_ITEM_TYPE.RECRUTEURS_LBA}

@@ -28,8 +28,8 @@ function TabPanel(props: TabPanelProps) {
 
 function TabContent({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Box sx={{ mb: fr.spacing("3w"), p: fr.spacing("3w"), border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-      <Typography sx={{ mb: fr.spacing("3w"), fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
+    <Box sx={{ mb: fr.spacing("6v"), p: fr.spacing("6v"), border: "2px solid #E5E5E5", borderRadius: "5px" }}>
+      <Typography sx={{ mb: fr.spacing("6v"), fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
         {title}
       </Typography>
       <hr />

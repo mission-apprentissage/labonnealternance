@@ -178,7 +178,7 @@ const UserFieldsForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={handleSubmit}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "baseline", my: fr.spacing("2w") }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "baseline", my: fr.spacing("4v") }}>
           {user && <Input disabled={true} label="Identifiant" nativeInputProps={{ type: "text", name: "id", value: user._id.toString() }} />}
           <Select
             label="Type de compte"

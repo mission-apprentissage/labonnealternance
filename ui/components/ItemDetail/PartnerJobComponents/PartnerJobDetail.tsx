@@ -43,7 +43,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
       <Box
         sx={{
           pb: 0,
-          mt: fr.spacing("3w"),
+          mt: fr.spacing("6v"),
           position: "relative",
           backgroundColor: "white",
           padding: "16px 24px",
@@ -54,7 +54,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
         </Typography>
-        <Box sx={{ p: 2, mb: fr.spacing("2w"), borderRadius: "8px", backgroundColor: "#f6f6f6" }}>
+        <Box sx={{ p: 2, mb: fr.spacing("4v"), borderRadius: "8px", backgroundColor: "#f6f6f6" }}>
           <Stack spacing={1}>
             {jobStartDate && (
               <Box>
@@ -102,12 +102,12 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           </Stack>
         </Box>
 
-        <Box sx={{ mb: fr.spacing("2w") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
+        <Box sx={{ mb: fr.spacing("4v") }}>{job?.job?.elligibleHandicap && <LbaJobEngagement />}</Box>
 
         <JobDescription job={job} />
         {job?.job?.offer_desired_skills?.length ? <JobAccordion title="Qualités souhaitées pour ce poste" items={job?.job?.offer_desired_skills} defaultExpanded={false} /> : null}
 
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <ReportJobLink
             itemId={job.id}
             type={LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES}
@@ -122,7 +122,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
         direction="row"
         sx={{
           alignItems: "center",
-          my: fr.spacing("3w"),
+          my: fr.spacing("6v"),
           maxWidth: "970px",
           mx: { xs: 0, md: "auto" },
         }}
@@ -158,7 +158,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
       <Box
         sx={{
           pb: 0,
-          mt: fr.spacing("3w"),
+          mt: fr.spacing("6v"),
           position: "relative",
           backgroundColor: "white",
           padding: "16px 24px",

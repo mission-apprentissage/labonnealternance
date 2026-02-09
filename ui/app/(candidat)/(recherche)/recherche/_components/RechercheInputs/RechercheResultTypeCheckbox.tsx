@@ -65,8 +65,8 @@ export const RechercheResultTypeCheckbox = ({
     <Box
       sx={{
         marginTop: {
-          xs: fr.spacing("1w"),
-          md: forceMobileStyle ? fr.spacing("1w") : 0,
+          xs: fr.spacing("2v"),
+          md: forceMobileStyle ? fr.spacing("2v") : 0,
         },
         fieldset: {
           maxWidth: {
@@ -98,7 +98,7 @@ export const RechercheResultTypeCheckbox = ({
                 <input name={itemType} id={checkboxId} type="checkbox" checked={checked} data-fr-js-checkbox-input={checked} readOnly />
                 <label className="fr-label" htmlFor={checkboxId}>
                   {itemType}
-                  {count !== undefined ? ` (${count})` : displayLoading ? <CircularProgress size={14} style={{ marginLeft: fr.spacing("1w") }} /> : null}
+                  {count !== undefined ? ` (${count})` : displayLoading ? <CircularProgress size={14} style={{ marginLeft: fr.spacing("2v") }} /> : null}
                 </label>
               </div>
             </Box>

@@ -132,7 +132,7 @@ function TrainingDetailPage({
       }}
       {...swipeHandlers}
     >
-      <Box role="main" component="main" sx={{ mb: fr.spacing("6w") }}>
+      <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
         <Box
           sx={{
             filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
@@ -141,7 +141,7 @@ function TrainingDetailPage({
             ...stickyHeaderProperties,
           }}
         >
-          <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("1w") }}>
+          <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("2v") }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
               <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
@@ -223,10 +223,10 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
     <>
       <Box
         id="detail-content-container"
-        sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}
+        sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}
       >
         <TrainingDescriptionDetails training={training.training} />
-        <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("3w"), p: 2 }}>
+        <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("6v"), p: 2 }}>
           {training.training.onisepUrl && (
             <div>
               <Typography component="span">Descriptif du {training.training.title} sur&nbsp;</Typography>
@@ -249,7 +249,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         </Box>
       </Box>
       {IJStats.isFetched && <StatsInserJeunes stats={IJStats.data} />}
-      <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur l'établissement
         </Typography>
@@ -281,7 +281,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         <ItemGoogleSearchLink item={training} />
 
         {training.contact.url && (
-          <Box sx={{ display: "flex", alignItems: "center", mt: fr.spacing("2w"), flexDirection: "row" }}>
+          <Box sx={{ display: "flex", alignItems: "center", mt: fr.spacing("4v"), flexDirection: "row" }}>
             <Image width={30} height={30} src="/images/icons/small_info.svg" alt="" />
 
             <Typography component="span">
@@ -294,7 +294,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         )}
       </Box>
       {isCfaDEntreprise && (
-        <Box sx={{ pb: "0px", mt: fr.spacing("3w"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
           <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
             Cet établissement est un CFA d&apos;entreprise
           </Typography>
@@ -304,7 +304,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
             CFA d&apos;entreprise concerné :
           </Typography>
 
-          <Box sx={{ my: fr.spacing("2w") }}>
+          <Box sx={{ my: fr.spacing("4v") }}>
             <Box>
               &bull;{" "}
               <Typography
@@ -371,7 +371,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
         </Box>
       )}
       {training.objectif && training.objectif.length > 20 && (
-        <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("2w") }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("4v") }}>
           <Image width={24} height={24} src="/images/icons/training-target.svg" alt="" />
           <Box
             sx={{
@@ -387,7 +387,7 @@ const TrainingDescriptionDetails = ({ training }: { training: ILbaItemTraining2 
         </Box>
       )}
       {training.sessions.length ? (
-        <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("2w") }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", mt: fr.spacing("4v") }}>
           <Image width={24} height={24} src="/images/icons/training-academic-cap.svg" alt="" />
           <Box sx={{ pl: 4, whiteSpace: "pre-wrap" }}>
             <Typography sx={{ fontWeight: "700" }}>Sessions de formation</Typography>

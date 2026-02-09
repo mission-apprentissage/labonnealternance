@@ -31,7 +31,7 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
             sx={{
               fontSize: "12px",
               lineHeight: "21px",
-              padding: fr.spacing("1w"),
+              padding: fr.spacing("2v"),
             }}
           >
             Cette entreprise recrute peut-être des alternants. <strong>Tentez votre chance en envoyant votre candidature spontanée !</strong>
