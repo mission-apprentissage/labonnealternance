@@ -141,7 +141,7 @@ jobs:
               IdentityFile ~/.ssh/github_actions
 
       - name: Run playbook
-        run: .bin/mna-lba deploy ${{ inputs.environment }} --extra-vars "app_version=${{ needs.version.outputs.VERSION }}"
+        run: .bin/mna-lba app:deploy ${{ inputs.environment }} --extra-vars "app_version=${{ needs.version.outputs.VERSION }}"
         env:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}

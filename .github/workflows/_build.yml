@@ -94,7 +94,7 @@ jobs:
         run: echo "VERSION=$(git describe --tags --abbrev=0 | cut -c2-)" >> "$GITHUB_OUTPUT"
 
       - name: bump and release
-        run: .bin/mna-lba build:image "${{ inputs.version }}" push "${{ inputs.environment }}"
+        run: .bin/mna-lba app:build "${{ inputs.version }}" push "${{ inputs.environment }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
