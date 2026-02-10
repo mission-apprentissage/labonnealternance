@@ -30,7 +30,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
           <Typography component="span" sx={{ fontWeight: 400 }}>
             Le centre de formation&nbsp;
           </Typography>
-          <Typography component="span">{companyName}</Typography>
+          <Typography component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
           <Typography component="span" sx={{ fontWeight: 400 }}>
             &nbsp;propose actuellement cette offre dans le domaine suivant
           </Typography>
@@ -43,7 +43,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           {companyName ? (
             <>
-              <Typography component="span">{companyName}</Typography>
+              <Typography component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
               <Typography component="span" sx={{ fontWeight: 400 }}>
                 &nbsp;recherche un.e alternant.e pour le poste suivant :
               </Typography>
@@ -69,7 +69,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
     if (kind === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
       res = (
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
-          <Typography component="span">{companyName}</Typography>
+          <Typography component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
           <Typography component="span" sx={{ fontWeight: 400 }}>
             &nbsp;a des salariés qui exercent le métier auquel vous vous destinez. Envoyez votre candidature spontanée !
           </Typography>

@@ -51,7 +51,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     offer_creation: createdAt,
     offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    offer_multicast: false, //true TODO: remettre à true après validation
+    offer_multicast: true,
   }
 }
 

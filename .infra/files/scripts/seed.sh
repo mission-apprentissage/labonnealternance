@@ -15,7 +15,7 @@ cleanup() {
 
 trap cleanup EXIT
 
-echo "{{ vault.SEED_GPG_PASSPHRASE }}" > "$PASSPHRASE"
+echo "{{ SEED_GPG_PASSPHRASE }}" > "$PASSPHRASE"
 chmod 600 "$PASSPHRASE"
 
 rm "$SEED_ARCHIVE"
@@ -24,7 +24,7 @@ chmod 600 "$SEED_ARCHIVE"
 
 # Drop the entire database before restore to avoid duplicate key errors
 echo "Dropping database $TARGET_DB if it exists..."
-/opt/app/tools/docker-compose.sh exec -T mongodb mongosh "mongodb://__system:{{vault.MONGODB_KEYFILE}}@localhost:27017/$TARGET_DB?authSource=local&directConnection=true" --eval "db.dropDatabase()" || true
+/opt/app/tools/docker-compose.sh exec -T mongodb mongosh "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/$TARGET_DB?authSource=local&directConnection=true" --eval "db.dropDatabase()" || true
 
 # Restore from file accessible via mounted volume
 echo "Restoring database $TARGET_DB..."
@@ -34,4 +34,4 @@ echo "Restoring database $TARGET_DB..."
   --nsTo="$TARGET_DB.*" \
   --drop \
   --gzip \
-  "mongodb://__system:{{vault.MONGODB_KEYFILE}}@localhost:27017/?authSource=local&directConnection=true"
+  "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/?authSource=local&directConnection=true"
