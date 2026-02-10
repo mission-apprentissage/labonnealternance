@@ -2,15 +2,6 @@ name: Release version
 on:
   push:
     branches: [main, next]
-on:
-  workflow_call:
-    secrets:
-      OPENPGP_PRIVATE_SUBKEY:
-        description: Github Actions' OpenPGP private subkey
-        required: true
-      TOKEN_MNA_SHARED:
-        description: Authentication token for accessing private repositories
-        required: true
 
 jobs:
   tests:
