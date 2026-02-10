@@ -11,6 +11,7 @@ import type { IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import { omit } from "lodash-es"
 import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
@@ -223,7 +224,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     expect(savedApplication?.caller).toBe("Hellowork")
     expect(savedApplication?.foreign_application_id).toBe("hw_app_123")
     expect(savedApplication?.foreign_application_status_url).toBe("https://api.hellowork.com/status/hw_app_123")
-    expect(savedApplication).toMatchSnapshot()
+    expect(omit(savedApplication, ["_id", "applicant_id", "created_at", "last_update_at"])).toMatchSnapshot()
   })
 
   it("Should successfully create application with missing coverLetter", async () => {
