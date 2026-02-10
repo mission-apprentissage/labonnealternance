@@ -170,6 +170,20 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "foreign_application_id": {
+            "description": "Identifiant de la candidature dans un système tiers.",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "foreign_application_status_url": {
+            "description": "URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
           "iv": {
             "description": "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
             "example": "...59c24c059b...",
@@ -6756,6 +6770,20 @@ Limite : 20 appel(s) / 1 seconde(s)
                   "applicant_phone": {
                     "description": "Téléphone du candidat",
                     "type": "string",
+                  },
+                  "foreign_application_id": {
+                    "description": "Identifiant de la candidature dans un système tiers.",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "foreign_application_status_url": {
+                    "description": "URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "recipient_id": {
                     "description": "Identifiant unique de la ressource vers laquelle la candidature est faite, préfixé par le nom de la collection",
