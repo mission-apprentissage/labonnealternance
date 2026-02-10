@@ -54,7 +54,12 @@ description = "Allowed patterns and paths for La Bonne Alternance"
 paths = [
   # Encrypted files
   '''\.infra/files/configs/mongodb/seed\.gpg''',
-  '''\.infra/vault/vault\.yml''',
+  '''\.infra/env.global\.yml''',
+  '''\.infra/env.production\.yml''',
+  '''\.infra/env.pentest\.yml''',
+  '''\.infra/env.recette\.yml''',
+  '''\.infra/env.preview\.yml''',
+  '''\.infra/env.local\.yml''',
 
   # Test environment with test credentials
   '''server/\.env\.test''',

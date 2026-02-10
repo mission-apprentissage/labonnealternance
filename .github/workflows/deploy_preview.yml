@@ -91,7 +91,7 @@ jobs:
           sudo pipx inject ansible-core jmespath
 
       - name: Run playbook
-        run: .bin/mna-lba deploy preview "${{ github.event.issue.number }}"
+        run: .bin/mna-lba app:deploy preview "${{ github.event.issue.number }}"
         env:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}
