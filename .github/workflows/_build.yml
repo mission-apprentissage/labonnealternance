@@ -13,6 +13,14 @@ on:
         options:
           - recette
           - pentest
+  workflow_call:
+    secrets:
+      OPENPGP_PRIVATE_SUBKEY:
+        description: Github Actions' OpenPGP private subkey
+        required: true
+      TOKEN_MNA_SHARED:
+        description: Authentication token for accessing private repositories
+        required: true
 
 jobs:
   npm-packages-check:
@@ -21,7 +29,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: true
 
       - name: Clone mna-npm-check repository
@@ -44,8 +52,18 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
-          persist-credentials: true
+          fetch-depth: 2
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          submodules: true
+
+      - name: Initialize the GnuPG keyring
+        run: |
+          echo -n "$OPENPGP_KEY" | gpg --import
+        env:
+          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
 
       - uses: actions/setup-node@v6
         with:
@@ -90,9 +108,10 @@ jobs:
     uses: "./.github/workflows/_deploy.yml"
     with:
       environment: ${{ inputs.environment }}
-      app_version: ${{ inputs.version  }}
+      app_version: ${{ inputs.version }}
     secrets:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      VAULT_PWD: ${{ secrets.VAULT_PWD }}
+      OPENPGP_PRIVATE_SUBKEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+      TOKEN_MNA_SHARED: ${{ secrets.TOKEN_MNA_SHARED }}
