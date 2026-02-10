@@ -86,22 +86,35 @@ const GuideCFA = () => {
               <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
                 <ListItem sx={{ display: "list-item" }}>
                   Pour rechercher une formation en alternance, le{" "}
-                  <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/">Catalogue des offres de formations en apprentissage</DsfrLink> du Réseau des Carif-Oref
-                  centralise nationalement l'ensemble des offres de formation en apprentissage collectées régionalement par les Carif-Oref.
+                  <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Consulter le Catalogue des offres de formations en apprentissage">
+                    Catalogue des offres de formations en apprentissage
+                  </DsfrLink>{" "}
+                  du Réseau des Carif-Oref centralise nationalement l'ensemble des offres de formation en apprentissage collectées régionalement par les Carif-Oref.
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  Le <DsfrLink href="https://travail-emploi.gouv.fr/precis-de-lapprentissage">Précis de l’apprentissage</DsfrLink> vous présente des repères sur l’apprentissage. Il
-                  est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond à l’objectif d’harmoniser les pratiques des
-                  acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases documentaires et méthodologiques communes.
+                  Le{" "}
+                  <DsfrLink href="https://travail-emploi.gouv.fr/precis-de-lapprentissage" aria-label="Consulter le Précis de l’apprentissage">
+                    Précis de l’apprentissage
+                  </DsfrLink>{" "}
+                  vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond
+                  à l’objectif d’harmoniser les pratiques des acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases
+                  documentaires et méthodologiques communes.
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  Le <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf">Vade-mecum CFA</DsfrLink> précise les modalités pratiques de gestion des contrats
-                  d’apprentissage.Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le secteur privé et a été élaboré en concertation avec les
-                  têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation Professionnelle (DGEFP).
+                  Le{" "}
+                  <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf" aria-label="Consulter le Vade-mecum CFA">
+                    Vade-mecum CFA
+                  </DsfrLink>{" "}
+                  précise les modalités pratiques de gestion des contrats d’apprentissage.Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le
+                  secteur privé et a été élaboré en concertation avec les têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation
+                  Professionnelle (DGEFP).
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Retrouvez les fiches juridiques et les actualités de la formation professionnelle sur le site{" "}
-                  <DsfrLink href="https://www.centre-inffo.fr/">Centre Inffo</DsfrLink>, association sous tutelle du ministère en charge de la Formation professionnelle.
+                  <DsfrLink href="https://www.centre-inffo.fr/" aria-label="Consulter le site Centre Inffo">
+                    Centre Inffo
+                  </DsfrLink>
+                  , association sous tutelle du ministère en charge de la Formation professionnelle.
                 </ListItem>
               </List>
             </Grid>
@@ -184,7 +197,7 @@ const GuideCFA = () => {
                   Diffusez simplement et gratuitement les offres en alternance de vos partenaires
                 </Typography>
                 <Box>
-                  <DsfrLink href={PAGES.static.home.getPath()}>
+                  <DsfrLink href={PAGES.static.home.getPath()} aria-label="Consulter le site La bonne alternance">
                     Accéder à la page d'accueil
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>
@@ -199,7 +212,7 @@ const GuideCFA = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={PAGES.static.faq.getPath()}>
+                  <DsfrLink href={PAGES.static.faq.getPath()} aria-label="Consulter la foire aux questions">
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

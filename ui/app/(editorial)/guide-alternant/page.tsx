@@ -198,25 +198,41 @@ const GuideAlternant = () => {
                   </Typography>
                   <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("3v")}>
                     <Box>
-                      <DsfrLink href={"#"}>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"}
+                        external
+                        aria-label="Télécharger le tableau de suivi des candidatures au format PDF"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - PDF
                       </DsfrLink>
                     </Box>
                     <Box>
-                      <DsfrLink href={"#"}>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_Excel.xlsx"}
+                        external
+                        aria-label="Télécharger le tableau de suivi des candidatures au format Excel"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Excel
                       </DsfrLink>
                     </Box>
                     <Box>
-                      <DsfrLink href={"#"}>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_Numbers.numbers"}
+                        external
+                        aria-label="Télécharger le tableau de suivi des candidatures au format Numbers"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Numbers
                       </DsfrLink>
                     </Box>
                     <Box>
-                      <DsfrLink href={"#"}>
+                      <DsfrLink
+                        href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_LibreOffice.ods"}
+                        external
+                        aria-label="Télécharger le tableau de suivi des candidatures au format LibreOffice"
+                      >
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Libre office
                       </DsfrLink>
@@ -306,7 +322,7 @@ const GuideAlternant = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={PAGES.static.faq.getPath()}>
+                  <DsfrLink href={PAGES.static.faq.getPath()} aria-label="Consulter la foire aux questions">
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

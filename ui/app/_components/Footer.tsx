@@ -68,7 +68,7 @@ const linkListContent: LinkCategory[] = [
         linkProps: {
           href: PAGES.static.aPropos.getPath(),
         },
-        text: "A propos",
+        text: "À propos",
       },
       {
         linkProps: {

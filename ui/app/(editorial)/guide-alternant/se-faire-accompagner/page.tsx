@@ -52,8 +52,14 @@ const SeFaireAccompagnerPage = () => {
       </Section>
       <Section title="Les Missions locales : votre premier point de contact">
         <Paragraph>
-          Contactez la <DsfrLink href="https://www.missions-locales.org/">Mission locale</DsfrLink> de votre secteur. Des conseillers vous aideront dans vos recherches
-          d'entreprise. <DsfrLink href="https://www.missions-locales.org/">Trouver ma mission locale.</DsfrLink>
+          Contactez la{" "}
+          <DsfrLink href="https://www.missions-locales.org/" aria-label="Consulter le site des Missions locales">
+            Mission locale
+          </DsfrLink>{" "}
+          de votre secteur. Des conseillers vous aideront dans vos recherches d'entreprise.{" "}
+          <DsfrLink href="https://www.missions-locales.org/" aria-label="Trouver ma mission locale">
+            Trouver ma mission locale.
+          </DsfrLink>
         </Paragraph>
         <Paragraph>
           Les Missions locales accompagnent les jeunes de 16 à 25 ans dans leur insertion professionnelle. Leurs conseillers sont des experts de l'emploi et de la formation sur
@@ -104,23 +110,78 @@ const SeFaireAccompagnerPage = () => {
         </Paragraph>
         <ParagraphList
           listItems={[
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-apprentissage-ara">Auvergne-Rhône-Alpes</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-bfc-appui-aux-apprentis">Bourgogne-Franche-Comté</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-en-bretagne">Bretagne</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/candidature-label-orientation-cvl">Centre-Val de Loire</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-pour-l-appren">Corse</DsfrLink>,
-            <DsfrLink href="https://www.orientest.fr/contact">Grand Est</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/dreets-hdf-cellule-regionale-interministerielle-a-">Hauts-de-France</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-apprentissage-iledefrance">Île-de-France</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-apprentissage-normandie">Normandie</DsfrLink>,
-            <DsfrLink href="mailto:dreets-na.cellule-apprentissage@dreets.gouv.fr">Nouvelle-Aquitaine</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-region-occita">Occitanie</DsfrLink>,
-            <DsfrLink href="mailto:dreets-pdl.apprentissage@dreets.gouv.fr">Pays de la Loire</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-region-occita">Provence-Alpes-Côte d'Azur (PACA)</DsfrLink>,
-            <DsfrLink href="mailto:974.apprentissage@dreets.gouv.fr">La réunion</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-apprentissage-guadeloupe-idn">Guadeloupe/Saint-Martin/Saint-Barthélemy</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-d-accompagnement-vers-l-apprentissage-mart">Martinique</DsfrLink>,
-            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-a-l-apprentis">Mayotte</DsfrLink>,
+            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-apprentissage-ara" aria-label="Contacter la cellule apprentissage Auvergne-Rhône-Alpes">
+              Auvergne-Rhône-Alpes
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-bfc-appui-aux-apprentis"
+              aria-label="Contacter la cellule apprentissage Bourgogne-Franche-Comté"
+            >
+              Bourgogne-Franche-Comté
+            </DsfrLink>,
+            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-en-bretagne" aria-label="Contacter la cellule apprentissage Bretagne">
+              Bretagne
+            </DsfrLink>,
+            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/candidature-label-orientation-cvl" aria-label="Contacter la cellule apprentissage Centre-Val de Loire">
+              Centre-Val de Loire
+            </DsfrLink>,
+            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-pour-l-appren" aria-label="Contacter la cellule apprentissage Corse">
+              Corse
+            </DsfrLink>,
+            <DsfrLink href="https://www.orientest.fr/contact" aria-label="Contacter la cellule apprentissage Grand Est">
+              Grand Est
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/dreets-hdf-cellule-regionale-interministerielle-a-"
+              aria-label="Contacter la cellule apprentissage Hauts-de-France"
+            >
+              Hauts-de-France
+            </DsfrLink>,
+            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-apprentissage-iledefrance" aria-label="Contacter la cellule apprentissage Île-de-France">
+              Île-de-France
+            </DsfrLink>,
+            <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-apprentissage-normandie" aria-label="Contacter la cellule apprentissage Normandie">
+              Normandie
+            </DsfrLink>,
+            <DsfrLink href="mailto:dreets-na.cellule-apprentissage@dreets.gouv.fr" aria-label="Contacter la cellule apprentissage Nouvelle-Aquitaine">
+              Nouvelle-Aquitaine
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-region-occita"
+              aria-label="Contacter la cellule apprentissage Occitanie"
+            >
+              Occitanie
+            </DsfrLink>,
+            <DsfrLink href="mailto:dreets-pdl.apprentissage@dreets.gouv.fr" aria-label="Contacter la cellule apprentissage Pays de la Loire">
+              Pays de la Loire
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-region-occita"
+              aria-label="Contacter la cellule apprentissage Provence-Alpes-Côte d'Azur (PACA)"
+            >
+              Provence-Alpes-Côte d'Azur (PACA)
+            </DsfrLink>,
+            <DsfrLink href="mailto:974.apprentissage@dreets.gouv.fr" aria-label="Contacter la cellule apprentissage de la réunion">
+              La réunion
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-apprentissage-guadeloupe-idn"
+              aria-label="Contacter la cellule apprentissage Guadeloupe/Saint-Martin/Saint-Barthélemy"
+            >
+              Guadeloupe/Saint-Martin/Saint-Barthélemy
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/cellule-d-accompagnement-vers-l-apprentissage-mart"
+              aria-label="Contacter la cellule apprentissage Martinique"
+            >
+              Martinique
+            </DsfrLink>,
+            <DsfrLink
+              href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-a-l-apprentis"
+              aria-label="Contacter la cellule apprentissage Mayotte"
+            >
+              Mayotte
+            </DsfrLink>,
           ]}
         />
       </Section>
@@ -140,15 +201,22 @@ const SeFaireAccompagnerPage = () => {
         <ParagraphList
           listItems={[
             <>
-              La possibilité d’échanger avec un mentor avec <DsfrLink href="https://www.1jeune1mentor.fr/">1jeune1mentor</DsfrLink> et son réseau d’associations ;
+              La possibilité d’échanger avec un mentor avec{" "}
+              <DsfrLink href="https://www.1jeune1mentor.fr/" aria-label="Consulter le service 1jeune1mentor">
+                1jeune1mentor
+              </DsfrLink>{" "}
+              et son réseau d’associations ;
             </>,
             "la mise en relation avec des conseillers près de chez vous (France Travail, Missions locales, Info jeune) ;",
             "des ateliers et événements de recrutement.",
           ]}
         />
         <Paragraph>
-          La plateforme 1jeune1solution <DsfrLink href="https://www.1jeune1solution.gouv.fr/accompagnement">vous oriente vers les bons interlocuteurs</DsfrLink> selon votre
-          situation et votre localisation. C'est un guichet unique qui simplifie vos démarches et vous fait gagner un temps précieux.
+          La plateforme 1jeune1solution{" "}
+          <DsfrLink href="https://www.1jeune1solution.gouv.fr/accompagnement" aria-label="Consulter le service 1jeune1solution">
+            vous oriente vers les bons interlocuteurs
+          </DsfrLink>{" "}
+          selon votre situation et votre localisation. C'est un guichet unique qui simplifie vos démarches et vous fait gagner un temps précieux.
         </Paragraph>
       </Section>
       <Section title="Nos conseils pour bien profiter de ces accompagnements">

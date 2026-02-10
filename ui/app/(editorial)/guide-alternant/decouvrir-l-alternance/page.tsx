@@ -37,8 +37,10 @@ const DecouvrirLAlternancePage = () => {
             "Les jeunes de 16 ans à 29 ans révolus;",
             <>
               Certains publics au-delà de 29 ans : les apprentis préparant un diplôme ou titre supérieur à celui obtenu via un précédent contrat,{" "}
-              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage">les personnes en situation de handicap</DsfrLink>, les personnes ayant un projet de
-              création ou de reprise d’entreprise nécessitant le diplôme ou titre visé, les sportifs de haut niveau.
+              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage" aria-label="Consulter les informations sur le contrat d'apprentissage aménagé">
+                les personnes en situation de handicap
+              </DsfrLink>
+              , les personnes ayant un projet de création ou de reprise d’entreprise nécessitant le diplôme ou titre visé, les sportifs de haut niveau.
             </>,
             "les personnes entrant dans leur 16ème année (15 ans et un jour), si elles ont terminé leur cycle du collège (brevet obtenu ou pas), peuvent commencer à exécuter un contrat d’apprentissage.",
           ]}

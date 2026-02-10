@@ -31,8 +31,13 @@ const CommentSignerUnContratEnAlternancePage = () => {
       <Section title="Pour un contrat d'apprentissage">
         <Paragraph>
           Votre employeur doit remplir un formulaire officiel{" "}
-          <DsfrLink href="https://travail-emploi.gouv.fr/contrat-dapprentissage-services-en-ligne">Cerfa disponible sur le site du ministère du Travail</DsfrLink>. Ce document
-          officialise votre contrat d'apprentissage.
+          <DsfrLink
+            href="https://travail-emploi.gouv.fr/contrat-dapprentissage-services-en-ligne"
+            aria-label="Consulter le formulaire Cerfa disponible sur le site du ministère du Travail"
+          >
+            Cerfa disponible sur le site du ministère du Travail
+          </DsfrLink>
+          . Ce document officialise votre contrat d'apprentissage.
         </Paragraph>
         <Paragraph component={"h3"} variant="h3">
           Les informations nécessaires
@@ -78,14 +83,23 @@ const CommentSignerUnContratEnAlternancePage = () => {
               À noter :
             </Typography>
             si vous signez avec une structure publique (mairie, ministère…), les démarches sont un peu différentes. Votre employeur trouvera les informations spécifiques sur{" "}
-            <DsfrLink href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique7">cette page</DsfrLink>.
+            <DsfrLink
+              href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique7"
+              aria-label="Consulter les informations spécifiques pour les structures publiques"
+            >
+              cette page
+            </DsfrLink>
+            .
           </Paragraph>
         </InfoSection>
       </Section>
       <Section title="Pour un contrat de professionnalisation">
         <Paragraph>
           Comme pour le contrat d'apprentissage, votre employeur doit remplir un formulaire officiel : Vous pouvez le consulter{" "}
-          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338">sur le site du ministère du Travail</DsfrLink> .
+          <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R10338" aria-label="Consulter le formulaire officiel sur le site du ministère du Travail">
+            sur le site du ministère du Travail
+          </DsfrLink>{" "}
+          .
         </Paragraph>
         <Paragraph component={"h3"} variant="h3">
           Les informations nécessaires
@@ -140,10 +154,17 @@ const CommentSignerUnContratEnAlternancePage = () => {
         </Paragraph>
         <ParagraphList
           listItems={[
-            <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage">Le contrat d'apprentissage</DsfrLink>,
-            <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation">Le contrat de professionnalisation</DsfrLink>,
+            <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage" aria-label="Consulter les informations sur le contrat d'apprentissage">
+              Le contrat d'apprentissage
+            </DsfrLink>,
+            <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation" aria-label="Consulter les informations sur le contrat de professionnalisation">
+              Le contrat de professionnalisation
+            </DsfrLink>,
             <>
-              <DsfrLink href="https://travail-emploi.gouv.fr/aides-aux-contrats-en-alternance-guide-pratique-destination-des-employeurs-et-des-organismes-de-formation">
+              <DsfrLink
+                href="https://travail-emploi.gouv.fr/aides-aux-contrats-en-alternance-guide-pratique-destination-des-employeurs-et-des-organismes-de-formation"
+                aria-label="Consulter le guide pratique à destination des employeurs et des organismes de formation sur les aides aux contrats en alternance"
+              >
                 Aides au contrats en alternance | Guide pratique à destination des employeurs et des organismes de formation
               </DsfrLink>
             </>,

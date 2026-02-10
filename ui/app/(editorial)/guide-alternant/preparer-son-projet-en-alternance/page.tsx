@@ -65,17 +65,25 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Box>
         <Paragraph>La plateforme de l’Onisep vous propose des quiz pour identifier les métiers faits pour vous ici et ici par exemple.</Paragraph>
         <Paragraph>
-          <DsfrLink href={"https://diagoriente.fr/"}>Diagoriente</DsfrLink> est également un service qui vous accompagne dans la construction de votre orientation professionnelle.
-          Le service propose des outils gratuits d'analyse et de valorisation de vos compétences afin de vous accompagner tout au long de votre parcours scolaire et professionnel.
+          <DsfrLink href={"https://diagoriente.fr/"} aria-label="Consulter le service Diagoriente">
+            Diagoriente
+          </DsfrLink>{" "}
+          est également un service qui vous accompagne dans la construction de votre orientation professionnelle. Le service propose des outils gratuits d'analyse et de
+          valorisation de vos compétences afin de vous accompagner tout au long de votre parcours scolaire et professionnel.
         </Paragraph>
         <Paragraph>Une fois que vous avez une idée de métier, explorez concrètement la réalité de ce métier :</Paragraph>
         <ParagraphList
           listItems={[
             <>
               En rencontrant des professionnels pour découvrir la réalité quotidienne des métiers (stages d'observation, immersions professionnelles, journées découvertes):{" "}
-              <DsfrLink href={"https://www.myjobglasses.com/webinars/"}>Myjobglasses</DsfrLink> vous propose de découvrir des métiers, en vidéo ou en rencontrant des
-              professionnels. <DsfrLink href="https://immersion-facile.beta.gouv.fr/">Immersion facilitée</DsfrLink> simplifie les démarches administratives pour vous permettre de
-              faire des immersions en entreprise ;
+              <DsfrLink href={"https://www.myjobglasses.com/webinars/"} aria-label="Consulter les webinaires Myjobglasses">
+                Myjobglasses
+              </DsfrLink>{" "}
+              vous propose de découvrir des métiers, en vidéo ou en rencontrant des professionnels.{" "}
+              <DsfrLink href="https://immersion-facile.beta.gouv.fr/" aria-label="Consulter le service Immersion facilitée">
+                Immersion facilitée
+              </DsfrLink>{" "}
+              simplifie les démarches administratives pour vous permettre de faire des immersions en entreprise ;
             </>,
             "en participant à des forums des métiers, des portes ouvertes d'établissements, etc. ;",
             "regardez des vidéos témoignages de professionnels pour avoir un aperçu concret.",
@@ -98,8 +106,10 @@ const PreparerSonProjetEnAlternancePage = () => {
             <>
               certains publics peuvent entrer en apprentissage au-delà de 29 ans (les apprentis préparant un diplôme ou titre supérieur à celui obtenu, les personnes reconnues
               travailleur handicapé{" > "}
-              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage">en savoir plus sur le contrat d’apprentissage aménagé</DsfrLink> ; les personnes
-              ayant un projet de création ou de reprise d’entreprise nécessitant le diplôme ou titre visé) ; les sportifs de haut niveau ;
+              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage" aria-label="Consulter les informations sur le contrat d’apprentissage aménagé">
+                en savoir plus sur le contrat d’apprentissage aménagé
+              </DsfrLink>{" "}
+              ; les personnes ayant un projet de création ou de reprise d’entreprise nécessitant le diplôme ou titre visé) ; les sportifs de haut niveau ;
             </>,
             "les personnes entrant dans leur 16ème année (15 ans et un jour), si elles ont terminé leur cycle du collège (brevet obtenu ou pas), peuvent commencer à exécuter un contrat d’apprentissage.",
           ]}
@@ -117,16 +127,34 @@ const PreparerSonProjetEnAlternancePage = () => {
           ]}
         />
         <Paragraph>
-          Le <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage">contrat d’apprentissage</DsfrLink> a pour but d’obtenir un diplôme d'État (CAP, BAC, BTS,
-          Licence, Master,…) ou un titre à finalité professionnelle inscrit au répertoire national des certifications professionnelles (
-          <DsfrLink href={"https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"}>RNCP</DsfrLink>), dont l’ensemble des
-          titres professionnels relevant du ministère chargé de l’emploi.
+          Le{" "}
+          <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage" aria-label="Consulter les informations sur le contrat d’apprentissage">
+            contrat d’apprentissage
+          </DsfrLink>{" "}
+          a pour but d’obtenir un diplôme d'État (CAP, BAC, BTS, Licence, Master,…) ou un titre à finalité professionnelle inscrit au répertoire national des certifications
+          professionnelles (
+          <DsfrLink
+            href={"https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"}
+            aria-label="Consulter le Répertoire national des certifications professionnelles"
+          >
+            RNCP
+          </DsfrLink>
+          ), dont l’ensemble des titres professionnels relevant du ministère chargé de l’emploi.
         </Paragraph>
         <Paragraph>
-          Le <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation">contrat de professionnalisation</DsfrLink> a pour but d'acquérir une qualification
-          professionnelle reconnue (un diplôme ou un titre professionnel enregistré dans le Répertoire national des certifications professionnelles –{" "}
-          <DsfrLink href={"https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"}>RNCP</DsfrLink> ) ; un certificat de
-          qualification professionnelle (CQP) ; une qualification reconnue dans les classifications d’une convention collective nationale.
+          Le{" "}
+          <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-de-professionnalisation" aria-label="Consulter les informations sur le contrat de professionnalisation">
+            contrat de professionnalisation
+          </DsfrLink>{" "}
+          a pour but d'acquérir une qualification professionnelle reconnue (un diplôme ou un titre professionnel enregistré dans le Répertoire national des certifications
+          professionnelles –{" "}
+          <DsfrLink
+            href={"https://www.francecompetences.fr/recherche-resultats/?types=certification&search=&pageType=certification&active=1"}
+            aria-label="Consulter le Répertoire National des Certifications Professionnelles"
+          >
+            RNCP
+          </DsfrLink>{" "}
+          ) ; un certificat de qualification professionnelle (CQP) ; une qualification reconnue dans les classifications d’une convention collective nationale.
         </Paragraph>
       </Section>
       <Section title="Rechercher une entreprise en vue de conclure un contrat de travail">
@@ -189,12 +217,20 @@ const PreparerSonProjetEnAlternancePage = () => {
         <Box display={"flex"} flexDirection={"column"} gap={2}>
           <Paragraph>
             Pour vous entraîner à contacter les entreprises, vous pouvez tester vos connaissances avec nos quiz de mise en situation :{" "}
-            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e">Chercher un employeur</DsfrLink> et{""}
-            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac">Préparer un entretien avec un employeur</DsfrLink>
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e" aria-label="Consultez le quizz chercher un employeur">
+              Chercher un employeur
+            </DsfrLink>{" "}
+            et{""}
+            <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" aria-label="Consultez le quizz préparer un entretien avec un employeur">
+              Préparer un entretien avec un employeur
+            </DsfrLink>
           </Paragraph>
           <Paragraph>
             Pour plus de conseils sur la lettre de motivation, découvrez{" "}
-            <DsfrLink href="https://labonnealternance.sites.beta.gouv.fr/blog-la-bonne-alternance/lettre-de-motivation-pour-une-alternance-mod%C3%A8les-et-conseils/">
+            <DsfrLink
+              href="https://labonnealternance.sites.beta.gouv.fr/blog-la-bonne-alternance/lettre-de-motivation-pour-une-alternance-mod%C3%A8les-et-conseils/"
+              aria-label="Consultez notre article dédié à la lettre de motivation pour une alternance"
+            >
               notre article dédié
             </DsfrLink>
           </Paragraph>
@@ -226,7 +262,13 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Paragraph>
         <Paragraph>
           Pour vous aider dans votre recherche, vous pouvez utiliser le catalogue des formations disponible sur{" "}
-          <DsfrLink href="https://www.1jeune1solution.gouv.fr/formations/apprentissage">cette page</DsfrLink>.
+          <DsfrLink
+            href="https://www.1jeune1solution.gouv.fr/formations/apprentissage"
+            aria-label="Consultez le catalogue des formations en apprentissage sur 1jeune1solution.gouv.fr"
+          >
+            cette page
+          </DsfrLink>
+          .
         </Paragraph>
         <Paragraph>
           Une fois la formation choisie, il faut s’y inscrire en respectant les modalités définies par l’organisme de formation. Il est possible de débuter une formation en
@@ -290,58 +332,94 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Paragraph>
         <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("1v")} color={fr.colors.decisions.text.title.grey.default}>
           <Typography>
-            <DsfrLink href="https://www.auvergnerhonealpes.fr/">AUVERGNE-RHÔNE-ALPES</DsfrLink>
+            <DsfrLink href="https://www.auvergnerhonealpes.fr/" aria-label="Consultez le site de la région Auvergne-Rhône-Alpes">
+              AUVERGNE-RHÔNE-ALPES
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.bourgognefranchecomte.fr/">BOURGOGNE-FRANCHE-COMTÉ</DsfrLink>
+            <DsfrLink href="https://www.bourgognefranchecomte.fr/" aria-label="Consultez le site de la région Bourgogne-Franche-Comté">
+              BOURGOGNE-FRANCHE-COMTÉ
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.bretagne.bzh/">BRETAGNE</DsfrLink>
+            <DsfrLink href="https://www.bretagne.bzh/" aria-label="Consultez le site de la région Bretagne">
+              BRETAGNE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.centre-valdeloire.fr/">CENTRE-VAL DE LOIRE</DsfrLink>
+            <DsfrLink href="https://www.centre-valdeloire.fr/" aria-label="Consultez le site de la région Centre-Val de Loire">
+              CENTRE-VAL DE LOIRE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.isula.corsica/">CORSE</DsfrLink>
+            <DsfrLink href="https://www.isula.corsica/" aria-label="Consultez le site de la région Corse">
+              CORSE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.grandest.fr/">GRAND EST</DsfrLink>
+            <DsfrLink href="https://www.grandest.fr/" aria-label="Consultez le site de la région Grand Est">
+              GRAND EST
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.regionguadeloupe.fr/">GUADELOUPE</DsfrLink>
+            <DsfrLink href="https://www.regionguadeloupe.fr/" aria-label="Consultez le site de la région Guadeloupe">
+              GUADELOUPE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.ctguyane.fr/">GUYANE</DsfrLink>
+            <DsfrLink href="https://www.ctguyane.fr/" aria-label="Consultez le site de la région Guyane">
+              GUYANE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.hautsdefrance.fr/">HAUTS-DE-FRANCE</DsfrLink>
+            <DsfrLink href="https://www.hautsdefrance.fr/" aria-label="Consultez le site de la région Hauts-de-France">
+              HAUTS-DE-FRANCE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.iledefrance.fr/">ÎLE-DE-FRANCE</DsfrLink>
+            <DsfrLink href="https://www.iledefrance.fr/" aria-label="Consultez le site de la région Île-de-France">
+              ÎLE-DE-FRANCE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.collectivitedemartinique.mq/">MARTINIQUE</DsfrLink>
+            <DsfrLink href="https://www.collectivitedemartinique.mq/" aria-label="Consultez le site de la région Martinique">
+              MARTINIQUE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.mayotte.fr/">MAYOTTE</DsfrLink>
+            <DsfrLink href="https://www.mayotte.fr/" aria-label="Consultez le site de la région Mayotte">
+              MAYOTTE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.normandie.fr/">NORMANDIE</DsfrLink>
+            <DsfrLink href="https://www.normandie.fr/" aria-label="Consultez le site de la région Normandie">
+              NORMANDIE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.nouvelle-aquitaine.fr/">NOUVELLE-AQUITAINE</DsfrLink>
+            <DsfrLink href="https://www.nouvelle-aquitaine.fr/" aria-label="Consultez le site de la région Nouvelle-Aquitaine">
+              NOUVELLE-AQUITAINE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.laregion.fr/">OCCITANIE</DsfrLink>
+            <DsfrLink href="https://www.laregion.fr/" aria-label="Consultez le site de la région Occitanie">
+              OCCITANIE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.paysdelaloire.fr/">PAYS DE LA LOIRE</DsfrLink>
+            <DsfrLink href="https://www.paysdelaloire.fr/" aria-label="Consultez le site de la région Pays de la Loire">
+              PAYS DE LA LOIRE
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.maregionsud.fr/">PROVENCE-ALPES-CÔTE D'AZUR (PACA)</DsfrLink>
+            <DsfrLink href="https://www.maregionsud.fr/" aria-label="Consultez le site de la région Provence-Alpes-Côte d'Azur (PACA)">
+              PROVENCE-ALPES-CÔTE D'AZUR (PACA)
+            </DsfrLink>
           </Typography>
           <Typography>
-            <DsfrLink href="https://www.regionreunion.com/">RÉUNION</DsfrLink>
+            <DsfrLink href="https://www.regionreunion.com/" aria-label="Consultez le site de la région Réunion">
+              RÉUNION
+            </DsfrLink>
           </Typography>
         </Box>
       </Section>

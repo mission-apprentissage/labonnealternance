@@ -37,12 +37,12 @@ const NAV_ITEMS: NavItem[] = [
     text: "Je suis recruteur",
     menuLinks: [
       {
-        text: "Je m'informe sur l'alternance",
-        href: PAGES.static.guideRecruteur.getPath(),
+        text: "Je recrute un alternant",
+        href: PAGES.static.jeSuisRecruteur.getPath(),
       },
       {
-        text: "Je recrute un alternant",
-        href: PAGES.static.accesRecruteur.getPath(),
+        text: "Je m'informe sur l'alternance",
+        href: PAGES.static.guideRecruteur.getPath(),
       },
     ],
   },
@@ -50,12 +50,12 @@ const NAV_ITEMS: NavItem[] = [
     text: "Je suis CFA",
     menuLinks: [
       {
-        text: "Je m'informe sur l'alternance",
-        href: PAGES.static.guideCFA.getPath(),
+        text: "Je recrute pour mes partenaires",
+        href: PAGES.static.jeSuisCFA.getPath(),
       },
       {
-        text: "Je recrute pour mes partenaires",
-        href: PAGES.static.organismeDeFormation.getPath(),
+        text: "Je m'informe sur l'alternance",
+        href: PAGES.static.guideCFA.getPath(),
       },
       {
         text: "Je télécharge la carte étudiant des métiers",

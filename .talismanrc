@@ -346,7 +346,31 @@ fileignoreconfig:
 - filename: ui/app/(editorial)/guide-cfa/page.tsx
   checksum: 3cd8cce155eb16d8483b7f919e072a163c57f4beb65bd8aea275520179020955
 - filename: ui/app/(editorial)/guide-alternant/se-faire-accompagner/page.tsx
-  checksum: 19e9847206e87da96d16195ad18e025d59e771338e9294e3f3348e4295802462
+  checksum: 79a65270f76376f1f35bb1fbab8dd32455596cc2b004ee70d3065a6f1205ef77
+- filename: ui/public/images/je-suis-cfa/illu-partenaires.svg
+  checksum: 1f3b34d95a3a0f41e546f844f89d2eb15e7e5199c7134cb0c2e93adc455778a2
+- filename: ui/public/images/je-suis-recruteur/illu-plateforme-jeunes.svg
+  checksum: d124858d42d301cdc001b9f53862acc3781662b9629ff1c38d63da9262f1b746
+- filename: ui/public/images/je-suis-cfa/illu-bientot.svg
+  checksum: 803179194df690b9cfd7c79a27f2c49fd1c56a4b8dec908745e8a5124b12b9a2
+- filename: ui/public/images/je-suis-cfa/illu-entreprises-mandatees.svg
+  checksum: e36a667ae39d8fa9bc901cf478e64e9405817b6f7ab39edc0e185c8633cdca11
+- filename: ui/public/images/je-suis-recruteur/illu-offre-emploi.svg
+  checksum: a7d7ddd78f4fe973c828954c7460355b8aa6ea5d6c7560feab75095aa5eae41d
+- filename: ui/public/images/je-suis-recruteur/illu-votre-besoin.svg
+  checksum: 7ca014427da26f76879bb42d72c88ed1d8f212086efaed79283e59e126ff4e9c
+- filename: ui/public/images/je-suis-cfa/illu-liste-offres.svg
+  checksum: d42b537bab61cbeab5cbbcb5ba3c4d9b537975bff566baa2fedd4f434b6695f9
+- filename: ui/public/images/je-suis-cfa/illu-contact-candidat.svg
+  checksum: c17a5dc75ac340e5252d5002b72674ec2e0a82e4a2c2a8dbf3013f90ed2c01eb
+- filename: ui/public/images/je-suis-recruteur/illu-soliciter-cfa.svg
+  checksum: ffd10a2c53a22b98607b8dcde5e309b756ddc02a442b2da35c0af5d430913365
+- filename: ui/public/images/je-suis-recruteur/illu-marche-cache.svg
+  checksum: e2166e1475c1630cd58e9701a816ac654d9898de02b7ca9cfa124cb3824a6cae
+- filename: ui/public/images/je-suis-cfa/illu-rdv.svg
+  checksum: c3d83006d5898ad2a39b75cfae12a667517f39c5310bc6ed8df86151ff4d745f
+- filename: ui/app/(editorial)/guide-alternant/se-faire-accompagner/page.tsx
+  checksum: 79a65270f76376f1f35bb1fbab8dd32455596cc2b004ee70d3065a6f1205ef77
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 scopeconfig:

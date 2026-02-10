@@ -217,6 +217,15 @@ export const PAGES = {
         description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
       }),
     },
+    jeSuisCFA: {
+      getPath: () => `/je-suis-cfa` as string,
+      title: "Je suis CFA",
+      index: true,
+      getMetadata: () => ({
+        title: "Je suis CFA - La bonne alternance",
+        description: "Découvrez comment La bonne alternance peut aider votre CFA à trouver des apprentis et à promouvoir vos formations.",
+      }),
+    },
     guideCFA: {
       getPath: () => `/guide-cfa` as string,
       title: "Je m'informe sur l'alternance",
@@ -251,6 +260,15 @@ export const PAGES = {
       getMetadata: () => ({
         title: "La carte étudiant des métiers | Guide CFA",
         description: "La carte d'étudiant des métiers permet d'ouvrir droit à de nombreuses réductions",
+      }),
+    },
+    jeSuisRecruteur: {
+      getPath: () => `/je-suis-recruteur` as string,
+      title: "Je suis recruteur",
+      index: true,
+      getMetadata: () => ({
+        title: "Je suis recruteur - La bonne alternance",
+        description: "Découvrez comment La bonne alternance peut aider votre entreprise à trouver des apprentis.",
       }),
     },
     guideRecruteur: {

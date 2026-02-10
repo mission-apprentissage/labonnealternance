@@ -36,7 +36,10 @@ const ApprentissageEtHandicapPage = () => {
       <InfoSection>
         <Box>
           Bon à savoir : le Ministère du Travail et de l'Emploi, en partenariat avec l’AGEFIPH et le FIHFP, a publié{" "}
-          <DsfrLink href="https://travail-emploi.gouv.fr/apprentissage-et-handicap-un-guide-pour-les-employeurs-et-les-apprentis">
+          <DsfrLink
+            href="https://travail-emploi.gouv.fr/apprentissage-et-handicap-un-guide-pour-les-employeurs-et-les-apprentis"
+            aria-label="Consulter le guide sur l’apprentissage & le handicap"
+          >
             un guide sur l’apprentissage & le handicap
           </DsfrLink>{" "}
           à destination des employeurs, des CFA et des personnes en situation de handicap.
@@ -139,8 +142,14 @@ const ApprentissageEtHandicapPage = () => {
         <Paragraph>
           Dans les cas d’allongement de durée de la période de formation, le pourcentage du Smic pris en compte pour le calcul de la rémunération est majoré, pendant la période de
           prolongation, de 15 points par rapport à celui appliqué avant cette période. Si vous êtes en situation de handicap**, vous pouvez solliciter une aide de l’
-          <DsfrLink href="https://www.agefiph.fr/">Agefiph**</DsfrLink> (si vous avez conclu un contrat avec un employeur du secteur privé), ou du
-          <DsfrLink href="https://www.fiphfp.fr/">FIPHFP</DsfrLink> (si vous avez conclu un contrat avec un employeur public).
+          <DsfrLink href="https://www.agefiph.fr/" aria-label="Consulter le site de l'Agefiph">
+            Agefiph**
+          </DsfrLink>{" "}
+          (si vous avez conclu un contrat avec un employeur du secteur privé), ou du
+          <DsfrLink href="https://www.fiphfp.fr/" aria-label="Consulter le site du FIPHFP">
+            FIPHFP
+          </DsfrLink>{" "}
+          (si vous avez conclu un contrat avec un employeur public).
         </Paragraph>
       </Section>
       <Section title="Quelles sont les aides spécifiques pour les employeurs d’un apprenti reconnu travailleur handicapé ?">
@@ -155,7 +164,9 @@ const ApprentissageEtHandicapPage = () => {
                   Pour les employeurs du secteur privé :
                 </Typography>{" "}
                 l’aide à l’embauche en contrat d’apprentissage d’une personne handicapée proposée par l’
-                <DsfrLink href="https://www.agefiph.fr/">Agefiph.</DsfrLink>
+                <DsfrLink href="https://www.agefiph.fr/" aria-label="Consulter le site de l'Agefiph">
+                  Agefiph.
+                </DsfrLink>
               </>,
               <Typography component="span" fontWeight={"bold"}>
                 Pour les employeurs du secteur public (non industriel et commercial) (qui ne bénéficient pas de l'aide de l'État) :
@@ -175,11 +186,16 @@ const ApprentissageEtHandicapPage = () => {
           <ParagraphList
             listItems={[
               <>
-                <DsfrLink href="https://www.fiphfp.fr/employeurs/nos-aides-financieres/catalogue-des-interventions">Consulter le catalogue des interventions du FIPHFP</DsfrLink> si
-                vous avez conclu un contrat avec un employeur public ;
+                <DsfrLink href="https://www.fiphfp.fr/employeurs/nos-aides-financieres/catalogue-des-interventions" aria-label="Consulter le catalogue des interventions du FIPHFP">
+                  Consulter le catalogue des interventions du FIPHFP
+                </DsfrLink>{" "}
+                si vous avez conclu un contrat avec un employeur public ;
               </>,
               <>
-                <DsfrLink href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2025-02/Metodia_Janvier_2025.pdf">
+                <DsfrLink
+                  href="https://www.agefiph.fr/sites/default/files/medias/fichiers/2025-02/Metodia_Janvier_2025.pdf"
+                  aria-label="Consulter l’offre d’aides financières et services de l’Agefiph"
+                >
                   Consultez l’offre d’aides financières et services de l’Agefiph
                 </DsfrLink>
                 si vous avez conclu un contrat avec un employeur privé.
