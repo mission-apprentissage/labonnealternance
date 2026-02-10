@@ -24,7 +24,7 @@ export default (server: Server) => {
 
       if (result === null) {
         res.status(404)
-        return { error: "Pas de données disponibles" }
+        return { statusCode: 404, error: "Not Found", message: "Pas de données disponibles" }
       }
 
       return result
