@@ -37,8 +37,11 @@ on:
       SLACK_WEBHOOK:
         description: Slack webhook URL
         required: true
-      VAULT_PWD:
-        description: Vault Password
+      OPENPGP_PRIVATE_SUBKEY:
+        description: Github Actions' OpenPGP private subkey
+        required: true
+      TOKEN_MNA_SHARED:
+        description: Authentication token for accessing private repositories
         required: true
 
 jobs:
@@ -73,7 +76,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: true
 
       - name: Clone mna-npm-check repository
@@ -88,7 +91,7 @@ jobs:
   deploy:
     if: ${{ success() }}
     needs: ["version", "npm-packages-check"]
-    name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
+   name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify new deployment on Slack
@@ -105,6 +108,19 @@ jobs:
 
       - name: Checkout project
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          submodules: true
+
+      - name: Initialize the GnuPG keyring
+        run: |
+          echo -n "$OPENPGP_KEY" | gpg --import
+        env:
+          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
 
       - uses: actions/setup-node@v6
         with:
@@ -124,21 +140,15 @@ jobs:
             Host *
               IdentityFile ~/.ssh/github_actions
 
-      - name: Create vault pwd file
-        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
-
       - name: Run playbook
         run: .bin/mna-lba deploy ${{ inputs.environment }} --extra-vars "app_version=${{ needs.version.outputs.VERSION }}"
         env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
 
       - name: Encrypt logs
-        run: .bin/mna-lba deploy:log:encrypt
+        run: .bin/mna-lba app:deploy:log:encrypt
         if: always()
-        env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
 
       - name: Upload logs artifacts
         if: always()
@@ -149,7 +159,7 @@ jobs:
 
       - name: Add Job summary
         if: always()
-        run: echo 'You can get logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`' >> $GITHUB_STEP_SUMMARY
+        run: echo 'You can get logs using `.bin/mna app:deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Notify failure on Slack
         uses: ravsamhq/notify-slack-action@v2
@@ -157,7 +167,7 @@ jobs:
         with:
           status: ${{ job.status }}
           notification_title: "Le déploiement ${{ needs.version.outputs.VERSION }} en ${{ inputs.environment }} a échoué"
-          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
+          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba app:deploy:log:decrypt ${{ github.run_id }} ${{ inputs.environment }}`"
           notify_when: "failure"
           mention_groups: "S0693U59FCK"
         env:
@@ -176,6 +186,5 @@ jobs:
       - name: notify sentry that a new version has been deployed
         run: .bin/mna-lba sentry:deploy ${{ inputs.environment }} ${{ needs.version.outputs.VERSION }}
         env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
