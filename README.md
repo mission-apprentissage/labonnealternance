@@ -6,7 +6,7 @@
   - [Fiche Produit](#fiche-produit)
   - [Installation](#installation)
     - [Pré-requis](#pré-requis)
-    - [Clé GPG](#clé-gpg)
+    - [Clé OpenPGP](#clé-gpg)
   - [Développement](#développement)
     - [Gettting started](#gettting-started)
     - [Détails des commandes globales](#détails-des-commandes-globales)
@@ -19,7 +19,7 @@
       - [Deploiement depuis l'environnement local](#deploiement-depuis-lenvironnement-local)
       - [Gestion des migrations](#gestion-des-migrations)
       - [Gitleaks](#gitleaks)
-      - [Vault](#vault)
+      - [SOPS](#sops)
       - [Linter](#linter)
       - [Release depuis l'environnement local](#release-depuis-lenvironnement-local)
     - [Variables d'environnement local](#variables-denvironnement-local)
@@ -41,11 +41,11 @@ Avant d'installer le projet, assurez-vous d'avoir les éléments suivants :
 - **Docker** 23.03.0+
 - **Git LFS**
 - **GnuPG**
+- **SOPS** 3.9.3+
 - **pwgen**
 - **1password-cli**
 - **yq**
 - **shred**
-- **sshpass**
 - **NodeJS** 24+
 - **Ansible** 2.7+
 
@@ -60,18 +60,14 @@ brew install 1password-cli
 brew install ansible
 brew install pwgen
 brew install bash
+brew install sops
 ```
 
-```bash
-brew tap esolitos/ipa
-brew install esolitos/ipa/sshpass
-```
+### Clé OpenPGP
 
-### Clé GPG
+Pour déchiffrer les variables d'environnement, vous avez besoin d'une clé OpenPGP. Si vous n'en avez pas, vous pouvez en créer une en suivant la documentation GitHub [ici](https://docs.github.com/fr/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
 
-Pour décrypter les variables d'environnement, vous avez besoin d'une clé GPG. Si vous n'en avez pas, vous pouvez en créer une en suivant la documentation GitHub [ici](https://docs.github.com/fr/authentication/managing-commit-signature-verification/generating-a-new-gpg-key).
-
-Voici les étapes pour créer votre clé GPG :
+Voici les étapes pour créer votre clé OpenPGP :
 
 1. Lors de la création de la clé, choisissez les options suivantes :
    - `Please select what kind of key you want` > `ECC (sign and encrypt)`
@@ -103,15 +99,7 @@ Voici les étapes pour créer votre clé GPG :
 
    Ces deux fichiers peuvent être sauvegardés, par exemple, sur une clé USB.
 
-5. Communiquez votre clé à votre équipe afin d'être autorisé à décrypter le vault.
-
-**Une fois autorisé, vous aurez accès aux fichiers suivants :**
-
-- `.infra/vault/.vault-password.gpg`
-
-6. Installer 1password cli et connecter votre compte
-
-- brew install 1password-cli https://developer.1password.com/docs/cli/get-started/
+5. Communiquez votre trousseau de clés publiques à votre équipe afin d'être autorisé à déchiffrer les variables d'environnements
 
 ## Développement
 
@@ -127,7 +115,7 @@ yarn setup
 
 Cette commande mettra à jour les dépendances du projet.
 
-Le script vous demandera plusieurs fois la phrase secrète de votre clé GPG pour décrypter les variables d'environnement du vault.
+Le script vous demandera la phrase secrète de votre clé OpenPGP pour déchiffrer les variables d'environnement.
 
 Il est possible que vous rencontriez un problème avec le fichier `.infra/local/mongo_keyfile` lors du démarrage du container de `mongodb` (vous auriez des erreurs dans les logs du démarrage du container).
 
@@ -154,7 +142,7 @@ Les principales opérations sont regroupées dans le `package.json`.
   yarn setup
 ```
 
-installation ou mise à jour de vos fichiers d'environnement de développement depuis le vault.yml (`server/.env` et `ui/.env`)
+Installation ou mise à jour de vos fichiers d'environnement de développement (`server/.env` et `ui/.env`), depuis les fichiers chiffrés avec **SOPS**.
 
 #### Lancement de la stack compléte
 
@@ -257,15 +245,23 @@ Scanner les secrets dans le repo
   yarn gitleaks:check
 ```
 
+<<<<<<< Updated upstream
 Pour ajouter une exception, éditer le fichier `.gitleaks.toml` et ajouter le chemin ou le pattern regex dans la section `[allowlist]`.
 
 #### Vault
+=======
+#### SOPS
+>>>>>>> Stashed changes
 
-Édition du vault ansible
+Édition des variables d'environnement.
 
 ```bash
-  yarn vault:edit
+  yarn vault:edit [<env>]
 ```
+
+Par défaut, le fichier `.infra/env.global.yml` est édité.
+
+Si un environnement est renseigné, le fichier associé `.infra/env.<env>.yml` à cet environnement est édité.
 
 #### Linter
 
@@ -285,7 +281,7 @@ Création d'une release
 
 ### Variables d'environnement local
 
-Les variables d'environnement local du server sont stocké dans le vault (peut contenir des secrets). Si vous souhaitez overwwrite certaines variables ou changer le port de l'api par exemple, il est possible de créer un fichier `server/.env.local` et `ui/.env.local`
+Les variables d'environnement locales du serveur sont stockées dans le fichier chiffré avec **SOPS** `.infra/env.local.yml`. Si vous souhaitez surcharger certaines variables ou changer le port de l'API par exemple, il est possible de créer un fichier `server/.env.local` et `ui/.env.local`
 
 ### Exécution des tests
 
@@ -314,7 +310,6 @@ yarn test --update
 ## Aller plus loin
 
 - [Datasouces](./docs/DATASOURCES.md)
-- [Vault](./docs/Vault.md)
 - [Déploiement](./docs/deploy.md)
 - [Développement](./docs/developpement/developpement.md)
 - [Debugging](./docs/developpement/debug.md)
