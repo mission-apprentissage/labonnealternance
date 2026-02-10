@@ -91,7 +91,7 @@ jobs:
   deploy:
     if: ${{ success() }}
     needs: ["version", "npm-packages-check"]
-   name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
+    name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify new deployment on Slack
