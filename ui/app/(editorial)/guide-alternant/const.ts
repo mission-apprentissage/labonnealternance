@@ -83,4 +83,25 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     path: PAGES.static.salaireAlternant.getPath(),
     updatedAt: "30/01/2026",
   },
+  ["a-propos-des-formations"]: {
+    id: "a-propos-des-formations",
+    title: "À propos des formations",
+    description: "Informations sur les formations en alternance",
+    path: PAGES.static.guideAlternantAProposDesFormations.getPath(),
+    updatedAt: "30/01/2026",
+  },
+  ["conseils-et-astuces-pour-trouver-un-employeur"]: {
+    id: "conseils-et-astuces-pour-trouver-un-employeur",
+    title: "Conseils et astuces pour trouver un employeur",
+    description: "Astuces pour réussir votre recherche d'employeur en alternance",
+    path: PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur.getPath(),
+    updatedAt: "30/01/2026",
+  },
+  ["les-aides-financieres-et-materielles"]: {
+    id: "les-aides-financieres-et-materielles",
+    title: "Les aides financières et matérielles",
+    description: "Découvrez les différentes aides financières et matérielles disponibles pour les alternants",
+    path: PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles.getPath(),
+    updatedAt: "30/01/2026",
+  },
 }

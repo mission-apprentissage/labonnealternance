@@ -19,7 +19,7 @@ export const LayoutArticle = ({
   description: ReactNode
   updatedAt: ReactNode
   children: ReactNode
-  allerPlusLoinItems: Array<{
+  allerPlusLoinItems?: Array<{
     id: string
     title: string
     description: string
@@ -46,20 +46,22 @@ export const LayoutArticle = ({
       <Grid size={{ md: 1, xs: 0 }}></Grid>
     </Grid>
     <Divider sx={{ width: "100%", height: 0, background: "none", borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`, my: fr.spacing("3w") }} />
-    <Grid container spacing={fr.spacing("3w")} marginTop={fr.spacing("4w")}>
-      <Grid size={12} spacing={fr.spacing("3w")}>
-        <Typography component={"h2"} variant="h2">
-          Pour continuer d'explorer
-        </Typography>
-        <Divider
-          sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
-        />
-      </Grid>
-      {allerPlusLoinItems.map((item, index) => (
-        <Grid key={index} size={{ md: 4, xs: 12 }}>
-          <AllerPlusLoinItem {...item} />
+    {allerPlusLoinItems?.length > 0 && (
+      <Grid container spacing={fr.spacing("3w")} marginTop={fr.spacing("4w")}>
+        <Grid size={12} spacing={fr.spacing("3w")}>
+          <Typography component={"h2"} variant="h2">
+            Pour continuer d'explorer
+          </Typography>
+          <Divider
+            sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
+          />
         </Grid>
-      ))}
-    </Grid>
+        {allerPlusLoinItems.map((item, index) => (
+          <Grid key={index} size={{ md: 4, xs: 12 }}>
+            <AllerPlusLoinItem {...item} />
+          </Grid>
+        ))}
+      </Grid>
+    )}
   </DefaultContainer>
 )

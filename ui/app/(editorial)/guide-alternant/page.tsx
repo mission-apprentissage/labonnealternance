@@ -18,7 +18,7 @@ import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHead
 
 export const metadata: Metadata = PAGES.static.guideAlternant.getMetadata()
 
-const GuideAlternant = () => {
+const GuideAlternantPage = () => {
   return (
     <Box
       sx={{
@@ -111,9 +111,17 @@ const GuideAlternant = () => {
               sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
             />
           </Grid>
-          <Conseil title="À propos des formations en alternance" icon="ri-graduation-cap-line" href={"/"} />
-          <Conseil title="Pour trouver un employeur et préparer vos candidatures" icon="fr-icon-briefcase-line" href={"/"} />
-          <Conseil title="À propos des aides financières et matérielles" icon="fr-icon-calculator-line" href={"/"} />
+          <Conseil title="À propos des formations en alternance" icon="ri-graduation-cap-line" href={PAGES.static.guideAlternantAProposDesFormations.getPath()} />
+          <Conseil
+            title="Pour trouver un employeur et préparer vos candidatures"
+            icon="fr-icon-briefcase-line"
+            href={PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur.getPath()}
+          />
+          <Conseil
+            title="À propos des aides financières et matérielles"
+            icon="fr-icon-calculator-line"
+            href={PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles.getPath()}
+          />
           <Grid
             container
             size={12}
@@ -127,7 +135,7 @@ const GuideAlternant = () => {
               "& .fr-card__title ::after": {
                 display: "none",
               },
-              padding: fr.spacing("4w"),
+              padding: { md: fr.spacing("4w"), xs: fr.spacing("2w") },
               marginTop: fr.spacing("4w"),
             }}
           >
@@ -173,7 +181,12 @@ const GuideAlternant = () => {
           <Grid
             container
             size={12}
-            sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, borderRadius: fr.spacing("2v"), padding: fr.spacing("4w"), marginTop: fr.spacing("4w") }}
+            sx={{
+              backgroundColor: fr.colors.decisions.background.default.grey.hover,
+              borderRadius: fr.spacing("2v"),
+              padding: { md: fr.spacing("4w"), xs: fr.spacing("1w") },
+              marginTop: fr.spacing("4w"),
+            }}
             spacing={2}
           >
             <Grid size={12} my={fr.spacing("6v")}>
@@ -184,7 +197,13 @@ const GuideAlternant = () => {
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
-            <Grid container size={12} mx={fr.spacing("4w")} padding={fr.spacing("3w")} sx={{ backgroundColor: "white" }}>
+            <Grid
+              container
+              size={12}
+              mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}
+              padding={{ md: fr.spacing("3w"), xs: fr.spacing("2w") }}
+              sx={{ backgroundColor: "white" }}
+            >
               <Grid size={{ md: 4, xs: 0 }} alignContent={"center"}>
                 <Image src="/images/guides/guide-alternant/tableau-de-suivi.svg" width={222} height={175} alt="" />
               </Grid>
@@ -243,7 +262,7 @@ const GuideAlternant = () => {
             </Grid>
             <Grid
               size={12}
-              mx={fr.spacing("4w")}
+              mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}
               sx={{
                 backgroundColor: "white",
                 "& .fr-card__content": {
@@ -339,4 +358,4 @@ const GuideAlternant = () => {
   )
 }
 
-export default GuideAlternant
+export default GuideAlternantPage

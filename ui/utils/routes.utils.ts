@@ -217,6 +217,33 @@ export const PAGES = {
         description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
       }),
     },
+    guideAlternantAProposDesFormations: {
+      getPath: () => `/guide-alternant/a-propos-des-formations` as string,
+      title: "À propos des formations",
+      index: true,
+      getMetadata: () => ({
+        title: "À propos des formations | Guide alternant",
+        description: "Découvrez les différents types de formations en alternance et comment choisir celle qui vous convient.",
+      }),
+    },
+    guideAlternantConseilsEtAstucesPourTrouverUnEmployeur: {
+      getPath: () => `/guide-alternant/conseils-et-astuces-pour-trouver-un-employeur` as string,
+      title: "Conseils et astuces pour trouver un employeur",
+      index: true,
+      getMetadata: () => ({
+        title: "Conseils et astuces pour trouver un employeur | Guide alternant",
+        description: "Découvrez nos conseils et astuces pour trouver un employeur en alternance et réussir votre recherche.",
+      }),
+    },
+    guideAlternantLesAidesFinancieresEtMaterielles: {
+      getPath: () => `/guide-alternant/les-aides-financieres-et-materielles` as string,
+      title: "Les aides financières et matérielles pour les alternants",
+      index: true,
+      getMetadata: () => ({
+        title: "Les aides financières et matérielles pour les alternants | Guide alternant",
+        description: "Découvrez les différentes aides financières et matérielles auxquelles vous pouvez prétendre en tant qu'alternant.",
+      }),
+    },
     jeSuisCFA: {
       getPath: () => `/je-suis-cfa` as string,
       title: "Je suis CFA",

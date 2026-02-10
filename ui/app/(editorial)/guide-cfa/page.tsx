@@ -16,7 +16,7 @@ import { DocumentGridItem } from "@/app/(editorial)/_components/DocumentGridItem
 
 export const metadata: Metadata = PAGES.static.guideCFA.getMetadata()
 
-const GuideCFA = () => {
+const GuideCFAPage = () => {
   return (
     <Box
       sx={{
@@ -82,7 +82,7 @@ const GuideCFA = () => {
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
-            <Grid size={12} mx={fr.spacing("4w")}>
+            <Grid size={12} mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}>
               <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
                 <ListItem sx={{ display: "list-item" }}>
                   Pour rechercher une formation en alternance, le{" "}
@@ -121,7 +121,12 @@ const GuideCFA = () => {
             <Grid
               container
               size={12}
-              sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, borderRadius: fr.spacing("2v"), padding: fr.spacing("4w"), marginTop: fr.spacing("4w") }}
+              sx={{
+                backgroundColor: fr.colors.decisions.background.default.grey.hover,
+                borderRadius: fr.spacing("2v"),
+                padding: { md: fr.spacing("4w"), xs: fr.spacing("2w") },
+                marginTop: fr.spacing("4w"),
+              }}
               spacing={2}
             >
               <Grid size={12} my={fr.spacing("6v")}>
@@ -187,7 +192,7 @@ const GuideCFA = () => {
               />
             </Grid>
           </Grid>
-          <Grid container size={12} sx={{ px: fr.spacing("3w"), py: fr.spacing("2w"), my: fr.spacing("6v") }}>
+          <Grid container size={12} sx={{ px: fr.spacing("3w"), py: fr.spacing("2w") }}>
             <Grid size={{ md: 3, xs: 12 }}>
               <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" />
             </Grid>
@@ -205,7 +210,7 @@ const GuideCFA = () => {
               </Box>
             </Grid>
           </Grid>
-          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("3w"), py: fr.spacing("2w"), my: fr.spacing("6v") }}>
+          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("3w"), py: fr.spacing("2w") }}>
             <Grid size={{ md: 10, xs: 12 }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("2w")} my={fr.spacing("2w")}>
                 <Typography variant="body1" fontWeight={500}>
@@ -229,4 +234,4 @@ const GuideCFA = () => {
   )
 }
 
-export default GuideCFA
+export default GuideCFAPage

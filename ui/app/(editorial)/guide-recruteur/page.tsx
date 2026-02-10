@@ -17,7 +17,7 @@ import { DocumentGridItem } from "@/app/(editorial)/_components/DocumentGridItem
 
 export const metadata: Metadata = PAGES.static.guideRecruteur.getMetadata()
 
-const GuideRecruteur = () => {
+const GuideRecruteurPage = () => {
   return (
     <Box
       sx={{
@@ -126,18 +126,19 @@ const GuideRecruteur = () => {
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
-            <Grid size={12} mx={fr.spacing("4w")}>
+            <Grid size={12} mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}>
               <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
                 <ListItem sx={{ display: "list-item", flex: "1" }}>
-                  <Box display={"flex"} flexDirection={"row"} gap={1}>
-                    <Typography fontWeight={700}>Estimez le coût d’un alternant</Typography> pour votre entreprise avec le simulateur de l’URSSAF.
-                    <DsfrLink
-                      href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
-                      aria-label="Consulter le simulateur de l’URSSAF pour estimer le coût d’un alternant"
-                    >
-                      En savoir plus
-                    </DsfrLink>
-                  </Box>
+                  <Typography component="span" fontWeight={"bold"}>
+                    Estimez le coût d’un alternant
+                  </Typography>{" "}
+                  pour votre entreprise avec le simulateur de l’URSSAF.
+                  <DsfrLink
+                    href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
+                    aria-label="Consulter le simulateur de l’URSSAF pour estimer le coût d’un alternant"
+                  >
+                    En savoir plus
+                  </DsfrLink>
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Depuis février 2025, le Gouvernement a mis à jour l’aide aux entreprises, allant jusqu’à 6000 euros s'il s'agit d'un apprenti en situation de handicap.{" "}
@@ -214,7 +215,12 @@ const GuideRecruteur = () => {
             <Grid
               container
               size={12}
-              sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, borderRadius: fr.spacing("2v"), padding: fr.spacing("4w"), marginTop: fr.spacing("4w") }}
+              sx={{
+                backgroundColor: fr.colors.decisions.background.default.grey.hover,
+                borderRadius: fr.spacing("2v"),
+                padding: { md: fr.spacing("4w"), xs: fr.spacing("2w") },
+                marginTop: fr.spacing("4w"),
+              }}
               spacing={2}
             >
               <Grid size={12} my={fr.spacing("6v")}>
@@ -323,4 +329,4 @@ const GuideRecruteur = () => {
   )
 }
 
-export default GuideRecruteur
+export default GuideRecruteurPage
