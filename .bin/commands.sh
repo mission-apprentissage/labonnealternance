@@ -12,6 +12,8 @@ else
 
   git submodule update --recursive --init --remote "${ROOT_DIR}/.bin/shared"
 
+  . "${ROOT_DIR}/.bin/shared/commands.sh"
+
 fi
 
 ################################################################################
