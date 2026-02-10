@@ -2,9 +2,17 @@
 - hosts: preview
   become: true
   gather_facts: false
-  vars_files:
-    - "../vault/vault.yml"
   tasks:
+    - name: Chargement des variables chiffrées globales
+      community.sops.load_vars:
+        file: "{{ inventory_dir }}/../env.global.yml"
+        expressions: ignore
+
+    - name: Chargement des variables chiffrées de l'environnement preview
+      community.sops.load_vars:
+        file: "{{ inventory_dir }}/../env.preview.yml"
+        expressions: ignore
+
     - include_tasks: ./tasks/files_copy.yml
 
     - name: lancement preview system
@@ -15,7 +23,7 @@
     - name: Setup MongoDB ReplicaSet
       shell:
         chdir: /opt/app
-        cmd: 'docker compose -f docker-compose.preview-system.yml exec -it mongodb mongosh "{{ vault[env_type].LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
+        cmd: 'docker compose -f docker-compose.preview-system.yml exec -it mongodb mongosh "{{ LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
       when: env_type == 'preview'
 
     - include_tasks: ./tasks/preview_pr.yml
