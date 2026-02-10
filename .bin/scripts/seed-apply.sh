@@ -44,4 +44,4 @@ cat "$SEED_GZ" | docker compose -f "$ROOT_DIR/docker-compose.yml" exec -iT mongo
 
 yarn build:dev
 yarn cli migrations:up
-yarn cli recreate:indexes 
+yarn cli indexes:recreate
