@@ -54,11 +54,11 @@ describe("InserJeune Controller", () => {
       })
 
       // Mock 404 response
-      nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/99999/certifications/00000000").reply(404)
+      nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75011/certifications/00000000").reply(404)
 
       const response = await httpClient().inject({
         method: "GET",
-        path: "/api/inserjeune/99999/00000000",
+        path: "/api/inserjeune/75011/00000000",
       })
 
       expect(response.statusCode).toBe(404)

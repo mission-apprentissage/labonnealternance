@@ -3,13 +3,13 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 
-const zInserJeuneStatsResponse = z.unknown()
+const zInserJeunesStatsResponse = z.unknown()
 
-export const zInserJeuneRoutes = {
+export const zInserJeunesRoutes = {
   get: {
-    "/inserjeune/:zipcode/:cfd": {
+    "/inserjeunes/:zipcode/:cfd": {
       method: "get",
-      path: "/inserjeune/:zipcode/:cfd",
+      path: "/inserjeunes/:zipcode/:cfd",
       params: z
         .object({
           zipcode: z.string().describe("Code postal de la région"),
@@ -17,7 +17,7 @@ export const zInserJeuneRoutes = {
         })
         .strict(),
       response: {
-        "200": zInserJeuneStatsResponse,
+        "200": zInserJeunesStatsResponse,
         "404": ZResError,
         "500": ZResError,
       },

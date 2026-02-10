@@ -2,7 +2,6 @@ import { internal } from "@hapi/boom"
 import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"
-import { logger } from "@/common/logger"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
@@ -29,17 +28,16 @@ const getOmogenToken = async (): Promise<string> => {
   // Start a new token fetch
   tokenFetchPromise = (async () => {
     try {
-      logger.info(`Récupération du token pour l'API Omogen InserJeune`)
       const requestBody = new URLSearchParams({
         grant_type: "client_credentials",
-        client_id: config.inserjeune.clientId,
-        client_secret: config.inserjeune.clientSecret,
+        client_id: config.inserjeunes.clientId,
+        client_secret: config.inserjeunes.clientSecret,
       })
 
       const { data } = await axiosClient.post(`${OMOGEN_BASE_URL}/auth/token`, requestBody.toString(), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "x-Omogen-api-key": config.inserjeune.apiKey,
+          "x-Omogen-api-key": config.inserjeunes.apiKey,
         },
       })
 
@@ -79,7 +77,7 @@ const getOmogenToken = async (): Promise<string> => {
 /**
  * Fetch InserJeune statistics for a specific certification and region
  */
-export const fetchInserJeuneStats = async (zipcode: string, cfd: string) => {
+export const fetchInserJeunesStats = async (zipcode: string, cfd: string) => {
   try {
     const token = await getOmogenToken()
     const { data } = await axiosClient.get(`${OMOGEN_BASE_URL}/exposition-inserjeunes-insersup/api/inserjeunes/regionales/${zipcode}/certifications/${cfd}`, {
@@ -90,10 +88,9 @@ export const fetchInserJeuneStats = async (zipcode: string, cfd: string) => {
     return data
   } catch (error: any) {
     if (error.response?.status === 404) {
-      logger.info(`Pas de données InserJeune disponibles pour zipcode=${zipcode}, cfd=${cfd}`)
       return null
     }
     sentryCaptureException(error, { extra: { responseData: error.response?.data, zipcode, cfd } })
-    throw internal("Erreur lors de la récupération des données InserJeune")
+    throw internal("Erreur lors de la récupération des données InserJeunes")
   }
 }

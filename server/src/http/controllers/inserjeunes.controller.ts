@@ -1,6 +1,6 @@
 import { zRoutes } from "shared"
 
-import { fetchInserJeuneStats } from "@/common/apis/inserjeune/inserjeune.client"
+import { fetchInserJeunesStats } from "@/common/apis/inserjeunes/inserjeunes.client"
 import type { Server } from "@/http/server"
 
 const config = {
@@ -12,15 +12,15 @@ const config = {
 
 export default (server: Server) => {
   server.get(
-    "/inserjeune/:zipcode/:cfd",
+    "/inserjeunes/:zipcode/:cfd",
     {
-      schema: zRoutes.get["/inserjeune/:zipcode/:cfd"],
+      schema: zRoutes.get["/inserjeunes/:zipcode/:cfd"],
       config,
     },
     async (req, res) => {
       const { zipcode, cfd } = req.params
 
-      const result = await fetchInserJeuneStats(zipcode, cfd)
+      const result = await fetchInserJeunesStats(zipcode, cfd)
 
       if (result === null) {
         res.status(404)

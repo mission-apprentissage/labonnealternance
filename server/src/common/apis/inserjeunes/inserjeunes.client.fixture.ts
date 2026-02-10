@@ -1,4 +1,4 @@
-export const inserJeuneStatsFixture = {
+export const inserJeunesStatsFixture = {
   millesime: "2023",
   region: {
     code: "11",
