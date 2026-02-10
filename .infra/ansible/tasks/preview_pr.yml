@@ -34,7 +34,7 @@
 
     - name: "[{{ pr_number }}] creation du fichier docker compose"
       ansible.builtin.template:
-        src: "{{inventory_dir}}/docker-compose.preview.yml"
+        src: "{{inventory_dir}}/../docker-compose.preview.yml"
         dest: "/opt/app/projects/{{ pr_number }}/docker-compose.yml"
 
     - name: "Check if repository exists"
