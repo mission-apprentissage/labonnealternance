@@ -1,6 +1,3 @@
 * @mission-apprentissage/lba
 
 .infra/files/configs/mongodb/seed.gpg @mission-apprentissage/lba
-.infra/vault/vault.yml @mission-apprentissage/lba
-.infra/vault/.env_server @mission-apprentissage/lba
-.infra/vault/.env_ui @mission-apprentissage/lba

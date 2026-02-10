@@ -1,0 +1,27 @@
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Chargement des variables chiffrées globales
+      community.sops.load_vars:
+        file: "{{ inventory_dir }}/../env.global.yml"
+        expressions: ignore
+
+    - name: Chargement des variables chiffrées de l'environnement local
+      community.sops.load_vars:
+        file: "{{ inventory_dir }}/../env.local.yml"
+        expressions: ignore
+
+    - name: Mise à jour du fichier de variables d'environnement server
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ inventory_dir }}/../../server/.env"
+      with_fileglob:
+        - "{{ inventory_dir }}/../.env_server"
+
+    - name: Mise à jour du fichier de variables d'environnement ui
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "{{ inventory_dir }}/../../ui/.env"
+      with_fileglob:
+        - "{{inventory_dir}}/../.env_ui"

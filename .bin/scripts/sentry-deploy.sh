@@ -3,21 +3,13 @@
 set -euo pipefail
 
 export ENVIRONMENT="${1:?"Veuillez préciser l'environement"}";
-shift;
+shift
 export VERSION="${1:?"Veuillez préciser la version"}";
-shift;
+shift
 
-if [[ -z "${ANSIBLE_VAULT_PASSWORD_FILE:-}" ]]; then
-  ansible_extra_opts+=("--vault-password-file" "${SCRIPT_DIR}/get-vault-password-client.sh")
-else
-  echo "Récupération de la passphrase depuis l'environnement variable ANSIBLE_VAULT_PASSWORD_FILE" 
-fi
-
-readonly VAULT_FILE="${ROOT_DIR}/.infra/vault/vault.yml"
-
-LBA_SERVER_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -r '.vault.LBA_SERVER_SENTRY_DSN')
-LBA_UI_SENTRY_DSN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -r '.vault.LBA_UI_SENTRY_DSN')
-export SENTRY_AUTH_TOKEN=$(ansible-vault view "${ansible_extra_opts[@]}" "$VAULT_FILE" | yq -r '.vault.SENTRY_AUTH_TOKEN')
+LBA_SERVER_SENTRY_DSN=$(sops --decrypt --extract '["LBA_SERVER_SENTRY_DSN"]' .infra/env.global.yml)
+LBA_UI_SENTRY_DSN=$(sops --decrypt --extract '["LBA_UI_SENTRY_DSN"]' .infra/env.global.yml)
+SENTRY_AUTH_TOKEN=$(sops --decrypt --extract '["SENTRY_AUTH_TOKEN"]' .infra/env.global.yml)
 
 export SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}"
 cd "$ROOT_DIR/server"
