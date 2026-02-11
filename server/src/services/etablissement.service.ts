@@ -32,7 +32,7 @@ import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.servi
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
+import { getUserWithAccountByEmail } from "./userWithAccount.service"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -642,12 +642,7 @@ export const sendEmailConfirmationEntreprise = async (
   accessStatus: AccessStatus | null,
   entrepriseStatus: EntrepriseStatus | null
 ) => {
-  if (
-    entrepriseStatus !== EntrepriseStatus.VALIDE ||
-    !isUserEmailChecked(user) ||
-    !accessStatus ||
-    ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)
-  ) {
+  if (entrepriseStatus !== EntrepriseStatus.VALIDE || !accessStatus || ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)) {
     return
   }
   const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
