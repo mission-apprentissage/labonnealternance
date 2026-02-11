@@ -1,7 +1,7 @@
 import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { ZNewApplication } from "../models/applications.model.js"
+import { ZHelloworkApplication, ZNewApplication } from "../models/applications.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
 import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
@@ -82,6 +82,47 @@ export const zApplicationRoutes = {
         access: null,
         resources: {},
       },
+    },
+    "/application/hellowork": {
+      path: "/application/hellowork",
+      method: "post",
+      body: ZHelloworkApplication,
+      response: {
+        "200": z
+          .object({
+            atsApplicationId: z.string(),
+          })
+          .strict(),
+        "400": z
+          .union([
+            ZResError,
+            ZLbacError,
+            z
+              .object({
+                message: z.string(),
+                code: z.string(),
+              })
+              .strict(),
+          ])
+          .openapi({
+            description: "Bad Request",
+          }),
+        "401": z
+          .union([
+            ZResError,
+            ZLbacError,
+            z
+              .object({
+                message: z.string(),
+                code: z.string(),
+              })
+              .strict(),
+          ])
+          .openapi({
+            description: "Unauthorized",
+          }),
+      },
+      securityScheme: null,
     },
   },
   get: {

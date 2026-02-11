@@ -16,10 +16,10 @@ curl -sS --retry 5 --retry-all-errors https://{{dns_name}}/metabase/api/setup \
 --data-raw "{
     \"token\": \"$TOKEN\",
     \"user\": {
-        \"password_confirm\": \"{{ vault[env_type].LBA_METABASE_ADMIN_PASS }}\",
-        \"password\": \"{{ vault[env_type].LBA_METABASE_ADMIN_PASS }}\",
+        \"password_confirm\": \"{{ LBA_METABASE_ADMIN_PASS }}\",
+        \"password\": \"{{ LBA_METABASE_ADMIN_PASS }}\",
         \"site_name\": \"boite aux lettres\",
-        \"email\": \"{{ vault[env_type].LBA_METABASE_ADMIN_EMAIL }}\",
+        \"email\": \"{{ LBA_METABASE_ADMIN_EMAIL }}\",
         \"last_name\": null,
         \"first_name\": null
     },
@@ -33,7 +33,7 @@ curl -sS --retry 5 --retry-all-errors https://{{dns_name}}/metabase/api/setup \
         \"schedules\": {},
         \"details\": {
             \"use-conn-uri\": true,
-            \"conn-uri\": \"{{ vault[env_type].LBA_METABASE_MONGODB_URI }}\",
+            \"conn-uri\": \"{{ LBA_METABASE_MONGODB_URI }}\",
             \"tunnel-enabled\": false,
             \"advanced-options\": true,
             \"ssl\": true

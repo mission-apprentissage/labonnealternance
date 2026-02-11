@@ -4,7 +4,7 @@ set -euo pipefail
 
 sync_indexes(){
     echo "Creation des indexes MongoDB"
-    /opt/app/tools/docker-compose.sh run --rm --no-deps server yarn cli recreate:indexes --queued
+    /opt/app/tools/docker-compose.sh run --rm --no-deps server yarn cli indexes:recreate --queued
 }
 
 sync_indexes
