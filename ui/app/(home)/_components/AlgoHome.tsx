@@ -51,7 +51,7 @@ export const AlgoHome = () => (
           </Box>
         </Box>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: { sx: "center", sm: "center", md: "center", lg: "flex-end" } }}>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: { xs: "center", sm: "center", md: "center", lg: "flex-end" } }}>
         <Image src="/images/icons/algo-home.png" alt="" width={324} height={387} />
       </Box>
     </Box>
