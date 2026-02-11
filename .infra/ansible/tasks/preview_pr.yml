@@ -34,7 +34,7 @@
 
     - name: "[{{ pr_number }}] creation du fichier docker compose"
       ansible.builtin.template:
-        src: "{{inventory_dir}}/docker-compose.preview.yml"
+        src: "{{inventory_dir}}/../docker-compose.preview.yml"
         dest: "/opt/app/projects/{{ pr_number }}/docker-compose.yml"
 
     - name: "Check if repository exists"
@@ -51,10 +51,15 @@
     - name: "[{{ pr_number }}] Clone du repository"
       git:
         repo: "git@github.com:mission-apprentissage/{{repo_name}}.git"
+        recursive: false
         version: "{{ pr_commit_id }}"
         force: yes
         accept_newhostkey: yes
         dest: "/opt/app/projects/{{ pr_number }}/repository"
+
+    - name: "[{{ pr_number }}] Clone mna-shared-bin submodules"
+      shell:
+        cmd: "git -C '/opt/app/projects/{{ pr_number }}/repository' submodule update --init .bin/shared"
 
     - name: "[{{ pr_number }}] Root only pour tous les répertoires applicatifs"
       file:
@@ -68,7 +73,7 @@
 
     - name: "[{{ pr_number }}] Build local images 0.0.0-{{ pr_number }}"
       shell:
-        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
+        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba app:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       environment:
         CI: "{{ CI | default('true') }}"
@@ -118,7 +123,7 @@
 
     - name: "[{{ pr_number }}] Preview URL"
       debug:
-        msg: "{{ vault[env_type].LBA_PUBLIC_URL }}"
+        msg: "{{ LBA_PUBLIC_URL }}"
 
 - name: "[{{ pr_number }}] Uninstalling preview"
   when: pr_state != 'open'
@@ -143,7 +148,7 @@
 
     - name: "[{{ pr_number }}] Remove database"
       shell:
-        cmd: docker run --rm -i --network mna_network mongo:6.0.2-focal mongosh "{{ vault[env_type].LBA_MONGODB_URI }}" --eval "db.dropDatabase()"
+        cmd: docker run --rm -i --network mna_network mongo:6.0.2-focal mongosh "{{ LBA_MONGODB_URI }}" --eval "db.dropDatabase()"
 
     - name: "[{{ pr_number }}] Removing preview directory"
       shell:

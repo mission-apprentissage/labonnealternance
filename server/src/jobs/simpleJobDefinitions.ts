@@ -75,6 +75,7 @@ import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
+import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -405,6 +406,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillLbaUrl,
     description: "Remplit le champ lba_url dans la collection jobs_partners",
+  },
+  {
+    fct: cancelRemovedJobsPartners,
+    description: "Annule les offres présentes dans jobs_partners qui ne sont plus présentes dans le flux source (ex: recruteurs LBA)",
   },
   {
     fct: processRecruteursLbaRawToEnd,

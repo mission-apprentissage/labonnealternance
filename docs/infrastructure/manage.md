@@ -47,8 +47,6 @@ env_type=recette
 Pour information, vous pouvez obtenir l'adresse ip du vps en consultant les emails de
 service : https://www.ovh.com/manager/dedicated/#/useraccount/emails
 
-Editer le vault pour créer les env-vars liés à ce nouvel environnement (cf: [Edition du vault](#edition-du-vault))
-
 Vous pouvez maintenant poursuivre avec le [Deploiement de l'application](#deploiement-de-lapplication).
 
 ## Release
@@ -72,8 +70,6 @@ yarn release:interactive
 See [Deployment](../deploy.md)
 
 ## Gestion des secrets
-
-See [Vault](../Vault.md)
 
 ## Operations sur le serveur
 

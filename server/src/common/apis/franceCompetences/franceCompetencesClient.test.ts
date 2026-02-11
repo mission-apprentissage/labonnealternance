@@ -49,5 +49,25 @@ describe("franceCompetencesClient", () => {
       expect(result).toBeNull()
       expect(nock.isDone()).toBe(true)
     })
+
+    it("should return null for code 03 (API Déclaration)", async () => {
+      const siret = "12345678901234"
+      const response = {
+        code: "03" as const,
+        siret,
+        idcc: "1234",
+        opcoRattachement: {
+          code: "1",
+          nom: "AKTO",
+        },
+      }
+
+      nockFranceCompetencesOpcoSearch(siret, response)
+
+      const result = await FCGetOpcoInfos(siret)
+
+      expect(result).toBeNull()
+      expect(nock.isDone()).toBe(true)
+    })
   })
 })
