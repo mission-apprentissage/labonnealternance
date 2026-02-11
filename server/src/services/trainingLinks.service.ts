@@ -6,6 +6,7 @@ import type { IFormationCatalogue, IReferentielCommune } from "shared/models/ind
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
+import { expandRomesV3toV4 } from "./rome.service"
 import config from "@/config.js"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -223,6 +224,7 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
 
   romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
+  romes = await expandRomesV3toV4(romes)
 
   // Build url based on formations and coordinates
   if (formations?.length) {
