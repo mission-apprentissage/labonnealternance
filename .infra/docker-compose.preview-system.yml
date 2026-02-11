@@ -42,7 +42,7 @@ services:
 
   mongodb:
     <<: *default
-    image: mongo:7
+    image: mongo:8
     hostname: mongodb
     container_name: lba_mongodb
     deploy:
