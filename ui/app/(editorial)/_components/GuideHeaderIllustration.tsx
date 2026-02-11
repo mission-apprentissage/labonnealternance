@@ -1,5 +1,5 @@
 import Image from "next/image"
-import header from "ui/public/images/guides/header.svg"
+import header from "@/public/images/guides/header.svg"
 
 export const GuideHeaderIllustration = () => (
   <Image

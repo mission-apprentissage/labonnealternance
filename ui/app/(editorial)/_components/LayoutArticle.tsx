@@ -23,7 +23,7 @@ export const LayoutArticle = ({
     id: string
     title: string
     description: string
-    imageUrl: string
+    imageUrl?: string
     path: string
   }>
 }) => (

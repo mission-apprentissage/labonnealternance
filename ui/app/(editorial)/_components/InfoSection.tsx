@@ -1,8 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
+import type { ReactNode } from "react"
 import { DsfrIcon } from "@/components/DsfrIcon"
 
-export const InfoSection = ({ children }: { children: React.ReactNode }) => (
+export const InfoSection = ({ children }: { children: ReactNode }) => (
   <Box
     gap={2}
     display={"flex"}

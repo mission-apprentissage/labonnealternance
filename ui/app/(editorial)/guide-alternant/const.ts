@@ -2,7 +2,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 export const IMAGE_BASE_PATH = "/images/guides/guide-alternant/"
 
-export const ARTICLES: Record<string, { id: string; title: string; description: string; imageUrl: string; path: string; updatedAt: string }> = {
+export const ARTICLES: Record<string, { id: string; title: string; description: string; imageUrl?: string; path: string; updatedAt: string }> = {
   ["decouvrir-l-alternance"]: {
     id: "decouvrir-l-alternance",
     title: PAGES.static.guideAlternantDecouvrirLAlternance.title,

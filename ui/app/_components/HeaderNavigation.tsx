@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation"
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { PAGES } from "@/utils/routes.utils"
-import { parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 type NavLink = {
   text: string
@@ -25,7 +24,7 @@ const NAV_ITEMS: NavItem[] = [
       },
       {
         text: "Je recherche une alternance",
-        href: PAGES.dynamic.recherche(parseRecherchePageParams(null, null)).getPath(),
+        href: PAGES.dynamic.recherche(null).getPath(),
       },
       {
         text: "Je calcule ma rémunération",
