@@ -51,6 +51,7 @@
     - name: "[{{ pr_number }}] Clone du repository"
       git:
         repo: "git@github.com:mission-apprentissage/{{repo_name}}.git"
+        recursive: false
         version: "{{ pr_commit_id }}"
         force: yes
         accept_newhostkey: yes
