@@ -12,7 +12,7 @@ const offerXmlTag = "item"
 
 export const importPassRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {
-    await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, partnerLabel: JOBPARTNERS_LABEL.PASS })
+    await importFromStreamInXml({ destinationCollection: rawCollectionName, offerXmlTag, stream: sourceStream, importName: JOBPARTNERS_LABEL.PASS })
   } else {
     await importFromUrlInXml({ destinationCollection: rawCollectionName, url: config.passUrl, offerXmlTag, partnerLabel: JOBPARTNERS_LABEL.PASS })
   }

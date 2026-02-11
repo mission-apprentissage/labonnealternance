@@ -20,3 +20,14 @@ export const deduplicateBy = <T>(array: T[], valueFct: (item: T) => string | num
   const values = itemsWithValues.map(([, value]) => value)
   return itemsWithValues.flatMap(([item, value], index) => (values.indexOf(value) === index ? [item] : []))
 }
+
+export const partition = <T>(array: T[], testFct: (item: T, index: number) => boolean): { match: T[]; notMatch: T[] } => {
+  const match: T[] = []
+  const notMatch: T[] = []
+  array.forEach((item, index) => {
+    const isMatching = testFct(item, index)
+    const collection = isMatching ? match : notMatch
+    collection.push(item)
+  })
+  return { match, notMatch }
+}

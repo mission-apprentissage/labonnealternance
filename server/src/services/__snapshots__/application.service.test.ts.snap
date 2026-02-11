@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildApplicationFromHelloworkAndSaveToDb > Should successfully create application from Hellowork with valid data 1`] = `
+{
+  "applicant_attachment_name": "CV_John_Doe.pdf",
+  "applicant_message_to_company": "I am very interested in this position",
+  "application_url": null,
+  "caller": "Hellowork",
+  "company_address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+  "company_email": "employer@test.fr",
+  "company_feedback": null,
+  "company_feedback_reasons": null,
+  "company_feedback_send_status": null,
+  "company_naf": "",
+  "company_name": "Enseigne inconnue",
+  "company_phone": null,
+  "company_recruitment_intention": null,
+  "company_recruitment_intention_date": null,
+  "company_siret": null,
+  "foreign_application_id": "hw_app_123",
+  "foreign_application_status_url": "https://api.hellowork.com/status/hw_app_123",
+  "job_id": "6081289803569600282e0010",
+  "job_origin": "offres_emploi_partenaires",
+  "job_searched_by_user": null,
+  "job_title": "Une super offre d'alternance",
+  "scan_status": "WAITING_FOR_SCAN",
+  "to_applicant_message_id": null,
+  "to_company_message_id": null,
+}
+`;

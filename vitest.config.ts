@@ -1,8 +1,14 @@
+// @ts-expect-error
 import path from "node:path"
 
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
+  server: {
+    watch: {
+      ignored: ["**/venv/**"],
+    },
+  },
   test: {
     projects: [
       {

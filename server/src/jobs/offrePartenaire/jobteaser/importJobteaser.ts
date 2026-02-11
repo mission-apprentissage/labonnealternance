@@ -20,7 +20,7 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: sourceStream,
-      partnerLabel: JOBPARTNERS_LABEL.JOBTEASER,
+      importName: JOBPARTNERS_LABEL.JOBTEASER,
       conflictingOpeningTagWithoutAttributes: true,
     })
   } else {
@@ -61,7 +61,7 @@ export const importJobteaserRaw = async (sourceStream?: NodeJS.ReadableStream) =
       destinationCollection: rawCollectionName,
       offerXmlTag,
       stream: fileSourceStream,
-      partnerLabel: JOBPARTNERS_LABEL.JOBTEASER,
+      importName: JOBPARTNERS_LABEL.JOBTEASER,
       conflictingOpeningTagWithoutAttributes: true,
     })
   }

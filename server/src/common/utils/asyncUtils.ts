@@ -1,7 +1,10 @@
-export const asyncForEach = async <T>(array: T[], callback: (item: T, index: number) => Promise<unknown>) => {
+export const asyncForEach = async <T, B>(array: T[], callback: (item: T, index: number) => Promise<B>) => {
+  const results: B[] = []
   for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index)
+    const result = await callback(array[index], index)
+    results.push(result)
   }
+  return results
 }
 
 export const asyncForEachGrouped = async <T>(array: T[], groupSize: number, callback: (item: T, index: number) => Promise<void>) => {

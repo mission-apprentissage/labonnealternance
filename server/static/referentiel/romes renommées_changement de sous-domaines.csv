@@ -1,0 +1,25 @@
+Code ROME,Ancien Libellé,Nouveau libellé,Ancien sous-domaine,Nouveau sous-domaine
+A1401,Vendangeur / Vendangeuse,Cueilleur / Cueilleuse de fruits,Exploitation agricole,Production de produits fermiers
+A1401,Vendangeur / Vendangeuse,Cueilleur / Cueilleuse de fruits,Exploitation agricole,"Horticulture : production de fleurs, végétaux, arbustes"
+A1402,Aide horticole,Aide agricole en production végétale,"Horticulture : production de fleurs, végétaux, arbustes",Exploitation agricole
+A1402,Aide horticole,Aide agricole en production végétale,"Horticulture : production de fleurs, végétaux, arbustes",Production de produits fermiers
+A1408,Éleveur / Éleveuse d'animaux,Eleveur / Eleveuse d'animaux sauvages,Elevage d'animaux de ferme,Soins aux animaux
+A1408,Éleveur / Éleveuse d'animaux,Eleveur / Eleveuse d'animaux sauvages,"Elevage de chats, chiens",Soins aux animaux
+D1203,Agent thermal / Agente thermale,Agent / Agente de soins en hydrothérapie,"Santé, soins aux personnes","Kinésithérapie, rééducation"
+D1203,Agent thermal / Agente thermale,Agent / Agente de soins en hydrothérapie,"Santé, soins aux personnes","Santé, soins aux personnes"
+D1204,Loueur / Loueuse de véhicules,Agent technico-commercial / Agente technico-commerciale en location de véhicules,Transport fluvial et maritime,"Développement commercial, force de vente"
+D1204,Loueur / Loueuse de véhicules,Agent technico-commercial / Agente technico-commerciale en location de véhicules,"Transport, conduite, livraison","Développement commercial, force de vente"
+F1502,Échafaudeur / Échafaudeuse,Monteur / Monteuse en structures métalliques,"Travail du bois, ébénisterie, Menuiserie, Charpente","Métallurgie (soudure, chaudronnerie, tuyautage, …)"
+H2208,Sculpteur / Sculptrice sur bois,FaÃ§onnier / FaÃ§onnière d'ouvrages décoratifs en bois et matériaux associés,"Sculpture, gravure, travail des matières (pierre, verre, plastique, céramique,bois …)","Travail du bois, ébénisterie, Menuiserie, Charpente"
+I1202,Agent / Agente d'entretien de la voirie,Agent / Agente d'exploitation de la voirie,"Nettoyage, propreté",Entretien et maintenance de bâtiments
+I1402,Technicien / Technicienne SAV,Technicien / Technicienne de maintenance en appareils électroménagers,"Maintenance, installation et assistance informatique","Mécanique, maintenance industrielle"
+K1301,Accompagnateur médicosocial / Accompagnatrice médicosociale,Educateur / Educatrice en locomotion,"Santé, soins aux personnes","Education spécialisée, assistance auprès d'adultes"
+K1301,Accompagnateur médicosocial / Accompagnatrice médicosociale,Educateur / Educatrice en locomotion,"Education spécialisée, assistance auprès d'adultes","Education spécialisée, assistance auprès d'adultes"
+L1304,Réalisateur / Réalisatrice,Premier assistant réalisateur / Première assistante réalisatrice,"Journalisme, création de contenu","Production, réalisation de films"
+L1304,Réalisateur / Réalisatrice,Premier assistant réalisateur / Première assistante réalisatrice,"Cinéma, Télévision, spectacle","Cinéma, Télévision, spectacle"
+M1202,Expert-comptable / Experte-comptable,Auditeur comptable et financier / Auditrice comptable et financière,"Comptabilité, gestion de paie","Finance, Analyse financière, contrôle de gestion, trésorerie"
+M1616,Steward / Hôtesse au sol,Auxiliaire de gestion des écoles de conduite,"Accueil touristique","Administratif, secrétariat, assistanat"
+M1616,Steward / Hôtesse au sol,Auxiliaire de gestion des écoles de conduite,"Transport aérien","Administratif, secrétariat, assistanat"
+N4132,Agent commercial / Agente commerciale de conduite transport en commun,Contrôleur / Contrôleuse de bus,"Développement commercial, force de vente","Sécurité, secours, surveillance"
+N4132,Agent commercial / Agente commerciale de conduite transport en commun,Contrôleur / Contrôleuse de bus,"Développement commercial, force de vente","Transport, conduite, livraison"
+N4402,Agent / Agente d'exploitation des remontées mécaniques,Conducteur / Conductrice de remontées mécaniques,"Tourisme : conception de produits touristiques, voyages","Transport, conduite, livraison"

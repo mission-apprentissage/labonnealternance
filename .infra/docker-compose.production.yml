@@ -146,18 +146,18 @@ services:
     environment:
       JAVA_TIMEZONE: Europe/Paris
       MB_SITE_LOCALE: fr
-      MB_SITE_URL: "{{dns_name}}/metabase"
+      MB_SITE_URL: "{{ dns_name }}/metabase"
       MB_DB_TYPE: postgres
-      MB_DB_CONNECTION_URI: "{{vault[env_type].LBA_METABASE_URI}}"
-      MB_ENCRYPTION_SECRET_KEY: "{{vault[env_type].LBA_METABASE_ENCRYPTION_SECRET_KEY}}"
+      MB_DB_CONNECTION_URI: "{{ LBA_METABASE_URI }}"
+      MB_ENCRYPTION_SECRET_KEY: "{{ LBA_METABASE_ENCRYPTION_SECRET_KEY }}"
       MB_PASSWORD_COMPLEXITY: strong
       MB_START_OF_WEEK: monday
-      MB_EMAIL_SMTP_HOST: "{{vault[env_type].LBA_SMTP_HOST}}"
-      MB_EMAIL_SMTP_PORT: "{{vault[env_type].LBA_SMTP_PORT}}"
-      MB_EMAIL_SMTP_USERNAME: "{{vault[env_type].LBA_SMTP_AUTH_USER}}"
-      MB_EMAIL_SMTP_PASSWORD: "{{vault[env_type].LBA_SMTP_AUTH_PASS}}"
-      MB_EMAIL_FROM_ADDRESS: "{{vault.METABASE_EMAIL_FROM_ADDRESS}}"
-      MB_EMAIL_FROM_NAME: "{{vault.METABASE_EMAIL_FROM_NAME}}"
+      MB_EMAIL_SMTP_HOST: "{{ LBA_SMTP_HOST }}"
+      MB_EMAIL_SMTP_PORT: "{{ LBA_SMTP_PORT }}"
+      MB_EMAIL_SMTP_USERNAME: "{{ LBA_SMTP_AUTH_USER }}"
+      MB_EMAIL_SMTP_PASSWORD: "{{ LBA_SMTP_AUTH_PASS }}"
+      MB_EMAIL_FROM_ADDRESS: "{{ METABASE_EMAIL_FROM_ADDRESS }}"
+      MB_EMAIL_FROM_NAME: "{{ METABASE_EMAIL_FROM_NAME }}"
       MB_EMAIL_SMTP_SECURITY: tls
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
@@ -169,7 +169,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.json.lba.{{env_type}}.metabase
+        tag: docker.json.lba.{{ env_type }}.metabase
         fluentd-async: "true"
 
   clamav:

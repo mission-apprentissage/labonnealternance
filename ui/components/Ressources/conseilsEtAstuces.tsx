@@ -70,7 +70,7 @@ const accordions = [
               L'ANAF (Association Nationale des Apprentis de France)
             </Typography>{" "}
             peut vous aider à tout moment de votre parcours et pour toute question que vous vous posez !{" "}
-            <DsfrLink href="https://www.anaf.fr/apprentissage/" aria-label="Accéder au site de l'ANAF">
+            <DsfrLink href="https://anaf.fr/besoin-aide" aria-label="Accéder au site de l'ANAF">
               En savoir plus
             </DsfrLink>
           </ListItem>
@@ -175,7 +175,7 @@ const accordions = [
           <ListItem sx={{ display: "list-item", mb: 2 }}>
             Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur Diagoriente et laissez-vous guider dans la construction d'un CV
             pertinent, mettant en lumière vos compétences.{" "}
-            <DsfrLink href="https://web-app.diagoriente.beta.gouv.fr/#/inscription?utm_source=lba&utm_campaign=lba-dec2021" aria-label="Accéder au guide CV de Diagoriente">
+            <DsfrLink href="https://diagoriente.fr/" aria-label="Accéder au site Diagoriente">
               En savoir plus
             </DsfrLink>
           </ListItem>
@@ -222,7 +222,7 @@ const accordions = [
           </ListItem>
 
           <ListItem sx={{ display: "list-item", mb: 2 }}>
-            <DsfrLink href="https://travail-emploi.gouv.fr/IMG/pdf/precis-apprentissage.pdf" aria-label="Accéder au précis de l'apprentissage">
+            <DsfrLink href="https://travail-emploi.gouv.fr/precis-de-lapprentissage" aria-label="Accéder au précis de l'apprentissage">
               Le Précis de l’apprentissage
             </DsfrLink>{" "}
             vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond à
@@ -240,7 +240,7 @@ const accordions = [
         <List sx={{ listStyleType: "disc", pl: 2 }}>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
             Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aide dès maintenant.{" "}
-            <DsfrLink href="https://mes-aides.francetravail.fr/transport-et-mobilite/financer-mon-permis" aria-label="Accéder au site mes aides de France travail">
+            <DsfrLink href="https://mes-aides.francetravail.fr/mobilite/financer-vos-permis" aria-label="Accéder au site mes aides de France travail">
               En savoir plus
             </DsfrLink>
           </ListItem>
@@ -261,7 +261,7 @@ const accordions = [
           </ListItem>
           <ListItem sx={{ display: "list-item", mb: 2 }}>
             De nombreuses aides existent pour les jeunes : pour les connaître, faites une simulation sur 1 jeune 1 solution !{" "}
-            <DsfrLink href="https://mes-aides.1jeune1solution.beta.gouv.fr/?utm_source=labonnealternance" aria-label="Accéder au site de un jeune une solution">
+            <DsfrLink href="https://mes-aides.1jeune1solution.beta.gouv.fr/" aria-label="Accéder au site de un jeune une solution">
               En savoir plus
             </DsfrLink>
           </ListItem>

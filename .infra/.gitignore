@@ -135,7 +135,6 @@ setEnv.sh
 yarn-error.log
 
 
-**/.vault-password.gpg
 **/.*.gpg
 **/habilitations.yml
 
