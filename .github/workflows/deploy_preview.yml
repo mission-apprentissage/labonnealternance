@@ -50,6 +50,8 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ steps.get-branch.outputs.branch }}
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          submodules: true
 
       - name: Create LFS file list
         run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
@@ -65,6 +67,15 @@ jobs:
       - name: Git LFS Pull
         run: git lfs pull
 
+      - name: Initialize the GnuPG keyring
+        run: |
+          echo -n "$OPENPGP_KEY" | gpg --import
+        env:
+          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
+
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -75,25 +86,19 @@ jobs:
             Host *
               IdentityFile ~/.ssh/github_actions
 
-      - name: Create vault pwd file
-        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
-
       - name: Install jmespath
         run: |
           sudo pipx inject ansible-core jmespath
 
       - name: Run playbook
-        run: .bin/mna-lba deploy preview "${{ github.event.issue.number }}"
+        run: .bin/mna-lba app:deploy preview "${{ github.event.issue.number }}"
         env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}
 
       - name: Encrypt logs
-        run: .bin/mna-lba deploy:log:encrypt
+        run: .bin/mna-lba app:deploy:log:encrypt
         if: always()
-        env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
 
       - name: Upload logs artifacts
         if: always()
@@ -104,11 +109,11 @@ jobs:
 
       - name: Add Job summary
         if: always()
-        run: echo 'You can get logs using `.bin/mna deploy:log:decrypt ${{ github.run_id }} ${{ github.event.issue.number }}`' >> $GITHUB_STEP_SUMMARY
+        run: echo 'You can get logs using `.bin/mna-lba app:deploy:log:decrypt ${{ github.run_id }} ${{ github.event.issue.number }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Preview Summary when failed
         if: failure()
-        run: echo 'You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`' >> $GITHUB_STEP_SUMMARY
+        run: echo 'You can get error logs using `.bin/mna-lba app:deploy:log:decrypt ${{ github.run_id }}`' >> $GITHUB_STEP_SUMMARY
 
       - name: Preview Summary
         run: echo 'https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/ 🚀' >> $GITHUB_STEP_SUMMARY
@@ -137,7 +142,7 @@ jobs:
 
             https://${{ github.event.issue.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
 
-            You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`
+            You can get error logs using `.bin/mna-lba app:deploy:log:decrypt ${{ github.run_id }}`
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
             To re-deploy just add a comment with :rocket:

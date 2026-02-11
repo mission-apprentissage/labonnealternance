@@ -15,6 +15,17 @@ jobs:
         uses: actions/checkout@v5
         with:
           lfs: true
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          submodules: true
+
+      - name: Initialize the GnuPG keyring
+        run: |
+          echo -n "$OPENPGP_KEY" | gpg --import
+        env:
+          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -26,9 +37,6 @@ jobs:
             Host *
               IdentityFile ~/.ssh/github_actions
 
-      - name: Create vault pwd file
-        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
-
       - name: Install jmespath
         run: |
           sudo pipx inject ansible-core jmespath
@@ -36,6 +44,5 @@ jobs:
       - name: Run playbook
         run: .bin/mna-lba preview:cleanup
         env:
-          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
