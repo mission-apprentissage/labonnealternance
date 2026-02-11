@@ -127,6 +127,15 @@ export const PAGES = {
         description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
       }),
     },
+    carteDEtudiantDesMetiers: {
+      getPath: () => `/carte-d-etudiant-des-metiers` as string,
+      title: "Carte d'étudiant des métiers",
+      index: true,
+      getMetadata: () => ({
+        title: "Carte d'étudiant des métiers - La bonne alternance",
+        description: "Téléchargez la carte d'étudiant des métiers",
+      }),
+    },
     guideAlternant: {
       getPath: () => `/guide-alternant` as string,
       title: "Je m'informe sur l'alternance",
@@ -368,14 +377,6 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Salaire alternant : simulateur de rémunération - La bonne alternance",
         description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
-      }),
-    },
-    carteEtudiantDesMetiers: {
-      getPath: () => `/carte-etudiant-des-metiers` as string,
-      title: "Carte étudiant des métiers",
-      index: true,
-      getMetadata: () => ({
-        title: "Carte étudiant des métiers - La bonne alternance",
       }),
     },
     EspaceDeveloppeurs: {

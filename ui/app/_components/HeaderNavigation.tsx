@@ -59,7 +59,7 @@ const NAV_ITEMS: NavItem[] = [
       },
       {
         text: "Je télécharge la carte étudiant des métiers",
-        href: PAGES.static.carteEtudiantDesMetiers.getPath(),
+        href: PAGES.static.carteDEtudiantDesMetiers.getPath(),
       },
     ],
   },

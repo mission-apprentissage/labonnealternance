@@ -122,11 +122,11 @@ const JeSuisCFAPage = () => {
                 La bonne alternance
               </DsfrLink>
               ,{" "}
-              <DsfrLink href="1jeune1solution.fr" aria-label="Consulter le site 1jeune1solution">
+              <DsfrLink href="https://1jeune1solution.fr" aria-label="Consulter le site 1jeune1solution">
                 1jeune1solution
               </DsfrLink>
               ,{" "}
-              <DsfrLink href="parcoursup.fr" aria-label="Consulter le site Parcoursup">
+              <DsfrLink href="https://parcoursup.fr" aria-label="Consulter le site Parcoursup">
                 Parcoursup
               </DsfrLink>{" "}
               et bien d’autres.

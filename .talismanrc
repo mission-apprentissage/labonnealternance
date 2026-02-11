@@ -371,6 +371,10 @@ fileignoreconfig:
   checksum: ffd10a2c53a22b98607b8dcde5e309b756ddc02a442b2da35c0af5d430913365
 - filename: ui/public/images/je-suis-recruteur/illu-marche-cache.svg
   checksum: e2166e1475c1630cd58e9701a816ac654d9898de02b7ca9cfa124cb3824a6cae
+- filename: ui/public/images/carte-d-etudiant-des-metiers-verso.svg
+  checksum: ca6266d0beefd063a14ad95ed89418648bc06f662967bdb115bda1ac8ac33022
+- filename: ui/public/images/carte-d-etudiant-des-metiers-recto.svg
+  checksum: bac506d94b942fa69f278be21e59afa095289482ec3f311025d8b380b3cb3b46
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 scopeconfig:

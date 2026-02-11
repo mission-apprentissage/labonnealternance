@@ -225,6 +225,9 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - PDF
                       </DsfrLink>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                        (3.9 Mo)
+                      </Typography>
                     </Box>
                     <Box>
                       <DsfrLink
@@ -235,6 +238,9 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Excel
                       </DsfrLink>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                        (12 ko)
+                      </Typography>
                     </Box>
                     <Box>
                       <DsfrLink
@@ -245,6 +251,9 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Numbers
                       </DsfrLink>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                        (788 ko)
+                      </Typography>
                     </Box>
                     <Box>
                       <DsfrLink
@@ -255,6 +264,9 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Libre office
                       </DsfrLink>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                        (29 ko)
+                      </Typography>
                     </Box>
                   </Box>
                 </Box>
