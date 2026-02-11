@@ -51,10 +51,15 @@
     - name: "[{{ pr_number }}] Clone du repository"
       git:
         repo: "git@github.com:mission-apprentissage/{{repo_name}}.git"
+        recursive: false
         version: "{{ pr_commit_id }}"
         force: yes
         accept_newhostkey: yes
         dest: "/opt/app/projects/{{ pr_number }}/repository"
+
+    - name: "[{{ pr_number }}] Clone mna-shared-bin submodules"
+      shell:
+        cmd: "git -C '/opt/app/projects/{{ pr_number }}/repository' submodule update --init .bin/shared"
 
     - name: "[{{ pr_number }}] Root only pour tous les répertoires applicatifs"
       file:

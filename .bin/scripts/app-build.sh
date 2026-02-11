@@ -13,7 +13,7 @@ fi
 export VERSION="${1:?"Veuillez préciser la version"}"
 shift 1
 
-mode=${2:?"Veuillez préciser le mode <push|load>"}
+mode=${1:?"Veuillez préciser le mode <push|load>"}
 shift 1
 
 export COMMIT_HASH="${1:?"Veuillez préciser le hash du commit"}"
