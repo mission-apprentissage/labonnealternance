@@ -249,9 +249,10 @@ Scanner les secrets dans le repo
 Pour ajouter une exception, éditer le fichier `.gitleaks.toml` et ajouter le chemin ou le pattern regex dans la section `[allowlist]`.
 
 #### Vault
+
 =======
+
 #### SOPS
->>>>>>> Stashed changes
 
 Édition des variables d'environnement.
 
