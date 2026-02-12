@@ -316,7 +316,7 @@ export async function setupJobProcessor() {
           },
         },
     jobs: {
-      "recreate:indexes": {
+      "indexes:recreate": {
         handler: async (job) => {
           const { drop } = job.payload as any
           await recreateIndexes({ drop })

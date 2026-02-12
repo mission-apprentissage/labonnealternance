@@ -168,7 +168,7 @@ function TableWithPagination({
           <Box className="fr-table__container">
             <Box className="fr-table__content">
               <Box as="table" {...getTableProps()}>
-                <Box sx={{ fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
+                <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
                   {caption}
                 </Box>
                 <Box component="thead">
