@@ -55,7 +55,7 @@ function sentry:release() {
 _meta_help["preview:cleanup"]="Remove preview from close pull-requests"
 
 function preview:cleanup() {
-  "${SCRIPT_DIR}/run-playbook.sh" "preview_cleanup.yml" "preview"
+  "${SCRIPT_SHARED_DIR}/run-playbook.sh" "preview_cleanup.yml" "preview"
 }
 
 
