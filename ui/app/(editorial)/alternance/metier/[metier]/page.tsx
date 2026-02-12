@@ -149,8 +149,8 @@ const boxCss = {
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  minWidth: { xs: "146px", md: "210px" },
-  maxWidth: { xs: "45%", md: "23%" },
+  minWidth: { xs: "146px", md: "160px", lg: "210px" },
+  maxWidth: { xs: "75%", md: "70%", lg: "45%" },
   minHeight: { xs: "146px", md: "210px" },
   padding: fr.spacing("7v"),
   backgroundColor: "white",
@@ -323,8 +323,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(4, minmax(0, 1fr))" },
-                gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
+                gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", md: "repeat(4, minmax(0, 1fr))" },
+                gap: { xs: fr.spacing("2v"), md: fr.spacing("3v"), lg: fr.spacing("5v") },
                 alignItems: "stretch",
               }}
             >
@@ -363,6 +363,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 <Typography sx={{ mt: fr.spacing("2v"), fontSize: { sx: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { sx: "20px", md: "24px" }, color: "#161616" }}>
                   Salaire brut mensuel moyen*
                 </Typography>
+              </Box>
+              <Box sx={{ maxWidth: { xs: "75%", md: "70%", lg: "45%" }, gridColumn: { xs: "span 2", md: "span 4" }, justifySelf: "right" }}>
+                <Typography sx={{ fontSize: "12px", color: "#666" }}>*calcul basé sur les contrats enregistrés pour l'année 2024/2025</Typography>
               </Box>
             </Box>
           </Box>
