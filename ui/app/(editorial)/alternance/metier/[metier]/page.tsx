@@ -315,7 +315,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             }}
           >
             <Box>
-              <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
+              <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
                 Alternance{" "}
                 <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
                   {data.metier}
@@ -458,9 +458,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         </Box>
 
         {/**
-         * BLOC VIE D'ALTERNANT
+         * BLOC SALAIRE
          */}
-        {/* <Box
+        <Box
           sx={{
             mb: fr.spacing("4w"),
             py: fr.spacing("4w"),
@@ -468,62 +468,48 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
           }}
         >
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
-            La vie d'alternant <span style={{ color: "#161616" }}>à {data.ville}</span>
+          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v") }}>
+            Le salaire d’un alternant <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
           </Typography>
           <Box
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
           <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
-            Le bassin socio économique
+            Rémunération et évolution
           </Typography>
-          <Box sx={{ mt: fr.spacing("4w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("2w") }}>
-                Activités porteuses :
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", md: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              alignItems: "stretch",
+              mt: fr.spacing("4v"),
+            }}
+          >
+            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>1 ère année</Typography>
+              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                ≃ {data.salaire.salaire_1ere_annee}€
               </Typography>
-              {(data.content.vie.activites as { naf_label?: string; rome_codes?: string[] }[]).map((activite) => (
-                <Link
-                  key={activite.naf_label}
-                  underline="none"
-                  href={`/recherche-emploi?romes=${activite.rome_codes.join(",")}&job_name=${activite.naf_label}&radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
-                  sx={{
-                    display: "flex",
-                    width: "100%",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      mb: fr.spacing("1w"),
-                      backgroundColor: "white",
-                      padding: fr.spacing("2w"),
-                      borderRadius: "5px",
-                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                      ":hover": {
-                        backgroundColor: "#E8EDFF",
-                      },
-                    }}
-                  >
-                    {activite.naf_label}
-                    <ArrowRightLine sx={{ ml: "auto", width: 16, height: 16 }} />
-                  </Box>
-                </Link>
-              ))}
-              <Box sx={{ mt: fr.spacing("2w"), textAlign: "right" }}>
-                <Link sx={{ textDecoration: "underline" }} href={`/?${utmParams}`}>
-                  Voir toutes les opportunités à {data.ville}
-                  <ArrowRightLine sx={{ ml: fr.spacing("2w"), width: 12, height: 12 }} />
-                </Link>
-              </Box>
+              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
+            </Box>
+            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>2 ème année</Typography>
+              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                ≃ {data.salaire.salaire_2eme_annee}€
+              </Typography>
+              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
+            </Box>
+            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>Salaire médian pour un professionnel</Typography>
+              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                ≃ {data.salaire.salaire_median}€
+              </Typography>
+              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
             </Box>
           </Box>
-        </Box> */}
+        </Box>
 
         {/**
          * BLOC STATISTIQUES
