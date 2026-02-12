@@ -29,7 +29,7 @@ let isMappingInitialized = false
 //   return romeV4toV3[codeRomeV4]
 // }
 
-export async function getRomesV4FromRomeV3(codeRomeV3: string): Promise<string[]> {
+async function getRomesV4FromRomeV3(codeRomeV3: string): Promise<string[]> {
   if (!isMappingInitialized) {
     await buildRomeV4toV3()
   }
