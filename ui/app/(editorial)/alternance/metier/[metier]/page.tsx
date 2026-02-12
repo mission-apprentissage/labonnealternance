@@ -5,11 +5,13 @@ import Image from "next/image"
 import { redirect } from "next/navigation"
 
 // import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { ArrowRightLine } from "@/theme/components/icons"
 // import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 // import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-// import { ArrowRightLine } from "@/theme/components/icons"
 // import { apiGet } from "@/utils/api.utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ metier: string }> }) {
@@ -370,49 +372,88 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             </Box>
           </Box>
         </Box>
+        <Box sx={{ textAlign: "center" }}>
+          <Button size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false`}>
+              Voir toutes les offres en alternance
+              <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
+            </DsfrLink>
+          </Button>
+        </Box>
 
         {/**
-         * BLOC DESCRIPTION DE LA VILLE
+         * BLOC DESCRIPTION METIER
          */}
-        {/* <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
+        <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
+          <Box sx={{ mb: fr.spacing("6v") }}>
+            <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+              Le métier de <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()},</span> en alternance
+            </Typography>
+            <Box
+              component="hr"
+              sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+            />
+            <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Image src="/images/seo/metier/mission.svg" alt="" aria-hidden="true" width={60} height={60} />
+            <Typography sx={{ ml: fr.spacing("4v"), fontSize: "20px", fontWeight: "bold" }}>Missions principales :</Typography>
+          </Box>
+
           <Box
             sx={{
-              position: "relative",
-              display: "flex",
-              flexDirection: { xs: "column", md: "row" },
-              gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") },
-              justifyContent: "space-between",
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              alignItems: "stretch",
+              mt: fr.spacing("4v"),
             }}
           >
-            <Box sx={{ mb: fr.spacing("4w") }}>
-              <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
-                <span style={{ color: "#161616" }}>{data.ville},</span> {data.content.description_ville.title}
-              </Typography>
+            {(data.missions as { title: string; description: string }[]).map((mission) => (
               <Box
-                component="hr"
-                sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-              />
+                key={mission.title}
+                sx={{
+                  backgroundColor: "white",
+                  padding: fr.spacing("7v"),
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                }}
+              >
+                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: "#000091" }}>{mission.title} :</Typography>
+                <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{mission.description}</Typography>
+              </Box>
+            ))}
+          </Box>
 
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.description_ville.text }} />
-            </Box>
-            <Box
-              sx={{
-                marginLeft: { xs: "unset", md: "auto" },
-                margin: { xs: "auto", md: "unset" },
-                width: { xs: "100%", md: "250px", lg: "385px" },
-                minWidth: { xs: "unset", md: "250px", lg: "385px" },
-                maxWidth: "385px",
-                mb: fr.spacing("4w"),
-              }}
-            >
-              <Image
-                src={`/images/seo/ville/${data.content.description_ville.image}`}
-                alt=""
-                width={385}
-                height={385}
-                style={{ width: "100%", height: "auto", borderRadius: "5px", boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)" }}
-              />
-            </Box>
+          <Box sx={{ display: "flex", alignItems: "center", mt: fr.spacing("10v"), mb: fr.spacing("4v") }}>
+            <Image src="/images/seo/metier/competence.svg" alt="" aria-hidden="true" width={60} height={60} />
+            <Typography sx={{ ml: fr.spacing("4v"), fontSize: "20px", fontWeight: "bold" }}>Compétences développées :</Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              alignItems: "stretch",
+              mt: fr.spacing("4v"),
+            }}
+          >
+            {(data.competences as { title: string; description: string }[]).map((competence) => (
+              <Box
+                key={competence.title}
+                sx={{
+                  backgroundColor: "white",
+                  padding: fr.spacing("7v"),
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                }}
+              >
+                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: "#000091" }}>{competence.title} :</Typography>
+                <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{competence.description}</Typography>
+              </Box>
+            ))}
           </Box>
         </Box>
 
