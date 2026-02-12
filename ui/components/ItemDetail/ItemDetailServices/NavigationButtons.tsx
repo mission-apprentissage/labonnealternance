@@ -4,7 +4,7 @@ import { Box } from "@mui/material"
 
 export const NavigationButtons = ({ goPrev, goNext, handleClose }: { goPrev?: () => void; goNext?: () => void; handleClose: () => void }) => {
   return (
-    <Box sx={{ display: "flex", gap: fr.spacing("1w") }}>
+    <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
       {goPrev && (
         <Button
           priority="tertiary"

@@ -30,7 +30,7 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
   return (
     <Box
       sx={{
-        mt: fr.spacing("3w"),
+        mt: fr.spacing("6v"),
         p: fr.spacing("2v"),
         display: "flex",
         alignItems: "center",

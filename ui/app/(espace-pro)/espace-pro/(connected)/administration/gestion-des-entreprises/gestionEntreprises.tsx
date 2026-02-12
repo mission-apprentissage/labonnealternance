@@ -43,9 +43,9 @@ function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newS
         return (
           <Form>
             <CustomDSFRInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
-            <Box sx={{ display: "flex", mt: fr.spacing("1w"), justifyContent: "flex-start" }}>
+            <Box sx={{ display: "flex", mt: fr.spacing("2v"), justifyContent: "flex-start" }}>
               <Button type="submit" data-testid="search_for_algo_company" disabled={!isValid || !dirty}>
-                <SearchLine sx={{ mr: fr.spacing("1w") }} /> Chercher
+                <SearchLine sx={{ mr: fr.spacing("2v") }} /> Chercher
               </Button>
             </Box>
           </Form>
@@ -89,7 +89,7 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
   const { error: updateError } = updateEntreprise
 
   if (isLoading) {
-    return <CircularProgress size={32} sx={{ my: fr.spacing("2w") }} />
+    return <CircularProgress size={32} sx={{ my: fr.spacing("4v") }} />
   }
   if (!siret) {
     return null
@@ -107,15 +107,15 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
   return (
     <>
       {hasUpdated && (
-        <Box sx={{ my: fr.spacing("2w") }}>
+        <Box sx={{ my: fr.spacing("4v") }}>
           <Alert severity="success" title="Succès" description={`Le SIRET ${currentCompany.siret} a été mis à jour.`} />
         </Box>
       )}
-      <Typography component="h2" sx={{ fontWeight: 700, my: fr.spacing("3w") }}>
+      <Typography component="h2" sx={{ fontWeight: 700, my: fr.spacing("6v") }}>
         Mise à jour des coordonnées pour l’entreprise :
       </Typography>
 
-      <Box sx={{ borderColor: "#000091", borderWidth: "1px", p: fr.spacing("2w"), mb: fr.spacing("2w") }}>
+      <Box sx={{ borderColor: "#000091", borderWidth: "1px", p: fr.spacing("4v"), mb: fr.spacing("4v") }}>
         <Formik
           validate={(values) => {
             if (!currentCompany.active && !values.email && !values.phone) return { email: unreferencedLbaRecruteurWarning, phone: unreferencedLbaRecruteurWarning }
@@ -138,10 +138,10 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
           {({ values, isValid, dirty }) => {
             return (
               <Form>
-                <Typography sx={{ fontWeight: 700, mb: fr.spacing("1w"), fontSize: "22px" }}>{currentCompany.enseigne}</Typography>
-                <Typography sx={{ color: "#666666", mb: fr.spacing("1w") }}>SIRET {currentCompany.siret}</Typography>
+                <Typography sx={{ fontWeight: 700, mb: fr.spacing("2v"), fontSize: "22px" }}>{currentCompany.enseigne}</Typography>
+                <Typography sx={{ color: "#666666", mb: fr.spacing("2v") }}>SIRET {currentCompany.siret}</Typography>
                 {!currentCompany.active && (
-                  <Typography sx={{ mb: fr.spacing("1w"), color: "#CE0500", fontSize: "14px" }}>
+                  <Typography sx={{ mb: fr.spacing("2v"), color: "#CE0500", fontSize: "14px" }}>
                     Société supprimée de la collection <strong>recruteurslba</strong> mais présente dans <strong>applications</strong>.
                     <br />
                     Seules les mises à jour seront enregistrées.
@@ -150,7 +150,7 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
                 <CustomInput required={false} name="phone" label="Nouveau numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                 <CustomInput required={false} name="email" label="Nouvel email de contact" type="email" value={values.email} />
                 {updateError && <Alert title="Erreur" description={updateError.message} severity="error" />}
-                <Box sx={{ display: "flex", justifyContent: "flex-start", mt: fr.spacing("2w") }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-start", mt: fr.spacing("4v") }}>
                   <Button type="submit" data-testid="update_algo_company" disabled={!isValid || !dirty}>
                     Enregistrer les modifications
                   </Button>
@@ -171,7 +171,7 @@ export default function GestionEntreprises() {
     <AdminLayout currentAdminPage="ENTREPRISES_ALGO">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
       <Box>
-        <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("2w") }}>
+        <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
           Entreprises de l'algorithme :
         </Typography>
         <FormulaireRechercheEntreprise onSiretChange={setSiret} />

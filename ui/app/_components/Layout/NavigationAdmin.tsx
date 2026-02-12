@@ -32,7 +32,7 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
   }
 
   return (
-    <Box sx={{ mt: fr.spacing("3w") }}>
+    <Box sx={{ mt: fr.spacing("6v") }}>
       <Tabs value={selectedIndex} onChange={handleTabsChange}>
         <Tab sx={tabSx} label="Gestion des recruteurs" data-testid="recruiter_management_tab" />
         <Tab sx={tabSx} label="Entreprises de l'algorithme" data-testid="algo_company_tab" />

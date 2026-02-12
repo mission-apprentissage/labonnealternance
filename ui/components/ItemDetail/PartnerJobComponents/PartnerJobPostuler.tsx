@@ -22,7 +22,7 @@ export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => 
 
   if (job.contact?.url) {
     return (
-      <Box sx={{ my: fr.spacing("2w") }}>
+      <Box sx={{ my: fr.spacing("4v") }}>
         <Button
           linkProps={{
             href: job.contact.url,

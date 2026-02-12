@@ -98,15 +98,15 @@ export default function RendezVousApprentissageDetailRendererClient({
   return (
     <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
-      <Typography component="h2" sx={{ fontWeight: 700, mt: fr.spacing("2w") }}>
+      <Typography component="h2" sx={{ fontWeight: 700, mt: fr.spacing("4v") }}>
         {title}
       </Typography>
       <Box>
         {eligibleTrainingsForAppointmentResult ? (
           <>
             <EtablissementComponent id={etablissement?._id.toString()} />
-            <Box sx={{ display: "flex", backgroundColor: "white", mt: fr.spacing("5w"), border: "1px solid #E0E5ED", borderRadius: "4px", borderBottom: "none" }}>
-              <Typography sx={{ flex: "1", fontSize: "20px", fontWeight: 700, p: fr.spacing("2w") }}>Formations</Typography>
+            <Box sx={{ display: "flex", backgroundColor: "white", mt: fr.spacing("10v"), border: "1px solid #E0E5ED", borderRadius: "4px", borderBottom: "none" }}>
+              <Typography sx={{ flex: "1", fontSize: "20px", fontWeight: 700, p: fr.spacing("4v") }}>Formations</Typography>
             </Box>
             <Box sx={{ border: "1px solid #E0E5ED", overflow: "auto", cursor: "pointer" }}>
               <Box className="fr-table">
@@ -139,7 +139,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                                   sx={{
                                     verticalAlign: "top",
                                     fontSize: "0.8em",
-                                    py: fr.spacing("2w"),
+                                    py: fr.spacing("4v"),
                                     px: fr.spacing("1v"),
                                   }}
                                 >
@@ -177,7 +177,7 @@ export default function RendezVousApprentissageDetailRendererClient({
                                   />
                                   <Box
                                     sx={{
-                                      mt: fr.spacing("2w"),
+                                      mt: fr.spacing("4v"),
                                     }}
                                   >
                                     {/* @ts-expect-error: TODO */}

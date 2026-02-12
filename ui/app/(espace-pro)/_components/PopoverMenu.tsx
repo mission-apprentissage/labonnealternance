@@ -88,7 +88,7 @@ export const PopoverMenu = ({
                         key={idx}
                         onClick={handleClose}
                         disableGutters
-                        sx={{ py: fr.spacing("3v"), mx: `0 !important`, px: `${fr.spacing("1w")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
+                        sx={{ py: fr.spacing("3v"), mx: `0 !important`, px: `${fr.spacing("2v")} !important`, mb: `0 !important`, fontSize: "14px !important", minHeight: "24px" }}
                       >
                         {action.type === "link" || action.type === "externalLink" ? (
                           <Link
