@@ -32,6 +32,8 @@ if [[ `command -v $command` != $command ]]; then
   _help
 fi
 
-dev:dependencies:check
+if [ -z "${CI:-}" ]; then
+  dev:dependencies:check
+fi
 
 $command "$@"
