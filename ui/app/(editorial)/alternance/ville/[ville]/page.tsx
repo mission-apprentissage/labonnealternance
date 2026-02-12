@@ -75,7 +75,8 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             <Box>
               <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
                 Trouver une alternance
-                <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
+                <br />
+                <Typography variant="h1" component="span" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
                   <span style={{ color: "#161616" }}>à </span>
                   {data.ville}
                 </Typography>
