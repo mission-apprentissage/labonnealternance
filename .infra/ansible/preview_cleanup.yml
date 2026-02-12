@@ -11,7 +11,7 @@
     - name: Chargement des variables chiffrées de l'environnement preview
       community.sops.load_vars:
         file: "{{ inventory_dir }}/../env.preview.yml"
-        expressions: ignore
+        expressions: evaluate-on-load
 
     - name: List projects
       ansible.builtin.find:
