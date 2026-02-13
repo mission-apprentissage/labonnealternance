@@ -149,6 +149,7 @@ const config = {
     toulouseMetropole: env.get("TOULOUSE_METROPOLE_FLUX_URL").required().asString(),
   },
   helloworkUrl: env.get("HELLOWORK_FLUX_URL").required().asString(),
+  helloworkApiKey: env.get("HELLOWORK_API_KEY").required().asString(),
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
@@ -170,6 +171,11 @@ const config = {
   },
   mistralai: {
     apiKey: env.get("MISTALAI_API_KEY").required().asString(),
+  },
+  inserjeunes: {
+    apiKey: env.get("IJ_MEN_API_KEY").required().asString(),
+    clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),
+    clientSecret: env.get("IJ_MEN_CLIENT_SECRET").required().asString(),
   },
 }
 

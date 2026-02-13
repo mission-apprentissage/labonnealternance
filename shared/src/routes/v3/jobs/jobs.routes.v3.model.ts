@@ -3,8 +3,8 @@ import { z } from "zod"
 import { OPCOS_LABEL, TRAINING_CONTRACT_TYPE } from "../../../constants/recruteur.js"
 import { extensions } from "../../../helpers/zodHelpers/zodPrimitives.js"
 import { JOB_STATUS_ENGLISH } from "../../../models/job.model.js"
-import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi } from "../../../models/jobsPartners.model.js"
-import { JOBPARTNERS_LABEL, ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobsPartners.model.js"
+import type { IJobsPartnersOfferApi, IJobsPartnersRecruiterApi, JOBPARTNERS_LABEL } from "../../../models/jobsPartners.model.js"
+import { ZJobsPartnersOfferApi, ZJobsPartnersOfferPrivate, ZJobsPartnersRecruiterApi, zDiplomaEuropeanLevel } from "../../../models/jobsPartners.model.js"
 
 const TIME_CLOCK_TOLERANCE = 300_000
 
@@ -115,7 +115,7 @@ export const zJobSearchApiV3Query = z
     romes: extensions.romeCodeArray().nullable().default(null),
     rncp: extensions.rncpCode().nullable().default(null),
     partners_to_exclude: z
-      .union([extensions.buildEnum(JOBPARTNERS_LABEL), z.array(extensions.buildEnum(JOBPARTNERS_LABEL))])
+      .union([z.string(), z.array(z.string())])
       .transform((v) => (v ? (Array.isArray(v) ? v : [v]) : []))
       .nullish(),
     departements: z

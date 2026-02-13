@@ -20,7 +20,7 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
   return (
     <RechercheForm
       onSubmit={(formValues) => {
-        navigateToRecherchePage({ ...rechercheFormToRechercheParams(formValues), displayMobileForm: false })
+        navigateToRecherchePage({ ...rechercheFormToRechercheParams(formValues), displayMobileForm: false, scrollToRecruteursLba: false })
       }}
       rechercheParams={rechercheParams}
       itemTypeRequired={true}

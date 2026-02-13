@@ -19,16 +19,13 @@ import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { Footer } from "@/app/_components/Footer"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMap, displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
   const rechercheResult = useRechercheResults(props.rechercheParams)
   const virtualizerRef = useRef<Virtualizer<any, Element>>(null)
-
-  if (displayMobileForm) {
-    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
-  }
 
   const elements: ReturnType<typeof RechercheResultatsList> = []
 
@@ -48,6 +45,10 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
     },
     ...RechercheResultatsList({ ...props, scrollToItem })
   )
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
 
   const getScolledElementIndex = () => {
     return elements.findIndex((element) => {
@@ -127,10 +128,17 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
   const rechercheResult = useRechercheResults(props.rechercheParams)
   if (rechercheResult.status === "disabled") {
     return (
-      <Box id="search-content-container">
-        <RecherchePageEmpty {...props} />
-      </Box>
+      <>
+        <Box role="main" tabIndex={-1} component="main" id="search-content-container">
+          <RecherchePageEmpty {...props} />
+        </Box>
+        <Footer />
+      </>
     )
   }
-  return <RecherchePageComponentWithParams {...props} />
+  return (
+    <Box role="main" component="main">
+      <RecherchePageComponentWithParams {...props} />
+    </Box>
+  )
 }

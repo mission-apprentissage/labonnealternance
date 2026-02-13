@@ -5,7 +5,13 @@ import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName
 import { ApplicationIntention } from "shared/constants/application"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, wrongApplicationTestFile } from "shared/fixtures/application.fixture"
+import {
+  applicationTestFile,
+  generateApplicantFixture,
+  generateApplicationFixture,
+  mismatchedHeaderContentTestFile,
+  wrongApplicationTestFile,
+} from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
@@ -204,6 +210,8 @@ describe("POST /v2/application", () => {
       company_siret: recruteur.workplace_siret,
       company_recruitment_intention_date: null,
       created_at: expect.any(Date),
+      foreign_application_id: null,
+      foreign_application_status_url: null,
       job_id: recruteur._id,
       job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
       job_searched_by_user: null,
@@ -270,6 +278,8 @@ describe("POST /v2/application", () => {
       company_siret: recruiter.establishment_siret,
       company_recruitment_intention_date: null,
       created_at: expect.any(Date),
+      foreign_application_id: null,
+      foreign_application_status_url: null,
       job_id: job._id,
       job_searched_by_user: null,
       job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
@@ -304,7 +314,37 @@ describe("POST /v2/application", () => {
       headers: { authorization: `Bearer ${token}` },
     })
     expect.soft(response.statusCode).toEqual(400)
-    expect.soft(response.json()).toEqual({ statusCode: 400, error: "Bad Request", message: "File type is not supported" })
+    expect.soft(response.json()).toEqual({
+      statusCode: 400,
+      error: "Bad Request",
+      message: "File type is not supported",
+    })
+  })
+
+  it("return 400 when header matches filename but content type is different", async () => {
+    const job = recruiter.jobs[0]
+    const body: IApplicationApiPublic = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: mismatchedHeaderContentTestFile,
+      applicant_email: "jeam.dupont@mail.com",
+      applicant_first_name: "Jean",
+      applicant_last_name: "Dupont",
+      applicant_phone: "0101010101",
+      recipient_id: `recruiters_${job._id.toString()}`,
+    }
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/application",
+      body,
+      headers: { authorization: `Bearer ${token}` },
+    })
+    expect.soft(response.statusCode).toEqual(400)
+    expect.soft(response.json()).toEqual({
+      statusCode: 400,
+      error: "Bad Request",
+      message: "File type is not supported",
+    })
   })
 
   it("save scheduled intention when link in email is followed", async () => {

@@ -13,6 +13,8 @@ export default async function Layout({ children }: PropsWithChildren) {
     <>
       <Header />
       <Box
+        component="main"
+        role="main"
         sx={{
           display: "flex",
           flexDirection: "column",

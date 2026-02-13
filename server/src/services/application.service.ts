@@ -5,10 +5,10 @@ import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
 import { isEmailBurner } from "burner-email-providers"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
-import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IJob, INewApplicationV1, IRecruiter } from "shared"
-import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IHelloworkApplication, IJob, INewApplicationV1, IRecruiter } from "shared"
+import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
 import type { RefusalReasons } from "shared/constants/application"
-import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
+import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
@@ -21,6 +21,8 @@ import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { z } from "zod"
 
+import axios from "axios"
+import { captureException } from "@sentry/node"
 import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import type { BrevoEventStatus } from "./brevo.service"
@@ -54,6 +56,7 @@ const imagePath = `${config.publicUrl}/images/emails/`
 const PARTNER_NAMES = {
   oc: "OpenClassrooms",
   "1jeune1solution": "1jeune1solution",
+  Hellowork: "Hellowork",
 }
 
 const images: object = {
@@ -227,29 +230,73 @@ export const sendApplication = async ({
   }
 }
 
-async function identifyFileType(base64String: string) {
+async function identifyFileType(base64Data: string): Promise<string | undefined> {
   try {
-    // Remove the data URL part if it's present
-    const base64Data = base64String.replace(/^data:[^;]+;base64,/, "")
     // Convert base64 string to a buffer
     const buffer = Buffer.from(base64Data, "base64")
     // Get the file type from the buffer
     const type = await fileTypeFromBuffer(buffer)
-    return type
+    return type?.ext
   } catch (_) {
     return undefined
   }
 }
 
-async function validateApplicationFileType(base64String: string) {
-  const type = await identifyFileType(base64String)
-  if (!type) {
-    sentryCaptureException("Application file type could not be determined", { extra: { responseData: base64String } })
+enum AcceptedFileType {
+  docx = "docx",
+  pdf = "pdf",
+}
+
+const mappingFileTypeToHeader = {
+  docx: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+  pdf: "data:application/pdf;base64,",
+} as const
+
+function findAttachmentHeader(content: string): string | null {
+  const headerFound = Object.values(mappingFileTypeToHeader).find((header) => content.startsWith(header))
+  return headerFound ?? null
+}
+
+function getFiletypeFromFilename(filename: string): string {
+  const pointIndex = filename.lastIndexOf(".")
+  if (pointIndex === -1) {
+    return filename
+  }
+  return filename.substring(pointIndex + 1)
+}
+
+async function validateApplicationFileType(filename: string, base64String: string) {
+  const filenameFileType = getFiletypeFromFilename(filename)
+  const acceptedFileType = parseEnum(AcceptedFileType, filenameFileType)
+  if (!acceptedFileType) {
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
-
-  if (!["pdf", "docx"].includes(type?.ext)) {
-    sentryCaptureException("Application file type not supported", { extra: { responseData: type } })
+  const expectedHeader = mappingFileTypeToHeader[acceptedFileType]
+  if (!base64String.startsWith(expectedHeader)) {
+    sentryCaptureException("Application file header does not match expected MIME type", {
+      extra: {
+        expectedHeader,
+        receivedHeaderSample: base64String.substring(0, expectedHeader.length + 20),
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  const content = base64String.substring(expectedHeader.length)
+  const detectedFileType = await identifyFileType(content)
+  if (!detectedFileType) {
+    const base64Length = base64String.length
+    sentryCaptureException("Application file type could not be determined", {
+      extra: {
+        attachmentMetadata: {
+          base64Length,
+          expectedHeader,
+        },
+      },
+    })
+    throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
+  }
+  if (detectedFileType !== acceptedFileType) {
+    sentryCaptureException("Application file type not matching data", { extra: { detectedFileType, filenameFileType } })
     throw badRequest(BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED)
   }
 }
@@ -270,13 +317,14 @@ export const sendApplicationV2 = async ({
   const {
     recipient_id: { collectionName, jobId },
     applicant_attachment_content,
+    applicant_attachment_name,
     applicant_email,
     applicant_first_name,
     applicant_last_name,
     applicant_phone,
   } = newApplication
 
-  await validateApplicationFileType(applicant_attachment_content)
+  await validateApplicationFileType(applicant_attachment_name, applicant_attachment_content)
 
   if (isEmailBurner(applicant_email)) {
     throw badRequest(BusinessErrorCodes.BURNER)
@@ -305,6 +353,9 @@ export const sendApplicationV2 = async ({
     const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
     if (!job) {
       throw badRequest(BusinessErrorCodes.NOTFOUND)
+    }
+    if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      throw badRequest(BusinessErrorCodes.EXPIRED)
     }
     lbaJob = { type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, job, recruiter: null }
   }
@@ -579,6 +630,8 @@ const newApplicationToApplicationDocumentV2 = async (
     to_company_message_id: null,
     scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
     application_url: "application_url" in newApplication ? newApplication.application_url : null,
+    foreign_application_status_url: "foreign_application_status_url" in newApplication ? newApplication.foreign_application_status_url : null,
+    foreign_application_id: "foreign_application_id" in newApplication ? newApplication.foreign_application_id : null,
     ...offreOrCompanyToCompanyFields(LbaJob),
   }
   return application
@@ -1103,7 +1156,8 @@ export const processApplicationEmails = {
       attachments: [
         {
           filename: application.applicant_attachment_name,
-          path: attachmentContent,
+          content: removeDataUrlPrefix(attachmentContent),
+          encoding: "base64",
         },
       ],
     })
@@ -1146,6 +1200,14 @@ export const processApplicationEmails = {
   },
 }
 
+function removeDataUrlPrefix(attachmentData: string) {
+  const headerFound = findAttachmentHeader(attachmentData)
+  if (headerFound) {
+    return attachmentData.substring(headerFound.length)
+  }
+  return attachmentData
+}
+
 function buildRecruitingCompaniesUrl(application: IApplication) {
   const { application_url } = application
   if (!application_url) {
@@ -1173,6 +1235,8 @@ const getApplicationWebsiteOrigin = (caller: IApplication["caller"]) => {
     case "oc":
     case "openclassrooms":
       return " par OpenClassrooms"
+    case "Hellowork":
+      return " via Hellowork"
 
     default:
       return ""
@@ -1459,6 +1523,13 @@ export const sendRecruiterIntention = async ({
       }
     )
 
+    if (application.foreign_application_status_url && application.caller === PARTNER_NAMES.Hellowork) {
+      await sendApplicationStatusToHellowork({
+        status: company_recruitment_intention === ApplicationIntention.ENTRETIEN ? HELLOWORK_STATUS.CONTACTED : HELLOWORK_STATUS.REJECTED,
+        application,
+      })
+    }
+
     await getDbCollection("applicants_email_logs").insertOne({
       _id: new ObjectId(),
       applicant_id: applicant._id,
@@ -1519,5 +1590,58 @@ export const processScheduledRecruiterIntentions = async () => {
       error: true,
     })
     throw err
+  }
+}
+
+export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHelloworkApplication) => {
+  const { job, applicant, resume, statusApiUrl } = payload
+
+  const attachmentContentType = typeof resume.file.contentType === "string" && resume.file.contentType.trim().length > 0 ? resume.file.contentType.trim() : "application/pdf"
+
+  const result = await sendApplicationV2({
+    newApplication: {
+      applicant_attachment_name: resume.file.fileName,
+      applicant_attachment_content: `data:${attachmentContentType};base64,${resume.file.data}`,
+      applicant_first_name: applicant.firstName,
+      applicant_last_name: applicant.lastName,
+      applicant_email: applicant.email,
+      applicant_phone: applicant.phoneNumber,
+      recipient_id: {
+        collectionName: "partners",
+        jobId: job.jobId,
+      },
+      applicant_message: applicant.coverLetter || "",
+      foreign_application_id: payload.applicationId,
+      foreign_application_status_url: statusApiUrl,
+    },
+    caller: "Hellowork",
+  })
+
+  return {
+    atsApplicationId: result._id.toString(),
+  }
+}
+
+const sendApplicationStatusToHellowork = async ({ status, application }: { status: HELLOWORK_STATUS; application: IApplication }) => {
+  const now = new Date().toISOString()
+
+  const payload = {
+    status,
+    eventDate: now,
+    created: application?.created_at?.toISOString() ?? now,
+    jobId: application?.job_id ?? "",
+    source: PARTNER_NAMES.Hellowork,
+  }
+
+  try {
+    await axios.post(application.foreign_application_status_url!, payload)
+  } catch (error) {
+    captureException(error, {
+      extra: {
+        applicationId: application._id,
+        foreign_application_status_url: application.foreign_application_status_url,
+        payload,
+      },
+    })
   }
 }

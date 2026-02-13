@@ -21,5 +21,5 @@ export const importFromUrlInXml = async ({
   })
   const stream = response.data
 
-  return importFromStreamInXml({ destinationCollection, offerXmlTag, stream, partnerLabel, conflictingOpeningTagWithoutAttributes })
+  return importFromStreamInXml({ destinationCollection, offerXmlTag, stream, importName: partnerLabel, conflictingOpeningTagWithoutAttributes })
 }

@@ -695,7 +695,7 @@ async function findLbaJobOpportunities({ romes, geo, target_diploma_level, depar
 }
 
 export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSearchApiV3QueryResolved> {
-  const { romes, rncp, latitude, longitude, radius, ...rest } = query
+  const { romes, rncp, latitude, longitude, radius, partners_to_exclude, ...rest } = query
 
   const geo = latitude === null || longitude === null ? null : { latitude, longitude, radius }
 
@@ -721,6 +721,7 @@ export async function resolveQuery(query: IJobSearchApiV3Query): Promise<IJobSea
 
   return {
     ...rest,
+    partners_to_exclude: partners_to_exclude ?? [],
     geo,
     romes: romeCriteria,
   }
@@ -1058,7 +1059,7 @@ export const getApplyUrl = (job: IJobsPartnersOfferPrivate): string => {
   }
   const jobType = getJobTypeFromPartnerLabel(job.partner_label as JOBPARTNERS_LABEL)
 
-  return `${config.publicUrl}/emploi/${jobType}/${job._id}/${encodeURIComponent(job.offer_title)}`
+  return `${config.publicUrl}/emploi/${jobType}/${jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_siret : job._id}/${encodeURIComponent(jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_naf_label! : job.offer_title)}`
 }
 
 export const getRecipientID = (type: IJobCollectionName, id: string) => {

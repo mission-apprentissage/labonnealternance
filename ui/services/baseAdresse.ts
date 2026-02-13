@@ -44,7 +44,7 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
     }
     if (type) filter = "&type=" + type
 
-    const addressURL = `https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${term}${filter}`
+    const addressURL = `https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${term}${filter}`
 
     try {
       const response = await fetch(addressURL, { signal })
@@ -79,7 +79,7 @@ export async function searchAddress(value: string, type?: string, signal?: Abort
 }
 
 export const fetchAddressFromCoordinates = async (coordinates: Coordinates, type?: string, signal?: AbortSignal): Promise<IAddressItem[]> => {
-  const addressURL = `https://api-adresse.data.gouv.fr/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
+  const addressURL = `https://data.geopf.fr/geocodage/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
 
   try {
     const response = await fetch(addressURL, { signal })

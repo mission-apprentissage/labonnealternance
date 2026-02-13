@@ -238,11 +238,11 @@ function createJobAction(name) {
 }
 
 program
-  .command("recreate:indexes")
+  .command("indexes:recreate")
   .description("Recreate MongoDB indexes")
   .option("-d, --drop", "Drop all indexes before recreating them", false)
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("recreate:indexes"))
+  .action(createJobAction("indexes:recreate"))
 
 program.command("db:validate").description("Validate Documents").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("db:validate"))
 
@@ -396,6 +396,12 @@ program
   .description("Importe le référentiel des communes")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("referentiel:commune:import"))
+
+program
+  .command("exportJobsToS3V2")
+  .description("export les offres dans un json")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("exportJobsToS3V2"))
 
 simpleJobDefinitions.forEach((jobDef) => {
   const { description } = jobDef

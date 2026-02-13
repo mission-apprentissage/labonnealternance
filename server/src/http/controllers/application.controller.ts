@@ -3,9 +3,18 @@ import { ApplicationIntention } from "shared/constants/application"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import { assertUnreachable, CompanyFeebackSendStatus, zRoutes } from "shared/index"
 
+import { captureException } from "@sentry/node"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getApplicationDataForIntentionAndScheduleMessage, getCompanyEmailFromToken, sendApplication, sendRecruiterIntention } from "@/services/application.service"
+import config from "@/config"
 import type { Server } from "@/http/server"
+import {
+  buildApplicationFromHelloworkAndSaveToDb,
+  getApplicationDataForIntentionAndScheduleMessage,
+  getCompanyEmailFromToken,
+  sendApplication,
+  sendRecruiterIntention,
+} from "@/services/application.service"
 
 const rateLimitConfig = {
   rateLimit: {
@@ -134,6 +143,54 @@ export default function (server: Server) {
       const { intention } = req.query
       const data = await getApplicationDataForIntentionAndScheduleMessage(id, intention)
       return res.status(200).send(data)
+    }
+  )
+
+  server.post(
+    "/application/hellowork",
+    {
+      schema: zRoutes.post["/application/hellowork"],
+      config: rateLimitConfig,
+    },
+    async (_req, res) => {
+      if (_req.headers["x-api-key"] !== config.helloworkApiKey) {
+        return res.status(401).send({
+          message: "Problème d'authentification",
+          code: "Authentication",
+        })
+      }
+      try {
+        const result = await buildApplicationFromHelloworkAndSaveToDb(_req.body)
+        return res.status(200).send(result)
+      } catch (err: any) {
+        switch (err.message) {
+          case BusinessErrorCodes.BURNER:
+          case BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_OFFER:
+          case BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY:
+          case BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET:
+            return res.status(400).send({
+              message: err.message,
+              code: "RejectedCandidate",
+            })
+          case BusinessErrorCodes.NOTFOUND:
+          case BusinessErrorCodes.EXPIRED:
+            return res.status(400).send({
+              message: err.message,
+              code: "Offer",
+            })
+          case BusinessErrorCodes.FILE_TYPE_NOT_SUPPORTED:
+            return res.status(400).send({
+              message: err.message,
+              code: "Attachment",
+            })
+          default:
+            captureException(err, { extra: { payload: { applicationId: _req.body?.applicationId, jobId: _req.body?.job?.jobId } } })
+            return res.status(500).send({
+              message: "Erreur interne du serveur",
+              code: "InternalServerError",
+            })
+        }
+      }
     }
   )
 }

@@ -1,5 +1,3 @@
-import { config } from "dotenv"
+import { loadEnvForTests } from "./loadEnvForTests"
 
-config({
-  path: "./server/.env.test",
-})
+loadEnvForTests()

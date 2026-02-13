@@ -78,7 +78,7 @@ describe("fillLocationInfosForPartners", () => {
       },
     ])
 
-    nock("https://api-adresse.data.gouv.fr:443")
+    nock("https://data.geopf.fr:443/geocodage")
       .get("/search")
       .query({ q: "1T IMPASSE PASSOIR CLICHY", limit: "1" })
       .reply(200, {

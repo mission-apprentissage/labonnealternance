@@ -1,5 +1,5 @@
-import { config } from "dotenv"
 import { MongoClient } from "mongodb"
+import { loadEnvForTests } from "./loadEnvForTests"
 
 export default async () => {
   return async () => {
@@ -7,7 +7,7 @@ export default async () => {
       return
     }
 
-    config({ path: "./server/.env.test" })
+    loadEnvForTests()
 
     const client = new MongoClient(process.env.LBA_MONGODB_URI?.replace("VITEST_POOL_ID", "") ?? "", {
       connectTimeoutMS: 1_000,
