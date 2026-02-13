@@ -2,7 +2,7 @@ x-default: &default
   deploy:
     resources:
       limits:
-        memory: 512M
+        memory: 512m
   restart: always
   networks:
     - mna_network
@@ -38,7 +38,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 256m
     image: "ghcr.io/mission-apprentissage/mna_lba_ui:0.0.0-{{pr_number}}-preview"
     container_name: lba_{{pr_number}}_ui
     env_file: .env_ui
