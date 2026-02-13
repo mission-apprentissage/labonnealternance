@@ -509,8 +509,61 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
             </Box>
           </Box>
+          <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
+            <Button size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
+              <DsfrLink href={`/simulateur?${utmParams}`}>
+                Calculer ma rémunération en alternance
+                <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
+              </DsfrLink>
+            </Button>
+          </Box>
         </Box>
 
+        {/**
+         * BLOC ENTREPRISES
+         */}
+        <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
+          <Box sx={{ mb: fr.spacing("6v") }}>
+            <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+              Entreprises qui recrutent activement en alternance
+            </Typography>
+            <Box
+              component="hr"
+              sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+            />
+            <Typography sx={{ fontSize: "18px", mb: fr.spacing("6v") }}>
+              Découvrez{" "}
+              <Typography component={"span"} sx={{ color: fr.colors.decisions.text.default.info.default, fontWeight: 700, fontSize: "18px" }}>
+                les {data.company_count} entreprises
+              </Typography>{" "}
+              qui recrutent activement des alternants développeur web :
+            </Typography>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                gap: fr.spacing("4v"),
+                alignItems: "stretch",
+                mt: fr.spacing("4v"),
+              }}
+            >
+              {(data.entreprises as { nom: string; job_count: number }[]).map((entreprise) => (
+                <Box
+                  key={entreprise.nom}
+                  sx={{
+                    backgroundColor: "white",
+                    padding: fr.spacing("7v"),
+                    borderRadius: "5px",
+                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                  }}
+                >
+                  <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{entreprise.nom}</Typography>
+                  <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px", color: fr.colors.decisions.text.label.grey.default }}>{entreprise.job_count} postes</Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        </Box>
         {/**
          * BLOC STATISTIQUES
          */}
