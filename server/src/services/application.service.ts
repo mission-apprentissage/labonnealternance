@@ -14,7 +14,7 @@ import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { prepareMessageForMail, removeUrlsFromText } from "shared/helpers/common"
 import dayjs from "shared/helpers/dayjs"
-import { getDirectJobPath } from "shared/metier/lbaitemutils"
+import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ITrackingCookies } from "shared/models/trafficSources.model"
@@ -32,6 +32,7 @@ import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { logger } from "@/common/logger"
 import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 import { manageApiError } from "@/common/utils/errorManager"
@@ -402,8 +403,7 @@ const buildUrlsOfDetail = (application: IApplication, utm?: { utm_source?: strin
   const { job_id, company_siret, job_origin, job_title } = application
   const defaultUtm = { utm_source: "lba", utm_medium: "email", utm_campaign: "je-candidate" }
   const { utm_campaign, utm_medium, utm_source } = { ...defaultUtm, ...utm }
-  const idInUrl = job_origin === LBA_ITEM_TYPE.RECRUTEURS_LBA ? company_siret! : job_id!.toString()
-  const urlWithoutUtm = `${publicUrl}${getDirectJobPath(job_origin, idInUrl, job_title ?? undefined)}`
+  const urlWithoutUtm = buildLbaUrl(job_origin, job_id!, company_siret, job_title ?? undefined)
 
   const searchParams = new URLSearchParams()
   searchParams.append("utm_source", utm_source)
@@ -504,7 +504,7 @@ const buildRecruiterEmailUrlsAndParameters = async (application: IApplication) =
   }
 
   if (application.job_id) {
-    urls.jobUrl = `${config.publicUrl}${getDirectJobPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
+    urls.jobUrl = `${config.publicUrl}${buildJobUrlPath(application.job_origin, application.job_id.toString())}${utmRecruiterData}`
     urls.jobProvidedUrl = createProvidedJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
     urls.cancelJobUrl = createCancelJobLink(userForToken, application.job_id.toString(), application.job_origin, utmRecruiterData)
   }

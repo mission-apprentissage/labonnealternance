@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { buildJobUrl } from "shared/metier/lbaitemutils"
 import type { IJob, IRecruiter } from "shared/models/index"
 import { JOB_STATUS } from "shared/models/index"
 import type { ISitemap } from "shared/models/sitemap.model"
@@ -9,10 +8,10 @@ import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
 import dayjs from "shared/helpers/dayjs"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import config from "@/config"
 
 type AggregateRecruiter = Pick<Omit<IRecruiter, "jobs">, "updatedAt"> & {
   jobs: Pick<IJob, "job_update_date" | "_id" | "rome_label" | "rome_appellation_label" | "offer_title_custom">
@@ -35,11 +34,11 @@ const generateSitemapXml = async () => {
       const { job_update_date, _id, rome_label, rome_appellation_label, offer_title_custom } = job
       const lastMod = job_update_date && dayjs(updatedAt).isBefore(job_update_date) ? job_update_date : updatedAt
       const jobTitle = offer_title_custom ?? rome_appellation_label ?? rome_label
-      const url = `${config.publicUrl}${buildJobUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id.toString(), jobTitle ?? undefined)}`
+      const url = buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id, null, jobTitle ?? undefined)
       return {
         loc: url,
         lastmod: lastMod,
-        changefreq: "daily",
+        changefreq: "daily" as const,
       }
     })
   )
