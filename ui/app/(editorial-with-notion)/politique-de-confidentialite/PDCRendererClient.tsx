@@ -64,9 +64,10 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
             <Grid size={{ xs: 12, md: 5 }}>
               <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("1w") }}>
                 Politique
-              </Typography>
-              <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default, mb: fr.spacing("1w") }}>
-                de confidentialité
+                <br />
+                <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default }} variant="h1">
+                  de confidentialité
+                </Typography>
               </Typography>
               <Box
                 component="hr"
