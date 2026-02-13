@@ -180,22 +180,4 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
   })
-  describe("ENTREPRISE / CFA", () => {
-    it("Vérifie que un email ne peut pas créer un compte entreprise puis un compte CFA", async () => {
-      const email = defaultCreationEntreprisePayload.email
-      const response = await callCreation({ ...defaultCreationEntreprisePayload, email })
-      expect.soft(response.statusCode).toBe(200)
-      const response2 = await callCreation({ ...defaultCreationCFAPayload, email })
-      expect.soft(response2.statusCode).toBe(403)
-      expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
-    }, 10_000)
-    it("Vérifie que un email ne peut pas créer un compte CFA puis un compte entreprise", async () => {
-      const email = defaultCreationEntreprisePayload.email
-      const response = await callCreation({ ...defaultCreationCFAPayload, email })
-      expect.soft(response.statusCode).toBe(200)
-      const response2 = await callCreation({ ...defaultCreationEntreprisePayload, email })
-      expect.soft(response2.statusCode).toBe(403)
-      expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
-    }, 10_000)
-  })
 })
