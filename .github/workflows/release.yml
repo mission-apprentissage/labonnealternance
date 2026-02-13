@@ -276,6 +276,15 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Initialize the GnuPG keyring
+        run: |
+          echo -n "$OPENPGP_KEY" | gpg --import
+        env:
+          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
+
       - uses: actions/setup-node@v6
         with:
           node-version: 24
