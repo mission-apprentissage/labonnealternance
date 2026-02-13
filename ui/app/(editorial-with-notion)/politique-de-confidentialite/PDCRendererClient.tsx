@@ -97,6 +97,8 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                   <FormControlLabel
                     control={
                       <Checkbox
+                        aria-labelledby="follow-checkbox"
+                        aria-describedby="follow-info"
                         onChange={(event) => {
                           changeMatomoOptout({
                             checked: event.target.checked,
@@ -105,11 +107,15 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                         checked={hasConsent}
                       />
                     }
-                    label={<Typography component="strong">Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.</Typography>}
+                    label={
+                      <Typography id="follow-checkbox" component="strong">
+                        Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.
+                      </Typography>
+                    }
                     sx={{ mt: 2 }}
                   />
                   {!hasConsent && (
-                    <Typography sx={{ mt: 2 }}>
+                    <Typography id="follow-info" sx={{ mt: 2 }}>
                       Note : si vous nettoyez vos cookies et supprimez le cookie d'exclusion, ou bien si vous changez d'ordinateur et/ou de navigateur, il vous faudra de nouveau
                       effectuer la procédure d'exclusion.
                     </Typography>
