@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
@@ -510,7 +511,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
             </Box>
             <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
-              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>Salaire médian pour un professionnel</Typography>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>
+                Salaire médian pour un professionnel{" "}
+                <Tooltip kind="hover" title="Le salaire médian divise les travailleurs en deux groupes, la moitié gagne davantage, l'autre moins" />
+              </Typography>
               <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
                 ≃ {data.salaire.salaire_median}€
               </Typography>
