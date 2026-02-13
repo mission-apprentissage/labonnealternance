@@ -47,19 +47,25 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
     formations: [
       {
         title: "Formation A",
-        description: "Description de la formation A pour le métier de chargé de recrutement en alternance.",
+        description: "Description de la formation A",
+        duree: "2 ans",
+        niveau: "BAC",
         count: 50,
         competences: ["Compétence 1", "Compétence 2", "Compétence 3"],
       },
       {
         title: "Formation B",
-        description: "Description de la formation B pour le métier de chargé de recrutement en alternance.",
+        description: "Description de la formation B",
+        duree: "2 ans",
+        niveau: "BAC + 2",
         count: 30,
         competences: ["Compétence 4", "Compétence 5", "Compétence 6"],
       },
       {
         title: "Formation C",
-        description: "Description de la formation C pour le métier de chargé de recrutement en alternance.",
+        description: "Description de la formation C",
+        duree: "3 ans",
+        niveau: "BAC + 5",
         count: 20,
         competences: ["Compétence 7", "Compétence 8", "Compétence 9"],
       },
@@ -193,19 +199,25 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
     formations: [
       {
         title: "Formation A",
-        description: "Description de la formation A pour le métier de chargé de recrutement en alternance.",
+        description: "Description de la formation A",
+        duree: "2 ans",
+        niveau: "BAC",
         count: 50,
         competences: ["Compétence 1", "Compétence 2", "Compétence 3"],
       },
       {
         title: "Formation B",
-        description: "Description de la formation B pour le métier de chargé de recrutement en alternance.",
+        description: "Description de la formation B",
+        duree: "2 ans",
+        niveau: "BAC + 2",
         count: 30,
         competences: ["Compétence 4", "Compétence 5", "Compétence 6"],
       },
       {
         title: "Formation C",
-        description: "Description de la formation C pour le métier de chargé de recrutement en alternance.",
+        description: "Description de la formation C",
+        duree: "3 ans",
+        niveau: "BAC + 5",
         count: 20,
         competences: ["Compétence 7", "Compétence 8", "Compétence 9"],
       },
@@ -291,10 +303,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         <Box
           sx={{
             position: "relative",
-            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
-            py: fr.spacing("4w"),
-            marginTop: { xs: 0, sm: fr.spacing("4w") },
-            marginBottom: fr.spacing("4w"),
+            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+            py: fr.spacing("8v"),
+            marginTop: { xs: 0, sm: fr.spacing("8v") },
+            marginBottom: fr.spacing("8v"),
             borderRadius: "10px",
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
@@ -462,9 +474,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
          */}
         <Box
           sx={{
-            mb: fr.spacing("4w"),
-            py: fr.spacing("4w"),
-            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
+            mb: fr.spacing("8v"),
+            py: fr.spacing("8v"),
+            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
             backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
           }}
         >
@@ -564,6 +576,81 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             </Box>
           </Box>
         </Box>
+
+        <Box sx={{ textAlign: "center" }}>
+          <Button size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false`}>
+              Voir toutes les offres en alternance
+              <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
+            </DsfrLink>
+          </Button>
+        </Box>
+
+        <Box
+          sx={{
+            mt: fr.spacing("10v"),
+            mb: fr.spacing("8v"),
+            py: fr.spacing("8v"),
+            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          }}
+        >
+          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            Les formations
+          </Typography>
+          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid #4B9F6C`, opacity: 1 }} />
+          <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+            Niveaux de formation disponibles
+          </Typography>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              alignItems: "stretch",
+              mt: fr.spacing("4v"),
+            }}
+          >
+            {(data.formations as { title: string; description: string; duree: string; niveau: string; count: number; competences: string[] }[]).map((formation) => (
+              <Box
+                key={formation.title}
+                sx={{
+                  backgroundColor: "white",
+                  padding: fr.spacing("7v"),
+                  borderRadius: "5px",
+                  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+                  textAlign: "center",
+                }}
+              >
+                <Typography sx={{ fontSize: "28px", fontWeight: "bold", color: "#4B9F6C" }}>{formation.title}</Typography>
+                <Typography sx={{ my: fr.spacing("6v"), fontSize: "22px", fontWeight: 700 }}>{formation.count} formations</Typography>
+                <Typography sx={{ fontSize: "18px", color: "#666" }}>
+                  Durée : {formation.duree} | Niveau : {formation.niveau}
+                  <br />
+                  {formation.description}
+                </Typography>
+                <Box sx={{ backgroundColor: fr.colors.decisions.background.alt.greenEmeraude.default, padding: fr.spacing("4v"), mt: fr.spacing("6v"), fontSize: "18px" }}>
+                  <Typography sx={{ margin: "auto", fontWeight: 700 }}>Compétences développées</Typography>
+                  <ul>
+                    {(formation.competences as string[]).map((competence) => (
+                      <li>{competence}</li>
+                    ))}
+                  </ul>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+
+          <Box sx={{ textAlign: "center" }}>
+            <Button size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
+              <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayEntreprises=false`}>
+                Voir toutes les formations en alternance
+                <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
+              </DsfrLink>
+            </Button>
+          </Box>
+        </Box>
+
         {/**
          * BLOC STATISTIQUES
          */}
