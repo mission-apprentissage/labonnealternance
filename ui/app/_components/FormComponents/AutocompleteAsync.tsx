@@ -231,13 +231,13 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
             "& .MuiAutocomplete-option": {
               // Style normal
               backgroundColor: "#fff",
-              color: "#161616",
+              color: fr.colors.decisions.text.label.grey.default,
               borderLeft: "4px solid transparent",
 
               // Option focalisée (hover ou navigation clavier)
               "&.Mui-focused": {
-                backgroundColor: "#e3f2fd",
-                color: "#161616",
+                backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                color: fr.colors.decisions.text.label.grey.default,
                 borderLeft: "4px solid #6A6AF4",
               },
 
