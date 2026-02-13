@@ -57,6 +57,8 @@ async function getOAuth2Token() {
   return access_token
 }
 
+const validContractTypes = ["CAP - Contrat d'apprentissage", "CDD - Contrat de professionnalisation"]
+
 export const importFranceTravailCEGIDRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (!sourceStream) {
     const token = await getOAuth2Token()
@@ -84,7 +86,7 @@ export const importFranceTravailCEGIDRaw = async (sourceStream?: NodeJS.Readable
     while (nextUrl) {
       const result = await getCEGIDOffers(nextUrl)
       nextUrl = result.nextUrl
-      offers = offers.concat(result.offers)
+      offers = offers.concat(result.offers.filter((offer) => validContractTypes.includes(offer.contractType?.label ?? "")))
     }
 
     sourceStream = stringToStream(JSON.stringify(offers))
