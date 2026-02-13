@@ -27,10 +27,6 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const rechercheResult = useRechercheResults(props.rechercheParams)
   const virtualizerRef = useRef<Virtualizer<any, Element>>(null)
 
-  if (displayMobileForm) {
-    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
-  }
-
   const elements: ReturnType<typeof RechercheResultatsList> = []
 
   const scrollToItem = (item: ResultCardData) => {
@@ -49,6 +45,10 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
     },
     ...RechercheResultatsList({ ...props, scrollToItem })
   )
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
 
   const getScolledElementIndex = () => {
     return elements.findIndex((element) => {
