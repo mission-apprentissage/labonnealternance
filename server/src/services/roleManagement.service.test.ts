@@ -1,7 +1,7 @@
-import dayjs from "shared/helpers/dayjs"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import type { IRoleManagement } from "shared/models/index"
 import { AccessStatus } from "shared/models/index"
+import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { describe, expect, it } from "vitest"
 
 import { isGrantedAndAutoValidatedRole } from "./roleManagement.service"
@@ -13,38 +13,37 @@ const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
   })
 }
 
-const creationDate = new Date("2025-01-23T15:30:20.975+00:00")
-
 describe("roleManagement.service", () => {
   describe("isGrantedAndAutoValidatedRole", () => {
-    it("should return true if role is validated fastly", () => {
+    it("should return true if role is auto-validated (AWAITING then GRANTED with AUTO)", () => {
       expect(
         isGrantedAndAutoValidatedRole(
           roleWithEventsFactory([
             roleManagementEventFactory({
               status: AccessStatus.AWAITING_VALIDATION,
-              date: creationDate,
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
             }),
             roleManagementEventFactory({
               status: AccessStatus.GRANTED,
-              date: dayjs(creationDate).add(500, "ms").toDate(),
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
             }),
           ])
         )
       ).toEqual(true)
     })
-    it("should return true if role is only granted", () => {
+    it("should return true if role is only granted with AUTO validation", () => {
       expect(
         isGrantedAndAutoValidatedRole(
           roleWithEventsFactory([
             roleManagementEventFactory({
               status: AccessStatus.GRANTED,
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
             }),
           ])
         )
       ).toEqual(true)
     })
-    it("should return false if role is not granted", () => {
+    it("should return false if last status is not granted", () => {
       expect(
         isGrantedAndAutoValidatedRole(
           roleWithEventsFactory([
@@ -53,25 +52,27 @@ describe("roleManagement.service", () => {
             }),
             roleManagementEventFactory({
               status: AccessStatus.GRANTED,
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
             }),
             roleManagementEventFactory({
               status: AccessStatus.DENIED,
+              validation_type: VALIDATION_UTILISATEUR.MANUAL,
             }),
           ])
         )
       ).toEqual(false)
     })
-    it("should return false if role is granted in a slow manner", () => {
+    it("should return false if role is granted manually", () => {
       expect(
         isGrantedAndAutoValidatedRole(
           roleWithEventsFactory([
             roleManagementEventFactory({
               status: AccessStatus.AWAITING_VALIDATION,
-              date: creationDate,
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
             }),
             roleManagementEventFactory({
               status: AccessStatus.GRANTED,
-              date: dayjs(creationDate).add(1, "hour").toDate(),
+              validation_type: VALIDATION_UTILISATEUR.MANUAL,
             }),
           ])
         )

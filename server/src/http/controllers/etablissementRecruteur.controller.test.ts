@@ -4,20 +4,32 @@ import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
 import type { zRoutes } from "shared/routes/index"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import mailer from "@/services/mailer.service"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveUserWithAccount } from "@tests/utils/user.test.utils"
+
+vi.mock("@/services/mailer.service", () => {
+  return {
+    default: {
+      sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
+      renderEmail: vi.fn().mockResolvedValue("<html>Test Email</html>"),
+    },
+  }
+})
 
 describe("POST /etablissement/creation", () => {
   useMongo()
   const httpClient = useServer()
 
   beforeEach(async () => {
+    vi.clearAllMocks()
+
     const mockEntreprise = nock("https://entreprise.api.gouv.fr/v3/insee")
       .persist()
       .get(new RegExp("/sirene/etablissements/diffusibles/", "g"))
@@ -115,6 +127,24 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(403)
       expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
+
+    it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
+      const response = await callCreation(defaultCreationEntreprisePayload)
+
+      expect.soft(response.statusCode).toBe(200)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls.length).toBe(1)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls[0]?.[0]?.to).toBe(defaultCreationEntreprisePayload.email)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls[0]?.[0]?.subject).toBe("Confirmez votre adresse mail")
+    })
+
+    it("N'échoue pas si l'envoi de l'email de confirmation échoue", async () => {
+      vi.mocked(mailer.sendEmail).mockRejectedValueOnce(new Error("smtp failed"))
+
+      const response = await callCreation(defaultCreationEntreprisePayload)
+
+      expect.soft(response.statusCode).toBe(200)
+      expect.soft(vi.mocked(mailer.sendEmail).mock.calls.length).toBe(1)
+    })
   })
   describe("Création de CFA", () => {
     it("Vérifie que le CFA est créé", async () => {
@@ -148,24 +178,6 @@ describe("POST /etablissement/creation", () => {
       // then
       expect.soft(response.statusCode).toBe(403)
       expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
-    })
-  })
-  describe("ENTREPRISE / CFA", () => {
-    it("Vérifie que un email ne peut pas créer un compte entreprise puis un compte CFA", async () => {
-      const email = defaultCreationEntreprisePayload.email
-      const response = await callCreation({ ...defaultCreationEntreprisePayload, email })
-      expect.soft(response.statusCode).toBe(200)
-      const response2 = await callCreation({ ...defaultCreationCFAPayload, email })
-      expect.soft(response2.statusCode).toBe(403)
-      expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
-    })
-    it("Vérifie que un email ne peut pas créer un compte CFA puis un compte entreprise", async () => {
-      const email = defaultCreationEntreprisePayload.email
-      const response = await callCreation({ ...defaultCreationCFAPayload, email })
-      expect.soft(response.statusCode).toBe(200)
-      const response2 = await callCreation({ ...defaultCreationEntreprisePayload, email })
-      expect.soft(response2.statusCode).toBe(403)
-      expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
   })
 })

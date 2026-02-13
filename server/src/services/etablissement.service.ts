@@ -44,6 +44,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { logger } from "@/common/logger"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -492,6 +493,20 @@ export const entrepriseOnboardingWorkflow = {
       },
       managingUser._id.toString()
     )
+
+    if (!isUserEmailChecked(managingUser)) {
+      try {
+        await sendUserConfirmationEmail(managingUser)
+      } catch (error) {
+        logger.error("Failed to send user confirmation email after enterprise account creation", {
+          userId: managingUser._id,
+          email: managingUser.email,
+          error,
+        })
+        sentryCaptureException(error, { extra: { userId: managingUser._id, email: managingUser.email } })
+      }
+    }
+
     return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({
@@ -642,12 +657,7 @@ export const sendEmailConfirmationEntreprise = async (
   accessStatus: AccessStatus | null,
   entrepriseStatus: EntrepriseStatus | null
 ) => {
-  if (
-    entrepriseStatus !== EntrepriseStatus.VALIDE ||
-    !isUserEmailChecked(user) ||
-    !accessStatus ||
-    ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)
-  ) {
+  if (entrepriseStatus !== EntrepriseStatus.VALIDE || !accessStatus || ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)) {
     return
   }
   const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
