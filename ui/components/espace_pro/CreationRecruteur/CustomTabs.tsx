@@ -48,6 +48,8 @@ export const tabSx = {
     "&.Mui-selected": {
       color: "primary.main",
       backgroundColor: "#fff",
+      borderLeft: "1px solid #DDD",
+      borderRight: "1px solid #DDD",
       // Hover
       "&:hover": {
         backgroundColor: "#C1C1FB",
