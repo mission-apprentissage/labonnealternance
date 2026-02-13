@@ -31,6 +31,8 @@ const ZSeoMetierEntreprise = z.object({
 const ZSeoMetierFormation = z.object({
   title: z.string(),
   description: z.string(),
+  duree: z.string(),
+  niveau: z.string(),
   count: z.number(),
   competences: z.array(z.string()),
 })

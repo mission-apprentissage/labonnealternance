@@ -1,18 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
-// import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, /*Link,*/ Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 
-// import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Link from "next/link"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ArrowRightLine } from "@/theme/components/icons"
-// import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
-// import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-// import { apiGet } from "@/utils/api.utils"
 
 export async function generateMetadata({ params }: { params: Promise<{ metier: string }> }) {
   const { metier } = await params
@@ -343,7 +339,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               }}
             >
               <Box sx={boxCss}>
-                <Image alt="" src={`/images/seo/metier/malette.svg`} width={80} height={80} />
+                <Image alt="" aria-hidden="true" src={`/images/seo/metier/malette.svg`} width={80} height={80} />
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.job_count}
                 </Typography>
@@ -352,7 +348,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 </Typography>
               </Box>
               <Box sx={boxCss}>
-                <Image alt="" src={`/images/seo/metier/ecosystem.svg`} width={80} height={80} />
+                <Image alt="" aria-hidden="true" src={`/images/seo/metier/ecosystem.svg`} width={80} height={80} />
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.applicant_count}
                 </Typography>
@@ -361,7 +357,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 </Typography>
               </Box>
               <Box sx={boxCss}>
-                <Image alt="" src={`/images/seo/metier/usine.svg`} width={80} height={80} />
+                <Image alt="" aria-hidden="true" src={`/images/seo/metier/usine.svg`} width={80} height={80} />
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.company_count}
                 </Typography>
@@ -370,7 +366,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 </Typography>
               </Box>
               <Box sx={boxCss}>
-                <Image alt="" src={`/images/seo/metier/monnaie.svg`} width={80} height={80} />
+                <Image alt="" aria-hidden="true" src={`/images/seo/metier/monnaie.svg`} width={80} height={80} />
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.salaire.salaire_brut_moyen}€
                 </Typography>
@@ -385,8 +381,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
         </Box>
         <Box sx={{ textAlign: "center" }}>
-          <Button size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false`}>
+          <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}`}>
               Voir toutes les offres en alternance
               <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </DsfrLink>
@@ -432,7 +428,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                   boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                 }}
               >
-                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: "#000091" }}>{mission.title} :</Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.hover }}>{mission.title} :</Typography>
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{mission.description}</Typography>
               </Box>
             ))}
@@ -462,7 +458,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                   boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                 }}
               >
-                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: "#000091" }}>{competence.title} :</Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.hover }}>{competence.title} :</Typography>
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{competence.description}</Typography>
               </Box>
             ))}
@@ -522,8 +518,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             </Box>
           </Box>
           <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
-            <Button size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
-              <DsfrLink href={`/simulateur?${utmParams}`}>
+            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
+              <DsfrLink aria-label="Aller au simulateur pour calculer ma rémunération en alternance" href={`/simulateur?${utmParams}`}>
                 Calculer ma rémunération en alternance
                 <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
               </DsfrLink>
@@ -578,8 +574,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         </Box>
 
         <Box sx={{ textAlign: "center" }}>
-          <Button size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false`}>
+          <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}`}>
               Voir toutes les offres en alternance
               <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </DsfrLink>
@@ -642,8 +638,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
 
           <Box sx={{ textAlign: "center" }}>
-            <Button size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
-              <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayEntreprises=false`}>
+            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
+              <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}`}>
                 Voir toutes les formations en alternance
                 <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
               </DsfrLink>
@@ -652,237 +648,71 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         </Box>
 
         {/**
-         * BLOC STATISTIQUES
+         * BLOC VILLES
          */}
-        {/* <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
-            Opportunités d'emploi
-            <br />
-            en alternance <span style={{ color: "#161616" }}>à {data.ville}</span>
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
-          <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("2w") }}>
-            <Box sx={{ flex: 1, boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)", padding: fr.spacing("2w") }}>
-              <TagOffreEmploi />
-              <Box sx={{ display: "flex" }}>
-                <Box sx={{ flex: 2 }}>
-                  <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: fr.colors.decisions.text.default.info.default, mt: fr.spacing("2w") }}>
-                    {data.job_count}
-                  </Typography>
-                  <Typography sx={{ fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
-                    offres d'emploi{" "}
-                    <Typography component="span" sx={{ fontWeight: "bold", color: "#161616" }}>
-                      auprès desquelles postuler
-                    </Typography>
-                  </Typography>
-                </Box>
-                <Box sx={{ flex: 1, textAlign: "right", pt: fr.spacing("2w") }}>
-                  <Image src="/images/seo/offre-emploi.svg" alt="" width={80} height={80} />
-                </Box>
-              </Box>
-            </Box>
-
-            <Box sx={{ flex: 1, boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)", padding: fr.spacing("2w") }}>
-              <TagCandidatureSpontanee />
-              <Box sx={{ display: "flex" }}>
-                <Box sx={{ flex: 2 }}>
-                  <Typography sx={{ fontWeight: "bold", lineHeight: "2.5rem", fontSize: "2rem", color: "#716043", mt: fr.spacing("2w") }}>{data.recruteur_count}</Typography>
-                  <Typography sx={{ fontWeight: "bold", color: "#716043" }}>
-                    entreprises{" "}
-                    <Typography component="span" sx={{ fontWeight: "bold", color: "#161616" }}>
-                      auprès desquelles adresser des candidatures spontanées
-                    </Typography>{" "}
-                  </Typography>
-                </Box>
-                <Box sx={{ flex: 1, textAlign: "right", pt: fr.spacing("2w") }}>
-                  <Image src="/images/seo/candidature-spontanee.svg" alt="" width={80} height={80} />
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Box> */}
-
-        {/**
-         * BLOC MOBILITE
-         */}
-        {/* <Box
-          sx={{
-            mb: fr.spacing("4w"),
-            py: fr.spacing("4w"),
-            px: { xs: fr.spacing("2w"), md: fr.spacing("4w") },
-            backgroundColor: fr.colors.decisions.background.default.grey.hover,
-          }}
-        >
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2 }}>
-            La mobilité et le logement
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
-            <Box sx={{ flex: 1 }}></Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: { xs: fr.spacing("3v"), md: 0 } }}>
-                La mobilité
-              </Typography>
-            </Box>
-          </Box>
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
-            <Box sx={{ flex: 1 }}>
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-                  gap: fr.spacing("2w"),
-                }}
-              >
-                {(data.content.mobilite.transports as { type?: string; label?: string }[]).map((transport) => (
-                  <Box
-                    key={transport.type}
-                    sx={{
-                      textAlign: "center",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "146px",
-                      height: "146px",
-                      padding: fr.spacing("3v"),
-                      backgroundColor: "white",
-                      borderRadius: "5px",
-                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                    }}
-                  >
-                    <Image alt="" src={`/images/seo/transports/${transports[transport.type as string]}`} width="50" height={50} />
-                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{transport.label}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap", mt: { xs: fr.spacing("5v"), md: 0 } }} dangerouslySetInnerHTML={{ __html: data.content.mobilite.text }} />
-            </Box>
-          </Box> */}
-
-        {/**
-         * BLOC LOGEMENT
-         */}
-        {/* <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", my: { xs: fr.spacing("3v"), md: 0 } }}>
-                Le logement
-              </Typography>
-            </Box>
-            <Box sx={{ flex: 1 }}></Box>
-          </Box>
-
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("4w") } }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.logement.text }} />
-            </Box>
-
-            <Box sx={{ flex: 1, alignItems: "center", justifyContent: "center", alignContent: "center" }}>
-              <Box
-                sx={{
-                  display: "grid",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  alignContent: "center",
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                  gap: fr.spacing("2w"),
-                }}
-              >
-                {(data.content.logement.loyers as { type?: string; price_range?: string }[]).map((appartement) => (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      textAlign: "center",
-                      width: "100%",
-                      maxWidth: "250px",
-                      p: fr.spacing("3w"),
-                      backgroundColor: "white",
-                      borderRadius: "5px",
-                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                    }}
-                    key={appartement.type}
-                  >
-                    <Image alt="" style={{ margin: "auto" }} src={`/images/seo/logement/${appartements[appartement.type]}`} width="90" height="90" />
-                    <Typography sx={{ fontWeight: "bold", fontSize: "20px", mt: fr.spacing("1w") }}>{appartement.type} à louer</Typography>
-                    <Typography
-                      sx={{
-                        lineHeight: "2.5rem",
-                        fontWeight: "bold",
-                        fontSize: "2rem",
-                        mt: fr.spacing("3v"),
-                        color: fr.colors.decisions.text.default.info.default,
-                      }}
-                    >
-                      {appartement.price_range}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          </Box>
-        </Box> */}
-
-        {/**
-         * BLOC LOISIRS
-         */}
-        {/* <Box sx={{ mb: fr.spacing("4w"), px: { xs: fr.spacing("2w"), md: fr.spacing("4w") } }}>
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
-            Les loisirs <span style={{ color: "#161616" }}>à {data.ville}</span>
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
-          <Box sx={{ mt: fr.spacing("1w"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4w") }}>
+        <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
+          <Box sx={{ mb: fr.spacing("6v") }}>
+            <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+              Où trouver une alternance <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
+            </Typography>
             <Box
-              sx={{
-                flex: 1,
-              }}
-            >
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: { xs: "repeat(2, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-                  gap: fr.spacing("2w"),
-                }}
-              >
-                {(data.content.loisirs.types as { type?: string; label?: string }[]).map((loisir) => (
-                  <Box
-                    key={loisir.type}
-                    sx={{
-                      textAlign: "center",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: "146px",
-                      height: "146px",
-                      padding: fr.spacing("3v"),
-                      backgroundColor: "white",
-                      borderRadius: "5px",
-                      boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                    }}
-                  >
-                    <Image alt="" src={`/images/seo/loisirs/${loisirs[loisir.type]}`} width="50" height={50} />
-                    <Typography sx={{ mt: fr.spacing("1v"), fontWeight: "bold", color: "#161616" }}>{loisir.label}</Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.loisirs.text }} />
-            </Box> 
+              component="hr"
+              sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
+            />
+            <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+              Les offres par ville :
+            </Typography>
           </Box>
-        </Box>*/}
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              //alignItems: "stretch",
+              mt: fr.spacing("4v"),
+            }}
+          >
+            {(data.villes as { nom: string; job_count: number; geopoint: { lat: number; long: number } }[]).map((ville) => (
+              <Link
+                href={`/recherche?romes=${data.romes.join()}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false`}
+                style={{ background: "transparent" }}
+                aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}
+              >
+                <Box
+                  sx={{
+                    ...boxCss,
+                    minWidth: "220px",
+                    width: "100%",
+                    maxWidth: "100%",
+                    paddingY: fr.spacing("8v"),
+                    paddingX: fr.spacing("6v"),
+                    ":hover": {
+                      backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  <Box sx={{ width: "100%", textAlign: "center" }}>
+                    <Image alt="" aria-hidden="true" src={`/images/seo/metier/france.svg`} width={60} height={60} />
+                  </Box>
+                  <Box sx={{ width: "100%", textAlign: "left" }}>
+                    <Typography sx={{ mt: fr.spacing("1v"), fontSize: "40px", fontWeight: "bold", lineHeight: "48px", color: fr.colors.decisions.text.default.info.default }}>
+                      {ville.nom}
+                    </Typography>
+                    <Box sx={{ width: "100%", display: "flex", alignItems: "center", flexDirection: "row" }}>
+                      <Typography sx={{ flex: 1, mt: fr.spacing("2v"), fontSize: "22px", fontWeight: "bold", lineHeight: "24px", color: "#161616" }}>
+                        {ville.job_count} offres
+                      </Typography>
+                      <ArrowRightLine
+                        sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.hover, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
+                      />
+                    </Box>
+                  </Box>
+                </Box>
+              </Link>
+            ))}
+          </Box>
+        </Box>
       </DefaultContainer>
     </Box>
   )
