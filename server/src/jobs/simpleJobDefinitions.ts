@@ -75,6 +75,8 @@ import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
+import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
+import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -407,6 +409,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Remplit le champ lba_url dans la collection jobs_partners",
   },
   {
+    fct: cancelRemovedJobsPartners,
+    description: "Annule les offres présentes dans jobs_partners qui ne sont plus présentes dans le flux source (ex: recruteurs LBA)",
+  },
+  {
     fct: processRecruteursLbaRawToEnd,
     description: "Import des recruteurs LBA de la collection raw à la collection jobs_partners",
   },
@@ -429,5 +435,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: validateDomaineMetiers,
     description: "Validation des données domainesmetiers",
+  },
+  {
+    fct: fillEntrepriseEngagementJobsPartners,
+    description: "Mise à jour des handi-engagement des offres actives",
   },
 ]
