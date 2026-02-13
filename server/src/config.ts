@@ -172,6 +172,11 @@ const config = {
   mistralai: {
     apiKey: env.get("MISTALAI_API_KEY").required().asString(),
   },
+  inserjeunes: {
+    apiKey: env.get("IJ_MEN_API_KEY").required().asString(),
+    clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),
+    clientSecret: env.get("IJ_MEN_CLIENT_SECRET").required().asString(),
+  },
 }
 
 export default config

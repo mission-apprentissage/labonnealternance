@@ -69,7 +69,10 @@ paths = [
   '''\.spec\.ts$''',
   '''\.test\.tsx$''',
   '''\.spec\.tsx$''',
+  '''\.fixture\.ts$''',
   '''tests/''',
+  '''docker-compose\.production\.yml''',
+  '''seed\.sh''',
 ]
 
 regexes = [
