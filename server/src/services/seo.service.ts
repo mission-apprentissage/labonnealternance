@@ -1,6 +1,7 @@
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoVilleModel from "shared/models/seoVille.model"
+import seoMetierModel from "shared/models/seoMetier.model"
 
 import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
@@ -106,4 +107,9 @@ export const updateSeoVilleActivities = async () => {
       }
     )
   }
+}
+
+export const getSeoMetier = async ({ metier }: { metier: string }) => {
+  const seoMetier = await getDbCollection(seoMetierModel.collectionName).findOne({ slug: metier })
+  return seoMetier
 }

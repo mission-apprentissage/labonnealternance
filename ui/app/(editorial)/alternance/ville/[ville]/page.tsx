@@ -18,13 +18,13 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
 
   if (!data) {
     return {
-      title: "Alternance | La bonne alternance",
+      title: "Alternance dans les grandes villes | La bonne alternance",
       description: "Trouvez votre contrat d'apprentissage",
     }
   }
 
   return {
-    title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations 2025`,
+    title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations  ${new Date().getFullYear()}`,
     description: `${data.job_count + data.recruteur_count} offres d'alternance à ${data.ville}. Salaire moyen 1050€. BTS, Licence Pro, Master. Trouvez votre contrat d'apprentissage en ${data.region}.`,
   }
 }
@@ -75,7 +75,8 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             <Box>
               <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
                 Trouver une alternance
-                <Typography component="h1" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
+                <br />
+                <Typography variant="h1" component="span" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
                   <span style={{ color: "#161616" }}>à </span>
                   {data.ville}
                 </Typography>
