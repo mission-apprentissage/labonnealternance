@@ -239,7 +239,6 @@ jobs:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      VAULT_PWD: ${{ secrets.VAULT_PWD }}
       OPENPGP_PRIVATE_SUBKEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
       TOKEN_MNA_SHARED: ${{ secrets.TOKEN_MNA_SHARED }}
 
@@ -256,7 +255,6 @@ jobs:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      VAULT_PWD: ${{ secrets.VAULT_PWD }}
       OPENPGP_PRIVATE_SUBKEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
       TOKEN_MNA_SHARED: ${{ secrets.TOKEN_MNA_SHARED }}
 
