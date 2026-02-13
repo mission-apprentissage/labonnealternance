@@ -245,7 +245,6 @@ Scanner les secrets dans le repo
   yarn gitleaks:check
 ```
 
-
 #### SOPS
 
 Édition des variables d'environnement.
