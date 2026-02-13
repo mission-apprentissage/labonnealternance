@@ -245,12 +245,6 @@ Scanner les secrets dans le repo
   yarn gitleaks:check
 ```
 
-<<<<<<< Updated upstream
-Pour ajouter une exception, éditer le fichier `.gitleaks.toml` et ajouter le chemin ou le pattern regex dans la section `[allowlist]`.
-
-#### Vault
-
-=======
 
 #### SOPS
 

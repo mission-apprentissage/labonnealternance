@@ -27,6 +27,7 @@ import etablissementsRecruteurRoute from "./controllers/etablissementRecruteur.c
 import formationsRegionV1Route from "./controllers/formationRegion.controller"
 import formationsV1Route from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
+import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
@@ -143,6 +144,7 @@ export async function bind(app: Server) {
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       seoRouteController(typedSubApp)
+      inserjeunesRoute(typedSubApp)
 
       /**
        * Admin / Auth
