@@ -32,7 +32,7 @@ import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.servi
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { getUserWithAccountByEmail } from "./userWithAccount.service"
+import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -44,6 +44,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { logger } from "@/common/logger"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -492,6 +493,20 @@ export const entrepriseOnboardingWorkflow = {
       },
       managingUser._id.toString()
     )
+
+    if (!isUserEmailChecked(managingUser)) {
+      try {
+        await sendUserConfirmationEmail(managingUser)
+      } catch (error) {
+        logger.error("Failed to send user confirmation email after enterprise account creation", {
+          userId: managingUser._id,
+          email: managingUser.email,
+          error,
+        })
+        sentryCaptureException(error, { extra: { userId: managingUser._id, email: managingUser.email } })
+      }
+    }
+
     return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({

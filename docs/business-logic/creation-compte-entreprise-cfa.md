@@ -86,7 +86,8 @@ Utilisateur arrive sur /espace-pro/creation/entreprise
           v
   Compte cree !
           |
-          +--[Entreprise]--> Cree sa premiere offre --> recoit email de confirmation
+     +--[Entreprise]--> Recoit email de confirmation immediatement
+     |                  puis peut creer sa premiere offre
           |
           +--[CFA auto-valide]--> recoit email de confirmation immediatement
           |
@@ -468,6 +469,10 @@ entrepriseOnboardingWorkflow.create()
 +-- createFormulaire()
 |   +-- MongoDB: recruiters.insertOne
 |
++-- sendUserConfirmationEmail() [non bloquant]
+|   +-- Email de confirmation envoye des la creation du compte entreprise
+|   +-- En cas d'echec SMTP: log + Sentry, la creation de compte continue
+|
 +-- generateDepotSimplifieToken(user, establishment_id)
 |   +-- Genere un JWT pour le depot simplifie d'offres
 |
@@ -585,7 +590,11 @@ Quand l'auto-validation est declenchee, l'evenement de role est enregistre avec 
 ```
 1. POST /etablissement/creation
    +-- Compte cree, role = GRANTED (validation_type = AUTO)
-   +-- Aucun email envoye a ce stade
+   +-- sendUserConfirmationEmail()
+   |   Template : mail-confirmation-email.mjml.ejs
+   |   Objet : "Confirmez votre adresse mail"
+   |   Contenu : lien magic link de confirmation (validite 30 jours)
+   |   Note : envoi non bloquant (echec SMTP journalise, creation conservee)
    +-- Redirection vers /creation/offre (creation 1ere offre)
 
 2. Creation de la premiere offre
@@ -595,11 +604,13 @@ Quand l'auto-validation est declenchee, l'evenement de role est enregistre avec 
    |   Contenu : details de l'offre + lien magic link de confirmation
    |   Condition : entreprise VALIDE + 1 seule offre + non delegue
    |
-   +-- [OU, si plusieurs offres ou delegue]
-       sendUserConfirmationEmail()
-       Template : mail-confirmation-email.mjml.ejs
-       Objet : "Confirmez votre adresse mail"
-       Contenu : lien magic link de confirmation (validite 30 jours)
+      +-- [OU, si plusieurs offres ou delegue]
+         sendUserConfirmationEmail()
+         Template : mail-confirmation-email.mjml.ejs
+         Objet : "Confirmez votre adresse mail"
+         Contenu : lien magic link de confirmation (validite 30 jours)
+      +-- Remarque : un second email de confirmation peut etre envoye
+         si l'utilisateur n'a pas encore confirme son adresse
 
 3. Clic sur le lien de confirmation --> POST /etablissement/validation
    +-- isGrantedAndAutoValidatedRole() verifie que validation_type = AUTO
@@ -628,7 +639,11 @@ L'utilisateur est mis en attente si aucune des conditions d'auto-validation n'es
 ```
 1. POST /etablissement/creation
    +-- Compte cree, role = AWAITING_VALIDATION
-   +-- Aucun email envoye a ce stade
+   +-- sendUserConfirmationEmail()
+   |   Template : mail-confirmation-email.mjml.ejs
+   |   Objet : "Confirmez votre adresse mail"
+   |   Contenu : lien magic link de confirmation (validite 30 jours)
+   |   Note : envoi non bloquant (echec SMTP journalise, creation conservee)
    +-- Redirection vers /creation/offre (creation 1ere offre)
 
 2. Creation de la premiere offre
@@ -770,17 +785,17 @@ opcoReminderJob()
 
 ### Tableau recapitulatif des emails
 
-| Email                   | Template                                         | Objet                                 | Destinataire      | Declencheur                                                                                |
-| ----------------------- | ------------------------------------------------ | ------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------ |
-| Confirmation email      | `mail-confirmation-email.mjml.ejs`               | Confirmez votre adresse mail          | Utilisateur       | CFA auto-valide (immediat) ou fallback entreprise                                          |
-| Confirmation 1ere offre | `mail-nouvelle-offre-depot-simplifie.mjml.ejs`   | Confirmez votre adresse mail          | Utilisateur       | ENTREPRISE : creation 1ere offre (non delegue)                                             |
-| Bienvenue               | `mail-bienvenue.mjml.ejs`                        | Bienvenue sur La bonne alternance     | Utilisateur       | Clic lien confirmation + role GRANTED + auto-valide                                        |
-| Bienvenue (sans offre)  | `mail-bienvenue-entreprise-sans-offre.mjml.ejs`  | Bienvenue sur La bonne alternance     | Utilisateur       | ENTREPRISE sans offres + clic lien confirmation                                            |
-| Engagement handicap     | `mail-sensibilisation-handi-engagement.mjml.ejs` | Engagez-vous en faveur de l'emploi... | Utilisateur       | ENTREPRISE uniquement, apres validation email, si auto-valide et pas d'engagement existant |
-| Compte desactive        | `mail-compte-desactive.mjml.ejs`                 | Mise a jour de votre compte...        | Utilisateur       | Admin/OPCO desactive le compte                                                             |
-| Expiration offre        | `mail-expiration-offres.mjml.ejs`                | Votre offre expire dans X jours       | Utilisateur       | Cron J-7 et J-1                                                                            |
-| Relance OPCO            | `mail-relance-opco.mjml.ejs`                     | Nouveaux comptes a valider            | Utilisateurs OPCO | Cron periodique                                                                            |
-| Connexion               | `mail-connexion.mjml.ejs`                        | Lien de connexion                     | Utilisateur       | Demande de connexion via /login/magiclink                                                  |
+| Email                   | Template                                         | Objet                                 | Destinataire      | Declencheur                                                                                      |
+| ----------------------- | ------------------------------------------------ | ------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------ |
+| Confirmation email      | `mail-confirmation-email.mjml.ejs`               | Confirmez votre adresse mail          | Utilisateur       | ENTREPRISE: immediat a la creation du compte, CFA auto-valide (immediat), ou fallback entreprise |
+| Confirmation 1ere offre | `mail-nouvelle-offre-depot-simplifie.mjml.ejs`   | Confirmez votre adresse mail          | Utilisateur       | ENTREPRISE : creation 1ere offre (non delegue)                                                   |
+| Bienvenue               | `mail-bienvenue.mjml.ejs`                        | Bienvenue sur La bonne alternance     | Utilisateur       | Clic lien confirmation + role GRANTED + auto-valide                                              |
+| Bienvenue (sans offre)  | `mail-bienvenue-entreprise-sans-offre.mjml.ejs`  | Bienvenue sur La bonne alternance     | Utilisateur       | ENTREPRISE sans offres + clic lien confirmation                                                  |
+| Engagement handicap     | `mail-sensibilisation-handi-engagement.mjml.ejs` | Engagez-vous en faveur de l'emploi... | Utilisateur       | ENTREPRISE uniquement, apres validation email, si auto-valide et pas d'engagement existant       |
+| Compte desactive        | `mail-compte-desactive.mjml.ejs`                 | Mise a jour de votre compte...        | Utilisateur       | Admin/OPCO desactive le compte                                                                   |
+| Expiration offre        | `mail-expiration-offres.mjml.ejs`                | Votre offre expire dans X jours       | Utilisateur       | Cron J-7 et J-1                                                                                  |
+| Relance OPCO            | `mail-relance-opco.mjml.ejs`                     | Nouveaux comptes a valider            | Utilisateurs OPCO | Cron periodique                                                                                  |
+| Connexion               | `mail-connexion.mjml.ejs`                        | Lien de connexion                     | Utilisateur       | Demande de connexion via /login/magiclink                                                        |
 
 ---
 
@@ -847,24 +862,6 @@ Template : mail-connexion.mjml.ejs
 Objet : "Lien de connexion"
 Contenu : nom/prenom, lien magic link de connexion (validite 15 min)
 ```
-
----
-
-## Problemes connus
-
-### Comptes orphelins (entreprise)
-
-**Situation** : Lors de la creation d'un compte entreprise, si l'utilisateur quitte le parcours avant de creer sa premiere offre (par exemple, il ferme le navigateur sur la page `/creation/offre`), aucun email de confirmation n'est envoye.
-
-**Consequence** : Le compte existe en base de donnees mais l'utilisateur n'a jamais recu d'email. Il ne peut pas se connecter car son email n'est pas verifie.
-
-**Cause technique** : L'email de confirmation (`sendEmailConfirmationEntreprise()`) est envoye uniquement a la creation de la premiere offre, pas a la creation du compte.
-
-**Impact** : L'utilisateur doit creer un nouveau compte ou contacter le support. Le compte orphelin reste en base.
-
-**Piste de resolution** : Envoyer `sendUserConfirmationEmail()` directement dans `entrepriseOnboardingWorkflow.create()` apres la creation du compte, en plus de l'email envoye a la creation de l'offre.
-
----
 
 ## Reference technique
 
