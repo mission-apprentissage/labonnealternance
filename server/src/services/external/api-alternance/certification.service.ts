@@ -4,6 +4,7 @@ import axios from "axios"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 import type { CertificationAPIApprentissage } from "@/services/queryValidator.service.types"
+import { expandRomesV3toV4 } from "@/services/rome.service"
 
 const getFirstCertificationFromAPIApprentissage = async (rncp: string, throwOnError: boolean): Promise<CertificationAPIApprentissage | null> => {
   try {
@@ -57,5 +58,7 @@ export const getRomesFromRncp = async (rncp: string, throwOnError: boolean = fal
     return null
   }
 
-  return activeCertification.domaines.rome.rncp.map((x) => x.code)
+  const romesV3 = activeCertification.domaines.rome.rncp.map((x) => x.code)
+  const allRomes = await expandRomesV3toV4(romesV3)
+  return allRomes
 }

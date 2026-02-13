@@ -8,7 +8,6 @@ export const up = async () => {
   const filepath = getStaticFilePath("referentiel/labonnealternance.referentielromes_classification_new_21.01.26.csv")
   const content = (await fs.readFile(filepath)).toString()
   const parsedCsv = await parseCsvContent(content, { delimiter: ";" })
-  console.log(parsedCsv)
   const data = parsedCsv as {
     code: string
     sousDomaine: string
