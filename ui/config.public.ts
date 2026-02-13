@@ -9,7 +9,6 @@ interface PublicConfig {
     siteId: string
     jsTrackerFile: string
   }
-  inserJeuneApiUrl: string
   apiEndpoint: string
   version: string
   plausibleDomain: string
@@ -33,7 +32,6 @@ function getProductionPublicConfig(): PublicConfig {
       siteId: "7",
       jsTrackerFile: "js/container_s4n03ZE1.js",
     },
-    inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
     plausibleDomain: "labonnealternance.apprentissage.beta.gouv.fr",
@@ -54,7 +52,6 @@ function getRecettePublicConfig(): PublicConfig {
       siteId: "10",
       jsTrackerFile: "js/container_6EvvnT5g.js",
     },
-    inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
@@ -76,7 +73,6 @@ function getPentestPublicConfig(): PublicConfig {
       siteId: "10",
       jsTrackerFile: "js/container_6EvvnT5g.js",
     },
-    inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
@@ -105,7 +101,6 @@ function getPreviewPublicConfig(): PublicConfig {
       siteId: "",
       jsTrackerFile: "",
     },
-    inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
     version,
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
@@ -129,7 +124,6 @@ function getLocalPublicConfig(): PublicConfig {
       siteId: "",
       jsTrackerFile: "",
     },
-    inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     version: getVersion(),
     plausibleDomain: "labonnealternance-recette2.apprentissage.beta.gouv.fr",
     disableRobots: true,
