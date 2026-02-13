@@ -39,10 +39,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          persist-credentials: false
+          submodules: recursive
           fetch-depth: 0
-          persist-credentials: true
 
       - uses: actions/setup-node@v6
         with:
@@ -89,7 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.TOKEN_MNA_SHARED }}
@@ -134,14 +136,17 @@ jobs:
           CI: true
 
   build-ui-pentest:
+    if: false # disabled for now
     needs: ["release"]
-    if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
+    # if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          submodules: true
 
       - uses: actions/setup-node@v6
         with:
@@ -243,6 +248,7 @@ jobs:
       TOKEN_MNA_SHARED: ${{ secrets.TOKEN_MNA_SHARED }}
 
   deploy-pentest:
+    if: false # disabled for now
     concurrency:
       group: "deploy-pentest-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release", "build-ui-pentest"]
@@ -263,10 +269,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
+          token: ${{ secrets.TOKEN_MNA_SHARED }}
+          persist-credentials: false
+          submodules: recursive
           fetch-depth: 0
-          persist-credentials: true
+
+      - name: Initialize the GnuPG keyring
+        run: |
+          echo -n "$OPENPGP_KEY" | gpg --import
+        env:
+          OPENPGP_KEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
+
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
 
       - uses: actions/setup-node@v6
         with:
