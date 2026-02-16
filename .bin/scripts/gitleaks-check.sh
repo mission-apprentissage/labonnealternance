@@ -8,7 +8,7 @@ yarn run gitleaks-secret-scanner --diff-mode all -f json -r report.json || true
 TMP_FINGERPRINTS="gitleaks-fingerprints-tmp.txt"
 
 echo "generating fingerprints"
-cat report.json |jq '.[] | .File + ":" + .RuleID + ":" + .Secret'|cut -d '"' -f2|sort|uniq > $TMP_FINGERPRINTS
+cat report.json |jq -r '.[] | .File + ":" + .RuleID + ":" + .Secret'|sort|uniq > $TMP_FINGERPRINTS
 
 echo "deleting report"
 rm report.json
