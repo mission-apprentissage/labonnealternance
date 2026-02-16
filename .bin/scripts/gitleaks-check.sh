@@ -14,15 +14,14 @@ echo "deleting report"
 rm report.json
 
 HAS_ERROR="0"
-# diff -y gitleaks-fingerprints-baseline.txt $TMP_FINGERPRINTS || HAS_ERROR="1"
 
-while read line; do
-  grepResult=$(grep "^$line$" gitleaks-fingerprints-baseline.txt || true)
+while read -r line; do
+  grepResult=$(grep -F "$line" gitleaks-fingerprints-baseline.txt || true)
   if [ -z "$grepResult" ] ; then
     HAS_ERROR="1"
     echo "missing secret: $line"
   fi
-done < $TMP_FINGERPRINTS
+done < "$TMP_FINGERPRINTS"
 
 rm $TMP_FINGERPRINTS
 if [ $HAS_ERROR = "1" ] ; then
