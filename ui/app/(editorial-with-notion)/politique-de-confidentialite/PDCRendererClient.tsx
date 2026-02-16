@@ -98,7 +98,7 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                     control={
                       <Checkbox
                         aria-labelledby="follow-checkbox"
-                        aria-describedby="follow-info"
+                        aria-describedby={!hasConsent ? "follow-info" : undefined}
                         onChange={(event) => {
                           changeMatomoOptout({
                             checked: event.target.checked,
