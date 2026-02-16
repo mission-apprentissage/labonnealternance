@@ -248,7 +248,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
           </Box>
         </Box>
       </Box>
-      {IJStats.isFetched && <StatsInserJeunes stats={IJStats.data} />}
+      {IJStats.isFetched && IJStats.data ? <StatsInserJeunes stats={IJStats.data} /> : null}
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur l'établissement

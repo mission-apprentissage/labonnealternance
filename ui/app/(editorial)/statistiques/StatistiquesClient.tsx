@@ -71,10 +71,28 @@ export default function StatistiquesClient() {
 
         <Box sx={{ mt: fr.spacing("12v") }}>
           <Box sx={{ px: { xs: 0, sm: 4 } }}>
-            <Tabs value={value} onChange={handleChange} aria-label="statistiques tabs">
-              <Tab sx={tabSx} label="Exposition" />
-              <Tab sx={tabSx} label="Mise en relation" />
-              <Tab sx={tabSx} label="Conversion" />
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="Onglets de choix des écrans statistiques"
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              slotProps={{
+                indicator: {
+                  sx: {
+                    top: 0, // ← Indicateur en haut
+                    bottom: "auto",
+                    height: "3px",
+                    backgroundColor: "primary.main",
+                  },
+                },
+              }}
+              sx={tabSx}
+            >
+              <Tab disableRipple label="Exposition" />
+              <Tab disableRipple label="Mise en relation" />
+              <Tab disableRipple label="Conversion" />
             </Tabs>
           </Box>
 

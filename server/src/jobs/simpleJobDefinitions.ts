@@ -75,6 +75,7 @@ import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
+import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
@@ -434,5 +435,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: validateDomaineMetiers,
     description: "Validation des données domainesmetiers",
+  },
+  {
+    fct: fillEntrepriseEngagementJobsPartners,
+    description: "Mise à jour des handi-engagement des offres actives",
   },
 ]
