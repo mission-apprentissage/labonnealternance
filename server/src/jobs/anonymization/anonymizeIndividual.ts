@@ -8,6 +8,7 @@ import { anonymizeAppointments } from "./anonymizeAppointments"
 import { logger } from "@/common/logger"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 
 const anonimizeUserWithAccount = (_id: ObjectId) =>
   getDbCollection("userswithaccounts")
@@ -28,8 +29,11 @@ const anonimizeUserWithAccount = (_id: ObjectId) =>
     ])
     .toArray()
 
-const anonimizeRecruiterByUserId = (userId: ObjectId) =>
-  getDbCollection("recruiters")
+const anonimizeRecruiterByUserId = (userId: ObjectId) => {
+  if (config.featureFlips.deletedRecruitersCollection) {
+    return
+  }
+  return getDbCollection("recruiters")
     .aggregate([
       {
         $match: { managed_by: userId },
@@ -61,8 +65,14 @@ const anonimizeRecruiterByUserId = (userId: ObjectId) =>
       },
     ])
     .toArray()
+}
 
-const deleteRecruiter = (query) => getDbCollection("recruiters").deleteMany(query)
+const deleteRecruiter = (query) => {
+  if (config.featureFlips.deletedRecruitersCollection) {
+    return
+  }
+  return getDbCollection("recruiters").deleteMany(query)
+}
 const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").deleteMany(query)
 
 const anonymizeApplication = async (_id: ObjectId) => {

@@ -4,7 +4,6 @@ import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamIn
 
 export async function importFichesRncp() {
   const filepath = getStaticFilePath("referentiel/export_fiches_RNCP_V4_1_2026-01-21.xml")
-  console.log({ filepath })
   const fileStream = fs.createReadStream(filepath)
   await importFromStreamInXml({
     stream: fileStream,

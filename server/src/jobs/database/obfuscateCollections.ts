@@ -185,6 +185,9 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
 const obfuscateRecruiter = async () => {
+  if (config.featureFlips.deletedRecruitersCollection) {
+    return
+  }
   logger.info(`obfuscating recruiters`)
 
   const remainingUsers = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })

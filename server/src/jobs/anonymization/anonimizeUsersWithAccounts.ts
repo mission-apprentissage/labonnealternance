@@ -8,6 +8,7 @@ import { ObjectId } from "mongodb"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 
 const recruiterProjection: Partial<Record<keyof IRecruiter, 1>> = {
   establishment_id: 1,
@@ -54,25 +55,31 @@ const anonymize = async () => {
       },
     ])
     .toArray()
-  await getDbCollection("recruiters")
-    .aggregate([
-      {
-        $match: recruiterQuery,
-      },
-      {
-        $project: recruiterProjection,
-      },
-      {
-        $merge: anonymizedRecruitersModel.collectionName,
-      },
-    ])
-    .toArray()
+  if (config.featureFlips.deletedRecruitersCollection) {
+    await getDbCollection("recruiters")
+      .aggregate([
+        {
+          $match: recruiterQuery,
+        },
+        {
+          $project: recruiterProjection,
+        },
+        {
+          $merge: anonymizedRecruitersModel.collectionName,
+        },
+      ])
+      .toArray()
+  }
 
   await getDbCollection("rolemanagements").deleteMany({
     user_id: { $in: userIds.map((id) => new ObjectId(id)) },
   })
 
-  const { deletedCount: recruiterCount } = await getDbCollection("recruiters").deleteMany(recruiterQuery)
+  let recruiterCount = 0
+  if (config.featureFlips.deletedRecruitersCollection) {
+    const { deletedCount } = await getDbCollection("recruiters").deleteMany(recruiterQuery)
+    recruiterCount = deletedCount
+  }
   const { deletedCount: userWithAccountCount } = await getDbCollection("userswithaccounts").deleteMany(userWithAccountQuery)
   return { userWithAccountCount, recruiterCount }
 }
@@ -133,7 +140,7 @@ export async function anonimizeUsersWithAccounts() {
   logger.info("[START] Anonymisation des users de plus de 2 ans")
   try {
     const { recruiterCount, userWithAccountCount } = await anonymize()
-    const recruiterOrphelins = await anonymizeRecruitersOrphelins()
+    const recruiterOrphelins = config.featureFlips.deletedRecruitersCollection ? 0 : await anonymizeRecruitersOrphelins()
 
     await notifyToSlack({
       subject: "ANONYMISATION DES USERWITHACCOUNT et RECRUITERS",

@@ -1,33 +1,30 @@
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
-import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
-import type { zRoutes } from "shared/routes/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import type { CreationBody, CreationResponse } from "@tests/use-cases/entrepriseUseCase"
+import { entrepriseUseCase } from "@tests/use-cases/entrepriseUseCase"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 
-describe("POST /etablissement/creation", () => {
+describe.each([true, false])("POST /etablissement/creation - feature flip FEATURE_FLIP_DELETED_RECRUITERS_COLLECTION = %s", (deletedRecruitersCollection) => {
+  config.featureFlips.deletedRecruitersCollection = deletedRecruitersCollection
+
   useMongo()
   const httpClient = useServer()
 
   beforeEach(async () => {
-    const mockEntreprise = nock("https://entreprise.api.gouv.fr/v3/insee")
-      .persist()
-      .get(new RegExp("/sirene/etablissements/diffusibles/", "g"))
-      .reply(200, apiEntrepriseEtablissementFixture.dinum)
-
     const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+", "g")).reply(200, apiReferentielCatalogueFixture)
 
     return async () => {
-      mockEntreprise.persist(false)
       mockCfa.persist(false)
+      await getDbCollection("jobs_partners").deleteMany()
       await getDbCollection("recruiters").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()
@@ -35,9 +32,6 @@ describe("POST /etablissement/creation", () => {
       await getDbCollection("userswithaccounts").deleteMany()
     }
   })
-
-  type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
-  type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
 
   const defaultCreationEntreprisePayload = {
     email: "email@email.com",
@@ -62,12 +56,7 @@ describe("POST /etablissement/creation", () => {
     establishment_siret: "52151363000017",
   } as const
 
-  const callCreation = (body: CreationBody) =>
-    httpClient().inject({
-      method: "POST",
-      path: "/api/etablissement/creation",
-      body,
-    })
+  const callCreation = (body: CreationBody) => entrepriseUseCase.create(httpClient, body)
 
   describe("Création d'entreprise", () => {
     it("Vérifie que le recruteur est créé avec une offre", async () => {

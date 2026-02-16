@@ -831,12 +831,23 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
   return filteredRome
 }
 
-const validateFieldsFromReferentielRome = async (job) => {
+const validateFieldsFromReferentielRome = async (job: IJobCreate | Partial<IJob>) => {
   const { competences_rome, rome_code, rome_appellation_label, rome_label } = job
-  const romeDetails = await getRomeDetailsFromDB(rome_code[0])
+  const firstRomeCode = rome_code?.at(0)
+  const romeDetails = firstRomeCode ? await getRomeDetailsFromDB(firstRomeCode) : null
 
   if (!romeDetails) {
     throw internal("unexpected: rome details not found")
+  }
+
+  if (!rome_appellation_label) {
+    throw new Error("rome_appellation_label est vide")
+  }
+  if (!rome_label) {
+    throw new Error("rome_label est vide")
+  }
+  if (!competences_rome) {
+    throw new Error("competences_rome est vide")
   }
 
   const {

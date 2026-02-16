@@ -1,12 +1,13 @@
-import { OPCOS_LABEL } from "shared/constants/index"
-import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
-import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { AccessEntityType, JOB_STATUS } from "shared/models/index"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 
+import dayjs from "shared/helpers/dayjs"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
+import type { OfferCreationResponse } from "@tests/use-cases/entrepriseUseCase"
+import { entrepriseUseCase } from "@tests/use-cases/entrepriseUseCase"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 
@@ -14,26 +15,60 @@ describe("formulaire.controller", () => {
   useMongo()
   const httpClient = useServer()
 
+  const romeCode = "M1602"
+  const referentielRome = generateReferentielRome()
+  referentielRome.rome.code_rome = romeCode
+
+  beforeEach(async () => {
+    await getDbCollection("referentielromes").insertOne(referentielRome)
+
+    return async () => {
+      await getDbCollection("referentielromes").deleteMany({})
+    }
+  })
+
+  it("crée une offre", async () => {
+    // given
+    const { cookies: entrepriseCookies, formulaire } = await entrepriseUseCase.getConnectedUser(httpClient)
+    // when
+    const offerResponse = await entrepriseUseCase.createOffer(httpClient, {
+      establishment_id: formulaire!.establishment_id,
+      cookies: entrepriseCookies,
+      job: {
+        job_start_date: dayjs().add(1, "day").toDate(),
+        rome_code: [romeCode],
+        rome_appellation_label: referentielRome.appellations[0].libelle,
+        rome_label: referentielRome.rome.intitule,
+        competences_rome: referentielRome.competences,
+        job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
+        job_count: 1,
+      },
+    })
+
+    // then
+    expect.soft(offerResponse.statusCode).toBe(200)
+  })
+
   it("met à jour une offre active", async () => {
     // given
-    const opco = OPCOS_LABEL.CONSTRUCTYS
-    const entreprise = generateEntrepriseFixture()
-    const referentielRome = generateReferentielRome()
-    const recruiter = generateRecruiterFixture({
-      establishment_siret: entreprise.siret,
-      opco,
-      jobs: [
-        generateJobFixture({
-          job_status: JOB_STATUS.ACTIVE,
-          competences_rome: referentielRome.competences,
-          rome_label: referentielRome.rome.intitule,
-          rome_appellation_label: referentielRome.appellations[0].libelle,
-        }),
-      ],
+    const { cookies: entrepriseCookies, formulaire } = await entrepriseUseCase.getConnectedUser(httpClient)
+    const opco = formulaire!.opco!
+
+    const offerResponse = await entrepriseUseCase.createOffer(httpClient, {
+      establishment_id: formulaire!.establishment_id,
+      cookies: entrepriseCookies,
+      job: {
+        job_start_date: dayjs().add(1, "day").toDate(),
+        rome_code: [romeCode],
+        rome_appellation_label: referentielRome.appellations[0].libelle,
+        rome_label: referentielRome.rome.intitule,
+        competences_rome: referentielRome.competences,
+        job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
+        job_count: 1,
+      },
     })
-    await getDbCollection("referentielromes").insertOne(referentielRome)
-    await getDbCollection("entreprises").insertOne(entreprise)
-    await getDbCollection("recruiters").insertOne(recruiter)
+
+    const { recruiter } = offerResponse.json() as OfferCreationResponse
     const { cookies } = await givenAConnectedOpcoUser(
       {},
       {
@@ -61,17 +96,28 @@ describe("formulaire.controller", () => {
     // then
     expect.soft(response.statusCode).toBe(200)
   })
-  it.each([JOB_STATUS.ANNULEE, JOB_STATUS.POURVUE, JOB_STATUS.EN_ATTENTE])("interdit la mise à jour d'une offre au status %s", async (jobStatus) => {
+  it.each([JOB_STATUS.ANNULEE, JOB_STATUS.POURVUE, JOB_STATUS.EN_ATTENTE])("interdit la mise à jour d'une offre au status %s", async (_jobStatus) => {
+    // TODO handle cancel actions, ...
+
     // given
-    const opco = OPCOS_LABEL.CONSTRUCTYS
-    const entreprise = generateEntrepriseFixture()
-    const recruiter = generateRecruiterFixture({
-      establishment_siret: entreprise.siret,
-      opco,
-      jobs: [generateJobFixture({ job_status: jobStatus })],
+    const { cookies: entrepriseCookies, formulaire } = await entrepriseUseCase.getConnectedUser(httpClient)
+    const opco = formulaire!.opco!
+
+    const offerResponse = await entrepriseUseCase.createOffer(httpClient, {
+      establishment_id: formulaire!.establishment_id,
+      cookies: entrepriseCookies,
+      job: {
+        job_start_date: dayjs().add(1, "day").toDate(),
+        rome_code: [romeCode],
+        rome_appellation_label: referentielRome.appellations[0].libelle,
+        rome_label: referentielRome.rome.intitule,
+        competences_rome: referentielRome.competences,
+        job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
+        job_count: 1,
+      },
     })
-    await getDbCollection("entreprises").insertOne(entreprise)
-    await getDbCollection("recruiters").insertOne(recruiter)
+
+    const { recruiter } = offerResponse.json() as OfferCreationResponse
     const { cookies } = await givenAConnectedOpcoUser(
       {},
       {
