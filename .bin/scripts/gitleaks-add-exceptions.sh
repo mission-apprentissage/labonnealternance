@@ -6,7 +6,10 @@ echo "generating report"
 yarn run gitleaks-secret-scanner --diff-mode all -f json -r report.json || true
 
 echo "generating fingerprints"
-cat report.json |jq '.[] | .Fingerprint + ":" + .Secret'|cut -d '"' -f2|sort > gitleaks-fingerprints-baseline.txt
+cat gitleaks-fingerprints-baseline.txt > gitleaks-fingerprints-new.txt
+cat report.json |jq '.[] | .File + ":" + .RuleID + ":" + .Secret'|cut -d '"' -f2 >> gitleaks-fingerprints-new.txt
+cat gitleaks-fingerprints-new.txt|sort|uniq > gitleaks-fingerprints-baseline.txt
+rm gitleaks-fingerprints-new.txt
 
 echo "deleting report"
 rm report.json

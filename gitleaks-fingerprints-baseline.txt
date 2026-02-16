@@ -3,3 +3,5 @@ server/.env.test:private-key:57:-----BEGIN EC PRIVATE KEY-----\\nMIHcAgEBBEIBB+T
 server/.env.test:private-key:58:-----BEGIN EC PRIVATE KEY-----\\nMIHcAgEBBEIBYcYulCksA8Rj6K8U20MM1MX/Wozwvn31omfQy3dKYceI3ZVJIRfU\\nkPNLziGTcOYDgQPgqyaeP8Ofyhr2yEfhP9mgBwYFK4EEACOhgYkDgYYABAAgdOjj\\nBpzF4nh0beCRSP8K6YpRRzZoKYQ5Ul3pxafMIlHrYN9B9029X0opMakX4e/VSft7\\neN0uFP/TocZX71GHTQGnYG1k4tDggagkfDtoThGDZIR/h2spPX3AvI9HOowXZvEV\\nzxw1JkCTm2dtw3csipiQL82tFKi4RjQaGzttlAUuRg==\\n-----END EC PRIVATE KEY-----
 server/.env.test:private-key-content:57:-----BEGIN EC PRIVATE KEY-----
 server/.env.test:private-key-content:58:-----BEGIN EC PRIVATE KEY-----
+server/src/common/apis/inserjeunes/inserjeunes.client.fixture.ts:generic-token-assignment:access_token
+server/src/http/controllers/inserjeunes.controller.test.ts:generic-token-assignment:Token

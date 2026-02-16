@@ -9,7 +9,7 @@ PREV_COMMIT_ID=$(curl https://labonnealternance.apprentissage.beta.gouv.fr/api/h
 
 LBA_SERVER_SENTRY_DSN=$(sops --decrypt --extract '["LBA_SERVER_SENTRY_DSN"]' .infra/env.global.yml)
 LBA_UI_SENTRY_DSN=$(sops --decrypt --extract '["LBA_UI_SENTRY_DSN"]' .infra/env.global.yml)
-SENTRY_AUTH_TOKEN=$(sops --decrypt --extract '["SENTRY_AUTH_TOKEN"]' .infra/env.global.yml)
+export SENTRY_AUTH_TOKEN=$(sops --decrypt --extract '["SENTRY_AUTH_TOKEN"]' .infra/env.global.yml)
 
 export SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}"
 cd "$ROOT_DIR/server"
