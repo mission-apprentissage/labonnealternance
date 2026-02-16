@@ -52,8 +52,7 @@
     "foreach:seq": "yarn workspaces foreach -Av --exclude mna-lba",
     "foreach:parallel": "yarn foreach:seq -pi",
     "foreach:ci": "yarn foreach:seq -p",
-    "knip": "knip",
-    "prepare": "husky"
+    "knip": "knip"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
