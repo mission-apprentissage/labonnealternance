@@ -642,7 +642,10 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
     subject: "Confirmez votre adresse mail",
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true` },
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      },
       last_name: sanitizeTextField(user.last_name),
       first_name: sanitizeTextField(user.first_name),
       confirmation_url: url,
