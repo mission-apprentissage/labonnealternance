@@ -60,29 +60,5 @@ paths = [
   '''\.infra/env.recette\.yml''',
   '''\.infra/env.preview\.yml''',
   '''\.infra/env.local\.yml''',
-
-  # Test environment with test credentials
-  '''server/\.env\.test''',
-
-  # Test files (may contain test tokens/credentials)
-  '''\.test\.ts$''',
-  '''\.spec\.ts$''',
-  '''\.test\.tsx$''',
-  '''\.spec\.tsx$''',
-  '''\.fixture\.ts$''',
-  '''tests/''',
-  '''docker-compose\.production\.yml''',
-  '''seed\.sh''',
-]
-
-regexes = [
-  # Domain patterns (used throughout codebase in URLs/emails)
-  '''apprentissage\.beta\.gouv\.fr''',
-
-  # Variable names that trigger false positives with custom rules
-  '''apiKey["\']?\s*[:=]''',
-  '''ApiKey["\']?\s*[:=]''',
-
-  # Training resource URLs with long IDs
-  '''https://dinum\.didask\.com/.*''',
+  '''gitleaks-fingerprints-baseline.txt''',
 ]

@@ -53,21 +53,17 @@ export default function StatistiquesClient() {
           Statistiques
         </Typography>
 
-        <Typography>
+        <Typography sx={{ mb: fr.spacing("4v") }}>
           La bonne alternance est une startup d'Etat incubée par beta.gouv. Nous développons un service à destination des publics selon les principes du Manifeste de beta.gouv.
           Nous mesurons l'impact de nos actions et publions en toute transparence nos statistiques.
-          <br />
-          <br />
-          Notre méthode de calcul d'impact se base sur 3 étapes :<br />
-          1. Mesurer l'exposition de l'information,
-          <br />
-          2. Mesurer le nombre de mises en relation générées par nos services,
-          <br />
-          3. Mesurer que ces mises en relation se convertissent en recrutements effectifs.
-          <br />
-          <br />
-          Pour visualiser correctement cette page, veuillez désactiver votre bloqueur de publicité
         </Typography>
+        <Typography>Notre méthode de calcul d'impact se base sur 3 étapes :</Typography>
+        <ol>
+          <li>Mesurer l'exposition de l'information,</li>
+          <li>Mesurer le nombre de mises en relation générées par nos services,</li>
+          <li>Mesurer que ces mises en relation se convertissent en recrutements effectifs.</li>
+        </ol>
+        <Typography>Pour visualiser correctement cette page, veuillez désactiver votre bloqueur de publicité</Typography>
 
         <Box sx={{ mt: fr.spacing("12v") }}>
           <Box sx={{ px: { xs: 0, sm: 4 } }}>

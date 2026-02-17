@@ -64,9 +64,10 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
             <Grid size={{ xs: 12, md: 5 }}>
               <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("2v") }}>
                 Politique
-              </Typography>
-              <Typography component="h1" variant="h1" sx={{ display: "block", color: fr.colors.decisions.text.default.info.default, mb: fr.spacing("2v") }}>
-                de confidentialité
+                <br />
+                <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default }} variant="h1">
+                  de confidentialité
+                </Typography>
               </Typography>
               <Box
                 component="hr"
@@ -96,6 +97,8 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                   <FormControlLabel
                     control={
                       <Checkbox
+                        aria-labelledby="follow-checkbox"
+                        aria-describedby={!hasConsent ? "follow-info" : undefined}
                         onChange={(event) => {
                           changeMatomoOptout({
                             checked: event.target.checked,
@@ -104,11 +107,15 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                         checked={hasConsent}
                       />
                     }
-                    label={<Typography component="strong">Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.</Typography>}
+                    label={
+                      <Typography id="follow-checkbox" component="strong">
+                        Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.
+                      </Typography>
+                    }
                     sx={{ mt: fr.spacing("4v") }}
                   />
                   {!hasConsent && (
-                    <Typography sx={{ mt: fr.spacing("4v") }}>
+                    <Typography id="follow-info" sx={{ mt: fr.spacing("4v") }}>
                       Note : si vous nettoyez vos cookies et supprimez le cookie d'exclusion, ou bien si vous changez d'ordinateur et/ou de navigateur, il vous faudra de nouveau
                       effectuer la procédure d'exclusion.
                     </Typography>

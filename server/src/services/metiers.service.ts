@@ -4,10 +4,12 @@ import type { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesM
 import { removeAccents, removeRegexChars } from "shared/utils/index"
 
 import { getRomesFromCatalogue } from "./catalogue.service"
+import { expandRomesV3toV4 } from "./rome.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logger } from "@/common/logger"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheMetierLoading = false
@@ -39,6 +41,9 @@ export const initializeCacheDiplomas = async () => {
     cacheDiplomaLoading = true
     logger.info("initializeCacheDiplomas on first use")
     globalCacheDiplomas = await getDbCollection("diplomesmetiers").find({}).toArray()
+    await asyncForEach(globalCacheDiplomas, async (diploma) => {
+      diploma.codes_romes = await expandRomesV3toV4(diploma.codes_romes)
+    })
     cacheDiplomaLoading = false
     const roughObjSize = JSON.stringify(globalCacheDiplomas).length
     if (config.env === "production") {
