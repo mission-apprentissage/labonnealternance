@@ -6,6 +6,7 @@ import type { IFormationCatalogue, IReferentielCommune } from "shared/models/ind
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
+import { expandRomesV3toV4 } from "./rome.service"
 import config from "@/config.js"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -208,7 +209,8 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
   if (formations?.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
-    return buildEmploiUrl({ params: { romes: rome_codes as string[], lat: latitude, lon: longitude, radius: "60", ...utmParams } })
+    const romes = await expandRomesV3toV4(rome_codes ?? [])
+    return buildEmploiUrl({ params: { romes, lat: latitude, lon: longitude, radius: "60", ...utmParams } })
   }
 
   // Extract postcode and get coordinates if available
@@ -223,6 +225,7 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
 
   romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
+  romes = await expandRomesV3toV4(romes)
 
   // Build url based on formations and coordinates
   if (formations?.length) {
@@ -260,7 +263,7 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
 }
 
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
-  const results: any[] = []
+  const results: ILinks[] = []
   await asyncForEach(params, async (training) => {
     const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training), getLBALink(training)])
     results.push({ id: training.id, lien_prdv, lien_lba })
