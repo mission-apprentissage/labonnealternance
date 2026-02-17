@@ -598,19 +598,8 @@ Quand l'auto-validation est declenchee, l'evenement de role est enregistre avec 
    +-- Redirection vers /creation/offre (creation 1ere offre)
 
 2. Creation de la premiere offre
-   +-- sendEmailConfirmationEntreprise()
-   |   Template : mail-nouvelle-offre-depot-simplifie.mjml.ejs
-   |   Objet : "Confirmez votre adresse mail"
-   |   Contenu : details de l'offre + lien magic link de confirmation
-   |   Condition : entreprise VALIDE + 1 seule offre + non delegue
-   |
-      +-- [OU, si plusieurs offres ou delegue]
-         sendUserConfirmationEmail()
-         Template : mail-confirmation-email.mjml.ejs
-         Objet : "Confirmez votre adresse mail"
-         Contenu : lien magic link de confirmation (validite 30 jours)
-      +-- Remarque : un second email de confirmation peut etre envoye
-         si l'utilisateur n'a pas encore confirme son adresse
+   +-- Aucun nouvel email de confirmation n'est envoye
+   +-- L'email de confirmation du compte a deja ete transmis a l'etape 1
 
 3. Clic sur le lien de confirmation --> POST /etablissement/validation
    +-- isGrantedAndAutoValidatedRole() verifie que validation_type = AUTO
@@ -647,13 +636,8 @@ L'utilisateur est mis en attente si aucune des conditions d'auto-validation n'es
    +-- Redirection vers /creation/offre (creation 1ere offre)
 
 2. Creation de la premiere offre
-   +-- sendEmailConfirmationEntreprise()
-   |   Template : mail-nouvelle-offre-depot-simplifie.mjml.ejs
-   |   Objet : "Confirmez votre adresse mail"
-   |   Contenu : details de l'offre + lien confirmation + mention "en attente de validation"
-   |   Condition : entreprise VALIDE + 1 seule offre + non delegue
-   |
-   +-- [OU fallback] sendUserConfirmationEmail()
+   +-- Aucun nouvel email de confirmation n'est envoye
+   +-- Le compte reste en attente de validation manuelle
 
 3. Clic sur le lien de confirmation --> POST /etablissement/validation
    +-- Email marque comme verifie
@@ -785,17 +769,16 @@ opcoReminderJob()
 
 ### Tableau recapitulatif des emails
 
-| Email                   | Template                                         | Objet                                 | Destinataire      | Declencheur                                                                                      |
-| ----------------------- | ------------------------------------------------ | ------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------ |
-| Confirmation email      | `mail-confirmation-email.mjml.ejs`               | Confirmez votre adresse mail          | Utilisateur       | ENTREPRISE: immediat a la creation du compte, CFA auto-valide (immediat), ou fallback entreprise |
-| Confirmation 1ere offre | `mail-nouvelle-offre-depot-simplifie.mjml.ejs`   | Confirmez votre adresse mail          | Utilisateur       | ENTREPRISE : creation 1ere offre (non delegue)                                                   |
-| Bienvenue               | `mail-bienvenue.mjml.ejs`                        | Bienvenue sur La bonne alternance     | Utilisateur       | Clic lien confirmation + role GRANTED + auto-valide                                              |
-| Bienvenue (sans offre)  | `mail-bienvenue-entreprise-sans-offre.mjml.ejs`  | Bienvenue sur La bonne alternance     | Utilisateur       | ENTREPRISE sans offres + clic lien confirmation                                                  |
-| Engagement handicap     | `mail-sensibilisation-handi-engagement.mjml.ejs` | Engagez-vous en faveur de l'emploi... | Utilisateur       | ENTREPRISE uniquement, apres validation email, si auto-valide et pas d'engagement existant       |
-| Compte desactive        | `mail-compte-desactive.mjml.ejs`                 | Mise a jour de votre compte...        | Utilisateur       | Admin/OPCO desactive le compte                                                                   |
-| Expiration offre        | `mail-expiration-offres.mjml.ejs`                | Votre offre expire dans X jours       | Utilisateur       | Cron J-7 et J-1                                                                                  |
-| Relance OPCO            | `mail-relance-opco.mjml.ejs`                     | Nouveaux comptes a valider            | Utilisateurs OPCO | Cron periodique                                                                                  |
-| Connexion               | `mail-connexion.mjml.ejs`                        | Lien de connexion                     | Utilisateur       | Demande de connexion via /login/magiclink                                                        |
+| Email                  | Template                                         | Objet                                 | Destinataire      | Declencheur                                                                                      |
+| ---------------------- | ------------------------------------------------ | ------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------ |
+| Confirmation email     | `mail-confirmation-email.mjml.ejs`               | Confirmez votre adresse mail          | Utilisateur       | ENTREPRISE: immediat a la creation du compte, CFA auto-valide (immediat), ou fallback entreprise |
+| Bienvenue              | `mail-bienvenue.mjml.ejs`                        | Bienvenue sur La bonne alternance     | Utilisateur       | Clic lien confirmation + role GRANTED + auto-valide                                              |
+| Bienvenue (sans offre) | `mail-bienvenue-entreprise-sans-offre.mjml.ejs`  | Bienvenue sur La bonne alternance     | Utilisateur       | ENTREPRISE sans offres + clic lien confirmation                                                  |
+| Engagement handicap    | `mail-sensibilisation-handi-engagement.mjml.ejs` | Engagez-vous en faveur de l'emploi... | Utilisateur       | ENTREPRISE uniquement, apres validation email, si auto-valide et pas d'engagement existant       |
+| Compte desactive       | `mail-compte-desactive.mjml.ejs`                 | Mise a jour de votre compte...        | Utilisateur       | Admin/OPCO desactive le compte                                                                   |
+| Expiration offre       | `mail-expiration-offres.mjml.ejs`                | Votre offre expire dans X jours       | Utilisateur       | Cron J-7 et J-1                                                                                  |
+| Relance OPCO           | `mail-relance-opco.mjml.ejs`                     | Nouveaux comptes a valider            | Utilisateurs OPCO | Cron periodique                                                                                  |
+| Connexion              | `mail-connexion.mjml.ejs`                        | Lien de connexion                     | Utilisateur       | Demande de connexion via /login/magiclink                                                        |
 
 ---
 

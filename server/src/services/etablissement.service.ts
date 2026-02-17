@@ -672,8 +672,8 @@ export const sendEmailConfirmationEntreprise = async (
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
         images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-        nom: sanitizeTextField(user.last_name),
-        prenom: sanitizeTextField(user.first_name),
+        last_name: sanitizeTextField(user.last_name),
+        first_name: sanitizeTextField(user.first_name),
         email: sanitizeTextField(user.email),
         confirmation_url: url,
         offre: {
