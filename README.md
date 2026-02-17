@@ -57,6 +57,7 @@ brew install n
 brew install yq
 brew install coreutils
 brew install git-lfs
+brew install jq
 brew install 1password-cli
 brew install ansible
 brew install pwgen
