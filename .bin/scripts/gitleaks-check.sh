@@ -8,10 +8,10 @@ yarn run gitleaks-secret-scanner --diff-mode all -f json -r report.json || true
 TMP_FINGERPRINTS="gitleaks-fingerprints-tmp.txt"
 
 echo "generating fingerprints"
-cat report.json |jq -r '.[] | .File + ":" + .RuleID + ":" + .Secret'|sort|uniq > $TMP_FINGERPRINTS
+cat report.json |jq -r '.[] | .File + ":" + .RuleID + ":" + .Secret'|sort|uniq > "$TMP_FINGERPRINTS"
 
 echo "deleting report"
-rm report.json
+rm -f "report.json"
 
 HAS_ERROR="0"
 
@@ -23,7 +23,7 @@ while read -r line; do
   fi
 done < "$TMP_FINGERPRINTS"
 
-rm $TMP_FINGERPRINTS
+rm -f "$TMP_FINGERPRINTS"
 if [ $HAS_ERROR = "1" ] ; then
     echo "❌ new errors detected !"
     exit 1
