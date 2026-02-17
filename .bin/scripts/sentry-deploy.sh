@@ -7,14 +7,12 @@ shift
 export VERSION="${1:?"Veuillez préciser la version"}";
 shift
 
-LBA_SERVER_SENTRY_DSN=$(sops --decrypt --extract '["LBA_SERVER_SENTRY_DSN"]' .infra/env.global.yml)
-LBA_UI_SENTRY_DSN=$(sops --decrypt --extract '["LBA_UI_SENTRY_DSN"]' .infra/env.global.yml)
-SENTRY_AUTH_TOKEN=$(sops --decrypt --extract '["SENTRY_AUTH_TOKEN"]' .infra/env.global.yml)
+export SENTRY_AUTH_TOKEN=$(sops --decrypt --extract '["SENTRY_AUTH_TOKEN"]' ${ROOT_DIR}/.infra/env.global.yml)
 
-export SENTRY_DSN="${LBA_SERVER_SENTRY_DSN}"
+export SENTRY_DSN=$(sops --decrypt --extract '["LBA_SERVER_SENTRY_DSN"]' ${ROOT_DIR}/.infra/env.global.yml)
 cd "$ROOT_DIR/server"
 "./sentry-deploy-server.sh" "${ENVIRONMENT}" "${VERSION}"
 
-export SENTRY_DSN="${LBA_UI_SENTRY_DSN}"
+export SENTRY_DSN=$(sops --decrypt --extract '["LBA_UI_SENTRY_DSN"]' ${ROOT_DIR}/.infra/env.global.yml)
 cd "$ROOT_DIR/ui"
 "./sentry-deploy-ui.sh" "${ENVIRONMENT}" "${VERSION}"
