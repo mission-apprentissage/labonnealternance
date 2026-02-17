@@ -16,8 +16,7 @@ rm report.json
 HAS_ERROR="0"
 
 while read -r line; do
-  grepResult=$(grep -F "$line" gitleaks-fingerprints-baseline.txt || true)
-  if [ -z "$grepResult" ] ; then
+  if ! grep -Fqx -- "$line" gitleaks-fingerprints-baseline.txt; then
     HAS_ERROR="1"
     echo "missing secret: $line"
   fi
