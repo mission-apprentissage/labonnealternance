@@ -3,12 +3,12 @@
 set -euo pipefail
 
 echo "generating report"
-yarn run gitleaks-secret-scanner --diff-mode all -f json -r report.json || true
+yarn run gitleaks-secret-scanner --diff-mode all -f json -r "report.json" || true
 
 TMP_FINGERPRINTS="gitleaks-fingerprints-tmp.txt"
 
 echo "generating fingerprints"
-cat report.json |jq -r '.[] | .File + ":" + .RuleID + ":" + .Secret'|sort|uniq > "$TMP_FINGERPRINTS"
+cat "report.json" |jq -r '.[] | .File + ":" + .RuleID + ":" + .Secret'|sort|uniq > "$TMP_FINGERPRINTS"
 
 echo "deleting report"
 rm -f "report.json"
@@ -16,7 +16,7 @@ rm -f "report.json"
 HAS_ERROR="0"
 
 while read -r line; do
-  grepResult=$(grep -F "$line" gitleaks-fingerprints-baseline.txt || true)
+  grepResult=$(grep -F "$line" "gitleaks-fingerprints-baseline.txt" || true)
   if [ -z "$grepResult" ] ; then
     HAS_ERROR="1"
     echo "missing secret: $line"
