@@ -378,11 +378,6 @@ export const activateUserRole = async ({ userId, requestedBy }: { userId: Object
 export const isGrantedAndAutoValidatedRole = (role: IRoleManagement): boolean => {
   const sortedEvents = getSortedStatusEvents(role.status)
   const lastEvent = sortedEvents.at(sortedEvents.length - 1)
-  const isGranted = lastEvent?.status === AccessStatus.GRANTED
-  if (!isGranted) return false
-  if (sortedEvents.length < 2) return true
-  // do not use `if (!beforeLastEvent)` as `array.at(-1)` returns the last element of the array and `sortedEvents.length - 2 = -1`
-  const beforeLastEvent = sortedEvents.at(sortedEvents.length - 2)!
-  const isAutoValidated = beforeLastEvent.status === AccessStatus.AWAITING_VALIDATION && lastEvent.date.getTime() - beforeLastEvent.date.getTime() < 2_000
-  return isAutoValidated
+  if (lastEvent?.status !== AccessStatus.GRANTED) return false
+  return lastEvent.validation_type === VALIDATION_UTILISATEUR.AUTO
 }

@@ -44,6 +44,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { logger } from "@/common/logger"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -492,6 +493,20 @@ export const entrepriseOnboardingWorkflow = {
       },
       managingUser._id.toString()
     )
+
+    if (!isUserEmailChecked(managingUser)) {
+      try {
+        await sendUserConfirmationEmail(managingUser)
+      } catch (error) {
+        logger.error("Failed to send user confirmation email after enterprise account creation", {
+          userId: managingUser._id,
+          email: managingUser.email,
+          error,
+        })
+        sentryCaptureException(error, { extra: { userId: managingUser._id, email: managingUser.email } })
+      }
+    }
+
     return { formulaire, user: managingUser, validated }
   },
   createFromCFA: async ({
@@ -627,7 +642,10 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
     subject: "Confirmez votre adresse mail",
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
-      images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true` },
+      images: {
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+        logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+      },
       last_name: sanitizeTextField(user.last_name),
       first_name: sanitizeTextField(user.first_name),
       confirmation_url: url,
@@ -642,12 +660,7 @@ export const sendEmailConfirmationEntreprise = async (
   accessStatus: AccessStatus | null,
   entrepriseStatus: EntrepriseStatus | null
 ) => {
-  if (
-    entrepriseStatus !== EntrepriseStatus.VALIDE ||
-    !isUserEmailChecked(user) ||
-    !accessStatus ||
-    ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)
-  ) {
+  if (entrepriseStatus !== EntrepriseStatus.VALIDE || !accessStatus || ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)) {
     return
   }
   const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
@@ -662,8 +675,8 @@ export const sendEmailConfirmationEntreprise = async (
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
         images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-        nom: sanitizeTextField(user.last_name),
-        prenom: sanitizeTextField(user.first_name),
+        last_name: sanitizeTextField(user.last_name),
+        first_name: sanitizeTextField(user.first_name),
         email: sanitizeTextField(user.email),
         confirmation_url: url,
         offre: {

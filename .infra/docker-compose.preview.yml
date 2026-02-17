@@ -58,6 +58,10 @@ services:
 
   jobs_processor:
     <<: *default
+    deploy:
+      resources:
+        limits:
+          memory: 300m
     image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
     container_name: lba_{{pr_number}}_jobs_processor
     command: ["yarn", "cli", "job_processor:start"]
@@ -67,6 +71,10 @@ services:
 
   stream_processor:
     <<: *default
+    deploy:
+      resources:
+        limits:
+          memory: 300m
     image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
     container_name: lba_{{pr_number}}_stream_processor
     command: ["yarn", "cli", "stream_processor:start"]
