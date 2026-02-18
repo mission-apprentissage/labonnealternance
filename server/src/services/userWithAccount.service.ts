@@ -8,7 +8,7 @@ import type { IUserStatusEvent, IUserWithAccount } from "shared/models/userWithA
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
 
-import { checkForJobActivations } from "./formulaire.service"
+import { checkForJobActivations, recruiterDbProxy } from "./formulaire.service"
 import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -84,7 +84,7 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], 
   if (!newUser) {
     throw internal(`utilisateur avec id=${id} non trouvé`)
   }
-  const recruiters = await getDbCollection("recruiters").find({ managed_by: userOpt._id.toString() }).toArray()
+  const recruiters = await recruiterDbProxy.find({ managed_by: userOpt._id.toString() }).toArray()
   await asyncForEach(recruiters, async (recruiter) => checkForJobActivations(recruiter))
   return newUser
 }

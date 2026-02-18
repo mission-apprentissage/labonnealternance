@@ -184,39 +184,6 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
 }
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
-const obfuscateRecruiter = async () => {
-  if (config.featureFlips.deletedRecruitersCollection) {
-    return
-  }
-  logger.info(`obfuscating recruiters`)
-
-  const remainingUsers = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })
-  for await (const user of remainingUsers) {
-    const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-    getDbCollection("recruiters").findOneAndUpdate({ _id: user._id }, replacement, { bypassDocumentValidation: true })
-  }
-
-  const recruitersWithDelegations = getDbCollection("recruiters").find({ "jobs.delegations.0": { $exists: true } })
-
-  for await (const recruiter of recruitersWithDelegations) {
-    let shouldSave = false
-    if (recruiter.jobs) {
-      recruiter.jobs.forEach((job) => {
-        if (job.delegations) {
-          shouldSave = true
-          job.delegations.forEach((delegation) => {
-            delegation.email = fakeEmail
-          })
-        }
-      })
-    }
-    if (shouldSave) {
-      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } }, { bypassDocumentValidation: true })
-    }
-  }
-
-  logger.info(`obfuscating recruiters done`)
-}
 
 const obfuscateUser = async () => {
   logger.info(`obfuscating users`)
@@ -314,8 +281,8 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateElligibleTrainingsForAppointment()
   await obfuscateEtablissements()
   await obfuscateFormations()
-  await obfuscateRecruiter()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await obfuscatePartnerJobs()
+  // TODO FEATURE_DELETE_RECRUITERS obfuscate entreprises gérées par CFA
 }

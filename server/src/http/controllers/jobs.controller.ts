@@ -1,38 +1,23 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
-import type { IJob, ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
+import type { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, JOB_STATUS, zRoutes } from "shared"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import dayjs from "shared/helpers/dayjs"
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
+import { getUserFromRequest } from "@/security/authenticationService"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
-import {
-  addExpirationPeriod,
-  cancelOffre,
-  createJobDelegations,
-  createOffre,
-  extendOffre,
-  getFormulaire,
-  getFormulaires,
-  getJob,
-  getOffre,
-  patchOffre,
-  provideOffre,
-} from "@/services/formulaire.service"
+import { addExpirationPeriod, cancelOffre, createJobDelegations, extendOffre, getFormulaires, getJob, getOffre, patchOffre, provideOffre } from "@/services/formulaire.service"
 import { getFtJobFromId } from "@/services/ftjob.service"
 import { getJobsQuery, getJobsQueryPrivate } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView, getLbaJobById } from "@/services/lbajob.service"
-import { getCompanyFromSiret, getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
-import { getFicheMetierFromDB } from "@/services/rome.service"
-import type { Server } from "@/http/server"
-import { getUserWithAccountByEmail, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
-import type { Appellation } from "@/services/rome.service.types"
 import { getPartnerJobById, getPartnerJobByIdV2 } from "@/services/partnerJob.service"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getCompanyFromSiret, getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
 
 const config = {
   rateLimit: {
@@ -52,6 +37,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { establishment_siret, email } = req.query
 
+      // TODO FEATURE_DELETE_RECRUITERS ignore
       const establishment = await getDbCollection("recruiters").findOne({ establishment_siret, email })
 
       if (!establishment) {
@@ -119,67 +105,6 @@ export default (server: Server) => {
       }
 
       return res.status(201).send(result.formulaire)
-    }
-  )
-
-  server.post(
-    "/v1/jobs/:establishmentId",
-    {
-      schema: zRoutes.post["/v1/jobs/:establishmentId"],
-      onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"]),
-      config,
-    },
-    async (req, res) => {
-      const { establishmentId } = req.params
-      const { body } = req
-      // Check if entity exists
-      const establishmentExists = await getFormulaire({ establishment_id: establishmentId })
-
-      if (!establishmentExists) {
-        return res.status(400).send({ error: true, message: "Establishment does not exist" })
-      }
-      const user = await getUserWithAccountByEmail(establishmentExists.email)
-      if (!user) {
-        return res.status(400).send({ error: true, message: "User does not exist" })
-      }
-      await validateUserWithAccountEmail(user._id, "Création par API v1")
-
-      const romeDetails = await getFicheMetierFromDB({
-        query: {
-          "appellations.code_ogr": body.appellation_code,
-        },
-      })
-
-      if (!romeDetails) {
-        return res.send({ error: true, message: "ROME Code details could not be retrieved" })
-      }
-
-      const appellation = romeDetails?.appellations ? (romeDetails.appellations.find(({ code_ogr }) => code_ogr === body.appellation_code) as Appellation) : null
-
-      const job: Partial<IJob> = {
-        rome_label: romeDetails.rome.intitule,
-        rome_appellation_label: appellation && appellation.libelle,
-        rome_code: [romeDetails.rome.code_rome],
-        job_level_label: body.job_level_label,
-        job_start_date: new Date(body.job_start_date),
-        job_description: body.job_description,
-        job_employer_description: body.job_employer_description,
-        job_creation_date: dayjs().toDate(),
-        job_expiration_date: addExpirationPeriod(dayjs()).toDate(),
-        job_status: JOB_STATUS.ACTIVE,
-        job_type: body.job_type,
-        is_disabled_elligible: body.is_disabled_elligible,
-        job_count: body.job_count,
-        job_duration: body.job_duration,
-        job_rythm: body.job_rythm,
-        custom_address: body.custom_address,
-        custom_geo_coordinates: body.custom_geo_coordinates,
-        offer_title_custom: body.custom_job_title, // TODO: 23/06/2025 custom_job_title est obsolète, à supprimer lorsque fin d'usage par opco EP
-      }
-
-      const updatedRecruiter = await createOffre(establishmentId, job)
-
-      return res.status(201).send(updatedRecruiter)
     }
   )
 

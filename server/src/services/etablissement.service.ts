@@ -15,15 +15,15 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import dayjs from "shared/helpers/dayjs"
 import { captureException } from "@sentry/node"
+import dayjs from "shared/helpers/dayjs"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
 import type { IFormatAPIEntreprise, IReferentiel } from "./etablissement.service.types"
-import { createFormulaire, getFormulaire } from "./formulaire.service"
+import { createFormulaire, getFormulaire, recruiterDbProxy } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
@@ -33,7 +33,6 @@ import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -41,9 +40,10 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 import { getHttpClient } from "@/common/utils/httpUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -432,7 +432,7 @@ export const entrepriseOnboardingWorkflow = {
     { isUserValidated = false }: { isUserValidated?: boolean } = {}
   ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
-    const formulaireExist = await getFormulaire({ establishment_siret: siret, email })
+    const formulaireExist = await recruiterDbProxy.findOne({ establishment_siret: siret, email })
     if (formulaireExist) {
       return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
     }
@@ -533,7 +533,7 @@ export const entrepriseOnboardingWorkflow = {
     const opcoResult = await getOpcoData(siret)
     const opco = opcoResult?.opco
 
-    const existingFormulaire = await getDbCollection("recruiters").findOne({ cfa_delegated_siret, establishment_siret: siret })
+    const existingFormulaire = await recruiterDbProxy.findOne({ cfa_delegated_siret, establishment_siret: siret })
     const updatedFields = {
       first_name,
       last_name,
@@ -548,6 +548,7 @@ export const entrepriseOnboardingWorkflow = {
     }
 
     if (existingFormulaire) {
+      // TODO FEATURE_DELETE_RECRUITERS
       const result = await getDbCollection("recruiters").findOneAndUpdate(
         { cfa_delegated_siret, establishment_siret: siret },
         {

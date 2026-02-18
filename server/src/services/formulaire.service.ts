@@ -165,7 +165,7 @@ export const createJob = async ({
   await validateFieldsFromReferentielRome(job)
 
   const userId = user._id
-  const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
+  const recruiter = await recruiterDbProxy.findOne({ establishment_id: establishment_id })
   if (!recruiter) {
     throw internal(`recruiter with establishment_id=${establishment_id} not found`)
   }
@@ -426,7 +426,7 @@ export const updateFormulaire = async (establishment_id: IRecruiter["establishme
  * @returns {Promise<boolean>}
  */
 export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establishment_id"]) => {
-  const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: id })
+  const recruiter = await recruiterDbProxy.findOne({ establishment_id: id })
   if (!recruiter) {
     throw internal("Recruiter not found")
   }
@@ -451,7 +451,7 @@ export const archiveFormulaire = async (recruiter: IRecruiter) => {
  * @returns {Promise<boolean>}
  */
 export const activateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean> => {
-  const recruiter = await getDbCollection("recruiters").findOne({ _id: id })
+  const recruiter = await recruiterDbProxy.findOne({ _id: id })
   if (!recruiter) {
     throw internal("Recruiter not found")
   }
@@ -464,7 +464,7 @@ export const activateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean>
  * @param {IUserRecruteur["establishment_siret"]} establishment_siret
  */
 export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]) => {
-  const formulaires = await getDbCollection("recruiters").find({ cfa_delegated_siret: siret }).toArray()
+  const formulaires = await recruiterDbProxy.find({ cfa_delegated_siret: siret }).toArray()
   if (!formulaires.length) return false
   await asyncForEach(formulaires, archiveFormulaire)
 }
@@ -474,7 +474,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJob["_id"]} id
  */
 export async function getOffre(id: string | ObjectId) {
-  return getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(id.toString()) })
+  return recruiterDbProxy.findByJobId(new ObjectId(id.toString()))
 }
 
 export async function getOffreWithRomeDetail(id: string | ObjectId) {
@@ -780,11 +780,11 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
 }
 
 export const getFormulaireFromUserId = async (userId: string) => {
-  return getDbCollection("recruiters").findOne({ managed_by: userId })
+  return recruiterDbProxy.findOne({ managed_by: userId })
 }
 
 export const getFormulaireFromUserIdWithOpco = async (userId: string, opco: OPCOS_LABEL) => {
-  return getDbCollection("recruiters").findOne({ managed_by: userId, opco })
+  return recruiterDbProxy.findOne({ managed_by: userId, opco })
 }
 
 export const getFormulaireFromUserIdOrError = async (userId: string) => {
@@ -902,7 +902,7 @@ export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStream
 }
 
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
-  const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
+  const recruiter = await recruiterDbProxy.findOne({ _id: recruiterId })
 
   if (recruiter?.jobs?.length && recruiter.address) {
     await asyncForEach(recruiter.jobs, async (job: IJob) => {
@@ -1151,4 +1151,16 @@ export const startRecruiterChangeStream = async (signal: AbortSignal) => {
 
   const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
   startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken, signal)
+}
+
+export const recruiterDbProxy = {
+  findOne(filters: Partial<IRecruiter>) {
+    return getDbCollection("recruiters").findOne(filters)
+  },
+  find(filters: Partial<IRecruiter>) {
+    return getDbCollection("recruiters").find(filters)
+  },
+  findByJobId(jobId: ObjectId) {
+    return getDbCollection("recruiters").findOne({ "jobs._id": jobId })
+  },
 }

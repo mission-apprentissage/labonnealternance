@@ -20,14 +20,15 @@ import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
+import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
+import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
@@ -37,7 +38,6 @@ import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "./offrePartenaire/jooble/processJooble"
 import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
-import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "./offrePartenaire/lbaJobToJobsPartners"
 import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
@@ -68,15 +68,10 @@ import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { cancelOfferJob } from "./recruiters/cancelOfferJob"
-import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
-import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
-import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
-import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
-import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -101,20 +96,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Pseudonymisation des documents",
   },
   {
-    fct: updateMissingStartDate,
-    description: "Récupération des geo_coordinates manquants dans la collection Recruiters",
-  },
-  {
     fct: importReferentielRome,
     description: "import référentiel rome v4 from XML",
   },
   {
     fct: cancelOfferJob,
     description: "Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle",
-  },
-  {
-    fct: createJobsCollectionForMetabase,
-    description: "Permet de créer une collection dédiée aux offres pour metabase",
   },
   {
     fct: createRoleManagement360,
@@ -203,14 +190,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonymizeReportedReasons,
     description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
-  },
-  {
-    fct: fixJobExpirationDate,
-    description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
-  },
-  {
-    fct: fixRecruiterDataValidation,
-    description: "Répare les data de la collection recruiters",
   },
   {
     fct: anonimizeUsersWithAccounts,
@@ -373,11 +352,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
-  },
-  { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
-  {
-    fct: syncLbaJobsIntoJobsPartnersFull,
-    description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
   },
   {
     fct: analyzeClosedCompanies,

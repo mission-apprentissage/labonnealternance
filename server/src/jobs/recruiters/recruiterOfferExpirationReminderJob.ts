@@ -24,6 +24,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
     additionalFilter[`jobs.${dateRelanceFieldName}`] = null
   }
   const now = new Date()
+  // TODO FEATURE_DELETE_RECRUITERS refactor
   const recruiters = await getDbCollection("recruiters")
     .find({
       "jobs.job_status": JOB_STATUS.ACTIVE,

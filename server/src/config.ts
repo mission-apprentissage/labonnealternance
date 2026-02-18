@@ -177,9 +177,6 @@ const config = {
     clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),
     clientSecret: env.get("IJ_MEN_CLIENT_SECRET").required().asString(),
   },
-  featureFlips: {
-    deletedRecruitersCollection: env.get("FEATURE_FLIP_DELETED_RECRUITERS_COLLECTION").required().asBool(),
-  },
 }
 
 export default config

@@ -89,6 +89,7 @@ export const getJobs = async ({
     stages.push(...romeDetailAggregateStages)
   }
 
+  // TODO FEATURE_DELETE_RECRUITERS
   const recruiters = await getDbCollection("recruiters").aggregate<IRecruiter>(stages).toArray()
 
   const recruitersWithJobs = await Promise.all(
@@ -426,6 +427,7 @@ export function sortLbaJobs(jobs: Partial<ILbaItemLbaJob | ILbaItemPartnerJob>[]
  */
 export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
   try {
+    // TODO FEATURE_DELETE_RECRUITERS
     await getDbCollection("recruiters").updateOne(
       { "jobs._id": jobId },
       {
@@ -446,6 +448,7 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
 export const incrementLbaJobsViewCount = async (jobIds: string[]) => {
   const ids = jobIds.map((id) => new ObjectId(id))
   try {
+    // TODO FEATURE_DELETE_RECRUITERS
     await getDbCollection("recruiters").updateMany(
       { "jobs._id": { $in: ids } },
       {

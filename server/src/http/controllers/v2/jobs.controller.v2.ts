@@ -29,6 +29,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { establishment_siret, email } = req.query
 
+      // TODO FEATURE_DELETE_RECRUITERS check usage
       const establishment = await getDbCollection("recruiters").findOne({ establishment_siret, email })
 
       if (!establishment) {

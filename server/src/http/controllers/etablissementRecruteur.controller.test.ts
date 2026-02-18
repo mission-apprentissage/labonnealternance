@@ -6,16 +6,13 @@ import { beforeEach, describe, expect, it } from "vitest"
 
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
-import type { CreationBody, CreationResponse } from "@tests/use-cases/entrepriseUseCase"
-import { entrepriseUseCase } from "@tests/use-cases/entrepriseUseCase"
+import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
+import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 
-describe.each([true, false])("POST /etablissement/creation - feature flip FEATURE_FLIP_DELETED_RECRUITERS_COLLECTION = %s", (deletedRecruitersCollection) => {
-  config.featureFlips.deletedRecruitersCollection = deletedRecruitersCollection
-
+describe("POST /etablissement/creation", () => {
   useMongo()
   const httpClient = useServer()
 
@@ -56,7 +53,7 @@ describe.each([true, false])("POST /etablissement/creation - feature flip FEATUR
     establishment_siret: "52151363000017",
   } as const
 
-  const callCreation = (body: CreationBody) => entrepriseUseCase.create(httpClient, body)
+  const callCreation = (body: CreationBody) => entrepriseSdk(httpClient).create(body)
 
   describe("Création d'entreprise", () => {
     it("Vérifie que le recruteur est créé avec une offre", async () => {

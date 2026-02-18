@@ -19,6 +19,7 @@ type AggregateRecruiter = Pick<Omit<IRecruiter, "jobs">, "updatedAt"> & {
 }
 
 const generateSitemapXml = async () => {
+  // TODO FEATURE_DELETE_RECRUITERS
   const documents = (await getDbCollection("recruiters")
     .aggregate([
       { $match: { status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE } },

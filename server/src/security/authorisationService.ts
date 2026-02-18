@@ -32,14 +32,12 @@ type UserResource = {
 
 type Resources = {
   users: Array<UserResource>
-  recruiters: Array<RecruiterResource>
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
   entreprises: Array<EntrepriseResource>
   jobPartners: Array<JobPartnerResource>
 }
 export type ResourceIds = {
-  recruiters?: string[]
   jobs?: Array<{ job: string; recruiter: string | null } | null>
   users?: Array<string>
   applications?: Array<{ application: string; job: string; recruiter: string } | null>
@@ -116,51 +114,6 @@ const getEntreprisesManagedByUser = async (user: IUserWithAccount) => {
   return entreprises?.length ? entreprises.map((entreprise) => entreprise.entreprises) : []
 }
 
-async function getRecruitersResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["recruiters"]> {
-  if (!schema.securityScheme.resources.recruiter) {
-    return []
-  }
-
-  const recruiters: IRecruiter[] = (
-    await Promise.all(
-      schema.securityScheme.resources.recruiter.map(async (recruiterDef): Promise<IRecruiter[]> => {
-        if ("_id" in recruiterDef) {
-          const recruiterOpt = await getDbCollection("recruiters").findOne({ _id: new ObjectId(getAccessResourcePathValue(recruiterDef._id, req)) })
-          return recruiterOpt ? [recruiterOpt] : []
-        }
-        if ("establishment_id" in recruiterDef) {
-          return getDbCollection("recruiters")
-            .find({
-              establishment_id: getAccessResourcePathValue(recruiterDef.establishment_id, req),
-            })
-            .toArray()
-        }
-        if ("email" in recruiterDef && "establishment_siret" in recruiterDef) {
-          return getDbCollection("recruiters")
-            .find({
-              email: getAccessResourcePathValue(recruiterDef.email, req),
-              establishment_siret: getAccessResourcePathValue(recruiterDef.establishment_siret, req),
-            })
-            .toArray()
-        }
-        if ("opco" in recruiterDef) {
-          return getDbCollection("recruiters")
-            .find({ opco: getAccessResourcePathValue(recruiterDef.opco, req) })
-            .toArray()
-        }
-        if ("cfa_delegated_siret" in recruiterDef) {
-          return getDbCollection("recruiters")
-            .find({ cfa_delegated_siret: getAccessResourcePathValue(recruiterDef.cfa_delegated_siret, req) })
-            .toArray()
-        }
-
-        assertUnreachable(recruiterDef)
-      })
-    )
-  ).flatMap((_) => _)
-  return (await Promise.all(recruiters.map(recruiterToRecruiterResource))).flatMap((_) => (_ ? [_] : []))
-}
-
 async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobs"]> {
   if (!schema.securityScheme.resources.job) {
     return []
@@ -171,6 +124,7 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
       schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource | null> => {
         if ("_id" in jobDef) {
           const id = new ObjectId(getAccessResourcePathValue(jobDef._id, req))
+          // TODO FEATURE_DELETE_RECRUITERS
           const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": id })
 
           if (!recruiter) {
@@ -233,6 +187,7 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!job_id) {
           return { application }
         }
+        // TODO FEATURE_DELETE_RECRUITERS
         const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
         if (!recruiter) {
           return { application }
@@ -304,8 +259,7 @@ async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, r
 }
 
 async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [recruiters, jobs, users, applications, entreprises, jobPartners] = await Promise.all([
-    getRecruitersResource(schema, req),
+  const [jobs, users, applications, entreprises, jobPartners] = await Promise.all([
     getJobsResource(schema, req),
     getUserResource(schema, req),
     getApplicationResource(schema, req),
@@ -314,7 +268,6 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
   ])
 
   return {
-    recruiters,
     jobs,
     users,
     applications,
@@ -385,7 +338,6 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
     }
   }
   return (
-    resources.recruiters.every((recruiter) => canAccessRecruiter(userAccess, recruiter)) &&
     resources.jobs.every((job) => canAccessJob(userAccess, job)) &&
     resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
     resources.users.every((user) => canAccessUser(userAccess, user)) &&

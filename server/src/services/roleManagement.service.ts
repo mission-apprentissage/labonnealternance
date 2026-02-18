@@ -9,7 +9,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
-import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
+import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError, recruiterDbProxy } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
@@ -332,7 +332,7 @@ export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reas
   })
 
   if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
-    const formulaire = await getDbCollection("recruiters").findOne({
+    const formulaire = await recruiterDbProxy.findOne({
       managed_by: updatedRole.user_id.toString(),
       establishment_siret: organization.siret,
     })

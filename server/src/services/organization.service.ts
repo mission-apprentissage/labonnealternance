@@ -11,7 +11,7 @@ import { getLastStatusEvent, isEnum } from "shared/utils/index"
 
 import type { getEntrepriseDataFromSiret } from "./etablissement.service"
 import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
-import { checkForJobActivations } from "./formulaire.service"
+import { checkForJobActivations, recruiterDbProxy } from "./formulaire.service"
 import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -92,6 +92,7 @@ export const upsertEntrepriseData = async (
   }
   await setEntrepriseValid(savedEntreprise._id)
 
+  // TODO FEATURE_DELETE_RECRUITERS
   await getDbCollection("recruiters").updateMany(
     { establishment_siret: siret },
     {
@@ -111,7 +112,7 @@ export const upsertEntrepriseData = async (
     }
   )
   if (getLastStatusEvent(existingEntreprise?.status)?.status === EntrepriseStatus.ERROR) {
-    const recruiters = await getDbCollection("recruiters").find({ establishment_siret: siret }).toArray()
+    const recruiters = await recruiterDbProxy.find({ establishment_siret: siret }).toArray()
     const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).toArray()
     const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
     const users = await getDbCollection("userswithaccounts")

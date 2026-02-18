@@ -73,6 +73,7 @@ export const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBu
 }
 
 const updateRecruteursSiretInfosInError = async () => {
+  // TODO FEATURE_DELETE_RECRUITERS
   const recruteurs = await getDbCollection("recruiters").find({ status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION }).toArray()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)

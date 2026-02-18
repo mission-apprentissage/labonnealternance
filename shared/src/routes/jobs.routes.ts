@@ -4,7 +4,7 @@ import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types.js"
-import { ZJob, ZJobFields, ZJobStartDateCreate } from "../models/job.model.js"
+import { ZJob, ZJobStartDateCreate } from "../models/job.model.js"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model.js"
 import {
   ZLbaItemFtJob,
@@ -462,76 +462,6 @@ export const zV1JobsRoutes = {
         tags: ["V1 - Jobs"] as string[],
         deprecated: true,
         description: `Create an establishment entity\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
-      },
-    },
-    "/v1/jobs/:establishmentId": {
-      method: "post",
-      path: "/v1/jobs/:establishmentId",
-      params: z.object({ establishmentId: z.string() }).strict(),
-      body: ZJobFields.pick({
-        job_level_label: true,
-        job_duration: true,
-        job_type: true,
-        job_count: true,
-        job_rythm: true,
-        job_employer_description: true,
-        job_description: true,
-        is_disabled_elligible: true,
-        custom_address: true,
-        custom_geo_coordinates: true,
-        custom_job_title: true,
-      })
-        .extend({
-          job_start_date: ZJobStartDateCreate(),
-          appellation_code: z.string().regex(/^[0-9]+$/, "appelation code ne doit contenir que des chiffres"),
-        })
-        .strict()
-        .refine(
-          ({ custom_address, custom_geo_coordinates }) => {
-            if ((custom_address !== undefined && custom_geo_coordinates === undefined) || (custom_address === undefined && custom_geo_coordinates !== undefined)) {
-              return false
-            }
-            return true
-          },
-          { message: "custom_geo_coordinates est obligatoire si custom_address est passé en paramètre" }
-        )
-        .refine(
-          ({ job_description }) => {
-            if (job_description && job_description?.length < 30) {
-              return false
-            }
-            return true
-          },
-          { message: "job_description doit avoir un minimum de 30 caractères" }
-        )
-        .refine(
-          ({ job_employer_description }) => {
-            if (job_employer_description && job_employer_description?.length < 30) {
-              return false
-            }
-            return true
-          },
-          { message: "job_employer_description doit avoir un minimum de 30 caractères" }
-        ),
-      response: {
-        "201": ZRecruiter,
-        "400": z.union([ZResError, ZLbarError]),
-      },
-      securityScheme: {
-        auth: "api-key",
-        access: "recruiter:add_job",
-        resources: {
-          recruiter: [
-            {
-              establishment_id: { type: "params", key: "establishmentId" },
-            },
-          ],
-        },
-      },
-      openapi: {
-        tags: ["V1 - Jobs"] as string[],
-        deprecated: true,
-        description: `Create a job offer inside an establishment entity.\n${rateLimitDescription({ max: 5, timeWindow: "1s" })}`,
       },
     },
     "/v1/jobs/delegations/:jobId": {

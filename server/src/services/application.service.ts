@@ -27,7 +27,7 @@ import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
 import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
 import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { getOffreAvecInfoMandataire, recruiterDbProxy } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { validateCaller } from "./queryValidator.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
@@ -815,7 +815,7 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
 
 const getJobSourceType = async (application: IApplication) => {
   if (LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA === application.job_origin && application.job_id) {
-    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id) })
+    const recruiter = await recruiterDbProxy.findByJobId(new ObjectId(application.job_id))
     if (recruiter?.cfa_delegated_siret) {
       return CFA
     }
@@ -1256,7 +1256,7 @@ const getJobOrCompany = async (application: IApplication): Promise<IJobOrCompany
     return { type: LBA_ITEM_TYPE.RECRUTEURS_LBA, job: company, recruiter: null }
   }
   if (job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
+    const recruiter = await recruiterDbProxy.findByJobId(job_id)
     if (!recruiter) {
       throw internal(`inattendu: aucun recruiter avec jobs._id=${job_id}`)
     }
@@ -1345,7 +1345,7 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
 
   switch (application.job_origin) {
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
-      recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": job_id })
+      recruiter = await recruiterDbProxy.findByJobId(job_id!)
       job = await getDbCollection("jobs_partners").findOne({ _id: job_id! })
       break
     }

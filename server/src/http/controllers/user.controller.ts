@@ -171,6 +171,7 @@ export default (server: Server) => {
 
       if (opco && entreprise) {
         await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } })
+        // TODO FEATURE_DELETE_RECRUITERS
         await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: { opco, updatedAt: new Date() } })
       }
 

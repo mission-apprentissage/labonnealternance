@@ -182,6 +182,7 @@ export default (server: Server) => {
       if (!cfa_delegated_siret) {
         throw internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
       }
+      // TODO FEATURE_DELETE_RECRUITERS
       const entreprises = await getDbCollection("recruiters")
         .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
         .toArray()

@@ -3,14 +3,11 @@ import { JOB_STATUS } from "shared/models/index"
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const cancelOfferJob = async () => {
-  if (config.featureFlips.deletedRecruitersCollection) {
-    return
-  }
+  // TODO FEATURE_DELETE_RECRUITERS
   const today = dayjs().startOf("day").utc(true).toDate()
 
   const formulaires = await getDbCollection("recruiters")

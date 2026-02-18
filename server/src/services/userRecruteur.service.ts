@@ -14,7 +14,7 @@ import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/use
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { createAuthMagicLink } from "./appLinks.service"
-import { getFormulaireFromUserIdOrError } from "./formulaire.service"
+import { getFormulaireFromUserIdOrError, recruiterDbProxy } from "./formulaire.service"
 import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
@@ -239,7 +239,7 @@ export const createAdminUser = async (userProps: IUserWithAccountFields, { grant
 }
 
 export const updateUserWithAccountFields = async (userId: ObjectId, fields: Partial<IUserWithAccountFields>): Promise<IUserWithAccount | { error: BusinessErrorCodes }> => {
-  const { email, first_name, last_name, phone } = fields
+  const { email } = fields
   const newEmail = email?.toLocaleLowerCase()
 
   if (newEmail) {
@@ -251,7 +251,7 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
     const emailHasChanged = oldEmail !== newEmail
     if (emailHasChanged) {
       const userExist = await getDbCollection("userswithaccounts").findOne({ email: newEmail })
-      const recruiterExist = await getDbCollection("recruiters").findOne({ email: newEmail })
+      const recruiterExist = await recruiterDbProxy.findOne({ email: newEmail })
       if (userExist || recruiterExist) {
         return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
       }
@@ -269,10 +269,11 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   if (!newUser) {
     throw badRequest("user not found")
   }
-  await getDbCollection("recruiters").updateMany(
-    { managed_by: userId.toString() },
-    { $set: { ...removeUndefinedFields({ first_name, last_name, phone, email: newEmail }), updatedAt: new Date() } }
-  )
+  // TODO FEATURE_DELETE_RECRUITERS check for CFA
+  // await getDbCollection("recruiters").updateMany(
+  //   { managed_by: userId.toString() },
+  //   { $set: { ...removeUndefinedFields({ first_name, last_name, phone, email: newEmail }), updatedAt: new Date() } }
+  // )
   return newUser
 }
 
@@ -383,7 +384,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
-  const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString() })
+  const recruiter = await recruiterDbProxy.findOne({ managed_by: user._id.toString() })
   const hasJobs = Boolean(recruiter?.jobs.length)
 
   await mailer.sendEmail({

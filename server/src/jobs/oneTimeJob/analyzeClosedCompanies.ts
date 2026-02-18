@@ -4,6 +4,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const analyzeClosedCompanies = async (): Promise<void> => {
+  // TODO FEATURE_DELETE_RECRUITERS
   console.info("start")
   const activeRecruiters = await getDbCollection("recruiters")
     .aggregate([
