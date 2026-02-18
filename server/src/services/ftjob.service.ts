@@ -1,6 +1,5 @@
 import { setTimeout } from "timers/promises"
 
-import { badRequest, notFound } from "@hapi/boom"
 import distance from "@turf/distance"
 import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -15,12 +14,12 @@ import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import type { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+
 import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
 import { manageApiError } from "@/common/utils/errorManager"
 import type { IApiError } from "@/common/utils/errorManager"
 
-import { getFtJob, searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
+import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "ief2i", "institut f2i", "openclassrooms", "mewo", "acp interim et recrutement", "jour j recrutement"]
 
@@ -425,37 +424,4 @@ export const getSomeFtJobs = async ({ romes, insee, radius, latitude, longitude,
   }
 
   return { results: jobs }
-}
-
-/**
- * @description Retourne un tableau contenant la seule offre France Travail identifiée
- */
-export const getFtJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<{ peJobs: ILbaItemFtJob[] }> => {
-  try {
-    const job = await getFtJob(id)
-    if (job.status === 204 || job.data === "") {
-      throw notFound()
-    }
-    if (job.status === 400) {
-      throw badRequest()
-    }
-
-    const ftJob = transformFtJob({ job: job.data })
-
-    if (caller) {
-      trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
-      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-      if (ftJob.company) {
-        ftJob.company.siret = null
-      }
-    }
-
-    return { peJobs: [ftJob] }
-  } catch (error: any) {
-    if (!error.isBoom) {
-      sentryCaptureException(error)
-      await manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from FT" })
-    }
-    throw error
-  }
 }

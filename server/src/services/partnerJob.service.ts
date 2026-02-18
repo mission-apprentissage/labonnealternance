@@ -15,11 +15,10 @@ import { generateApplicationToken } from "./appLinks.service"
 import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sortLbaJobs } from "./lbajob.service"
 import { filterJobsByOpco } from "./opco.service"
-import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 /**
@@ -259,27 +258,6 @@ export const getPartnerJobs = async ({
   } catch (error) {
     sentryCaptureException(error)
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from partner job (${api})` })
-  }
-}
-
-export const getPartnerJobById = async ({ id, caller }: { id: ObjectId; caller?: string }): Promise<IApiError | { partnerJobs: ILbaItemPartnerJob[] }> => {
-  try {
-    const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: id })
-
-    if (!rawPartnerJob) {
-      return { error: "not_found" }
-    }
-
-    const partnerJob = transformPartnerJob(rawPartnerJob, "V1")
-
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/partnerJob", response: "OK" })
-    }
-
-    return { partnerJobs: [partnerJob] }
-  } catch (error) {
-    sentryCaptureException(error)
-    return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from partner jobs" })
   }
 }
 

@@ -44,6 +44,7 @@ Avant d'installer le projet, assurez-vous d'avoir les éléments suivants :
 - **SOPS** 3.9.3+
 - **pwgen**
 - **1password-cli**
+- **jq**
 - **yq**
 - **shred**
 - **NodeJS** 24+
@@ -56,6 +57,7 @@ brew install n
 brew install yq
 brew install coreutils
 brew install git-lfs
+brew install jq
 brew install 1password-cli
 brew install ansible
 brew install pwgen
@@ -244,6 +246,14 @@ Scanner les secrets dans le repo
 ```bash
   yarn gitleaks:check
 ```
+
+Ajouter les secrets détectés dans une liste de secrets ignorés
+
+```bash
+  yarn gitleaks:update-ignore
+```
+
+Les secrets actuellement ignorés sont stockés dans `gitleaks-fingerprints-baseline.txt`
 
 #### SOPS
 

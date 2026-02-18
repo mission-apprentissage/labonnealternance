@@ -30,12 +30,14 @@ export default function CGURendererClient({ recordMap }: { recordMap: ExtendedRe
             <Grid size={{ xs: 12, md: 5 }}>
               <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("1w") }}>
                 Conditions
-              </Typography>
-              <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("1w") }}>
-                générales
-              </Typography>
-              <Typography component={"h1"} variant="h1" sx={{ mb: fr.spacing("1w"), color: fr.colors.decisions.text.default.info.default }}>
-                d&apos;utilisation
+                <br />
+                <Typography component="span" variant="h1">
+                  générales
+                </Typography>
+                <br />
+                <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default }} variant="h1">
+                  d&apos;utilisation
+                </Typography>
               </Typography>
               <Box
                 component="hr"

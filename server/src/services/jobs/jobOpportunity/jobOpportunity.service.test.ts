@@ -220,15 +220,11 @@ describe("findJobsOpportunities", () => {
   ]
 
   beforeEach(async () => {
-    const ctrl = new AbortController()
-    await startRecruiterChangeStream(ctrl.signal)
     await getDbCollection("jobs_partners").insertMany(recruiters)
     await getDbCollection("recruiters").insertMany(lbaJobs)
     await getDbCollection("jobs_partners").insertMany(partnerJobs)
     await getDbCollection("referentielromes").insertMany(romes)
     await getDbCollection("referentiel.communes").insertMany(generateReferentielCommuneFixtures([parisFixture, clichyFixture, levalloisFixture, marseilleFixture]))
-    await new Promise((r) => setTimeout(r, 200))
-    ctrl.abort()
   })
 
   it("should execute query", async () => {

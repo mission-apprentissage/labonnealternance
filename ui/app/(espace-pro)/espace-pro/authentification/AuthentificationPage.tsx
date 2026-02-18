@@ -129,7 +129,7 @@ export default function Authentification() {
             {({ values, isValid, isSubmitting }) => {
               return (
                 <Form autoComplete="off">
-                  <CustomInput required={false} name="email" label="Votre email" type="text" value={values.email} />
+                  <CustomInput required={false} name="email" label="Votre email" type="email" value={values.email} autoFocus />
                   <Alerts />
                   <Button type="submit" disabled={!isValid || isSubmitting} style={{ width: "100%" }}>
                     <Box
