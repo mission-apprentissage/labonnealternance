@@ -1,25 +1,28 @@
-import dayjs from "shared/helpers/dayjs"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import dayjs from "shared/helpers/dayjs"
 import type { IGeoPoint, IRecruiter, IReferentielRome } from "shared/models/index"
 import { JOB_STATUS } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import type { IJobOfferApiReadV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
-import type { IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
+import z from "zod"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
-import { startRecruiterChangeStream } from "@/services/formulaire.service"
+import { mockDiagoriente } from "@tests/mocks/mockDiagoriente"
+import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
+import { mockLab } from "@tests/mocks/mockLab"
+import { jobsV3Sdk, processComputedToJobsPartners } from "@tests/sdk/jobsV3Sdk"
 import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
@@ -28,6 +31,7 @@ vi.mock("@/common/apis/franceTravail/franceTravail.client")
 vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
 
 const httpClient = useServer()
+const jobsSdk = jobsV3Sdk(httpClient)
 
 const token = await getApiApprentissageTestingToken({
   email: "test@test.fr",
@@ -67,18 +71,36 @@ const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPriv
   offer_expiration: expirationDate,
 })
 
+const jobOfferApiWriteInput: IJobOfferApiWriteV3Input = {
+  contract: { start: new Date("2024-09-01T00:00:00.000Z").toJSON() },
+
+  offer: {
+    title: "Apprentis en développement web",
+    rome_codes: ["M1602"],
+    description: "Envie de devenir développeur web ? Rejoignez-nous !",
+  },
+
+  apply: { email: "mail@mail.com" },
+
+  workplace: {
+    siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
+  },
+}
+
 useMongo()
 
 beforeAll(async () => {
   nock.disableNetConnect()
+  const mockLabInstance = mockLab()
+  const { tokenMock, classificationMock } = mockDiagoriente()
 
   return () => {
     nock.enableNetConnect()
+    mockLabInstance.persist(false)
+    tokenMock.persist(false)
+    classificationMock.persist(false)
+    nock.cleanAll()
   }
-})
-
-afterEach(() => {
-  nock.cleanAll()
 })
 
 describe("GET /v3/jobs/search", () => {
@@ -282,23 +304,6 @@ describe("GET /v3/jobs/search", () => {
 
 describe("POST /jobs", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
-  const inSept = new Date("2024-09-01T00:00:00.000Z")
-
-  const data: IJobOfferApiWriteV3Input = {
-    contract: { start: inSept.toJSON() },
-
-    offer: {
-      title: "Apprentis en développement web",
-      rome_codes: ["M1602"],
-      description: "Envie de devenir développeur web ? Rejoignez-nous !",
-    },
-
-    apply: { email: "mail@mail.com" },
-
-    workplace: {
-      siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
-    },
-  }
 
   beforeEach(async () => {
     // Do not mock nextTick
@@ -307,21 +312,7 @@ describe("POST /jobs", async () => {
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
 
-    nock("https://data.geopf.fr:443/geocodage")
-      .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
-      .reply(200, {
-        features: [
-          {
-            geometry: parisFixture.centre,
-            properties: generateFeaturePropertyFixture({
-              city: parisFixture.nom,
-              postcode: parisFixture.codesPostaux[0],
-              name: "20 AVENUE DE SEGUR",
-            }),
-          },
-        ],
-      })
+    const mockGeo = mockGeolocalisation()
 
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
@@ -333,6 +324,7 @@ describe("POST /jobs", async () => {
     })
 
     return () => {
+      mockGeo.persist(false)
       vi.useRealTimers()
     }
   })
@@ -341,7 +333,7 @@ describe("POST /jobs", async () => {
     const response = await httpClient().inject({
       method: "POST",
       path: `/api/v3/jobs`,
-      body: data,
+      body: jobOfferApiWriteInput,
       headers: { authorization: `Bearer ${fakeToken}` },
     })
 
@@ -360,7 +352,7 @@ describe("POST /jobs", async () => {
     const response = await httpClient().inject({
       method: "POST",
       path: `/api/v3/jobs`,
-      body: data,
+      body: jobOfferApiWriteInput,
       headers: { authorization: `Bearer ${restrictedToken}` },
     })
 
@@ -369,21 +361,20 @@ describe("POST /jobs", async () => {
   })
 
   it("should create a new job offer", async () => {
-    const response = await httpClient().inject({
-      method: "POST",
-      path: `/api/v3/jobs`,
-      body: data,
-      headers: { authorization: `Bearer ${token}` },
+    const response = await jobsSdk.createOffer({
+      data: jobOfferApiWriteInput,
+      token,
     })
-
     expect.soft(response.statusCode).toBe(200)
     const responseJson = response.json()
-    expect(responseJson).toEqual({ id: expect.any(String) })
-    expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
-    const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
+    expect.soft(responseJson).toEqual({ id: expect.any(String) })
 
-    // Ensure that the job offer is associated to the correct permission
-    expect(doc?.partner_label).toBe("Un super Partenaire")
+    const { id } = z.object({ id: z.string() }).parse(responseJson)
+    await processComputedToJobsPartners([id])
+    const getResponse = await jobsSdk.getOffer(id, token)
+    expect.soft(getResponse.statusCode).toBe(200)
+    const getOfferData = getResponse.json() as IJobOfferApiReadV3
+    expect.soft(getOfferData.identifier.partner_label).toBe("Un super Partenaire")
   })
 
   it("should apply method be defined", async () => {
@@ -391,7 +382,7 @@ describe("POST /jobs", async () => {
       method: "POST",
       path: `/api/v3/jobs`,
       body: {
-        ...data,
+        ...jobOfferApiWriteInput,
         apply: {
           email: null,
           phone: null,
@@ -470,21 +461,7 @@ describe("PUT /jobs/:id", async () => {
 
     vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
 
-    nock("https://data.geopf.fr:443/geocodage")
-      .get("/search")
-      .query({ q: "20 AVENUE DE SEGUR, 75007 PARIS", limit: "1" })
-      .reply(200, {
-        features: [
-          {
-            geometry: parisFixture.centre,
-            properties: generateFeaturePropertyFixture({
-              city: parisFixture.nom,
-              postcode: parisFixture.codesPostaux[0],
-              name: "20 AVENUE DE SEGUR",
-            }),
-          },
-        ],
-      })
+    const mockGeo = mockGeolocalisation()
 
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
@@ -498,6 +475,7 @@ describe("PUT /jobs/:id", async () => {
     await getDbCollection("jobs_partners").insertOne(originalJob)
 
     return () => {
+      mockGeo.persist(false)
       vi.useRealTimers()
     }
   })
@@ -632,13 +610,7 @@ describe("GET /v3/jobs/:id", () => {
     await getDbCollection("referentielromes").insertMany(romes)
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
-
-    const ctrl = new AbortController()
-    await startRecruiterChangeStream(ctrl.signal)
-
     await getDbCollection("recruiters").insertOne(lbaJob)
-    await new Promise((r) => setTimeout(r, 200))
-    ctrl.abort()
   })
 
   it("should return 401 if no api key provided", async () => {
@@ -691,19 +663,24 @@ describe("GET /v3/jobs/:id", () => {
   })
 
   it("should return valid jobOpportunity data from recruiters collection", async () => {
-    // Effectuer la requête API avec l'id de la collection recruiters
-    const jobId = lbaJob.jobs[0]._id
-    const response = await httpClient().inject({
-      method: "GET",
-      path: `/api/v3/jobs/${jobId}`,
-      headers: { authorization: `Bearer ${token}` },
+    const createResponse = await jobsSdk.createOffer({
+      data: jobOfferApiWriteInput,
+      token,
     })
+    expect.soft(createResponse.statusCode).toBe(200)
+    const responseJson = createResponse.json()
+    expect.soft(responseJson).toEqual({ id: expect.any(String) })
+
+    const { id } = z.object({ id: z.string() }).parse(responseJson)
+    await processComputedToJobsPartners([id])
+    const getResponse = await jobsSdk.getOffer(id, token)
+    expect.soft(getResponse.statusCode).toBe(200)
 
     // Vérifier que le statut HTTP est 200
-    expect(response.statusCode).toBe(200)
+    expect(getResponse.statusCode).toBe(200)
 
     // Récupérer les données JSON de la réponse
-    const data = response.json()
+    const data = getResponse.json()
 
     // Vérifier que les données correspondent bien au schéma `zJobOfferApiReadV3`
     // Conversion en date forcée car problème de typage avec les dates
