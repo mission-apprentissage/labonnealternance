@@ -113,3 +113,16 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
   const seoMetier = await getDbCollection(seoMetierModel.collectionName).findOne({ slug: metier })
   return seoMetier
 }
+
+export const updateSeoMetierJobCounts = async () => {
+  const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
+  console.log(metiers)
+
+  // build job_count: 0,
+  // build company_count: 0,
+  // build applicant_count: 0,
+  // build entreprises: [],
+  // build formations: [],
+  // build villes: [],
+  // build cards: [],
+}
