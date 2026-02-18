@@ -23,7 +23,6 @@ import dayjs from "shared/helpers/dayjs"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
-import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { anonymizeLbaJobsPartners } from "./partnerJob.service"
@@ -214,14 +213,6 @@ export const createJob = async ({
 
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
-    if (!entrepriseStatus) {
-      throw internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${establishment_id}`)
-    }
-    const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
-    const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
-
-    await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
-
     if (source) {
       await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
     }
