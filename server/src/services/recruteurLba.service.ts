@@ -16,7 +16,6 @@ import type { TLbaItemResult } from "./jobOpportunity.service.types"
 import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { isAllowedSource } from "@/common/utils/isAllowedSource"
 import type { IApiError } from "@/common/utils/errorManager"
@@ -436,60 +435,6 @@ export const getSomeCompanies = async ({
     return transformCompanies({ companies, referer, caller, applicationCountByCompany, isMinimalData })
   } else {
     return companies
-  }
-}
-
-/**
- * Retourne une société issue de l'algo identifiée par sont SIRET
- */
-export const getCompanyFromSiret = async ({
-  siret,
-  referer,
-  caller,
-}: {
-  siret: string
-  referer: string | undefined
-  caller: string | undefined
-}): Promise<
-  | IApiError
-  | {
-      lbaCompanies: ILbaItemLbaCompany[]
-    }
-> => {
-  try {
-    const lbaCompany = (await getDbCollection("jobs_partners").findOne({
-      workplace_siret: siret,
-      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-    })) as IJobsPartnersRecruteurAlgoPrivate
-
-    if (!lbaCompany) {
-      if (caller) {
-        trackApiCall({ caller, api_path: "jobV1/company", job_count: 0, result_count: 0, response: "OK" })
-      }
-      return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
-    }
-
-    if (caller) {
-      trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
-    }
-
-    const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.workplace_siret!])
-    const company = transformCompany({
-      company: lbaCompany,
-      contactAllowedOrigin: isAllowedSource({ referer, caller }),
-      caller,
-      applicationCountByCompany,
-    })
-
-    return { lbaCompanies: [company] }
-  } catch (error) {
-    sentryCaptureException(error)
-    return manageApiError({
-      error,
-      api_path: "jobV1/company",
-      caller,
-      errorTitle: "getting company by Siret from local ES",
-    })
   }
 }
 

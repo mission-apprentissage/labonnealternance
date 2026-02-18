@@ -16,8 +16,6 @@ export const getRomeDetailsFromDB = async (romeCode: string) =>
       },
     }
   )
-export const getFicheMetierFromDB = async ({ query }) => getDbCollection("referentielromes").findOne(query)
-
 // let romeV4toV3: Record<string, string> = {}
 let romeV3toV4: Record<string, string[]> = {}
 let isMappingInitialized = false

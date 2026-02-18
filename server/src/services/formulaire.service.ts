@@ -119,28 +119,6 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
   return { recruiter: recruiterOpt, job }
 }
 
-/**
- * @description Get formulaire list with mondodb paginate query
- * @param {Object} payload
- * @param {Filter<IRecruiter>} payload.query
- * @param {object} payload.options
- * @param {number} payload.page
- * @param {number} payload.limit
- */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page = 1, limit = 10 }: { page?: number; limit?: number }) => {
-  const response = await getDbCollection("recruiters").find(query, { projection: select })
-  const data =
-    page && limit
-      ? await response
-          .skip(page > 0 ? (page - 1) * limit : 0)
-          .limit(limit)
-          .toArray()
-      : await response.toArray()
-  const total = await getDbCollection("recruiters").countDocuments(query)
-  const number_of_page = limit ? Math.ceil(total / limit) : undefined
-  return { pagination: { page, result_per_page: limit, number_of_page, total }, data }
-}
-
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
   return access.admin || access.entreprises.includes(entrepriseId.toString())
