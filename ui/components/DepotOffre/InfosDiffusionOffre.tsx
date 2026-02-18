@@ -42,8 +42,6 @@ export const InfosDiffusionOffre = () => {
           },
         }}
       >
-        <Image src="/images/logosPartenaires/minimal/1j1s.svg" height={80} width={100} alt="#1jeune1solution" />
-        <Image src="/images/logosPartenaires/minimal/portail-alternance.svg" height={80} width={100} alt="Le Portail de l'alternance alternance.emploi.gouv.fr" />
         <Image
           src="/images/logosPartenaires/minimal/affelnet.svg"
           height={80}
