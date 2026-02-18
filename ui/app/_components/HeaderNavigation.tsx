@@ -19,12 +19,12 @@ const NAV_ITEMS: NavItem[] = [
     text: "Je suis alternant",
     menuLinks: [
       {
-        text: "Je m'informe sur l'alternance",
-        href: PAGES.static.guideAlternant.getPath(),
-      },
-      {
         text: "Je recherche une alternance",
         href: PAGES.dynamic.recherche(null).getPath(),
+      },
+      {
+        text: "Je m'informe sur l'alternance",
+        href: PAGES.static.guideAlternant.getPath(),
       },
       {
         text: "Je calcule ma rémunération",
@@ -58,7 +58,7 @@ const NAV_ITEMS: NavItem[] = [
       },
       {
         text: "Je télécharge la carte étudiant des métiers",
-        href: PAGES.static.carteDEtudiantDesMetiers.getPath(),
+        href: PAGES.static.guideCFALaCarteEtudiantDesMetiers.getPath(),
       },
     ],
   },

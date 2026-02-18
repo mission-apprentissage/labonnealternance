@@ -35,7 +35,7 @@ const LesAidesFinancieresEtMateriellesPage = () => {
                 APL (Aide personnalisée au logement) :
               </Typography>{" "}
               En tant qu'alternant, vous avez droit aux aides au logement (APL, ALS, ALF) versées par la CAF selon votre situation. Un abattement fiscal est appliqué sur vos
-              revenus d'apprenti pour le calcul de ces aides. Faites votre demande dès la signature de votre bail (l'aide n'est pas rétroactive).
+              revenus d'apprenti pour le calcul de ces aides. Faites votre demande dès la signature de votre bail (l'aide n'est pas rétroactive).{" "}
               <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/F38630" aria-label="Consulter la liste des aides pour les apprentis">
                 Demander une aide au logement (Service-public.fr)
               </DsfrLink>
@@ -54,13 +54,22 @@ const LesAidesFinancieresEtMateriellesPage = () => {
               <Typography component={"span"} fontWeight={"bold"}>
                 Avance Loca-Pass® :
               </Typography>{" "}
-              Pour financer le dépôt de garantie de votre location, l’avance Loca-pass vous avance sans intérêts.. En savoir plus sur l’Avance Loca-Pass
+              Pour financer le dépôt de garantie de votre location, l’avance Loca-pass vous avance sans intérêts. En savoir plus sur l’Avance Loca-Pass{" "}
               <DsfrLink
                 href="https://www.actionlogement.fr/guides/trouver-un-logement/quelles-aides-au-logement-pour-les-alternants-en-contrat-pro-ou-apprentissage"
                 aria-label="Consulter les aides disponibles sur le site Action Logement"
               >
                 (Action Logement)
               </DsfrLink>
+            </>,
+            <>
+              <DsfrLink href="https://monlogementetudiant.beta.gouv.fr/trouver-un-logement-etudiant" aria-label="Rechercher un logement étudiant sur le site Mon Logement Étudiant">
+                Mon Logement Étudiant
+              </DsfrLink>{" "}
+              a pour objectif de faciliter l'accès aux logements étudiants à vocation sociale, en particulier pour les étudiants boursiers ou en situation de précarité. La
+              plateforme référence plus de 300 résidences sociales (soit près de 40 000 logements) et met à disposition des outils de simulation des aides au logement, ainsi que
+              des ressources pour mieux anticiper son budget. Près de 88% des résidences sont situées en Île-de-France et en Occitanie, deux territoires où la tension sur le
+              logement étudiant est particulièrement forte.
             </>,
             <>
               <Typography component={"span"} fontWeight={"bold"}>
@@ -71,6 +80,12 @@ const LesAidesFinancieresEtMateriellesPage = () => {
             </>,
           ]}
         />
+        <Paragraph>
+          <Typography component={"span"} fontWeight={"bold"}>
+            Conseil pratique :
+          </Typography>{" "}
+          faites vos demandes avant ou juste après l'entrée dans votre nouveau logement pour ne rien perdre.
+        </Paragraph>
       </Section>
       <Section title="Mobilité et transport pendant l’alternance">
         <Paragraph>Votre employeur doit obligatoirement prendre en charge 50 % du coût de vos abonnements de transports en commun pour vos trajets domicile-travail.</Paragraph>

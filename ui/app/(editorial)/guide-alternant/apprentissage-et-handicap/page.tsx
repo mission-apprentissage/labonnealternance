@@ -58,7 +58,7 @@ const ApprentissageEtHandicapPage = () => {
               </>,
             ]}
           />
-          <Box sx={{ ml: fr.spacing("5w"), mt: 0 }}>
+          <Box sx={{ ml: fr.spacing("10v"), mt: 0 }}>
             <ParagraphList
               listItems={[
                 "Les personnes qui bénéficient de la reconnaissance de la qualité de travailleur handicapé (RQTH) ; ",
@@ -76,7 +76,7 @@ const ApprentissageEtHandicapPage = () => {
               </>,
             ]}
           />
-          <Box sx={{ ml: fr.spacing("5w"), mt: 0 }}>
+          <Box sx={{ ml: fr.spacing("10v"), mt: 0 }}>
             <ParagraphList
               listItems={[
                 "D’un projet personnalisé de scolarisation (PPS) ;",
@@ -173,7 +173,7 @@ const ApprentissageEtHandicapPage = () => {
               </Typography>,
             ]}
           />
-          <Box sx={{ ml: fr.spacing("5w") }}>
+          <Box sx={{ ml: fr.spacing("10v") }}>
             <ParagraphList
               listItems={[
                 "l’indemnité d’apprentissage en cas de recrutement d’une personne en situation de handicap avec une prise en charge par le FIPHFP du coût salarial chargé de l’apprenti à hauteur de 80 %;",

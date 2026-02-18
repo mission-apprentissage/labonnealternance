@@ -20,7 +20,7 @@ const GuideCFAPage = () => {
   return (
     <Box
       sx={{
-        mb: fr.spacing("3w"),
+        mb: fr.spacing("6v"),
       }}
     >
       <Breadcrumb pages={[PAGES.static.guideCFA]} />
@@ -29,8 +29,8 @@ const GuideCFAPage = () => {
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>
-          <Grid container spacing={4} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
-            <Grid size={{ md: 7, xs: 12 }} gap={2} display={"flex"} flexDirection={"column"}>
+          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
+            <Grid size={{ md: 7, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
               <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }} gutterBottom>
                 Ressources CFA
               </Typography>
@@ -41,7 +41,7 @@ const GuideCFAPage = () => {
             </Grid>
           </Grid>
         </Box>
-        <Grid container spacing={2}>
+        <Grid container spacing={fr.spacing("4v")}>
           <Grid size={12} my={fr.spacing("6v")}>
             <Typography component="h2" variant="h2">
               Tout savoir sur l'alternance
@@ -55,7 +55,7 @@ const GuideCFAPage = () => {
             size={12}
             sx={{
               "& .fr-card__content": {
-                padding: fr.spacing("3w"),
+                padding: fr.spacing("6v"),
               },
               "& .fr-card__end": {
                 display: "none",
@@ -73,7 +73,7 @@ const GuideCFAPage = () => {
               <AllerPlusLoinItem {...ARTICLES["la-carte-etudiant-des-metiers"]} />
             </Grid>
           </Grid>
-          <Grid container size={12} spacing={2}>
+          <Grid container size={12} spacing={fr.spacing("4v")}>
             <Grid size={12} my={fr.spacing("6v")}>
               <Typography component="h2" variant="h2">
                 Liens utiles
@@ -82,7 +82,7 @@ const GuideCFAPage = () => {
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
-            <Grid size={12} mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}>
+            <Grid size={12} mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}>
               <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
                 <ListItem sx={{ display: "list-item" }}>
                   Pour rechercher une formation en alternance, le{" "}
@@ -105,7 +105,7 @@ const GuideCFAPage = () => {
                   <DsfrLink href="https://www.cfadock.fr/doc/Vade-mecum%20CFA.pdf" aria-label="Consulter le Vade-mecum CFA">
                     Vade-mecum CFA
                   </DsfrLink>{" "}
-                  précise les modalités pratiques de gestion des contrats d’apprentissage.Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le
+                  précise les modalités pratiques de gestion des contrats d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le
                   secteur privé et a été élaboré en concertation avec les têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation
                   Professionnelle (DGEFP).
                 </ListItem>
@@ -116,6 +116,29 @@ const GuideCFAPage = () => {
                   </DsfrLink>
                   , association sous tutelle du ministère en charge de la Formation professionnelle.
                 </ListItem>
+                <ListItem sx={{ display: "list-item" }}>
+                  <DsfrLink href="https://www.francecompetences.fr/" aria-label="Consulter le site France Compétences">
+                    France Compétences
+                  </DsfrLink>{" "}
+                  est l’autorité nationale chargée du financement et de la régulation de la formation professionnelle de l’apprentissage.
+                </ListItem>
+                <ListItem sx={{ display: "list-item" }}>
+                  Pour découvrir les bonnes pratiques d’une formation en apprentissage pour les établissements d’enseignement supérieur, consultez la{" "}
+                  <DsfrLink
+                    href="https://www.enseignementsup-recherche.gouv.fr/fr/charte-pour-un-accompagnement-responsable-et-de-qualite-des-apprentis-des-etablissements-d-93051"
+                    aria-label="Consulter la Charte pour un accompagnement responsable et de qualité des apprentis"
+                  >
+                    Charte pour un accompagnement responsable et de qualité des apprentis
+                  </DsfrLink>
+                  .
+                </ListItem>
+                <ListItem sx={{ display: "list-item" }}>
+                  De façon globale, le site référence pour suivre l’actualité et la réglementation sur l’alternance est celui du{" "}
+                  <DsfrLink href="https://travail-emploi.gouv.fr/" aria-label="Consulter le site du Ministère du Travail">
+                    Ministère du Travail
+                  </DsfrLink>
+                  .
+                </ListItem>
               </List>
             </Grid>
             <Grid
@@ -124,8 +147,8 @@ const GuideCFAPage = () => {
               sx={{
                 backgroundColor: fr.colors.decisions.background.default.grey.hover,
                 borderRadius: fr.spacing("2v"),
-                padding: { md: fr.spacing("4w"), xs: fr.spacing("2w") },
-                marginTop: fr.spacing("4w"),
+                padding: { md: fr.spacing("8v"), xs: fr.spacing("4v") },
+                marginTop: fr.spacing("8v"),
               }}
               spacing={2}
             >
@@ -192,12 +215,12 @@ const GuideCFAPage = () => {
               />
             </Grid>
           </Grid>
-          <Grid container size={12} sx={{ px: fr.spacing("3w"), py: fr.spacing("2w") }}>
+          <Grid container size={12} sx={{ px: fr.spacing("6v"), py: fr.spacing("4v") }}>
             <Grid size={{ md: 3, xs: 12 }}>
-              <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" />
+              <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" aria-hidden={true} />
             </Grid>
             <Grid size={{ md: 9, xs: 12 }} sx={{ display: "flex", alignItems: "center" }}>
-              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("2w")} my={fr.spacing("2w")}>
+              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
                 <Typography variant="body1" fontWeight={500}>
                   Diffusez simplement et gratuitement les offres en alternance de vos partenaires
                 </Typography>
@@ -210,9 +233,9 @@ const GuideCFAPage = () => {
               </Box>
             </Grid>
           </Grid>
-          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("3w"), py: fr.spacing("2w") }}>
+          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("6v"), py: fr.spacing("4v") }}>
             <Grid size={{ md: 10, xs: 12 }}>
-              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("2w")} my={fr.spacing("2w")}>
+              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
                 <Typography variant="body1" fontWeight={500}>
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
@@ -225,7 +248,7 @@ const GuideCFAPage = () => {
               </Box>
             </Grid>
             <Grid size={{ md: 2, xs: 12 }}>
-              <Image src="/images/guides/faq.svg" width={200} height={110} alt="" />
+              <Image src="/images/guides/faq.svg" width={200} height={110} alt="" aria-hidden={true} />
             </Grid>
           </Grid>
         </Grid>

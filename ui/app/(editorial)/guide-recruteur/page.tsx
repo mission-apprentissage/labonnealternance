@@ -21,7 +21,7 @@ const GuideRecruteurPage = () => {
   return (
     <Box
       sx={{
-        mb: fr.spacing("3w"),
+        mb: fr.spacing("6v"),
       }}
     >
       <Breadcrumb pages={[PAGES.static.guideRecruteur]} />
@@ -30,8 +30,8 @@ const GuideRecruteurPage = () => {
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>
-          <Grid container spacing={4} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
-            <Grid size={{ md: 7, xs: 12 }} gap={2} display={"flex"} flexDirection={"column"}>
+          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
+            <Grid size={{ md: 7, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
               <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }} gutterBottom>
                 Ressources recruteur
               </Typography>
@@ -41,7 +41,7 @@ const GuideRecruteurPage = () => {
             </Grid>
           </Grid>
         </Box>
-        <Grid container spacing={2}>
+        <Grid container spacing={fr.spacing("4v")}>
           <Grid size={12} my={fr.spacing("6v")}>
             <Typography component="h2" variant="h2">
               Tout savoir sur l'alternance
@@ -55,7 +55,7 @@ const GuideRecruteurPage = () => {
             size={12}
             sx={{
               "& .fr-card__content": {
-                padding: fr.spacing("3w"),
+                padding: fr.spacing("6v"),
               },
               "& .fr-card__end": {
                 display: "none",
@@ -89,14 +89,14 @@ const GuideRecruteurPage = () => {
               backgroundColor: fr.colors.decisions.background.default.grey.hover,
               borderRadius: fr.spacing("2v"),
               "& .fr-card__content": {
-                paddingTop: fr.spacing("3w"),
-                paddingBottom: fr.spacing("4w"),
+                paddingTop: fr.spacing("6v"),
+                paddingBottom: fr.spacing("8v"),
               },
               "& .fr-card__title ::after": {
                 display: "none",
               },
-              padding: fr.spacing("4w"),
-              marginTop: fr.spacing("4w"),
+              padding: fr.spacing("8v"),
+              marginTop: fr.spacing("8v"),
             }}
           >
             <Grid size={12}>
@@ -117,7 +117,7 @@ const GuideRecruteurPage = () => {
               />
             </Grid>
           </Grid>
-          <Grid container size={12} spacing={2}>
+          <Grid container size={12} spacing={fr.spacing("4v")}>
             <Grid size={12} my={fr.spacing("6v")}>
               <Typography component="h2" variant="h2">
                 Liens utiles
@@ -126,15 +126,15 @@ const GuideRecruteurPage = () => {
                 sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
               />
             </Grid>
-            <Grid size={12} mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}>
+            <Grid size={12} mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}>
               <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
                 <ListItem sx={{ display: "list-item", flex: "1" }}>
                   <Typography component="span" fontWeight={"bold"}>
                     Estimez le coût d’un alternant
                   </Typography>{" "}
-                  pour votre entreprise avec le simulateur de l’URSSAF.
+                  pour votre entreprise avec le simulateur de l’URSSAF.{" "}
                   <DsfrLink
-                    href="https://www.alternance.emploi.gouv.fr/simulateur-employeur/etape-1"
+                    href="https://www.urssaf.fr/accueil/outils-documentation/simulateurs/cotisations-employeur.html"
                     aria-label="Consulter le simulateur de l’URSSAF pour estimer le coût d’un alternant"
                   >
                     En savoir plus
@@ -150,29 +150,28 @@ const GuideRecruteurPage = () => {
                   </DsfrLink>
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  <Typography component="span" fontWeight={700}>
+                  <Typography component="span" fontWeight={"bold"}>
                     Retrouvez les informations légales de votre entreprise
                   </Typography>{" "}
-                  sur l’annuaire des entreprises, à partir de votre SIRET.
+                  sur l’annuaire des entreprises, à partir de votre SIRET.{" "}
                   <DsfrLink href="https://annuaire-entreprises.data.gouv.fr/" aria-label="Consulter l’annuaire des entreprises">
                     En savoir plus
                   </DsfrLink>
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
-                  <Typography fontWeight={700}>Chaque entreprise est rattachée à un Opérateur de compétences (OPCO).</Typography> Il s’agit de votre interlocuteur de proximité pour
-                  vos démarches liées à l’alternance (financement des contrats, formation, ...). Votre OPCO peut vous aider à affiner vos besoins de recrutement. Aussi, sachez
-                  qu’en déposant une offre d’emploi en alternance sur le site de votre OPCO, celle-ci sera rediffusée sur les sites consultés par les jeunes. Vous ne connaissez pas
-                  votre OPCO ? Retrouvez votre OPCO sur
+                  <Typography fontWeight={"bold"} component={"span"}>
+                    Chaque entreprise est rattachée à un Opérateur de compétences (OPCO).
+                  </Typography>{" "}
+                  Il s’agit de votre interlocuteur de proximité pour vos démarches liées à l’alternance (financement des contrats, formation, ...). Votre OPCO peut vous aider à
+                  affiner vos besoins de recrutement. Aussi, sachez qu’en déposant une offre d’emploi en alternance sur le site de votre OPCO, celle-ci sera rediffusée sur les
+                  sites consultés par les jeunes. Vous ne connaissez pas votre OPCO ? Retrouvez votre OPCO sur{" "}
                   <DsfrLink href="https://quel-est-mon-opco.francecompetences.fr/" aria-label="Consulter le site France compétences">
                     France compétences
                   </DsfrLink>
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Les Directions régionales de l’économie, de l’emploi, du travail et des solidarités (
-                  <DsfrLink
-                    href="https://entreprendre.service-public.gouv.fr/vosdroits/F23556"
-                    aria-label="Consulter les informations sur les Directions régionales de l’économie, de l’emploi, du travail et des solidarités"
-                  >
+                  <DsfrLink href="https://dreets.gouv.fr/" aria-label="Consulter le site des Directions régionales de l’économie, de l’emploi, du travail et des solidarités">
                     DREETS
                   </DsfrLink>
                   ) sont les services déconcentrés du Ministère du Travail, de la Santé et des Solidarités. Vous pouvez les contacter pour toute question relative au contrat
@@ -201,11 +200,11 @@ const GuideRecruteurPage = () => {
                     Cerfa n° 10103*11
                   </DsfrLink>{" "}
                   doit être signé et transmis à votre OPCO{" "}
-                  <Typography component="span" fontWeight={700}>
+                  <Typography component="span" fontWeight={"bold"}>
                     au plus tard 5 jours après le démarrage du contrat.
                   </Typography>{" "}
-                  Gagnez du temps ! Optimisez la création de vos contrats d’apprentissage avec le service{" "}
-                  <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319" aria-label="Consulter le service CERFA dématérialisé">
+                  Gagnez du temps ! Pour le secteur public, optimisez la création de vos contrats d'apprentissage avec le service{" "}
+                  <DsfrLink href="https://celia.emploi.gouv.fr/" aria-label="Consulter le service CERFA dématérialisé">
                     CERFA dématérialisé
                   </DsfrLink>
                 </ListItem>
@@ -218,10 +217,10 @@ const GuideRecruteurPage = () => {
               sx={{
                 backgroundColor: fr.colors.decisions.background.default.grey.hover,
                 borderRadius: fr.spacing("2v"),
-                padding: { md: fr.spacing("4w"), xs: fr.spacing("2w") },
-                marginTop: fr.spacing("4w"),
+                padding: { md: fr.spacing("8v"), xs: fr.spacing("4v") },
+                marginTop: fr.spacing("8v"),
               }}
-              spacing={2}
+              spacing={fr.spacing("4v")}
             >
               <Grid size={12} my={fr.spacing("6v")}>
                 <Typography component="h2" variant="h2">
@@ -287,12 +286,12 @@ const GuideRecruteurPage = () => {
               />
             </Grid>
           </Grid>
-          <Grid container size={12} sx={{ px: fr.spacing("3w"), py: fr.spacing("2w"), my: fr.spacing("6v") }}>
+          <Grid container size={12} sx={{ px: fr.spacing("6v"), py: fr.spacing("4v"), my: fr.spacing("6v") }}>
             <Grid size={{ md: 3, xs: 12 }}>
-              <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" />
+              <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" aria-hidden={true} />
             </Grid>
             <Grid size={{ md: 9, xs: 12 }} sx={{ display: "flex", alignItems: "center" }}>
-              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("2w")} my={fr.spacing("2w")}>
+              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
                 <Typography variant="body1" fontWeight={500}>
                   Diffusez simplement et gratuitement vos offres en alternance
                 </Typography>
@@ -305,9 +304,9 @@ const GuideRecruteurPage = () => {
               </Box>
             </Grid>
           </Grid>
-          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("3w"), py: fr.spacing("2w"), my: fr.spacing("6v") }}>
+          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("6v"), py: fr.spacing("4v"), my: fr.spacing("6v") }}>
             <Grid size={{ md: 10, xs: 12 }}>
-              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("2w")} my={fr.spacing("2w")}>
+              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
                 <Typography variant="body1" fontWeight={500}>
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
@@ -320,7 +319,7 @@ const GuideRecruteurPage = () => {
               </Box>
             </Grid>
             <Grid size={{ md: 2, xs: 12 }}>
-              <Image src="/images/guides/faq.svg" width={200} height={110} alt="" />
+              <Image src="/images/guides/faq.svg" width={200} height={110} alt="" aria-hidden={true} />
             </Grid>
           </Grid>
         </Grid>

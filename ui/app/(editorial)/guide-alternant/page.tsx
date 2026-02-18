@@ -22,7 +22,7 @@ const GuideAlternantPage = () => {
   return (
     <Box
       sx={{
-        mb: fr.spacing("3w"),
+        mb: fr.spacing("6v"),
       }}
     >
       <Breadcrumb pages={[PAGES.static.guideAlternant]} />
@@ -31,8 +31,8 @@ const GuideAlternantPage = () => {
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>
-          <Grid container spacing={4} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
-            <Grid size={{ md: 7, xs: 12 }} gap={2} display={"flex"} flexDirection={"column"}>
+          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
+            <Grid size={{ md: 7, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
               <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }} gutterBottom>
                 Ressources alternant
               </Typography>
@@ -42,7 +42,7 @@ const GuideAlternantPage = () => {
             </Grid>
           </Grid>
         </Box>
-        <Grid container spacing={2}>
+        <Grid container spacing={fr.spacing("4v")}>
           <Grid size={12} my={fr.spacing("6v")}>
             <Typography component="h2" variant="h2">
               Tout savoir sur l'alternance
@@ -56,7 +56,7 @@ const GuideAlternantPage = () => {
             size={12}
             sx={{
               "& .fr-card__content": {
-                padding: fr.spacing("3w"),
+                padding: fr.spacing("6v"),
               },
               "& .fr-card__end": {
                 display: "none",
@@ -129,14 +129,14 @@ const GuideAlternantPage = () => {
               backgroundColor: fr.colors.decisions.background.default.grey.hover,
               borderRadius: fr.spacing("2v"),
               "& .fr-card__content": {
-                paddingTop: fr.spacing("3w"),
-                paddingBottom: fr.spacing("4w"),
+                paddingTop: fr.spacing("6v"),
+                paddingBottom: fr.spacing("8v"),
               },
               "& .fr-card__title ::after": {
                 display: "none",
               },
-              padding: { md: fr.spacing("4w"), xs: fr.spacing("2w") },
-              marginTop: fr.spacing("4w"),
+              padding: { md: fr.spacing("8v"), xs: fr.spacing("4v") },
+              marginTop: fr.spacing("8v"),
             }}
           >
             <Grid size={12}>
@@ -184,10 +184,10 @@ const GuideAlternantPage = () => {
             sx={{
               backgroundColor: fr.colors.decisions.background.default.grey.hover,
               borderRadius: fr.spacing("2v"),
-              padding: { md: fr.spacing("4w"), xs: fr.spacing("1w") },
-              marginTop: fr.spacing("4w"),
+              padding: { md: fr.spacing("8v"), xs: fr.spacing("2v") },
+              marginTop: fr.spacing("8v"),
             }}
-            spacing={2}
+            spacing={fr.spacing("4v")}
           >
             <Grid size={12} my={fr.spacing("6v")}>
               <Typography component="h2" variant="h2">
@@ -200,12 +200,12 @@ const GuideAlternantPage = () => {
             <Grid
               container
               size={12}
-              mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}
-              padding={{ md: fr.spacing("3w"), xs: fr.spacing("2w") }}
+              mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}
+              padding={{ md: fr.spacing("6v"), xs: fr.spacing("4v") }}
               sx={{ backgroundColor: "white" }}
             >
               <Grid size={{ md: 4, xs: 0 }} alignContent={"center"}>
-                <Image src="/images/guides/guide-alternant/tableau-de-suivi.svg" width={222} height={175} alt="" />
+                <Image src="/images/guides/guide-alternant/tableau-de-suivi.svg" width={222} height={175} alt="" aria-hidden={true} />
               </Grid>
               <Grid size={{ md: 8, xs: 12 }}>
                 <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")}>
@@ -225,7 +225,7 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - PDF
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
                         (3.9 Mo)
                       </Typography>
                     </Box>
@@ -238,7 +238,7 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Excel
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
                         (12 ko)
                       </Typography>
                     </Box>
@@ -251,7 +251,7 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Numbers
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
                         (788 ko)
                       </Typography>
                     </Box>
@@ -264,7 +264,7 @@ const GuideAlternantPage = () => {
                         <DsfrIcon name="fr-icon-file-download-line" size={16} />
                         Tableau de suivi à imprimer - Libre office
                       </DsfrLink>
-                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("1w")}>
+                      <Typography component={"span"} variant="caption" mt={"auto"} ml={fr.spacing("2v")}>
                         (29 ko)
                       </Typography>
                     </Box>
@@ -274,12 +274,12 @@ const GuideAlternantPage = () => {
             </Grid>
             <Grid
               size={12}
-              mx={{ md: fr.spacing("4w"), xs: fr.spacing("1w") }}
+              mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}
               sx={{
                 backgroundColor: "white",
                 "& .fr-card__content": {
-                  paddingTop: fr.spacing("2w"),
-                  paddingBottom: fr.spacing("4w"),
+                  paddingTop: fr.spacing("4v"),
+                  paddingBottom: fr.spacing("8v"),
                 },
                 "& .fr-card__end": {
                   display: "none",
@@ -291,10 +291,10 @@ const GuideAlternantPage = () => {
             >
               <Card
                 title={
-                  <Box display={"flex"} gap={fr.spacing("3w")}>
-                    <Image src={"/images/guides/guide.svg"} width={40} height={40} alt="" />
+                  <Box display={"flex"} gap={fr.spacing("6v")}>
+                    <Image src={"/images/guides/guide.svg"} width={40} height={40} alt="" aria-hidden={true} />
                     <Box display="flex" flexDirection={"column"}>
-                      <Typography component="span" variant="body1" color={fr.colors.decisions.text.title.blueFrance.default} fontWeight={700}>
+                      <Typography component="span" variant="body1" color={fr.colors.decisions.text.title.blueFrance.default} fontWeight={"bold"}>
                         Guide apprentissage et handicap
                       </Typography>
                       <Typography component="span" variant="body2" color={fr.colors.decisions.text.default.grey.default} fontSize={14}>
@@ -346,9 +346,9 @@ const GuideAlternantPage = () => {
             </Grid>
           </Grid>
 
-          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("3w"), py: fr.spacing("2w") }}>
+          <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("6v"), py: fr.spacing("4v") }}>
             <Grid size={{ md: 10, xs: 12 }}>
-              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("2w")} my={fr.spacing("2w")}>
+              <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
                 <Typography variant="body1" fontWeight={500}>
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
@@ -361,7 +361,7 @@ const GuideAlternantPage = () => {
               </Box>
             </Grid>
             <Grid size={{ md: 2, xs: 12 }}>
-              <Image src="/images/guides/faq.svg" width={200} height={110} alt="" />
+              <Image src="/images/guides/faq.svg" width={200} height={110} alt="" aria-hidden={true} />
             </Grid>
           </Grid>
         </Grid>

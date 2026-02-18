@@ -54,7 +54,7 @@ const PreparerSonProjetEnAlternancePage = () => {
       </Section>
       <Section title="Choisir le métier vers lequel se tourner">
         <Paragraph>Pour savoir quel métier choisir, la meilleure approche est encore de partir de vous et vos goûts personnels :</Paragraph>
-        <Box sx={{ marginLeft: { md: fr.spacing("5w") }, xs: fr.spacing("2w") }}>
+        <Box sx={{ marginLeft: { md: fr.spacing("10v") }, xs: fr.spacing("4v") }}>
           <ParagraphList
             listItems={[
               "Faites le point sur vos centres d'intérêt et vos passions, même celles qui semblent éloignées du monde professionnel. Identifiez vos matières préférées à l'école et ce qui les rend motivantes ;",
@@ -214,7 +214,7 @@ const PreparerSonProjetEnAlternancePage = () => {
         />
       </Section>
       <InfoSection>
-        <Box display={"flex"} flexDirection={"column"} gap={2}>
+        <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")}>
           <Paragraph>
             Pour vous entraîner à contacter les entreprises, vous pouvez tester vos connaissances avec nos quiz de mise en situation :{" "}
             <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e" aria-label="Consultez le quizz chercher un employeur">

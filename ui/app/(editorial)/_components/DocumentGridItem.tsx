@@ -10,17 +10,17 @@ export const DocumentGridItem = ({ title, link }: { title: string; link: string 
       sx={{
         backgroundColor: "transparent",
         "& .fr-card__content": {
-          paddingTop: fr.spacing("2w"),
-          paddingBottom: fr.spacing("4w"),
+          paddingTop: fr.spacing("4v"),
+          paddingBottom: fr.spacing("8v"),
         },
       }}
     >
       <Card
         title={
-          <Box display={"flex"} gap={fr.spacing("3w")} height={"100%"}>
+          <Box display={"flex"} gap={fr.spacing("6v")} height={"100%"}>
             <Image src={"/images/guides/guide.svg"} width={40} height={40} alt="" />
             <Box display="flex" flexDirection={"column"} gap={1}>
-              <Typography component="span" variant="body1" color={fr.colors.decisions.text.title.blueFrance.default} fontWeight={700}>
+              <Typography component="span" variant="body1" color={fr.colors.decisions.text.title.blueFrance.default} fontWeight={"bold"}>
                 {title}
               </Typography>
             </Box>

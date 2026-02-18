@@ -29,7 +29,7 @@ export const LayoutArticle = ({
 }) => (
   <DefaultContainer sx={{ marginBottom: fr.spacing("10v"), marginTop: fr.spacing("10v") }}>
     <Breadcrumb pages={pages} />
-    <Grid container spacing={2}>
+    <Grid container spacing={fr.spacing("4v")}>
       <Grid size={{ md: 12, xs: 12 }}>
         <Typography component="h1" variant="h1" color={fr.colors.decisions.text.default.info.default}>
           {title}
@@ -37,7 +37,7 @@ export const LayoutArticle = ({
       </Grid>
       <Grid size={{ md: 1, xs: 0 }}></Grid>
       <Grid size={{ md: 10, xs: 12 }}>
-        <Box gap={3} display={"flex"} flexDirection={"column"}>
+        <Box gap={fr.spacing("6v")} display={"flex"} flexDirection={"column"}>
           {updatedAt}
           {description}
           {children}
@@ -45,10 +45,10 @@ export const LayoutArticle = ({
       </Grid>
       <Grid size={{ md: 1, xs: 0 }}></Grid>
     </Grid>
-    <Divider sx={{ width: "100%", height: 0, background: "none", borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`, my: fr.spacing("3w") }} />
+    <Divider sx={{ width: "100%", height: 0, background: "none", borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`, my: fr.spacing("6v") }} />
     {allerPlusLoinItems?.length > 0 && (
-      <Grid container spacing={fr.spacing("3w")} marginTop={fr.spacing("4w")}>
-        <Grid size={12} spacing={fr.spacing("3w")}>
+      <Grid container spacing={fr.spacing("6v")} marginTop={fr.spacing("8v")}>
+        <Grid size={12} spacing={fr.spacing("6v")}>
           <Typography component={"h2"} variant="h2">
             Pour continuer d'explorer
           </Typography>

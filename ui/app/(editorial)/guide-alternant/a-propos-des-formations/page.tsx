@@ -128,14 +128,14 @@ const AProposDesFormationsPage = () => {
           size={12}
           sx={{
             "& .fr-card__content": {
-              paddingTop: fr.spacing("3w"),
-              paddingBottom: fr.spacing("4w"),
+              paddingTop: fr.spacing("6v"),
+              paddingBottom: fr.spacing("8v"),
             },
             "& .fr-card__title ::after": {
               display: "none",
             },
           }}
-          spacing={4}
+          spacing={fr.spacing("8v")}
         >
           <Grid size={{ md: 12, xs: 12 }}>
             <QuizItem

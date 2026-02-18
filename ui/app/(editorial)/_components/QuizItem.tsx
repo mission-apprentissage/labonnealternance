@@ -9,8 +9,8 @@ export const QuizItem = ({ title, desc, href }: { title: string; desc: string; h
       <Badge
         style={{
           // padding: fr.spacing("1v"),
-          paddingLeft: fr.spacing("1w"),
-          paddingRight: fr.spacing("1w"),
+          paddingLeft: fr.spacing("2v"),
+          paddingRight: fr.spacing("2v"),
           borderRadius: fr.spacing("3v"),
           marginBottom: fr.spacing("2v"),
           textTransform: "none",

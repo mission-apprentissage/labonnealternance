@@ -57,7 +57,7 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
         <Paragraph>
           <Typography fontWeight={"bold"}>
             Plus d’un employeur sur deux recrute sans déposer d'offre d'emploi : optimisez vos chances en adressant aussi des candidatures spontanées ! La bonne alternance
-            identifie pour vous des entreprises de recruter, auprès desquelles vous pouvez adresser des candidatures spontanées.
+            identifie pour vous des entreprises susceptibles de recruter, auprès desquelles vous pouvez adresser des candidatures spontanées.
           </Typography>
         </Paragraph>
       </Section>
@@ -131,14 +131,14 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
           size={12}
           sx={{
             "& .fr-card__content": {
-              paddingTop: fr.spacing("3w"),
-              paddingBottom: fr.spacing("4w"),
+              paddingTop: fr.spacing("6v"),
+              paddingBottom: fr.spacing("8v"),
             },
             "& .fr-card__title ::after": {
               display: "none",
             },
           }}
-          spacing={4}
+          spacing={fr.spacing("8v")}
         >
           <Grid size={{ md: 6, xs: 12 }}>
             <QuizItem
