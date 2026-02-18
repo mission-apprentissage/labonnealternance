@@ -54,7 +54,7 @@ export function CandidaterButton({
           <ItemDetailApplicationsStatus item={item} />
         ) : isOfferActive(item) ? (
           <>
-            <Box sx={{ my: fr.spacing("8v") }}>
+            <Box sx={{ my: fr.spacing("4v") }}>
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>
@@ -64,13 +64,13 @@ export function CandidaterButton({
                 direction="row"
                 sx={{
                   alignItems: "center",
-                  my: fr.spacing("16v"),
+                  my: 0,
                 }}
               >
                 <Box component="span">
-                  <Image width={16} height={16} src="/images/icons/small_info.svg" alt="" />
+                  <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
                 </Box>
-                <Typography component="span" variant="body2" sx={{ ml: fr.spacing("8v"), fontSize: "12px", fontStyle: "italic" }}>
+                <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
                   Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l'entreprise.{" "}
                 </Typography>
               </Stack>
