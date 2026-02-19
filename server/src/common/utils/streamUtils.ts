@@ -149,15 +149,15 @@ export function limitStream<TInput>(options: LimitStreamOptions<TInput>): Transf
 
       activeCount++
 
-      const promise: Promise<void> = (async () => {
+      const promise = (async () => {
         try {
           await processItem(item)
         } finally {
           activeCount--
-          pendingPromises.delete(promise)
           signalSlotFree()
         }
       })()
+      void promise.finally(() => pendingPromises.delete(promise))
 
       pendingPromises.add(promise)
       callback(null)
