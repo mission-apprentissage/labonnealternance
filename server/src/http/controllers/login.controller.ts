@@ -10,7 +10,7 @@ import { controlUserState } from "@/services/login.service"
 import mailer from "@/services/mailer.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 import type { Server } from "@/http/server"
-import { getUserWithAccountByEmail, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurProps, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
 import { createAuthMagicLink } from "@/services/appLinks.service"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -53,14 +53,11 @@ export default (server: Server) => {
       if (!user) {
         return res.status(400).send({ error: true, data: "UNKNOWN" })
       }
-      const userState = await controlUserState(user)
-      if (userState?.error) {
-        return res.status(400).send(userState)
+      if (isUserDisabled(user)) {
+        return res.status(400).send({ error: true, data: "DISABLED" })
       }
 
       const is_email_checked = isUserEmailChecked(user)
-      const { email: userEmail, first_name, last_name } = user
-
       if (!is_email_checked) {
         await sendUserConfirmationEmail(user)
         return res.status(400).send({
@@ -68,6 +65,13 @@ export default (server: Server) => {
           data: "VERIFY",
         })
       }
+
+      const userState = await controlUserState(user)
+      if (userState?.error) {
+        return res.status(400).send(userState)
+      }
+
+      const { email: userEmail, first_name, last_name } = user
 
       await mailer.sendEmail({
         to: userEmail,

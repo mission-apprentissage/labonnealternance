@@ -23,6 +23,7 @@ import type {
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 
+import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 import { logger } from "@/common/logger"
 import type { IApiError } from "@/common/utils/errorManager"
@@ -35,7 +36,7 @@ import type { FTJob } from "@/services/ftjob.service.types"
 import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
 import type { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/services/lbaitem.shared.service.types"
 import { getLbaJobs, incrementLbaJobsViewCount } from "@/services/lbajob.service"
-import { jobsQueryValidator, jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
+import { jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
 
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
@@ -310,60 +311,6 @@ export const getJobsQueryPrivate = async (
   return result
 }
 
-/**
- * Retourne la compilation d'offres partenaires, d'offres LBA et de sociétés issues de l'algo
- * ou une liste d'erreurs si les paramètres de la requête sont invalides
- */
-export const getJobsQuery = async (
-  query: TJobSearchQuery
-): Promise<
-  | IApiError
-  | {
-      peJobs: TLbaItemResult<ILbaItemFtJob> | null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
-      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-      lbbCompanies: null
-    }
-> => {
-  const parameterControl = await jobsQueryValidator(query)
-
-  if ("error" in parameterControl) {
-    return parameterControl
-  }
-
-  const result = await getJobsFromApi({ romes: parameterControl.romes, ...query })
-
-  if ("error" in result) {
-    return result
-  }
-
-  let job_count = 0
-
-  if ("lbaCompanies" in result && result.lbaCompanies && "results" in result.lbaCompanies) {
-    job_count += result.lbaCompanies.results.length
-  }
-
-  if ("peJobs" in result && result.peJobs && "results" in result.peJobs) {
-    job_count += result.peJobs.results.length
-  }
-
-  if ("matchas" in result && result.matchas && "results" in result.matchas) {
-    job_count += result.matchas.results.length
-    await incrementLbaJobsViewCount(result.matchas.results.flatMap((job) => (job?.id ? [job.id] : [])))
-  }
-
-  if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
-    job_count += result.partnerJobs.results.length
-  }
-
-  if (query.caller) {
-    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
-  }
-
-  return result
-}
-
 export const getJobsPartnersFromDB = async ({
   romes,
   geo,
@@ -501,12 +448,12 @@ export const getJobsPartnersForApi = async ({
     : [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA]
   const jobsPartners = await getJobsPartnersFromDB({ romes, geo, target_diploma_level, partners_to_exclude: partnersToExclude, opco, departements, elligibleHandicapFilter: false })
 
-  return jobsPartners.map((j) =>
+  return jobsPartners.map((job) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
-      ...j,
-      contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-      apply_url: getApplyUrl(j),
-      apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
+      ...job,
+      contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+      apply_url: buildApplyUrlFromJob(job),
+      apply_recipient_id: job.apply_email ? getRecipientID(JobCollectionName.partners, job._id.toString()) : null,
     })
   )
 }
@@ -536,7 +483,12 @@ export const convertLbaCompanyToJobRecruiterApi = (recruteursLba: IJobsPartnersO
         },
       },
       apply: {
-        url: buildApplyUrl(recruteurLba.workplace_siret!, recruteurLba.workplace_legal_name!, LBA_ITEM_TYPE.RECRUTEURS_LBA),
+        url: buildLbaUrl(
+          LBA_ITEM_TYPE.RECRUTEURS_LBA,
+          recruteurLba._id,
+          recruteurLba.workplace_siret,
+          recruteurLba.workplace_legal_name ?? recruteurLba.workplace_brand ?? undefined
+        ),
         phone: recruteurLba.apply_phone,
         recipient_id: recruteurLba.apply_email ? getRecipientID(JobCollectionName.partners, recruteurLba._id.toString()) : null,
       },
@@ -684,12 +636,12 @@ async function findLbaJobOpportunities({ romes, geo, target_diploma_level, depar
     elligibleHandicapFilter: false,
   })
 
-  return jobsPartners.map((j) =>
+  return jobsPartners.map((job) =>
     jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
-      ...j,
-      contract_type: j.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-      apply_url: getApplyUrl(j),
-      apply_recipient_id: j.apply_email ? getRecipientID(JobCollectionName.partners, j._id.toString()) : null,
+      ...job,
+      contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+      apply_url: buildApplyUrlFromJob(job),
+      apply_recipient_id: job.apply_email ? getRecipientID(JobCollectionName.partners, job._id.toString()) : null,
     })
   )
 }
@@ -991,7 +943,7 @@ export const jobsPartnersToApiV3Read = (job: IJobsPartnersOfferPrivate): IJobOff
   jobsRouteApiv3Converters.convertToJobOfferApiReadV3({
     ...job,
     contract_type: job.contract_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-    apply_url: getApplyUrl(job),
+    apply_url: buildApplyUrlFromJob(job),
     apply_recipient_id: job.apply_email ? `partners_${job._id}` : null,
     is_delegated: job.is_delegated ?? false,
   })
@@ -1039,7 +991,7 @@ const computedJobsPartnersToPublishing = (job: IComputedJobsPartners): IJobOffer
   }
 }
 
-export const getJobTypeFromPartnerLabel = (jobType: JOBPARTNERS_LABEL): LBA_ITEM_TYPE => {
+const getJobTypeFromPartnerLabel = (jobType: JOBPARTNERS_LABEL): LBA_ITEM_TYPE => {
   if (jobType === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
     return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
   } else if (jobType === JOBPARTNERS_LABEL.RECRUTEURS_LBA) {
@@ -1049,17 +1001,31 @@ export const getJobTypeFromPartnerLabel = (jobType: JOBPARTNERS_LABEL): LBA_ITEM
   }
 }
 
-export const buildApplyUrl = (jobId: string, jobTitle: string, jobType: LBA_ITEM_TYPE): string => {
-  return `${config.publicUrl}/emploi/${jobType}/${jobId}/${encodeURIComponent(jobTitle)}`
+export const buildLbaUrl = (type: LBA_ITEM_TYPE, objectId: string | ObjectId, siret: string | null, title?: string): string => {
+  const id = objectId.toString()
+  switch (type) {
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
+      return `${config.publicUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, id, title)}`
+    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
+      return `${config.publicUrl}${buildJobUrlPath(LBA_ITEM_TYPE.RECRUTEURS_LBA, siret!, title)}`
+    default:
+      return `${config.publicUrl}${buildJobUrlPath(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES, id, title)}`
+  }
 }
 
-export const getApplyUrl = (job: IJobsPartnersOfferPrivate): string => {
+export const buildLbaUrlFromJob = (job: Pick<IJobsPartnersOfferPrivate, "partner_label" | "_id" | "workplace_siret" | "offer_title" | "workplace_naf_label">): string => {
+  const jobType = getJobTypeFromPartnerLabel(job.partner_label as JOBPARTNERS_LABEL)
+  const title = jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_naf_label : job.offer_title
+  return buildLbaUrl(jobType, job._id, job.workplace_siret, title ?? undefined)
+}
+
+export const buildApplyUrlFromJob = (
+  job: Pick<IJobsPartnersOfferPrivate, "partner_label" | "apply_url" | "_id" | "workplace_siret" | "offer_title" | "workplace_naf_label">
+): string => {
   if (job.apply_url) {
     return job.apply_url
   }
-  const jobType = getJobTypeFromPartnerLabel(job.partner_label as JOBPARTNERS_LABEL)
-
-  return `${config.publicUrl}/emploi/${jobType}/${jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_siret : job._id}/${encodeURIComponent(jobType === LBA_ITEM_TYPE.RECRUTEURS_LBA ? job.workplace_naf_label! : job.offer_title)}`
+  return buildLbaUrlFromJob(job)
 }
 
 export const getRecipientID = (type: IJobCollectionName, id: string) => {
