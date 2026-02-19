@@ -1,6 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Tab, Tabs } from "@mui/material"
-import { fr } from "@codegouvfr/react-dsfr"
 
 interface TabPanelProps {
   children?: React.ReactNode
