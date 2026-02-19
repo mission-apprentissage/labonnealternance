@@ -191,10 +191,10 @@ const getApplicantCountForMetier = async (romes: string[]) => {
   return applicantCountResult[0]?.distinctApplicants || 0
 }
 
-const getTopCitiesForMetier = async (romes: string[]) => {
+const getTopCompaniesForMetier = async (romes: string[]) => {
   const topLimit = 6
 
-  const topCities = await getDbCollection("jobs_partners")
+  const topCompanies = await getDbCollection("jobs_partners")
     .aggregate([
       // 1. Filtrer par statut Active et codes ROME
       {
@@ -236,9 +236,9 @@ const getTopCitiesForMetier = async (romes: string[]) => {
     ])
     .toArray()
 
-  return topCities.map((city) => ({
-    nom: city.workplace_name || city.workplace_brand || city.workplace_legal_name || "Entreprise inconnue",
-    job_count: city.count,
+  return topCompanies.map((company) => ({
+    nom: company.workplace_name || company.workplace_brand || company.workplace_legal_name || "Entreprise inconnue",
+    job_count: company.count,
   }))
 }
 
@@ -250,7 +250,7 @@ export const updateSeoMetierJobCounts = async () => {
     const companyCount = await getCompanyCountForMetier(metier.romes)
     const applicantCount = await getApplicantCountForMetier(metier.romes)
 
-    const entreprises = await getTopCitiesForMetier(metier.romes)
+    const entreprises = await getTopCompaniesForMetier(metier.romes)
 
     console.log(`Updating SEO for metier ${metier.slug}: job_count=${jobCount}, company_count=${companyCount}, applicant_count=${applicantCount}`)
     await getDbCollection(seoMetierModel.collectionName).updateOne(
