@@ -308,6 +308,41 @@ const getTopCitiesForMetier = async (romes: string[]) => {
   return cityCounts.sort((a, b) => b.job_count - a.job_count).slice(0, topLimit)
 }
 
+const getFormationsForMetier = async (romes: string[]) => {
+  const diplomes = await getDbCollection("formationcatalogues")
+    .aggregate([
+      {
+        $match: { rome_codes: { $in: romes } },
+      },
+      {
+        $group: {
+          _id: "$diplome",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          diplome: "$_id",
+          count: 1,
+        },
+      },
+    ])
+    .toArray()
+
+  return diplomes.map((diplome) => ({
+    title: diplome.diplome,
+    description: "",
+    duree: "",
+    niveau: "",
+    count: diplome.count,
+    competences: [],
+  }))
+}
+
 export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
@@ -318,13 +353,13 @@ export const updateSeoMetierJobCounts = async () => {
 
     const entreprises = await getTopCompaniesForMetier(metier.romes)
     const villes = await getTopCitiesForMetier(metier.romes)
+    const formations = await getFormationsForMetier(metier.romes)
+
+    // build cards: [], TODO dans un ticket à venir
 
     await getDbCollection(seoMetierModel.collectionName).updateOne(
       { slug: metier.slug },
-      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations: [], villes, cards: [] } }
+      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations, villes, cards: [] } }
     )
   })
-
-  // build formations: [],
-  // build cards: [],
 }
