@@ -11,7 +11,7 @@ import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/Cand
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE"]
+const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE", "FranceTravail CEGID"]
 
 export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   // KBA fix enum shared/models/lbaItem.model.ts

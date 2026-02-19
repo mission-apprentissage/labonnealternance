@@ -31,9 +31,10 @@ export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap 
             <Grid size={{ xs: 12, md: 5 }}>
               <Typography sx={{ mb: fr.spacing("1w") }} variant="h1" component={"h1"}>
                 Déclaration
-              </Typography>
-              <Typography sx={{ mb: fr.spacing("1w"), color: fr.colors.decisions.text.default.info.default }} variant="h1" component={"h1"}>
-                d'accessibilité
+                <br />
+                <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default }} variant="h1">
+                  d'accessibilité
+                </Typography>
               </Typography>
               <Box
                 component="hr"
