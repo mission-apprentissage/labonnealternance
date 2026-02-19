@@ -68,7 +68,6 @@ const zRoutesGetP5 = {
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
-  ...zJobsRoutesV2.get,
   ...zJobsRoutesV3.get,
   ...zClassificationRoute.get,
 } as const
@@ -126,7 +125,6 @@ const zRoutesDelete = {
 } as const
 
 const zRoutesPatch = {
-  ...zV1JobsRoutes.patch,
   ...zFormulaireRoute.patch,
   ...zEtablissementRoutes.patch,
   ...zEligibleTrainingsForAppointmentRoutes.patch,

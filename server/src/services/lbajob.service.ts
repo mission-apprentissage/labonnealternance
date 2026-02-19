@@ -12,14 +12,13 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount } from "./application.service"
 import { generateApplicationToken } from "./appLinks.service"
-import { getOffreAvecInfoMandataire, romeDetailAggregateStages } from "./formulaire.service"
+import { romeDetailAggregateStages } from "./formulaire.service"
 import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
 import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+
 import { roundDistance } from "@/common/utils/geolib"
-import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { encryptMailWithIV } from "@/common/utils/encryptString"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -208,34 +207,6 @@ function transformLbaJobs({ jobs, applicationCountByJob, isMinimalData }: { jobs
             applicationCountByJob,
           })
     ),
-  }
-}
-
-/**
- * @description Retourne une offre LBA identifiée par son id
- */
-export const getLbaJobById = async ({ id, caller }: { id: ObjectId; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
-  try {
-    const rawJob = await getOffreAvecInfoMandataire(id)
-
-    if (!rawJob) {
-      return { error: "not_found" }
-    }
-
-    if (caller) {
-      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
-    }
-
-    const applicationCountByJob = await getApplicationByJobCount([id])
-    const job = transformLbaJob({
-      recruiter: rawJob.recruiter,
-      applicationCountByJob,
-    })
-
-    return { matchas: job }
-  } catch (error) {
-    sentryCaptureException(error)
-    return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
 
