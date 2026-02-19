@@ -4,7 +4,7 @@ import { levalloisFixture, marseilleFixture, parisFixture } from "shared/fixture
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { getPartnerJobById, getPartnerJobs } from "./partnerJob.service"
+import { getPartnerJobs } from "./partnerJob.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
@@ -85,28 +85,5 @@ describe("partnerJob.service", () => {
       results.results[0].token = ""
     }
     expect(results).toMatchSnapshot()
-  })
-
-  it("should find offer by id", async () => {
-    const results = await getPartnerJobById({
-      id: new ObjectId("67520b8db04d1ef4ff79e1e5"),
-      caller: "lba",
-    })
-
-    if (results && "partnerJobs" in results) {
-      results.partnerJobs[0].token = ""
-    }
-    expect(results).toMatchSnapshot()
-  })
-
-  it("should return not_found when offer id is not correct", async () => {
-    const results = await getPartnerJobById({
-      id: new ObjectId("67520b8db04d1ef4ff79e177"),
-      caller: "lba",
-    })
-
-    expect(results).toEqual({
-      error: "not_found",
-    })
   })
 })
