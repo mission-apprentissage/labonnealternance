@@ -125,6 +125,7 @@ const getCompanyCountForMetier = async (romes: string[]) => {
       {
         $match: {
           offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
           offer_rome_codes: { $in: romes },
         },
       },
@@ -242,6 +243,71 @@ const getTopCompaniesForMetier = async (romes: string[]) => {
   }))
 }
 
+const cities = [
+  { name: "Paris", lat: 48.8566, long: 2.3522 },
+  { name: "Marseille", lat: 43.2965, long: 5.3698 },
+  { name: "Lyon", lat: 45.764, long: 4.8357 },
+  { name: "Toulouse", lat: 43.6047, long: 1.4442 },
+  { name: "Nice", lat: 43.7102, long: 7.262 },
+  { name: "Lille", lat: 50.6292, long: 3.0573 },
+  { name: "Nantes", lat: 47.2184, long: -1.5536 },
+  { name: "Bordeaux", lat: 44.8378, long: -0.5792 },
+  { name: "Strasbourg", lat: 48.5734, long: 7.7521 },
+  { name: "Montpellier", lat: 43.6108, long: 3.8767 },
+  { name: "Rennes", lat: 48.1173, long: -1.6778 },
+  { name: "Reims", lat: 49.2583, long: 4.0317 },
+  { name: "Le Havre", lat: 49.4944, long: 0.1079 },
+  { name: "Saint-Étienne", lat: 45.4397, long: 4.3872 },
+  { name: "Grenoble", lat: 45.1885, long: 5.7245 },
+  { name: "Aix-en-Provence", lat: 43.5297, long: 5.4474 },
+  { name: "Angers", lat: 47.4784, long: -0.5632 },
+  { name: "Tours", lat: 47.3941, long: 0.6848 },
+  { name: "Metz", lat: 49.1193, long: 6.1757 },
+  { name: "Clermont-Ferrand", lat: 45.7772, long: 3.087 },
+]
+
+const getTopCitiesForMetier = async (romes: string[]) => {
+  const topLimit = 6
+  const radius = 30_000
+
+  const cityCounts = await Promise.all(
+    cities.map(async (city) => {
+      const count = await getDbCollection("jobs_partners")
+        .aggregate([
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [city.long, city.lat] },
+              distanceField: "distance",
+              key: "workplace_geopoint",
+              maxDistance: radius,
+              query: {
+                offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+                offer_rome_codes: { $in: romes },
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$_id",
+            },
+          },
+          {
+            $count: "distinctJobs",
+          },
+        ])
+        .toArray()
+
+      return {
+        nom: city.name,
+        job_count: count[0]?.distinctJobs || 0,
+        geopoint: { lat: city.lat, long: city.long },
+      }
+    })
+  )
+
+  return cityCounts.sort((a, b) => b.job_count - a.job_count).slice(0, topLimit)
+}
+
 export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
@@ -251,15 +317,14 @@ export const updateSeoMetierJobCounts = async () => {
     const applicantCount = await getApplicantCountForMetier(metier.romes)
 
     const entreprises = await getTopCompaniesForMetier(metier.romes)
+    const villes = await getTopCitiesForMetier(metier.romes)
 
-    console.log(`Updating SEO for metier ${metier.slug}: job_count=${jobCount}, company_count=${companyCount}, applicant_count=${applicantCount}`)
     await getDbCollection(seoMetierModel.collectionName).updateOne(
       { slug: metier.slug },
-      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations: [], villes: [], cards: [] } }
+      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations: [], villes, cards: [] } }
     )
   })
 
-  // build entreprises: [],
   // build formations: [],
   // build cards: [],
 }
