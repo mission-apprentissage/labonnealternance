@@ -103,9 +103,13 @@ const importRecruteursLbaToRawCollection = async () => {
         callback()
         return
       }
-      count += filtered.length
-      await getDbCollection("raw_recruteurslba").insertMany(filtered)
-      callback()
+      try {
+        count += filtered.length
+        await getDbCollection("raw_recruteurslba").insertMany(filtered)
+        callback()
+      } catch (err) {
+        callback(err as Error)
+      }
     },
   })
 
