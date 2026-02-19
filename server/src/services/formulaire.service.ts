@@ -23,7 +23,6 @@ import dayjs from "shared/helpers/dayjs"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
-import { sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { anonymizeLbaJobsPartners } from "./partnerJob.service"
@@ -120,28 +119,6 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
   return { recruiter: recruiterOpt, job }
 }
 
-/**
- * @description Get formulaire list with mondodb paginate query
- * @param {Object} payload
- * @param {Filter<IRecruiter>} payload.query
- * @param {object} payload.options
- * @param {number} payload.page
- * @param {number} payload.limit
- */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page = 1, limit = 10 }: { page?: number; limit?: number }) => {
-  const response = await getDbCollection("recruiters").find(query, { projection: select })
-  const data =
-    page && limit
-      ? await response
-          .skip(page > 0 ? (page - 1) * limit : 0)
-          .limit(limit)
-          .toArray()
-      : await response.toArray()
-  const total = await getDbCollection("recruiters").countDocuments(query)
-  const number_of_page = limit ? Math.ceil(total / limit) : undefined
-  return { pagination: { page, result_per_page: limit, number_of_page, total }, data }
-}
-
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
   return access.admin || access.entreprises.includes(entrepriseId.toString())
@@ -214,14 +191,6 @@ export const createJob = async ({
 
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
-    if (!entrepriseStatus) {
-      throw internal(`inattendu : pas de status pour l'entreprise pour establishment_id=${establishment_id}`)
-    }
-    const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: organization._id.toString() })
-    const roleStatus = getLastStatusEvent(role?.status)?.status ?? null
-
-    await sendEmailConfirmationEntreprise(user, updatedFormulaire, roleStatus, entrepriseStatus)
-
     if (source) {
       await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
     }
