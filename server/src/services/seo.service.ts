@@ -117,12 +117,9 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
 
 export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
-  console.log(metiers)
 
   await asyncForEach(metiers, async (metier) => {
     const jobCount = await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: metier.romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
-
-    console.log(jobCount)
 
     const companyCountResult = await getDbCollection("jobs_partners")
       .aggregate([
@@ -145,7 +142,57 @@ export const updateSeoMetierJobCounts = async () => {
 
     const companyCount = companyCountResult[0]?.distinctSirets || 0
 
-    console.log(companyCount)
+    const dateThreshold = new Date()
+    dateThreshold.setMonth(dateThreshold.getMonth() - 3)
+    const applicantCountResult = await getDbCollection("applications")
+      .aggregate([
+        {
+          $match: {
+            created_at: { $gte: dateThreshold },
+          },
+        },
+        {
+          $lookup: {
+            from: "jobs_partners",
+            let: { jobId: "$job_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: { $eq: ["$_id", "$$jobId"] },
+                  offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+                  offer_rome_codes: { $in: metier.romes },
+                },
+              },
+              {
+                $project: { _id: 1 },
+              },
+            ],
+            as: "job",
+          },
+        },
+        {
+          $match: {
+            "job.0": { $exists: true },
+          },
+        },
+        {
+          $group: {
+            _id: "$applicant_id",
+          },
+        },
+        {
+          $count: "distinctApplicants",
+        },
+      ])
+      .toArray()
+
+    const applicantCount = applicantCountResult[0]?.distinctApplicants || 0
+
+    console.log(`Updating SEO for metier ${metier.slug}: job_count=${jobCount}, company_count=${companyCount}, applicant_count=${applicantCount}`)
+    await getDbCollection(seoMetierModel.collectionName).updateOne(
+      { slug: metier.slug },
+      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises: [], formations: [], villes: [], cards: [] } }
+    )
   })
 
   // build applicant_count: 0,
