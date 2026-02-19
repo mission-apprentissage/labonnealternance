@@ -115,89 +115,151 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
   return seoMetier
 }
 
+const getJobCountForMetier = async (romes: string[]) => {
+  return await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+}
+
+const getCompanyCountForMetier = async (romes: string[]) => {
+  const companyCountResult = await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $match: {
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_rome_codes: { $in: romes },
+        },
+      },
+      {
+        $group: {
+          _id: "$workplace_siret",
+        },
+      },
+      {
+        $count: "distinctSirets",
+      },
+    ])
+    .toArray()
+
+  return companyCountResult[0]?.distinctSirets || 0
+}
+
+const getApplicantCountForMetier = async (romes: string[]) => {
+  const monthAgo = 3
+  const dateThreshold = new Date()
+  dateThreshold.setMonth(dateThreshold.getMonth() - monthAgo)
+  const applicantCountResult = await getDbCollection("applications")
+    .aggregate([
+      {
+        $match: {
+          created_at: { $gte: dateThreshold },
+        },
+      },
+      {
+        $lookup: {
+          from: "jobs_partners",
+          let: { jobId: "$job_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$_id", "$$jobId"] },
+                offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+                offer_rome_codes: { $in: romes },
+              },
+            },
+            {
+              $project: { _id: 1 },
+            },
+          ],
+          as: "job",
+        },
+      },
+      {
+        $match: {
+          "job.0": { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: "$applicant_id",
+        },
+      },
+      {
+        $count: "distinctApplicants",
+      },
+    ])
+    .toArray()
+
+  return applicantCountResult[0]?.distinctApplicants || 0
+}
+
+const getTopCitiesForMetier = async (romes: string[]) => {
+  const topLimit = 6
+
+  const topCities = await getDbCollection("jobs_partners")
+    .aggregate([
+      // 1. Filtrer par statut Active et codes ROME
+      {
+        $match: {
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+          offer_rome_codes: { $in: romes },
+        },
+      },
+      // 2. Grouper par SIRET
+      {
+        $group: {
+          _id: "$workplace_siret",
+          workplace_legal_name: { $first: "$workplace_legal_name" },
+          workplace_brand: { $first: "$workplace_brand" },
+          workplace_name: { $first: "$workplace_name" },
+          count: { $sum: 1 },
+        },
+      },
+      // 3. Trier par count décroissant
+      {
+        $sort: { count: -1 },
+      },
+      // 4. Limiter à topLimit
+      {
+        $limit: topLimit,
+      },
+
+      // 5. Formatter le résultat
+      {
+        $project: {
+          _id: 0,
+          workplace_siret: "$_id",
+          workplace_legal_name: 1,
+          workplace_brand: 1,
+          workplace_name: 1,
+          count: 1,
+        },
+      },
+    ])
+    .toArray()
+
+  return topCities.map((city) => ({
+    nom: city.workplace_name || city.workplace_brand || city.workplace_legal_name || "Entreprise inconnue",
+    job_count: city.count,
+  }))
+}
+
 export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
   await asyncForEach(metiers, async (metier) => {
-    const jobCount = await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: metier.romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    const jobCount = await getJobCountForMetier(metier.romes)
+    const companyCount = await getCompanyCountForMetier(metier.romes)
+    const applicantCount = await getApplicantCountForMetier(metier.romes)
 
-    const companyCountResult = await getDbCollection("jobs_partners")
-      .aggregate([
-        {
-          $match: {
-            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-            offer_rome_codes: { $in: metier.romes },
-          },
-        },
-        {
-          $group: {
-            _id: "$workplace_siret",
-          },
-        },
-        {
-          $count: "distinctSirets",
-        },
-      ])
-      .toArray()
-
-    const companyCount = companyCountResult[0]?.distinctSirets || 0
-
-    const dateThreshold = new Date()
-    dateThreshold.setMonth(dateThreshold.getMonth() - 3)
-    const applicantCountResult = await getDbCollection("applications")
-      .aggregate([
-        {
-          $match: {
-            created_at: { $gte: dateThreshold },
-          },
-        },
-        {
-          $lookup: {
-            from: "jobs_partners",
-            let: { jobId: "$job_id" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ["$_id", "$$jobId"] },
-                  offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-                  offer_rome_codes: { $in: metier.romes },
-                },
-              },
-              {
-                $project: { _id: 1 },
-              },
-            ],
-            as: "job",
-          },
-        },
-        {
-          $match: {
-            "job.0": { $exists: true },
-          },
-        },
-        {
-          $group: {
-            _id: "$applicant_id",
-          },
-        },
-        {
-          $count: "distinctApplicants",
-        },
-      ])
-      .toArray()
-
-    const applicantCount = applicantCountResult[0]?.distinctApplicants || 0
+    const entreprises = await getTopCitiesForMetier(metier.romes)
 
     console.log(`Updating SEO for metier ${metier.slug}: job_count=${jobCount}, company_count=${companyCount}, applicant_count=${applicantCount}`)
     await getDbCollection(seoMetierModel.collectionName).updateOne(
       { slug: metier.slug },
-      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises: [], formations: [], villes: [], cards: [] } }
+      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations: [], villes: [], cards: [] } }
     )
   })
 
-  // build applicant_count: 0,
   // build entreprises: [],
   // build formations: [],
-  // build villes: [],
   // build cards: [],
 }
