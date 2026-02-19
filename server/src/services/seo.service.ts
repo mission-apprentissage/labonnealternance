@@ -5,6 +5,7 @@ import seoMetierModel from "shared/models/seoMetier.model"
 
 import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 
 const DEFAULT_RADIUS_KM = 30
 
@@ -118,8 +119,35 @@ export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
   console.log(metiers)
 
-  // build job_count: 0,
-  // build company_count: 0,
+  await asyncForEach(metiers, async (metier) => {
+    const jobCount = await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: metier.romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+
+    console.log(jobCount)
+
+    const companyCountResult = await getDbCollection("jobs_partners")
+      .aggregate([
+        {
+          $match: {
+            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+            offer_rome_codes: { $in: metier.romes },
+          },
+        },
+        {
+          $group: {
+            _id: "$workplace_siret",
+          },
+        },
+        {
+          $count: "distinctSirets",
+        },
+      ])
+      .toArray()
+
+    const companyCount = companyCountResult[0]?.distinctSirets || 0
+
+    console.log(companyCount)
+  })
+
   // build applicant_count: 0,
   // build entreprises: [],
   // build formations: [],
