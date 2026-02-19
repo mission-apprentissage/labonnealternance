@@ -122,6 +122,10 @@ type LimitStreamOptions<TInput> = {
  */
 export function limitStream<TInput>(options: LimitStreamOptions<TInput>): Transform {
   const { concurrency, processItem } = options
+
+  if (concurrency <= 0) {
+    throw new Error(`concurrency must be positive, got ${concurrency}`)
+  }
   let activeCount = 0
   const pendingPromises = new Set<Promise<void>>()
   const waiters: Array<() => void> = []
