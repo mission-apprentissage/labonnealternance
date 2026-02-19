@@ -51,9 +51,17 @@ const AProposDesFormationsPage = () => {
               <Typography component="span" fontWeight={"bold"}>
                 Renseignez-vous sur votre futur métier :
               </Typography>{" "}
-              Avant de vous lancer, informez-vous sur le secteur qui vous intéresse. Le réseau des Carif-Oref met à votre disposition des données sur le marché du travail et les
-              perspectives d'emploi.Le réseau d'entreprises partenaires fait la différence Un établissement bien connecté avec des entreprises facilite grandement votre recherche
-              d'alternance. N'hésitez pas à demander quels sont leurs partenaires.
+              Avant de vous lancer, informez-vous sur le secteur qui vous intéresse.{" "}
+              <DsfrLink href={"https://www.intercariforef.org/formations/recherche-formations.html"} aria-label="Consulter le site du réseau des Carif-Oref">
+                Le réseau des Carif-Oref
+              </DsfrLink>{" "}
+              informe sur les métiers, les formations et le marché du travail. Ilnmet à votre disposition des données sur le marché du travail et les perspectives d'emploi.
+            </>,
+            <>
+              <Typography component="span" fontWeight={"bold"}>
+                Le réseau d'entreprises partenaires fait la différence :
+              </Typography>{" "}
+              Un établissement bien connecté avec des entreprises facilite grandement votre recherche d'alternance. N'hésitez pas à demander quels sont leurs partenaires.
             </>,
             <>
               <Typography component={"span"} fontWeight={"bold"}>
@@ -61,12 +69,6 @@ const AProposDesFormationsPage = () => {
               </Typography>{" "}
               2 jours en formation / 3 jours en entreprise ? 1 semaine / 1 semaine ? Assurez-vous que le rythme proposé correspond aux attentes des employeurs de votre secteur pour
               maximiser vos chances de trouver un contrat.
-            </>,
-            <>
-              <DsfrLink href="https://www.intercariforef.org/formations/recherche-formations.html" aria-label="Consulter le site du réseau des Carif-Oref">
-                Le réseau des Carif-Oref
-              </DsfrLink>{" "}
-              informe sur les métiers, les formations et le marché du travail pour aider les professionels et le public à s’orienter.
             </>,
           ]}
         />

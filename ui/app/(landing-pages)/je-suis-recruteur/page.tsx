@@ -17,7 +17,7 @@ const JeSuisRecruteurPage = () => {
         mb: fr.spacing("6v"),
       }}
     >
-      <Breadcrumb pages={[PAGES.static.jeSuisCFA]} />
+      <Breadcrumb pages={[PAGES.static.jeSuisRecruteur]} />
       <DefaultContainer>
         <Grid container spacing={fr.spacing("4v")}>
           <Grid

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Typography } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
@@ -39,7 +40,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
           </DsfrLink>
           . Ce document officialise votre contrat d'apprentissage.
         </Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Les informations nécessaires
         </Paragraph>
         <Paragraph>Pour remplir ce formulaire, votre employeur aura besoin de plusieurs informations. De votre côté, préparez :</Paragraph>
@@ -51,7 +52,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
           ]}
         />
         <Paragraph>Votre employeur se chargera de compléter le reste : informations sur l'entreprise, sur votre maître d'apprentissage, etc.</Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           La signature du contrat
         </Paragraph>
         <Paragraph>Une fois le formulaire rempli, trois signatures sont nécessaires :</Paragraph>
@@ -70,7 +71,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
           Il arrive que certaines entreprises tardent à signer le contrat et changent d’avis au dernier moment avant la signature. Prenez vos précautions : si vous sentez que les
           délais se raccourcissent, anticipez en relançant l’entreprise et en poursuivant vos recherches d’entreprise en quête d’un plan B.
         </Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Et après ?
         </Paragraph>
         <Paragraph>
@@ -101,11 +102,11 @@ const CommentSignerUnContratEnAlternancePage = () => {
           </DsfrLink>{" "}
           .
         </Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Les informations nécessaires
         </Paragraph>
         <Paragraph>Votre employeur aura besoin d'informations sur vous, sur le tuteur qui vous accompagnera, sur l'entreprise et sur la formation prévue.</Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           La signature du contrat
         </Paragraph>
         <Paragraph>
@@ -149,7 +150,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
             </>,
           ]}
         />
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Ressources du Ministère du Travail
         </Paragraph>
         <ParagraphList

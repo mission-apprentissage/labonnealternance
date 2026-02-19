@@ -97,7 +97,7 @@ const PreparerSonProjetEnAlternancePage = () => {
       <Section title="Choisir entre le contrat d’apprentissage et le contrat de professionnalisation">
         <Paragraph>Les critères de choix :</Paragraph>
         <ParagraphList listItems={["Votre âge et votre statut sur le marché du travail"]} />
-        <Paragraph bold component="h3" variant="h4">
+        <Paragraph bold component={"h3"} variant={"h4"}>
           Contrat d'apprentissage :
         </Paragraph>
         <ParagraphList
@@ -114,7 +114,7 @@ const PreparerSonProjetEnAlternancePage = () => {
             "les personnes entrant dans leur 16ème année (15 ans et un jour), si elles ont terminé leur cycle du collège (brevet obtenu ou pas), peuvent commencer à exécuter un contrat d’apprentissage.",
           ]}
         />
-        <Paragraph bold component="h3" variant="h4">
+        <Paragraph bold component={"h3"} variant={"h4"}>
           Contrat de professionnalisation :
         </Paragraph>
         <ParagraphList
@@ -169,16 +169,16 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Paragraph>
       </Section>
       <Section>
-        <Paragraph component="h3" variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Qui peut vous aider ?
         </Paragraph>
-        <Paragraph component="h4" variant="h4">
+        <Paragraph component={"h4"} variant={"h4"} fontWeight={"bold"}>
           1. L'établissement de formation :
         </Paragraph>
         <Paragraph>
           Très souvent les établissements de formation disposent de partenariats avec un certain nombre d’entreprises et peuvent vous mettre en contact avec elles.
         </Paragraph>
-        <Paragraph component="h4" variant="h4">
+        <Paragraph component={"h4"} variant={"h4"} fontWeight={"bold"}>
           2. Multiplier les réseaux
         </Paragraph>
         <Paragraph>Pour que votre recherche ait le plus de chance d’aboutir, vous devez activer un maximum de leviers de recherche : </Paragraph>
@@ -201,7 +201,7 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Paragraph>
       </InfoSection>
       <Section>
-        <Paragraph component="h3" variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Méthodologie pour contacter une entreprise
         </Paragraph>
         <ParagraphList
@@ -237,7 +237,7 @@ const PreparerSonProjetEnAlternancePage = () => {
         </Box>
       </InfoSection>
       <Section>
-        <Paragraph component="h3" variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Le rôle de l’employeur
         </Paragraph>
         <ParagraphList

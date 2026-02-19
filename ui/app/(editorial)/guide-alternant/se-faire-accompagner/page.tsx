@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Typography } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
@@ -97,7 +98,7 @@ const SeFaireAccompagnerPage = () => {
           trouver un employeur. Ce délai débute à la date du début de sa formation. Elles peuvent également intervenir pour aider les jeunes à trouver un nouvel employeur à la
           suite d'une rupture de contrat.
         </Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Comment les contacter ?
         </Paragraph>
         <Paragraph>
@@ -190,7 +191,7 @@ const SeFaireAccompagnerPage = () => {
           Un mentor (ancien alternant ou adulte actif inséré dans la vie professionnelle) peut vous épauler tout au long de votre parcours et suivant vos besoins !
         </Paragraph>
         <Paragraph>Le mentorat consiste à être accompagné par une personne plus expérimentée qui partage ses conseils, son réseau et son vécu professionnel.</Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           1 jeune 1 solution : un accompagnement de proximité
         </Paragraph>
         <Paragraph>
@@ -220,23 +221,23 @@ const SeFaireAccompagnerPage = () => {
         </Paragraph>
       </Section>
       <Section title="Nos conseils pour bien profiter de ces accompagnements">
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           1. N'attendez pas d'être en difficulté
         </Paragraph>
         <Paragraph>Sollicitez de l'aide dès le début de vos recherches. L'accompagnement est encore plus efficace en prévention qu'en résolution de problèmes.</Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           2. Soyez proactif et régulier
         </Paragraph>
         <Paragraph>
           Prenez vos rendez-vous, préparez vos questions, donnez des nouvelles à vos conseillers. Plus vous serez impliqué, plus l'accompagnement sera fructueux.
         </Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           3. Cumulez les soutiens
         </Paragraph>
         <Paragraph>
           Vous pouvez tout à fait bénéficier de plusieurs accompagnements simultanément. Chaque structure a ses spécificités et peut vous apporter un éclairage différent.{" "}
         </Paragraph>
-        <Paragraph component={"h3"} variant="h3">
+        <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           4. N'ayez pas peur de poser des questions
         </Paragraph>
         <Paragraph>Il n'y a pas de question bête. Les structures d'accompagnement sont là pour répondre à toutes vos interrogations, même les plus basiques. </Paragraph>
