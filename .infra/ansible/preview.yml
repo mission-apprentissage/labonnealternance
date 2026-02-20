@@ -29,7 +29,7 @@
     - name: Setup Metabase preview
       shell:
         chdir: /opt/app
-        cmd: "sudo bash /opt/app/configs/metabase/setup-metabase-preview.sh"
+        cmd: "bash /opt/app/configs/metabase/setup-metabase-preview.sh"
       timeout: 600
 
     - include_tasks: ./tasks/preview_pr.yml

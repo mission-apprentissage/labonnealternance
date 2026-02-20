@@ -2,17 +2,21 @@
 set -euo pipefail
 
 METABASE_URL="https://metabase.{{dns_name}}"
-PROPS=$(curl -sS --retry 5 --retry-all-errors "${METABASE_URL}/api/session/properties")
-IS_SETUP=$(echo $PROPS | jq -r '."has-user-setup"')
+PROPS=$(curl -sSf --retry 5 --retry-all-errors "${METABASE_URL}/api/session/properties")
+IS_SETUP=$(echo "$PROPS" | jq -r '."has-user-setup"')
 
-if [[ $IS_SETUP == "true" ]]; then
+if [[ "$IS_SETUP" == "true" ]]; then
   echo 'metabase already setup'
   exit 0
 fi
 
-TOKEN=$(echo $PROPS | jq -r '."setup-token"')
+TOKEN=$(echo "$PROPS" | jq -r '."setup-token"')
+if [[ -z "$TOKEN" || "$TOKEN" == "null" ]]; then
+  echo "Error: Failed to retrieve setup token" >&2
+  exit 1
+fi
 
-curl -sS --retry 5 --retry-all-errors "${METABASE_URL}/api/setup" \
+curl -sSf --retry 5 --retry-all-errors "${METABASE_URL}/api/setup" \
   --header 'Content-Type: application/json' \
   --data-raw "{
     \"token\": \"$TOKEN\",
