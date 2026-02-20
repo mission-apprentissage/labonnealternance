@@ -5,12 +5,15 @@ import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { modelToKeep } from "shared/models/model-to-keep.model"
+import { modelDescriptors } from "shared/models/models"
 import type { CollectionName } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 
+import { recreateIndexes } from "./recreateIndexes"
 import { logger } from "@/common/logger"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
@@ -253,10 +256,30 @@ const obfuscateUsersWithAccounts = async () => {
   await keepSpecificUser("opco@beta.gouv.fr", AccessEntityType.OPCO)
 }
 
+const dropUnknownCollections = async () => {
+  const knownCollections = new Set<string>([...modelDescriptors.map((d) => d.collectionName), ...modelToKeep])
+  const existingCollections = await getDatabase().listCollections().toArray()
+
+  await Promise.all(
+    existingCollections
+      .filter(({ name }) => !knownCollections.has(name))
+      .map(async ({ name }) => {
+        logger.info(`dropping unknown collection ${name}`)
+        await getDatabase().dropCollection(name)
+      })
+  )
+}
+
 export async function obfuscateCollections(): Promise<void> {
   if (config.env === "production") return
 
+  await dropUnknownCollections()
+
   const collectionsToEmpty: CollectionName[] = [
+    "apicalls",
+    "applicants",
+    "applications",
+    "appointments",
     "cache_geolocation",
     "cache_siret",
     "unsubscribedrecruteurslba",
@@ -284,22 +307,29 @@ export async function obfuscateCollections(): Promise<void> {
     "raw_jooble",
     "raw_jobteaser",
     "raw_rhalternance",
+    "raw_recruteurslba",
+    "raw_toulouse_metropole",
+    "raw_engagement_jeunes",
+    "raw_france_travail_cegid",
+    "raw_monster",
+    "raw_nos_talents_nos_emplois",
+    "raw_vite_un_emploi",
+    "raw_atlas",
+    "raw_meteojob",
+    "raw_decathlon",
     "computed_jobs_partners",
   ]
 
   await Promise.all(
     collectionsToEmpty.map(async (collectionToEmpty) => {
-      logger.info(`flusing ${collectionToEmpty}`)
-      getDbCollection(collectionToEmpty).deleteMany({})
+      logger.info(`dropping ${collectionToEmpty}`)
+      await getDatabase()
+        .dropCollection(collectionToEmpty)
+        .catch(() => {})
     })
   )
 
-  await reduceModel("apicalls", 5)
-  await reduceModel("applicants", 50)
-  await reduceModel("applications", 500)
-  await reduceModel("appointments", 100)
   await reduceModel("emailblacklists", 100)
-  await reduceModel("applicants", 10)
   await reduceModel("users", 10)
   await reduceModel("opcos", 5000)
 
@@ -315,4 +345,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await obfuscatePartnerJobs()
+
+  await recreateIndexes({ drop: true })
 }
