@@ -1,7 +1,7 @@
 import { Readable } from "stream"
 import { describe, expect, it, vi } from "vitest"
 
-import { getFileFromApecFTP } from "./apec.client"
+import { getApecJobs } from "./apec.client"
 
 vi.mock("@/common/utils/ftpUtils")
 vi.mock("@/common/logger")
@@ -13,7 +13,7 @@ describe("getFileFromApecFTP", () => {
     const { downloadFileFromSFTP } = await import("@/common/utils/ftpUtils")
     vi.mocked(downloadFileFromSFTP).mockResolvedValue(Readable.from(xmlContent))
 
-    const stream = await getFileFromApecFTP()
+    const stream = await getApecJobs()
 
     const chunks: Buffer[] = []
     for await (const chunk of stream) {
