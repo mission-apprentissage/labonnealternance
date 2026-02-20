@@ -55,7 +55,7 @@ const AProposDesFormationsPage = () => {
               <DsfrLink href={"https://www.intercariforef.org/formations/recherche-formations.html"} aria-label="Consulter le site du réseau des Carif-Oref">
                 Le réseau des Carif-Oref
               </DsfrLink>{" "}
-              informe sur les métiers, les formations et le marché du travail. Ilnmet à votre disposition des données sur le marché du travail et les perspectives d'emploi.
+              informe sur les métiers, les formations et le marché du travail. Il met à votre disposition des données sur le marché du travail et les perspectives d'emploi.
             </>,
             <>
               <Typography component="span" fontWeight={"bold"}>

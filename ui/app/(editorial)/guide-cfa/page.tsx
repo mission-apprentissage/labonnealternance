@@ -193,7 +193,7 @@ const GuideCFAPage = () => {
             <Grid size={{ md: 6, xs: 12 }}>
               <Card
                 title="Ressources alternant"
-                desc="Toutes les informations et resources utiles pour bien accompagner vos alternants."
+                desc="Toutes les informations et ressources utiles pour bien accompagner vos alternants."
                 linkProps={{
                   href: PAGES.static.guideAlternant.getPath(),
                 }}

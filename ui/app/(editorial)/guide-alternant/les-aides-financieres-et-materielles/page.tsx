@@ -94,7 +94,7 @@ const LesAidesFinancieresEtMateriellesPage = () => {
           directement auprès de votre conseil régional pour connaître les dispositifs actifs dans votre région.
         </Paragraph>
       </Section>
-      <Section title="Connaitre toutes les aides auxquelles vous pouvez prétendre">
+      <Section title="Connaître toutes les aides auxquelles vous pouvez prétendre">
         <Paragraph>
           <DsfrLink href={"https://mes-aides.1jeune1solution.beta.gouv.fr/"} aria-label="Consulter le simulateur Mes-aides">
             Mes-aides

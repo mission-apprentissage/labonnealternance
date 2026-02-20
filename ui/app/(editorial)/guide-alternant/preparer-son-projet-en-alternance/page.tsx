@@ -63,7 +63,20 @@ const PreparerSonProjetEnAlternancePage = () => {
             ]}
           />
         </Box>
-        <Paragraph>La plateforme de l’Onisep vous propose des quiz pour identifier les métiers faits pour vous ici et ici par exemple.</Paragraph>
+        <Paragraph>
+          La plateforme de l’Onisep vous propose des quiz pour identifier les métiers faits pour vous{" "}
+          <DsfrLink href="https://www.onisep.fr/metier/quiz-quels-metiers-selon-mes-gouts" aria-label="Consulter le quiz 'Quels métiers selon mes goûts' sur Onisep">
+            ici
+          </DsfrLink>{" "}
+          et{" "}
+          <DsfrLink
+            href="https://www.onisep.fr/metier/les-quiz-de-l-onisep/quiz-quels-univers-professionnels-selon-ma-personnalite"
+            aria-label="Consulter le quiz 'Quels univers professionnels selon ma personnalité' sur Onisep"
+          >
+            ici
+          </DsfrLink>{" "}
+          par exemple.
+        </Paragraph>
         <Paragraph>
           <DsfrLink href={"https://diagoriente.fr/"} aria-label="Consulter le service Diagoriente">
             Diagoriente
@@ -220,7 +233,7 @@ const PreparerSonProjetEnAlternancePage = () => {
             <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e" aria-label="Consultez le quizz chercher un employeur">
               Chercher un employeur
             </DsfrLink>{" "}
-            et{""}
+            et{" "}
             <DsfrLink href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" aria-label="Consultez le quizz préparer un entretien avec un employeur">
               Préparer un entretien avec un employeur
             </DsfrLink>
@@ -243,7 +256,7 @@ const PreparerSonProjetEnAlternancePage = () => {
         <ParagraphList
           listItems={[
             "Favoriser l’insertion professionnelle de l’alternant dans l'entreprise ;",
-            "désigner un tuteur ou au maître d’apprentissage et lui permettre  d’assurer l’accompagnement de l’alternant, tout en exécutant sa propre  prestation de travail (décharge horaire par exemple) ;",
+            "désigner un tuteur ou un maître d’apprentissage et lui permettre d’assurer l’accompagnement de l’alternant, tout en exécutant sa propre prestation de travail (décharge horaire par exemple) ;",
             "former l'alternant au métier choisi (formation pratique) ;",
             "donner les disponibilités à l'alternant pour suivre la formation théorique en organisme de formation ;",
             "rémunérer l'alternant pour son travail, en respectant le minimum légal.",

@@ -31,33 +31,6 @@ const DecouvrirLAlternancePage = () => {
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["preparer-son-projet-en-alternance"], ARTICLES["comprendre-la-remuneration"], ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"]]}
     >
-      <Section title="Qu'est-ce que l'alternance ?">
-        <Paragraph>Les conditions pour être alternant diffèrent selon le type de contrat choisi</Paragraph>
-        <Paragraph>Pour le contrat d'apprentissage :</Paragraph>
-        <ParagraphList
-          listItems={[
-            "Les jeunes de 16 ans à 29 ans révolus;",
-            <>
-              Certains publics au-delà de 29 ans : les apprentis préparant un diplôme ou titre supérieur à celui obtenu via un précédent contrat,{" "}
-              <DsfrLink href="https://travail-emploi.gouv.fr/le-contrat-dapprentissage-amenage" aria-label="Consulter les informations sur le contrat d'apprentissage aménagé">
-                les personnes en situation de handicap
-              </DsfrLink>
-              , les personnes ayant un projet de création ou de reprise d’entreprise nécessitant le diplôme ou titre visé, les sportifs de haut niveau.
-            </>,
-            "les personnes entrant dans leur 16ème année (15 ans et un jour), si elles ont terminé leur cycle du collège (brevet obtenu ou pas), peuvent commencer à exécuter un contrat d’apprentissage.",
-          ]}
-        />
-        <Paragraph>Pour le contrat de professionnalisation :</Paragraph>
-        <ParagraphList
-          listItems={[
-            "Jeunes âgés de 16 à 25 ans révolus afin de compléter leur formation initiale ;",
-            "Demandeurs d’emploi âgés de 26 ans et plus.",
-            "Bénéficiaires du revenu de solidarité active (RSA), de l’allocation de solidarité spécifique ou de l’allocation aux adultes handicapés (AAH) ;",
-            "Personnes ayant bénéficié d’un contrat aidé (contrat unique d’insertion - CUI).",
-          ]}
-        />
-      </Section>
-
       <Section title="Qui peut être alternant ?">
         <Paragraph>Les conditions pour être alternant diffèrent selon le type de contrat choisi.</Paragraph>
         <Paragraph>Pour le contrat d’apprentissage :</Paragraph>
@@ -101,7 +74,7 @@ const DecouvrirLAlternancePage = () => {
           listItems={[
             "d’un diplôme ou d’un titre à finalité professionnelle enregistré au RNCP ;",
             "d’une qualification reconnue dans les classifications d’une convention collective nationale ;",
-            "d’un certificat de qualification professionnelle (CQP) de branche ou interbranche",
+            "d’un certificat de qualification professionnelle (CQP) de branche ou interbranche.",
           ]}
         />
       </Section>

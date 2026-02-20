@@ -32,7 +32,7 @@ const JeSuisCFAPage = () => {
               Vous êtes un organisme de formation
             </Typography>
             <Typography variant="h2" component="h2" gutterBottom color={fr.colors.decisions.text.default.grey.default}>
-              Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emplois
+              Attirez des candidats en offrant plus de visibilité à vos formations et offres d’emploi
             </Typography>
             <Typography variant="body1" gutterBottom>
               Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.{" "}
@@ -113,7 +113,7 @@ const JeSuisCFAPage = () => {
                 Répondez facilement aux candidats intéressés par vos formations
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Vous recevez directement dans votre boite mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.
+                Vous recevez directement dans votre boîte mail des demandes de candidats intéressés par vos formations et pouvez leur répondre en quelques clics.
               </Typography>
               <Typography variant="caption">
                 *Vous pouvez à tout moment vous désinscrire de ce service en{" "}

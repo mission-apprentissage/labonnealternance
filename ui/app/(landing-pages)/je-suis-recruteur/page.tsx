@@ -253,7 +253,7 @@ const JeSuisRecruteurPage = () => {
                 </Typography>
               </ListItem>
             </List>
-            <DsfrLink href={PAGES.static.guideRecruteurDecouvrirLAlternance.getPath()}>Je ne souhaite plus recevoir de candidature spontanée</DsfrLink>
+            <DsfrLink href={"#"}>Je ne souhaite plus recevoir de candidature spontanée</DsfrLink>
           </Grid>
           <Grid size={{ md: 5, xs: 12 }} sx={{ mb: "auto" }}>
             <Image
@@ -307,7 +307,7 @@ const JeSuisRecruteurPage = () => {
           <Grid size={{ md: 3, xs: 12 }} sx={{ my: "auto" }}>
             <Box sx={{ display: "flex", flexDirection: "row", my: "auto", justifyContent: "center" }}>
               <Button linkProps={{ href: "https://www.linkedin.com/company/la-bonne-alternance/posts/" }} priority="primary">
-                Voir notre page Linkedin
+                Voir notre page LinkedIn
               </Button>
             </Box>
           </Grid>

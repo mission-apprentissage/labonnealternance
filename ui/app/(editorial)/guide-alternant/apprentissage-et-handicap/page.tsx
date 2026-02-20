@@ -21,7 +21,7 @@ const ApprentissageEtHandicapPage = () => {
   const descriptionParts = [
     "En France on estime que 8% de la population est en situation de handicap. Ces personnes rencontrent malheureusement des difficultés multiples pour accéder à un emploi du fait d'une méconnaissance du handicap et d'idées reçues.",
     "L’apprentissage constitue un levier privilégié pour l’accès et le maintien dans l’emploi des personnes handicapées, en garantissant une formation certifiante, une rémunération et une insertion professionnelle rapide et durable. En 2025, plus de 15 000 contrats d'apprentissage avaient été signés grâce à une politique publique volontariste et inclusive.",
-    "Avoir un handicap ne signifie en aucun cas être moins compétent. Pourtant, les idées reçues persistent… La réalité ? Les personnes non sensibilisées pensent uniquement au handicap moteur, pourtant 80 % des handicaps sont invisibles. Ils peuvent tout autant nécessiter des aménagements",
+    "Avoir un handicap ne signifie en aucun cas être moins compétent. Pourtant, les idées reçues persistent… La réalité ? Les personnes non sensibilisées pensent uniquement au handicap moteur, pourtant 80 % des handicaps sont invisibles. Ils peuvent tout autant nécessiter des aménagements.",
     "Pour faciliter la formation du jeune travailleur en situation de handicap, certaines règles du contrat d’apprentissage sont aménagées comme la durée du contrat, le temps de travail, le déroulement de la formation ou encore la limite d’âge.",
   ]
 
@@ -104,10 +104,10 @@ const ApprentissageEtHandicapPage = () => {
         <Paragraph>La formation peut se dérouler dans tout centre de formation d’apprentis (CFA).</Paragraph>
         <Paragraph>
           Les CFA doivent tenir compte des besoins particuliers des apprentis en situation de handicap en procédant aux aménagements nécessaires pour le suivi de la formation, y
-          compris pédagogiques .
+          compris pédagogiques.
         </Paragraph>
         <Paragraph>
-          A leur entrée en CFA, le référent handicap de l'établissement doit évaluer les besoins de compensation de l'apprenti en situation de handicap pour déterminer les
+          À leur entrée en CFA, le référent handicap de l'établissement doit évaluer les besoins de compensation de l'apprenti en situation de handicap pour déterminer les
           aménagements nécessaires. Ces derniers peuvent comporter aussi bien des aides humaines, animalières, techniques que des adaptations pédagogiques et d’apprentissage. Ce
           peut être également un soutien particulier sur des compétences clés qui auraient dû être acquises mais qui n’ont pu être consolidées. Ces adaptations et ces aménagements
           sont individualisés et personnalisés.

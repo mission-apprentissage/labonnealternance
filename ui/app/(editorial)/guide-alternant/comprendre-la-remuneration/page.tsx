@@ -54,7 +54,7 @@ const ComprendreLaRemunerationPage = () => {
               , ouvert aux jeunes de 16 à 25 ans révolus souhaitant compléter leur formation initiale et aux demandeurs d'emploi de 26 ans et plus. La rémunération varie selon
               l'âge et le niveau de qualification initial (
               <DsfrLink
-                href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000018523891/"
+                href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000018498338/"
                 aria-label="Consulter les articles L. 6325-1 à L. 6325-3 du Code du travail – Légifrance"
               >
                 articles L. 6325-1 à L. 6325-3 du Code du travail – Légifrance
@@ -151,8 +151,8 @@ const ComprendreLaRemunerationPage = () => {
           ).
         </Paragraph>
         <Paragraph>
-          Exemple : Si le jeune a réalisée une année master 1 en formation sous statut étudiant, et l’année de master 2 sous statut apprenti alors la rémunération en deuxième année
-          de master est calculée sur la base d’une 2eme année d’un contrat d’apprentissage.
+          Exemple : Si le jeune a réalisé une année master 1 en formation sous statut étudiant, et l’année de master 2 sous statut apprenti alors la rémunération en deuxième année
+          de master est calculée sur la base d’une 2ème année d’un contrat d’apprentissage.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Succession de contrats d'apprentissage
@@ -187,7 +187,7 @@ const ComprendreLaRemunerationPage = () => {
           Un minimum réglementaire
         </Paragraph>
         <Paragraph>
-          La réglementation fixe des minimums de salaires pour les apprentis. Les conventions collectives des entreprises peuvent définir de seuil supérieur à appliquer. Chaque
+          La réglementation fixe des minimums de salaires pour les apprentis. Les conventions collectives des entreprises peuvent définir un seuil supérieur à appliquer. Chaque
           employeur est libre de définir une rémunération supérieure à ces minimums.
         </Paragraph>
       </Section>
@@ -218,7 +218,7 @@ const ComprendreLaRemunerationPage = () => {
         </Paragraph>
         <Paragraph>
           Pour les contrats conclus à partir du 1er mars 2025 : le seuil d'exonération est abaissé à 50 % du SMIC (environ 911,52 € brut). Au-delà de ce seuil, les cotisations
-          sociales.
+          sociales s'appliquent.
         </Paragraph>
         <Paragraph>Concrètement :</Paragraph>
         <ParagraphList
@@ -231,7 +231,7 @@ const ComprendreLaRemunerationPage = () => {
           Pour les contrats conclus avec un organisme public (mairie,…) les cotisations sociales sont à la charge de l’employeur. Le salaire net égale le salaire brut.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
-          Charges sociales en contrat d'apprentissage
+          Charges sociales en contrat de professionnalisation
         </Paragraph>
         <Paragraph>
           Le contrat de professionnalisation ne bénéficie pas d'exonérations spécifiques de cotisations salariales. Les cotisations salariales classiques s'appliquent, ce qui
@@ -260,7 +260,7 @@ const ComprendreLaRemunerationPage = () => {
       </Section>
       <Section title="Exonération fiscale du salaire des apprentis">
         <Paragraph>
-          n application de l'article 81 bis du Code général des impôts (Légifrance), les salaires versés aux apprentis sont exonérés d'impôt sur le revenu dans une limite égale au
+          En application de l'article 81 bis du Code général des impôts (Légifrance), les salaires versés aux apprentis sont exonérés d'impôt sur le revenu dans une limite égale au
           montant annuel du SMIC (
           <DsfrLink
             href="https://travail-emploi.gouv.fr/formation-en-alternance/apprentissage-et-formation-en-alternance"
@@ -305,7 +305,7 @@ const ComprendreLaRemunerationPage = () => {
           ).
         </Paragraph>
         <Paragraph>
-          Pour en savoir plus , rendez-vous sur le site du Ministère du Travail (
+          Pour en savoir plus, rendez-vous sur le site du Ministère du Travail (
           <DsfrLink href={"https://travail-emploi.gouv.fr"} aria-label="Consulter le site travail-emploi.gouv.fr – Ministère du Travail">
             travail-emploi.gouv.fr
           </DsfrLink>
