@@ -26,6 +26,12 @@
         cmd: 'docker compose -f docker-compose.preview-system.yml exec -it mongodb mongosh "{{ LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
       when: env_type == 'preview'
 
+    - name: Setup Metabase preview
+      shell:
+        chdir: /opt/app
+        cmd: "sudo bash /opt/app/configs/metabase/setup-metabase-preview.sh"
+      timeout: 600
+
     - include_tasks: ./tasks/preview_pr.yml
       vars:
         build: true

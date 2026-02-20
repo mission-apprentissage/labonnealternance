@@ -148,6 +148,37 @@ services:
       - LETSENCRYPT_HOST={{dns_name}}
       - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
 
+  metabase:
+    <<: *default
+    image: metabase/metabase:v0.56.3
+    container_name: lba_metabase
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    environment:
+      JAVA_TIMEZONE: Europe/Paris
+      MB_SITE_LOCALE: fr
+      MB_SITE_URL: "https://metabase.{{dns_name}}"
+      MB_ENCRYPTION_SECRET_KEY: "{{ LBA_METABASE_ENCRYPTION_SECRET_KEY }}"
+      MB_PASSWORD_COMPLEXITY: normal
+      MB_START_OF_WEEK: monday
+      VIRTUAL_HOST: "metabase.{{dns_name}}"
+      VIRTUAL_PATH: /
+      VIRTUAL_PORT: 3000
+      LETSENCRYPT_HOST: "metabase.{{dns_name}}"
+      LETSENCRYPT_EMAIL: misson.apprentissage.devops@gmail.com
+    volumes:
+      - metabase:/metabase-data
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 6m
+    labels:
+      - autoheal=true
+
   autoheal:
     <<: *default
     image: willfarrell/autoheal:latest
@@ -161,6 +192,7 @@ volumes:
   html:
   certs:
   acme:
+  metabase:
 
 networks:
   mna_network:
