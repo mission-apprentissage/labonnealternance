@@ -6,7 +6,7 @@ import { Footer } from "@/app/_components/Footer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
 import { getSession } from "@/utils/getSession"
 
-export default async function HomeLayout({ children }: PropsWithChildren) {
+export default async function EditorialLayout({ children }: PropsWithChildren) {
   const { user } = await getSession()
 
   return (
@@ -18,7 +18,7 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <PublicHeader user={user} hideConnectionButton={true} />
+      <PublicHeader user={user} hideConnectionButton={false} />
       <Box component="main" role="main">
         {children}
       </Box>
