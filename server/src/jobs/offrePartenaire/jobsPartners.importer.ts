@@ -11,10 +11,10 @@ import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
-// import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./decathlon/importDecathlon"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
+import { processApec } from "./apec/processApec"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -131,6 +131,12 @@ export const importers: Record<string, CronDef> = {
   "Import Decathlon": {
     cron_string: timings.import_source,
     handler: processDecathlon,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import APEC": {
+    cron_string: timings.import_source,
+    handler: processApec,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
