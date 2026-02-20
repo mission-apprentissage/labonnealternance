@@ -116,7 +116,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-      <Box sx={{ display: "grid", gridTemplateRows: { xs: "1fr", sm: ".5fr 2fr" }, gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("6v") }}>
+      <Box sx={{ display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("6v") }}>
         <Box>
           <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
             Informations de contact
