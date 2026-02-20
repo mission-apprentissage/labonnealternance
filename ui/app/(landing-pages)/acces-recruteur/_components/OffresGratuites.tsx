@@ -17,10 +17,6 @@ export const OffresGratuites = () => {
           }}
         >
           Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-          <DsfrLink aria-label="Accès au site un jeune une solution - nouvelle fenêtre" href="https://www.1jeune1solution.gouv.fr">
-            1jeune1solution
-          </DsfrLink>
-          ,{" "}
           <DsfrLink aria-label="Accès au site Parcoursup - nouvelle fenêtre" href="https://www.parcoursup.fr">
             Parcoursup
           </DsfrLink>{" "}
