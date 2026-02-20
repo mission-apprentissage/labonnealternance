@@ -77,6 +77,7 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { processApec } from "./offrePartenaire/apec/processApec"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -439,5 +440,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillEntrepriseEngagementJobsPartners,
     description: "Mise à jour des handi-engagement des offres actives",
+  },
+  {
+    fct: processApec,
+    description: "Import du flux APEC jusqu'à la collection computed_jobs_partners",
   },
 ]

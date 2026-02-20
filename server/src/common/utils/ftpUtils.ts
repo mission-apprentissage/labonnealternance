@@ -1,4 +1,5 @@
 import Ftp from "basic-ftp"
+import { Client as SFTPClient } from "ssh2"
 
 import { sentryCaptureException } from "./sentryUtils"
 import { logger } from "@/common/logger"
@@ -53,3 +54,40 @@ class FTPClient {
 }
 
 export { FTPClient }
+
+type SFTPConnectOptions = {
+  host: string
+  port?: number
+  username: string
+  password: string
+}
+
+export const downloadFileFromSFTP = async (remotePath: string, options: SFTPConnectOptions): Promise<NodeJS.ReadableStream> => {
+  return new Promise((resolve, reject) => {
+    const conn = new SFTPClient()
+
+    conn.on("ready", () => {
+      conn.sftp((err, sftp) => {
+        if (err) {
+          conn.end()
+          return reject(err)
+        }
+
+        const stream = sftp.createReadStream(remotePath)
+
+        stream.on("error", (err: Error) => {
+          conn.end()
+          reject(err)
+        })
+
+        stream.on("close", () => conn.end())
+
+        resolve(stream)
+      })
+    })
+
+    conn.on("error", reject)
+
+    conn.connect({ port: 22, ...options })
+  })
+}
