@@ -10,8 +10,8 @@ export const AmeliorerLBA = () => (
     sx={{
       display: "grid",
       gridTemplateColumns: { xs: "1fr", md: "2fr 3fr" },
-      padding: fr.spacing("6w"),
-      gap: fr.spacing("6w"),
+      padding: fr.spacing("12v"),
+      gap: fr.spacing("12v"),
       backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
       borderRadius: "10px",
     }}
@@ -19,7 +19,7 @@ export const AmeliorerLBA = () => (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
       <Image src="/images/home_pics/illu-support.svg" alt="" unoptimized width={422} height={244} style={{ width: "100%", height: "auto" }} />
     </Box>
-    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3w") }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
       <Typography variant="h2">
         Vous êtes une entreprise à la{" "}
         <Box component="span" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>

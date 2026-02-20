@@ -78,13 +78,13 @@ export const OffresTabs = ({
 
   if (jobs.length === 0) {
     return (
-      <Box sx={{ py: fr.spacing("3w"), backgroundColor: "#F5F5FE" }}>
+      <Box sx={{ py: fr.spacing("6v"), backgroundColor: "#F5F5FE" }}>
         <Box sx={{ display: "flex", width: "fit-content", m: "auto", alignItems: "center" }}>
           <Image src="/images/espace_pro/no-job.svg" alt="" aria-hidden={true} width="118" height="70" />
           <Typography
             component="span"
             sx={{
-              ml: fr.spacing("1w"),
+              ml: fr.spacing("2v"),
               fontWeight: 700,
               color: "#161616",
             }}

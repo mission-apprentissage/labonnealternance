@@ -162,7 +162,7 @@ function AdministrationOpco() {
 
       <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("6v") }}>
         <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Entreprises</Typography>
       </Box>
 

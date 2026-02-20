@@ -102,14 +102,14 @@ function FAQRendererClientGeneric({
     <Box
       ref={pageRef}
       sx={{
-        mb: fr.spacing("3w"),
+        mb: fr.spacing("6v"),
       }}
     >
       <Breadcrumb pages={[PAGES.static.faq]} />
       <DefaultContainer>
         <Box
           sx={{
-            mb: fr.spacing("1w"),
+            mb: fr.spacing("2v"),
           }}
         >
           <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>

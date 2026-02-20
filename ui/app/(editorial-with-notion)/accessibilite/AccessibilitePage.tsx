@@ -21,15 +21,15 @@ export const AccessibilitePage = ({ recordMap }: { recordMap: ExtendedRecordMap 
       <DefaultContainer>
         <Box
           sx={{
-            p: { xs: fr.spacing("2w"), md: fr.spacing("5w") },
-            marginBottom: fr.spacing("5w"),
+            p: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
+            marginBottom: fr.spacing("10v"),
             borderRadius: "10px",
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography sx={{ mb: fr.spacing("1w") }} variant="h1" component={"h1"}>
+              <Typography sx={{ mb: fr.spacing("2v") }} variant="h1" component={"h1"}>
                 Déclaration
                 <br />
                 <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default }} variant="h1">

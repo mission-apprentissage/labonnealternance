@@ -25,17 +25,17 @@ const UserValidationHistory = ({ histories }: { histories: IUserStatusValidation
   }
 
   return (
-    <Box sx={{ mt: fr.spacing("5w") }}>
+    <Box sx={{ mt: fr.spacing("10v") }}>
       <hr />
       <Box sx={{ mt: fr.spacing("5v") }}>
         <Typography sx={{ fontSize: "20px", fontWeight: 700 }}>Historique du compte</Typography>
-        <Box sx={{ mt: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
           <Box className="fr-table">
             <Box className="fr-table__wrapper">
               <Box className="fr-table__container">
                 <Box className="fr-table__content">
                   <Box component="table">
-                    <Box component="caption" sx={{ position: "relative !important", fontWeight: "700", mb: fr.spacing("1w") }}>
+                    <Box component="caption" sx={{ position: "relative !important", fontWeight: "700", mb: fr.spacing("2v") }}>
                       Historique des changements d'état du compte
                     </Box>
                     <Box component="thead">

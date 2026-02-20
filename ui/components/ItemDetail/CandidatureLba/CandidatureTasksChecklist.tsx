@@ -5,6 +5,7 @@ import * as motion from "motion/react-m"
 import Image from "next/image"
 import { useState } from "react"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { fr } from "@codegouvfr/react-dsfr"
 
 const OffreSpontaneTasks = [
   "je me suis renseigné·e sur l'entreprise (son domaine activité, ses valeurs, ...)",
@@ -79,7 +80,7 @@ export const CandidatureTasksChecklist = ({ kind }: { kind: LBA_ITEM_TYPE | LBA_
                       key={task}
                       control={<Checkbox defaultChecked={false} onChange={() => toggleTask(task)} />}
                       label={task}
-                      sx={{ mt: 2, alignItems: "flex-start" }}
+                      sx={{ mt: fr.spacing("4v"), alignItems: "flex-start" }}
                       className="mui-checkbox"
                     />
                   ))}

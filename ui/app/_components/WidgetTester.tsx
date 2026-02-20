@@ -114,11 +114,11 @@ export function WidgetTester() {
   const [widgetUrl, setWidgetUrl] = useState(`${baseUrl}/recherche`)
 
   return (
-    <Box sx={{ p: fr.spacing("3w"), backgroundColor: "#f8f8f8" }}>
-      <Typography variant="h1" sx={{ mb: fr.spacing("2w") }}>
+    <Box sx={{ p: fr.spacing("6v"), backgroundColor: "#f8f8f8" }}>
+      <Typography variant="h1" sx={{ mb: fr.spacing("4v") }}>
         Test du Widget La bonne alternance
       </Typography>
-      <Typography sx={{ mb: fr.spacing("2w") }}>
+      <Typography sx={{ mb: fr.spacing("4v") }}>
         Lien vers la documentation détaillé :{" "}
         <DsfrLink href="https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/" aria-label="Accès à la documentation - nouvelle fenêtre" external={true}>
           https://www.data.gouv.fr/fr/dataservices/api-la-bonne-alternance/
@@ -150,7 +150,7 @@ export function WidgetTester() {
         }}
         component={WidgetFormComponent}
       />
-      <Box sx={{ p: fr.spacing("3w"), backgroundColor: fr.colors.decisions.background.altOverlap.grey.active, my: fr.spacing("3w") }}>
+      <Box sx={{ p: fr.spacing("6v"), backgroundColor: fr.colors.decisions.background.altOverlap.grey.active, my: fr.spacing("6v") }}>
         <Typography sx={{ textAlign: "center" }}>
           URL associée à l&apos;attribut{" "}
           <Typography component={"span"} sx={{ fontWeight: 700 }}>

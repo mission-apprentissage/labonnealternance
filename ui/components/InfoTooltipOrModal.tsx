@@ -19,7 +19,7 @@ export const InfoTooltipOrModal = ({ tooltipContent, children }: { tooltipConten
   return (
     <>
       <ModalReadOnly isOpen={isModalOpen /* && isMobileBool*/} onClose={closeModal}>
-        <Box sx={{ px: fr.spacing("4w"), py: fr.spacing("2w") }}>{tooltipContent}</Box>
+        <Box sx={{ px: fr.spacing("8v"), py: fr.spacing("4v") }}>{tooltipContent}</Box>
       </ModalReadOnly>
       <Typography component={"span"} sx={{ ":hover": { cursor: "pointer" } }} onClick={onClick}>
         {children}

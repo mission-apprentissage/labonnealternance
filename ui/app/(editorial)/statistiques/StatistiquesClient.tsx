@@ -21,15 +21,15 @@ function TabPanel(props: TabPanelProps) {
 
   return (
     <div role="tabpanel" hidden={value !== index} id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`} {...other}>
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ pt: fr.spacing("6v") }}>{children}</Box>}
     </div>
   )
 }
 
 function TabContent({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Box sx={{ mb: fr.spacing("3w"), p: fr.spacing("3w"), border: "2px solid #E5E5E5", borderRadius: "5px" }}>
-      <Typography sx={{ mb: fr.spacing("3w"), fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
+    <Box sx={{ mb: fr.spacing("6v"), p: fr.spacing("6v"), border: "2px solid #E5E5E5", borderRadius: "5px" }}>
+      <Typography sx={{ mb: fr.spacing("6v"), fontWeight: 700, fontSize: "28px", color: "#000091" }} component="h3">
         {title}
       </Typography>
       <hr />
@@ -49,7 +49,7 @@ export default function StatistiquesClient() {
     <Box>
       <Breadcrumb pages={[PAGES.static.statistiques]} />
       <DefaultContainer>
-        <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+        <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
           Statistiques
         </Typography>
 
@@ -65,7 +65,7 @@ export default function StatistiquesClient() {
         </ol>
         <Typography>Pour visualiser correctement cette page, veuillez désactiver votre bloqueur de publicité</Typography>
 
-        <Box sx={{ mt: 6 }}>
+        <Box sx={{ mt: fr.spacing("12v") }}>
           <Box sx={{ px: { xs: 0, sm: 4 } }}>
             <Tabs
               value={value}

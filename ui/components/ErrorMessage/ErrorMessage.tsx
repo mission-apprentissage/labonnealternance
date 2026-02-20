@@ -29,7 +29,7 @@ const ErrorMessage = ({ type = undefined, message }: Props) => {
       </Box>
       {type === "column" && (
         <Box sx={{ margin: "auto", maxWidth: "75%", textAlign: "center" }}>
-          <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
+          <Typography variant="h3" sx={{ my: fr.spacing("6v") }}>
             Pas de panique !
           </Typography>
           <Typography sx={{ fontWeight: 700 }}>Il y a forcément un résultat qui vous attend, veuillez revenir ultérieurement</Typography>

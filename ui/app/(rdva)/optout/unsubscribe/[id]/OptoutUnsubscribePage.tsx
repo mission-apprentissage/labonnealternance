@@ -98,11 +98,11 @@ export default function OptOutUnsubscribe() {
 
   return (
     <Container>
-      <Typography variant="h3" sx={{ my: fr.spacing("3w") }}>
+      <Typography variant="h3" sx={{ my: fr.spacing("6v") }}>
         Désinscription au service “RDV Apprentissage”
       </Typography>
       {hasBeenUnsubscribed && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), my: fr.spacing("6v") }}>
           <SuccessCircle width={33} fillHexaColor="#000091" />
           <Typography component="h3" sx={{ fontWeight: 700 }}>
             Votre désinscription au service “RDV Apprentissage” a bien été prise en compte
@@ -110,7 +110,7 @@ export default function OptOutUnsubscribe() {
         </Box>
       )}
       {isQuestionSent && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2w"), my: fr.spacing("3w") }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v"), my: fr.spacing("6v") }}>
           <SuccessCircle width={33} fillHexaColor="#000091" />
           <Typography component="h3" sx={{ fontWeight: 700 }}>
             L'équipe “RDV Apprentissage” reviendra vers vous très prochainement pour répondre à vos questions.
@@ -121,13 +121,13 @@ export default function OptOutUnsubscribe() {
         <>
           <FormControl>
             <RadioGroup onChange={(e) => setRadioValue(e.target.value)} value={radioValue}>
-              <Stack gap={fr.spacing("2w")}>
+              <Stack gap={fr.spacing("4v")}>
                 <FormControlLabel
                   label="Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :"
                   control={<Radio />}
                   value={radioOptions.UNSUBSCRIBE_NO_DETAILS}
                 />
-                <Stack gap={fr.spacing("1w")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("3w") }}>
+                <Stack gap={fr.spacing("2v")} sx={{ backgroundColor: "#E5E5E5", p: fr.spacing("6v") }}>
                   <Typography>
                     Raison sociale : <strong>{etablissement.raison_sociale}</strong>
                   </Typography>
@@ -161,7 +161,7 @@ export default function OptOutUnsubscribe() {
               </Stack>
             </RadioGroup>
           </FormControl>
-          <Box sx={{ my: fr.spacing("5w") }}>
+          <Box sx={{ my: fr.spacing("10v") }}>
             <Button onClick={submit} disabled={radioValue === radioOptions.UNSUBSCRIBE_MORE_DETAILS && textarea === ""}>
               Envoyer
             </Button>

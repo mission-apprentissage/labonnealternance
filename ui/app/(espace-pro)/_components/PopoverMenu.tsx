@@ -108,7 +108,7 @@ export const PopoverMenu = ({
                         sx={{
                           py: fr.spacing("3v"),
                           mx: `0 !important`,
-                          px: `${fr.spacing("1w")} !important`,
+                          px: `${fr.spacing("2v")} !important`,
                           mb: `0 !important`,
                           fontSize: "14px !important",
                           minHeight: "24px",

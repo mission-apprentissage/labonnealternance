@@ -69,7 +69,7 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
 
             <Box
               sx={{
-                mt: 2,
+                mt: fr.spacing("4v"),
               }}
             >
               <Button onClick={() => reset()} type="button">
@@ -79,7 +79,7 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
 
             <Box
               sx={{
-                mt: 2,
+                mt: fr.spacing("4v"),
               }}
             >
               <DsfrLink href="/" locale="fr">

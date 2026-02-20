@@ -21,7 +21,7 @@ const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJ
   return (
     <Button priority="tertiary no outline" onClick={copyLink} data-tracking-id={`partager-${item.ideaType}`}>
       {copied ? (
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
           <Image src="/images/icons/share_copied_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
           <Typography
             sx={{
@@ -32,7 +32,7 @@ const ShareLinkInner = ({ item }: { item: ILbaItemFormationJson | ILbaItemFtJobJ
           </Typography>
         </Box>
       ) : (
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+        <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
           <Image src="/images/icons/share_icon.svg" width={16} height={16} aria-hidden={true} alt="" />
           <Typography
             sx={{

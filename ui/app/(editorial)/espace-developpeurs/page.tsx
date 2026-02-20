@@ -17,15 +17,15 @@ export default function EspaceDeveloppeurs() {
   return (
     <Box
       sx={{
-        mb: fr.spacing("3w"),
+        mb: fr.spacing("6v"),
       }}
     >
       <Breadcrumb pages={[PAGES.static.EspaceDeveloppeurs]} />
       <DefaultContainer>
-        <Box sx={{ p: { xs: fr.spacing("2w"), md: fr.spacing("5w") }, borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-          <Grid container spacing={fr.spacing("3w")}>
+        <Box sx={{ p: { xs: fr.spacing("4v"), md: fr.spacing("10v") }, borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+          <Grid container spacing={fr.spacing("6v")}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("1w"), color: fr.colors.decisions.text.default.info.default }}>
+              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v"), color: fr.colors.decisions.text.default.info.default }}>
                 Espace développeurs
               </Typography>
               <Box
@@ -36,7 +36,7 @@ export default function EspaceDeveloppeurs() {
             <Grid size={{ xs: 12, md: 7 }}>
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 La bonne alternance propose un point d’entrée unique et documenté pour faciliter l’accès à toutes les données relatives à l’apprentissage.
@@ -44,7 +44,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 L’espace développeur est un site dédié{" "}
@@ -59,7 +59,7 @@ export default function EspaceDeveloppeurs() {
                   mb: fr.spacing("12v"),
                   display: "flex",
                   justifyContent: "center",
-                  gap: 4,
+                  gap: fr.spacing("8v"),
                 }}
               >
                 <Button priority="secondary" size="large">
@@ -72,14 +72,14 @@ export default function EspaceDeveloppeurs() {
               <Typography
                 variant="h4"
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Obtenir des données
               </Typography>
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                   fontWeight: 700,
                 }}
               >
@@ -87,7 +87,7 @@ export default function EspaceDeveloppeurs() {
               </Typography>
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Les opportunités d'emplois et de formation exposées sur le site La bonne alternance sont accessibles à tous via notre API.
@@ -95,7 +95,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Utilisée dans sa globalité cette API permet la mise en relation des candidats à l’alternance avec des entreprises accueillant des alternants d’une part et/ou avec
@@ -104,7 +104,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Documentation des différentes routes API
@@ -113,11 +113,11 @@ export default function EspaceDeveloppeurs() {
               <Box
                 component="ul"
                 sx={{
-                  mb: 4,
-                  pl: 2,
+                  mb: fr.spacing("8v"),
+                  pl: fr.spacing("4v"),
                   listStyle: "disc",
                   "& > li": {
-                    mb: 1.5, // ou `mb: 2` si tu veux plus d'espacement
+                    mb: fr.spacing("3v"), // ou `mb: 2` si tu veux plus d'espacement
                   },
                 }}
               >
@@ -133,7 +133,7 @@ export default function EspaceDeveloppeurs() {
               </Box>
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                   fontWeight: 700,
                 }}
               >
@@ -142,7 +142,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Pour une intégration rapide et simplifiée, les données présentées ci-dessus sont également disponibles sous forme de widget.
@@ -150,7 +150,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Disponible en marque blanche ce widget est proposé en plusieurs tailles. Par ailleurs, différents filtres peuvent être appliqués aux données qu’il restitue.
@@ -158,7 +158,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Pour exploiter le widget,{" "}
@@ -172,7 +172,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Pour tester le widget,{" "}
@@ -184,7 +184,7 @@ export default function EspaceDeveloppeurs() {
               <Typography
                 variant="h4"
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Envoyer des données
@@ -192,7 +192,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                   fontWeight: 700,
                 }}
               >
@@ -201,7 +201,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Par ailleurs, collectez et partagez les besoins en recrutement en alternance de vos entreprises, afin d’améliorer leur visibilité auprès des candidats à
@@ -212,7 +212,7 @@ export default function EspaceDeveloppeurs() {
               </Typography>
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                   fontWeight: 700,
                 }}
               >
@@ -221,7 +221,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Pour une intégration rapide et simplifiée, cette fonctionnalité est également disponible sous forme de widget.
@@ -229,7 +229,7 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("2w"),
+                  mb: fr.spacing("4v"),
                 }}
               >
                 Pour exploiter le widget, utilisez l’adresse suivante au sein d’une balise HTML en remplaçant "ORIGINE" par le nom de votre établissement.

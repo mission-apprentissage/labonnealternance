@@ -78,14 +78,14 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
 
   return (
     <ModalReadOnly isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+      <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Êtes-vous certain de vouloir supprimer votre offre ?
         </Typography>
 
         <Box
           sx={{
-            pb: 2,
+            pb: fr.spacing("4v"),
           }}
         >
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>Celle-ci sera définitivement supprimée. Vous ne recevrez plus de candidatures.</Typography>
@@ -109,7 +109,7 @@ export default function ConfirmationSuppressionOffre(props: ConfirmationSuppress
                 ))}
               </Select>
               {formik.values.motif === motifAutre && <CustomInput label="Précisez votre motif (facultatif)" name="autreMotif" required={false} />}
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("6v") }}>
                 <Box sx={{ ml: fr.spacing("3v") }}>
                   <Button type="button" priority="secondary" onClick={() => resetState()}>
                     Annuler

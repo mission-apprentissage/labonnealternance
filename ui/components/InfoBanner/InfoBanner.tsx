@@ -104,8 +104,8 @@ const InfoBanner = ({
       {showEnvAlert && env !== "production" && (forceEnvBanner || !isEnvClosed) && (
         <Box
           sx={{
-            p: 2,
-            mb: 1,
+            p: fr.spacing("4v"),
+            mb: fr.spacing("2v"),
             backgroundColor: "#FFE9E6",
           }}
         >
@@ -114,7 +114,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {envBannerText}
@@ -126,8 +126,8 @@ const InfoBanner = ({
       {!isAlertClosed && showAlert && (
         <Box
           sx={{
-            p: 2,
-            mb: 1,
+            p: fr.spacing("4v"),
+            mb: fr.spacing("2v"),
             backgroundColor: "#FFE9E6",
           }}
         >
@@ -136,7 +136,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {redBannerText}
@@ -148,8 +148,8 @@ const InfoBanner = ({
       {!isOKClosed && showOK && (
         <Box
           sx={{
-            p: 2,
-            mb: 1,
+            p: fr.spacing("4v"),
+            mb: fr.spacing("2v"),
             backgroundColor: "#B8FEC9",
           }}
         >
@@ -158,7 +158,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {greenBannerText}
@@ -170,8 +170,8 @@ const InfoBanner = ({
       {!isInfoClosed && showInfo && (
         <Box
           sx={{
-            p: 2,
-            mb: 1,
+            p: fr.spacing("4v"),
+            mb: fr.spacing("2v"),
             backgroundColor: "#E8EDFF",
           }}
         >
@@ -180,7 +180,7 @@ const InfoBanner = ({
             <Box
               sx={{
                 flexGrow: 1,
-                ml: fr.spacing("2w"),
+                ml: fr.spacing("4v"),
               }}
             >
               {blueBannerText}

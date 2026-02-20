@@ -29,7 +29,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
         <Box className="fr-table__container">
           <Box className="fr-table__content">
             <Box component="table" {...getTableProps()}>
-              <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("1w") }} component="caption">
+              <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
                 {caption}
               </Box>
               <Box component="thead">
@@ -43,7 +43,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                             <Box
                               component="span"
                               sx={{
-                                pl: 1,
+                                pl: fr.spacing("2v"),
                               }}
                             >
                               {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}

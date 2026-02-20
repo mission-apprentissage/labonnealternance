@@ -118,7 +118,7 @@ export function RechercheMapIci(props: WithRecherchePageParams<RechercheMapIciPr
     <Box
       sx={{
         position: "absolute",
-        top: fr.spacing("2w"),
+        top: fr.spacing("4v"),
         width: "100%",
         display: "flex",
         justifyContent: "center",

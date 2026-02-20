@@ -108,7 +108,7 @@ export const AdminUserForm = ({
           </Box>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", mb: fr.spacing("2v") }}>
             <Box sx={{ width: "300px" }}>Statut du compte </Box>
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", gap: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "baseline", gap: fr.spacing("6v") }}>
               <Box> {accessStatus}</Box>
               {accessStatus !== AccessStatus.GRANTED && (
                 <ActivateUserButton
@@ -178,7 +178,7 @@ const UserFieldsForm = ({
   return (
     <FormikProvider value={formik}>
       <form onSubmit={handleSubmit}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1, alignItems: "baseline", my: fr.spacing("2w") }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), alignItems: "baseline", my: fr.spacing("4v") }}>
           {user && <Input disabled={true} label="Identifiant" nativeInputProps={{ type: "text", name: "id", value: user._id.toString() }} />}
           <Select
             label="Type de compte"

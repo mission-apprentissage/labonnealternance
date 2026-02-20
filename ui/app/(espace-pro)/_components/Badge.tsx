@@ -25,8 +25,8 @@ const variants = {
     fontSize: "12px",
     fontWeight: 700,
     lineHeight: "20px",
-    padding: `2px ${fr.spacing("1w")}`,
-    marginLeft: fr.spacing("2w"),
+    padding: `2px ${fr.spacing("2v")}`,
+    marginLeft: fr.spacing("4v"),
   },
 }
 
