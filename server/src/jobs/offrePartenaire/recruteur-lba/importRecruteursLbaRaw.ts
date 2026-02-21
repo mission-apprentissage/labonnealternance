@@ -97,15 +97,19 @@ const importRecruteursLbaToRawCollection = async () => {
 
   const insertionStream = new Transform({
     objectMode: true,
-    transform(chunk, _, callback) {
+    async transform(chunk, _, callback) {
       const filtered = chunk.filter((item) => item)
       if (!filtered.length) {
         callback()
         return
       }
-      count += filtered.length
-      getDbCollection("raw_recruteurslba").insertMany(filtered)
-      callback()
+      try {
+        count += filtered.length
+        await getDbCollection("raw_recruteurslba").insertMany(filtered)
+        callback()
+      } catch (err) {
+        callback(err as Error)
+      }
     },
   })
 
