@@ -103,7 +103,7 @@ export default (server: Server) => {
   )
 
   /**
-   * Récupérer l'OPCO d'une entreprise à l'aide des données en base ou de l'API CFA DOCK
+   * Récupérer l'OPCO d'une entreprise à l'aide des données en base
    */
   server.get(
     "/etablissement/entreprise/:siret/opco",
