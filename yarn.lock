@@ -14767,16 +14767,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nan@npm:^2.14.0":
-  version: 2.23.0
-  resolution: "nan@npm:2.23.0"
-  dependencies:
-    node-gyp: latest
-  checksum: 2d1fd612d69d4cf4dd63c8ce61ee6aa36ace2caf5363c98b3232833fc24ab761fb96742682997716dea5fb9abf57e2fe7e94e76e0c4c302ed1fcde5b908f3e8f
-  languageName: node
-  linkType: hard
-
-"nan@npm:^2.19.0, nan@npm:^2.23.0":
+"nan@npm:^2.14.0, nan@npm:^2.19.0, nan@npm:^2.23.0":
   version: 2.25.0
   resolution: "nan@npm:2.25.0"
   dependencies:
