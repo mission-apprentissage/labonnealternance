@@ -96,7 +96,19 @@ export const apecJobToJobsPartners = (job: IApecJob): IComputedJobsPartners => {
 }
 
 const getContratType = (contrat: IApecJob["Contrat"]): IComputedJobsPartners["contract_type"] => {
-  return contrat.Type_contrat === "CDI - Alternance - Contrat d'apprentissage" ? ["Apprentissage"] : ["Professionnalisation"]
+  const type = contrat.Type_contrat.toLowerCase()
+
+  if (type.includes("apprentissage")) {
+    return ["Apprentissage"]
+  }
+
+  if (type.includes("professionnalisation")) {
+    return ["Professionnalisation"]
+  }
+
+  // Fallback: preserve previous behavior where any non-exact apprenticeship string
+  // was treated as "Professionnalisation"
+  return ["Professionnalisation"]
 }
 
 const getContratDuration = (contrat: IApecJob["Contrat"]): number | null => {
