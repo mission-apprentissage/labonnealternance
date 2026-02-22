@@ -84,7 +84,7 @@ export const apecJobToJobsPartners = (job: IApecJob): IComputedJobsPartners => {
     offer_multicast: false,
     workplace_name: job.Nom_entreprise,
     workplace_address_label: `${job.Lieu.Libelle_lieu} ${job.Lieu.COG_lieu}`,
-    workplace_address_zipcode: job.Lieu.COG_lieu,
+    workplace_address_zipcode: null,
     workplace_address_city: job.Lieu.Libelle_lieu,
     workplace_naf_code: job.Secteur_activite.NAF_secteur,
     workplace_naf_label: job.Secteur_activite.Libelle_secteur,
