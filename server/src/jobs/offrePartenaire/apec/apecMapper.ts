@@ -100,9 +100,13 @@ const getContratType = (contrat: IApecJob["Contrat"]): IComputedJobsPartners["co
 }
 
 const getContratDuration = (contrat: IApecJob["Contrat"]): number | null => {
-  const duration = toInteger(contrat.Duree_contrat)
-  if (isNaN(duration)) {
+  const rawDuration = contrat.Duree_contrat?.trim()
+  if (!rawDuration) {
     return null
   }
-  return duration
+  const parsedDuration = Number.parseInt(rawDuration, 10)
+  if (Number.isNaN(parsedDuration)) {
+    return null
+  }
+  return parsedDuration
 }
