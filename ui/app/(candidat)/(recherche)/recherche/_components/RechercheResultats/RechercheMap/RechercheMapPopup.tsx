@@ -47,14 +47,14 @@ function RechercheMapPopupContent(props: WithRecherchePageParams<{ activeItems: 
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("2w"),
-        margin: fr.spacing("2w"),
+        gap: fr.spacing("4v"),
+        margin: fr.spacing("4v"),
       }}
     >
       <Box
         sx={{
           display: "flex",
-          gap: fr.spacing("1w"),
+          gap: fr.spacing("2v"),
           alignItems: "center",
         }}
       >
@@ -75,7 +75,7 @@ function RechercheMapPopupContent(props: WithRecherchePageParams<{ activeItems: 
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: fr.spacing("1w"),
+          gap: fr.spacing("2v"),
         }}
       >
         {props.activeItems.map((item) => (

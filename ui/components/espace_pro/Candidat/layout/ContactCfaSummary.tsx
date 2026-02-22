@@ -18,20 +18,20 @@ export const ContactCfaSummary = (props: Props) => {
   const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 
   return (
-    <Box sx={{ py: { xs: 0, sm: fr.spacing("7v"), mt: fr.spacing("1w") } }}>
+    <Box sx={{ py: { xs: 0, sm: fr.spacing("7v"), mt: fr.spacing("2v") } }}>
       <Typography sx={{ fontWeight: "700", color: "#2a2a2a" }}>{entrepriseRaisonSociale}</Typography>
       <Typography sx={{ fontWeight: "400", color: "#2a2a2a" }}>{intitule}</Typography>
       {adresse && codePostal && (
         <Box
           sx={{
-            mt: 1,
+            mt: fr.spacing("2v"),
           }}
         >
           <MapPin2Fill sx={{ color: "#3a55d1", mb: fr.spacing("1v") }} />
           <Typography
             component="span"
             sx={{
-              ml: fr.spacing("1w"),
+              ml: fr.spacing("2v"),
             }}
           >
             {adresse},{" "}
@@ -43,7 +43,7 @@ export const ContactCfaSummary = (props: Props) => {
       )}
       <Box
         sx={{
-          mt: 8,
+          mt: fr.spacing("16v"),
           borderBottom: "1px solid #D0C9C4",
         }}
       />

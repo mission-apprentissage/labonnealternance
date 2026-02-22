@@ -10,11 +10,11 @@ export function RechercheResultatsPlaceholder(props: WithRecherchePageParams) {
   return (
     <Box
       sx={{
-        pt: fr.spacing("6w"),
+        pt: fr.spacing("12v"),
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        gap: fr.spacing("4w"),
+        gap: fr.spacing("8v"),
         justifyContent: "center",
       }}
     >

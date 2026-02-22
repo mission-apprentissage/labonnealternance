@@ -157,7 +157,7 @@ export function UsersList() {
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("6v") }}>
         <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Gestion des recruteurs</Typography>
       </Box>
 
@@ -323,7 +323,7 @@ function TabContent({
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
         onConfirmation={onInvalidateData}
       />
-      <Box sx={{ display: "flex", gap: fr.spacing("2w") }}>
+      <Box sx={{ display: "flex", gap: fr.spacing("4v") }}>
         <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
         <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
       </Box>
@@ -332,8 +332,8 @@ function TabContent({
           fontSize: "16px",
           lineHeight: "24px",
           color: "#666666",
-          marginTop: fr.spacing("2w"),
-          marginBottom: fr.spacing("2w") + "!important",
+          marginTop: fr.spacing("4v"),
+          marginBottom: fr.spacing("4v") + "!important",
         }}
       >
         {userRecruteurs.length}

@@ -11,9 +11,9 @@ export const HowTo = () => (
         sm: "repeat(2, 1fr)",
         lg: "repeat(3, 1fr)",
       },
-      gap: { xs: fr.spacing("2w"), md: fr.spacing("6w"), lg: fr.spacing("15w") },
+      gap: { xs: fr.spacing("4v"), md: fr.spacing("12v"), lg: fr.spacing("30v") },
       borderRadius: "5px",
-      px: { xs: fr.spacing("2w"), md: fr.spacing("6w"), lg: 0 },
+      px: { xs: fr.spacing("4v"), md: fr.spacing("12v"), lg: 0 },
       alignItems: "flex-start",
     }}
   >
@@ -21,14 +21,14 @@ export const HowTo = () => (
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("2w"),
+        gap: fr.spacing("4v"),
         position: "relative",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <Image fetchPriority="high" src="/images/howto1.svg" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Le job de vos rêves</Typography>
         <Typography>
           Renseignez
@@ -60,12 +60,12 @@ export const HowTo = () => (
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("2w"),
+        gap: fr.spacing("4v"),
         position: "relative",
       }}
     >
       <Image fetchPriority="high" src="/images/howto2.svg" alt="" unoptimized width={299} height={145} style={{ width: "100%" }} />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>En un clin d’oeil</Typography>
         <Typography>
           Obtenez en un clin d’oeil la
@@ -87,12 +87,12 @@ export const HowTo = () => (
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("2w"),
+        gap: fr.spacing("4v"),
         position: "relative",
       }}
     >
       <Image fetchPriority="high" src="/images/howto3.svg" alt="" unoptimized width={285} height={140} style={{ width: "100%" }} />
-      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1w") }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Un contact facile</Typography>
         <Typography>
           <Box

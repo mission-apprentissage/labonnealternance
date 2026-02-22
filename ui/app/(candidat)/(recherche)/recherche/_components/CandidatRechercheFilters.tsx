@@ -35,8 +35,8 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
           display: "block",
           "& > *": {
             display: "inline-block",
-            marginRight: fr.spacing("3w"),
-            marginBottom: `${fr.spacing("1w")} !important`,
+            marginRight: fr.spacing("6v"),
+            marginBottom: `${fr.spacing("2v")} !important`,
             verticalAlign: "bottom",
             "&:last-child": {
               marginRight: 0,
@@ -70,7 +70,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
       <Box
         sx={{
           alignSelf: "flex-end",
-          marginBottom: fr.spacing("1w"),
+          marginBottom: fr.spacing("2v"),
         }}
       >
         <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
@@ -89,20 +89,20 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
           xs: "none",
           lg: "block",
         },
-        marginTop: fr.spacing("2w"),
-        marginBottom: fr.spacing("4w"),
+        marginTop: fr.spacing("4v"),
+        marginBottom: fr.spacing("8v"),
         paddingLeft: displayMap
           ? {
-              md: fr.spacing("1w"),
-              lg: fr.spacing("2w"),
+              md: fr.spacing("2v"),
+              lg: fr.spacing("4v"),
             }
           : {
-              md: fr.spacing("10w"),
-              lg: fr.spacing("14w"),
+              md: fr.spacing("20v"),
+              lg: fr.spacing("28v"),
             },
         paddingRight: {
-          md: displayMap ? fr.spacing("1w") : fr.spacing("2w"),
-          lg: fr.spacing("2w"),
+          md: displayMap ? fr.spacing("2v") : fr.spacing("4v"),
+          lg: fr.spacing("4v"),
         },
       }}
     >
