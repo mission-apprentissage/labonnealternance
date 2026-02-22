@@ -27,8 +27,8 @@ export const AmeliorerLBA = () => (
         </Box>
       </Typography>
       <Typography>
-        Participez à une démonstration de La bonne alternance. Un <strong>service public gratuit pour publier facilement vos offres sur plusieurs plateformes</strong> : La bonne
-        alternance, 1jeune1solution, Parcoursup, l'Onisep, et bien d'autres.
+        Participez à une démonstration de La bonne alternance. Un <strong>service public gratuit pour publier facilement vos offres sur plusieurs plateformes</strong> : 
+        La bonne alternance, Affelnet, Parcoursup, Mon Master, l'Onisep et bien d'autres.
       </Typography>
       <Typography>
         <strong>Chaque semaine</strong>, nous organisons des webinaires spécialement conçus pour les recruteurs afin de vous présenter toutes les fonctionnalités de notre

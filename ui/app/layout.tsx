@@ -1,7 +1,6 @@
 //import { Alert, AlertTitle } from "@mui/material"
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import type { Metadata } from "next"
-import PlausibleProvider from "next-plausible"
 import type { PropsWithChildren } from "react"
 import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
 
@@ -47,7 +46,6 @@ export default function RootLayout({ children }: PropsWithChildren) {
           ]}
           doDisableFavicon={true}
         />
-        <PlausibleProvider domain={publicConfig.host} />
         <Matomo />
       </head>
       <body>

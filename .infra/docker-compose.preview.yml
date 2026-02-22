@@ -2,7 +2,7 @@ x-default: &default
   deploy:
     resources:
       limits:
-        memory: 512m
+        memory: 256m
   restart: always
   networks:
     - mna_network
@@ -35,10 +35,6 @@ services:
 
   ui:
     <<: *default
-    deploy:
-      resources:
-        limits:
-          memory: 256m
     image: "ghcr.io/mission-apprentissage/mna_lba_ui:0.0.0-{{pr_number}}-preview"
     container_name: lba_{{pr_number}}_ui
     env_file: .env_ui
@@ -56,18 +52,19 @@ services:
       retries: 11
       start_period: 10s
 
-  jobs_processor:
-    <<: *default
-    deploy:
-      resources:
-        limits:
-          memory: 300m
-    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
-    container_name: lba_{{pr_number}}_jobs_processor
-    command: ["yarn", "cli", "job_processor:start"]
-    volumes:
-      - server:/data
-      - ./.env_server:/app/server/.env
+  # job_processor désactivé car inutile et permet de récupérer des ressources pour d'autres preview
+  # jobs_processor:
+  #   <<: *default
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 300m
+  #   image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+  #   container_name: lba_{{pr_number}}_jobs_processor
+  #   command: ["yarn", "cli", "job_processor:start"]
+  #   volumes:
+  #     - server:/data
+  #     - ./.env_server:/app/server/.env
 
   stream_processor:
     <<: *default

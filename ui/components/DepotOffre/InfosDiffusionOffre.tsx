@@ -42,17 +42,17 @@ export const InfosDiffusionOffre = () => {
           },
         }}
       >
-        <Image src="/images/logosPartenaires/minimal/1j1s.svg" height={80} width={100} alt="#1jeune1solution" />
-        <Image src="/images/logosPartenaires/minimal/portail-alternance.svg" height={80} width={100} alt="Le Portail de l'alternance alternance.emploi.gouv.fr" />
         <Image
           src="/images/logosPartenaires/minimal/affelnet.svg"
           height={80}
           width={200}
           alt="Choisir son affectation - Demander une formation et un établissement après la 3ème"
         />
-        <Image src="/images/logosPartenaires/minimal/mon-master.svg" height={80} width={100} alt="Mon Master" />
         <Image src="/images/logosPartenaires/minimal/parcoursup.svg" height={80} width={100} alt="Parcoursup - Entrez dans l'enseignement supérieur" />
+        <Image src="/images/logosPartenaires/minimal/mon-master.svg" height={80} width={100} alt="Mon Master" />
         <Image src="/images/logosPartenaires/minimal/france-travail.svg" height={80} width={100} alt="France Travail" />
+        <Image src="/images/logosPartenaires/minimal/logo-hellowork.svg" height={80} width={100} alt="Hellowork" />
+        <Image src="/images/logosPartenaires/minimal/logo-meteojob.svg" height={80} width={100} alt="Meteojob" />
       </Box>
     </BorderedBox>
   )
