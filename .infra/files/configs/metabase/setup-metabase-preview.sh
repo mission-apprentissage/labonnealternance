@@ -16,23 +16,29 @@ if [[ -z "$TOKEN" || "$TOKEN" == "null" ]]; then
   exit 1
 fi
 
+SETUP_PAYLOAD=$(jq -n \
+  --arg token "$TOKEN" \
+  --arg password "{{ LBA_METABASE_ADMIN_PASS }}" \
+  --arg email "{{ LBA_METABASE_ADMIN_EMAIL }}" \
+  '{
+    "token": $token,
+    "user": {
+      "password_confirm": $password,
+      "password": $password,
+      "site_name": "La bonne alternance",
+      "email": $email,
+      "last_name": null,
+      "first_name": null
+    },
+    "prefs": {
+      "site_name": "La bonne alternance",
+      "site_locale": "fr",
+      "allow_tracking": false
+    }
+  }')
+
 curl -sSf --retry 5 --retry-all-errors "${METABASE_URL}/api/setup" \
   --header 'Content-Type: application/json' \
-  --data-raw "{
-    \"token\": \"$TOKEN\",
-    \"user\": {
-      \"password_confirm\": \"{{ LBA_METABASE_ADMIN_PASS }}\",
-      \"password\": \"{{ LBA_METABASE_ADMIN_PASS }}\",
-      \"site_name\": \"La bonne alternance\",
-      \"email\": \"{{ LBA_METABASE_ADMIN_EMAIL }}\",
-      \"last_name\": null,
-      \"first_name\": null
-    },
-    \"prefs\": {
-      \"site_name\": \"La bonne alternance\",
-      \"site_locale\": \"fr\",
-      \"allow_tracking\": false
-    }
-  }"
+  --data-raw "$SETUP_PAYLOAD"
 
 echo 'metabase preview setup successfully'

@@ -9,9 +9,13 @@ fi
 
 METABASE_URL="https://metabase.{{dns_name}}"
 
+SESSION_PAYLOAD=$(jq -n \
+  --arg username "{{ LBA_METABASE_ADMIN_EMAIL }}" \
+  --arg password "{{ LBA_METABASE_ADMIN_PASS }}" \
+  '{"username": $username, "password": $password}')
 SESSION=$(curl -sSf -X POST "${METABASE_URL}/api/session" \
   --header 'Content-Type: application/json' \
-  --data-raw "{\"username\": \"{{ LBA_METABASE_ADMIN_EMAIL }}\", \"password\": \"{{ LBA_METABASE_ADMIN_PASS }}\"}")
+  --data-raw "$SESSION_PAYLOAD")
 TOKEN=$(echo "$SESSION" | jq -r '.id')
 if [[ -z "$TOKEN" || "$TOKEN" == "null" ]]; then
   echo "Error: Failed to authenticate with Metabase" >&2
