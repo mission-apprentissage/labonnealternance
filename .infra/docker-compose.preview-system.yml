@@ -155,8 +155,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
+          memory: 1g
     environment:
+      JAVA_OPTS: "-Xmx512m"
       JAVA_TIMEZONE: Europe/Paris
       MB_SITE_LOCALE: fr
       MB_SITE_URL: "https://metabase.{{dns_name}}"
