@@ -107,8 +107,8 @@ const getContratType = (contrat: IApecJob["Contrat"]): IComputedJobsPartners["co
   }
 
   // Fallback: preserve previous behavior where any non-exact apprenticeship string
-  // was treated as "Professionnalisation"
-  return ["Professionnalisation"]
+  // was treated as "Apprentissage"
+  return ["Apprentissage"]
 }
 
 const getContratDuration = (contrat: IApecJob["Contrat"]): number | null => {
