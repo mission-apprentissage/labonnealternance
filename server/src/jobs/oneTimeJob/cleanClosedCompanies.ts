@@ -7,7 +7,6 @@ import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -26,7 +25,6 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
   const content = readFileSync(filePath, "utf-8")
   const rows: CsvRow[] = parse(content, { columns: true, skip_empty_lines: true })
 
-  const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "") // Format YYYYMMDD
   const now = new Date()
 
   console.info(`cleanClosedCompanies: traitement de ${rows.length} lignes`)
@@ -57,23 +55,6 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
       }
 
       const managedById = new ObjectId(managedBy)
-
-      // 2. Désactive l'utilisateur et modifie l'email
-      await getDbCollection("userswithaccounts").updateOne(
-        { _id: managedById },
-        {
-          $push: {
-            status: {
-              validation_type: VALIDATION_UTILISATEUR.AUTO,
-              status: UserEventType.DESACTIVE,
-              reason: "clôture siret fermé",
-              granted_by: "migration",
-              date: now,
-            },
-          },
-          $set: { email: `support-${dateStr}-${managedBy}@apprentissage.beta.gouv.fr` },
-        }
-      )
 
       // 3. Désactive les accès rolemanagement
       await getDbCollection("rolemanagements").updateMany(
