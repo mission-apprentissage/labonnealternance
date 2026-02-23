@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs"
+import { unlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
@@ -10,7 +10,7 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { cleanClosedCompanies } from "./cleanClosedCompanies"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -18,19 +18,32 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 
 useMongo()
 
-const makeCsvFile = (rows: Array<{ id: string; "cfa-delegated-siret": string; "is-delegated": string; "managed-by": string }>) => {
-  const csvPath = join(tmpdir(), `test-companies-${Date.now()}.csv`)
-  const header = "id,cfa-delegated-siret,is-delegated,managed-by"
-  const lines = rows.map((r) => `${r.id},${r["cfa-delegated-siret"]},${r["is-delegated"]},${r["managed-by"]}`)
-  writeFileSync(csvPath, [header, ...lines].join("\n"))
-  return csvPath
-}
-
 describe("cleanClosedCompanies", () => {
   let managedById: ObjectId
+  const createdCsvFiles: string[] = []
+
+  const makeCsvFile = (rows: Array<{ id: string; "cfa-delegated-siret": string; "is-delegated": string; "managed-by": string }>) => {
+    const csvPath = join(tmpdir(), `test-companies-${Date.now()}.csv`)
+    const header = "id,cfa-delegated-siret,is-delegated,managed-by"
+    const lines = rows.map((r) => `${r.id},${r["cfa-delegated-siret"]},${r["is-delegated"]},${r["managed-by"]}`)
+    writeFileSync(csvPath, [header, ...lines].join("\n"))
+    createdCsvFiles.push(csvPath)
+    return csvPath
+  }
 
   beforeEach(() => {
     managedById = new ObjectId()
+  })
+
+  afterEach(() => {
+    for (const file of createdCsvFiles) {
+      try {
+        unlinkSync(file)
+      } catch {
+        // ignore si déjà supprimé
+      }
+    }
+    createdCsvFiles.length = 0
   })
 
   it("archive le recruteur et annule uniquement les offres actives", async () => {

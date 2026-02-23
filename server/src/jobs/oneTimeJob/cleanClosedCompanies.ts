@@ -31,59 +31,72 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
 
   console.info(`cleanClosedCompanies: traitement de ${rows.length} lignes`)
 
-  await asyncForEach(rows, async (row) => {
-    const recruiterId = new ObjectId(row.id)
-    const managedBy = row["managed-by"]
+  let successCount = 0
+  let errorCount = 0
 
-    // 1. Archive le recruteur et annule ses offres actives
-    await getDbCollection("recruiters").updateOne(
-      { _id: recruiterId },
-      {
-        $set: {
-          status: RECRUITER_STATUS.ARCHIVE,
-          "jobs.$[elem].job_status": JOB_STATUS.ANNULEE,
-        },
-      },
-      { arrayFilters: [{ "elem.job_status": JOB_STATUS.ACTIVE }] }
-    )
+  await asyncForEach(rows, async (row, index) => {
+    try {
+      const recruiterId = new ObjectId(row.id)
+      const managedBy = row["managed-by"]
 
-    if (!managedBy) return
-
-    const managedById = new ObjectId(managedBy)
-
-    // 2. Désactive l'utilisateur et modifie l'email
-    await getDbCollection("userswithaccounts").updateOne(
-      { _id: managedById },
-      {
-        $push: {
-          status: {
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            status: UserEventType.DESACTIVE,
-            reason: "clôture siret fermé",
-            granted_by: "migration",
-            date: now,
+      // 1. Archive le recruteur et annule ses offres actives
+      await getDbCollection("recruiters").updateOne(
+        { _id: recruiterId },
+        {
+          $set: {
+            status: RECRUITER_STATUS.ARCHIVE,
+            "jobs.$[elem].job_status": JOB_STATUS.ANNULEE,
           },
         },
-        $set: { email: `support-${dateStr}-${managedBy}@apprentissage.beta.gouv.fr` },
-      }
-    )
+        { arrayFilters: [{ "elem.job_status": JOB_STATUS.ACTIVE }] }
+      )
 
-    // 3. Désactive les accès rolemanagement
-    await getDbCollection("rolemanagements").updateMany(
-      { user_id: managedById },
-      {
-        $push: {
-          status: {
-            validation_type: VALIDATION_UTILISATEUR.AUTO,
-            status: AccessStatus.DENIED,
-            reason: "clôture siret fermé",
-            granted_by: "SERVEUR",
-            date: now,
-          },
-        },
+      if (!managedBy) {
+        successCount++
+        return
       }
-    )
+
+      const managedById = new ObjectId(managedBy)
+
+      // 2. Désactive l'utilisateur et modifie l'email
+      await getDbCollection("userswithaccounts").updateOne(
+        { _id: managedById },
+        {
+          $push: {
+            status: {
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
+              status: UserEventType.DESACTIVE,
+              reason: "clôture siret fermé",
+              granted_by: "migration",
+              date: now,
+            },
+          },
+          $set: { email: `support-${dateStr}-${managedBy}@apprentissage.beta.gouv.fr` },
+        }
+      )
+
+      // 3. Désactive les accès rolemanagement
+      await getDbCollection("rolemanagements").updateMany(
+        { user_id: managedById },
+        {
+          $push: {
+            status: {
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
+              status: AccessStatus.DENIED,
+              reason: "clôture siret fermé",
+              granted_by: "SERVEUR",
+              date: now,
+            },
+          },
+        }
+      )
+
+      successCount++
+    } catch (error) {
+      errorCount++
+      console.error(`cleanClosedCompanies: erreur sur la ligne ${index + 1} (id=${row.id}, managed-by=${row["managed-by"]})`, error)
+    }
   })
 
-  console.info("cleanClosedCompanies: terminé")
+  console.info(`cleanClosedCompanies: terminé (${successCount} succès, ${errorCount} erreurs)`)
 }
