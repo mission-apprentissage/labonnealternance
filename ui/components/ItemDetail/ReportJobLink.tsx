@@ -114,7 +114,7 @@ export const ReportJobLink = ({
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
-          <Box sx={{ p: fr.spacing("4w") }}>
+          <Box sx={{ p: fr.spacing("8v") }}>
             <Typography variant="h1" sx={{ fontSize: "24px", fontWeight: 700 }}>
               {content.title}
             </Typography>
@@ -133,8 +133,8 @@ export const ReportJobLink = ({
                         sx: {
                           display: "flex",
                           flexDirection: "column",
-                          gap: 1,
-                          mb: 1,
+                          gap: fr.spacing("2v"),
+                          mb: fr.spacing("2v"),
                         },
                       }}
                       size="small"
@@ -186,13 +186,13 @@ export const ReportJobLink = ({
 
 const ReportedAcknowledgement = () => {
   return (
-    <Box sx={{ justifySelf: "center", p: fr.spacing("4w") }}>
+    <Box sx={{ justifySelf: "center", p: fr.spacing("8v") }}>
       <Stack
         direction="row"
         spacing={4}
         sx={{
           alignItems: "center",
-          mb: 2,
+          mb: fr.spacing("4v"),
         }}
       >
         <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />

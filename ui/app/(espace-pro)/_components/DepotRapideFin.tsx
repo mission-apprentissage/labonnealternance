@@ -114,8 +114,8 @@ function FinComponent(props: ComponentProps) {
           gap: { xs: 1, lg: 2 },
           justifyContent: "center",
           width: "100%",
-          mt: fr.spacing("1w"),
-          pt: `${fr.spacing("2w")} !important`,
+          mt: fr.spacing("2v"),
+          pt: `${fr.spacing("4v")} !important`,
         }}
       >
         <Image src="/images/espace_pro/mailcloud.svg" width="269" height="151" alt="" />
@@ -123,7 +123,7 @@ function FinComponent(props: ComponentProps) {
           <Typography
             component="h1"
             sx={{
-              mb: 3,
+              mb: fr.spacing("6v"),
               backgroundColor: "white",
               fontSize: "32px",
               fontWeight: "bold",
@@ -153,7 +153,7 @@ function FinComponent(props: ComponentProps) {
 
           <Box
             sx={{
-              mt: 2,
+              mt: fr.spacing("4v"),
             }}
           >
             <JobPreview jobId={jobId} userIsValidated={userIsValidated} />
@@ -166,7 +166,7 @@ function FinComponent(props: ComponentProps) {
 
 const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { withDelegation: boolean; email: string; onResendEmail: () => void }) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, my: 1 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), my: fr.spacing("2v") }}>
       <Typography>Voici les prochaines étapes qui vous attendent :</Typography>
       <ContenuAvecPuce contenuPuce={1}>
         <Typography component="h2" sx={{ fontSize: "18px", fontWeight: "bold" }}>
@@ -195,7 +195,7 @@ const AwaitingAccountDescription = ({ withDelegation, email, onResendEmail }: { 
 
 const ContenuAvecPuce = ({ children, contenuPuce }: { children: React.ReactNode; contenuPuce: React.ReactNode }) => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", gap: 1 }}>
+    <Box sx={{ display: "flex", flexDirection: "row", gap: fr.spacing("2v") }}>
       <Box
         sx={{
           display: "flex",
@@ -235,7 +235,7 @@ const ResendEmailContent = ({ onClick }: { onClick: () => void }) => {
           },
         }}
       >
-        <Typography sx={{ mr: fr.spacing("1w") }}>Vous n’avez pas reçu le mail ? </Typography>
+        <Typography sx={{ mr: fr.spacing("2v") }}>Vous n’avez pas reçu le mail ? </Typography>
         <Button
           type="button"
           style={{
@@ -263,7 +263,7 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
   return (
     <Box
       sx={{
-        mb: fr.spacing("1w"),
+        mb: fr.spacing("2v"),
       }}
     >
       <Box sx={{ mb: fr.spacing("3v") }}>
@@ -278,16 +278,15 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
       {userIsValidated && (
         <Box
           sx={{
-            mb: 1,
-            mt: 2,
+            mb: fr.spacing("2v"),
+            mt: fr.spacing("4v"),
           }}
         >
           <PrintJobLink jobId={jobId} />
         </Box>
       )}
       <Typography sx={{ fontSize: "16px", fontStyle: "italic", color: "grey.425" }}>
-        Votre offre est également visible sur les sites internet partenaires de La bonne alternance dont : Parcoursup, “Choisir son affectation après la 3è”, le Portail de
-        l’alternance, l’ONISEP, la CCI, des plateformes régionales et certains sites d’OPCO.
+        Votre offre est également visible sur les sites partenaires de La bonne alternance dont : “Choisir son affectation après la 3è”, Parcoursup, Mon Master, l’Onisep, Hellowork, et bien d'autres.
       </Typography>
     </Box>
   )

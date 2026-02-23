@@ -1,8 +1,9 @@
 import { Box, Typography } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
 
 const LbaJobReportTooltip = () => {
   return (
-    <Box sx={{ p: 1 }}>
+    <Box sx={{ p: fr.spacing("2v") }}>
       <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: "700", marginBottom: "8px", color: "#161616" }}>
         Cette offre vous semble inappropriée ? Voici les raisons pour lesquelles vous pouvez nous signaler une offre :
       </Typography>

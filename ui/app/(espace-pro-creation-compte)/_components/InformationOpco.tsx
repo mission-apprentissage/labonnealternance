@@ -31,7 +31,7 @@ export const InformationOpco = ({ isUpdatable, infosOpco, resetOpcoChoice }: { i
             </Button>
           )}
         </Box>
-        <Box sx={{ display: "flex", alignItems: "flex-start", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("1w"), md: fr.spacing("2w") } }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") } }}>
           <Typography>{infosOpco.description}</Typography>
           <Image src={infosOpco.image} alt="" width={80} />
         </Box>

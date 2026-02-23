@@ -8,8 +8,8 @@ export const BAD_DESCRIPTION_LENGTH = 50
 
 const DescriptionSection = ({ title, children }: { title: string; children: string }) => (
   <Box>
-    <Typography sx={{ fontWeight: 700, mb: fr.spacing("2w") }}>{title}</Typography>
-    <Typography sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("2w") }} dangerouslySetInnerHTML={{ __html: children }} />
+    <Typography sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>{title}</Typography>
+    <Typography sx={{ whiteSpace: "pre-wrap", mb: fr.spacing("4v") }} dangerouslySetInnerHTML={{ __html: children }} />
   </Box>
 )
 

@@ -97,7 +97,7 @@ export const OffresTabsMenu = ({
           <Typography
             component="span"
             sx={{
-              ml: fr.spacing("1w"),
+              ml: fr.spacing("2v"),
               fontSize: "14px",
               mb: 0,
               color: "#18753C",

@@ -55,7 +55,7 @@ const PageContent = ({ cleMinistereEducatif, referrer }: { cleMinistereEducatif:
   return confirmation ? (
     <DemandeDeContactConfirmation {...confirmation} />
   ) : (
-    <Box sx={{ my: fr.spacing("3w") }}>
+    <Box sx={{ my: fr.spacing("6v") }}>
       <ContactCfaSummary
         entrepriseRaisonSociale={data?.etablissement_formateur_entreprise_raison_sociale}
         intitule={data?.intitule_long}
