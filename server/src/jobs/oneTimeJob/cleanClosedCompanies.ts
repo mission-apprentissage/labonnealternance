@@ -6,7 +6,7 @@ import { parse } from "csv-parse/sync"
 import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
-import { AccessStatus } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -77,7 +77,7 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
 
       // 3. Désactive les accès rolemanagement
       await getDbCollection("rolemanagements").updateMany(
-        { user_id: managedById },
+        { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE },
         {
           $push: {
             status: {
