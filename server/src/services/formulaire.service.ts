@@ -1132,3 +1132,97 @@ export const recruiterDbProxy = {
     return getDbCollection("recruiters").findOne({ "jobs._id": jobId })
   },
 }
+
+// export function jobsPartnerToRecruiter(job: IJobsPartnersOfferPrivate): IRecruiter {
+//   const now = new Date()
+
+//   const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
+//     getRomeDetailsFromDB(job.rome_code[0]),
+//     recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
+//     getEntrepriseEngagementFranceTravail(recruiter.establishment_siret),
+//   ])
+
+//   const { definition, acces_metier } = romeDetails ?? {}
+
+//   const delegatedFields = recruiter.is_delegated
+//     ? {
+//         cfa_siret: lbaJobContactInfo?.establishment_siret || null,
+//         cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
+//         cfa_apply_phone: lbaJobContactInfo?.phone || null,
+//         cfa_apply_email: lbaJobContactInfo?.email || null,
+//         cfa_address_label: lbaJobContactInfo?.address || null,
+//       }
+//     : {
+//         cfa_siret: null,
+//         cfa_legal_name: null,
+//         cfa_apply_phone: null,
+//         cfa_apply_email: null,
+//         cfa_address_label: null,
+//       }
+
+//   const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
+
+//   const recruiter: IRecruiter = {
+//     _id: job._id,
+//     is_delegated: job.is_delegated,
+//     establishment_enseigne: job.workplace_brand,
+//     establishment_siret: job.workplace_siret,
+//     geopoint: job.workplace_geopoint,
+//     address: job.workplace_address_label,
+//     address_detail: {
+//       code_postal: job.workplace_address_zipcode,
+//     },
+//     opco: job.workplace_opco,
+//     idcc: job.workplace_idcc,
+//     naf_code: job.workplace_naf_code,
+//     naf_label: job.workplace_naf_label,
+//     establishment_size: job.workplace_size,
+//     origin: job.offer_origin,
+
+//     jobs: [
+//       {
+//         job_status_comment: job.job_status_comment,
+//         job_delegation_count: job.job_delegation_count,
+//         delegations: job.delegations,
+//         _id: job._id,
+//         job_update_date: job.updated_at,
+//         job_creation_date: job.created_at,
+//         job_start_date: job.contract_start ?? now,
+//         job_duration: job.contract_duration,
+//         job_type: job.contract_type,
+//         job_rythm: job.contract_rythm,
+//         offer_title: job.offer_title,
+//         rome_code: job.offer_rome_codes,
+//         job_expiration_date: job.offer_expiration,
+//         job_count: job.offer_opening_count,
+//         competences_rome: {
+//           savoir_etre_professionnel: job.offer_desired_skills.map((x) => ({
+//             code_ogr: "unknown",
+//             libelle: x,
+//           })),
+//         },
+//       },
+//     ],
+
+//     workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
+//     workplace_address_city: getCity(recruiter) ?? null,
+
+//     apply_phone: (lbaJobContactInfo ? lbaJobContactInfo?.phone : recruiter.phone) ?? null,
+//     apply_email: recruiter.is_delegated ? lbaJobContactInfo?.email : recruiter.email,
+
+//     offer_target_diploma: getDiplomaLevel(job.job_level_label),
+//     offer_desired_skills:
+//       job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+//       romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+//       [],
+//     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
+//     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+//     offer_access_conditions: acces_metier ? [acces_metier] : [],
+//     offer_rome_codes: job.rome_code ?? null,
+//     offer_description: job.job_description ?? definition ?? "",
+//     offer_status: getOfferStatus(job.job_status, recruiter.status),
+
+//     ...delegatedFields,
+//   }
+//   return recruiter
+// }

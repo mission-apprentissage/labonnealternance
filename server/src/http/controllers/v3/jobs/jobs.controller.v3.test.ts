@@ -205,9 +205,9 @@ describe("GET /v3/jobs/search", () => {
       headers: { authorization: `Bearer ${token}` },
     })
     const data = response.json()
-    expect(response.statusCode).toBe(200)
-    expect(data.jobs).toHaveLength(1)
-    expect(data.recruiters).toHaveLength(1)
+    expect.soft(response.statusCode).toBe(200)
+    expect.soft(data.jobs).toHaveLength(1)
+    expect.soft(data.recruiters).toHaveLength(1)
   })
 
   it("should support rncp param", async () => {
