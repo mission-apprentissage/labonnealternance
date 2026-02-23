@@ -128,7 +128,6 @@ describe("apecJobToJobsPartners", () => {
       offer_multicast: false,
       workplace_name: "AROLLA",
       workplace_address_label: "PARIS 01 75101",
-      workplace_address_zipcode: "75101",
       workplace_address_city: "PARIS 01",
       workplace_naf_code: "6202A",
       workplace_naf_label: "CONSEIL EN SYSTÈMES ET LOGICIELS INFORMATIQUES",
