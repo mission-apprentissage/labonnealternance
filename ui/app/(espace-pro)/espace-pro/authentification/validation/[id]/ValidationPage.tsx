@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -29,7 +30,7 @@ const ErreurValidation = () => (
     </Typography>
     <Typography sx={{ fontSize: "18px" }}>
       La validation de votre email a échoué. Merci de{" "}
-      <Link sx={{ ml: 1 }} href={`mailto:${publicConfig.publicEmail}?subject=Authentification%20LBAR%20-%20Mail%20invalide`}>
+      <Link sx={{ ml: fr.spacing("2v") }} href={`mailto:${publicConfig.publicEmail}?subject=Authentification%20LBAR%20-%20Mail%20invalide`}>
         Contacter l'équipe La bonne alternance
       </Link>
     </Typography>

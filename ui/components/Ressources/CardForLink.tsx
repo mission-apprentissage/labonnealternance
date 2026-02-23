@@ -8,13 +8,13 @@ export const CardForLink = ({ imageUrl, text, link, linkTitle, linkAriaLabel }: 
   return (
     <Card
       sx={{
-        p: fr.spacing("3w"),
+        p: fr.spacing("6v"),
         boxShadow: "0px 0px 12px 6px rgba(121, 121, 121, 0.4)",
         display: "flex",
         alignItems: "center",
       }}
     >
-      <Box aria-hidden="true" sx={{ display: { xs: "none", sm: "block" }, mr: fr.spacing("2w") }}>
+      <Box aria-hidden="true" sx={{ display: { xs: "none", sm: "block" }, mr: fr.spacing("4v") }}>
         <Image src={imageUrl} alt="" width={120} height={90} />
       </Box>
       <CardContent sx={{ p: 0 }}>

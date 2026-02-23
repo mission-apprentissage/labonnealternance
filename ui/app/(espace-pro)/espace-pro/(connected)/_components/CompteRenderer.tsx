@@ -96,14 +96,14 @@ export default function CompteRenderer() {
           return (
             <>
               <ModificationCompteEmail {...ModificationEmailPopup} />
-              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: 2, marginBottom: fr.spacing("2w") }}>
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(2, 1fr)" }, gap: fr.spacing("4v"), marginBottom: fr.spacing("4v") }}>
                 <Box>
                   <Typography component="h2" sx={{ fontWeight: 700 }}>
                     Vos informations de contact
                   </Typography>
                   <Typography
                     sx={{
-                      mt: fr.spacing("1w"),
+                      mt: fr.spacing("2v"),
                       fontSize: "20px",
                       textAlign: "justify",
                     }}
@@ -113,20 +113,20 @@ export default function CompteRenderer() {
                       : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
                   </Typography>
                   {user.type === AUTHTYPE.CFA && (
-                    <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
+                    <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
                   )}
-                  <Box sx={{ mt: fr.spacing("2w") }}>
+                  <Box sx={{ mt: fr.spacing("4v") }}>
                     <Form>
                       <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
                       <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
                       <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                       <CustomInput name="email" label="Email" type="email" value={values.email} />
-                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("5w"), mb: fr.spacing("2w") }}>
+                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: fr.spacing("10v"), mb: fr.spacing("4v") }}>
                         <Button type="submit" disabled={!isValid || isSubmitting}>
                           {isSubmitting ? (
-                            <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                            <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
                           ) : (
-                            <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                            <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
                           )}
                           Enregistrer
                         </Button>

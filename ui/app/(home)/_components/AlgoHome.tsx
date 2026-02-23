@@ -14,14 +14,14 @@ export const AlgoHome = () => (
           xs: "1fr",
           md: "2fr 1fr",
         },
-        gap: fr.spacing("2w"),
+        gap: fr.spacing("4v"),
       }}
     >
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: fr.spacing("5w"),
+          gap: fr.spacing("10v"),
         }}
       >
         <Typography id="home-content-container" variant="h1">
@@ -32,9 +32,9 @@ export const AlgoHome = () => (
           </Box>
         </Typography>
         <Box sx={{ width: "13%", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
-        <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3w") }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
           <Typography className={fr.cx("fr-text--lg")}>La bonne alternance expose différents types d&apos;opportunités d&apos;emplois :</Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3w") }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
             <Box className={fr.cx("fr-text--lg")}>
               <Typography>
                 <strong>Les offres d&apos;emploi</strong> identifiables grâce au tag <TagOffreEmploi /> qui sont de 3 types :

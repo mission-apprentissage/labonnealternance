@@ -1,6 +1,7 @@
 import { Box, Stack, Typography, Grid, List, ListItem } from "@mui/material"
 import Image from "next/image"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { CardForLink } from "./CardForLink"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -14,7 +15,7 @@ const RessourcesRecruteur = () => {
         sx={{
           fontSize: 32,
           fontWeight: 700,
-          my: 2,
+          my: fr.spacing("4v"),
         }}
       >
         Testez vos connaissances
@@ -22,7 +23,7 @@ const RessourcesRecruteur = () => {
       <Typography
         variant="body1"
         sx={{
-          mb: 6,
+          mb: fr.spacing("12v"),
         }}
       >
         Entraînez-vous avec notre premier parcours de mise en situation à destination des recruteurs :
@@ -31,7 +32,7 @@ const RessourcesRecruteur = () => {
         container
         spacing={2}
         sx={{
-          my: 6,
+          my: fr.spacing("12v"),
         }}
       >
         <Grid size={{ xs: 12, md: 6 }}>
@@ -48,19 +49,19 @@ const RessourcesRecruteur = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          my: 6,
+          my: fr.spacing("12v"),
         }}
       >
         <Box
           sx={{
-            mr: 2,
+            mr: fr.spacing("4v"),
           }}
         >
           <Image src="/images/pages_ressources/conseils et astuces.svg" alt="" width={60} height={60} aria-hidden="true" />
         </Box>
         <Typography variant="h2">Liens utiles</Typography>
       </Box>
-      <List sx={{ listStyleType: "disc", pl: 2 }}>
+      <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
         <ListItem sx={{ display: "list-item" }}>
           <Typography
             component="span"
@@ -137,12 +138,12 @@ const RessourcesRecruteur = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          my: 8,
+          my: fr.spacing("16v"),
         }}
       >
         <Box
           sx={{
-            mr: 2,
+            mr: fr.spacing("4v"),
           }}
         >
           <Image src="/images/pages_ressources/recruteur.svg" alt="" width={189} height={119} aria-hidden="true" />
@@ -151,7 +152,7 @@ const RessourcesRecruteur = () => {
           <Typography
             sx={{
               fontWeight: 700,
-              mb: 1,
+              mb: fr.spacing("2v"),
             }}
           >
             Diffusez simplement et gratuitement vos offres en alternance

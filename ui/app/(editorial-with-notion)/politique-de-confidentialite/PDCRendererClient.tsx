@@ -54,15 +54,15 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
       <DefaultContainer>
         <Box
           sx={{
-            p: { xs: fr.spacing("2w"), md: fr.spacing("5w") },
-            marginBottom: fr.spacing("5w"),
+            p: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
+            marginBottom: fr.spacing("10v"),
             borderRadius: "10px",
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("1w") }}>
+              <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("2v") }}>
                 Politique
                 <br />
                 <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default }} variant="h1">
@@ -88,8 +88,8 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                     nextLink: Link,
                   }}
                 />
-                <Box sx={{ mt: fr.spacing("3w"), px: fr.spacing("2w") }}>
-                  <Typography sx={{ mb: 2 }}>
+                <Box sx={{ mt: fr.spacing("6v"), px: fr.spacing("4v") }}>
+                  <Typography sx={{ mb: fr.spacing("4v") }}>
                     La bonne alternance utilise la solution de mesure d'audience <DsfrLink href="https://matomo.org/">Matomo</DsfrLink> en l'ayant configuré en mode « exempté »,
                     conformément aux <DsfrLink href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience">recommandations de la CNIL</DsfrLink>. Elle ne nécessite donc pas le
                     consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case ci-dessous.
@@ -112,10 +112,10 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                         Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.
                       </Typography>
                     }
-                    sx={{ mt: 2 }}
+                    sx={{ mt: fr.spacing("4v") }}
                   />
                   {!hasConsent && (
-                    <Typography id="follow-info" sx={{ mt: 2 }}>
+                    <Typography id="follow-info" sx={{ mt: fr.spacing("4v") }}>
                       Note : si vous nettoyez vos cookies et supprimez le cookie d'exclusion, ou bien si vous changez d'ordinateur et/ou de navigateur, il vous faudra de nouveau
                       effectuer la procédure d'exclusion.
                     </Typography>

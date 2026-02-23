@@ -22,7 +22,7 @@ const CustomInput = (props) => {
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
         {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
         {props.info && (
-          <Box className={fr.cx("fr-hint-text")} sx={{ pb: 1 }}>
+          <Box className={fr.cx("fr-hint-text")} sx={{ pb: fr.spacing("2v") }}>
             {props.info}
           </Box>
         )}
@@ -33,11 +33,11 @@ const CustomInput = (props) => {
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box
               sx={{
-                ml: 1,
+                ml: fr.spacing("2v"),
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Warning sx={{ mr: fr.spacing("1w") }} />
+                <Warning sx={{ mr: fr.spacing("2v") }} />
                 <Typography sx={{ color: fr.colors.decisions.text.actionHigh.redMarianne.default }}>Les informations de votre entreprise sont non diffusibles.</Typography>
               </Box>
               <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=Espace%20pro%20-%20Donnees%20entreprise%20non%20diffusibles`} external={true}>
@@ -46,7 +46,7 @@ const CustomInput = (props) => {
             </Box>
           ) : (
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ display: "flex", ml: fr.spacing("1w") }}>
+              <Box sx={{ display: "flex", ml: fr.spacing("2v") }}>
                 <Typography className={fr.cx("fr-message--error")}>{parse(meta.error || "")}</Typography>
                 {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
               </Box>
