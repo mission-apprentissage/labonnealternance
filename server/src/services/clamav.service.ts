@@ -8,6 +8,8 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
 
+const isClamavDisabled = config.env === "preview"
+
 let clamavCache: Promise<NodeClam> | null = null
 let watcher: NodeJS.Timeout | null = null
 
@@ -71,6 +73,10 @@ export async function getVersion(): Promise<string> {
 }
 
 export async function isClamavAvailable(): Promise<boolean> {
+  if (isClamavDisabled) {
+    logger.info("ClamAV is disabled in preview environment, skipping availability check")
+    return true
+  }
   try {
     await getVersion()
     return true
@@ -80,6 +86,10 @@ export async function isClamavAvailable(): Promise<boolean> {
 }
 
 export async function isInfected(file: string): Promise<boolean> {
+  if (isClamavDisabled) {
+    logger.info("ClamAV is disabled in preview environment, skipping virus scan")
+    return false
+  }
   let _isInfected: boolean = false
   await startSentryPerfRecording({ name: "clamav", operation: "scan" }, async () => {
     const clamav = await getClamav()
