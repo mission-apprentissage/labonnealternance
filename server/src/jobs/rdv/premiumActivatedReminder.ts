@@ -85,21 +85,21 @@ export const premiumActivatedReminderAffelnet = async () => {
         gestionnaire_email: {
           $ne: null,
         },
-        premium_activation_date: {
+        premium_affelnet_activation_date: {
           $ne: null,
         },
       })
       .toArray(),
-    eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }),
+    eligibleTrainingsForAppointmentService.find({ affelnet_visible: true, lieu_formation_email: { $ne: null } }),
   ])
 
-  const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
+  const etablissementWithAffelnet = etablissementsActivated.filter((etablissement) =>
     eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
   let targetedEmails: string[] = []
 
-  for (const etablissement of etablissementWithParcoursup) {
+  for (const etablissement of etablissementWithAffelnet) {
     // Retrieve all emails
     let establishmentEmails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
       if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
