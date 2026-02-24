@@ -3,7 +3,6 @@ import { Box, Container } from "@mui/material"
 
 import type { Metadata } from "next"
 import { AlgoHome } from "./_components/AlgoHome"
-import { AmeliorerLBA } from "./_components/AmeliorerLBA"
 import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
 import { HomeRechercheForm } from "./_components/HomeRechercheForm"
 import { HowTo } from "./_components/HowTo"
@@ -56,7 +55,6 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       </Box>
 
       <AlgoHome />
-      <AmeliorerLBA />
       <PromoRessources target="candidat" />
     </Container>
   )
