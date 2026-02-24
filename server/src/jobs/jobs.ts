@@ -55,7 +55,7 @@ import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinition
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
-import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
+import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { generateSitemap } from "@/services/sitemap.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import config from "@/config"
@@ -251,6 +251,11 @@ export async function setupJobProcessor() {
           "Rappel aux établissements que le premium est activé (Parcoursup)": {
             cron_string: "0 6 8 1 *",
             handler: async () => premiumActivatedReminder(),
+            tag: "main",
+          },
+          "Rappel aux établissements que la prise de rdv est activée (Affelnet)": {
+            cron_string: "0 6 23 3 *",
+            handler: async () => premiumActivatedReminderAffelnet(),
             tag: "main",
           },
           "Creation de la collection rolemanagement360": {
