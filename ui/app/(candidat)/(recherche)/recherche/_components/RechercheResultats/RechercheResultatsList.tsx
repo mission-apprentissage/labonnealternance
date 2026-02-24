@@ -105,9 +105,9 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
       {formationQuery.status === "success" && formationQuery.formations.length === 0 && (
         <Box
           sx={{
-            mx: 6,
+            mx: fr.spacing("12v"),
             textAlign: "center",
-            my: 2,
+            my: fr.spacing("4v"),
             fontWeight: 700,
           }}
         >
@@ -119,8 +119,8 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
           sx={{
             fontWeight: 700,
             textAlign: "center",
-            mx: 4,
-            my: 2,
+            mx: fr.spacing("8v"),
+            my: fr.spacing("4v"),
           }}
         >
           Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
@@ -146,10 +146,10 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("3w"),
-        my: fr.spacing("3w"),
+        gap: fr.spacing("6v"),
+        my: fr.spacing("6v"),
         alignItems: "center",
-        paddingX: fr.spacing("4w"),
+        paddingX: fr.spacing("8v"),
       }}
     >
       <RechercheResultatsFooter jobStatus={jobQuery.status} searchParams={props.rechercheParams} jobCount={jobQuery.status === "loading" ? 0 : jobsCount} />
@@ -172,8 +172,8 @@ function ResultCardWithContainer({
   return (
     <Box
       sx={{
-        my: fr.spacing("1w"),
-        px: { md: displayMap ? fr.spacing("1w") : 0, lg: fr.spacing("2w") },
+        my: fr.spacing("2v"),
+        px: { md: displayMap ? fr.spacing("2v") : 0, lg: fr.spacing("4v") },
       }}
     >
       <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />

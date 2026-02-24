@@ -91,7 +91,7 @@ const Formulaire = ({
                     name="email"
                     label="Email"
                     type="email"
-                    pb={fr.spacing("1w")}
+                    pb={fr.spacing("2v")}
                     value={values.email}
                     info={
                       email
@@ -101,7 +101,7 @@ const Formulaire = ({
                   />
                   <Box
                     sx={{
-                      mb: fr.spacing("2w"),
+                      mb: fr.spacing("4v"),
                     }}
                   >
                     <Box className={fr.cx("fr-messages-group")}>
@@ -124,9 +124,9 @@ const Formulaire = ({
                     )}
                     <Button type="submit" disabled={!isValid || isSubmitting}>
                       {isSubmitting ? (
-                        <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                        <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
                       ) : (
-                        <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                        <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
                       )}
                       Suivant
                     </Button>
@@ -151,8 +151,8 @@ const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right:
   return (
     <Box
       sx={{
-        rowGap: 4,
-        columnGap: 4,
+        rowGap: fr.spacing("8v"),
+        columnGap: fr.spacing("8v"),
         display: "grid",
         gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
         gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },
@@ -163,12 +163,12 @@ const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right:
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
           {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
         </Typography>
-        <Typography sx={{ fontSize: "20px", pt: fr.spacing("1w"), pb: fr.spacing("2w") }}>
+        <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
           {type === AUTHTYPE.ENTREPRISE
             ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."
             : "Seul le numéro de téléphone sera visible sur les offres de vos entreprises partenaires. Vous recevrez les candidatures sur l'email renseigné."}
         </Typography>
-        {type === AUTHTYPE.ENTREPRISE && <Typography sx={{ pb: fr.spacing("2w") }}>Tous les champs sont obligatoires.</Typography>}
+        {type === AUTHTYPE.ENTREPRISE && <Typography sx={{ pb: fr.spacing("4v") }}>Tous les champs sont obligatoires.</Typography>}
         <Box>{left}</Box>
       </Box>
       <Box>{right}</Box>

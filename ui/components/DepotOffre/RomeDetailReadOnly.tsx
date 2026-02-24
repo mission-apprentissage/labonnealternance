@@ -26,7 +26,7 @@ export const RomeDetailReadOnly = ({
 }) => {
   return (
     <Box sx={{ border: "1px solid #000091", p: fr.spacing("5v"), mb: fr.spacing("5v") }}>
-      <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("2w") }}>
+      <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
         {appellation}
       </Typography>
       <Accordion defaultExpanded={true} id="metier" label="Descriptif du métier">
@@ -70,7 +70,7 @@ export const RomeDetailReadOnly = ({
         <Typography>{acces_metier}</Typography>
       </Accordion>
 
-      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px", mt: fr.spacing("2w") }}>
+      <Typography sx={{ fontSize: "14px", color: "#3A3A3A", lineHeight: "24px", mt: fr.spacing("4v") }}>
         La fiche métier se base sur la classification ROME de France Travail
       </Typography>
     </Box>

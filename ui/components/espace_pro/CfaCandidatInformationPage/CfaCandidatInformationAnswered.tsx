@@ -1,10 +1,11 @@
 import { Box, Typography } from "@mui/material"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { getCurrentDate, getCurrentHourMinute } from "@/common/utils/dateUtils"
 
 export const CfaCandidatInformationAnswered = (props: { msg: string }) => {
   return (
-    <Box sx={{ mt: 4, p: 4, backgroundColor: "#F5F5FE" }}>
+    <Box sx={{ mt: fr.spacing("8v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
       <Typography variant="h2" sx={{ fontWeight: 700, color: "#000091", fontSize: "22px", lineHeight: "36px" }}>
         Votre réponse au candidat
       </Typography>

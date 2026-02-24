@@ -38,10 +38,10 @@ export default function APropos() {
       <Box>
         <Breadcrumb pages={[PAGES.static.aPropos]} />
         <DefaultContainer>
-          <Box sx={{ p: fr.spacing("5w"), marginBottom: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
-            <Grid container spacing={fr.spacing("1w")}>
+          <Box sx={{ p: fr.spacing("10v"), marginBottom: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+            <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
-                <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: 2, color: fr.colors.decisions.text.default.info.default }}>
+                <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
                   A propos
                 </Typography>
                 <Box
@@ -53,7 +53,7 @@ export default function APropos() {
                 <Typography
                   variant="h4"
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   Constat
@@ -61,7 +61,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   L’alternance est une formule pleine de promesses pour les entreprises et les étudiants, car elle assure une formation proche des métiers et de la réalité du
@@ -71,7 +71,7 @@ export default function APropos() {
                 <Typography
                   variant="h4"
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   La solution
@@ -80,7 +80,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   La bonne alternance a pour objectif de simplifier les mises en relation entre ces trois types d’acteurs afin de faciliter les entrées en alternance.
@@ -89,7 +89,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   <Typography
@@ -108,7 +108,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   <Typography
@@ -121,7 +121,7 @@ export default function APropos() {
                   </Typography>{" "}
                   intéressés par l'alternance à trouver une formation d’une part, et un contrat avec une entreprise d’autre part, en exposant et permettant aux candidat d'entrer en
                   contact avec :
-                  <Box component="ul" sx={{ my: 4, pl: 2, listStyle: "disc", "& > li": { mb: 3 } }}>
+                  <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
                     <li>
                       Les formations en apprentissage issues du{" "}
                       <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Accéder au catalogue des formations intercarif oref - nouvelle fenêtre">
@@ -165,7 +165,7 @@ export default function APropos() {
                 <Typography
                   variant="h4"
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   Impact observé
@@ -174,7 +174,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   Vous pouvez consulter nos{" "}
@@ -186,7 +186,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   La bonne alternance, en collaboration avec ses partenaires, est au carrefour des mondes de la formation et de l’emploi, et ambitionne ainsi d’aider les candidats
@@ -196,7 +196,7 @@ export default function APropos() {
                 <Typography
                   variant="h4"
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   Nos partenaires
@@ -205,8 +205,8 @@ export default function APropos() {
                 <Box
                   sx={{
                     display: "grid",
-                    gap: 2,
-                    mb: 4,
+                    gap: fr.spacing("4v"),
+                    mb: fr.spacing("8v"),
                     gridTemplateColumns: {
                       xs: "repeat(2, 1fr)",
                       sm: "repeat(3, 1fr)",
@@ -238,7 +238,7 @@ export default function APropos() {
                 <Typography
                   variant="h4"
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   Qui sommes nous
@@ -247,7 +247,7 @@ export default function APropos() {
                 <Typography
                   component={"p"}
                   sx={{
-                    mb: fr.spacing("2w"),
+                    mb: fr.spacing("4v"),
                   }}
                 >
                   D’abord développé par France travail, La bonne alternance a été repris en 2020 par{" "}

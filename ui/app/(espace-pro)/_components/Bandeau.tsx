@@ -1,5 +1,6 @@
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import { Box, Link } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
 
 export type BandeauProps = {
   header: React.ReactNode
@@ -20,7 +21,7 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
           target="_blank"
           rel="noopener noreferrer"
           sx={{
-            ml: 1,
+            ml: fr.spacing("2v"),
           }}
         >
           {lien}
@@ -32,7 +33,7 @@ export const Bandeau = ({ header, description, lien = null, type }: BandeauProps
   return (
     <Box
       sx={{
-        mb: 1,
+        mb: fr.spacing("2v"),
       }}
     >
       <Alert severity={type === "success" ? "success" : "error"} title={header} description={descriptionContent} />

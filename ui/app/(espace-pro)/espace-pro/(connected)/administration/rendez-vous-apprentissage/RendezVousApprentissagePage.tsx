@@ -49,13 +49,13 @@ export default function RendezVousApprentissage() {
     <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche]} />
       <Box sx={{ border: "1px solid #E0E5ED", backgroundColor: "white" }}>
-        <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("2w"), borderBottom: "1px solid #E0E5ED" }}>
+        <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("4v"), borderBottom: "1px solid #E0E5ED" }}>
           Rechercher un établissement
         </Typography>
-        <Box sx={{ mt: fr.spacing("2w"), px: fr.spacing("2w") }}>
+        <Box sx={{ mt: fr.spacing("4v"), px: fr.spacing("4v") }}>
           <Formik initialValues={{ keyword: "" }} onSubmit={search}>
             <Form>
-              <Box sx={{ mb: fr.spacing("2w") }}>
+              <Box sx={{ mb: fr.spacing("4v") }}>
                 <CustomDSFRInput
                   label="Identification de l'établissement *"
                   required={true}
