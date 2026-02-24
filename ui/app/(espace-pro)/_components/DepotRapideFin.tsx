@@ -286,7 +286,8 @@ const JobPreview = ({ jobId, userIsValidated }: { jobId: string; userIsValidated
         </Box>
       )}
       <Typography sx={{ fontSize: "16px", fontStyle: "italic", color: "grey.425" }}>
-        Votre offre est également visible sur les sites partenaires de La bonne alternance dont : “Choisir son affectation après la 3è”, Parcoursup, Mon Master, l’Onisep, Hellowork, et bien d'autres.
+        Votre offre est également visible sur les sites partenaires de La bonne alternance dont : “Choisir son affectation après la 3è”, Parcoursup, Mon Master, l’Onisep,
+        Hellowork, et bien d'autres.
       </Typography>
     </Box>
   )
