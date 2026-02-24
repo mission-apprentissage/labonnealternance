@@ -24,6 +24,8 @@ export const ZRecruteursLbaRaw = z.object({
   rome_codes: z.array(z.object({ rome_code: z.string(), normalized_score: z.number() })),
   handiengagee: z.string().nullish(),
   site_web: z.string().nullish(),
+  naf_code: z.string().nullish(),
+  naf_label: z.string().nullish(),
 })
 
 export type IRecruteursLbaRaw = z.output<typeof ZRecruteursLbaRaw>
