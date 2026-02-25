@@ -1,6 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Checkbox, FormControlLabel, Grid, Typography } from "@mui/material"
+import { Box, Checkbox, FormControl, Grid, Typography } from "@mui/material"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
@@ -94,25 +94,25 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                     conformément aux <DsfrLink href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience">recommandations de la CNIL</DsfrLink>. Elle ne nécessite donc pas le
                     consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case ci-dessous :
                   </Typography>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        id="follow-checkbox"
-                        aria-describedby={!hasConsent ? "follow-info" : undefined}
-                        onChange={(event) => {
-                          changeMatomoOptout({
-                            checked: event.target.checked,
-                          })
-                        }}
-                        checked={hasConsent}
-                      />
-                    }
-                    label={
-                      <Typography htmlFor="follow-checkbox" component="label" sx={{ fontWeight: "bold" }}>
-                        Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.
-                      </Typography>
-                    }
-                  />
+                  <FormControl sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("2v") }} component="fieldset" variant="standard">
+                    <Checkbox
+                      id="follow-checkbox"
+                      onChange={(event) => {
+                        changeMatomoOptout({
+                          checked: event.target.checked,
+                        })
+                      }}
+                      checked={hasConsent}
+                      slotProps={{
+                        input: {
+                          "aria-describedby": !hasConsent ? "follow-info" : undefined,
+                        },
+                      }}
+                    />
+                    <Typography htmlFor="follow-checkbox" component="label" sx={{ fontWeight: "bold" }}>
+                      Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.
+                    </Typography>
+                  </FormControl>
                   {!hasConsent && (
                     <Typography id="follow-info" sx={{ mt: fr.spacing("4v") }}>
                       Note : si vous nettoyez vos cookies et supprimez le cookie d'exclusion, ou bien si vous changez d'ordinateur et/ou de navigateur, il vous faudra de nouveau
