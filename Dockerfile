@@ -26,9 +26,6 @@ WORKDIR /app
 FROM root AS builder_server
 WORKDIR /app
 
-COPY ./server ./server
-COPY ./shared ./shared
-
 RUN yarn --cwd server build
 
 RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
@@ -51,10 +48,8 @@ ARG COMMIT_HASH
 ENV COMMIT_HASH=$COMMIT_HASH
 
 COPY --from=builder_server /app/server ./server
-COPY --from=builder_server /app/shared ./shared
 COPY --from=builder_server /app/node_modules ./node_modules
 COPY --from=builder_server /app/server/node_modules ./server/node_modules
-COPY --from=builder_server /app/shared/node_modules ./shared/node_modules
 COPY ./server/static /app/server/static
 
 EXPOSE 5000
