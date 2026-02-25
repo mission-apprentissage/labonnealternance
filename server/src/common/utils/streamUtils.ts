@@ -122,33 +122,47 @@ type LimitStreamOptions<TInput> = {
  */
 export function limitStream<TInput>(options: LimitStreamOptions<TInput>): Transform {
   const { concurrency, processItem } = options
+
+  if (concurrency <= 0) {
+    throw new Error(`concurrency must be positive, got ${concurrency}`)
+  }
   let activeCount = 0
-  const pendingPromises: Promise<void>[] = []
+  const pendingPromises = new Set<Promise<void>>()
+  const waiters: Array<() => void> = []
+
+  const waitForSlot = async () =>
+    new Promise<void>((resolve) => {
+      waiters.push(resolve)
+    })
+
+  const signalSlotFree = () => {
+    const waiter = waiters.shift()
+    if (waiter) waiter()
+  }
 
   return new Transform({
     objectMode: true,
     async transform(item: TInput, _encoding: BufferEncoding, callback: TransformCallback) {
-      // Attendre qu'un slot se libère si on est à la limite
       while (activeCount >= concurrency) {
-        await new Promise((resolve) => setTimeout(resolve, 10))
+        await waitForSlot()
       }
 
       activeCount++
 
-      // Lancer le traitement de manière asynchrone
       const promise = (async () => {
         try {
           await processItem(item)
         } finally {
           activeCount--
+          signalSlotFree()
         }
       })()
+      void promise.finally(() => pendingPromises.delete(promise))
 
-      pendingPromises.push(promise)
+      pendingPromises.add(promise)
       callback(null)
     },
     async flush(callback: TransformCallback) {
-      // Attendre que toutes les opérations en cours se terminent
       try {
         await Promise.all(pendingPromises)
         callback(null)

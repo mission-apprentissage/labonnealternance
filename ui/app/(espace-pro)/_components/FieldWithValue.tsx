@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { InfoTooltip } from "./InfoToolTip"
 
 export const FieldWithValue = ({
@@ -21,7 +22,7 @@ export const FieldWithValue = ({
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <Typography
         sx={{
-          mr: 1,
+          mr: fr.spacing("2v"),
           minWidth: "fit-content",
         }}
       >

@@ -43,8 +43,8 @@ export default function GestionDesAdministrateurs() {
     <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
       <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose} size="md">
-        <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-          <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+        <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
+          <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
             Ajouter un nouvel utilisateur
           </Typography>
 
@@ -77,7 +77,7 @@ export default function GestionDesAdministrateurs() {
                   priority="tertiary no outline"
                   onClick={() => router.push(PAGES.dynamic.backEditAdministrator({ userId: row._id }).getPath())}
                 >
-                  <ArrowRightLine sx={{ mr: fr.spacing("1w"), width: 16, height: 16 }} />
+                  <ArrowRightLine sx={{ mr: fr.spacing("2v"), width: 16, height: 16 }} />
                 </Button>
               )
             },

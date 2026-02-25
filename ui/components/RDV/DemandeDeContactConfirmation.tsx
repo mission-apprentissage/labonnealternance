@@ -21,13 +21,13 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
 
   return (
     <div>
-      <Box sx={{ mb: fr.spacing("3w"), display: "flex", alignItems: "center" }}>
-        <Box component="img" src="/images/paperplane2.svg" aria-hidden={true} alt="" sx={{ mr: 2 }} />
+      <Box sx={{ mb: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
+        <Box component="img" src="/images/paperplane2.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
         <Typography variant="h4" data-testid="DemandeDeContactConfirmationTitle">
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
         </Typography>
       </Box>
-      <Box sx={{ mb: fr.spacing("3w") }}>
+      <Box sx={{ mb: fr.spacing("6v") }}>
         <Typography sx={{ fontWeight: 700, color: "grey.750" }}>
           {data.formation.etablissement_formateur_raison_sociale.toUpperCase()} pourra donc vous contacter au{" "}
           <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.actionHigh.blueCumulus.default }}>
@@ -40,7 +40,7 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
           pour répondre à vos questions.
         </Typography>
       </Box>
-      <Typography sx={{ mb: fr.spacing("3w") }}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Typography>
+      <Typography sx={{ mb: fr.spacing("6v") }}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Typography>
       <Box sx={{ display: "flex", backgroundColor: "#F9F8F6" }}>
         <Box sx={{ width: "100px", px: "40px", py: "16px" }}>
           <BarberGuy sx={{ width: "34px", height: "38px" }} />

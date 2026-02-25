@@ -62,7 +62,7 @@ export function IntentionPageForm({
     <form onSubmit={formik.handleSubmit}>
       <FormikProvider value={formik}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-          <Box sx={{ pt: fr.spacing("3w") }} data-testid="fieldset-message">
+          <Box sx={{ pt: fr.spacing("6v") }} data-testid="fieldset-message">
             <CustomFormControl label="Modifiez votre message :" required name="company_feedback">
               <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#666", marginTop: "4px" }}>Le candidat recevra le message suivant par courriel.</Typography>
               <TextField

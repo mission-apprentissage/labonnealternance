@@ -1,5 +1,6 @@
 import { Box, LinearProgress, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
+import { fr } from "@codegouvfr/react-dsfr"
 
 enum LOADING_ILLUSTRATION_TYPES {
   PARTNER = "PARTNER",
@@ -106,7 +107,7 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
             }}
           >
             <Box component="img" src={loadingIllustrations[currentIllustrationIndex].src} aria-hidden={true} alt="" sx={{ margin: "auto", display: "block" }} />
-            <Typography sx={{ mt: 1 }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
+            <Typography sx={{ mt: fr.spacing("2v") }}>{loadingIllustrations[currentIllustrationIndex].text}</Typography>
             <Box sx={{ maxWidth: "400px", mx: "auto", my: 4 }}>
               <LinearProgress sx={{ borderRadius: "20px" }} />
             </Box>
