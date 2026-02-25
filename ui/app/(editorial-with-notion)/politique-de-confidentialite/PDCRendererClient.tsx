@@ -89,15 +89,15 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                   }}
                 />
                 <Box sx={{ mt: fr.spacing("6v"), px: fr.spacing("4v") }}>
-                  <Typography sx={{ mb: fr.spacing("4v") }}>
+                  <Typography sx={{ mb: fr.spacing("3v") }}>
                     La bonne alternance utilise la solution de mesure d'audience <DsfrLink href="https://matomo.org/">Matomo</DsfrLink> en l'ayant configuré en mode « exempté »,
                     conformément aux <DsfrLink href="https://www.cnil.fr/fr/solutions-pour-la-mesure-daudience">recommandations de la CNIL</DsfrLink>. Elle ne nécessite donc pas le
-                    consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case ci-dessous.
+                    consentement des personnes concernées. Vous pouvez malgré tout vous opposer au suivi de votre navigation, en décochant la case ci-dessous :
                   </Typography>
                   <FormControlLabel
                     control={
                       <Checkbox
-                        aria-labelledby="follow-checkbox"
+                        id="follow-checkbox"
                         aria-describedby={!hasConsent ? "follow-info" : undefined}
                         onChange={(event) => {
                           changeMatomoOptout({
@@ -108,11 +108,10 @@ export default function PolitiqueDeConfidentialiteRendererClient({ politiqueDeCo
                       />
                     }
                     label={
-                      <Typography id="follow-checkbox" component="strong">
+                      <Typography htmlFor="follow-checkbox" component="label" sx={{ fontWeight: "bold" }}>
                         Vous êtes suivi(e), de façon anonyme. Décochez cette case pour vous exclure du suivi.
                       </Typography>
                     }
-                    sx={{ mt: fr.spacing("4v") }}
                   />
                   {!hasConsent && (
                     <Typography id="follow-info" sx={{ mt: fr.spacing("4v") }}>
