@@ -5,13 +5,7 @@ import config from "@/config"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import mailer from "@/services/mailer.service"
 
-/**
- * @description Send a "Premium" reminder mail.
- * @returns {Promise<void>}
- */
-export const premiumActivatedReminder = async () => {
-  logger.info("Cron #premiumActivatedReminder started.")
-
+export const getEmailsForParcoursup = async (): Promise<string[]> => {
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     getDbCollection("etablissements")
       .find({
@@ -30,7 +24,7 @@ export const premiumActivatedReminder = async () => {
     eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
-  let targetedEmails: string[] = []
+  const targetedEmails: string[] = []
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
@@ -48,7 +42,17 @@ export const premiumActivatedReminder = async () => {
     targetedEmails.push(...establishmentEmails)
   }
 
-  targetedEmails = [...new Set(targetedEmails)]
+  return [...new Set(targetedEmails)]
+}
+
+/**
+ * @description Send a "Premium" reminder mail.
+ * @returns {Promise<void>}
+ */
+export const premiumActivatedReminder = async () => {
+  logger.info("Cron #premiumActivatedReminder started.")
+
+  const targetedEmails = await getEmailsForParcoursup()
 
   for (const email of targetedEmails) {
     try {
@@ -76,9 +80,7 @@ export const premiumActivatedReminder = async () => {
   logger.info("Cron #premiumActivatedReminder done.")
 }
 
-export const premiumActivatedReminderAffelnet = async () => {
-  logger.info("Cron #premiumActivatedReminderAffelnet started.")
-
+export const getEmailsForAffelnet = async (): Promise<string[]> => {
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     getDbCollection("etablissements")
       .find({
@@ -97,7 +99,7 @@ export const premiumActivatedReminderAffelnet = async () => {
     eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
-  let targetedEmails: string[] = []
+  const targetedEmails: string[] = []
 
   for (const etablissement of etablissementWithAffelnet) {
     // Retrieve all emails
@@ -115,7 +117,12 @@ export const premiumActivatedReminderAffelnet = async () => {
     targetedEmails.push(...establishmentEmails)
   }
 
-  targetedEmails = [...new Set(targetedEmails)]
+  return [...new Set(targetedEmails)]
+}
+export const premiumActivatedReminderAffelnet = async () => {
+  logger.info("Cron #premiumActivatedReminderAffelnet started.")
+
+  const targetedEmails: string[] = await getEmailsForAffelnet()
 
   for (const email of targetedEmails) {
     try {
