@@ -1,28 +1,26 @@
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-
-const sourceFields = ["workplace_naf_code"] as const satisfies (keyof IComputedJobsPartners)[]
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const blockJobsPartnersWithNaf85 = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
-  const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForComputedPartnersFactory({
-    job: COMPUTED_ERROR_SOURCE.REMOVE_NAF_85,
-    sourceFields,
-    filledFields,
-    groupSize: 500,
-    addedMatchFilter,
-    getData: async (documents) => {
-      return documents.map((document) => {
-        const { _id, workplace_naf_code, business_error } = document
-        const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
-          _id,
-          business_error: workplace_naf_code?.startsWith("85") ? JOB_PARTNER_BUSINESS_ERROR.CFA : business_error,
-        }
-        return result
-      })
-    },
+  const job = COMPUTED_ERROR_SOURCE.REMOVE_NAF_85
+  const jobLogger = logger.child({ job })
+  jobLogger.info(`job ${job} : début d'enrichissement des données`)
+
+  const filter = {
+    workplace_naf_code: { $regex: "^85" },
+    business_error: null,
+    jobs_in_success: { $nin: [job] },
+    ...(addedMatchFilter ?? {}),
+  }
+
+  const result = await getDbCollection("computed_jobs_partners").updateMany(filter, {
+    $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.CFA, updated_at: new Date() },
+    $pull: { errors: { source: job } },
+    $push: { jobs_in_success: job },
   })
+
+  jobLogger.info(`job ${job} : enrichissement terminé. modifiedCount=${result.modifiedCount}`)
 }
