@@ -1,6 +1,4 @@
-import { createReadStream, createWriteStream, unlinkSync } from "node:fs"
 import { createRequire } from "node:module"
-import path from "node:path"
 import type Stream from "node:stream"
 import { Transform } from "node:stream"
 import { pipeline } from "node:stream/promises"
@@ -16,7 +14,6 @@ import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecru
 import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 import { logger } from "@/common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
-import { createAssetsFolder, CURRENT_DIR_PATH } from "@/common/utils/fileUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -29,19 +26,9 @@ const require = createRequire(import.meta.url)
 const { parser } = require("stream-json")
 const { streamArray } = require("stream-json/streamers/StreamArray")
 
-const PREDICTION_FILE_PATH = path.join(CURRENT_DIR_PATH, "./assets/recruteurslba.json")
 const S3_FILE = config.algoRecuteursLba.s3File
 
 type BulkOperation = AnyBulkWriteOperation<IComputedJobsPartners>
-
-const removePredictionFile = async () => {
-  try {
-    logger.info("Deleting downloaded file from assets")
-    await unlinkSync(PREDICTION_FILE_PATH)
-  } catch (err) {
-    logger.error(err, "Error removing company algo file")
-  }
-}
 
 export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
   const algoFileLastModificationDate = await getS3FileLastUpdate("storage", S3_FILE)
@@ -61,21 +48,7 @@ export const checkIfAlgoFileAlreadyProcessed = async (): Promise<boolean> => {
   return false
 }
 
-const getRecruteursLbaFileFromS3 = async ({ from, to }: { from: Stream.Readable; to: string }) => {
-  logger.info(`Downloading algo file from S3 Bucket to ${to}`)
-  await createAssetsFolder()
-  const writeStream = createWriteStream(to)
-
-  try {
-    await pipeline(from, writeStream)
-    logger.info("File transfer completed successfully")
-  } catch (error) {
-    logger.error(error, "Error during file transfer:")
-    throw error
-  }
-}
-
-const importRecruteursLbaToRawCollection = async () => {
+const importRecruteursLbaToRawCollection = async (sourceStream: Stream.Readable) => {
   logger.info("deleting old data")
   await getDbCollection("raw_recruteurslba").deleteMany({})
   logger.info("import starting...")
@@ -113,7 +86,7 @@ const importRecruteursLbaToRawCollection = async () => {
     },
   })
 
-  await pipeline(createReadStream(PREDICTION_FILE_PATH), parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
+  await pipeline(sourceStream, parser(), streamArray(), validationStream, groupStreamData({ size: 10_000 }), insertionStream)
 
   const message = `import recruteurs lba terminé : ${count} recruteurs importées`
   logger.info(message)
@@ -127,15 +100,12 @@ export const importRecruteursLbaRaw = async (sourceFileReadStream?: Stream.Reada
   try {
     logger.info(`début de importRecruteursLbaRaw`)
     const readStream = sourceFileReadStream ?? (await s3ReadAsStream("storage", S3_FILE))
-    await getRecruteursLbaFileFromS3({ from: readStream, to: PREDICTION_FILE_PATH })
-    await importRecruteursLbaToRawCollection()
+    await importRecruteursLbaToRawCollection(readStream)
     logger.info(`fin de importRecruteursLbaRaw`)
   } catch (err) {
     await notifyToSlack({ subject: `import des offres recruteurs lba dans raw`, message: `import recruteurs lba terminé : echec de l'import`, error: true })
     logger.error(err)
     sentryCaptureException(err)
-  } finally {
-    await removePredictionFile()
   }
 }
 
@@ -221,28 +191,41 @@ export const importRecruteurLbaToComputed = async () => {
 
 export const removeMissingRecruteursLbaFromComputedJobPartners = async () => {
   logger.info("clean-up recruteurs_lba in computed_jobs_partners from raw")
-  const results = (await getDbCollection("computed_jobs_partners")
-    .aggregate([
-      { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
-      {
-        $lookup: {
-          from: "raw_recruteurslba",
-          localField: "workplace_siret",
-          foreignField: "siret",
-          as: "matching",
-        },
-      },
-      { $match: { matching: { $size: 0 } } },
-      { $project: { _id: 1 } },
-    ])
-    .toArray()) as IComputedJobsPartners[]
+  logger.info("removeMissingRecruteursLbaFromComputedJobPartners: chargement des sirets raw en mémoire")
+  const rawSirets = new Set(await getDbCollection("raw_recruteurslba").distinct("siret"))
+  logger.info(`removeMissingRecruteursLbaFromComputedJobPartners: ${rawSirets.size} sirets chargés`)
 
-  const idsToRemove = results.map(({ _id }) => _id)
+  const computedCursor = getDbCollection("computed_jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { projection: { _id: 1, workplace_siret: 1 } })
+    .stream()
 
-  if (idsToRemove.length) {
-    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
+  let total = 0
+  let batch: IComputedJobsPartners["_id"][] = []
+  let scanned = 0
+
+  for await (const doc of computedCursor as AsyncIterable<{ _id: IComputedJobsPartners["_id"]; workplace_siret: string }>) {
+    scanned++
+    if (scanned % 10_000 === 0) {
+      logger.info(`removeMissingRecruteursLbaFromComputedJobPartners: ${scanned} docs parcourus, ${total} supprimés`)
+    }
+    if (!rawSirets.has(doc.workplace_siret)) {
+      batch.push(doc._id)
+    }
+    if (batch.length >= 1_000) {
+      await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+      total += batch.length
+      batch = []
+    }
   }
-  const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${idsToRemove.length}`
+
+  logger.info(`removeMissingRecruteursLbaFromComputedJobPartners: curseur terminé, ${scanned} docs parcourus`)
+
+  if (batch.length) {
+    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+    total += batch.length
+  }
+
+  const message = `clean-up dans computed_jobs_partners pour partner_label=${JOBPARTNERS_LABEL.RECRUTEURS_LBA} terminé. total=${total}`
   logger.info(message)
   await notifyToSlack({
     subject: `mapping Raw => computed_jobs_partners`,
@@ -252,28 +235,34 @@ export const removeMissingRecruteursLbaFromComputedJobPartners = async () => {
 
 export const removeUnsubscribedRecruteursLbaFromComputedJobPartners = async () => {
   logger.info("debut removeUnsubscribedRecruteursLbaFromComputedJobPartners")
-  const results = (await getDbCollection("computed_jobs_partners")
-    .aggregate([
-      { $match: { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA } },
-      {
-        $lookup: {
-          from: "unsubscribedrecruteurslba",
-          localField: "workplace_siret",
-          foreignField: "siret",
-          as: "matching",
-        },
-      },
-      { $match: { "matching.0": { $exists: true } } },
-      { $project: { _id: 1 } },
-    ])
-    .toArray()) as IComputedJobsPartners[]
 
-  const idsToRemove = results.map(({ _id }) => _id)
+  const unsubscribedSirets = new Set(await getDbCollection("unsubscribedrecruteurslba").distinct("siret"))
+  logger.info(`removeUnsubscribedRecruteursLbaFromComputedJobPartners: ${unsubscribedSirets.size} sirets désinscrits chargés`)
 
-  if (idsToRemove.length) {
-    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: idsToRemove } })
+  const computedCursor = getDbCollection("computed_jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { projection: { _id: 1, workplace_siret: 1 } })
+    .stream()
+
+  let total = 0
+  let batch: IComputedJobsPartners["_id"][] = []
+
+  for await (const doc of computedCursor as AsyncIterable<{ _id: IComputedJobsPartners["_id"]; workplace_siret: string }>) {
+    if (unsubscribedSirets.has(doc.workplace_siret)) {
+      batch.push(doc._id)
+    }
+    if (batch.length >= 1_000) {
+      await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+      total += batch.length
+      batch = []
+    }
   }
-  const message = `suppression dans computed_jobs_partners des recruteurs désinscrits terminée. total=${idsToRemove.length}`
+
+  if (batch.length) {
+    await getDbCollection("computed_jobs_partners").deleteMany({ _id: { $in: batch } })
+    total += batch.length
+  }
+
+  const message = `suppression dans computed_jobs_partners des recruteurs désinscrits terminée. total=${total}`
   logger.info(message)
   await notifyToSlack({
     subject: `mapping Raw => computed_jobs_partners`,
