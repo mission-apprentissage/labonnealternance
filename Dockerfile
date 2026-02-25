@@ -13,7 +13,7 @@ RUN yarn install --immutable
 
 COPY . .
 
-RUN yarn typecheck
+RUN yarn --cwd shared build
 
 FROM builder_root AS root
 WORKDIR /app
@@ -86,6 +86,7 @@ ENV __RRWEB_EXCLUDE_IFRAME__=true
 ENV __RRWEB_EXCLUDE_SHADOW_DOM__=true
 ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
 
+ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next
