@@ -324,13 +324,13 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { reason } = req.body
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.post["/user/:userId/organization/:organizationId/deactivate"]).value
       if (!requestUser) throw badRequest()
       await deactivateUserRole({
         reason,
         userId,
+        organizationId,
         requestedBy: requestUser,
       })
       return res.status(200).send({})
@@ -344,12 +344,12 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/user/:userId/organization/:organizationId/activate"])],
     },
     async (req, res) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.post["/user/:userId/organization/:organizationId/activate"]).value
       if (!requestUser) throw badRequest()
       await activateUserRole({
         userId,
+        organizationId,
         requestedBy: requestUser,
       })
       return res.status(200).send({})
@@ -370,7 +370,6 @@ export default (server: Server) => {
       }
 
       const { reason } = req.body
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.post["/user/:userId/organization/:organizationId/not-my-opco"]).value
       if (!requestUser) throw badRequest()
@@ -378,6 +377,7 @@ export default (server: Server) => {
         reason,
         requestedBy: requestUser,
         userId,
+        organizationId,
       })
       return res.status(200).send({})
     }

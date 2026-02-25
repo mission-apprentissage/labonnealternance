@@ -440,9 +440,11 @@ entrepriseOnboardingWorkflow.create()
 |   +-- MongoDB: recruiters.findOne({ establishment_siret, email })
 |   +-- Si oui --> erreur 403 ALREADY_EXISTS
 |
-+-- Verification: email deja utilise ?
++-- Verification: email avec role actif ?
 |   +-- MongoDB: userswithaccounts.findOne({ email })
-|   +-- Si oui --> erreur 403 ALREADY_EXISTS
+|   +-- MongoDB: rolemanagements.find({ user_id }) → filtre GRANTED / AWAITING_VALIDATION
+|   +-- Si au moins un role actif --> erreur 403 ALREADY_EXISTS
+|   +-- Si tous les roles sont DENIED (utilisateur desactive) --> creation autorisee
 |
 +-- getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
 |   +-- API SIRENE + geocodage (cf. etape 4a)
@@ -455,8 +457,11 @@ entrepriseOnboardingWorkflow.create()
 |   +-- MongoDB: entreprises.findOneAndUpdate (si OPCO pas deja defini)
 |
 +-- createOrganizationUser()
-|   +-- MongoDB: userswithaccounts.insertOne
-|   +-- MongoDB: rolemanagements.findOneAndUpdate
+|   +-- MongoDB: userswithaccounts.insertOne (nouvel utilisateur)
+|   |          OU findOneAndUpdate (utilisateur existant desactive :
+|   |             mise a jour nom/prenom/tel + ajout event ACTIF si desactive)
+|   +-- MongoDB: rolemanagements.insertOne / findOneAndUpdate
+|   |   (creation d'une nouvelle entree pour le nouveau SIRET)
 |
 +-- saveUserTrafficSourceIfAny()
 |   +-- MongoDB: trafficSource.insertOne (donnees cookies)
@@ -489,8 +494,10 @@ entrepriseOnboardingWorkflow.create()
 |   +-- API Referentiel + upsert CFA (cf. etape 4b)
 |
 +-- createOrganizationUser()
-|   +-- MongoDB: userswithaccounts.insertOne
-|   +-- MongoDB: rolemanagements.findOneAndUpdate
+|   +-- MongoDB: userswithaccounts.insertOne (nouvel utilisateur)
+|   |          OU findOneAndUpdate (utilisateur existant desactive :
+|   |             mise a jour nom/prenom/tel + ajout event ACTIF si desactive)
+|   +-- MongoDB: rolemanagements.insertOne / findOneAndUpdate
 |
 +-- saveUserTrafficSourceIfAny()
 |   +-- MongoDB: trafficSource.insertOne
@@ -846,6 +853,21 @@ Objet : "Lien de connexion"
 Contenu : nom/prenom, lien magic link de connexion (validite 15 min)
 ```
 
+## Problemes connus
+
+### Re-inscription d'un utilisateur desactive
+
+Un utilisateur dont tous les roles sont desactives (statut `DENIED` sur tous les `rolemanagements`) peut relancer un parcours de creation de compte avec un nouveau SIRET. Le comportement est le suivant :
+
+- La verification `emailHasActiveRole()` retourne `false` → la creation est autorisee
+- Le document `userswithaccounts` est **mis a jour** (nom, prenom, telephone, origin) plutot que recrée
+- Si l'utilisateur etait desactive au niveau `userWithAccount` (`isUserDisabled()`), un evenement `ACTIF` est ajoute
+- **Aucun email de confirmation n'est renvoye** : l'email ayant deja ete verifie lors de la premiere inscription, `isUserEmailChecked()` retourne `true`
+- Un nouveau `roleManagement` est cree pour le nouveau SIRET avec le statut `AWAITING_VALIDATION` (ou `GRANTED` si auto-valide)
+- L'utilisateur apparait dans l'onglet "EN ATTENTE" ou "VALIDE" de l'interface d'administration
+
+---
+
 ## Reference technique
 
 ### Collections MongoDB impliquees
@@ -854,7 +876,7 @@ Contenu : nom/prenom, lien magic link de connexion (validite 15 min)
 | ----------------------------------- | ------------------------------------------------------------------ | ------------------------------------ |
 | `entreprises`                       | Donnees entreprise (SIRET, adresse, NAF, OPCO, statut)             | findOne, insertOne, findOneAndUpdate |
 | `cfas`                              | Donnees CFA (SIRET, raison sociale, adresse, geoloc)               | findOne, insertOne, findOneAndUpdate |
-| `userswithaccounts`                 | Comptes utilisateurs (email, nom, prenom, telephone)               | findOne, insertOne                   |
+| `userswithaccounts`                 | Comptes utilisateurs (email, nom, prenom, telephone)               | findOne, insertOne, findOneAndUpdate |
 | `rolemanagements`                   | Droits d'acces (user vers entreprise/CFA, statut GRANTED/AWAITING) | find, findOneAndUpdate               |
 | `recruiters`                        | Formulaires recruteur (SIRET, offres, statut)                      | findOne, insertOne, updateMany       |
 | `cache_siret`                       | Cache des reponses API SIRENE                                      | findOne, updateOne                   |
@@ -917,7 +939,7 @@ CreationCompte (type=ENTREPRISE)
             |   |                                                 |
             |   |   +-- API SIRENE + geocodage                    |
             |   |   +-- entreprises.upsert ---------> [MongoDB]   |
-            |   |   +-- userswithaccounts.insert ----> [MongoDB]  |
+            |   |   +-- userswithaccounts.insert/update -> [MongoDB] |
             |   |   +-- rolemanagements.upsert ------> [MongoDB]  |
             |   |   +-- recruiters.insert -----------> [MongoDB]  |
             |   |   +-- Auto-validation role                      |

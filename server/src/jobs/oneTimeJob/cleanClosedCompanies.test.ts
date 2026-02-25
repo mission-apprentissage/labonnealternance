@@ -9,7 +9,6 @@ import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fi
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessStatus } from "shared/models/roleManagement.model"
-import { UserEventType } from "shared/models/userWithAccount.model"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { cleanClosedCompanies } from "./cleanClosedCompanies"
@@ -69,28 +68,6 @@ describe("cleanClosedCompanies", () => {
     expect(updatedRecruiter?.jobs[1].job_status).toBe(JOB_STATUS.POURVUE)
   })
 
-  it("ajoute un événement DESACTIVE à l'utilisateur et met à jour l'email", async () => {
-    const recruiter = generateRecruiterFixture({
-      status: RECRUITER_STATUS.ACTIF,
-      managed_by: managedById.toString(),
-    })
-    const user = generateUserWithAccountFixture({ _id: managedById })
-
-    await getDbCollection("recruiters").insertOne(recruiter)
-    await getDbCollection("userswithaccounts").insertOne(user)
-
-    const csvPath = makeCsvFile([{ id: recruiter._id.toString(), "cfa-delegated-siret": "", "is-delegated": "FALSE", "managed-by": managedById.toString() }])
-
-    await cleanClosedCompanies(csvPath)
-
-    const updatedUser = await getDbCollection("userswithaccounts").findOne({ _id: managedById })
-    const lastStatus = updatedUser?.status.at(-1)
-    expect(lastStatus?.status).toBe(UserEventType.DESACTIVE)
-    expect(lastStatus?.reason).toBe("clôture siret fermé")
-    expect(lastStatus?.granted_by).toBe("migration")
-    expect(updatedUser?.email).toMatch(/^support-\d{8}-[0-9a-f]{24}@apprentissage\.beta\.gouv\.fr$/)
-  })
-
   it("ajoute un événement DENIED à tous les rolemanagements de l'utilisateur", async () => {
     const recruiter = generateRecruiterFixture({
       status: RECRUITER_STATUS.ACTIF,
@@ -140,10 +117,5 @@ describe("cleanClosedCompanies", () => {
     const r2 = await getDbCollection("recruiters").findOne({ _id: recruiter2._id })
     expect(r1?.status).toBe(RECRUITER_STATUS.ARCHIVE)
     expect(r2?.status).toBe(RECRUITER_STATUS.ARCHIVE)
-
-    const u1 = await getDbCollection("userswithaccounts").findOne({ _id: managedById })
-    const u2 = await getDbCollection("userswithaccounts").findOne({ _id: managedById2 })
-    expect(u1?.status.at(-1)?.status).toBe(UserEventType.DESACTIVE)
-    expect(u2?.status.at(-1)?.status).toBe(UserEventType.DESACTIVE)
   })
 })
