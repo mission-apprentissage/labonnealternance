@@ -38,8 +38,8 @@ function renderGroup(props: AutocompleteRenderGroupParams) {
         sx={{
           textTransform: "uppercase",
           color: fr.colors.decisions.artwork.minor.blueFrance.default,
-          py: fr.spacing("1w"),
-          px: fr.spacing("2w"),
+          py: fr.spacing("2v"),
+          px: fr.spacing("4v"),
         }}
       >
         {props.group}
@@ -133,7 +133,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: fr.spacing("4w"),
+                  width: fr.spacing("8v"),
                   position: "absolute",
                   right: 1,
                   top: 1,
@@ -141,7 +141,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
                   backgroundColor: fr.colors.decisions.background.default.grey.default,
                 }}
               >
-                <CircularProgress color="inherit" size={fr.spacing("2w")} />
+                <CircularProgress color="inherit" size={fr.spacing("4v")} />
               </Box>
             ) : null
           }
@@ -167,8 +167,8 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
           {...htmlAttributes}
           key={key}
           sx={{
-            px: fr.spacing("2w"),
-            py: fr.spacing("1w"),
+            px: fr.spacing("4v"),
+            py: fr.spacing("2v"),
             color: isDeferredOrFetching ? fr.colors.decisions.text.disabled.grey.default : fr.colors.decisions.text.default.grey.default,
           }}
         >

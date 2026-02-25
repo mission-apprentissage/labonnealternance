@@ -55,18 +55,18 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
       {!hideModify && user.type !== AUTHTYPE.OPCO && (
         <Box
           sx={{
-            mr: fr.spacing("3w"),
+            mr: fr.spacing("6v"),
           }}
         >
           <Button priority="secondary" onClick={() => router.push(PAGES.dynamic.modificationEntreprise(user.type, establishment_id).getPath())}>
             {user.type === AUTHTYPE.ENTREPRISE ? (
               <>
-                <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-hotel-line")} />
+                <Typography mr={fr.spacing("2v")} className={fr.cx("fr-icon-hotel-line")} />
                 Mes informations
               </>
             ) : (
               <>
-                <Typography mr={fr.spacing("1w")} className={fr.cx("fr-icon-user-line")} />
+                <Typography mr={fr.spacing("2v")} className={fr.cx("fr-icon-user-line")} />
                 Modifier l'entreprise
               </>
             )}
@@ -74,14 +74,14 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
         </Box>
       )}
       <Button onClick={navigateToCreation}>
-        <Plus sx={{ mr: fr.spacing("1w") }} /> Ajouter une offre
+        <Plus sx={{ mr: fr.spacing("2v") }} /> Ajouter une offre
       </Button>
     </Box>
   )
 
   if (jobs.length === 0) {
     return (
-      <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
+      <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
           <Typography
             sx={{
@@ -99,7 +99,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   }
 
   return (
-    <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("2w") }}>
+    <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
         <Typography
           sx={{
@@ -117,7 +117,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 }
 
 const EmptySpace = () => (
-  <Stack direction={{ xs: "column", lg: "row" }} spacing="32px" sx={{ mt: fr.spacing("4w"), py: fr.spacing("5w"), border: "1px solid", borderColor: "grey.400" }}>
+  <Stack direction={{ xs: "column", lg: "row" }} spacing="32px" sx={{ mt: fr.spacing("8v"), py: fr.spacing("10v"), border: "1px solid", borderColor: "grey.400" }}>
     <Box
       sx={{
         width: { xs: "100%", lg: "350px" },
@@ -132,11 +132,11 @@ const EmptySpace = () => (
 
     <Box
       sx={{
-        px: { xs: fr.spacing("2w") },
+        px: { xs: fr.spacing("4v") },
         width: { xs: "100%", lg: "600px" },
       }}
     >
-      <Typography variant="h2" sx={{ mb: fr.spacing("3w") }}>
+      <Typography variant="h2" sx={{ mb: fr.spacing("6v") }}>
         Ajoutez votre première offre d’emploi en alternance.
       </Typography>
       <Typography>

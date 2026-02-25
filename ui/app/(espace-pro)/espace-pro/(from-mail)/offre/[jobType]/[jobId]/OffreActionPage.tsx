@@ -92,7 +92,7 @@ export function OffreActionPage({
       {!result && <LoadingEmptySpace label="Chargement en cours..." />}
       {result && result !== "ok" && (
         <Box sx={{ display: "flex", alignItems: "center", color: "#4a4a4a", ...cssParameters }}>
-          <Image width="32" style={{ marginRight: fr.spacing("1w") }} src="/images/icons/errorAlert.svg" alt="" />
+          <Image width="32" style={{ marginRight: fr.spacing("2v") }} src="/images/icons/errorAlert.svg" alt="" />
           {result}
         </Box>
       )}
@@ -101,7 +101,7 @@ export function OffreActionPage({
           Votre offre a été modifiée
         </Typography>
       )}
-      <Box sx={{ mt: fr.spacing("4w") }}>
+      <Box sx={{ mt: fr.spacing("8v") }}>
         Aller sur le site{" "}
         <Link
           href={PAGES.static.home.getPath()}

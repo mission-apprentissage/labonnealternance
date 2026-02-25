@@ -30,13 +30,13 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }
     >
       <Box
         sx={{
-          padding: fr.spacing("2w"),
+          padding: fr.spacing("4v"),
           maxWidth: "xl",
           margin: "auto",
           display: "flex",
           gap: {
-            md: fr.spacing("4w"),
-            lg: fr.spacing("8w"),
+            md: fr.spacing("8v"),
+            lg: fr.spacing("16v"),
           },
           alignItems: "center",
         }}

@@ -9,12 +9,12 @@ import { InfoCircle } from "@/theme/components/icons"
 export const InfosDiffusionOffre = () => {
   return (
     <BorderedBox>
-      <Typography variant="h4" sx={{ mb: fr.spacing("3w") }}>
+      <Typography variant="h4" sx={{ mb: fr.spacing("6v") }}>
         Profitez d'une visibilité accrue
       </Typography>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
         <InfoCircle sx={{ color: "#000091", width: "20px", height: "20px" }} />
-        <Typography sx={{ mb: fr.spacing("3w") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
+        <Typography sx={{ mb: fr.spacing("6v") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
       </Box>
       <br />
       <Typography>
@@ -31,8 +31,8 @@ export const InfosDiffusionOffre = () => {
         sx={{
           display: "grid",
           gridTemplateColumns: ["repeat(2, 1fr)", "repeat(2, 1fr)", "repeat(3, 1fr)", "repeat(3, 1fr)"],
-          gap: 2,
-          mt: fr.spacing("3w"),
+          gap: fr.spacing("4v"),
+          mt: fr.spacing("6v"),
           "& > *": {
             border: "solid 1px #DDDDDD",
             borderRadius: "3px",
@@ -42,17 +42,17 @@ export const InfosDiffusionOffre = () => {
           },
         }}
       >
-        <Image src="/images/logosPartenaires/minimal/1j1s.svg" height={80} width={100} alt="#1jeune1solution" />
-        <Image src="/images/logosPartenaires/minimal/portail-alternance.svg" height={80} width={100} alt="Le Portail de l'alternance alternance.emploi.gouv.fr" />
         <Image
           src="/images/logosPartenaires/minimal/affelnet.svg"
           height={80}
           width={200}
           alt="Choisir son affectation - Demander une formation et un établissement après la 3ème"
         />
-        <Image src="/images/logosPartenaires/minimal/mon-master.svg" height={80} width={100} alt="Mon Master" />
         <Image src="/images/logosPartenaires/minimal/parcoursup.svg" height={80} width={100} alt="Parcoursup - Entrez dans l'enseignement supérieur" />
+        <Image src="/images/logosPartenaires/minimal/mon-master.svg" height={80} width={100} alt="Mon Master" />
         <Image src="/images/logosPartenaires/minimal/france-travail.svg" height={80} width={100} alt="France Travail" />
+        <Image src="/images/logosPartenaires/minimal/logo-hellowork.svg" height={80} width={100} alt="Hellowork" />
+        <Image src="/images/logosPartenaires/minimal/logo-meteojob.svg" height={80} width={100} alt="Meteojob" />
       </Box>
     </BorderedBox>
   )
