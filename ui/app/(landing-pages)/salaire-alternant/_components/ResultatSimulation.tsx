@@ -1,6 +1,6 @@
 "use client"
 
-import { Box, Grid, List, ListItem, Typography, Skeleton } from "@mui/material"
+import { Box, Grid, List, ListItem, Typography, Skeleton, Stack } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
 import Image from "next/image"
 import { useEffect, useState } from "react"
@@ -78,7 +78,7 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
 
 const ExplicationsSalaire = ({ inputSimulation }: { inputSimulation: InputSimulation }) => {
   return (
-    <Box>
+    <Stack spacing={2}>
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
         Les données du simulateur sont présentées à des fins d'illustration. Elles ne prennent pas en compte :
       </Typography>
@@ -109,12 +109,13 @@ const ExplicationsSalaire = ({ inputSimulation }: { inputSimulation: InputSimula
         Dans cette simulation, le salaire de référence utilisé est le minimum réglementaire en vigueur au jour de la simulation.
       </Typography>
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
-        Certaines conventions collectives peuvent prévoir un revenu minimum plus élevé pour l’alternant.
+        Certaines conventions collectives peuvent prévoir un revenu minimum plus élevé pour l’alternant. L'employeur reste libre de proposer un salaire supérieur à celui-ci.
       </Typography>
       <Typography variant="body2" color={fr.colors.decisions.text.title.grey.default} gutterBottom>
-        L'employeur reste libre de proposer un salaire supérieur à celui-ci.
+        Les apprentis du secteur public travaillant pour la fonction publique de l'État (ministère, CNIL...) seront exonérés à 100% de leur cotisations salariales. Leurs salaire
+        net sera donc égal au salaire brut.
       </Typography>
-    </Box>
+    </Stack>
   )
 }
 

@@ -198,6 +198,10 @@ export const getChargesSalariales = ({ typeContrat, dateSignatureContrat, secteu
 
   // Apprentissage secteur public : exonération partielle
   if (secteur === "public") {
+    // Si le taux SMIC est <= 50%, exonération totale (MAJ 23/02/2026 https://mission-apprentissage.slack.com/archives/C09LX145Z5Z/p1771851092923919)
+    if (tauxSmic <= 0.5) {
+      return 0
+    }
     const tauxApresExoneration = TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PUBLIC * (1 - TAUX_EXONERATION_CHARGES_SALARIALES_APPRENTISSAGE_PUBLIC)
     return salaireHoraireBrut * tauxApresExoneration
   }
