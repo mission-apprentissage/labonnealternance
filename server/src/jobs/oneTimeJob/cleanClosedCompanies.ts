@@ -10,6 +10,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { logger } from "@/common/logger"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 
@@ -27,7 +28,7 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
 
   const now = new Date()
 
-  console.info(`cleanClosedCompanies: traitement de ${rows.length} lignes`)
+  logger.info(`cleanClosedCompanies: traitement de ${rows.length} lignes`)
 
   let successCount = 0
   let errorCount = 0
@@ -75,9 +76,9 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
       successCount++
     } catch (error) {
       errorCount++
-      console.error(`cleanClosedCompanies: erreur sur la ligne ${index + 1} (id=${row.id}, managed-by=${row["managed-by"]})`, error)
+      logger.error(`cleanClosedCompanies: erreur sur la ligne ${index + 1} (id=${row.id}, managed-by=${row["managed-by"]})`, error)
     }
   })
 
-  console.info(`cleanClosedCompanies: terminé (${successCount} succès, ${errorCount} erreurs)`)
+  logger.info(`cleanClosedCompanies: terminé (${successCount} succès, ${errorCount} erreurs)`)
 }
