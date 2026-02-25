@@ -74,16 +74,13 @@
           <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
             <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="26px" padding="16px 0px 16px 0px">
                 Les candidats peuvent contacter votre CFA directement depuis 
-                <% if(data.isParcoursup){ %>Parcoursup<%}%>
-                <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%> !
+                <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%> !
             </mj-text>
             <mj-text font-size="16px" line-height="24px">
                 Votre centre de formation bénéficie du service de mise en relation permettant aux candidats de contacter votre CFA sur 
-                <% if(data.isParcoursup){ %>Parcoursup<%}%>
-                <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>, 
+                <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>, 
                 proposé par La bonne alternance. L'ouverture de la saisie des voeux sur 
-                <% if(data.isParcoursup){ %>Parcoursup<%}%>
-                <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%> approche, préparez-vous à répondre aux sollicitations des candidats.
+                <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%> approche, préparez-vous à répondre aux sollicitations des candidats.
                 <br /><br />
                 Vous recevrez les demandes des candidats pour le(s) établissement(s) pour le(s)quel votre adresse email a été renseignée comme email de contact du lieu de formation auprès de votre Carif-Oref.
             </mj-text>
@@ -97,15 +94,12 @@
 
             <mj-text font-size="16px" line-height="24px">
               Un <strong>formulaire de contact est disponible sur les formations</strong> actuelles et futures exposées sur 
-              <% if(data.isParcoursup){ %>Parcoursup<%}%>
-              <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>
-              , rattachées à votre établissement.
+              <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>, rattachées à votre établissement.
               <br /><br />
               Vous recevrez les demandes des candidats à l’adresse email renseignée par votre établissement comme email de contact du lieu de formation auprès de votre <a style="color:#161616; text-decoration: 'underline';" href="https://www.intercariforef.org">Carif-Oref</a>.
               <br /><br />              
               Ce service est proposé par <a style="color:#161616; text-decoration: 'underline';" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation?<%= data.utmParams %>">La bonne alternance</a> pour 
-              <% if(data.isParcoursup){ %>Parcoursup<%}%>
-              <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>.
+              <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>.
             </mj-text>
 
             <mj-spacer height="24px"></mj-spacer>
@@ -125,16 +119,12 @@
         <mj-group>
           <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
             <mj-text font-weight="bold" font-size="20px" line-height="26px">
-              Vos engagements 
-              <% if(data.isParcoursup){ %>Parcoursup<%}%>
-              <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>
+              Vos engagements <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%>
               <br /><br />
             </mj-text>
             <mj-text font-size="16px" line-height="24px">
-              Ce service sur 
-              <% if(data.isParcoursup){ %>Parcoursup<%}%>
-              <% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%> 
-              vous engage en tant que CFA à contacter tous les candidats qui feront une demande sur la plateforme dans un délai de 4 jours ouvrés après réception de la demande par courriel.
+              Ce service sur <% if(data.isParcoursup){ %>Parcoursup<%}%><% if(data.isAffelnet){ %>Choisir son affectation après la 3e<%}%> vous 
+              engage en tant que CFA à contacter tous les candidats qui feront une demande sur la plateforme dans un délai de 4 jours ouvrés après réception de la demande par courriel.
               <br /><br />
             </mj-text>
             <mj-text font-weight="bold" font-size="20px" line-height="26px">
