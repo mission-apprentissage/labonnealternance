@@ -12,6 +12,10 @@ name: "lba_preview_{{pr_number}}"
 services:
   server:
     <<: *default
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
     container_name: lba_{{pr_number}}_server
     command: ["yarn", "cli", "start"]
