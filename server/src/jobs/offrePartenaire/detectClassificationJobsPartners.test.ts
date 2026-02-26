@@ -1,6 +1,6 @@
 import nock from "nock"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
@@ -24,9 +24,9 @@ describe("detectClassificationJobsPartners", () => {
     const apiResponse: IClassificationLabBatchResponse = [
       {
         id: partner_job_id,
-        label: "entreprise",
+        label: "publish",
         model: "model",
-        scores: { cfa: 0.5, entreprise: 0.4, entreprise_cfa: 0.2 },
+        scores: { publish: 0.6, unpublish: 0.4 },
         text: "Software Engineer",
       },
     ]
@@ -118,6 +118,36 @@ describe("detectClassificationJobsPartners", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toEqual(1)
     const [job] = jobs
+    expect.soft(job.jobs_in_success.includes(COMPUTED_ERROR_SOURCE.CLASSIFICATION)).toEqual(true)
+  })
+
+  it("should set business_error to CFA when classification is 'unpublish'", async () => {
+    // given
+    nock.cleanAll()
+    const unpublishResponse: IClassificationLabBatchResponse = [
+      {
+        id: partner_job_id,
+        label: "unpublish",
+        model: "model",
+        scores: { publish: 0.3, unpublish: 0.7 },
+        text: "Software Engineer",
+      },
+    ]
+    nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, unpublishResponse)
+    await givenSomeComputedJobPartners([
+      {
+        partner_job_id,
+        offer_title,
+        workplace_name,
+      },
+    ])
+    // when
+    await detectClassificationJobsPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toEqual(1)
+    const [job] = jobs
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA)
     expect.soft(job.jobs_in_success.includes(COMPUTED_ERROR_SOURCE.CLASSIFICATION)).toEqual(true)
   })
 })

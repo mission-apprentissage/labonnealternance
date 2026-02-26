@@ -33,7 +33,7 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
         const classification = classifications[index]
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
-          business_error: classification && classification === "cfa" ? JOB_PARTNER_BUSINESS_ERROR.CFA : business_error,
+          business_error: classification && classification === "unpublish" ? JOB_PARTNER_BUSINESS_ERROR.CFA : business_error,
         }
         return result
       })
