@@ -1,30 +1,28 @@
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
-import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-const sourceFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
-
-const blacklistedRomes: string[] = ["K2202", "G1605", "I1201", "L1102", "N4104"]
+const blacklistedRomes = ["K2202", "G1605", "I1201", "L1102", "N4104"]
 
 export const blockBadRomeJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
-  const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
-  return fillFieldsForComputedPartnersFactory({
-    job: COMPUTED_ERROR_SOURCE.BLOCK_BAD_ROME,
-    sourceFields,
-    filledFields,
-    groupSize: 500,
-    addedMatchFilter,
-    getData: async (documents) => {
-      return documents.map((document) => {
-        const { _id, offer_rome_codes, business_error } = document
-        const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
-          _id,
-          business_error: offer_rome_codes?.some((romeCode) => blacklistedRomes.includes(romeCode)) ? JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED : business_error,
-        }
-        return result
-      })
-    },
+  const job = COMPUTED_ERROR_SOURCE.BLOCK_BAD_ROME
+  const jobLogger = logger.child({ job })
+  jobLogger.info(`job ${job} : début d'enrichissement des données`)
+
+  const filter = {
+    offer_rome_codes: { $ne: null, $elemMatch: { $in: blacklistedRomes } },
+    business_error: null,
+    jobs_in_success: { $nin: [job] },
+    ...(addedMatchFilter ?? {}),
+  }
+
+  const result = await getDbCollection("computed_jobs_partners").updateMany(filter, {
+    $set: { business_error: JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED, updated_at: new Date() },
+    $pull: { errors: { source: job } },
+    $push: { jobs_in_success: job },
   })
+
+  jobLogger.info(`job ${job} : enrichissement terminé. modifiedCount=${result.modifiedCount}`)
 }

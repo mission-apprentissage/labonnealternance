@@ -1148,6 +1148,7 @@ export async function getPartnerJobsCount({
         $geoNear: {
           near: { type: "Point", coordinates: [longitude, latitude] },
           distanceField: "distance",
+          key: "workplace_geopoint",
           maxDistance: radius * 1000,
           spherical: true,
           query: {

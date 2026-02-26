@@ -116,6 +116,7 @@ export default {
     [{ workplace_name: 1 }, {}],
     [{ workplace_address_label: 1 }, {}],
     [{ offer_title: 1 }, {}],
+    [{ workplace_naf_code: 1 }, {}],
     [{ workplace_naf_label: 1 }, {}],
   ],
   collectionName: "computed_jobs_partners" as const,

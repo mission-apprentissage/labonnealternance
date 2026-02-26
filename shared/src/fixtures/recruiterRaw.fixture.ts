@@ -19,6 +19,8 @@ export function generateRecruiterRawFixture(data: Partial<IRecruteursLbaRaw> = {
     email: "roget@dinum.fr",
     phone: "0123456789",
     company_size: "6-9",
+    naf_code: "4673A",
+    naf_label: "Commerce de gros (commerce interentreprises) de bois et de matériaux de construction ",
     coordonneeLambertAbscisseEtablissement: 563785.301401543,
     coordonneeLambertOrdonneeEtablissement: 6980103.0348188747,
     libelleCommuneEtablissement: "SAINT-ROMAIN-DE-LERPS",
