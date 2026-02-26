@@ -5,6 +5,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import z from "zod"
+import { TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZApecJob = z.object({
@@ -20,6 +21,7 @@ export const ZApecJob = z.object({
     }
     return date
   }),
+  Teletravail: z.string().nullish(),
   Intitule: z.string(),
   Nombre_postes: z.string(),
   Contrat: z.object({
@@ -76,6 +78,7 @@ export const apecJobToJobsPartners = (job: IApecJob): IComputedJobsPartners => {
     partner_label: JOBPARTNERS_LABEL.APEC,
     contract_type: getContratType(job.Contrat),
     contract_duration: contractDuration,
+    contract_remote: getContratRemote(job.Teletravail),
     offer_title: job.Intitule,
     offer_description: job.Texte_offre,
     offer_creation: job.Date_parution,
@@ -121,4 +124,24 @@ const getContratDuration = (contrat: IApecJob["Contrat"]): number | null => {
     return null
   }
   return parsedDuration
+}
+
+const getContratRemote = (teletravail: IApecJob["Teletravail"]): IComputedJobsPartners["contract_remote"] => {
+  if (!teletravail) {
+    return null
+  }
+
+  if (teletravail.includes("Pas de télétravail autorisé")) {
+    return TRAINING_REMOTE_TYPE.onsite
+  }
+
+  if (teletravail.includes("Télétravail ponctuel autorisé") || teletravail.includes("Télétravail partiel autorisé")) {
+    return TRAINING_REMOTE_TYPE.hybrid
+  }
+
+  if (teletravail.includes("Télétravail total possible")) {
+    return TRAINING_REMOTE_TYPE.remote
+  }
+
+  return null
 }

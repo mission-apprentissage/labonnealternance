@@ -1,5 +1,6 @@
 import fs from "node:fs"
 
+import { TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -132,7 +133,40 @@ describe("apecJobToJobsPartners", () => {
       workplace_naf_code: "6202A",
       workplace_naf_label: "CONSEIL EN SYSTÈMES ET LOGICIELS INFORMATIQUES",
       apply_url: "https://www.apec.fr/candidat/recherche-emploi.html/emploi/detail-offre/177812004W",
+      contract_remote: null,
       business_error: null,
+    })
+  })
+
+  describe("contract_remote", () => {
+    it("should return null when Teletravail is absent", () => {
+      const result = apecJobToJobsPartners(baseJob)
+      expect(result.contract_remote).toBeNull()
+    })
+
+    it("should return onsite for 'Pas de télétravail autorisé'", () => {
+      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Pas de télétravail autorisé" })
+      expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.onsite)
+    })
+
+    it("should return hybrid for 'Télétravail ponctuel autorisé'", () => {
+      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail ponctuel autorisé" })
+      expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.hybrid)
+    })
+
+    it("should return hybrid for 'Télétravail partiel autorisé'", () => {
+      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail partiel autorisé" })
+      expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.hybrid)
+    })
+
+    it("should return remote for 'Télétravail total possible'", () => {
+      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail total possible" })
+      expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.remote)
+    })
+
+    it("should return null for an unrecognized telework value", () => {
+      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Valeur inconnue" })
+      expect(result.contract_remote).toBeNull()
     })
   })
 })
