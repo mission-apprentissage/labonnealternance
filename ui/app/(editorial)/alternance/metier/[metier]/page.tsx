@@ -49,7 +49,6 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
   const data = await apiGet("/_private/seo/metier/:metier", { params: { metier } })
 
   const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
-  console.log(utmParams)
 
   if (!data) {
     redirect("/404")
@@ -144,7 +143,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         </Box>
         <Box sx={{ textAlign: "center" }}>
           <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}`}>
+            <DsfrLink
+              style={{ color: "#fff" }}
+              href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${utmParams}`}
+            >
               Voir toutes les offres en alternance
               <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </DsfrLink>
@@ -340,7 +342,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
 
         <Box sx={{ textAlign: "center" }}>
           <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-            <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}`}>
+            <DsfrLink
+              style={{ color: "#fff" }}
+              href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${utmParams}`}
+            >
               Voir toutes les offres en alternance
               <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </DsfrLink>
@@ -392,7 +397,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
 
           <Box sx={{ textAlign: "center" }}>
             <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
-              <DsfrLink style={{ color: "#fff" }} href={`/recherche?romes=${data.romes.join()}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}`}>
+              <DsfrLink
+                style={{ color: "#fff" }}
+                href={`/recherche?romes=${data.romes.join()}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${utmParams}`}
+              >
                 Voir toutes les formations en alternance
                 <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
               </DsfrLink>
@@ -427,7 +435,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           >
             {(data.villes as { nom: string; job_count: number; geopoint: { lat: number; long: number } }[]).map((ville) => (
               <Link
-                href={`/recherche?romes=${data.romes.join()}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false`}
+                href={`/recherche?romes=${data.romes.join()}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${utmParams}`}
                 style={{ background: "transparent" }}
                 aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}
               >
