@@ -23,9 +23,11 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
     }
   }
 
+  const jobCount = data.job_count ?? 0
+
   return {
-    title: `Alternance en ${data.metier} : ${0} Offres | Salaires & Formations ${new Date().getFullYear()} | La bonne alternance`,
-    description: `${0} offres d'alternance en ${data.metier}. .`,
+    title: `Alternance en ${data.metier} : ${jobCount} Offres | Salaires & Formations ${new Date().getFullYear()} | La bonne alternance`,
+    description: `${jobCount} offres d'alternance en ${data.metier}. .`,
   }
 }
 
