@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip"
+//import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
@@ -230,7 +230,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         {/**
          * BLOC SALAIRE
          */}
-        <Box
+        {/* <Box
           sx={{
             mb: fr.spacing("8v"),
             py: fr.spacing("8v"),
@@ -290,7 +290,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               </DsfrLink>
             </Button>
           </Box>
-        </Box>
+        </Box> */}
 
         {/**
          * BLOC ENTREPRISES
@@ -384,20 +384,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 }}
               >
                 <Typography sx={{ fontSize: "28px", fontWeight: "bold", color: "#4B9F6C" }}>{formation.title}</Typography>
-                <Typography sx={{ my: fr.spacing("6v"), fontSize: "22px", fontWeight: 700 }}>{formation.count} formations</Typography>
-                <Typography sx={{ fontSize: "18px", color: "#666" }}>
-                  Durée : {formation.duree} | Niveau : {formation.niveau}
-                  {/* <br />
-                  {formation.description} */}
-                </Typography>
-                {/* <Box sx={{ backgroundColor: fr.colors.decisions.background.alt.greenEmeraude.default, padding: fr.spacing("4v"), mt: fr.spacing("6v"), fontSize: "18px" }}>
-                  <Typography sx={{ margin: "auto", fontWeight: 700 }}>Compétences développées</Typography>
-                  <ul>
-                    {(formation.competences as string[]).map((competence) => (
-                      <li>{competence}</li>
-                    ))}
-                  </ul>
-                </Box> */}
+                <Typography sx={{ my: fr.spacing("6v"), fontSize: "18px", color: "#666" }}>{formation.description}</Typography>
+                <Typography sx={{ fontSize: "22px", fontWeight: 700 }}>{formation.count} formations</Typography>
               </Box>
             ))}
           </Box>

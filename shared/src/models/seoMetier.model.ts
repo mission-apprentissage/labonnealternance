@@ -1,3 +1,4 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 import type { IModelDescriptor } from "./common.js"
@@ -28,13 +29,41 @@ const ZSeoMetierEntreprise = z.object({
   job_count: z.number(),
 })
 
+export enum SEO_METIER_FORMATION_NIVEAUX {
+  "3 (CAP...)" = "3 (CAP...)",
+  "4 (BAC...)" = "4 (BAC...)",
+  "5 (BTS, DEUST...)" = "5 (BTS, DEUST...)",
+  "6 (Licence, BUT...)" = "6 (Licence, BUT...)",
+  "7 (Master, titre ingénieur...)" = "7 (Master, titre ingénieur...)",
+}
+
+const ZFormationsNiveaux = extensions.buildEnum(SEO_METIER_FORMATION_NIVEAUX)
+
+export enum SEO_METIER_FORMATION_TITRES {
+  "3 (CAP...)" = "CAP, BEP, ...",
+  "4 (BAC...)" = "Baccalauréat",
+  "5 (BTS, DEUST...)" = "BTS, ...",
+  "6 (Licence, BUT...)" = "Licence, 1ère année de Master, BUT, ...",
+  "7 (Master, titre ingénieur...)" = "Master, diplôme d'école de commerce, diplôme d'école d'ingénieur, ...",
+}
+
+const ZFormationsTitres = extensions.buildEnum(SEO_METIER_FORMATION_TITRES)
+
+export enum SEO_METIER_FORMATION_DESCRIPTIONS {
+  "3 (CAP...)" = "ou autres formations niveau infrabac",
+  "4 (BAC...)" = "ou autres formations niveau Bac",
+  "5 (BTS, DEUST...)" = "ou autres formations niveau Bac+2",
+  "6 (Licence, BUT...)" = "ou autres formations niveau Bac+3",
+  "7 (Master, titre ingénieur...)" = "ou autres formations niveau Bac+5",
+}
+
+const ZFormationsDescriptions = extensions.buildEnum(SEO_METIER_FORMATION_DESCRIPTIONS)
+
 const ZSeoMetierFormation = z.object({
-  title: z.string(),
-  description: z.string(),
-  duree: z.string(),
-  niveau: z.string(),
+  title: ZFormationsTitres,
+  description: ZFormationsDescriptions,
+  niveau: ZFormationsNiveaux,
   count: z.number(),
-  competences: z.array(z.string()),
 })
 
 const ZSeoMetierVille = z.object({
