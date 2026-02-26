@@ -309,14 +309,14 @@ const getTopCitiesForMetier = async (romes: string[]) => {
 }
 
 const getFormationsForMetier = async (romes: string[]) => {
-  const diplomes = await getDbCollection("formationcatalogues")
+  const niveaux = await getDbCollection("formationcatalogues")
     .aggregate([
       {
         $match: { rome_codes: { $in: romes } },
       },
       {
         $group: {
-          _id: "$diplome",
+          _id: "$niveau",
           count: { $sum: 1 },
         },
       },
@@ -326,21 +326,25 @@ const getFormationsForMetier = async (romes: string[]) => {
       {
         $project: {
           _id: 0,
-          diplome: "$_id",
+          niveau: "$_id",
           count: 1,
         },
       },
     ])
     .toArray()
 
-  return diplomes.map((diplome) => ({
-    title: diplome.diplome,
-    description: "",
-    duree: "",
-    niveau: "",
-    count: diplome.count,
-    competences: [],
-  }))
+  return niveaux
+    .map((niveau) =>
+      SEO_METIER_FORMATION_TITRES[niveau.niveau] !== undefined
+        ? {
+            title: SEO_METIER_FORMATION_TITRES[niveau.niveau] || "Autres formations",
+            description: SEO_METIER_FORMATION_DESCRIPTIONS[niveau.niveau] || "",
+            niveau: niveau.niveau,
+            count: niveau.count,
+          }
+        : null
+    )
+    .filter((formation) => formation !== null)
 }
 
 export const updateSeoMetierJobCounts = async () => {
