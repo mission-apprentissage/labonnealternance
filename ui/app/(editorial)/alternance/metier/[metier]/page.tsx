@@ -104,7 +104,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.job_count}
                 </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { sx: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { sx: "20px", md: "24px" }, color: "#161616" }}>
+                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
                   Offres disponibles
                 </Typography>
               </Box>
@@ -113,7 +113,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.applicant_count}
                 </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { sx: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { sx: "20px", md: "24px" }, color: "#161616" }}>
+                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
                   candidats sur les 3 derniers mois
                 </Typography>
               </Box>
@@ -122,7 +122,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.company_count}
                 </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { sx: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { sx: "20px", md: "24px" }, color: "#161616" }}>
+                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
                   entreprises recrutent activement
                 </Typography>
               </Box>
@@ -131,7 +131,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                   {data.salaire.salaire_brut_moyen}€
                 </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { sx: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { sx: "20px", md: "24px" }, color: "#161616" }}>
+                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
                   Salaire brut mensuel moyen*
                 </Typography>
               </Box>
@@ -438,6 +438,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 href={`/recherche?romes=${data.romes.join()}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${utmParams}`}
                 style={{ background: "transparent" }}
                 aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}
+                key={ville.nom}
               >
                 <Box
                   sx={{
