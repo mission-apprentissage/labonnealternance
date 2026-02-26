@@ -32,7 +32,7 @@ export function DesinscriptionRecruteur() {
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.desinscription]} />
-      <DefaultContainer sx={{ marginBottom: fr.spacing("5w") }}>
+      <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
         <Box sx={{ height: 0 }} id="editorial-content-container" />
         {!isSuccess ? (
           <>

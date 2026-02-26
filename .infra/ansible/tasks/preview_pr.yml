@@ -121,6 +121,11 @@
       async: 900 # max 15 minutes
       poll: 15 # check every 15s
 
+    - name: "[{{ pr_number }}] Register database in Metabase"
+      shell:
+        cmd: "bash /opt/app/configs/metabase/add-preview-database.sh {{ pr_number }} '{{ LBA_METABASE_MONGODB_URI }}'"
+      ignore_errors: true
+
     - name: "[{{ pr_number }}] Preview URL"
       debug:
         msg: "{{ LBA_PUBLIC_URL }}"
@@ -145,6 +150,12 @@
         cmd: "docker image rm -f ghcr.io/mission-apprentissage/{{ item }}:0.0.0-{{ pr_number }}"
       when: check_stat.stat.exists
       loop: "{{ docker_images }}"
+
+    - name: "[{{ pr_number }}] Remove database from Metabase"
+      shell:
+        cmd: "bash /opt/app/configs/metabase/remove-preview-database.sh {{ pr_number }}"
+      when: check_stat.stat.exists
+      ignore_errors: true
 
     - name: "[{{ pr_number }}] Remove database"
       shell:

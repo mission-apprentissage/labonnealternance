@@ -8,7 +8,7 @@ export const GerezOffres = () => {
       <Grid size={{ xs: 12, md: 6 }}>
         <Image src="/images/home_pics/illu-candidatures.svg" alt="" width={571} height={308} style={{ width: "100%", height: "auto" }} />
       </Grid>
-      <Grid container size={{ xs: 12, md: 6 }} spacing={fr.spacing("3w")} sx={{ alignItems: "center", justifyContent: "left" }}>
+      <Grid container size={{ xs: 12, md: 6 }} spacing={fr.spacing("6v")} sx={{ alignItems: "center", justifyContent: "left" }}>
         <Grid>
           <Box
             component="span"
@@ -17,7 +17,7 @@ export const GerezOffres = () => {
               color: "#fff",
               borderRadius: "80px",
               lineHeight: "32px",
-              px: fr.spacing("3w"),
+              px: fr.spacing("6v"),
               fontSize: "20px",
               fontWeight: "700",
             }}
@@ -26,11 +26,11 @@ export const GerezOffres = () => {
           </Box>
         </Grid>
         <Grid>
-          <Typography component="h3" variant="h3" sx={{ mb: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ mb: fr.spacing("4v") }}>
             Gérez vos offres de manière collaborative
           </Typography>
           <Typography>Un accès multi-comptes permettra à plusieurs personnes de votre entreprise d’accéder et de gérer vos offres d&apos;emploi.</Typography>
-          <Typography component="h3" variant="h3" sx={{ my: 2 }}>
+          <Typography component="h3" variant="h3" sx={{ my: fr.spacing("4v") }}>
             Consultez et gérez vos candidatures
           </Typography>
           <Typography>Vérifiez d&apos;un coup d&apos;œil la progression des candidatures pour définir les prochaines étapes.</Typography>

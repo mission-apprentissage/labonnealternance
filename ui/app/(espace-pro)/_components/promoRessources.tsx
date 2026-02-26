@@ -19,7 +19,7 @@ export const PromoRessources = ({ target }: { target: Target }) => (
     sx={{
       display: "flex",
       flexDirection: "column",
-      gap: fr.spacing("3w"),
+      gap: fr.spacing("6v"),
       padding: fr.spacing("3v"),
       alignItems: "center",
       justifyContent: "center",

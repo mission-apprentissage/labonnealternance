@@ -34,9 +34,9 @@ describe("getLabClassification - get batch classification", () => {
   const apiResponse: IClassificationLabBatchResponse = [
     {
       id: jobFixture.partner_job_id,
-      label: "cfa",
+      label: "unpublish",
       model: "model",
-      scores: { cfa: 0.5, entreprise: 0.4, entreprise_cfa: 0.2 },
+      scores: { publish: 0.4, unpublish: 0.5 },
       text: "Software Engineer",
     },
   ]

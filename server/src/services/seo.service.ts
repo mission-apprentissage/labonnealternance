@@ -58,6 +58,7 @@ export const updateSeoVilleActivities = async () => {
           $geoNear: {
             near: { type: "Point", coordinates: [ville.geopoint.long, ville.geopoint.lat] },
             distanceField: "distance",
+            key: "workplace_geopoint",
             maxDistance: DEFAULT_RADIUS_KM * 1000,
             key: "workplace_geopoint",
             spherical: true,

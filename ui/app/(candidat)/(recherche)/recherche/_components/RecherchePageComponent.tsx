@@ -108,7 +108,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
         {displayMap ? <RechercheCarte item={null} variant="recherche" {...props} /> : <></>}
         <Box
           sx={{
-            padding: fr.spacing("2w"),
+            padding: fr.spacing("4v"),
             margin: "auto",
             display: {
               xs: "block",

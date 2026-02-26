@@ -32,7 +32,7 @@ const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
   }
 
   return (
-    <Box sx={{ mt: fr.spacing("3w") }}>
+    <Box sx={{ mt: fr.spacing("6v") }}>
       <Tabs
         value={selectedIndex}
         onChange={handleTabsChange}

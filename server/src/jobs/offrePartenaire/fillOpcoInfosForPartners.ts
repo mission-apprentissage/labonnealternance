@@ -18,9 +18,10 @@ export const fillOpcoInfosForPartners = async ({ addedMatchFilter }: FillCompute
     getData: async (documents) => {
       const sirets = [...new Set<string>(documents.flatMap(({ workplace_siret }) => (workplace_siret ? [workplace_siret] : [])))]
       const opcosData = await getOpcosData(sirets)
+      const opcosMap = new Map(opcosData.map((data) => [data.siret, data]))
 
       return documents.map((document) => {
-        const opcoData = opcosData.find((data) => data.siret === document.workplace_siret)
+        const opcoData = opcosMap.get(document.workplace_siret ?? "")
         if (!opcoData) {
           return {
             _id: document._id,

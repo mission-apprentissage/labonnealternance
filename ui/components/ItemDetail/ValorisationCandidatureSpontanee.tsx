@@ -63,7 +63,7 @@ export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {}, on
       }}
     >
       <Box>
-        <Typography variant="h4" sx={{ mb: 2, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Plus de 60% des recrutements en alternance se font sans qu’aucune offre n’ait été déposée.
         </Typography>
         <Typography>
@@ -74,7 +74,7 @@ export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {}, on
           </b>
         </Typography>
 
-        <Typography sx={{ pt: 2 }}>
+        <Typography sx={{ pt: fr.spacing("4v") }}>
           <span aria-hidden="true">👉</span> Vous étendez votre champ d'opportunités,
           <br />
           <span aria-hidden="true">👉</span> Vous choisissez les entreprises qui vous intéressent,

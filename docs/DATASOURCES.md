@@ -41,12 +41,6 @@ https://adresse.data.gouv.fr/
 
 Récupération des coordonnées géographiques entreprises
 
-## API CFADock
-
-https://www.cfadock.fr
-
-Récupération des OPCO & IDCC des entreprises
-
 ## France Competence
 
 https://www.francecompetences.fr

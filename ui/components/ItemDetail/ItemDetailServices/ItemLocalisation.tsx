@@ -1,13 +1,14 @@
 import { Typography } from "@mui/material"
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getPathLink } from "@/utils/tools"
 
 export default function ItemLocalisation({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (
-    <Typography sx={{ my: 2 }}>
+    <Typography sx={{ my: fr.spacing("4v") }}>
       <Typography component="span" sx={{ fontWeight: 700 }}>
         Localisation :{" "}
       </Typography>

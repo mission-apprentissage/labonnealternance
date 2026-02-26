@@ -28,14 +28,14 @@ export default function Ressources() {
   return (
     <Box
       sx={{
-        mb: fr.spacing("3w"),
+        mb: fr.spacing("6v"),
       }}
     >
       <Breadcrumb pages={[PAGES.static.ressources]} />
       <DefaultContainer>
         <Box
           sx={{
-            mb: fr.spacing("3w"),
+            mb: fr.spacing("6v"),
           }}
         >
           <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
@@ -43,7 +43,7 @@ export default function Ressources() {
           </Typography>
         </Box>
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "repeat(1, 1fr)", lg: "repeat(5, 1fr)" } }}>
-          <Box sx={{ gridColumn: { xs: "span 5", lg: "span 1" }, pb: { xs: fr.spacing("2w"), lg: 0 } }}>
+          <Box sx={{ gridColumn: { xs: "span 5", lg: "span 1" }, pb: { xs: fr.spacing("4v"), lg: 0 } }}>
             <nav className="fr-sidemenu" aria-labelledby="fr-sidemenu-title">
               <div className="fr-sidemenu__inner">
                 <button className="fr-sidemenu__btn" aria-controls="fr-sidemenu-wrapper" aria-expanded="false">

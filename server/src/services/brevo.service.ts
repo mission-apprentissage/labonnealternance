@@ -124,7 +124,9 @@ export const uploadContactListToBrevo = async (account: "TRANSACTIONAL" | "MARKE
           // Use Brevo's x-sib-ratelimit-reset header (time in ms until reset) or fallback to exponential backoff
           // Brevo rate limit: 10 RPS, so wait at least 100ms between retries
           // Exponential backoff: 100ms, 200ms, 500ms, 1s, 2s
-          const delayMs = rateLimitReset ? parseInt(rateLimitReset) : Math.min(100 * Math.pow(2, attempt - 1), 2000)
+          const parsed = parseInt(rateLimitReset)
+          const backoffMs = Math.min(100 * Math.pow(2, attempt - 1), 2000)
+          const delayMs = !isNaN(parsed) && parsed > 0 ? Math.min(parsed, 30_000) : backoffMs
 
           logger.warn(`Brevo API rate limit reached (429). Remaining: ${rateLimitRemaining || "unknown"}. Retrying in ${delayMs}ms (attempt ${attempt}/${maxRetries})`)
           await new Promise((resolve) => setTimeout(resolve, delayMs))

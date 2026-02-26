@@ -4,9 +4,9 @@ import { Grid, Typography } from "@mui/material"
 
 export const FollowLinkedIn = () => {
   return (
-    <Grid container spacing={fr.spacing("4w")} sx={{ alignItems: "center", justifyContent: "center" }}>
+    <Grid container spacing={fr.spacing("8v")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid size={{ xs: 12, md: 9 }}>
-        <Typography sx={{ fontWeight: "700", mb: fr.spacing("2w") }}>
+        <Typography sx={{ fontWeight: "700", mb: fr.spacing("4v") }}>
           La bonne alternance est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP) et conçoit des services numériques qui facilitent les
           entrées en apprentissage.
         </Typography>
