@@ -60,7 +60,6 @@ export const updateSeoVilleActivities = async () => {
             distanceField: "distance",
             key: "workplace_geopoint",
             maxDistance: DEFAULT_RADIUS_KM * 1000,
-            key: "workplace_geopoint",
             spherical: true,
             query: {
               offer_status: JOB_STATUS_ENGLISH.ACTIVE,
