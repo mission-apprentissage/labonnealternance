@@ -284,6 +284,7 @@ const getTopCitiesForMetier = async (romes: string[]) => {
               query: {
                 offer_status: JOB_STATUS_ENGLISH.ACTIVE,
                 offer_rome_codes: { $in: romes },
+                $or: [{ offer_expiration: null }, { offer_expiration: { $gt: new Date() } }],
               },
             },
           },
