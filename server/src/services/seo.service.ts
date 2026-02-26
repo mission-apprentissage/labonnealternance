@@ -1,7 +1,7 @@
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoVilleModel from "shared/models/seoVille.model"
-import seoMetierModel from "shared/models/seoMetier.model"
+import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
 
 import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
@@ -59,6 +59,7 @@ export const updateSeoVilleActivities = async () => {
             near: { type: "Point", coordinates: [ville.geopoint.long, ville.geopoint.lat] },
             distanceField: "distance",
             maxDistance: DEFAULT_RADIUS_KM * 1000,
+            key: "workplace_geopoint",
             spherical: true,
             query: {
               offer_status: JOB_STATUS_ENGLISH.ACTIVE,
