@@ -741,7 +741,7 @@ export const up = async () => {
 
   await updateSEO()
 
-  logger.info("Initialisation de la collection seo_villes terminée")
+  logger.info("Initialisation de la collection seo_metiers terminée")
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)

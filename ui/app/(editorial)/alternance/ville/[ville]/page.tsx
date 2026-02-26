@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ ville: st
   }
 
   return {
-    title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations  ${new Date().getFullYear()}`,
+    title: `Alternance ${data.ville} : ${data.job_count + data.recruteur_count} Offres | Salaires & Formations ${new Date().getFullYear()}`,
     description: `${data.job_count + data.recruteur_count} offres d'alternance à ${data.ville}. Salaire moyen 1050€. BTS, Licence Pro, Master. Trouvez votre contrat d'apprentissage en ${data.region}.`,
   }
 }

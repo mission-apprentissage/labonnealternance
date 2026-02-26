@@ -311,7 +311,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               <Typography component={"span"} sx={{ color: fr.colors.decisions.text.default.info.default, fontWeight: 700, fontSize: "18px" }}>
                 les {data.company_count} entreprises
               </Typography>{" "}
-              qui recrutent activement des alternants développeur web :
+              qui recrutent activement des alternants {data.metier.toLowerCase()} :
             </Typography>
             <Box
               sx={{
