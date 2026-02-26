@@ -57,7 +57,7 @@ export const classificationRoutes = (server: Server) => {
   })
 }
 
-const updateClassificationAndSynchronise = async ({ classification, partner_job_ids }: { classification: "cfa" | "entreprise" | "entreprise_cfa"; partner_job_ids: string[] }) => {
+const updateClassificationAndSynchronise = async ({ classification, partner_job_ids }: { classification: "publish" | "unpublish"; partner_job_ids: string[] }) => {
   // update cache_classification
   await getDbCollection("cache_classification").updateMany({ partner_job_id: { $in: partner_job_ids } }, { $set: { human_verification: classification } })
   // get jobs_partners to update offer_status to annulé if classification !== human_verification
