@@ -17,15 +17,16 @@ export const fillEntrepriseEngagementComputedJobsPartners = async ({ addedMatchF
     replaceMatchFilter: addedMatchFilter ?? {}, // run on all documents each time
     getData: async (documents) => {
       const sirets = [...new Set<string>(documents.flatMap(({ workplace_siret }) => (workplace_siret ? [workplace_siret] : [])))]
-      const engagementsEntreprise = await getDbCollection("referentiel_engagement_entreprise")
-        .find({ siret: { $in: sirets }, sources: EntrepriseEngagementSources.FRANCE_TRAVAIL })
+      const engagedSirets = await getDbCollection("referentiel_engagement_entreprise")
+        .find({ siret: { $in: sirets }, sources: EntrepriseEngagementSources.FRANCE_TRAVAIL }, { projection: { siret: 1 } })
+        .map(({ siret }) => siret)
         .toArray()
+      const engagedSiretsSet = new Set(engagedSirets)
 
       return documents.map((document) => {
-        const engagement = engagementsEntreprise.find((data) => data.siret === document.workplace_siret)
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id: document._id,
-          contract_is_disabled_elligible: engagement ? true : false,
+          contract_is_disabled_elligible: engagedSiretsSet.has(document.workplace_siret ?? ""),
         }
         return result
       })

@@ -1816,10 +1816,10 @@ const stringNormaliser = (str: string): string => {
   return removeAccents(str.toLowerCase())
 }
 
-const normalizedCfaList = cfaCompanyList.map(stringNormaliser)
+const normalizedCfaSet = new Set(cfaCompanyList.map(stringNormaliser))
 
 export const isCompanyInBlockedCfaList = (nom: string | null | undefined): boolean => {
   if (!nom) return false
   const nomNormalise = stringNormaliser(nom)
-  return normalizedCfaList.includes(nomNormalise)
+  return normalizedCfaSet.has(nomNormalise)
 }
