@@ -137,7 +137,7 @@ const getContratRemote = (teletravail: IApecJob["Teletravail"]): IComputedJobsPa
     return TRAINING_REMOTE_TYPE.onsite
   }
 
-  if (teletravail.includes("Télétravail ponctuel autorisé") || teletravail.includes("Télétravail partiel autorisé")) {
+  if (teletravail.includes("Télétravail ponctuel autorisé") || teletravail.includes("Télétravail partiel possible")) {
     return TRAINING_REMOTE_TYPE.hybrid
   }
 

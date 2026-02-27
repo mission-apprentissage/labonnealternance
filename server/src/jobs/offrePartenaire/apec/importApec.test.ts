@@ -158,8 +158,8 @@ describe("apecJobToJobsPartners", () => {
       expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.hybrid)
     })
 
-    it("should return hybrid for 'Télétravail partiel autorisé'", async () => {
-      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail partiel autorisé" })
+    it("should return hybrid for 'Télétravail partiel possible'", async () => {
+      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail partiel possible" })
       expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.hybrid)
     })
 
