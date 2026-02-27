@@ -194,7 +194,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                   boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                 }}
               >
-                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.hover }}>{mission.title} :</Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{mission.title} :</Typography>
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{mission.description}</Typography>
               </Box>
             ))}
@@ -224,7 +224,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                   boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
                 }}
               >
-                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.hover }}>{competence.title} :</Typography>
+                <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{competence.title} :</Typography>
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{competence.description}</Typography>
               </Box>
             ))}
@@ -460,7 +460,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                     <Image alt="" aria-hidden="true" src={`/images/seo/metier/france.svg`} width={60} height={60} />
                   </Box>
                   <Box sx={{ width: "100%", textAlign: "left" }}>
-                    <Typography sx={{ mt: fr.spacing("1v"), fontSize: "40px", fontWeight: "bold", lineHeight: "48px", color: fr.colors.decisions.text.default.info.default }}>
+                    <Typography
+                      sx={{ mt: fr.spacing("1v"), fontSize: "40px", fontWeight: "bold", lineHeight: "48px", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}
+                    >
                       {ville.nom}
                     </Typography>
                     <Box sx={{ width: "100%", display: "flex", alignItems: "center", flexDirection: "row" }}>
@@ -468,7 +470,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                         {ville.job_count} offres
                       </Typography>
                       <ArrowRightLine
-                        sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.hover, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
+                        sx={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default, mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }}
                       />
                     </Box>
                   </Box>
