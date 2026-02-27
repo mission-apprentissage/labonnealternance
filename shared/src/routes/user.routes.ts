@@ -111,7 +111,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
+        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob), organizationId: zObjectId }),
       },
       securityScheme: {
         auth: "cookie-session",

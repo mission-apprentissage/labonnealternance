@@ -211,8 +211,6 @@ export default (server: Server) => {
       const { userId } = req.params
       const role = await getDbCollection("rolemanagements").findOne({
         user_id: new ObjectId(userId),
-        // TODO à activer lorsque le frontend passe organizationId correctement
-        // authorized_id: organizationId,
       })
       if (!role) {
         throw badRequest("role not found")
@@ -261,7 +259,7 @@ export default (server: Server) => {
           event.user = `${user.first_name} ${user.last_name}`
         })
       }
-      return res.status(200).send({ ...userRecruteur, jobs })
+      return res.status(200).send({ ...userRecruteur, jobs, organizationId: role.authorized_id })
     }
   )
 
@@ -330,7 +328,7 @@ export default (server: Server) => {
       await deactivateUserRole({
         reason,
         userId,
-        organizationId,
+        organizationId: organizationId.toString(),
         requestedBy: requestUser,
       })
       return res.status(200).send({})
@@ -349,7 +347,7 @@ export default (server: Server) => {
       if (!requestUser) throw badRequest()
       await activateUserRole({
         userId,
-        organizationId,
+        organizationId: organizationId.toString(),
         requestedBy: requestUser,
       })
       return res.status(200).send({})
@@ -377,7 +375,7 @@ export default (server: Server) => {
         reason,
         requestedBy: requestUser,
         userId,
-        organizationId,
+        organizationId: organizationId.toString(),
       })
       return res.status(200).send({})
     }
