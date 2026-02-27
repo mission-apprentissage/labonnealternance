@@ -367,12 +367,8 @@ export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], rea
   return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.DESACTIVE)
 }
 
-export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) => {
+export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, role: IRoleManagement) => {
   const { email, first_name, last_name } = user
-  const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id, authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } })
-  if (!role) {
-    throw internal(`inattendu : pas de role pour user id=${user._id}`)
-  }
   const isCfa = role.authorized_type === AccessEntityType.CFA
   let organization
   if (isCfa) {
@@ -383,7 +379,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
-  const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString() })
+  const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString(), establishment_siret: organization.siret })
   const hasJobs = Boolean(recruiter?.jobs.length)
 
   await mailer.sendEmail({

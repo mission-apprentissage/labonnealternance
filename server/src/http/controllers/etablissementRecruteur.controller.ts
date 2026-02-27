@@ -326,7 +326,7 @@ export default (server: Server) => {
 
         const mainRole = await getMainRoleManagement(user._id, true)
         if (mainRole && isGrantedAndAutoValidatedRole(mainRole)) {
-          await sendWelcomeEmailToUserRecruteur(user)
+          await sendWelcomeEmailToUserRecruteur(user, mainRole)
           await sendEngagementHandicapEmailIfNeeded(user, mainRole)
         }
       }

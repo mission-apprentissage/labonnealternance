@@ -11,7 +11,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "@/services/formulaire.service"
+import { deleteFormulaire } from "@/services/formulaire.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -209,9 +209,14 @@ export default (server: Server) => {
       if (!requestUser) throw badRequest()
 
       const { userId } = req.params
-      const role = await getDbCollection("rolemanagements").findOne({
-        user_id: new ObjectId(userId),
-      })
+      // Prefer GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
+      const allRoles = await getDbCollection("rolemanagements")
+        .find({ user_id: new ObjectId(userId) })
+        .toArray()
+      const role =
+        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
+        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
+        allRoles[0]
       if (!role) {
         throw badRequest("role not found")
       }
@@ -244,7 +249,11 @@ export default (server: Server) => {
       const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id) : null
 
       if (type === ENTREPRISE) {
-        formulaire = opco ? await getFormulaireFromUserIdWithOpco(userId, opco) : await getFormulaireFromUserId(userId)
+        formulaire = await getDbCollection("recruiters").findOne({
+          managed_by: userId,
+          establishment_siret: organization!.siret,
+          ...(opco ? { opco } : {}),
+        })
         jobs = formulaire?.jobs ?? []
       }
 

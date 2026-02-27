@@ -9,7 +9,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
-import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError } from "./formulaire.service"
+import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
@@ -150,11 +150,10 @@ export const getPublicUserRecruteurProps = async (
       return { error: `inattendu : entreprise non trouvée pour user id=${userId}` }
     }
     const { siret } = entreprise
-    const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
-    if (!user) {
-      return { error: `inattendu : user non trouvé` }
+    const recruiter = await getDbCollection("recruiters").findOne({ managed_by: userId.toString(), establishment_siret: siret })
+    if (!recruiter) {
+      return { error: `inattendu : recruiter non trouvé pour user id=${userId} et siret=${siret}` }
     }
-    const recruiter = await getFormulaireFromUserIdOrError(user._id.toString())
     return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
   }
   if (type === OPCO) {
@@ -384,7 +383,14 @@ export const activateUserRole = async ({ userId, organizationId, requestedBy }: 
      * - update expiration date to one month later
      * - send email to delegation if available
      */
-    const userFormulaire = await getFormulaireFromUserIdOrError(user._id.toString())
+    const entreprise = await getDbCollection("entreprises").findOne({ _id: new ObjectId(updatedRole.authorized_id) })
+    if (!entreprise) {
+      throw internal(`activateUserRole: inattendu: entreprise introuvable pour role id=${updatedRole._id}`)
+    }
+    const userFormulaire = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString(), establishment_siret: entreprise.siret })
+    if (!userFormulaire) {
+      throw internal(`activateUserRole: inattendu: recruiter introuvable pour user id=${user._id} et siret=${entreprise.siret}`)
+    }
     await activateRecruiter(userFormulaire._id)
     await checkForJobActivations(userFormulaire)
   }
@@ -392,7 +398,7 @@ export const activateUserRole = async ({ userId, organizationId, requestedBy }: 
   await activateUser(user, requestedBy._id.toString())
 
   // validate user email addresse
-  await sendWelcomeEmailToUserRecruteur(user)
+  await sendWelcomeEmailToUserRecruteur(user, updatedRole)
   await sendEngagementHandicapEmailIfNeeded(user, updatedRole)
 }
 
