@@ -11,6 +11,10 @@ import { importApecRaw, importApecToComputed } from "./importApec"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
+vi.mock("@/services/referentiel/commune/commune.referentiel.service", () => ({
+  getCodePostalFromInsee: vi.fn().mockResolvedValue(null),
+}))
+
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 
 describe("importApec", () => {
@@ -81,45 +85,45 @@ describe("apecJobToJobsPartners", () => {
     return () => vi.useRealTimers()
   })
 
-  it("should map a CDI alternance job to Apprentissage contract type", () => {
-    const result = apecJobToJobsPartners(baseJob)
+  it("should map a CDI alternance job to Apprentissage contract type", async () => {
+    const result = await apecJobToJobsPartners(baseJob)
     expect(result.contract_type).toEqual(["Apprentissage"])
     expect(result.business_error).toBeNull()
   })
 
-  it("should map a non-CDI job to Professionnalisation contract type", () => {
+  it("should map a non-CDI job to Professionnalisation contract type", async () => {
     const job: IApecJob = {
       ...baseJob,
       Contrat: { Type_contrat: "CDD - Alternance - Contrat de professionnalisation", Duree_contrat: "12" },
     }
-    const result = apecJobToJobsPartners(job)
+    const result = await apecJobToJobsPartners(job)
     expect(result.contract_type).toEqual(["Professionnalisation"])
     expect(result.business_error).toBeNull()
   })
 
-  it("should set business_error to STAGE when contract duration < 6 months", () => {
+  it("should set business_error to STAGE when contract duration < 6 months", async () => {
     const job: IApecJob = {
       ...baseJob,
       Contrat: { Type_contrat: "CDD - Alternance - Contrat d'apprentissage", Duree_contrat: "1" },
     }
-    const result = apecJobToJobsPartners(job)
+    const result = await apecJobToJobsPartners(job)
     expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.STAGE)
   })
 
-  it("should set business_error to WRONG_DATA when description is too short", () => {
+  it("should set business_error to WRONG_DATA when description is too short", async () => {
     const job: IApecJob = { ...baseJob, Texte_offre: "Trop court." }
-    const result = apecJobToJobsPartners(job)
+    const result = await apecJobToJobsPartners(job)
     expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
   })
 
-  it("should set business_error to WRONG_DATA when title is too short", () => {
+  it("should set business_error to WRONG_DATA when title is too short", async () => {
     const job: IApecJob = { ...baseJob, Intitule: "AB" }
-    const result = apecJobToJobsPartners(job)
+    const result = await apecJobToJobsPartners(job)
     expect(result.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
   })
 
-  it("should map all fields correctly", () => {
-    const result = apecJobToJobsPartners(baseJob)
+  it("should map all fields correctly", async () => {
+    const result = await apecJobToJobsPartners(baseJob)
     expect(result).toMatchObject({
       partner_job_id: "177812004W",
       partner_label: JOBPARTNERS_LABEL.APEC,
@@ -128,7 +132,7 @@ describe("apecJobToJobsPartners", () => {
       offer_opening_count: 1,
       offer_multicast: false,
       workplace_name: "AROLLA",
-      workplace_address_label: "PARIS 01 75101",
+      workplace_address_label: "PARIS 01",
       workplace_address_city: "PARIS 01",
       workplace_naf_code: "6202A",
       workplace_naf_label: "CONSEIL EN SYSTÈMES ET LOGICIELS INFORMATIQUES",
@@ -139,33 +143,33 @@ describe("apecJobToJobsPartners", () => {
   })
 
   describe("contract_remote", () => {
-    it("should return null when Teletravail is absent", () => {
-      const result = apecJobToJobsPartners(baseJob)
+    it("should return null when Teletravail is absent", async () => {
+      const result = await apecJobToJobsPartners(baseJob)
       expect(result.contract_remote).toBeNull()
     })
 
-    it("should return onsite for 'Pas de télétravail autorisé'", () => {
-      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Pas de télétravail autorisé" })
+    it("should return onsite for 'Pas de télétravail autorisé'", async () => {
+      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Pas de télétravail autorisé" })
       expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.onsite)
     })
 
-    it("should return hybrid for 'Télétravail ponctuel autorisé'", () => {
-      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail ponctuel autorisé" })
+    it("should return hybrid for 'Télétravail ponctuel autorisé'", async () => {
+      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail ponctuel autorisé" })
       expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.hybrid)
     })
 
-    it("should return hybrid for 'Télétravail partiel autorisé'", () => {
-      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail partiel autorisé" })
+    it("should return hybrid for 'Télétravail partiel autorisé'", async () => {
+      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail partiel autorisé" })
       expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.hybrid)
     })
 
-    it("should return remote for 'Télétravail total possible'", () => {
-      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail total possible" })
+    it("should return remote for 'Télétravail total possible'", async () => {
+      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Télétravail total possible" })
       expect(result.contract_remote).toBe(TRAINING_REMOTE_TYPE.remote)
     })
 
-    it("should return null for an unrecognized telework value", () => {
-      const result = apecJobToJobsPartners({ ...baseJob, Teletravail: "Valeur inconnue" })
+    it("should return null for an unrecognized telework value", async () => {
+      const result = await apecJobToJobsPartners({ ...baseJob, Teletravail: "Valeur inconnue" })
       expect(result.contract_remote).toBeNull()
     })
   })

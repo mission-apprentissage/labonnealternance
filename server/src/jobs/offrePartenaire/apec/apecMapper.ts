@@ -7,6 +7,7 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.m
 import z from "zod"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { getCodePostalFromInsee } from "@/services/referentiel/commune/commune.referentiel.service"
 
 export const ZApecJob = z.object({
   Reference_apec: z.string(),
@@ -54,10 +55,11 @@ export const ZApecJob = z.object({
 })
 export type IApecJob = z.infer<typeof ZApecJob>
 
-export const apecJobToJobsPartners = (job: IApecJob): IComputedJobsPartners => {
+export const apecJobToJobsPartners = async (job: IApecJob): Promise<IComputedJobsPartners> => {
   const now = new Date()
   let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
   const contractDuration = getContratDuration(job.Contrat)
+  const codePostal = await getCodePostalFromInsee(job.Lieu.COG_lieu)
 
   if (contractDuration !== null && contractDuration < 6) {
     businessError = JOB_PARTNER_BUSINESS_ERROR.STAGE
@@ -86,8 +88,8 @@ export const apecJobToJobsPartners = (job: IApecJob): IComputedJobsPartners => {
     offer_opening_count: toInteger(job.Nombre_postes),
     offer_multicast: false,
     workplace_name: job.Nom_entreprise,
-    workplace_address_label: `${job.Lieu.Libelle_lieu} ${job.Lieu.COG_lieu}`,
-    workplace_address_zipcode: null,
+    workplace_address_label: `${job.Lieu.Libelle_lieu} ${codePostal ?? ""}`.trim(),
+    workplace_address_zipcode: codePostal,
     workplace_address_city: job.Lieu.Libelle_lieu,
     workplace_naf_code: job.Secteur_activite.NAF_secteur,
     workplace_naf_label: job.Secteur_activite.Libelle_secteur,
