@@ -117,15 +117,14 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response2.statusCode).toBe(403)
       expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
-    it("Vérifie qu'un email ne peut pas créer un compte si l utilisateur existe déjà", async () => {
-      // given
+    it("Vérifie qu'un utilisateur existant sans rôle actif peut recréer un compte", async () => {
+      // given: user exists in DB but has no active role (e.g. previously deleted/cleaned up)
       const { email } = defaultCreationEntreprisePayload
       await saveUserWithAccount({ email })
       // when
       const response = await callCreation({ ...defaultCreationEntreprisePayload, email })
-      // then
-      expect.soft(response.statusCode).toBe(403)
-      expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+      // then: re-registration is allowed since no active role exists
+      expect.soft(response.statusCode).toBe(200)
     })
 
     it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
