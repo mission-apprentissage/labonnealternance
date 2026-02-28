@@ -1,5 +1,4 @@
 import { fr } from "@codegouvfr/react-dsfr"
-//import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
@@ -12,9 +11,68 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
+const UTM_PARAMS = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
+
+// Shared style constants
+const boxCss = {
+  textAlign: "center",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  minWidth: { xs: "146px", md: "160px", lg: "210px" },
+  maxWidth: { xs: "75%", md: "70%", lg: "45%" },
+  minHeight: { xs: "146px", md: "210px" },
+  padding: fr.spacing("7v"),
+  backgroundColor: "white",
+  borderRadius: "5px",
+  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+  justifySelf: "center",
+}
+
+const cardSx = {
+  backgroundColor: "white",
+  padding: fr.spacing("7v"),
+  borderRadius: "5px",
+  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+}
+
+const hrSx = {
+  maxWidth: "93px",
+  border: "none",
+  borderBottom: "none",
+  borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
+  opacity: 1,
+}
+
+const threeColGridSx = {
+  display: "grid",
+  gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+  gap: fr.spacing("4v"),
+  alignItems: "stretch",
+  mt: fr.spacing("4v"),
+}
+
+async function fetchMetierData(metier: string) {
+  return apiGet("/_private/seo/metier/:metier", { params: { metier } })
+}
+
+function JobsCta({ href }: { href: string }) {
+  return (
+    <Box sx={{ textAlign: "center" }}>
+      <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+        <DsfrLink style={{ color: "#fff" }} href={href}>
+          Voir toutes les offres en alternance
+          <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
+        </DsfrLink>
+      </Button>
+    </Box>
+  )
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ metier: string }> }) {
   const { metier } = await params
-  const data = await apiGet("/_private/seo/metier/:metier", { params: { metier } })
+  const data = await fetchMetierData(metier)
 
   if (!data) {
     return {
@@ -31,30 +89,24 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
   }
 }
 
-const boxCss = {
-  textAlign: "center",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  minWidth: { xs: "146px", md: "160px", lg: "210px" },
-  maxWidth: { xs: "75%", md: "70%", lg: "45%" },
-  minHeight: { xs: "146px", md: "210px" },
-  padding: fr.spacing("7v"),
-  backgroundColor: "white",
-  borderRadius: "5px",
-  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-  justifySelf: "center",
-}
 export default async function Metier({ params }: { params: Promise<{ metier: string }> }) {
   const { metier } = await params
-  const data = await apiGet("/_private/seo/metier/:metier", { params: { metier } })
-
-  const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
+  const data = await fetchMetierData(metier)
 
   if (!data) {
     redirect("/404")
   }
+
+  const romesParam = data.romes.join()
+  const jobsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
+  const formationsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
+
+  const statItems = [
+    { icon: "/images/seo/metier/malette.svg", value: data.job_count, label: "Offres disponibles" },
+    { icon: "/images/seo/metier/ecosystem.svg", value: data.applicant_count, label: "candidats sur les 3 derniers mois" },
+    { icon: "/images/seo/metier/usine.svg", value: data.company_count, label: "entreprises recrutent activement" },
+    { icon: "/images/seo/metier/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
+  ]
 
   return (
     <Box>
@@ -70,29 +122,16 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Box
-            sx={{
-              display: {
-                xs: "none",
-                md: "block",
-              },
-            }}
-          >
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
             <HomeCircleImageDecoration size="small" />
           </Box>
-          <Box
-            sx={{
-              position: "relative",
-            }}
-          >
-            <Box>
-              <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
-                Alternance{" "}
-                <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
-                  {data.metier}
-                </Typography>
+          <Box sx={{ position: "relative" }}>
+            <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
+              Alternance{" "}
+              <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+                {data.metier}
               </Typography>
-            </Box>
+            </Typography>
             <Box
               sx={{
                 display: "grid",
@@ -101,72 +140,35 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 alignItems: "stretch",
               }}
             >
-              <Box sx={boxCss}>
-                <Image alt="" aria-hidden="true" src={`/images/seo/metier/malette.svg`} width={80} height={80} />
-                <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
-                  {data.job_count}
-                </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
-                  Offres disponibles
-                </Typography>
-              </Box>
-              <Box sx={boxCss}>
-                <Image alt="" aria-hidden="true" src={`/images/seo/metier/ecosystem.svg`} width={80} height={80} />
-                <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
-                  {data.applicant_count}
-                </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
-                  candidats sur les 3 derniers mois
-                </Typography>
-              </Box>
-              <Box sx={boxCss}>
-                <Image alt="" aria-hidden="true" src={`/images/seo/metier/usine.svg`} width={80} height={80} />
-                <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
-                  {data.company_count}
-                </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
-                  entreprises recrutent activement
-                </Typography>
-              </Box>
-              <Box sx={boxCss}>
-                <Image alt="" aria-hidden="true" src={`/images/seo/metier/monnaie.svg`} width={80} height={80} />
-                <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
-                  {data.salaire.salaire_brut_moyen}€
-                </Typography>
-                <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
-                  Salaire brut mensuel moyen*
-                </Typography>
-              </Box>
+              {statItems.map(({ icon, value, label }) => (
+                <Box key={label} sx={boxCss}>
+                  <Image alt="" aria-hidden="true" src={icon} width={80} height={80} />
+                  <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
+                    {value}
+                  </Typography>
+                  <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
+                    {label}
+                  </Typography>
+                </Box>
+              ))}
               <Box sx={{ maxWidth: { xs: "75%", md: "70%", lg: "45%" }, gridColumn: { xs: "span 2", md: "span 4" }, justifySelf: "right" }}>
                 <Typography sx={{ fontSize: "12px", color: "#666" }}>*calcul basé sur les contrats enregistrés pour l'année 2024/2025</Typography>
               </Box>
             </Box>
           </Box>
         </Box>
-        <Box sx={{ textAlign: "center" }}>
-          <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-            <DsfrLink
-              style={{ color: "#fff" }}
-              href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${utmParams}`}
-            >
-              Voir toutes les offres en alternance
-              <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-            </DsfrLink>
-          </Button>
-        </Box>
+
+        <JobsCta href={jobsSearchUrl} />
 
         {/**
          * BLOC DESCRIPTION METIER
          */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
-            <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
               Le métier de <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()},</span> en alternance
             </Typography>
-            <Box
-              component="hr"
-              sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-            />
+            <Box component="hr" sx={hrSx} />
             <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.description }} />
           </Box>
 
@@ -175,25 +177,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             <Typography sx={{ ml: fr.spacing("4v"), fontSize: "20px", fontWeight: "bold" }}>Missions principales :</Typography>
           </Box>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-              gap: fr.spacing("4v"),
-              alignItems: "stretch",
-              mt: fr.spacing("4v"),
-            }}
-          >
+          <Box sx={threeColGridSx}>
             {(data.missions as { title: string; description: string }[]).map((mission) => (
-              <Box
-                key={mission.title}
-                sx={{
-                  backgroundColor: "white",
-                  padding: fr.spacing("7v"),
-                  borderRadius: "5px",
-                  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                }}
-              >
+              <Box key={mission.title} sx={cardSx}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{mission.title} :</Typography>
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{mission.description}</Typography>
               </Box>
@@ -205,25 +191,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             <Typography sx={{ ml: fr.spacing("4v"), fontSize: "20px", fontWeight: "bold" }}>Compétences développées :</Typography>
           </Box>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-              gap: fr.spacing("4v"),
-              alignItems: "stretch",
-              mt: fr.spacing("4v"),
-            }}
-          >
+          <Box sx={threeColGridSx}>
             {(data.competences as { title: string; description: string }[]).map((competence) => (
-              <Box
-                key={competence.title}
-                sx={{
-                  backgroundColor: "white",
-                  padding: fr.spacing("7v"),
-                  borderRadius: "5px",
-                  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                }}
-              >
+              <Box key={competence.title} sx={cardSx}>
                 <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{competence.title} :</Typography>
                 <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px" }}>{competence.description}</Typography>
               </Box>
@@ -301,39 +271,20 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
          */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
-            <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
               Entreprises qui recrutent activement en alternance
             </Typography>
-            <Box
-              component="hr"
-              sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-            />
+            <Box component="hr" sx={hrSx} />
             <Typography sx={{ fontSize: "18px", mb: fr.spacing("6v") }}>
               Découvrez{" "}
-              <Typography component={"span"} sx={{ color: fr.colors.decisions.text.default.info.default, fontWeight: 700, fontSize: "18px" }}>
+              <Typography component="span" sx={{ color: fr.colors.decisions.text.default.info.default, fontWeight: 700, fontSize: "18px" }}>
                 les {data.company_count} entreprises
               </Typography>{" "}
               qui recrutent activement des alternants {data.metier.toLowerCase()} :
             </Typography>
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-                gap: fr.spacing("4v"),
-                alignItems: "stretch",
-                mt: fr.spacing("4v"),
-              }}
-            >
+            <Box sx={threeColGridSx}>
               {(data.entreprises as { nom: string; job_count: number }[]).map((entreprise) => (
-                <Box
-                  key={entreprise.nom}
-                  sx={{
-                    backgroundColor: "white",
-                    padding: fr.spacing("7v"),
-                    borderRadius: "5px",
-                    boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                  }}
-                >
+                <Box key={entreprise.nom} sx={cardSx}>
                   <Typography sx={{ fontSize: "20px", fontWeight: "bold", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>{entreprise.nom}</Typography>
                   <Typography sx={{ mt: fr.spacing("1v"), fontSize: "20px", color: fr.colors.decisions.text.label.grey.default }}>{entreprise.job_count} postes</Typography>
                 </Box>
@@ -342,17 +293,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
         </Box>
 
-        <Box sx={{ textAlign: "center" }}>
-          <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-            <DsfrLink
-              style={{ color: "#fff" }}
-              href={`/recherche?romes=${data.romes.join()}&radius=30&displayFormations=false&job_name=${encodeURIComponent(data.metier)}&${utmParams}`}
-            >
-              Voir toutes les offres en alternance
-              <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-            </DsfrLink>
-          </Button>
-        </Box>
+        <JobsCta href={jobsSearchUrl} />
 
         <Box
           sx={{
@@ -363,33 +304,16 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+          <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
             Les formations
           </Typography>
-          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid #4B9F6C`, opacity: 1 }} />
-          <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+          <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #4B9F6C", opacity: 1 }} />
+          <Typography component="h5" sx={{ fontSize: "22px", fontWeight: "bold" }}>
             Niveaux de formation disponibles
           </Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
-              gap: fr.spacing("4v"),
-              alignItems: "stretch",
-              mt: fr.spacing("4v"),
-            }}
-          >
+          <Box sx={threeColGridSx}>
             {(data.formations as { title: string; description: string; duree: string; niveau: string; count: number; competences: string[] }[]).map((formation) => (
-              <Box
-                key={formation.title}
-                sx={{
-                  backgroundColor: "white",
-                  padding: fr.spacing("7v"),
-                  borderRadius: "5px",
-                  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
-                  textAlign: "center",
-                }}
-              >
+              <Box key={formation.title} sx={{ ...cardSx, textAlign: "center" }}>
                 <Typography sx={{ fontSize: "28px", fontWeight: "bold", color: "#4B9F6C" }}>{formation.title}</Typography>
                 <Typography sx={{ my: fr.spacing("6v"), fontSize: "18px", color: "#666" }}>{formation.description}</Typography>
                 <Typography sx={{ fontSize: "22px", fontWeight: 700 }}>{formation.count} formations</Typography>
@@ -399,10 +323,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
 
           <Box sx={{ textAlign: "center" }}>
             <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
-              <DsfrLink
-                style={{ color: "#fff" }}
-                href={`/recherche?romes=${data.romes.join()}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${utmParams}`}
-              >
+              <DsfrLink style={{ color: "#fff" }} href={formationsSearchUrl}>
                 Voir toutes les formations en alternance
                 <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
               </DsfrLink>
@@ -415,14 +336,11 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
          */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
-            <Typography component={"h2"} variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
               Où trouver une alternance <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
             </Typography>
-            <Box
-              component="hr"
-              sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-            />
-            <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+            <Box component="hr" sx={hrSx} />
+            <Typography component="h5" sx={{ fontSize: "22px", fontWeight: "bold" }}>
               Les offres par ville :
             </Typography>
           </Box>
@@ -431,16 +349,15 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               display: "grid",
               gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
               gap: fr.spacing("4v"),
-              //alignItems: "stretch",
               mt: fr.spacing("4v"),
             }}
           >
             {(data.villes as { nom: string; job_count: number; geopoint: { lat: number; long: number } }[]).map((ville) => (
               <Link
-                href={`/recherche?romes=${data.romes.join()}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${utmParams}`}
+                key={ville.nom}
+                href={`/recherche?romes=${romesParam}&lat=${ville.geopoint.lat}&lon=${ville.geopoint.long}&address=${ville.nom}&job_name=${encodeURIComponent(data.metier)}&displayFormations=false&${UTM_PARAMS}`}
                 style={{ background: "transparent" }}
                 aria-label={`Afficher les offres en alternance de ${data.metier} à ${ville.nom}`}
-                key={ville.nom}
               >
                 <Box
                   sx={{
@@ -457,7 +374,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                   }}
                 >
                   <Box sx={{ width: "100%", textAlign: "center" }}>
-                    <Image alt="" aria-hidden="true" src={`/images/seo/metier/france.svg`} width={60} height={60} />
+                    <Image alt="" aria-hidden="true" src="/images/seo/metier/france.svg" width={60} height={60} />
                   </Box>
                   <Box sx={{ width: "100%", textAlign: "left" }}>
                     <Typography
