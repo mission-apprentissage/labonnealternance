@@ -146,15 +146,15 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                   <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "32px", md: "40px" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                     {value}
                   </Typography>
-                  <Typography sx={{ mt: fr.spacing("2v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
+                  <Typography sx={{ mt: fr.spacing("4v"), fontSize: { xs: "18px", md: "20px" }, fontWeight: "bold", lineHeight: { xs: "20px", md: "24px" }, color: "#161616" }}>
                     {label}
                   </Typography>
                 </Box>
               ))}
-              <Box sx={{ maxWidth: { xs: "75%", md: "70%", lg: "45%" }, gridColumn: { xs: "span 2", md: "span 4" }, justifySelf: "right" }}>
-                <Typography sx={{ fontSize: "12px", color: "#666" }}>*calcul basé sur les contrats enregistrés pour l'année 2024/2025</Typography>
-              </Box>
             </Box>
+            <Typography sx={{ mt: fr.spacing("2v"), fontSize: "12px", color: "#666", textAlign: "right" }}>
+              *calcul basé sur les contrats enregistrés pour l'année 2024/2025
+            </Typography>
           </Box>
         </Box>
 
