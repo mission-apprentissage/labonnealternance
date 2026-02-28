@@ -24,7 +24,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
 }: {
   collectionSource: CollectionName
   zodInput: ZodInput
-  mapper: (raw: z.output<ZodInput>) => IComputedJobsPartners
+  mapper: (raw: z.output<ZodInput>) => IComputedJobsPartners | Promise<IComputedJobsPartners>
   partnerLabel: JOBPARTNERS_LABEL
   documentJobRoot?: string
   rawFilterQuery?: Filter<CollectionName>
@@ -49,7 +49,7 @@ export const rawToComputedJobsPartners = async <ZodInput extends AnyZodObject>({
         try {
           const rawJob = documentJobRoot ? document[documentJobRoot] : document
           const parsedDocument = zodInput.parse(rawJob)
-          const computedJobPartner = mapper(parsedDocument)
+          const computedJobPartner = await mapper(parsedDocument)
 
           await getDbCollection("computed_jobs_partners").insertOne({
             ...computedJobPartner,
