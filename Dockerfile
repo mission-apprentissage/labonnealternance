@@ -1,7 +1,6 @@
 FROM platformatic/node-caged:25-slim AS builder_root
 WORKDIR /app
-RUN npm install -g corepack && corepack enable
-RUN yarn set version 3.3.1
+RUN npm install -g corepack@0.34.6 && corepack enable
 COPY .yarn /app/.yarn
 COPY package.json package.json
 COPY yarn.lock yarn.lock
@@ -34,6 +33,9 @@ RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 # Production image, copy all the files and run next
 FROM platformatic/node-caged:25-slim AS server
 WORKDIR /app
+
+COPY package.json /app/package.json
+RUN npm install -g corepack@0.34.6 && corepack enable && corepack install
 
 RUN apt-get update \
   && apt-get install -y curl debsecan \
@@ -85,7 +87,8 @@ ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
 ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN --mount=type=cache,target=/app/ui/.next/cache yarn workspace ui build
 
-# Production image, copy all the files and run next
+# Production image — Node 25 + pointer compression (node-caged)
+# Node 22 pin removed: Next.js 16.1.6 streaming issue resolved on Node 25
 FROM platformatic/node-caged:25-slim AS ui
 WORKDIR /app
 
