@@ -34,8 +34,7 @@ RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 FROM platformatic/node-caged:25-slim AS server
 WORKDIR /app
 
-COPY package.json /app/package.json
-RUN npm install -g corepack@0.34.6 && corepack enable && corepack install
+RUN npm install -g yarn@1.22.22
 
 RUN apt-get update \
   && apt-get install -y curl debsecan \
