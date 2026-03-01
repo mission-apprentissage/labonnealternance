@@ -1,5 +1,6 @@
-FROM node:24-slim AS builder_root
+FROM platformatic/node-caged:25-slim AS builder_root
 WORKDIR /app
+RUN npm install -g corepack && corepack enable
 RUN yarn set version 3.3.1
 COPY .yarn /app/.yarn
 COPY package.json package.json
@@ -13,7 +14,7 @@ RUN yarn install --immutable
 
 COPY . .
 
-RUN yarn --cwd shared build
+RUN yarn workspace shared build
 
 FROM builder_root AS root
 WORKDIR /app
@@ -26,12 +27,12 @@ WORKDIR /app
 FROM root AS builder_server
 WORKDIR /app
 
-RUN yarn --cwd server build
+RUN yarn workspace server build
 
 RUN mkdir -p /app/shared/node_modules && mkdir -p /app/server/node_modules
 
 # Production image, copy all the files and run next
-FROM node:24-slim AS server
+FROM platformatic/node-caged:25-slim AS server
 WORKDIR /app
 
 RUN apt-get update \
@@ -82,12 +83,10 @@ ENV __RRWEB_EXCLUDE_SHADOW_DOM__=true
 ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
 
 ENV NODE_OPTIONS="--max-old-space-size=3072"
-RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
+RUN --mount=type=cache,target=/app/ui/.next/cache yarn workspace ui build
 
 # Production image, copy all the files and run next
-# Locked to Node 22 LTS: Node 24 has streaming issues with Next.js 16
-# See: https://github.com/vercel/next.js/discussions/75995
-FROM node:22-slim AS ui
+FROM platformatic/node-caged:25-slim AS ui
 WORKDIR /app
 
 RUN apt-get update \
