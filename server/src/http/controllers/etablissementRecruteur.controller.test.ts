@@ -34,7 +34,6 @@ describe("POST /etablissement/creation", () => {
     return async () => {
       mockCfa.persist(false)
       await getDbCollection("jobs_partners").deleteMany()
-      await getDbCollection("recruiters").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()
       await getDbCollection("cfas").deleteMany()

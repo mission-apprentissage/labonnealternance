@@ -67,7 +67,6 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { cancelOfferJob } from "./recruiters/cancelOfferJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
@@ -98,10 +97,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: importReferentielRome,
     description: "import référentiel rome v4 from XML",
-  },
-  {
-    fct: cancelOfferJob,
-    description: "Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle",
   },
   {
     fct: createRoleManagement360,

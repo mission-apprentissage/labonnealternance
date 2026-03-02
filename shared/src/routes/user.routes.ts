@@ -299,46 +299,12 @@ export const zUserRecruteurRoutes = {
     },
   },
   delete: {
-    "/user": {
-      method: "delete",
-      path: "/user",
-      querystring: z
-        .object({
-          userId: zObjectId,
-          recruiterId: zObjectId.optional(),
-        })
-        .strict(),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        resources: {
-          user: [
-            {
-              _id: { type: "query", key: "userId" },
-            },
-          ],
-          recruiter: [
-            {
-              _id: { type: "query", key: "recruiterId" },
-            },
-          ],
-        },
-      },
-    },
     "/admin/users/:userId": {
       method: "delete",
       path: "/admin/users/:userId",
       params: z
         .object({
           userId: z.string(),
-        })
-        .strict(),
-      querystring: z
-        .object({
-          recruiterId: zObjectId.optional(),
         })
         .strict(),
       response: {

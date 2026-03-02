@@ -33,3 +33,7 @@
 ## TODO marker
 
 // TODO FEATURE_DELETE_RECRUITERS
+
+TODO : check update entreprise pour updater les jobs_partners
+TODO : check champs cfa dans jobs_partners
+TODO : système de droits

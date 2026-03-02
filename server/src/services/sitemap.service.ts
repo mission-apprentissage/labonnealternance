@@ -1,49 +1,45 @@
 import { ObjectId } from "mongodb"
-import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import type { IJob, IRecruiter } from "shared/models/index"
-import { JOB_STATUS } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { ISitemap } from "shared/models/sitemap.model"
 import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
-import dayjs from "shared/helpers/dayjs"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
-type AggregateRecruiter = Pick<Omit<IRecruiter, "jobs">, "updatedAt"> & {
-  jobs: Pick<IJob, "job_update_date" | "_id" | "rome_label" | "rome_appellation_label" | "offer_title_custom">
-}
-
 const generateSitemapXml = async () => {
-  // TODO FEATURE_DELETE_RECRUITERS
-  const documents = (await getDbCollection("recruiters")
-    .aggregate([
-      { $match: { status: RECRUITER_STATUS.ACTIF, "jobs.job_status": JOB_STATUS.ACTIVE } },
-      { $unwind: { path: "$jobs" } },
-      { $match: { "jobs.job_status": JOB_STATUS.ACTIVE } },
-      { $project: { updatedAt: 1, "jobs.job_update_date": 1, "jobs._id": 1, "jobs.rome_label": 1, "jobs.rome_appellation_label": 1, "jobs.offer_title_custom": 1 } },
-    ])
-    .limit(Number.MAX_SAFE_INTEGER)
-    .toArray()) as AggregateRecruiter[]
+  const lbaJobPartners = await getDbCollection("jobs_partners")
+    .find(
+      {
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      },
+      {
+        projection: {
+          _id: 1,
+          updated_at: 1,
+          offer_title: 1,
+        },
+      }
+    )
+    .toArray()
 
   const sitemap = generateSitemapFromUrlEntries(
-    documents.map((document) => {
-      const { jobs: job, updatedAt } = document
-      const { job_update_date, _id, rome_label, rome_appellation_label, offer_title_custom } = job
-      const lastMod = job_update_date && dayjs(updatedAt).isBefore(job_update_date) ? job_update_date : updatedAt
-      const jobTitle = offer_title_custom ?? rome_appellation_label ?? rome_label
-      const url = buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id, null, jobTitle ?? undefined)
+    lbaJobPartners.map((document) => {
+      const { updated_at, _id, offer_title } = document
+      const url = buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, _id, null, offer_title)
       return {
         loc: url,
-        lastmod: lastMod,
+        lastmod: updated_at,
         changefreq: "daily" as const,
       }
     })
   )
-  return { xml: sitemap, count: documents.length }
+  return { xml: sitemap, count: lbaJobPartners.length }
 }
 
 export const generateSitemap = async () => {

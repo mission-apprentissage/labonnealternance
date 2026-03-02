@@ -50,7 +50,6 @@ import rawRecruteursLbaModel from "./rawRecruteursLba.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import rawToulouseMetropoleModel from "./rawToulouseMetropole.model.js"
 import rawViteUnEmploiModel from "./rawViteUnEmploi.model.js"
-import recruiterModel from "./recruiter.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentielEngagementEntreprise.model.js"
@@ -70,6 +69,7 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
+import entreprisesManagedByCfaModel from "./entreprisesManagedByCfa.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -112,7 +112,6 @@ const modelDescriptorMap = {
   [rawViteUnEmploiModel.collectionName]: rawViteUnEmploiModel,
   [rawNosTalentsNosEmploisModel.collectionName]: rawNosTalentsNosEmploisModel,
   [rawToulouseMetropoleModel.collectionName]: rawToulouseMetropoleModel,
-  [recruiterModel.collectionName]: recruiterModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielEngagementEntrepriseModel.collectionName]: referentielEngagementEntrepriseModel,
@@ -141,6 +140,7 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,
+  [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

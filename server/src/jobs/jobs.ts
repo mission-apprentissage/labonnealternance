@@ -43,7 +43,6 @@ import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissemen
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { cancelOfferJob } from "./recruiters/cancelOfferJob"
 import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
@@ -109,11 +108,6 @@ export async function setupJobProcessor() {
           "Anonymisation des candidatures de plus de deux (2) ans": {
             cron_string: "15 0 * * *",
             handler: anonymizeApplications,
-            tag: "main",
-          },
-          "Annulation des offres expirées": {
-            cron_string: "15 0 * * *",
-            handler: cancelOfferJob,
             tag: "main",
           },
           "Génération du sitemap pour les offres": {

@@ -21,6 +21,7 @@ export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
+  EN_ATTENTE = "En attente",
 }
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
@@ -46,6 +47,8 @@ export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
       return JOB_STATUS.POURVUE
     case JOB_STATUS_ENGLISH.ANNULEE:
       return JOB_STATUS.ANNULEE
+    case JOB_STATUS_ENGLISH.EN_ATTENTE:
+      return JOB_STATUS.EN_ATTENTE
     default: {
       assertUnreachable(status)
     }

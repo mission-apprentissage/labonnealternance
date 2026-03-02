@@ -1,12 +1,11 @@
 import { ObjectId } from "mongodb"
 import { removeAccents } from "shared"
-import { RECRUITER_STATUS } from "shared/constants/index"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
-import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import type { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models/index"
+import type { IEntreprise, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { createJob } from "./formulaire.service"
@@ -17,45 +16,25 @@ useMongo()
 
 describe("createJob", () => {
   let user: IUserWithAccount
-  let recruiter: IRecruiter
+  let entreprise: IEntreprise
   let referentielRome: IReferentielRome
 
   beforeEach(async () => {
     const email = "entreprise@mail.fr"
-    const entreprise = generateEntrepriseFixture()
+    entreprise = generateEntrepriseFixture()
     const role = generateRoleManagementFixture()
     user = generateUserWithAccountFixture({
       _id: new ObjectId("670ce1ded6ce30c3c90a0e1d"),
       email,
-    })
-    recruiter = generateRecruiterFixture({
-      is_delegated: false,
-      cfa_delegated_siret: null,
-      status: RECRUITER_STATUS.ACTIF,
-      establishment_siret: entreprise.siret,
-      opco: entreprise.opco,
-      jobs: [],
-      geopoint: {
-        type: "Point",
-        coordinates: [2.3522, 48.8566],
-      },
-      geo_coordinates: "48.8566,2.3522",
-      email,
-      _id: new ObjectId("670ce30b57a50d6875c141f9"),
-      establishment_creation_date: new Date("2024-10-14T09:23:21.588Z"),
-      address: "126 RUE DE L'UNIVERSITE 75007 PARIS",
-      managed_by: "686e82f6965b78f107bf44c1",
     })
     referentielRome = generateReferentielRome()
     await getDbCollection("userswithaccounts").insertOne(user)
     await getDbCollection("referentielromes").insertOne(referentielRome)
     await getDbCollection("rolemanagements").insertOne(role)
     await getDbCollection("entreprises").insertOne(entreprise)
-    await getDbCollection("recruiters").insertOne(recruiter)
 
     return async () => {
       await getDbCollection("userswithaccounts").deleteMany({})
-      await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("entreprises").deleteMany({})
       await getDbCollection("rolemanagements").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
@@ -84,7 +63,7 @@ describe("createJob", () => {
         coeur_metier: "test",
       },
     ]
-    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, siret: entreprise.siret, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoir_faire do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -100,7 +79,7 @@ describe("createJob", () => {
         ],
       },
     ]
-    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, siret: entreprise.siret, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoirs do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -116,13 +95,13 @@ describe("createJob", () => {
         ],
       },
     ]
-    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, siret: entreprise.siret, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when rome_label do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.rome_label = "test"
     await expect
-      .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(
         `L'intitulé du code ROME ne correspond pas au référentiel : ${removeAccents(referentielRome.rome.intitule.toLowerCase())}, reçu ${removeAccents(job.rome_label.toLowerCase())}`
       )
@@ -131,7 +110,7 @@ describe("createJob", () => {
     const job = generateValidJobWritable()
     job.rome_appellation_label = "test"
     await expect
-      .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
   })
 })

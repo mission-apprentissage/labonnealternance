@@ -2,11 +2,11 @@ import { forbidden, internal } from "@hapi/boom"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import type { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
-import { ADMIN, CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
-import type { ICFA } from "shared/models/cfa.model"
+import { ADMIN, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IEntreprise } from "shared/models/entreprise.model"
-import type { ComputedUserAccess, IApplication, IJob, IRecruiter, IUserWithAccount } from "shared/models/index"
+import type { ComputedUserAccess, IApplication, IUserWithAccount } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IRoleManagement } from "shared/models/roleManagement.model"
 import { AccessEntityType } from "shared/models/roleManagement.model"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
@@ -14,17 +14,17 @@ import type { AccessPermission, AccessResourcePath } from "shared/security/permi
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 import type { Primitive } from "type-fest"
 
+import type { ICFA } from "shared/models/cfa.model"
 import { getUserFromRequest } from "./authenticationService"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getApplicantFromDB } from "@/services/applicant.service"
+import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
 
-type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
-type JobResource = { job: IJob; recruiterResource: RecruiterResource }
+type JobResource = { job: IJobsPartnersOfferPrivate; entreprise: IEntreprise; cfa?: ICFA }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string; user?: IUserWithAccount | null }
 type EntrepriseResource = { entreprise: IEntreprise }
-type JobPartnerResource = { job: IJobsPartnersOfferPrivate }
 type UserResource = {
   user: IUserWithAccount
   entreprises: IEntreprise[]
@@ -35,12 +35,11 @@ type Resources = {
   jobs: Array<JobResource>
   applications: Array<ApplicationResource>
   entreprises: Array<EntrepriseResource>
-  jobPartners: Array<JobPartnerResource>
 }
 export type ResourceIds = {
-  jobs?: Array<{ job: string; recruiter: string | null } | null>
+  jobs?: Array<{ job: string } | null>
   users?: Array<string>
-  applications?: Array<{ application: string; job: string; recruiter: string } | null>
+  applications?: Array<{ application: string; job: string } | null>
 }
 
 // Specify what we need to simplify mocking in tests
@@ -55,26 +54,19 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
   return obj[path.key]
 }
 
-const recruiterToRecruiterResource = async (recruiter: IRecruiter): Promise<RecruiterResource> => {
-  const { cfa_delegated_siret, establishment_siret } = recruiter
-  if (cfa_delegated_siret) {
-    const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
-    if (!cfa) {
-      throw internal(`could not find cfa for recruiter with id=${recruiter._id}`)
-    }
-    return { recruiter, type: CFA, cfa }
-  } else {
-    const entreprise = await getDbCollection("entreprises").findOne({ siret: establishment_siret })
-    if (!entreprise) {
-      throw internal(`could not find entreprise for recruiter with id=${recruiter._id}`)
-    }
-    return { recruiter, type: ENTREPRISE, entreprise }
+const jobToJobResource = async (job: IJobsPartnersOfferPrivate): Promise<JobResource | null> => {
+  const entreprise = await getDbCollection("entreprises").findOne({ siret: job.workplace_siret ?? "" })
+  if (!entreprise) {
+    return null
   }
-}
-
-const jobToJobResource = async (job: IJob, recruiter: IRecruiter): Promise<JobResource> => {
-  const recruiterResource = await recruiterToRecruiterResource(recruiter)
-  return { job, recruiterResource }
+  let cfa: ICFA | null = null
+  if (job.cfa_siret) {
+    cfa = await getDbCollection("cfas").findOne({ siret: job.cfa_siret })
+    if (!cfa) {
+      return null
+    }
+  }
+  return { job, entreprise, cfa: cfa ?? undefined }
 }
 
 const getEntreprisesManagedByUser = async (user: IUserWithAccount) => {
@@ -121,28 +113,67 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
 
   return (
     await Promise.all(
-      schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource | null> => {
+      schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource[] | null> => {
         if ("_id" in jobDef) {
-          const id = new ObjectId(getAccessResourcePathValue(jobDef._id, req))
-          // TODO FEATURE_DELETE_RECRUITERS
-          const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": id })
-
-          if (!recruiter) {
+          const { _id } = jobDef
+          const id = new ObjectId(getAccessResourcePathValue(_id, req))
+          const jobPartner = await getDbCollection("jobs_partners").findOne({ _id: id })
+          if (!jobPartner) {
             return null
           }
-
-          const job = await recruiter.jobs.find((j) => j._id.toString() === id.toString())
-
-          if (!job) {
+          const result = await jobToJobResource(jobPartner)
+          return result ? [result] : null
+        } else if ("establishment_id" in jobDef) {
+          const establishmentIdValue = getAccessResourcePathValue(jobDef.establishment_id, req)
+          const { userId, siret } = await establishmentIdToUserIdAndSiret(establishmentIdValue)
+          const jobPartners = await getDbCollection("jobs_partners")
+            .find({
+              partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+              workplace_siret: siret,
+              managed_by: userId,
+            })
+            .toArray()
+          return (await Promise.all(jobPartners.map(jobToJobResource))).flatMap((x) => (x ? [x] : []))
+        } else if ("opco" in jobDef) {
+          const { opco } = jobDef
+          const opcoValue = getAccessResourcePathValue(opco, req)
+          const jobPartners = await getDbCollection("jobs_partners")
+            .find({
+              partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+              workplace_opco: opcoValue,
+            })
+            .toArray()
+          return (await Promise.all(jobPartners.map(jobToJobResource))).flatMap((x) => (x ? [x] : []))
+        } else if ("cfa_delegated_siret" in jobDef) {
+          const cfaSiretValue = getAccessResourcePathValue(jobDef.cfa_delegated_siret, req)
+          const jobPartners = await getDbCollection("jobs_partners")
+            .find({
+              partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+              cfa_siret: cfaSiretValue,
+            })
+            .toArray()
+          return (await Promise.all(jobPartners.map(jobToJobResource))).flatMap((x) => (x ? [x] : []))
+        } else if ("email" in jobDef && "establishment_siret" in jobDef) {
+          const emailValue = getAccessResourcePathValue(jobDef.email, req)
+          const siretValue = getAccessResourcePathValue(jobDef.establishment_siret, req)
+          const user = await getUserWithAccountByEmail(emailValue)
+          if (!user) {
             return null
           }
-          return jobToJobResource(job, recruiter)
+          const jobPartners = await getDbCollection("jobs_partners")
+            .find({
+              partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+              workplace_siret: siretValue,
+              managed_by: user._id,
+            })
+            .toArray()
+          return (await Promise.all(jobPartners.map(jobToJobResource))).flatMap((x) => (x ? [x] : []))
         }
 
         assertUnreachable(jobDef)
       })
     )
-  ).flatMap((_) => (_ ? [_] : []))
+  ).flatMap((_) => (_ ? _ : []))
 }
 
 async function getUserResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["users"]> {
@@ -187,16 +218,14 @@ async function getApplicationResource<S extends WithSecurityScheme>(schema: S, r
         if (!job_id) {
           return { application }
         }
-        // TODO FEATURE_DELETE_RECRUITERS
-        const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(job_id) })
-        if (!recruiter) {
-          return { application }
-        }
-        const job = recruiter.jobs.find((job) => job._id === job_id)
+        const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(job_id) })
         if (!job) {
           return { application }
         }
-        const jobResource = await jobToJobResource(job, recruiter)
+        const jobResource = await jobToJobResource(job)
+        if (!jobResource) {
+          return { application }
+        }
         const applicantOpt = await getApplicantFromDB({ _id: application.applicant_id })
         if (applicantOpt) {
           const user = await getUserWithAccountByEmail(applicantOpt.email)
@@ -240,31 +269,12 @@ async function getEntrepriseResource<S extends WithSecurityScheme>(schema: S, re
   return results.flatMap((_) => (_ ? [_] : []))
 }
 
-async function getJobsPartnerResource<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources["jobPartners"]> {
-  if (!schema.securityScheme.resources.jobPartner) {
-    return []
-  }
-
-  const results: (JobPartnerResource | null)[] = await Promise.all(
-    schema.securityScheme.resources.jobPartner.map(async (jobPartnerDef): Promise<JobPartnerResource | null> => {
-      if ("_id" in jobPartnerDef) {
-        const _id = getAccessResourcePathValue(jobPartnerDef._id, req)
-        const job = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(_id) })
-        return job ? { job } : null
-      }
-      assertUnreachable(jobPartnerDef)
-    })
-  )
-  return results.flatMap((_) => (_ ? [_] : []))
-}
-
 async function getResources<S extends WithSecurityScheme>(schema: S, req: IRequest): Promise<Resources> {
-  const [jobs, users, applications, entreprises, jobPartners] = await Promise.all([
+  const [jobs, users, applications, entreprises] = await Promise.all([
     getJobsResource(schema, req),
     getUserResource(schema, req),
     getApplicationResource(schema, req),
     getEntrepriseResource(schema, req),
-    getJobsPartnerResource(schema, req),
   ])
 
   return {
@@ -272,21 +282,26 @@ async function getResources<S extends WithSecurityScheme>(schema: S, req: IReque
     users,
     applications,
     entreprises,
-    jobPartners,
   }
-}
-
-function canAccessRecruiter(userAccess: ComputedUserAccess, resource: RecruiterResource): boolean {
-  const recruiterOpco = parseEnum(OPCOS_LABEL, resource.recruiter.opco ?? null)
-  if (recruiterOpco && userAccess.opcos.includes(recruiterOpco)) {
-    return true
-  }
-  const { managed_by } = resource.recruiter
-  return Boolean(userAccess.users.includes(managed_by))
 }
 
 function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): boolean {
-  return canAccessRecruiter(userAccess, resource.recruiterResource)
+  const { job, cfa, entreprise } = resource
+  if (job.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
+    const { managed_by, workplace_opco } = job
+    const firstTest = (managed_by && userAccess.users.includes(managed_by.toString())) || (workplace_opco && userAccess.opcos.includes(workplace_opco))
+    if (firstTest) {
+      return true
+    }
+    if (cfa) {
+      return userAccess.cfas.includes(cfa._id.toString())
+    } else {
+      const entrepriseId = entreprise._id.toString()
+      return userAccess.entreprises.includes(entrepriseId)
+    }
+  } else {
+    return userAccess.partner_label.includes(job.partner_label)
+  }
 }
 
 function canAccessUser(userAccess: ComputedUserAccess, resource: Resources["users"][number]): boolean {
@@ -306,11 +321,6 @@ function canAccessEntreprise(userAccess: ComputedUserAccess, resource: Entrepris
   const { entreprise } = resource
   const entrepriseOpco = parseEnum(OPCOS_LABEL, entreprise.opco)
   return userAccess.entreprises.includes(entreprise._id.toString()) || Boolean(entrepriseOpco && userAccess.opcos.includes(entrepriseOpco))
-}
-
-function canAccessJobPartner(userAccess: ComputedUserAccess, resource: JobPartnerResource): boolean {
-  const { job } = resource
-  return userAccess.partner_label.includes(job.partner_label)
 }
 
 function isApiApprentissageAuthorized(requestedAccess: AccessPermission, habilitations: IApiAlternanceTokenData["habilitations"]): boolean {
@@ -341,8 +351,7 @@ function isAuthorized(access: AccessPermission, userAccess: ComputedUserAccess, 
     resources.jobs.every((job) => canAccessJob(userAccess, job)) &&
     resources.applications.every((application) => canAccessApplication(userAccess, application)) &&
     resources.users.every((user) => canAccessUser(userAccess, user)) &&
-    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise)) &&
-    resources.jobPartners.every((job) => canAccessJobPartner(userAccess, job))
+    resources.entreprises.every((entreprise) => canAccessEntreprise(userAccess, entreprise))
   )
 }
 

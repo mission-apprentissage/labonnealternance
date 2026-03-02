@@ -136,7 +136,6 @@ const intentionToken = generateApplicationReplyToken(userToken, applicationFixtu
 const mockData = async () => {
   await getDbCollection("userswithaccounts").insertOne(user)
   await getDbCollection("jobs_partners").insertOne(recruteur)
-  await getDbCollection("recruiters").insertOne(recruiter)
   await getDbCollection("referentielromes").insertOne(referentielRome)
   await getDbCollection("applicants").insertOne(applicantFixture)
   await getDbCollection("applications").insertOne(applicationFixture)

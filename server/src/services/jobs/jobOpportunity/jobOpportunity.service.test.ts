@@ -1105,7 +1105,6 @@ describe("findJobsOpportunities", () => {
             partner_job_id: "job-id-filter-4",
           }),
         ])
-        await getDbCollection("recruiters").deleteMany({})
       })
 
       it("should only return jobs without the excluded partner_labels", async () => {

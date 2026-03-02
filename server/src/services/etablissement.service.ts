@@ -1,13 +1,12 @@
 import { badRequest, internal } from "@hapi/boom"
 import type { Filter as MongoDBFilter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, IRecruiter, ITrackingCookies } from "shared"
+import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, ITrackingCookies } from "shared"
 import { parseEnum, TrafficType, ZCfaReferentielData } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/index"
+import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
-import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -22,8 +21,8 @@ import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { upsertCfa } from "./cfa.service"
+import { createEntrepriseManagedByCfa, getEntrepriseManagedByCfa, isEntrepriseManagedByCfa } from "./entrepriseManagedByCfa.service"
 import type { IFormatAPIEntreprise, IReferentiel } from "./etablissement.service.types"
-import { createFormulaire, getFormulaire, recruiterDbProxy } from "./formulaire.service"
 import { addressDetailToString, convertGeometryToPoint, getGeoCoordinates } from "./geolocation.service"
 import mailer from "./mailer.service"
 import { getOpcoBySirenFromDB, getOpcosBySiretFromDB, insertOpcos, saveOpco } from "./opco.service"
@@ -33,18 +32,19 @@ import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
 import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import config from "@/config"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
-import { getHttpClient } from "@/common/utils/httpUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { logger } from "@/common/logger"
-import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
+import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getHttpClient } from "@/common/utils/httpUtils"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -316,8 +316,8 @@ export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_s
   if (nafCode?.startsWith("85")) {
     return errorFactory("L'entreprise partenaire ne doit pas relever du secteur de l'enseignement.", BusinessErrorCodes.IS_CFA)
   }
-  const recruteurOpt = await getFormulaire({ establishment_siret: siret, cfa_delegated_siret, status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] } })
-  if (recruteurOpt) {
+  const isManagedByCfa = await isEntrepriseManagedByCfa(siret, cfa_delegated_siret)
+  if (isManagedByCfa) {
     return errorFactory("L'entreprise est déjà référencée comme partenaire.")
   }
 }
@@ -431,17 +431,16 @@ export const entrepriseOnboardingWorkflow = {
       source,
     }: { siret: string; last_name: string; first_name: string; phone?: string; email: string; origin?: string | null; opco: OPCOS_LABEL; idcc?: string; source: ITrackingCookies },
     { isUserValidated = false }: { isUserValidated?: boolean } = {}
-  ): Promise<IBusinessError | { formulaire: IRecruiter; user: IUserWithAccount; validated: boolean }> => {
+  ): Promise<IBusinessError | { formulaire: { establishment_id: string; opco: OPCOS_LABEL }; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
-    const formulaireExist = await recruiterDbProxy.findOne({ establishment_siret: siret, email })
-    if (formulaireExist) {
-      return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
-    }
     const formatedEmail = email.toLocaleLowerCase()
-    // Faut-il rajouter un contrôle sur l'existance du couple email/siret dans la collection recruiters ?
+    // TODO change this into getMainRoleManagement ?
     if (await getUserWithAccountByEmail(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
+    // if (formulaireExist) {
+    //   return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
+    // }
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     let isSiretInternalError = false
     try {
@@ -455,6 +454,7 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
+    // TODO update jobs_partners
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
 
     let validated = false
@@ -476,24 +476,6 @@ export const entrepriseOnboardingWorkflow = {
       validated = result.validated
     }
 
-    const formulaire = await createFormulaire(
-      {
-        ...entrepriseToRecruiter(entreprise),
-        first_name,
-        last_name,
-        phone,
-        opco: opcoResult.opco || OPCOS_LABEL.UNKNOWN_OPCO,
-        idcc: opcoResult.idcc,
-        origin,
-        email: formatedEmail,
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [],
-        naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
-        naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
-      },
-      managingUser._id.toString()
-    )
-
     if (!isUserEmailChecked(managingUser)) {
       try {
         await sendUserConfirmationEmail(managingUser)
@@ -507,7 +489,14 @@ export const entrepriseOnboardingWorkflow = {
       }
     }
 
-    return { formulaire, user: managingUser, validated }
+    return {
+      formulaire: {
+        ...opcoResult,
+        establishment_id: buildEstablishmentId(managingUser._id, siret),
+      },
+      user: managingUser,
+      validated,
+    }
   },
   createFromCFA: async ({
     email,
@@ -517,7 +506,6 @@ export const entrepriseOnboardingWorkflow = {
     siret,
     cfa_delegated_siret,
     origin,
-    managedBy,
   }: {
     siret: string
     last_name: string
@@ -525,7 +513,6 @@ export const entrepriseOnboardingWorkflow = {
     phone: string
     email: string
     cfa_delegated_siret: string
-    managedBy: string
     origin: string
   }) => {
     const formatedEmail = email.toLocaleLowerCase()
@@ -546,58 +533,47 @@ export const entrepriseOnboardingWorkflow = {
     if (cfaErrorOpt) return cfaErrorOpt
 
     const opcoResult = await getOpcoData(siret)
-    const opco = opcoResult?.opco
+    const entrepriseManagedByCfa = await getEntrepriseManagedByCfa(siret, cfa_delegated_siret)
 
-    const existingFormulaire = await recruiterDbProxy.findOne({ cfa_delegated_siret, establishment_siret: siret })
-    const updatedFields = {
+    const contactFields = {
       first_name,
       last_name,
       phone,
       email: formatedEmail,
-      status: "error" in siretResponse ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
-      is_delegated: true,
-      opco: (opco && parseEnum(OPCOS_LABEL, opco)) || OPCOS_LABEL.UNKNOWN_OPCO,
-      idcc: opcoResult?.idcc ?? null,
-      naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
-      naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
     }
 
-    if (existingFormulaire) {
-      // TODO FEATURE_DELETE_RECRUITERS
-      const result = await getDbCollection("recruiters").findOneAndUpdate(
-        { cfa_delegated_siret, establishment_siret: siret },
-        {
-          $set: {
-            ...entrepriseToRecruiter(entreprise),
-            ...updatedFields,
-          },
-        }
-      )
-
-      if (!result) {
-        const err = new Error("inattendu: recruiter introuvable lors de l'édition du compte par un CFA")
-        sentryCaptureException(err)
-        return {
-          error: true,
-          message: "Une erreur est survenue lors de l'édition du compte. Merci de contacter le support.",
-          errorCode: BusinessErrorCodes.UNKNOWN,
-        }
+    const jobsPartnersUpdate: Partial<IJobsPartnersOfferPrivate> = {
+      workplace_naf_label: "naf_label" in siretResponse ? siretResponse.naf_label : undefined,
+      workplace_naf_code: "naf_code" in siretResponse ? siretResponse.naf_code : undefined,
+    }
+    const opco = opcoResult?.opco
+    const opcoLabel = opco ? parseEnum(OPCOS_LABEL, opco) : null
+    if (opcoLabel) {
+      jobsPartnersUpdate.workplace_opco = opcoLabel
+      jobsPartnersUpdate.workplace_idcc = opcoResult?.idcc ?? null
+    }
+    await getDbCollection("jobs_partners").updateMany(
+      {
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        workplace_siret: siret,
+      },
+      {
+        $set: jobsPartnersUpdate,
       }
-      return result
+    )
+
+    if (entrepriseManagedByCfa) {
+      await getDbCollection("entreprise_managed_by_cfa").updateOne({ _id: entrepriseManagedByCfa._id }, { $set: contactFields })
+      return entrepriseManagedByCfa._id
     } else {
       try {
-        const formulaireInfo = await createFormulaire(
-          {
-            ...entrepriseToRecruiter(entreprise),
-            ...updatedFields,
-            jobs: [],
-            cfa_delegated_siret,
-            origin,
-          },
-          managedBy
-        )
-
-        return formulaireInfo
+        const entrepriseManagedByCfa = await createEntrepriseManagedByCfa({
+          ...contactFields,
+          cfaSiret: cfa_delegated_siret,
+          entrepriseSiret: siret,
+          origin,
+        })
+        return entrepriseManagedByCfa._id
       } catch (err: any) {
         sentryCaptureException(err)
 
@@ -619,23 +595,6 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-const entrepriseToRecruiter = (entreprise: IEntreprise): Partial<IRecruiter> => {
-  const { siret, address, address_detail, enseigne, geo_coordinates, idcc, opco, raison_sociale } = entreprise
-  const [latitude, longitude] = geo_coordinates!.split(",").map((coords) => parseFloat(coords))
-  const formulaire: Partial<IRecruiter> = {
-    establishment_siret: siret,
-    establishment_raison_sociale: raison_sociale,
-    establishment_enseigne: enseigne,
-    opco,
-    idcc,
-    address,
-    address_detail,
-    geo_coordinates,
-    geopoint: { type: "Point", coordinates: [longitude, latitude] as [number, number] },
-  }
-  return formulaire
-}
-
 export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
   const url = createValidationMagicLink(userWithAccountToUserForToken(user))
   await mailer.sendEmail({
@@ -655,23 +614,25 @@ export const sendUserConfirmationEmail = async (user: IUserWithAccount) => {
   })
 }
 
-export const sendEmailConfirmationEntreprise = async (
-  user: IUserWithAccount,
-  recruteur: IRecruiter,
-  accessStatus: AccessStatus | null,
-  entrepriseStatus: EntrepriseStatus | null
-) => {
+export const sendEmailConfirmationEntreprise = async (userId: ObjectId, accessStatus: AccessStatus | null, entrepriseStatus: EntrepriseStatus | null) => {
   if (entrepriseStatus !== EntrepriseStatus.VALIDE || !accessStatus || ![AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION].includes(accessStatus)) {
     return
   }
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
+  if (!user) {
+    throw internal(`could not find user with id=${userId}`)
+  }
   const isUserAwaiting = accessStatus === AccessStatus.AWAITING_VALIDATION
-  const { jobs, is_delegated, email } = recruteur
+  const jobs = await getDbCollection("jobs_partners").find({ managed_by: userId }).toArray()
   const offre = jobs.at(0)
-  if (jobs.length === 1 && offre && is_delegated === false) {
+  if (jobs.length === 1 && offre && offre.is_delegated === false) {
     // Get user account validation link
     const url = createValidationMagicLink(userWithAccountToUserForToken(user))
+    const firstRomeCode = offre.offer_rome_codes.at(0)
+    const referentielRomeOpt = firstRomeCode ? await getDbCollection("referentielromes").findOne({ "rome.code_rome": firstRomeCode }) : null
+
     await mailer.sendEmail({
-      to: email,
+      to: user.email,
       subject: "Confirmez votre adresse mail",
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
@@ -681,11 +642,11 @@ export const sendEmailConfirmationEntreprise = async (
         email: sanitizeTextField(user.email),
         confirmation_url: url,
         offre: {
-          job_title: offre.offer_title_custom,
-          rome_appellation_label: offre.rome_appellation_label,
-          job_type: offre.job_type,
-          job_level_label: offre.job_level_label,
-          job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
+          job_title: offre.offer_title,
+          rome_appellation_label: referentielRomeOpt?.rome.intitule,
+          job_type: offre.contract_type.join(", "),
+          job_level_label: offre.offer_target_diploma?.label,
+          job_start_date: dayjs(offre.contract_start).format("DD/MM/YY"),
           delegations: offre.delegations,
         },
         isUserAwaiting,
@@ -693,11 +654,7 @@ export const sendEmailConfirmationEntreprise = async (
       },
     })
   } else {
-    const user2 = await getDbCollection("userswithaccounts").findOne({ _id: user._id })
-    if (!user2) {
-      throw internal(`could not find user with id=${user._id}`)
-    }
-    await sendUserConfirmationEmail(user2)
+    await sendUserConfirmationEmail(user)
   }
 }
 
@@ -745,4 +702,25 @@ export const isHardbounceEventFromEtablissement = async (payload) => {
   return false
 }
 
-export const doTasksWhenEntrepriseIsReadyToPublish = async () => {}
+export function buildEstablishmentId(userId: ObjectId, siret: string) {
+  return `${userId}_${siret}`
+}
+
+export async function establishmentIdToUserIdAndSiret(establishment_id: string): Promise<{ userId: ObjectId; siret: string }> {
+  if (establishment_id.includes("_")) {
+    const [userId, siret] = establishment_id.split("_")
+    return { userId: new ObjectId(userId), siret }
+  }
+  const offer = await getDbCollection("jobs_partners").findOne({ establishment_id })
+  if (offer) {
+    const { managed_by, workplace_siret } = offer
+    if (!managed_by) {
+      throw new Error(`managed_by vide pour l offre id=${offer._id}`)
+    }
+    if (!workplace_siret) {
+      throw new Error(`workplace_siret vide pour l offre id=${offer._id}`)
+    }
+    return { userId: managed_by, siret: workplace_siret }
+  }
+  throw new Error(`could not find user and siret from establishment_id=${establishment_id}`)
+}

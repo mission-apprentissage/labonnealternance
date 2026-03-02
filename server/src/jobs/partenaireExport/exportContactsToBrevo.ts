@@ -173,6 +173,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
               cfa_enseigne: "$cfa_enseigne",
               cfa_raison_sociale: "$cfa_raison_sociale",
               cfa_siret: "$cfa_siret",
+              // TODO add establishment_size to entreprises
               recruiter_establishment_size: "$recruiters.establishment_size",
             },
             job_count: {

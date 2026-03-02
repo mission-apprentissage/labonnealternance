@@ -41,7 +41,7 @@ const givenARoute = ({
   }
 }
 
-const everyResourceType: ResourceType[] = ["application", "appointment", "formationCatalogue", "job", "recruiter", "user"]
+const everyResourceType: ResourceType[] = ["application", "appointment", "formationCatalogue", "job", "user"]
 const everyAuthStrategy: AuthStrategy[] = ["access-token", "api-key", "cookie-session"]
 
 const givenATokenUser = (): AccessUserToken => {

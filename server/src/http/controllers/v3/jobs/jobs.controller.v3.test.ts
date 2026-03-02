@@ -1,14 +1,11 @@
 import { ObjectId } from "mongodb"
 import nock from "nock"
-import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
-import type { IGeoPoint, IRecruiter, IReferentielRome } from "shared/models/index"
-import { JOB_STATUS } from "shared/models/index"
+import type { IGeoPoint, IReferentielRome } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IJobOfferApiReadV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
@@ -572,28 +569,6 @@ describe("GET /v3/jobs/:id", () => {
     offer_expiration: originalCreatedAtPlus2Months,
   })
 
-  const lbaJob: IRecruiter = generateRecruiterFixture({
-    establishment_siret: "11000001500013",
-    establishment_raison_sociale: "ASSEMBLEE NATIONALE",
-    geopoint: parisFixture.centre,
-    status: RECRUITER_STATUS.ACTIF,
-    jobs: [
-      {
-        rome_code: ["M1602"],
-        rome_label: "Opérations administratives",
-        job_status: JOB_STATUS.ACTIVE,
-        job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-        job_creation_date: new Date("2021-01-01"),
-        job_expiration_date: new Date("2050-01-01"),
-      },
-    ],
-    address_detail: {
-      code_insee_localite: parisFixture.code,
-    },
-    address: parisFixture.nom,
-    phone: "0300000000",
-  })
-
   const romes: IReferentielRome[] = [
     generateReferentielRome({
       rome: {
@@ -610,7 +585,6 @@ describe("GET /v3/jobs/:id", () => {
     await getDbCollection("referentielromes").insertMany(romes)
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
-    await getDbCollection("recruiters").insertOne(lbaJob)
   })
 
   it("should return 401 if no api key provided", async () => {
@@ -729,9 +703,7 @@ describe("GET /v3/jobs/:id", () => {
     const nonExistentId = new ObjectId().toString()
 
     // Vérifier que l'ID n'existe pas en base
-    const jobExistsInJobsPartners = await getDbCollection("recruiters").findOne({ _id: new ObjectId(nonExistentId) })
     const jobExistsInRecruiters = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(nonExistentId) })
-    expect(jobExistsInJobsPartners).toBeNull()
     expect(jobExistsInRecruiters).toBeNull()
 
     // Effectuer la requête API avec un ID inexistant

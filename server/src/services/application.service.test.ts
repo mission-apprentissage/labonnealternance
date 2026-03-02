@@ -15,7 +15,6 @@ import { omit } from "lodash-es"
 import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 
 // Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/awsUtils", () => {
@@ -111,7 +110,6 @@ describe("Sending application", () => {
     )
 
     return async () => {
-      await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
     }
   })

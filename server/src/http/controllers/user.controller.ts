@@ -1,17 +1,23 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ENTREPRISE } from "shared/constants/index"
 import { CFA, OPCOS_LABEL } from "shared/constants/recruteur"
-import type { IJob, IRecruiter } from "shared/index"
+import type { IJob } from "shared/index"
 import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "@/services/formulaire.service"
+import type { Server } from "@/http/server"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { buildEstablishmentId } from "@/services/etablissement.service"
+import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -21,11 +27,7 @@ import {
   updateUserWithAccountFields,
   userAndRoleAndOrganizationToUserRecruteur,
 } from "@/services/userRecruteur.service"
-import type { Server } from "@/http/server"
 import { createSuperUser } from "@/services/userWithAccount.service"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { stopSession } from "@/common/utils/session.service"
 
 export default (server: Server) => {
   server.get(
@@ -171,28 +173,7 @@ export default (server: Server) => {
 
       if (opco && entreprise) {
         await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } })
-        // TODO FEATURE_DELETE_RECRUITERS
-        await getDbCollection("recruiters").updateMany({ establishment_siret: siret }, { $set: { opco, updatedAt: new Date() } })
-      }
-
-      return res.status(200).send({ ok: true })
-    }
-  )
-
-  server.delete(
-    "/admin/users/:userId",
-    {
-      schema: zRoutes.delete["/admin/users/:userId"],
-      onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"])],
-    },
-    async (req, res) => {
-      const { recruiterId } = req.query
-
-      await removeUser(req.params.userId)
-
-      if (recruiterId) {
-        // Seulement dans le cas d'une entreprise (non utilisé en front pour l'instant)
-        await deleteFormulaire(recruiterId)
+        await getDbCollection("jobs_partners").updateMany({ workplace_siret: siret }, { $set: { opco, updated_at: new Date() } })
       }
 
       return res.status(200).send({ ok: true })
@@ -237,7 +218,6 @@ export default (server: Server) => {
       }
 
       let jobs: IJob[] = []
-      let formulaire: IRecruiter | null = null
 
       const opcoOrAdminRole = await getDbCollection("rolemanagements").findOne({
         user_id: requestUser._id,
@@ -247,11 +227,25 @@ export default (server: Server) => {
       const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id) : null
 
       if (type === ENTREPRISE) {
-        formulaire = opco ? await getFormulaireFromUserIdWithOpco(userId, opco) : await getFormulaireFromUserId(userId)
-        jobs = formulaire?.jobs ?? []
+        if (!organization) {
+          throw internal(`inattendu: organisation vide pour role id=${role._id}`)
+        }
+        const filter: Filter<IJobsPartnersOfferPrivate> = {
+          managed_by: new ObjectId(userId),
+        }
+        if (opco) {
+          filter.workplace_opco = opco
+        }
+        const establishment_id = buildEstablishmentId(user._id, organization.siret)
+        const recruiter = await getFormulaireWithRomeDetail({ establishment_id })
+        if (recruiter?.opco === opco) {
+          jobs = recruiter.jobs
+        } else {
+          jobs = []
+        }
       }
 
-      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
 
       if (opcoOrAdminRole && getLastStatusEvent(opcoOrAdminRole.status)?.status === AccessStatus.GRANTED) {
         const userIds = userRecruteur.status.flatMap(({ user }) => (user ? [user] : []))
@@ -385,21 +379,15 @@ export default (server: Server) => {
   )
 
   server.delete(
-    "/user",
+    "/admin/users/:userId",
     {
-      schema: zRoutes.delete["/user"],
-      onRequest: [server.auth(zRoutes.delete["/user"])],
+      schema: zRoutes.delete["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"])],
     },
     async (req, res) => {
-      const { userId, recruiterId } = req.query
-
+      const { userId } = req.params
       await removeUser(userId)
-
-      if (recruiterId) {
-        await deleteFormulaire(recruiterId)
-      }
-      await stopSession(req, res)
-      return res.status(200).send({})
+      return res.status(200).send({ ok: true })
     }
   )
 }

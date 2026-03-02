@@ -9,14 +9,15 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
 
-import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations, getFormulaireFromUserIdOrError, recruiterDbProxy } from "./formulaire.service"
+import { buildEstablishmentId } from "./etablissement.service"
+import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
+import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
-import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
+import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export const modifyPermissionToUser = async (
@@ -154,8 +155,8 @@ export const getPublicUserRecruteurProps = async (
     if (!user) {
       return { error: `inattendu : user non trouvé` }
     }
-    const recruiter = await getFormulaireFromUserIdOrError(user._id.toString())
-    return { ...commonFields, establishment_siret: siret, establishment_id: recruiter.establishment_id }
+    const establishment_id = buildEstablishmentId(user._id, entreprise.siret)
+    return { ...commonFields, establishment_siret: siret, establishment_id }
   }
   if (type === OPCO) {
     return { ...commonFields, scope: parseEnumOrError(OPCOS_LABEL, mainRole.authorized_id) }
@@ -332,16 +333,9 @@ export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reas
   })
 
   if (updatedRole.authorized_type === AccessEntityType.ENTREPRISE) {
-    const formulaire = await recruiterDbProxy.findOne({
-      managed_by: updatedRole.user_id.toString(),
-      establishment_siret: organization.siret,
-    })
-    if (!formulaire) {
-      throw internal(`inattendu: recruiter pour le role id=${updatedRole._id} introuvable`)
-    }
-    await archiveFormulaire(formulaire)
+    await archiveFormulaire(user._id, siret)
   } else if (updatedRole.authorized_type === AccessEntityType.CFA) {
-    await archiveDelegatedFormulaire(organization.siret)
+    await archiveDelegatedFormulaire(user._id, organization._id)
   }
 }
 
@@ -363,9 +357,7 @@ export const activateUserRole = async ({ userId, requestedBy }: { userId: Object
      * - update expiration date to one month later
      * - send email to delegation if available
      */
-    const userFormulaire = await getFormulaireFromUserIdOrError(user._id.toString())
-    await activateRecruiter(userFormulaire._id)
-    await checkForJobActivations(userFormulaire)
+    await checkForJobActivations(updatedRole.user_id, new ObjectId(updatedRole.authorized_id))
   }
 
   await activateUser(user, requestedBy._id.toString())

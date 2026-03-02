@@ -1,10 +1,13 @@
 import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
+import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { JOB_STATUS } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 
 import dayjs from "shared/helpers/dayjs"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -19,56 +22,56 @@ import mailer from "@/services/mailer.service"
 
 export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirationDate: number /* number of days to expiration for the reminder email to be sent */) => {
   const dateRelanceFieldName = numberOfDaysToExpirationDate === 1 ? "relance_mail_expiration_J1" : numberOfDaysToExpirationDate === 7 ? "relance_mail_expiration_J7" : null
-  const additionalFilter = {}
+  const additionalFilter: Filter<IJobsPartnersOfferPrivate> = {}
   if (dateRelanceFieldName) {
-    additionalFilter[`jobs.${dateRelanceFieldName}`] = null
+    additionalFilter[dateRelanceFieldName] = null
   }
   const now = new Date()
   // TODO FEATURE_DELETE_RECRUITERS refactor
-  const recruiters = await getDbCollection("recruiters")
+  let jobs = await getDbCollection("jobs_partners")
     .find({
-      "jobs.job_status": JOB_STATUS.ACTIVE,
-      "jobs.job_expiration_date": { $gt: now },
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_expiration: { $gt: now },
       ...additionalFilter,
     })
     .toArray()
 
-  const jobsWithRecruteurs = recruiters.flatMap((recruiter) => {
-    return recruiter.jobs.flatMap((job) => {
-      const { job_status, job_expiration_date } = job
-      const remainingDays = dayjs(job_expiration_date).diff(dayjs(), "days")
-      if (job_status === JOB_STATUS.ACTIVE && remainingDays === numberOfDaysToExpirationDate && (!dateRelanceFieldName || !job[dateRelanceFieldName])) {
-        return [{ ...job, recruiter }]
-      } else {
-        return []
-      }
-    })
+  jobs = jobs.filter((job) => {
+    const { offer_status, offer_expiration } = job
+    const remainingDays = dayjs(offer_expiration).diff(dayjs(), "days")
+    return offer_status === JOB_STATUS_ENGLISH.ACTIVE && remainingDays === numberOfDaysToExpirationDate && (!dateRelanceFieldName || !job[dateRelanceFieldName])
   })
 
-  const nbOffres = jobsWithRecruteurs.length
-  if (nbOffres === 0) {
+  const nbOffres = jobs.length
+  if (nbOffres <= 0) {
     logger.info("Aucune offre à relancer aujourd'hui.")
     await notifyToSlack({ subject: `RELANCE J+${numberOfDaysToExpirationDate}`, message: `Aucune relance à effectuer.` })
     return
   }
 
-  const groupByRecruiterOffres = groupBy(jobsWithRecruteurs, (job) => job.recruiter._id.toString())
+  const groupByUserOffres = groupBy(jobs, (job) => job.managed_by)
 
-  if (nbOffres > 0) {
-    logger.info(`${nbOffres} offres relancé aujourd'hui.`)
-    await notifyToSlack({
-      subject: `RELANCE J+${numberOfDaysToExpirationDate}`,
-      message: `*${nbOffres} offres* (${Object.keys(groupByRecruiterOffres).length} formulaires) ont été relancés.`,
-    })
-  }
+  logger.info(`${nbOffres} offres relancé aujourd'hui.`)
+  await notifyToSlack({
+    subject: `RELANCE J+${numberOfDaysToExpirationDate}`,
+    message: `*${nbOffres} offres* (${Object.keys(groupByUserOffres).length} users) ont été relancés.`,
+  })
 
-  await asyncForEach(Object.values(groupByRecruiterOffres), async (jobsWithRecruiter) => {
-    const recruiter = jobsWithRecruiter[0].recruiter
-    const { establishment_raison_sociale, is_delegated, managed_by } = recruiter
+  await asyncForEach(Object.values(groupByUserOffres), async (jobsGroup) => {
+    const firstJob = jobsGroup.at(0)
     try {
+      if (!firstJob) {
+        throw new Error("inattendu: groupe vide")
+      }
+      const { managed_by } = firstJob
+      if (!managed_by) {
+        throw new Error(`managed_by vide pour l'offre avec id=${firstJob._id}`)
+      }
+      const { is_delegated, workplace_name } = firstJob
       const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
-        throw internal(`inattendu : impossible de trouver l'utilisateur gérant le formulaire id=${recruiter._id}`)
+        throw internal(`inattendu : impossible de trouver l'utilisateur gérant l'offre avec id=${firstJob._id}`)
       }
 
       const subject = `Votre offre expire ${numberOfDaysToExpirationDate === 1 ? "demain" : `dans ${numberOfDaysToExpirationDate} jours`}`
@@ -85,14 +88,14 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
           },
           last_name: sanitizeTextField(contactUser.last_name),
           first_name: sanitizeTextField(contactUser.first_name),
-          establishment_raison_sociale,
+          establishment_raison_sociale: workplace_name,
           is_delegated,
-          offres: jobsWithRecruiter.map((job) => ({
-            job_title: job.offer_title_custom,
-            rome_appellation_label: job.rome_appellation_label ?? job.rome_label,
-            job_type: job.job_type,
-            job_level_label: job.job_level_label,
-            job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
+          offres: jobsGroup.map((job) => ({
+            job_title: job.offer_title,
+            rome_appellation_label: job.offer_rome_appellation,
+            job_type: job.contract_type.join(", "),
+            job_level_label: job.offer_target_diploma?.label,
+            job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
           })),
@@ -102,20 +105,22 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
         },
       })
       if (dateRelanceFieldName) {
-        await asyncForEach(jobsWithRecruiter, async (job) => {
-          await getDbCollection("recruiters").findOneAndUpdate(
-            { "jobs._id": job._id },
-            {
-              $set: { [`jobs.$[elem].${dateRelanceFieldName}`]: now },
+        await getDbCollection("jobs_partners").updateMany(
+          {
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            _id: { $in: jobsGroup.map((job) => job._id) },
+          },
+          {
+            $set: {
+              [dateRelanceFieldName]: now,
             },
-            { arrayFilters: [{ "elem._id": job._id }] }
-          )
-        })
+          }
+        )
       }
     } catch (err) {
       const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       logger.error(err)
-      logger.error(`Script de relance formulaire: recruiter id=${recruiter._id}, erreur: ${errorMessage}`)
+      logger.error(`Script de relance formulaire: offre id=${firstJob?._id}, erreur: ${errorMessage}`)
       sentryCaptureException(err)
     }
   })

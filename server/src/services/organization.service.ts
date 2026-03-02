@@ -9,9 +9,10 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent, isEnum } from "shared/utils/index"
 
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { getEntrepriseDataFromSiret } from "./etablissement.service"
 import { autoValidateUserRoleOnCompany, sendEmailConfirmationEntreprise } from "./etablissement.service"
-import { checkForJobActivations, recruiterDbProxy } from "./formulaire.service"
+import { checkForJobActivations } from "./formulaire.service"
 import { deactivateEntreprise, setEntrepriseInError, setEntrepriseValid } from "./userRecruteur.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -92,27 +93,26 @@ export const upsertEntrepriseData = async (
   }
   await setEntrepriseValid(savedEntreprise._id)
 
-  // TODO FEATURE_DELETE_RECRUITERS
-  await getDbCollection("recruiters").updateMany(
-    { establishment_siret: siret },
+  await getDbCollection("jobs_partners").updateMany(
+    {
+      workplace_siret: siret,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    },
     {
       $set: {
-        address,
-        address_detail,
-        establishment_enseigne,
-        geo_coordinates,
-        geopoint: siretResponse.geopoint,
-        establishment_raison_sociale,
-        establishment_creation_date: siretResponse.establishment_creation_date,
-        establishment_size: siretResponse.establishment_size,
-        naf_code: siretResponse.naf_code,
-        naf_label: siretResponse.naf_label,
-        updatedAt: new Date(),
+        updated_at: new Date(),
+        workplace_brand: establishment_enseigne,
+        workplace_address_label: address ?? undefined,
+        workplace_geopoint: siretResponse.geopoint,
+        workplace_legal_name: establishment_raison_sociale,
+        workplace_size: siretResponse.establishment_size,
+        workplace_naf_code: siretResponse.naf_code,
+        workplace_naf_label: siretResponse.naf_label,
       },
     }
   )
+
   if (getLastStatusEvent(existingEntreprise?.status)?.status === EntrepriseStatus.ERROR) {
-    const recruiters = await recruiterDbProxy.find({ establishment_siret: siret }).toArray()
     const roles = await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.ENTREPRISE, authorized_id: savedEntreprise._id.toString() }).toArray()
     const rolesToUpdate = roles.filter((role) => getLastStatusEvent(role.status)?.status !== AccessStatus.DENIED)
     const users = await getDbCollection("userswithaccounts")
@@ -122,17 +122,13 @@ export const upsertEntrepriseData = async (
       const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
       const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)
       if (result.validated) {
-        const recruiter = recruiters.find((recruiter) => recruiter.managed_by.toString() === user._id.toString())
-        if (!recruiter) {
-          return
-        }
-        await checkForJobActivations(recruiter)
+        await checkForJobActivations(user._id, savedEntreprise._id)
         const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())
         const status = getLastStatusEvent(role?.status)?.status
         if (!status) {
           throw internal("inattendu : status du role non trouvé")
         }
-        await sendEmailConfirmationEntreprise(user, recruiter, status, EntrepriseStatus.VALIDE)
+        await sendEmailConfirmationEntreprise(user._id, status, EntrepriseStatus.VALIDE)
       }
     })
   }

@@ -62,18 +62,6 @@ export const ZRecruiter = ZRecruiterWritable.extend({
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>
 
-export const ZRecruiterWithApplicationCount = ZRecruiter.omit({ jobs: true })
-  .extend({
-    jobs: z.array(
-      ZJob.extend({
-        candidatures: z.number(),
-      })
-    ),
-  })
-  .openapi("Recruiter")
-
-export type IRecruiterWithApplicationCount = z.output<typeof ZRecruiterWithApplicationCount>
-
 export const ZRecruiterWithRomeDetail = ZRecruiter.omit({ jobs: true })
   .extend({
     jobs: z.array(
@@ -85,6 +73,19 @@ export const ZRecruiterWithRomeDetail = ZRecruiter.omit({ jobs: true })
   .openapi("Recruiter")
 
 export type IRecruiterWithRomeDetail = z.output<typeof ZRecruiterWithRomeDetail>
+
+export const ZRecruiterWithRomeDetailAndApplicationCount = ZRecruiter.omit({ jobs: true })
+  .extend({
+    jobs: z.array(
+      ZJob.extend({
+        candidatures: z.number(),
+        rome_detail: ZReferentielRome.nullish(),
+      })
+    ),
+  })
+  .openapi("Recruiter")
+
+export type IRecruiterWithRomeDetailAndApplicationCount = z.output<typeof ZRecruiterWithRomeDetailAndApplicationCount>
 
 export const ZAnonymizedRecruiter = ZRecruiterWritable.pick({
   establishment_id: true,

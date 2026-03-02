@@ -1,7 +1,7 @@
 import { badRequest, internal } from "@hapi/boom"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IRecruiter, IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation } from "shared"
+import type { IUserRecruteur, IUserRecruteurForAdmin, IUserStatusValidation } from "shared"
 import { entriesToTypedRecord, removeUndefinedFields, typedEntries } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { ADMIN, CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCO, OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
@@ -13,8 +13,9 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { createAuthMagicLink } from "./appLinks.service"
-import { getFormulaireFromUserIdOrError, recruiterDbProxy } from "./formulaire.service"
+import { buildEstablishmentId } from "./etablissement.service"
 import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
@@ -58,12 +59,7 @@ const userRecruteurStatusToRoleStatus = (roleStatus: ETAT_UTILISATEUR): AccessSt
 
 export const getUserRecruteurById = async (id: string | ObjectId) => getUserRecruteurByUser2Query({ _id: typeof id === "string" ? new ObjectId(id) : id })
 
-export const userAndRoleAndOrganizationToUserRecruteur = (
-  user: IUserWithAccount,
-  role: IRoleManagement,
-  organisme: ICFA | IEntreprise | null,
-  formulaire: IRecruiter | null
-): IUserRecruteur => {
+export const userAndRoleAndOrganizationToUserRecruteur = (user: IUserWithAccount, role: IRoleManagement, organisme: ICFA | IEntreprise | null): IUserRecruteur => {
   const { email, first_name, last_name, phone, last_action_date, _id } = user
   const organismeType = organisme ? ("status" in organisme ? ENTREPRISE : CFA) : null
   const oldStatus: IUserStatusValidation[] = [
@@ -103,12 +99,9 @@ export const userAndRoleAndOrganizationToUserRecruteur = (
     const { idcc, opco }: { idcc: number | null; opco: OPCOS_LABEL | null } = organisme
     entrepriseFields = { idcc, opco }
   }
-  if (formulaire) {
-    const { establishment_id } = formulaire
-    Object.assign(entrepriseFields, { establishment_id })
-  }
   const userRecruteur: IUserRecruteur = {
     ...entrepriseFields,
+    establishment_id: siret ? buildEstablishmentId(user._id, siret) : undefined,
     establishment_siret: siret,
     establishment_enseigne: enseigne,
     establishment_raison_sociale: raison_sociale,
@@ -140,8 +133,7 @@ const getUserRecruteurByUser2Query = async (user2query: Partial<IUserWithAccount
   if (!role) return null
   const organization = await getOrganizationFromRole(role)
   if (!organization) return null
-  const formulaire = role.authorized_type === AccessEntityType.ENTREPRISE ? await getFormulaireFromUserIdOrError(user._id.toString()) : null
-  return userAndRoleAndOrganizationToUserRecruteur(user, role, organization, formulaire)
+  return userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
 }
 
 /**
@@ -251,8 +243,7 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
     const emailHasChanged = oldEmail !== newEmail
     if (emailHasChanged) {
       const userExist = await getDbCollection("userswithaccounts").findOne({ email: newEmail })
-      const recruiterExist = await recruiterDbProxy.findOne({ email: newEmail })
-      if (userExist || recruiterExist) {
+      if (userExist) {
         return { error: BusinessErrorCodes.EMAIL_ALREADY_EXISTS }
       }
     }
@@ -269,11 +260,19 @@ export const updateUserWithAccountFields = async (userId: ObjectId, fields: Part
   if (!newUser) {
     throw badRequest("user not found")
   }
-  // TODO FEATURE_DELETE_RECRUITERS check for CFA
-  // await getDbCollection("recruiters").updateMany(
-  //   { managed_by: userId.toString() },
-  //   { $set: { ...removeUndefinedFields({ first_name, last_name, phone, email: newEmail }), updatedAt: new Date() } }
-  // )
+  await getDbCollection("jobs_partners").updateMany(
+    {
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      managed_by: newUser._id,
+    },
+    {
+      $set: {
+        apply_email: newUser.email,
+        apply_phone: newUser.phone,
+        updated_at: new Date(),
+      },
+    }
+  )
   return newUser
 }
 
@@ -384,8 +383,8 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
-  const recruiter = await recruiterDbProxy.findOne({ managed_by: user._id.toString() })
-  const hasJobs = Boolean(recruiter?.jobs.length)
+  const jobsCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id })
+  const hasJobs = jobsCount > 0
 
   await mailer.sendEmail({
     to: email,
@@ -473,7 +472,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
     .map((result) => {
       const { user, role } = result
       const organization = "entreprise" in result ? result.entreprise : result.cfa
-      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, null)
+      const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
       const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
       const userRecruteurForAdmin: IUserRecruteurForAdmin = {
         _id,
@@ -587,7 +586,7 @@ export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatu
     if (!organization) {
       return []
     }
-    const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, null)
+    const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization)
     const lastStatus = getLastStatusEvent(userRecruteur.status)?.status
     if (queryStatus && queryStatus !== lastStatus) {
       return []

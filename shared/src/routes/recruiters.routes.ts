@@ -12,6 +12,7 @@ import { EntrepriseEngagementSources } from "../models/referentielEngagementEntr
 import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccount } from "../models/userWithAccount.model.js"
 
+import { OPCOS_LABEL } from "../constants/recruteur.js"
 import type { IRoutesDef } from "./common.routes.js"
 
 export const ZEntrepriseInformations = z
@@ -173,7 +174,12 @@ export const zRecruiterRoutes = {
       response: {
         "200": z
           .object({
-            formulaire: ZRecruiter.optional(),
+            formulaire: z
+              .object({
+                opco: extensions.buildEnum(OPCOS_LABEL),
+                establishment_id: z.string(),
+              })
+              .optional(),
             user: ZUserWithAccount,
             token: z.string(),
             validated: z.boolean(),

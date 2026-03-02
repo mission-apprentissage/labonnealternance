@@ -1,15 +1,14 @@
 import { badRequest, conflict, internal, notFound } from "@hapi/boom"
-import { RECRUITER_STATUS } from "shared/constants/index"
-import { JOB_STATUS, zRoutes } from "shared/index"
+import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
-import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
+import { entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
 import {
   archiveFormulaireByEstablishmentId,
@@ -21,9 +20,7 @@ import {
   extendOffre,
   getFormulaireWithRomeDetail,
   getFormulaireWithRomeDetailAndApplicationCount,
-  getJob,
   getJobWithRomeDetail,
-  getOffre,
   patchOffre,
   provideOffre,
   updateCfaManagedRecruiter,
@@ -116,13 +113,12 @@ export default (server: Server) => {
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
         origin: userRecruteurOpt.scope ?? "",
-        managedBy: userRecruteurOpt._id.toString(),
       })
       if ("error" in response) {
         const { message } = response
         throw badRequest(message)
       }
-      return res.status(200).send(response)
+      return res.status(200).send({ establishment_id: response.toString() })
     }
   )
 
@@ -150,6 +146,7 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/formulaire/offre/f/:jobId"])],
     },
     async (req, res) => {
+      console.log("in controller")
       const offre = await getJobWithRomeDetail(req.params.jobId.toString())
       if (!offre) {
         throw badRequest("L'offre n'existe pas")
@@ -171,11 +168,8 @@ export default (server: Server) => {
     async (req, res) => {
       const { establishment_id } = req.params
       const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre"]).value
-      const recruiter = await getDbCollection("recruiters").findOne({ establishment_id })
-      if (!recruiter) {
-        throw badRequest("/formulaire/:establishment_id/offre - L'entreprise n'existe pas")
-      }
 
+      const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
       const {
         job_type,
         delegations,
@@ -190,7 +184,7 @@ export default (server: Server) => {
         competences_rome,
         offer_title_custom,
       } = req.body
-      const updatedFormulaire = await createJob({
+      const createdOffer = await createJob({
         job: {
           job_type,
           delegations,
@@ -206,16 +200,10 @@ export default (server: Server) => {
           offer_title_custom,
         },
         user,
-        establishment_id,
+        siret,
         source: getSourceFromCookies(req),
       })
-      const job = updatedFormulaire.jobs.at(0)
-      if (!job) {
-        throw new Error("unexpected")
-      }
-
-      const token = generateOffreToken(user, job)
-      return res.status(200).send({ recruiter: updatedFormulaire, token })
+      return res.status(200).send({ _id: createdOffer._id })
     }
   )
 
@@ -237,11 +225,8 @@ export default (server: Server) => {
       if (!user) {
         throw internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
       }
-      const recruiter = await getDbCollection("recruiters").findOne({ establishment_id })
-      if (!recruiter) {
-        throw badRequest("/formulaire/:establishment_id/offre - L'entreprise n'existe pas")
-      }
 
+      const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
       const {
         job_type,
         delegations,
@@ -257,7 +242,7 @@ export default (server: Server) => {
         competences_rome,
         offer_title_custom,
       } = req.body
-      const updatedFormulaire = await createJob({
+      const createdOffer = await createJob({
         job: {
           job_type,
           delegations,
@@ -273,16 +258,12 @@ export default (server: Server) => {
           competences_rome,
           offer_title_custom,
         },
-        establishment_id,
+        siret,
         user,
         source: getSourceFromCookies(req),
       })
-      const job = updatedFormulaire.jobs.at(0)
-      if (!job) {
-        throw new Error("unexpected")
-      }
-      const token = generateOffreToken(user, job)
-      return res.status(200).send({ recruiter: updatedFormulaire, token })
+      const token = generateOffreToken(user, createdOffer)
+      return res.status(200).send({ job_id: createdOffer._id.toString(), token })
     }
   )
 
@@ -298,8 +279,8 @@ export default (server: Server) => {
     async (req, res) => {
       const { etablissementCatalogueIds } = req.body
       const { jobId } = req.params
-      const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
-      return res.status(200).send(job)
+      await createJobDelegations({ jobId, etablissementCatalogueIds })
+      return res.status(200).send({})
     }
   )
 
@@ -312,8 +293,8 @@ export default (server: Server) => {
     async (req, res) => {
       const { etablissementCatalogueIds } = req.body
       const { jobId } = req.params
-      const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
-      return res.status(200).send(job)
+      await createJobDelegations({ jobId, etablissementCatalogueIds })
+      return res.status(200).send({})
     }
   )
 
@@ -331,7 +312,7 @@ export default (server: Server) => {
 
       validateDelegatedCompanyPhoneAndEmail(user, phone, email)
 
-      await updateCfaManagedRecruiter(establishment_id, req.body)
+      await updateCfaManagedRecruiter(user, establishment_id, req.body)
 
       return res.status(200).send({ ok: true })
     }
@@ -348,13 +329,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const recruiterOpt = await getOffre(jobId)
-      const offreOpt = recruiterOpt?.jobs.find((job) => job._id.toString() === jobId.toString())
-      if (!recruiterOpt || !offreOpt) {
-        throw notFound("offer not found")
-      }
-
-      if (recruiterOpt.status !== RECRUITER_STATUS.ACTIF || offreOpt.job_status !== JOB_STATUS.ACTIVE) {
+      const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+      if (job?.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
         throw conflict("Offer is not active")
       }
       await patchOffre(jobId, req.body)
@@ -375,7 +351,7 @@ export default (server: Server) => {
       const { jobId } = req.params
       const { siret_formateur } = req.query
 
-      const offre = await getJob(jobId.toString())
+      const offre = await getDbCollection("jobs_partners").findOne({ _id: jobId })
       if (!offre) {
         throw badRequest("L'offre n'existe pas.")
       }
@@ -428,7 +404,16 @@ export default (server: Server) => {
       if (!exists) {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-      await cancelOffreFromAdminInterface(req.params.jobId, req.body)
+      const { job_status, job_status_comment } = req.body
+      const statusMapping: Record<typeof job_status, JOB_STATUS_ENGLISH> = {
+        [JOB_STATUS.POURVUE]: JOB_STATUS_ENGLISH.POURVUE,
+        [JOB_STATUS.ANNULEE]: JOB_STATUS_ENGLISH.ANNULEE,
+      }
+      await cancelOffreFromAdminInterface({
+        job_status_comment,
+        offer_status: statusMapping[job_status],
+        id: req.params.jobId,
+      })
       return res.status(200).send({})
     }
   )
@@ -461,8 +446,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/extend"])],
     },
     async (req, res) => {
-      const job = await extendOffre(req.params.jobId)
-      return res.status(200).send(job)
+      const newExpirationDate = await extendOffre(req.params.jobId)
+      return res.status(200).send({ job_expiration_date: newExpirationDate })
     }
   )
 }

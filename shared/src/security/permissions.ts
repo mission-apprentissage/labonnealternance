@@ -51,7 +51,13 @@ export type AccessResourcePath = {
 }
 
 export type AccessRessouces = {
-  recruiter?: ReadonlyArray<
+  appointment?: ReadonlyArray<{
+    _id: AccessResourcePath
+  }>
+  formationCatalogue?: ReadonlyArray<{
+    cle_ministere_educatif: AccessResourcePath
+  }>
+  job?: ReadonlyArray<
     | {
         _id: AccessResourcePath
       }
@@ -69,15 +75,6 @@ export type AccessRessouces = {
         cfa_delegated_siret: AccessResourcePath
       }
   >
-  appointment?: ReadonlyArray<{
-    _id: AccessResourcePath
-  }>
-  formationCatalogue?: ReadonlyArray<{
-    cle_ministere_educatif: AccessResourcePath
-  }>
-  job?: ReadonlyArray<{
-    _id: AccessResourcePath
-  }>
   application?: ReadonlyArray<{
     _id: AccessResourcePath
   }>
@@ -92,7 +89,6 @@ export type AccessRessouces = {
         siret: AccessResourcePath
       }
   >
-  jobPartner?: ReadonlyArray<{ _id: AccessResourcePath }>
 }
 
 export type UserWithType<T, V> = Readonly<{

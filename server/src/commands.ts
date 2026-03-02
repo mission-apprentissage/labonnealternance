@@ -14,7 +14,6 @@ import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simpleJobDefinitions"
 import { bindStreamProcessorServer } from "./http/StreamProcessorServer"
-import { startRecruiterChangeStream } from "./services/formulaire.service"
 
 async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
   logger.info("Setup job processor")
@@ -23,13 +22,6 @@ async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: bo
     logger.info(`Process jobs queue - start`)
     await startJobProcessor(signal)
     logger.info(`Processor shut down`)
-  }
-}
-
-async function setupAndStartStreamProcessor(signal: AbortSignal, shouldStartWorker: boolean) {
-  if (shouldStartWorker) {
-    logger.info("Setup stream processor")
-    await startRecruiterChangeStream(signal)
   }
 }
 
@@ -121,7 +113,6 @@ program
           })
         }),
         setupAndStartProcessor(signal, withProcessor),
-        setupAndStartStreamProcessor(signal, withProcessor),
       ])
     } catch (err) {
       logger.error(err)
@@ -207,7 +198,6 @@ program
             }
           })
         }),
-        setupAndStartStreamProcessor(signal, true),
       ])
     } catch (err) {
       logger.error(err)

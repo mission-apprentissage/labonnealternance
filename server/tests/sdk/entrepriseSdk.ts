@@ -17,6 +17,8 @@ export type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creati
 export type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
 
 export type OfferCreationResponse = z.output<(typeof zRoutes.post)["/formulaire/:establishment_id/offre"]["response"]["200"]>
+export type GetOfferResponse = z.output<(typeof zRoutes.get)["/formulaire/offre/f/:jobId"]["response"]["200"]>
+
 export type OfferUpdateBody = z.output<(typeof zRoutes.put)["/formulaire/offre/:jobId"]["body"]>
 
 export const entrepriseSdk = (httpClient: TestHttpClient) => ({
@@ -47,6 +49,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
     return response
   },
   async createAndGetConnectedUser({ validated = true }: { validated?: boolean } = {}) {
+    const opco = OPCOS_LABEL.CONSTRUCTYS
     const creationResponse = await this.create({
       email: "email@email.com",
       first_name: "John",
@@ -54,7 +57,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
       phone: "0612345678",
       establishment_siret: "42476141900045",
       origin: "lba",
-      opco: OPCOS_LABEL.CONSTRUCTYS,
+      opco,
       idcc: "3248",
       type: ENTREPRISE,
     })
@@ -65,7 +68,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
     }
 
     const { cookies } = await getConnectedInfos(user.email)
-    return { cookies, formulaire, user }
+    return { cookies, formulaire, user, opco }
   },
   async createOffer({ establishment_id, cookies, job }: { establishment_id: string; cookies: Record<string, string>; job: IJobCreate }) {
     const response = await httpClient().inject({
@@ -128,6 +131,14 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
     const response = await httpClient().inject({
       method: "PUT",
       path: `/api/formulaire/offre/${jobId}/extend`,
+      cookies,
+    })
+    return response
+  },
+  async getOffer({ jobId, cookies }: { jobId: string; cookies: Record<string, string> }) {
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/formulaire/offre/f/${jobId}`,
       cookies,
     })
     return response

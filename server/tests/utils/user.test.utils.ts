@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto"
-
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
@@ -161,45 +159,6 @@ export async function createCredentialTest(data: Partial<ICredential>) {
   }
   await getDbCollection("credentials").insertOne(u)
   return u
-}
-
-export async function saveRecruiter(data: Partial<IRecruiter>) {
-  const recruiter: IRecruiter = {
-    _id: new ObjectId(),
-    distance: 10,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    establishment_id: "establishment_id",
-    establishment_raison_sociale: "establishment_raison_sociale",
-    establishment_enseigne: "establishment_enseigne",
-    establishment_siret: "establishment_siret",
-    address_detail: "address_detail",
-    address: "address",
-    geo_coordinates: "geo_coordinates",
-    geopoint: {
-      type: "Point",
-      coordinates: [41, 10],
-    },
-    is_delegated: false,
-    cfa_delegated_siret: "cfa_delegated_siret",
-    last_name: "last_name",
-    first_name: "first_name",
-    phone: "phone",
-    email: `${randomUUID()}@email.fr`,
-    jobs: [],
-    origin: "origin",
-    opco: OPCOS_LABEL.MOBILITE,
-    idcc: 1000,
-    status: RECRUITER_STATUS.ACTIF,
-    naf_code: "naf_code",
-    naf_label: "naf_label",
-    establishment_size: "establishment_size",
-    establishment_creation_date: new Date(),
-    managed_by: new ObjectId().toString(),
-    ...data,
-  }
-  await getDbCollection("recruiters").insertOne(recruiter)
-  return recruiter
 }
 
 export async function createApplicationTest(data: Partial<IApplication>) {

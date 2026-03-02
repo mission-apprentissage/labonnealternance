@@ -1,35 +1,15 @@
-import { JOB_STATUS } from "shared"
-import { RECRUITER_STATUS } from "shared/constants/recruteur"
-
+import type { ICacheInfosSiret, IEntreprise } from "shared"
+import { EntrepriseStatus, getLastStatusEvent } from "shared"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const analyzeClosedCompanies = async (): Promise<void> => {
-  // TODO FEATURE_DELETE_RECRUITERS
-  console.info("start")
-  const activeRecruiters = await getDbCollection("recruiters")
+  console.info("start analyzeClosedCompanies")
+  const results = (await getDbCollection("entreprises")
     .aggregate([
-      {
-        $match: {
-          status: RECRUITER_STATUS.ACTIF,
-          "jobs.job_status": JOB_STATUS.ACTIVE,
-        },
-      },
-    ])
-    .toArray()
-  console.info("active recruiters", activeRecruiters.length)
-
-  const results = await getDbCollection("recruiters")
-    .aggregate([
-      {
-        $match: {
-          status: RECRUITER_STATUS.ACTIF,
-          "jobs.job_status": JOB_STATUS.ACTIVE,
-        },
-      },
       {
         $lookup: {
           from: "cache_siret",
-          localField: "establishment_siret",
+          localField: "siret",
           foreignField: "siret",
           as: "cache",
         },
@@ -43,12 +23,14 @@ export const analyzeClosedCompanies = async (): Promise<void> => {
         $project: {
           "cache.data.data.etat_administratif": 1,
           status: 1,
-          establishment_siret: 1,
+          siret: 1,
         },
       },
     ])
-    .toArray()
+    .toArray()) as (IEntreprise & { cache: ICacheInfosSiret })[]
   console.info("recruteurs avec problemes", results.length)
-  const flatResults = results.map(({ establishment_siret, cache }) => ({ siret: establishment_siret, status: cache?.[0]?.data?.data?.etat_administratif }))
+  const flatResults = results
+    .filter((entreprise) => getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.VALIDE)
+    .map(({ siret, cache }) => ({ siret, status: cache?.[0]?.data?.data?.etat_administratif }))
   console.info(flatResults)
 }
