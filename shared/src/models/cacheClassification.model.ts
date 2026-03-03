@@ -31,7 +31,6 @@ export const ZClassificationLabBatchResponse = z
     id: z.string(),
     label: z.enum(["publish", "unpublish"]),
     scores: ZClassitifationJobsPartners.shape.scores,
-    text: z.string(),
     model: z.string(),
   })
   .array()

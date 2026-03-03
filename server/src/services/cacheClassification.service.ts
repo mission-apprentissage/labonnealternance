@@ -36,7 +36,10 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
 
   const classificationPayload = notFoundJobs.map((job) => ({
     id: job.partner_job_id,
-    text: [job.workplace_name, job.workplace_description, job.offer_title, job.offer_description].filter(Boolean).join("\n"),
+    workplace_name: job.workplace_name,
+    workplace_description: job.workplace_description,
+    offer_title: job.offer_title,
+    offer_description: job.offer_description,
   }))
 
   const classificationsFromLab = await getLabClassificationBatch(classificationPayload)

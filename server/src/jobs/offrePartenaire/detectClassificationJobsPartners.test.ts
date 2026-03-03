@@ -27,7 +27,6 @@ describe("detectClassificationJobsPartners", () => {
         label: "publish",
         model: "model",
         scores: { publish: 0.6, unpublish: 0.4 },
-        text: "Software Engineer",
       },
     ]
     nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, apiResponse)
@@ -130,7 +129,6 @@ describe("detectClassificationJobsPartners", () => {
         label: "unpublish",
         model: "model",
         scores: { publish: 0.3, unpublish: 0.7 },
-        text: "Software Engineer",
       },
     ]
     nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, unpublishResponse)
