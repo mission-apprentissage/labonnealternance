@@ -87,9 +87,12 @@ describe("createJob", () => {
     expect.soft(result.jobs.length).toEqual(1)
     expect.soft(omit(result.jobs[0], "job_creation_date", "job_update_date", "_id", "job_expiration_date")).toMatchSnapshot()
 
-    await new Promise((r) => setTimeout(r, 200))
-
-    const partnerJob = await getDbCollection("jobs_partners").findOne({ partner_job_id: result.jobs[0]._id.toString() })
+    let partnerJob = null
+    const deadline = Date.now() + 5_000
+    while (partnerJob === null && Date.now() < deadline) {
+      partnerJob = await getDbCollection("jobs_partners").findOne({ partner_job_id: result.jobs[0]._id.toString() })
+      if (partnerJob === null) await new Promise((r) => setTimeout(r, 50))
+    }
     expect.soft(partnerJob?.offer_title).toEqual(job.rome_appellation_label)
     expect.soft(omit(partnerJob, "_id", "created_at", "offer_creation", "partner_job_id", "updated_at", "offer_expiration", "lba_url")).toMatchSnapshot()
 

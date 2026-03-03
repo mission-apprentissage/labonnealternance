@@ -1,6 +1,8 @@
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
+import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
 import type { zRoutes } from "shared/routes/index"
@@ -37,9 +39,23 @@ describe("POST /etablissement/creation", () => {
 
     const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
 
+    const mockGeocoding = nock("https://data.geopf.fr:443/geocodage")
+      .persist()
+      .get("/search")
+      .query(true)
+      .reply(200, {
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: generateFeaturePropertyFixture({ city: parisFixture.nom, postcode: parisFixture.codesPostaux[0], name: "20 AVENUE DE SEGUR" }),
+          },
+        ],
+      })
+
     return async () => {
       mockEntreprise.persist(false)
       mockCfa.persist(false)
+      mockGeocoding.persist(false)
       await getDbCollection("recruiters").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()
