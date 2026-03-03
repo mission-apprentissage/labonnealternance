@@ -508,8 +508,8 @@ describe("checkMaxApplicationCount", () => {
     })
     await getDbCollection("jobs_partners").insertOne(partnerJob)
 
-    // 80 applications = exactly at the limit (> 80 is false)
-    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ company_siret: "12345678901234" }))
+    // 79 existing + current submission = 80 total, condition (79+1) > 80 is false
+    const applications = Array.from({ length: 79 }, () => generateApplicationFixture({ company_siret: "12345678901234" }))
     await getDbCollection("applications").insertMany(applications)
 
     await sendApplicationV2({
@@ -533,8 +533,8 @@ describe("checkMaxApplicationCount", () => {
     })
     await getDbCollection("jobs_partners").insertOne(partnerJob)
 
-    // 81 applications exceeds the limit of 80
-    const applications = Array.from({ length: 81 }, () => generateApplicationFixture({ company_siret: "98765432109876" }))
+    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
+    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ company_siret: "98765432109876" }))
     await getDbCollection("applications").insertMany(applications)
 
     await sendApplicationV2({
@@ -558,7 +558,8 @@ describe("checkMaxApplicationCount", () => {
     })
     await getDbCollection("jobs_partners").insertOne(partnerJob)
 
-    const applications = Array.from({ length: 81 }, () => generateApplicationFixture({ company_siret: "11111111111111" }))
+    // count is by job_id for OFFRES_EMPLOI_PARTENAIRES (not company_siret)
+    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: new ObjectId("6081289803569600282e0032") }))
     await getDbCollection("applications").insertMany(applications)
 
     await sendApplicationV2({
@@ -598,7 +599,8 @@ describe("checkMaxApplicationCount", () => {
       })
     )
 
-    const applications = Array.from({ length: 81 }, () => generateApplicationFixture({ job_id: jobId }))
+    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
+    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId }))
     await getDbCollection("applications").insertMany(applications)
 
     await sendApplicationV2({

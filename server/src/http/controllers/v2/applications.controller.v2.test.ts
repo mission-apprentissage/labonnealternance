@@ -395,8 +395,8 @@ describe("POST /v2/application", () => {
   })
 
   it("Should mark offer as ANNULEE in jobs_partners when application count exceeds limit", async () => {
-    // 81 pre-existing applications for the recruteur's siret exceeds the limit of 80
-    const preExistingApplications = Array.from({ length: 81 }, () => generateApplicationFixture({ company_siret: recruteur.workplace_siret }))
+    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
+    const preExistingApplications = Array.from({ length: 80 }, () => generateApplicationFixture({ company_siret: recruteur.workplace_siret }))
     await getDbCollection("applications").insertMany(preExistingApplications)
 
     const body: IApplicationApiPublic = {
