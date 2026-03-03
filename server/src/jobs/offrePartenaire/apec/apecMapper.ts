@@ -12,15 +12,13 @@ import { getCodePostalFromInsee } from "@/services/referentiel/commune/commune.r
 export const ZApecJob = z.object({
   Reference_apec: z.string(),
   Date_parution: z.string().transform((val, ctx) => {
-    // format : "DD/MM/YYYY HH:mm:ss"
-    const [datePart, timePart] = val.split(" ")
-    const [day, month, year] = datePart.split("/")
-    const date = new Date(`${year}-${month}-${day}T${timePart}`)
-    if (isNaN(date.getTime())) {
+    // format : "DD/MM/YYYY HH:mm:ss" in Europe/Paris timezone
+    const parsed = dayjs.tz(val, "DD/MM/YYYY HH:mm:ss", "Europe/Paris")
+    if (!parsed.isValid()) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: `Invalid date: ${val}` })
       return z.NEVER
     }
-    return date
+    return parsed.toDate()
   }),
   Teletravail: z.string().nullish(),
   Intitule: z.string(),
@@ -83,7 +81,7 @@ export const apecJobToJobsPartners = async (job: IApecJob): Promise<IComputedJob
     contract_remote: getContratRemote(job.Teletravail),
     offer_title: job.Intitule,
     offer_description: job.Texte_offre,
-    offer_creation: job.Date_parution,
+    offer_creation: dayjs(job.Date_parution).tz().toDate(),
     offer_expiration: dayjs(job.Date_parution).tz().add(2, "months").toDate(),
     offer_opening_count: toInteger(job.Nombre_postes),
     offer_multicast: false,
