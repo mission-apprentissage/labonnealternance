@@ -32,10 +32,10 @@ describe("POST /etablissement/creation", () => {
 
     const mockEntreprise = nock("https://entreprise.api.gouv.fr/v3/insee")
       .persist()
-      .get(new RegExp("/sirene/etablissements/diffusibles/", "g"))
+      .get(new RegExp("/sirene/etablissements/diffusibles/"))
       .reply(200, apiEntrepriseEtablissementFixture.dinum)
 
-    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+", "g")).reply(200, apiReferentielCatalogueFixture)
+    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
 
     return async () => {
       mockEntreprise.persist(false)
