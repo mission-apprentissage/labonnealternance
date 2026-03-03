@@ -12,7 +12,7 @@ export const detectClassificationJobsPartners = async ({ addedMatchFilter, shoul
     job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
     sourceFields: ["workplace_description", "workplace_name", "offer_description", "offer_title", "partner_job_id", "partner_label"],
     filledFields,
-    groupSize: 100,
+    groupSize: 50,
     addedMatchFilter,
     getData: async (documents) => {
       const payload = documents.map((document) => {
