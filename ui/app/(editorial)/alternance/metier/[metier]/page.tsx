@@ -89,7 +89,7 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
 
   return {
     title: `Alternance en ${data.metier} : ${jobCount} Offres, ${data.salaire.salaire_brut_moyen}€/mois | La bonne alternance`,
-    description: `Trouvez votre alternance ${data.metier} parmi ${jobCount} offres. Salaire moyen ${data.salaire.salaire_brut_moyen}€ brut/mois. ${listeEntreprises} recrutent. Formations de ${firstFormation.title} à ${lastFormation.title}.`,
+    description: `Trouvez votre alternance ${data.metier} parmi ${jobCount} offres. Salaire moyen ${data.salaire.salaire_brut_moyen}€ brut/mois. ${listeEntreprises} recrutent. Formations de ${lastFormation.title} à ${firstFormation.title}.`,
   }
 }
 
