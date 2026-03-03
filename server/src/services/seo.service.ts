@@ -347,6 +347,7 @@ const getFormationsForMetier = async (romes: string[]) => {
         : null
     )
     .filter((formation) => formation !== null)
+    .sort((a, b) => parseInt(a.niveau) - parseInt(b.niveau))
 }
 
 export const updateSeoMetierJobCounts = async () => {
