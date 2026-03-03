@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import { removeAccents } from "shared"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
@@ -8,7 +9,7 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import type { IEntreprise, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { createJob } from "./formulaire.service"
+import { createJob, getCompetencesRomeFromPartnerJob } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
@@ -112,5 +113,39 @@ describe("createJob", () => {
     await expect
       .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
+  })
+})
+
+describe("getCompetencesRomeFromPartnerJob", () => {
+  it("should reconstruct competences_rome from partner fields and rome_detail", () => {
+    const referentielRome = generateReferentielRome()
+    const selectedSavoirEtre = referentielRome.competences.savoir_etre_professionnel?.at(0)
+    const selectedSavoirFaireCategory = referentielRome.competences.savoir_faire?.at(0)
+    const selectedSavoirFaireItem = selectedSavoirFaireCategory?.items.at(0)
+    const selectedSavoirsCategory = referentielRome.competences.savoirs?.at(0)
+    const selectedSavoirsItem = selectedSavoirsCategory?.items.at(0)
+
+    expect.soft(selectedSavoirEtre).toBeDefined()
+    expect.soft(selectedSavoirFaireCategory).toBeDefined()
+    expect.soft(selectedSavoirFaireItem).toBeDefined()
+    expect.soft(selectedSavoirsCategory).toBeDefined()
+    expect.soft(selectedSavoirsItem).toBeDefined()
+
+    const partnerJob = {
+      ...generateJobsPartnersOfferPrivate({
+        offer_desired_skills: selectedSavoirEtre ? [selectedSavoirEtre.libelle] : [],
+        offer_to_be_acquired_skills: selectedSavoirFaireCategory && selectedSavoirFaireItem ? [`${selectedSavoirFaireCategory.libelle}\t${selectedSavoirFaireItem.libelle}`] : [],
+        offer_to_be_acquired_knowledge: selectedSavoirsCategory && selectedSavoirsItem ? [`${selectedSavoirsCategory.libelle}\t${selectedSavoirsItem.libelle}`] : [],
+      }),
+      rome_detail: referentielRome,
+    }
+
+    const competencesRome = getCompetencesRomeFromPartnerJob(partnerJob)
+
+    expect(competencesRome).toEqual({
+      savoir_etre_professionnel: [selectedSavoirEtre],
+      savoir_faire: [{ libelle: selectedSavoirFaireCategory!.libelle, items: [selectedSavoirFaireItem] }],
+      savoirs: [{ libelle: selectedSavoirsCategory!.libelle, items: [selectedSavoirsItem] }],
+    })
   })
 })

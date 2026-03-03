@@ -223,6 +223,24 @@ const obfuscateUsersWithAccounts = async () => {
   await keepSpecificUser("opco@beta.gouv.fr", AccessEntityType.OPCO)
 }
 
+const obfuscateEntreprisesManagedByCfa = async () => {
+  logger.info(`obfuscating entreprise_managed_by_cfa`)
+  const entreprises = getDbCollection("entreprise_managed_by_cfa").find({})
+  for await (const entreprise of entreprises) {
+    await getDbCollection("userswithaccounts").findOneAndUpdate(
+      { _id: entreprise._id },
+      {
+        $set: {
+          email: getFakeEmail(),
+          phone: "0601010106",
+          last_name: "nom_famille",
+          first_name: "prenom",
+        },
+      }
+    )
+  }
+}
+
 export async function obfuscateCollections(): Promise<void> {
   if (config.env === "production") return
 
@@ -284,5 +302,5 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
   await obfuscatePartnerJobs()
-  // TODO FEATURE_DELETE_RECRUITERS obfuscate entreprises gérées par CFA
+  await obfuscateEntreprisesManagedByCfa()
 }

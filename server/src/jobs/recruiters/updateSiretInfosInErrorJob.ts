@@ -73,7 +73,6 @@ export const warnDeactivatedRecruteur = async (user: IUserWithAccount, entrepris
 }
 
 const updateRecruteursSiretInfosInError = async () => {
-  // TODO FEATURE_DELETE_RECRUITERS
   let entreprisesManagedByCfa = (await getDbCollection("entreprise_managed_by_cfa")
     .aggregate([
       {

@@ -31,7 +31,6 @@ type JobForMER = Pick<
 > & { user: IUserWithAccount }
 
 export const sendMiseEnRelation = async () => {
-  // TODO FEATURE_DELETE_RECRUITERS refactor
   const fromDate = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000)
   const toDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
 

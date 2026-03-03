@@ -58,7 +58,7 @@ describe("formulaire.controller", () => {
   })
 
   describe("mise à jour", () => {
-    it.only("met à jour une offre active", async () => {
+    it("met à jour une offre active", async () => {
       // given
       const { cookies: entrepriseCookies, formulaire, opco } = await entrepriseSdkInstance.createAndGetConnectedUser()
 

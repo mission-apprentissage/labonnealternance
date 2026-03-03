@@ -862,6 +862,87 @@ function getSkillsFromRome(skills, romeDetailsSkills): string[] {
   return usedSkills.flatMap((skill) => skill.items.map((subSkill) => `${skill.libelle}\t${subSkill.libelle}`))
 }
 
+function getStringBefore(text: string, separator: string): readonly [string, string] | null {
+  const index = text.indexOf(separator)
+  if (index === -1) {
+    return null
+  }
+  return [text.substring(0, index), text.substring(index + separator.length)] as const
+}
+
+export function getCompetencesRomeFromPartnerJob(jobPartner: IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null }): IJob["competences_rome"] {
+  const competences = jobPartner.rome_detail?.competences
+  if (!competences) {
+    return null
+  }
+
+  const desiredSkills = new Set(jobPartner.offer_desired_skills)
+
+  const selectedSavoirFaireByCategory = new Map<string, Set<string>>()
+  for (const value of jobPartner.offer_to_be_acquired_skills) {
+    const splitResult = getStringBefore(value, "\t")
+    if (!splitResult) {
+      continue
+    }
+    const [categoryLabel, itemLabel] = splitResult
+    const itemsByCategory = selectedSavoirFaireByCategory.get(categoryLabel) ?? new Set<string>()
+    itemsByCategory.add(itemLabel)
+    selectedSavoirFaireByCategory.set(categoryLabel, itemsByCategory)
+  }
+
+  const selectedSavoirsByCategory = new Map<string, Set<string>>()
+  for (const value of jobPartner.offer_to_be_acquired_knowledge ?? []) {
+    const splitResult = getStringBefore(value, "\t")
+    if (!splitResult) {
+      continue
+    }
+    const [categoryLabel, itemLabel] = splitResult
+    const itemsByCategory = selectedSavoirsByCategory.get(categoryLabel) ?? new Set<string>()
+    itemsByCategory.add(itemLabel)
+    selectedSavoirsByCategory.set(categoryLabel, itemsByCategory)
+  }
+
+  const savoirEtreProfessionnel = (competences.savoir_etre_professionnel ?? []).filter((item) => desiredSkills.has(item.libelle))
+
+  const savoirFaire = (competences.savoir_faire ?? [])
+    .map((category) => {
+      const selectedItems = selectedSavoirFaireByCategory.get(category.libelle)
+      if (!selectedItems) {
+        return null
+      }
+
+      const items = category.items.filter((item) => selectedItems.has(item.libelle))
+      if (!items.length) {
+        return null
+      }
+
+      return { ...category, items }
+    })
+    .filter((value): value is NonNullable<IReferentielRome["competences"]["savoir_faire"]>[number] => Boolean(value))
+
+  const savoirs = (competences.savoirs ?? [])
+    .map((category) => {
+      const selectedItems = selectedSavoirsByCategory.get(category.libelle)
+      if (!selectedItems) {
+        return null
+      }
+
+      const items = category.items.filter((item) => selectedItems.has(item.libelle))
+      if (!items.length) {
+        return null
+      }
+
+      return { ...category, items }
+    })
+    .filter((value): value is NonNullable<IReferentielRome["competences"]["savoirs"]>[number] => Boolean(value))
+
+  return {
+    savoir_etre_professionnel: savoirEtreProfessionnel,
+    savoir_faire: savoirFaire,
+    savoirs,
+  }
+}
+
 // const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
 //   const now = new Date()
 
@@ -1166,8 +1247,7 @@ function jobPartnersToRecruiter(
       custom_job_title: null,
       stats_detail_view: jobPartner.stats_detail_view,
       stats_search_view: jobPartner.stats_search_view,
-      // TODO FEATURE_DELETE_RECRUITERS
-      competences_rome: null,
+      competences_rome: getCompetencesRomeFromPartnerJob(jobPartner),
       mer_sent: jobPartner.mer_sent,
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
