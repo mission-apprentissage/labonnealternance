@@ -9,7 +9,7 @@ import config from "@/config"
 const client = getApiClient({ baseURL: config.labonnealternanceLab.baseUrl })
 // const client = getApiClient({ baseURL: "http://localhost:8000" })
 
-export const getLabClassification = async (job: string): Promise<IClassificationLabResponse> => {
+export const getLabClassification = async (job: IGetLabClassificationBatch[0]): Promise<IClassificationLabResponse> => {
   try {
     const response = await client.post("/score", { text: job })
     const validation = ZClassificationLabResponse.safeParse(response.data)
@@ -25,7 +25,10 @@ export const getLabClassification = async (job: string): Promise<IClassification
 
 export type IGetLabClassificationBatch = {
   id: string
-  text: string
+  workplace_name?: string
+  workplace_description?: string
+  offer_title?: string
+  offer_description?: string
 }[]
 
 export const getLabClassificationBatch = async (jobs: IGetLabClassificationBatch): Promise<IClassificationLabBatchResponse> => {

@@ -40,9 +40,9 @@ export default function PrintableJobPage() {
   }
 
   return (
-    <Box component="main" role="main" sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("3w"), px: fr.spacing("3w") }}>
+    <Box component="main" role="main" sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("6v"), px: fr.spacing("6v") }}>
       <Image style={{ margin: "auto" }} src="/images/espace_pro/images/illustration-impression.svg" width="209" height="95" alt="" aria-hidden={true} />
-      <Typography sx={{ mx: "auto", fontSize: "24px", mt: fr.spacing("4w") }}>{offre.company.name}</Typography>
+      <Typography sx={{ mx: "auto", fontSize: "24px", mt: fr.spacing("8v") }}>{offre.company.name}</Typography>
       <Typography
         sx={{
           mx: "auto",
@@ -56,7 +56,7 @@ export default function PrintableJobPage() {
         sx={{
           mx: "auto",
           fontSize: "32px",
-          mt: 7,
+          mt: fr.spacing("14v"),
           color: "#417DC4",
           fontWeight: 700,
           ...printExactColor,
@@ -108,7 +108,7 @@ export default function PrintableJobPage() {
       )}
       <Typography
         sx={{
-          mt: 6,
+          mt: fr.spacing("12v"),
           fontWeight: 700,
           mx: "auto",
           color: "#161616",
@@ -130,7 +130,7 @@ export default function PrintableJobPage() {
       />
       <Typography
         sx={{
-          mt: 6,
+          mt: fr.spacing("12v"),
           fontSize: "12px",
           mx: "auto",
           color: "#161616",

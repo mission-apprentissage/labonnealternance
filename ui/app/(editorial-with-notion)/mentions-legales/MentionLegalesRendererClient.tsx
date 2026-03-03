@@ -20,15 +20,15 @@ export default function MentionLegalesRendererClient({ mentionsLegales }: { ment
       <DefaultContainer>
         <Box
           sx={{
-            p: { xs: fr.spacing("2w"), md: fr.spacing("5w") },
-            marginBottom: fr.spacing("5w"),
+            p: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
+            marginBottom: fr.spacing("10v"),
             borderRadius: "10px",
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
           <Grid container spacing={0}>
             <Grid size={{ xs: 12, md: 5 }}>
-              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("1w"), color: fr.colors.decisions.text.default.info.default }}>
+              <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("2v"), color: fr.colors.decisions.text.default.info.default }}>
                 Mentions légales
               </Typography>
               <Box

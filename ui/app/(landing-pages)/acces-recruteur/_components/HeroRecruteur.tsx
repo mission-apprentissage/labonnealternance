@@ -13,12 +13,12 @@ import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActi
 
 export const HeroRecruteur = () => {
   return (
-    <Grid container spacing={fr.spacing("8w")} sx={{ alignItems: "center", justifyContent: "center" }}>
+    <Grid container spacing={fr.spacing("16v")} sx={{ alignItems: "center", justifyContent: "center" }}>
       <Grid>
         <Entreprise />
       </Grid>
       <Grid>
-        <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box sx={{ p: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <Grid container spacing={10} sx={{ alignItems: "center", justifyContent: "center" }}>
             <PostezVotreOffre />
             <OffresGratuites />
@@ -27,7 +27,7 @@ export const HeroRecruteur = () => {
         </Box>
       </Grid>
       <Grid>
-        <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
+        <Box sx={{ p: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
           <GerezOffres />
         </Box>
       </Grid>
@@ -48,7 +48,7 @@ export const HeroRecruteur = () => {
         </Box>
       </Grid>
       <Grid>
-        <Box sx={{ p: fr.spacing("5w"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
+        <Box sx={{ p: fr.spacing("10v"), borderRadius: "10px", backgroundColor: fr.colors.decisions.background.alt.blueFrance.default }}>
           <FollowLinkedIn />
         </Box>
       </Grid>

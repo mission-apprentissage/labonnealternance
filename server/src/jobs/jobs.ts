@@ -38,7 +38,7 @@ import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtabli
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
+import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
@@ -239,6 +239,11 @@ export async function setupJobProcessor() {
           "Rappel aux établissements que le premium est activé (Parcoursup)": {
             cron_string: "0 6 8 1 *",
             handler: async () => premiumActivatedReminder(),
+            tag: "main",
+          },
+          "Rappel aux établissements que la prise de rdv est activée (Affelnet)": {
+            cron_string: "0 6 23 3 *",
+            handler: async () => premiumActivatedReminderAffelnet(),
             tag: "main",
           },
           "Creation de la collection rolemanagement360": {

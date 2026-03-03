@@ -29,15 +29,17 @@ describe("getLabClassification - get batch classification", () => {
   }
   const apiPayload = {
     id: jobFixture.partner_job_id,
-    text: [jobFixture.workplace_name, jobFixture.workplace_description, jobFixture.offer_title, jobFixture.offer_description].filter(Boolean).join("\n"),
+    workplace_name: jobFixture.workplace_name ?? undefined,
+    workplace_description: jobFixture.workplace_description ?? undefined,
+    offer_title: jobFixture.offer_title ?? undefined,
+    offer_description: jobFixture.offer_description ?? undefined,
   }
   const apiResponse: IClassificationLabBatchResponse = [
     {
       id: jobFixture.partner_job_id,
-      label: "cfa",
+      label: "unpublish",
       model: "model",
-      scores: { cfa: 0.5, entreprise: 0.4, entreprise_cfa: 0.2 },
-      text: "Software Engineer",
+      scores: { publish: 0.4, unpublish: 0.5 },
     },
   ]
 

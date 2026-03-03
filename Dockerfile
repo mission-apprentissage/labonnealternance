@@ -13,7 +13,7 @@ RUN yarn install --immutable
 
 COPY . .
 
-RUN yarn typecheck
+RUN yarn --cwd shared build
 
 FROM builder_root AS root
 WORKDIR /app
@@ -25,9 +25,6 @@ WORKDIR /app
 # Rebuild the source code only when needed
 FROM root AS builder_server
 WORKDIR /app
-
-COPY ./server ./server
-COPY ./shared ./shared
 
 RUN yarn --cwd server build
 
@@ -51,10 +48,8 @@ ARG COMMIT_HASH
 ENV COMMIT_HASH=$COMMIT_HASH
 
 COPY --from=builder_server /app/server ./server
-COPY --from=builder_server /app/shared ./shared
 COPY --from=builder_server /app/node_modules ./node_modules
 COPY --from=builder_server /app/server/node_modules ./server/node_modules
-COPY --from=builder_server /app/shared/node_modules ./shared/node_modules
 COPY ./server/static /app/server/static
 
 EXPOSE 5000
@@ -86,6 +81,7 @@ ENV __RRWEB_EXCLUDE_IFRAME__=true
 ENV __RRWEB_EXCLUDE_SHADOW_DOM__=true
 ENV __SENTRY_EXCLUDE_REPLAY_WORKER__=true
 
+ENV NODE_OPTIONS="--max-old-space-size=3072"
 RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
 
 # Production image, copy all the files and run next

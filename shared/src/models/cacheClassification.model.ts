@@ -11,16 +11,15 @@ const ZClassitifationJobsPartners = z.object({
   partner_label: z.string(),
   classification: z.string(),
   scores: z.object({
-    cfa: z.number(),
-    entreprise: z.number(),
-    entreprise_cfa: z.number(),
+    publish: z.number(),
+    unpublish: z.number(),
   }),
-  human_verification: z.enum(["cfa", "entreprise", "entreprise_cfa"]).nullish(),
+  human_verification: z.enum(["publish", "unpublish"]).nullish(),
 })
 export type IClassificationJobsPartners = z.output<typeof ZClassitifationJobsPartners>
 
 export const ZClassificationLabResponse = z.object({
-  label: z.enum(["cfa", "entreprise", "entreprise_cfa"]),
+  label: z.enum(["publish", "unpublish"]),
   scores: ZClassitifationJobsPartners.shape.scores,
   text: z.string(),
   model: z.string(),
@@ -30,9 +29,8 @@ export type IClassificationLabResponse = z.output<typeof ZClassificationLabRespo
 export const ZClassificationLabBatchResponse = z
   .object({
     id: z.string(),
-    label: z.enum(["cfa", "entreprise", "entreprise_cfa"]),
+    label: z.enum(["publish", "unpublish"]),
     scores: ZClassitifationJobsPartners.shape.scores,
-    text: z.string(),
     model: z.string(),
   })
   .array()

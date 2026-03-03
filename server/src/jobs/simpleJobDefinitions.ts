@@ -61,7 +61,7 @@ import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEta
 import { inviteEtablissementParcoursupToPremium, inviteEtablissementParcoursupToPremiumBypassDate } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
+import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
@@ -71,6 +71,8 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
+import { processApec } from "./offrePartenaire/apec/processApec"
+import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -133,6 +135,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: premiumActivatedReminder,
     description: "Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup",
+  },
+  {
+    fct: premiumActivatedReminderAffelnet,
+    description: "Envoi un email à tous les établissements premium Affelnet pour les informer de l'ouverture des voeux sur Affelnet",
   },
   {
     fct: inviteEtablissementParcoursupToPremiumFollowUpCli,
@@ -408,5 +414,13 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillEntrepriseEngagementJobsPartners,
     description: "Mise à jour des handi-engagement des offres actives",
+  },
+  {
+    fct: processApec,
+    description: "Import du flux APEC jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: detectClassificationJobsPartners,
+    description: "Analyse la classification des offres partenaires",
   },
 ]

@@ -39,6 +39,7 @@ export enum JOBPARTNERS_LABEL {
   DECATHLON = "Décathlon",
   ENGAGEMENT_JEUNES = "Engagement Jeunes",
   JOBTEASER = "Jobteaser",
+  APEC = "APEC",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
@@ -299,6 +300,8 @@ export default {
   zod: ZJobsPartnersOfferPrivate,
   indexes: [
     [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, partner_label: 1, "offer_target_diploma.european": 1 }, {}],
+    [{ workplace_geopoint: "2dsphere", offer_status: 1, offer_expiration: 1, partner_label: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1 }, {}],
+    [{ offer_status: 1, partner_label: 1, offer_rome_codes: 1, offer_expiration: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],

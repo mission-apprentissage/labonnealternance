@@ -43,7 +43,7 @@ const CreationCompte = () => {
 }
 
 const InformationEntreprise = () => (
-  <Box sx={{ border: "1px solid #000091", p: { xs: fr.spacing("2w"), sm: fr.spacing("4w") } }}>
+  <Box sx={{ border: "1px solid #000091", p: { xs: fr.spacing("4v"), sm: fr.spacing("8v") } }}>
     <Typography sx={{ fontSize: "24px", mb: fr.spacing("5v"), fontWeight: 700, lineHeight: "30px" }} component="h2">
       Ajout d’une entreprise partenaire
     </Typography>
@@ -78,7 +78,7 @@ export default function CreationEntreprisePage() {
           gap: { xs: 0, sm: 2, lg: 5 },
         }}
       >
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: fr.spacing("4v") }}>
           <Typography sx={{ fontSize: "32px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "40px" }} component="h1">
             Renseignements entreprise
           </Typography>

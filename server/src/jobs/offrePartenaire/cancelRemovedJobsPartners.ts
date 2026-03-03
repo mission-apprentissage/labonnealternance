@@ -91,12 +91,7 @@ export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJob
           {
             $match: {
               $expr: {
-                $and: [
-                  {
-                    $eq: ["$partner_job_id", "$$partnerJobId"],
-                  },
-                  { $ne: ["$business_error", null] },
-                ],
+                $and: [{ $eq: ["$partner_label", "$$partnerLabel"] }, { $eq: ["$partner_job_id", "$$partnerJobId"] }, { $ne: ["$business_error", null] }],
               },
             },
           },

@@ -5,13 +5,7 @@ import config from "@/config"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import mailer from "@/services/mailer.service"
 
-/**
- * @description Send a "Premium" reminder mail.
- * @returns {Promise<void>}
- */
-export const premiumActivatedReminder = async () => {
-  logger.info("Cron #premiumActivatedReminder started.")
-
+export const getEmailsForParcoursup = async (): Promise<string[]> => {
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     getDbCollection("etablissements")
       .find({
@@ -30,7 +24,7 @@ export const premiumActivatedReminder = async () => {
     eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
-  let targetedEmails: string[] = []
+  const targetedEmails: string[] = []
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
@@ -48,7 +42,17 @@ export const premiumActivatedReminder = async () => {
     targetedEmails.push(...establishmentEmails)
   }
 
-  targetedEmails = [...new Set(targetedEmails)]
+  return [...new Set(targetedEmails)]
+}
+
+/**
+ * @description Send a "Premium" reminder mail.
+ * @returns {Promise<void>}
+ */
+export const premiumActivatedReminder = async () => {
+  logger.info("Cron #premiumActivatedReminder started.")
+
+  const targetedEmails = await getEmailsForParcoursup()
 
   for (const email of targetedEmails) {
     try {
@@ -57,6 +61,7 @@ export const premiumActivatedReminder = async () => {
         subject: "[Rappel] Trouvez et recrutez vos candidats sur Parcoursup avec La bonne alternance",
         template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
         data: {
+          isParcoursup: true,
           images: {
             logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
@@ -73,4 +78,73 @@ export const premiumActivatedReminder = async () => {
   }
 
   logger.info("Cron #premiumActivatedReminder done.")
+}
+
+export const getEmailsForAffelnet = async (): Promise<string[]> => {
+  const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
+    getDbCollection("etablissements")
+      .find({
+        gestionnaire_email: {
+          $ne: null,
+        },
+        premium_affelnet_activation_date: {
+          $ne: null,
+        },
+      })
+      .toArray(),
+    eligibleTrainingsForAppointmentService.find({ affelnet_visible: true, lieu_formation_email: { $ne: null } }),
+  ])
+
+  const etablissementWithAffelnet = etablissementsActivated.filter((etablissement) =>
+    eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
+  )
+
+  const targetedEmails: string[] = []
+
+  for (const etablissement of etablissementWithAffelnet) {
+    // Retrieve all emails
+    let establishmentEmails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
+      if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
+        const email = eligibleTrainingsForAppointment.lieu_formation_email
+        return email ? [email] : []
+      } else {
+        return []
+      }
+    })
+
+    establishmentEmails = [...new Set(establishmentEmails)]
+
+    targetedEmails.push(...establishmentEmails)
+  }
+
+  return [...new Set(targetedEmails)]
+}
+export const premiumActivatedReminderAffelnet = async () => {
+  logger.info("Cron #premiumActivatedReminderAffelnet started.")
+
+  const targetedEmails: string[] = await getEmailsForAffelnet()
+
+  for (const email of targetedEmails) {
+    try {
+      await mailer.sendEmail({
+        to: email,
+        subject: "[Rappel] Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e avec La bonne alternance",
+        template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
+        data: {
+          isAffelnet: true,
+          images: {
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
+            optoutCfa: `${config.publicUrl}/images/emails/optout_cfa.png?raw=true`,
+          },
+          publicEmail: config.publicEmail,
+          utmParams: "utm_source=lba&utm_medium=email&utm_campaign=lba_cfa_rdva-premium-affelnet-rappel-annuel",
+        },
+      })
+    } catch (error) {
+      logger.error(error)
+    }
+  }
+
+  logger.info("Cron #premiumActivatedReminderAffelnet done.")
 }

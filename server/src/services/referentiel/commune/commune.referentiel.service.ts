@@ -6,6 +6,24 @@ import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geo
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sleep } from "@/common/utils/asyncUtils"
 
+let inseeToCodesPostaux: Record<string, string[]> | null = null
+
+async function getInseeToCodesPostauxMapping(): Promise<Record<string, string[]>> {
+  if (inseeToCodesPostaux) {
+    return inseeToCodesPostaux
+  }
+  const communes = await getDbCollection("referentiel.communes")
+    .find({}, { projection: { _id: 0, code: 1, codesPostaux: 1 } })
+    .toArray()
+  inseeToCodesPostaux = Object.fromEntries(communes.map(({ code, codesPostaux }) => [code, codesPostaux]))
+  return inseeToCodesPostaux
+}
+
+export async function getCodePostalFromInsee(codeInsee: string): Promise<string | null> {
+  const mapping = await getInseeToCodesPostauxMapping()
+  return mapping[codeInsee]?.[0] ?? null
+}
+
 async function updateReferentielCommuneByCommune(commune: IGeoApiCommune): Promise<void> {
   const { code, ...rest } = commune
 

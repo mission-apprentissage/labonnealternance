@@ -31,7 +31,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
     const { business_error } = job
-    expect.soft(business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA)
+    expect.soft(business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED)
   })
   it("should NOT block the offer", async () => {
     await givenSomeComputedJobPartners([
