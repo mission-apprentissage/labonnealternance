@@ -1,7 +1,7 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import type { IApplicationApiPublic } from "shared"
-import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName } from "shared"
+import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -392,6 +392,34 @@ describe("POST /v2/application", () => {
       company_feedback_send_status: CompanyFeebackSendStatus.CANCELED,
       company_recruitment_intention: ApplicationIntention.ENTRETIEN,
     })
+  })
+
+  it("Should mark offer as ANNULEE in jobs_partners when application count exceeds limit", async () => {
+    // 81 pre-existing applications for the recruteur's siret exceeds the limit of 80
+    const preExistingApplications = Array.from({ length: 81 }, () => generateApplicationFixture({ company_siret: recruteur.workplace_siret }))
+    await getDbCollection("applications").insertMany(preExistingApplications)
+
+    const body: IApplicationApiPublic = {
+      applicant_attachment_name: "cv.pdf",
+      applicant_attachment_content: applicationTestFile,
+      applicant_email: "jean.dupont@mail.com",
+      applicant_first_name: "Jean",
+      applicant_last_name: "Dupont",
+      applicant_phone: "0101010101",
+      recipient_id: getRecipientID(JobCollectionName.partners, recruteur._id.toString()),
+    }
+
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/v2/application",
+      body,
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(202)
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: recruteur._id })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
   })
 
   it.skip("Remove scheduled intention when Envoyer le message button", async () => {
