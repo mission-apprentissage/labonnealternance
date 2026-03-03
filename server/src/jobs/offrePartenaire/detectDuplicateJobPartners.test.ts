@@ -1,7 +1,5 @@
 import { ObjectId } from "bson"
-import { RECRUITER_STATUS } from "shared/constants/index"
-import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
@@ -13,7 +11,6 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 
 const siret = "42476141900045"
 
@@ -173,22 +170,14 @@ describe("detectDuplicateJobPartners", () => {
         workplace_address_zipcode: "75002",
       },
     ])
-    await saveRecruiter(
-      generateRecruiterFixture({
-        establishment_siret: siret,
-        status: RECRUITER_STATUS.ACTIF,
-        address_detail: {
-          ...generateRecruiterFixture().address_detail,
-          code_postal: "75007",
-        },
-        jobs: [
-          generateJobFixture({
-            rome_appellation_label: offerTitle,
-            job_status: JOB_STATUS.ACTIVE,
-          }),
-        ],
-      })
-    )
+    await givenSomeComputedJobPartners([
+      {
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+      },
+    ])
     // when
     await detectDuplicateJobPartners()
     // then

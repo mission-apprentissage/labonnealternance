@@ -1,15 +1,16 @@
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import type { IReferentielRome } from "shared/models/index"
-import { AccessEntityType, JOB_STATUS } from "shared/models/index"
+import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import { ObjectId } from "bson"
-import { omit } from "lodash-es"
+import type { IJob } from "shared"
+import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import dayjs from "shared/helpers/dayjs"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenAConnectedOpcoUser } from "@tests/fixture/connectedUser.fixture"
-import type { GetOfferResponse, OfferCreationResponse } from "@tests/sdk/entrepriseSdk"
+import type { GetOfferResponse, OfferCreationByTokenResponse, OfferCreationResponse, OfferUpdateBody } from "@tests/sdk/entrepriseSdk"
 import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
@@ -24,6 +25,45 @@ const buildCreateJobDataFromReferentiel = (referentielRome: IReferentielRome) =>
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     job_count: 1,
   }
+}
+
+function jobToJobPatch(job: IJob): OfferUpdateBody {
+  const {
+    is_disabled_elligible,
+    job_count,
+    job_status,
+    job_type,
+    rome_code,
+    competences_rome,
+    delegations,
+    job_duration,
+    job_level_label,
+    job_rythm,
+    offer_title_custom,
+    rome_appellation_label,
+    rome_label,
+    job_start_date,
+    job_expiration_date,
+  } = job
+
+  const body: OfferUpdateBody = {
+    is_disabled_elligible,
+    job_count,
+    job_status,
+    job_type,
+    rome_code,
+    competences_rome,
+    delegations,
+    job_duration,
+    job_level_label,
+    job_rythm,
+    offer_title_custom,
+    rome_appellation_label,
+    rome_label,
+    job_start_date: job_start_date!,
+    job_expiration_date: job_expiration_date!,
+  }
+  return body
 }
 
 describe("formulaire.controller", () => {
@@ -79,22 +119,18 @@ describe("formulaire.controller", () => {
       )
       const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
       const job = offerResponse.json() as GetOfferResponse
-      console.log(job)
 
       // when
       const response = await entrepriseSdkInstance.updateOffer({
         jobId,
         cookies,
-        body: {
-          ...omit(job, ["_id", "job_creation_date", "job_update_date"]),
-          job_start_date: job.job_start_date!,
-          job_expiration_date: job.job_expiration_date!,
+        body: jobToJobPatch({
+          ...job,
           job_count: 3,
-        },
+        }),
       })
       // then
       expect.soft(response.statusCode).toBe(200)
-      expect.soft(response.body).toBe("")
     })
     it("interdit la mise à jour d'une offre annulée", async () => {
       // given
@@ -118,12 +154,10 @@ describe("formulaire.controller", () => {
       const response = await entrepriseSdkInstance.updateOffer({
         jobId,
         cookies: entrepriseCookies,
-        body: {
-          ...omit(job, ["_id", "job_creation_date", "job_update_date"]),
-          job_start_date: job.job_start_date!,
-          job_expiration_date: job.job_expiration_date!,
+        body: jobToJobPatch({
+          ...job,
           job_count: 3,
-        },
+        }),
       })
       expect.soft(response.statusCode).toBe(409)
     })
@@ -149,12 +183,10 @@ describe("formulaire.controller", () => {
       const response = await entrepriseSdkInstance.updateOffer({
         jobId,
         cookies: entrepriseCookies,
-        body: {
-          ...omit(job, ["_id", "job_creation_date", "job_update_date"]),
-          job_start_date: job.job_start_date!,
-          job_expiration_date: job.job_expiration_date!,
+        body: jobToJobPatch({
+          ...job,
           job_count: 3,
-        },
+        }),
       })
       expect.soft(response.statusCode).toBe(409)
     })
@@ -167,22 +199,19 @@ describe("formulaire.controller", () => {
         job: buildCreateJobDataFromReferentiel(referentielRome),
       })
       expect.soft(createOfferResponse.statusCode).toBe(200)
-      const { _id: jobObjectId } = createOfferResponse.json() as OfferCreationResponse
-      const jobId = jobObjectId.toString()
-      const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies: entrepriseCookies })
-      const job = offerResponse.json() as GetOfferResponse
-      expect.soft(job.job_status).toBe(JOB_STATUS.EN_ATTENTE)
+      const { job_id: jobId } = createOfferResponse.json() as OfferCreationByTokenResponse
+
+      const jobPartner = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+      expect.soft(jobPartner?.offer_status).toEqual(JOB_STATUS_ENGLISH.EN_ATTENTE)
 
       // when
       const response = await entrepriseSdkInstance.updateOffer({
         jobId,
         cookies: entrepriseCookies,
-        body: {
-          ...omit(job, ["_id", "job_creation_date", "job_update_date"]),
-          job_start_date: job.job_start_date!,
-          job_expiration_date: job.job_expiration_date!,
+        body: jobToJobPatch({
+          ...generateJobFixture(),
           job_count: 3,
-        },
+        }),
       })
       expect.soft(response.statusCode).toBe(403)
     })

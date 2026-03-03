@@ -1,9 +1,9 @@
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import type { IApplicationApiPublic } from "shared"
-import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName } from "shared"
+import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JobCollectionName } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
-import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
+import { OPCOS_LABEL } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import {
   applicationTestFile,
@@ -13,19 +13,17 @@ import {
   wrongApplicationTestFile,
 } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it, vi } from "vitest"
 
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { buildUserForToken } from "@/services/application.service"
 import { generateApplicationReplyToken } from "@/services/appLinks.service"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 
@@ -51,7 +49,7 @@ const fakeToken = await getApiApprentissageTestingTokenFromInvalidPrivateKey({
   habilitations: { "applications:write": true, "appointments:write": false, "jobs:write": false },
 })
 
-const recruteur = generateJobsPartnersOfferPrivate({
+const jobPartner = generateJobsPartnersOfferPrivate({
   _id: new ObjectId("64a43d28eeeb7c3b210faf59"),
   partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
   workplace_siret: "11000001500013",
@@ -80,39 +78,6 @@ const user = generateUserWithAccountFixture({
   email: recruiterEmailFixture,
 })
 
-const recruiter = generateRecruiterFixture({
-  establishment_siret: "11000001500013",
-  establishment_raison_sociale: "ASSEMBLEE NATIONALE",
-  geopoint: parisFixture.centre,
-  status: RECRUITER_STATUS.ACTIF,
-  email: recruiterEmailFixture,
-  managed_by: user._id.toString(),
-  jobs: [
-    {
-      rome_code: ["M1602"],
-      rome_label: "Opérations administratives",
-      job_status: JOB_STATUS.ACTIVE,
-      job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-      job_creation_date: new Date("2021-01-01"),
-      job_expiration_date: new Date("2050-01-01"),
-    },
-    {
-      _id: new ObjectId("64a43d28eeeb7c3b210faf59"),
-      rome_code: ["M1602"],
-      rome_label: "Opérations administratives",
-      job_status: JOB_STATUS.ACTIVE,
-      job_level_label: NIVEAUX_POUR_LBA.INDIFFERENT,
-      job_creation_date: new Date("2021-01-01"),
-      job_expiration_date: new Date("2050-01-01"),
-    },
-  ],
-  address_detail: {
-    code_insee_localite: parisFixture.code,
-  },
-  address: parisFixture.nom,
-  phone: "0300000000",
-})
-
 const referentielRome = generateReferentielRome({
   rome: {
     code_rome: "M1602",
@@ -135,7 +100,7 @@ const intentionToken = generateApplicationReplyToken(userToken, applicationFixtu
 
 const mockData = async () => {
   await getDbCollection("userswithaccounts").insertOne(user)
-  await getDbCollection("jobs_partners").insertOne(recruteur)
+  await getDbCollection("jobs_partners").insertOne(jobPartner)
   await getDbCollection("referentielromes").insertOne(referentielRome)
   await getDbCollection("applicants").insertOne(applicantFixture)
   await getDbCollection("applications").insertOne(applicationFixture)
@@ -166,7 +131,7 @@ describe("POST /v2/application", () => {
       applicant_first_name: "Jean",
       applicant_last_name: "Dupont",
       applicant_phone: "0101010101",
-      recipient_id: getRecipientID(JobCollectionName.partners, recruteur._id.toString()),
+      recipient_id: getRecipientID(JobCollectionName.partners, jobPartner._id.toString()),
     }
 
     const response = await httpClient().inject({
@@ -176,11 +141,12 @@ describe("POST /v2/application", () => {
       headers: { authorization: `Bearer ${token}` },
     })
 
-    const application = await getDbCollection("applications").findOne({ company_siret: recruteur.workplace_siret })
+    const application = await getDbCollection("applications").findOne({ company_siret: jobPartner.workplace_siret })
+    expect.soft(application).toBeDefined()
     const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
 
     expect.soft(response.statusCode).toEqual(202)
-    expect.soft(response.json()).toEqual({ id: application!._id.toString() })
+    expect.soft(response.json()).toEqual({ id: application?._id.toString() })
 
     expect.soft(omit(applicant, ["createdAt", "last_connection", "updatedAt"])).toEqual({
       _id: applicant?._id,
@@ -198,7 +164,7 @@ describe("POST /v2/application", () => {
       application_url: null,
       caller: "Un super Partenaire",
       company_address: "126 RUE DE L UNIVERSITE 75107 Paris",
-      company_email: recruteur.apply_email,
+      company_email: jobPartner.apply_email,
       company_feedback: null,
       company_feedback_send_status: null,
       company_feedback_reasons: null,
@@ -206,12 +172,12 @@ describe("POST /v2/application", () => {
       company_name: "ASSEMBLEE NATIONALE",
       company_phone: "0300000000",
       company_recruitment_intention: null,
-      company_siret: recruteur.workplace_siret,
+      company_siret: jobPartner.workplace_siret,
       company_recruitment_intention_date: null,
       created_at: expect.any(Date),
       foreign_application_id: null,
       foreign_application_status_url: null,
-      job_id: recruteur._id,
+      job_id: jobPartner._id,
       job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
       job_searched_by_user: null,
       job_title: "Une super offre d'alternance",
@@ -226,76 +192,8 @@ describe("POST /v2/application", () => {
     })
   })
 
-  it("Return 202 and create an application using a recruiter", async () => {
-    const job = recruiter.jobs[0]
-    const body: IApplicationApiPublic = {
-      applicant_attachment_name: "cv.pdf",
-      applicant_attachment_content: applicationTestFile,
-      applicant_email: "jeam.dupont@mail.com",
-      applicant_first_name: "Jean",
-      applicant_last_name: "Dupont",
-      applicant_phone: "0101010101",
-      recipient_id: getRecipientID(JobCollectionName.recruiters, job._id.toString()),
-    }
-
-    const response = await httpClient().inject({
-      method: "POST",
-      path: "/api/v2/application",
-      body,
-      headers: { authorization: `Bearer ${token}` },
-    })
-
-    const application = await getDbCollection("applications").findOne({ job_id: job._id })
-    const applicant = await getDbCollection("applicants").findOne({ _id: application?.applicant_id })
-
-    expect.soft(response.statusCode).toEqual(202)
-    expect.soft(response.json()).toEqual({ id: application!._id.toString() })
-
-    expect.soft(omit(applicant, ["createdAt", "last_connection", "updatedAt"])).toEqual({
-      _id: applicant?._id,
-      email: body.applicant_email,
-      firstname: body.applicant_first_name,
-      lastname: body.applicant_last_name,
-      phone: body.applicant_phone,
-    })
-
-    expect(application).toEqual({
-      _id: expect.any(ObjectId),
-      applicant_id: applicant?._id,
-      applicant_attachment_name: body.applicant_attachment_name,
-      applicant_message_to_company: "",
-      application_url: null,
-      company_address: "Paris",
-      company_email: "test-application@mail.fr",
-      company_feedback: null,
-      company_feedback_reasons: null,
-      company_feedback_send_status: null,
-      company_naf: "",
-      company_name: "ASSEMBLEE NATIONALE",
-      company_phone: "0300000000",
-      company_recruitment_intention: null,
-      company_siret: recruiter.establishment_siret,
-      company_recruitment_intention_date: null,
-      created_at: expect.any(Date),
-      foreign_application_id: null,
-      foreign_application_status_url: null,
-      job_id: job._id,
-      job_searched_by_user: null,
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      job_title: "Opérations administratives",
-      last_update_at: expect.any(Date),
-      scan_status: "WAITING_FOR_SCAN",
-      to_applicant_message_id: null,
-      to_company_message_id: null,
-      caller: "Un super Partenaire",
-    })
-
-    expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
-      Body: body.applicant_attachment_content,
-    })
-  })
   it("return 400 as file type is not supported", async () => {
-    const job = recruiter.jobs[0]
+    const job = jobPartner
     const body: IApplicationApiPublic = {
       applicant_attachment_name: "cv.pdf",
       applicant_attachment_content: wrongApplicationTestFile,
@@ -321,7 +219,7 @@ describe("POST /v2/application", () => {
   })
 
   it("return 400 when header matches filename but content type is different", async () => {
-    const job = recruiter.jobs[0]
+    const job = jobPartner
     const body: IApplicationApiPublic = {
       applicant_attachment_name: "cv.pdf",
       applicant_attachment_content: mismatchedHeaderContentTestFile,

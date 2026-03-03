@@ -22,7 +22,7 @@ import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.servic
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
 
-type JobResource = { job: IJobsPartnersOfferPrivate; entreprise: IEntreprise; cfa?: ICFA }
+type JobResource = { job: IJobsPartnersOfferPrivate; entreprise?: IEntreprise; cfa?: ICFA }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string; user?: IUserWithAccount | null }
 type EntrepriseResource = { entreprise: IEntreprise }
 type UserResource = {
@@ -57,13 +57,13 @@ function getAccessResourcePathValue(path: AccessResourcePath, req: IRequest): an
 const jobToJobResource = async (job: IJobsPartnersOfferPrivate): Promise<JobResource | null> => {
   const entreprise = await getDbCollection("entreprises").findOne({ siret: job.workplace_siret ?? "" })
   if (!entreprise) {
-    return null
+    return { job }
   }
   let cfa: ICFA | null = null
   if (job.cfa_siret) {
     cfa = await getDbCollection("cfas").findOne({ siret: job.cfa_siret })
     if (!cfa) {
-      return null
+      return { job, entreprise }
     }
   }
   return { job, entreprise, cfa: cfa ?? undefined }
@@ -110,7 +110,6 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
   if (!schema.securityScheme.resources.job) {
     return []
   }
-
   return (
     await Promise.all(
       schema.securityScheme.resources.job.map(async (jobDef): Promise<JobResource[] | null> => {
@@ -296,8 +295,8 @@ function canAccessJob(userAccess: ComputedUserAccess, resource: JobResource): bo
     if (cfa) {
       return userAccess.cfas.includes(cfa._id.toString())
     } else {
-      const entrepriseId = entreprise._id.toString()
-      return userAccess.entreprises.includes(entrepriseId)
+      const entrepriseId = entreprise?._id.toString()
+      return Boolean(entrepriseId && userAccess.entreprises.includes(entrepriseId))
     }
   } else {
     return userAccess.partner_label.includes(job.partner_label)

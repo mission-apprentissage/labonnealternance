@@ -17,6 +17,7 @@ export type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creati
 export type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
 
 export type OfferCreationResponse = z.output<(typeof zRoutes.post)["/formulaire/:establishment_id/offre"]["response"]["200"]>
+export type OfferCreationByTokenResponse = z.output<(typeof zRoutes.post)["/formulaire/:establishment_id/offre/by-token"]["response"]["200"]>
 export type GetOfferResponse = z.output<(typeof zRoutes.get)["/formulaire/offre/f/:jobId"]["response"]["200"]>
 
 export type OfferUpdateBody = z.output<(typeof zRoutes.put)["/formulaire/offre/:jobId"]["body"]>
@@ -138,7 +139,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
   async getOffer({ jobId, cookies }: { jobId: string; cookies: Record<string, string> }) {
     const response = await httpClient().inject({
       method: "GET",
-      path: `/formulaire/offre/f/${jobId}`,
+      path: `/api/formulaire/offre/f/${jobId}`,
       cookies,
     })
     return response

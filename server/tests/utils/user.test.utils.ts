@@ -1,13 +1,12 @@
 import { ObjectId } from "mongodb"
-import { OPCOS_LABEL, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import type { ICFA } from "shared/models/cfa.model"
 import { zCFA } from "shared/models/cfa.model"
 import { zObjectId } from "shared/models/common"
 import type { IEntreprise, IEntrepriseStatusEvent } from "shared/models/entreprise.model"
 import { EntrepriseStatus, ZEntreprise } from "shared/models/entreprise.model"
-import type { IApplication, ICredential, IEmailBlacklist, IRecruiter } from "shared/models/index"
+import type { IApplication, ICredential, IEmailBlacklist, IEntrepriseManagedByCfa } from "shared/models/index"
 import { ZApplication, ZCredential, ZEmailBlacklist, ZPointGeometry } from "shared/models/index"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -191,12 +190,7 @@ export const saveAdminUserTest = async (userProps: Partial<IUserWithAccount> = {
   return { user, role }
 }
 
-export const saveEntrepriseUserTest = async (
-  userProps: Partial<IUserWithAccount> = {},
-  roleProps: Partial<IRoleManagement> = {},
-  entrepriseProps: Partial<IEntreprise> = {},
-  recruiterProps: Partial<IRecruiter> = {}
-) => {
+export const saveEntrepriseUserTest = async (userProps: Partial<IUserWithAccount> = {}, roleProps: Partial<IRoleManagement> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
   const user = await saveUserWithAccount(userProps)
   const entreprise = await saveEntreprise(entrepriseProps)
   const role = await saveRoleManagement({
@@ -206,40 +200,43 @@ export const saveEntrepriseUserTest = async (
     status: [roleManagementEventFactory()],
     ...roleProps,
   })
-  const recruiter = await saveRecruiter(
-    generateRecruiterFixture({
-      is_delegated: false,
-      cfa_delegated_siret: null,
-      status: RECRUITER_STATUS.ACTIF,
-      establishment_siret: entreprise.siret,
-      opco: entreprise.opco,
-      managed_by: user._id.toString(),
-      jobs: [{}],
-      ...recruiterProps,
-    })
-  )
-  return { user, role, entreprise, recruiter }
+  return { user, role, entreprise }
 }
 
-export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {}) => {
+export const saveEntrepriseManagedByCfa = async (props: Partial<IEntrepriseManagedByCfa> = {}): Promise<IEntrepriseManagedByCfa> => {
+  const now = new Date()
+  const entreprise: IEntrepriseManagedByCfa = {
+    _id: new ObjectId(),
+    cfa_id: new ObjectId(),
+    createdAt: now,
+    updatedAt: now,
+    email: "email@email.com",
+    entreprise_id: new ObjectId(),
+    first_name: "first_name",
+    last_name: "last_name",
+    origin: "origin",
+    phone: "012345678",
+    ...props,
+  }
+  await getDbCollection("entreprise_managed_by_cfa").insertOne(entreprise)
+  return entreprise
+}
+
+export const saveCfaUserTest = async (userProps: Partial<IUserWithAccount> = {}, cfaProps: Partial<ICFA> = {}, entrepriseProps: Partial<IEntreprise> = {}) => {
   const user = await saveUserWithAccount(userProps)
-  const cfa = await saveCfa()
+  const cfa = await saveCfa(cfaProps)
   const role = await saveRoleManagement({
     user_id: user._id,
     authorized_id: cfa._id.toString(),
     authorized_type: AccessEntityType.CFA,
     status: [roleManagementEventFactory()],
   })
-  const recruiter = await saveRecruiter(
-    generateRecruiterFixture({
-      is_delegated: true,
-      cfa_delegated_siret: cfa.siret,
-      status: RECRUITER_STATUS.ACTIF,
-      managed_by: user._id.toString(),
-      jobs: [{}],
-    })
-  )
-  return { user, role, cfa, recruiter }
+  const entreprise = await saveEntreprise(entrepriseProps)
+  const entrepriseManagedByCfa = await saveEntrepriseManagedByCfa({
+    cfa_id: cfa._id,
+    entreprise_id: entreprise._id,
+  })
+  return { user, role, cfa, entreprise, entrepriseManagedByCfa }
 }
 
 export const validatedUserStatus = [

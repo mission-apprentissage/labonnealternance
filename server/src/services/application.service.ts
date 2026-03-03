@@ -242,7 +242,6 @@ export const sendApplicationV2 = async ({
   caller?: string
   source?: ITrackingCookies
 }): Promise<{ _id: ObjectId }> => {
-  const lbaJob: IJobOrCompanyV2 = { type: null as any, job: null as any }
   const {
     recipient_id: { jobId },
     applicant_attachment_content,
@@ -270,10 +269,15 @@ export const sendApplicationV2 = async ({
   if (!job) {
     throw badRequest(BusinessErrorCodes.NOTFOUND)
   }
-  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+  const { offer_expiration } = job
+  if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE || (offer_expiration && dayjs(offer_expiration).add(1, "day").isBefore(dayjs()))) {
     throw badRequest(BusinessErrorCodes.EXPIRED)
   }
 
+  const lbaJob: IJobOrCompanyV2 = {
+    job,
+    type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+  }
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
 
   const recruteurEmail = job.apply_email?.toLowerCase()

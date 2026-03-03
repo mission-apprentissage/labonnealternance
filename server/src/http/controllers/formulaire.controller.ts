@@ -146,7 +146,6 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/formulaire/offre/f/:jobId"])],
     },
     async (req, res) => {
-      console.log("in controller")
       const offre = await getJobWithRomeDetail(req.params.jobId.toString())
       if (!offre) {
         throw badRequest("L'offre n'existe pas")

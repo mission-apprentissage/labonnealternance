@@ -64,6 +64,7 @@ export function boomify(rawError: FastifyError | Boom<unknown> | Error | ZodErro
 
 export function errorMiddleware(server: Server) {
   server.setErrorHandler<FastifyError | Boom<unknown> | Error | ZodError, { Reply: IResError }>(async (rawError, request, reply) => {
+    console.error(rawError)
     const error = boomify(rawError)
 
     if (error.output.statusCode === 403) {

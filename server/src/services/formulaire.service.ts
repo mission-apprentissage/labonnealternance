@@ -1,4 +1,4 @@
-import { badRequest, internal } from "@hapi/boom"
+import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import { ObjectId } from "mongodb"
 import type { Filter } from "mongodb"
@@ -61,17 +61,6 @@ export interface IOffreExtended extends IJob {
   pourvue: string
   supprimer: string
 }
-
-// étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
-export const romeDetailAggregateStages = [
-  { $unwind: { path: "$jobs" } },
-  { $lookup: { from: "referentielromes", localField: "jobs.rome_code.0", foreignField: "rome.code_rome", as: "referentielrome" } },
-  { $unwind: { path: "$referentielrome" } },
-  { $set: { "jobs.rome_detail": "$referentielrome" } },
-  { $group: { _id: "$_id", recruiters: { $first: "$$ROOT" }, jobs: { $push: "$jobs" } } },
-  { $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } } },
-  { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0 } },
-]
 
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
@@ -271,12 +260,13 @@ const romeDetailJoin = [
   {
     $lookup: {
       from: "referentielromes",
-      let: { rome_code: { $arrayElemAt: ["$rome_code", 0] } },
+      let: { rome_code: { $arrayElemAt: ["$offer_rome_codes", 0] } },
       pipeline: [{ $match: { $expr: { $eq: ["$rome.code_rome", "$$rome_code"] } } }],
       as: "rome_detail",
     },
   },
   { $unwind: { path: "$rome_detail", preserveNullAndEmptyArrays: true } },
+  { $project: { "rome_detail._id": 0, "rome_detail.couple_appellation_rome": 0 } },
 ]
 
 const applicationCountJoin = [
@@ -323,7 +313,8 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
       _id: new ObjectId(id),
     },
   })
-  return recruiter?.jobs.at(0) ?? null
+  const jobOpt = recruiter?.jobs.at(0) ?? null
+  return jobOpt
 }
 
 export const getFormulaireWithRomeDetail = async ({ establishment_id }: { establishment_id: string }): Promise<IRecruiter | null> => {
@@ -386,7 +377,14 @@ const getRecruiterFromJobsPartnerFilter = async ({
     }
   }
 
-  return jobPartnersToRecruiter(jobsWithRomeDetail, mainRole, user, entreprise, cfa ?? undefined)
+  const recruiter = jobPartnersToRecruiter(jobsWithRomeDetail, mainRole, user, entreprise, cfa ?? undefined)
+  if (!addApplicationCounts) {
+    recruiter.jobs.forEach((job) => {
+      // @ts-expect-error
+      delete job.candidatures
+    })
+  }
+  return recruiter
 }
 
 /**
@@ -548,7 +546,7 @@ export const extendOffre = async (id: ObjectId): Promise<Date> => {
     }
   )
   if (!found) {
-    throw new Error(`could not find lba offer with id=${id}`)
+    throw notFound(`could not find lba offer with id=${id}`)
   }
   const { offer_expiration } = found
   if (!offer_expiration) {
@@ -1216,7 +1214,7 @@ function jobPartnersToRecruiter(
     const resolvedJobRythm: IJob["job_rythm"] = isTrainingRythmLabel(jobPartner.contract_rythm) ? jobPartner.contract_rythm : null
     const customTitle = jobPartner.offer_rome_appellation && jobPartner.offer_title !== jobPartner.offer_rome_appellation ? jobPartner.offer_title : null
 
-    return {
+    const ijob: IRecruiterWithRomeDetailAndApplicationCount["jobs"][number] = {
       _id: jobPartner._id,
       rome_label: jobPartner.rome_detail?.rome.intitule ?? null,
       rome_appellation_label: jobPartner.offer_rome_appellation ?? null,
@@ -1252,6 +1250,7 @@ function jobPartnersToRecruiter(
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
     }
+    return ijob
   })
 
   const recruiter = {
