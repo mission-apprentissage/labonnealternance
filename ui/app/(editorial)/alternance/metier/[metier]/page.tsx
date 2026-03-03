@@ -79,10 +79,17 @@ export async function generateMetadata({ params }: { params: Promise<{ metier: s
   }
 
   const jobCount = data.job_count ?? 0
+  const listeEntreprises = (data.entreprises as { nom: string }[])
+    .slice(0, 3)
+    .map((e) => e.nom)
+    .join(", ")
+
+  const firstFormation = (data.formations as { title: string }[]).pop() ?? { title: "" }
+  const lastFormation = (data.formations as { title: string }[]).shift() ?? { title: "" }
 
   return {
-    title: `Alternance en ${data.metier} : ${jobCount} Offres | Salaires & Formations ${new Date().getFullYear()} | La bonne alternance`,
-    description: `${jobCount} offres d'alternance en ${data.metier}. .`,
+    title: `Alternance en ${data.metier} : ${jobCount} Offres, ${data.salaire.salaire_brut_moyen}€/mois | La bonne alternance`,
+    description: `Trouvez votre alternance ${data.metier} parmi ${jobCount} offres. Salaire moyen ${data.salaire.salaire_brut_moyen}€ brut/mois. ${listeEntreprises} recrutent. Formations de ${firstFormation.title} à ${lastFormation.title}.`,
   }
 }
 
