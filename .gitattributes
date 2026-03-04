@@ -78,8 +78,6 @@
 .infra/files/configs/mongodb/seed.gpg filter=lfs diff=lfs merge=lfs -text
 .infra/env.global.yml diff=sopsdiffer
 .infra/env.production.yml diff=sopsdiffer
-.infra/env.pentest.yml diff=sopsdiffer
 .infra/env.recette.yml diff=sopsdiffer
 .infra/env.preview.yml diff=sopsdiffer
 .infra/env.local.yml diff=sopsdiffer
-.infra/habilitations.yml diff=sopsdiffer

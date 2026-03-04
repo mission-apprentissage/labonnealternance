@@ -61,7 +61,7 @@ import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEta
 import { inviteEtablissementParcoursupToPremium, inviteEtablissementParcoursupToPremiumBypassDate } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
-import { premiumActivatedReminder } from "./rdv/premiumActivatedReminder"
+import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
@@ -78,6 +78,8 @@ import { updateSEO } from "./seo/updateSEO"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
+import { processApec } from "./offrePartenaire/apec/processApec"
+import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -152,6 +154,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: premiumActivatedReminder,
     description: "Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup",
+  },
+  {
+    fct: premiumActivatedReminderAffelnet,
+    description: "Envoi un email à tous les établissements premium Affelnet pour les informer de l'ouverture des voeux sur Affelnet",
   },
   {
     fct: inviteEtablissementParcoursupToPremiumFollowUpCli,
@@ -444,5 +450,13 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: cleanClosedCompanies,
     description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
+  },
+  {
+    fct: processApec,
+    description: "Import du flux APEC jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: detectClassificationJobsPartners,
+    description: "Analyse la classification des offres partenaires",
   },
 ]

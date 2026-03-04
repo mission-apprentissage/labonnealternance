@@ -157,7 +157,6 @@ const config = {
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
   jobteaserUserName: env.get("JOBTEASER_FLUX_USERNAME").required().asString(),
   jobteaserPassword: env.get("JOBTEASER_FLUX_PASSWORD").required().asString(),
-
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
   franceTravailCegidFlux: {
@@ -176,6 +175,11 @@ const config = {
     apiKey: env.get("IJ_MEN_API_KEY").required().asString(),
     clientId: env.get("IJ_MEN_CLIENT_ID").required().asString(),
     clientSecret: env.get("IJ_MEN_CLIENT_SECRET").required().asString(),
+  },
+  apec: {
+    url: env.get("APEC_FLUX_URL").required().asString(),
+    login: env.get("APEC_FLUX_LOGIN").required().asString(),
+    password: env.get("APEC_FLUX_PASSWORD").required().asString(),
   },
 }
 

@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+if [ -z "${SCRIPT_DIR:-}" ]; then
+  export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
+if [ -z "${ROOT_DIR:-}" ]; then
+  export ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+fi
+
 defaultMode=""
 if [ ! -z "${CI:-}" ]; then
   defaultMode="push"
@@ -13,4 +21,4 @@ readonly next_version="${1}"
 readonly COMMIT_HASH="${2}"
 readonly mode=${3:-$defaultMode}
 
-"$ROOT_DIR/.bin/scripts/app-build.sh" $next_version $mode $COMMIT_HASH production
+"$ROOT_DIR"/.bin/mna-lba app:build $next_version $mode $COMMIT_HASH production
