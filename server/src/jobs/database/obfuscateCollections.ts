@@ -229,7 +229,7 @@ const obfuscateEntreprisesManagedByCfa = async () => {
   logger.info(`obfuscating entreprise_managed_by_cfa`)
   const entreprises = getDbCollection("entreprise_managed_by_cfa").find({})
   for await (const entreprise of entreprises) {
-    await getDbCollection("userswithaccounts").findOneAndUpdate(
+    await getDbCollection("entreprise_managed_by_cfa").findOneAndUpdate(
       { _id: entreprise._id },
       {
         $set: {
