@@ -16,7 +16,7 @@ const ZEntrepriseManagedByCfa = z
     email: z.string().describe("Email du contact"),
     origin: z.string().nullish().describe("Origine de la creation de l'établissement"),
   })
-  .openapi("RecruiterWritable")
+  .openapi("EntrepriseManagedByCfa")
 
 export type IEntrepriseManagedByCfa = z.output<typeof ZEntrepriseManagedByCfa>
 
