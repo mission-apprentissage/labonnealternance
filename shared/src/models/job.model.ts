@@ -21,7 +21,7 @@ export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
-  EN_ATTENTE = "En attente",
+  EN_ATTENTE = "Pending",
 }
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
