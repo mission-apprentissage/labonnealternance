@@ -1,4 +1,4 @@
-import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { badRequest, forbidden, notFound } from "@hapi/boom"
 import type { IEntreprise } from "shared"
 import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -15,7 +15,6 @@ import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import {
-  buildEstablishmentId,
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   getCfaSiretInfos,
@@ -41,11 +40,10 @@ import {
 } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
-import { asyncForEach } from "@/common/utils/asyncUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import type { Server } from "@/http/server"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
-import { getFormulaireWithRomeDetail } from "@/services/formulaire.service"
+import { getFormulairesForCfaManagedEnterprises } from "@/services/formulaire.service"
 
 export default (server: Server) => {
   /**
@@ -178,22 +176,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { cfaId } = req.params
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
-      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
-      if (!cfa) {
-        throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
-      }
-      const entreprisesManagedByCfa = await getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfa._id }).toArray()
-
-      const recruiterOpts = await asyncForEach(entreprisesManagedByCfa, async ({ _id, entreprise_id }) => {
-        const entreprise = await getDbCollection("entreprises").findOne({ _id: entreprise_id })
-        if (!entreprise) {
-          throw internal(`inattendu: entreprise non trouvée pour entreprise_managed_by_cfa id=${_id}`)
-        }
-        const establishment_id = buildEstablishmentId(userFromRequest._id, entreprise.siret)
-        const recruiter = await getFormulaireWithRomeDetail({ establishment_id })
-        return recruiter
-      })
-      const recruiters = recruiterOpts.flatMap((recruiterOpt) => (recruiterOpt ? [recruiterOpt] : []))
+      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
       return res.status(200).send(recruiters)
     }
   )
