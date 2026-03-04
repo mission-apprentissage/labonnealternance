@@ -173,7 +173,7 @@ export default (server: Server) => {
 
       if (opco && entreprise) {
         await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } })
-        await getDbCollection("jobs_partners").updateMany({ workplace_siret: siret }, { $set: { opco, updated_at: new Date() } })
+        await getDbCollection("jobs_partners").updateMany({ workplace_siret: siret }, { $set: { workplace_opco: opco, updated_at: new Date() } })
       }
 
       return res.status(200).send({ ok: true })

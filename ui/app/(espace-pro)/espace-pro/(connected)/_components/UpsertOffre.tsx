@@ -21,7 +21,9 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
   const handleSave = async (values) => {
     // Updates an offer
     if (job_id) {
-      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: { ...values, job_update_date: new Date() } }).then(() => {
+      delete values.job_creation_date
+      delete values.job_update_date
+      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: values }).then(() => {
         toast({
           title: "Offre mise à jour avec succès.",
         })

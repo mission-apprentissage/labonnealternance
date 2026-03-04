@@ -275,7 +275,6 @@ const romeDetailJoin = [
     },
   },
   { $unwind: { path: "$rome_detail", preserveNullAndEmptyArrays: true } },
-  { $project: { "rome_detail._id": 0, "rome_detail.couple_appellation_rome": 0 } },
 ]
 
 const applicationCountJoin = [
@@ -323,6 +322,12 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
     },
   })
   const jobOpt = recruiter?.jobs.at(0) ?? null
+  if (jobOpt?.rome_detail) {
+    // @ts-expect-error
+    delete jobOpt.rome_detail.couple_appellation_rome
+    // @ts-expect-error
+    delete jobOpt.rome_detail._id
+  }
   return jobOpt
 }
 
@@ -371,12 +376,18 @@ const getRecruiterFromJobsPartnerFilter = async ({
     .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
 
   const [mainRole, entreprise, user] = await Promise.all([
-    getMainRoleManagement(userId),
+    getMainRoleManagement(userId, true),
     getDbCollection("entreprises").findOne({ siret }),
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
-  if (!mainRole || !entreprise || !user) {
-    throw null
+  if (!mainRole) {
+    throw internal(`inattendu: mainRole vide pour userId=${userId}, siret=${siret}`)
+  }
+  if (!entreprise) {
+    throw internal(`inattendu: entreprise vide pour userId=${userId}, siret=${siret}`)
+  }
+  if (!user) {
+    throw internal(`inattendu: user vide pour userId=${userId}, siret=${siret}`)
   }
   let cfa: ICFA | null = null
   if (mainRole.authorized_type === AccessEntityType.CFA) {
