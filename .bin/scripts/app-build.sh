@@ -2,10 +2,10 @@
 
 set -euo pipefail
 
-# Set script and root directories if not already set (for direct execution)
 if [ -z "${SCRIPT_DIR:-}" ]; then
   export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
+
 if [ -z "${ROOT_DIR:-}" ]; then
   export ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 fi
@@ -47,7 +47,6 @@ fi
 
 export CHANNEL=$(get_channel $VERSION)
 
-# "$@" is the list of environements
 docker buildx bake --builder mna-lba --${mode} "$environement"
 docker builder prune --builder mna-lba --keep-storage 20GB --force
 docker buildx stop --builder mna-lba
