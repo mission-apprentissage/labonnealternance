@@ -1,5 +1,5 @@
 import type { IUserWithAccount } from "shared"
-import { JOB_STATUS } from "shared"
+import { JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 
@@ -45,7 +45,7 @@ export const sendMiseEnRelation = async () => {
             $lte: toDate,
           },
           is_delegated: false,
-          offer_status: JOB_STATUS.ACTIVE,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
           $or: [
             { mer_sent: null },
             {
