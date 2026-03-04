@@ -78,7 +78,7 @@ const getEmploiInclusionJobs = async (url: string, attempt = 1): Promise<z.outpu
  */
 export const getAllEmploiInclusionJobsByDepartement = async (departement: string): Promise<IEmploiInclusionJob[]> => {
   const allResults: IEmploiInclusionJob[] = []
-  let nextUrl: string | null = `${config.emploi_inclusion.url}/api/v1/siaes/?departement=${departement}`
+  let nextUrl: string | null = `${config.emploi_inclusion.url}/api/v1/siaes/?departement=${departement}&page_size=100000`
 
   while (nextUrl) {
     const page = await getEmploiInclusionJobs(nextUrl)
