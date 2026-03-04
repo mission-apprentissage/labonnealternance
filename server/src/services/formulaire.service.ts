@@ -345,6 +345,71 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
+export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, sirets: string[]): Promise<IRecruiter[]> => {
+  if (sirets.length === 0) return []
+
+  const [allJobsWithRomeDetail, entreprises, mainRole, user] = await Promise.all([
+    getDbCollection("jobs_partners")
+      .aggregate([
+        {
+          $match: {
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            workplace_siret: { $in: sirets },
+            managed_by: userId,
+          },
+        },
+        ...romeDetailJoin,
+      ])
+      .toArray() as Promise<(IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>,
+    getDbCollection("entreprises")
+      .find({ siret: { $in: sirets } })
+      .toArray(),
+    getMainRoleManagement(userId, true),
+    getDbCollection("userswithaccounts").findOne({ _id: userId }),
+  ])
+
+  if (!mainRole) {
+    throw internal(`inattendu: mainRole vide pour userId=${userId}`)
+  }
+  if (!user) {
+    throw internal(`inattendu: user vide pour userId=${userId}`)
+  }
+
+  let cfa: ICFA | null = null
+  if (mainRole.authorized_type === AccessEntityType.CFA) {
+    cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
+    if (!cfa) {
+      throw internal(`inattendu: cfa non trouvé pour role id=${mainRole._id}`)
+    }
+  }
+
+  const entreprisesBySiret = new Map(entreprises.map((e) => [e.siret, e]))
+  const jobsBySiret = new Map<string, (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>()
+  for (const job of allJobsWithRomeDetail) {
+    if (job.workplace_siret) {
+      const jobList = jobsBySiret.get(job.workplace_siret) ?? []
+      jobList.push(job)
+      jobsBySiret.set(job.workplace_siret, jobList)
+    }
+  }
+
+  const recruiters: IRecruiter[] = []
+  for (const siret of sirets) {
+    const entreprise = entreprisesBySiret.get(siret)
+    if (!entreprise) {
+      throw internal(`inattendu: entreprise non trouvée pour siret=${siret}`)
+    }
+    const jobs = jobsBySiret.get(siret) ?? []
+    const recruiter = jobPartnersToRecruiter(jobs, mainRole, user, entreprise, cfa ?? undefined)
+    recruiter.jobs.forEach((job) => {
+      // @ts-expect-error
+      delete job.candidatures
+    })
+    recruiters.push(recruiter)
+  }
+  return recruiters
+}
+
 const getRecruiterFromJobsPartnerFilter = async ({
   userId,
   siret,
