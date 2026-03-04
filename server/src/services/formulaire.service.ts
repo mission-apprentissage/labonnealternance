@@ -43,6 +43,7 @@ import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from ".
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
+import { deduplicate } from "@/common/utils/array"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -345,43 +346,46 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
-export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, sirets: string[]): Promise<IRecruiter[]> => {
-  if (sirets.length === 0) return []
-
-  const [allJobsWithRomeDetail, entreprises, mainRole, user] = await Promise.all([
-    getDbCollection("jobs_partners")
-      .aggregate([
-        {
-          $match: {
-            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-            workplace_siret: { $in: sirets },
-            managed_by: userId,
-          },
-        },
-        ...romeDetailJoin,
-      ])
-      .toArray() as Promise<(IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>,
-    getDbCollection("entreprises")
-      .find({ siret: { $in: sirets } })
-      .toArray(),
-    getMainRoleManagement(userId, true),
+export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId): Promise<IRecruiter[]> => {
+  const [mainRole, entreprisesManagedByCfa, cfa, user] = await Promise.all([
+    getMainRoleManagement(userId),
+    getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray(),
+    getDbCollection("cfas").findOne({ _id: cfaId }),
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
-
   if (!mainRole) {
     throw internal(`inattendu: mainRole vide pour userId=${userId}`)
+  }
+  if (mainRole.authorized_type !== AccessEntityType.CFA) {
+    throw internal(`inattendu: mainRole pour userId=${userId} n'est pas de type CFA`)
+  }
+  if (!cfa) {
+    throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
   }
   if (!user) {
     throw internal(`inattendu: user vide pour userId=${userId}`)
   }
+  const entrepriseIds = entreprisesManagedByCfa.map(({ entreprise_id }) => entreprise_id)
+  const entreprises = await getDbCollection("entreprises")
+    .find({ _id: { $in: entrepriseIds } })
+    .toArray()
 
-  let cfa: ICFA | null = null
-  if (mainRole.authorized_type === AccessEntityType.CFA) {
-    cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
-    if (!cfa) {
-      throw internal(`inattendu: cfa non trouvé pour role id=${mainRole._id}`)
-    }
-  }
+  if (entreprises.length === 0) return []
+
+  const sirets = deduplicate(entreprises.map((x) => x.siret))
+
+  const allJobsWithRomeDetail = (await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $match: {
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          workplace_siret: { $in: sirets },
+          managed_by: userId,
+        },
+      },
+      ...romeDetailJoin,
+    ])
+    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]
 
   const entreprisesBySiret = new Map(entreprises.map((e) => [e.siret, e]))
   const jobsBySiret = new Map<string, (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>()
@@ -400,7 +404,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, s
       throw internal(`inattendu: entreprise non trouvée pour siret=${siret}`)
     }
     const jobs = jobsBySiret.get(siret) ?? []
-    const recruiter = jobPartnersToRecruiter(jobs, mainRole, user, entreprise, cfa ?? undefined)
+    const recruiter = jobPartnersToRecruiter(jobs, mainRole, user, entreprise, cfa)
     recruiter.jobs.forEach((job) => {
       // @ts-expect-error
       delete job.candidatures
@@ -490,6 +494,16 @@ export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
     { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: { $ne: JOB_STATUS_ENGLISH.ACTIVE } },
     { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now } }
   )
+  const mainRole = await getMainRoleManagement(userId)
+  if (mainRole?.authorized_type === AccessEntityType.CFA) {
+    const entreprise = await getDbCollection("entreprises").findOne({ siret })
+    if (entreprise) {
+      await getDbCollection("entreprise_managed_by_cfa").deleteOne({
+        entreprise_id: entreprise._id,
+        cfa_id: new ObjectId(mainRole.authorized_id),
+      })
+    }
+  }
 }
 
 /**

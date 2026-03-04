@@ -176,17 +176,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { cfaId } = req.params
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
-      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
-      if (!cfa) {
-        throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
-      }
-      const entreprisesManagedByCfa = await getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfa._id }).toArray()
-      const entrepriseIds = entreprisesManagedByCfa.map(({ entreprise_id }) => entreprise_id)
-      const entreprises = await getDbCollection("entreprises")
-        .find({ _id: { $in: entrepriseIds } })
-        .toArray()
-      const sirets = entreprises.map((e) => e.siret)
-      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, sirets)
+      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
       return res.status(200).send(recruiters)
     }
   )

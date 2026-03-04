@@ -4,7 +4,7 @@ import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
-import { entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
+import { buildEstablishmentId, entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { getUserRecruteurById } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
@@ -118,7 +118,8 @@ export default (server: Server) => {
         const { message } = response
         throw badRequest(message)
       }
-      return res.status(200).send({ establishment_id: response.toString() })
+      const establishment_id = buildEstablishmentId(userRecruteurId, establishment_siret)
+      return res.status(200).send({ establishment_id })
     }
   )
 
