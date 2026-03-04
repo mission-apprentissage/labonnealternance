@@ -21,4 +21,4 @@ readonly next_version="${1}"
 readonly COMMIT_HASH="${2}"
 readonly mode=${3:-$defaultMode}
 
-"$ROOT_DIR"/.bin/mna-lab app:build $next_version $mode $COMMIT_HASH production
+"$ROOT_DIR"/.bin/mna-lba app:build $next_version $mode $COMMIT_HASH production

@@ -112,6 +112,6 @@ esac
 echo "Création des images docker locales (docker build)"
 
 echo "Build ui:$NEXT_VERSION ..."
-"$ROOT_DIR"/.bin/mna-lab app:release $NEXT_VERSION push
+"$ROOT_DIR"/.bin/mna-lba app:release $NEXT_VERSION push
 git tag -f "v$NEXT_VERSION"
 git push -f origin "v$NEXT_VERSION"
