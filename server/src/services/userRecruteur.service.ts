@@ -19,7 +19,7 @@ import { getFormulaireFromUserIdOrError } from "./formulaire.service"
 import mailer from "./mailer.service"
 import type { Organization, UserAndOrganization } from "./organization.service"
 import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
-import { createUser2IfNotExist, isUserDisabled, isUserEmailChecked } from "./userWithAccount.service"
+import { findOrCreateUserWithAccount, isUserDisabled, isUserEmailChecked } from "./userWithAccount.service"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -163,7 +163,7 @@ export const createOrganizationUser = async ({
   grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 }) => {
-  const { user, created } = await createUser2IfNotExist(userFields, is_email_checked, grantedBy ?? "")
+  const { user, created } = await findOrCreateUserWithAccount(userFields, is_email_checked, grantedBy ?? "")
 
   if (!created) {
     const { first_name, last_name, phone, origin, last_action_date } = userFields
@@ -199,7 +199,7 @@ export const createOpcoUser = async (
   opco: OPCOS_LABEL,
   { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
 ) => {
-  const { user } = await createUser2IfNotExist(
+  const { user } = await findOrCreateUserWithAccount(
     {
       ...userProps,
       last_action_date: new Date(),
@@ -225,7 +225,7 @@ export const createOpcoUser = async (
 }
 
 export const createAdminUser = async (userProps: IUserWithAccountFields, { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }) => {
-  const { user } = await createUser2IfNotExist(
+  const { user } = await findOrCreateUserWithAccount(
     {
       ...userProps,
       last_action_date: new Date(),

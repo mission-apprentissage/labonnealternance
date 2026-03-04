@@ -13,7 +13,7 @@ import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 
-export const createUser2IfNotExist = async (
+export const findOrCreateUserWithAccount = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
   is_email_checked: boolean,
   grantedBy: string
