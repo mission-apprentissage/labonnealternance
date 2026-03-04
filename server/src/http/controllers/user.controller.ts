@@ -238,7 +238,7 @@ export default (server: Server) => {
         }
         const establishment_id = buildEstablishmentId(user._id, organization.siret)
         const recruiter = await getFormulaireWithRomeDetail({ establishment_id })
-        if (recruiter?.opco === opco) {
+        if (recruiter && (opco === null || recruiter.opco === opco)) {
           jobs = recruiter.jobs
         } else {
           jobs = []
