@@ -329,7 +329,10 @@ export default (server: Server) => {
     async (req, res) => {
       const { jobId } = req.params
       const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
-      if (job?.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
+      if (!job) {
+        throw notFound("L'offre n'existe pas.")
+      }
+      if (job.offer_status !== JOB_STATUS_ENGLISH.ACTIVE) {
         throw conflict("Offer is not active")
       }
       await patchOffre(jobId, req.body)
