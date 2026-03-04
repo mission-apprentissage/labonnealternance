@@ -24,7 +24,7 @@ const ZUserForOpco = ZUserRecruteur.pick({
 }).extend({
   jobs_count: z.number(),
   origin: z.string(),
-  organizationId: zObjectId,
+  organizationId: z.string(),
 })
 
 export type IUserForOpco = z.output<typeof ZUserForOpco>
@@ -111,7 +111,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob), organizationId: zObjectId }),
+        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob), organizationId: z.string() }),
       },
       securityScheme: {
         auth: "cookie-session",

@@ -57,21 +57,23 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
 
       const managedById = new ObjectId(managedBy)
 
-      // 3. Désactive les accès rolemanagement
-      await getDbCollection("rolemanagements").updateMany(
-        { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE },
-        {
-          $push: {
-            status: {
-              validation_type: VALIDATION_UTILISATEUR.AUTO,
-              status: AccessStatus.DENIED,
-              reason: "clôture siret fermé",
-              granted_by: "SERVEUR",
-              date: now,
-            },
+      // 3. Désactive le rôle rolemanagement pour cette entreprise uniquement
+      const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId }, { projection: { establishment_siret: 1 } })
+      const entreprise = recruiter ? await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }, { projection: { _id: 1 } }) : null
+      const roleFilter = entreprise
+        ? { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() }
+        : { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE }
+      await getDbCollection("rolemanagements").updateMany(roleFilter, {
+        $push: {
+          status: {
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+            status: AccessStatus.DENIED,
+            reason: "clôture siret fermé",
+            granted_by: "SERVEUR",
+            date: now,
           },
-        }
-      )
+        },
+      })
 
       successCount++
     } catch (error) {

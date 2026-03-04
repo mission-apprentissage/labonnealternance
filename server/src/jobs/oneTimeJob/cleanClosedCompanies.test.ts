@@ -4,11 +4,12 @@ import { join } from "node:path"
 
 import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
+import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { JOB_STATUS } from "shared/models/job.model"
-import { AccessStatus } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 
 import { cleanClosedCompanies } from "./cleanClosedCompanies"
@@ -68,31 +69,35 @@ describe("cleanClosedCompanies", () => {
     expect(updatedRecruiter?.jobs[1].job_status).toBe(JOB_STATUS.POURVUE)
   })
 
-  it("ajoute un événement DENIED à tous les rolemanagements de l'utilisateur", async () => {
+  it("ajoute un événement DENIED uniquement sur le rôle de l'entreprise fermée", async () => {
+    const entrepriseFermee = generateEntrepriseFixture({ siret: "11000001500013" })
+    const autreEntreprise = generateEntrepriseFixture({ siret: "42476141900045" })
     const recruiter = generateRecruiterFixture({
       status: RECRUITER_STATUS.ACTIF,
       managed_by: managedById.toString(),
+      establishment_siret: entrepriseFermee.siret,
     })
     const user = generateUserWithAccountFixture({ _id: managedById })
-    const role1 = generateRoleManagementFixture({ user_id: managedById, authorized_id: "company-a" })
-    const role2 = generateRoleManagementFixture({ user_id: managedById, authorized_id: "company-b" })
+    const roleFermee = generateRoleManagementFixture({ user_id: managedById, authorized_id: entrepriseFermee._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
+    const roleAutre = generateRoleManagementFixture({ user_id: managedById, authorized_id: autreEntreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE })
 
+    await getDbCollection("entreprises").insertMany([entrepriseFermee, autreEntreprise])
     await getDbCollection("recruiters").insertOne(recruiter)
     await getDbCollection("userswithaccounts").insertOne(user)
-    await getDbCollection("rolemanagements").insertMany([role1, role2])
+    await getDbCollection("rolemanagements").insertMany([roleFermee, roleAutre])
 
     const csvPath = makeCsvFile([{ id: recruiter._id.toString(), "cfa-delegated-siret": "", "is-delegated": "FALSE", "managed-by": managedById.toString() }])
 
     await cleanClosedCompanies(csvPath)
 
-    const updatedRoles = await getDbCollection("rolemanagements").find({ user_id: managedById }).toArray()
-    expect(updatedRoles).toHaveLength(2)
-    for (const role of updatedRoles) {
-      const lastStatus = role.status.at(-1)
-      expect(lastStatus?.status).toBe(AccessStatus.DENIED)
-      expect(lastStatus?.reason).toBe("clôture siret fermé")
-      expect(lastStatus?.granted_by).toBe("SERVEUR")
-    }
+    const updatedRoleFermee = await getDbCollection("rolemanagements").findOne({ _id: roleFermee._id })
+    const lastStatusFermee = updatedRoleFermee?.status.at(-1)
+    expect(lastStatusFermee?.status).toBe(AccessStatus.DENIED)
+    expect(lastStatusFermee?.reason).toBe("clôture siret fermé")
+
+    const updatedRoleAutre = await getDbCollection("rolemanagements").findOne({ _id: roleAutre._id })
+    const lastStatusAutre = updatedRoleAutre?.status.at(-1)
+    expect(lastStatusAutre?.status).not.toBe(AccessStatus.DENIED)
   })
 
   it("traite plusieurs lignes du CSV indépendamment", async () => {

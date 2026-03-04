@@ -17,12 +17,12 @@ export const createUser2IfNotExist = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
   is_email_checked: boolean,
   grantedBy: string
-): Promise<IUserWithAccount> => {
+): Promise<{ user: IUserWithAccount; created: boolean }> => {
   const { first_name, last_name, last_action_date, origin, phone } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
-  let user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
-  if (!user) {
+  const existingUser = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
+  if (!existingUser) {
     const id = new ObjectId()
     grantedBy = grantedBy || id.toString()
     const status: IUserStatusEvent[] = []
@@ -56,34 +56,9 @@ export const createUser2IfNotExist = async (
       updatedAt: now,
     }
     await getDbCollection("userswithaccounts").insertOne(userFields)
-    user = userFields
-  } else {
-    const setFields = {
-      first_name,
-      last_name,
-      phone: phone ?? user.phone,
-      origin,
-      last_action_date,
-      updatedAt: new Date(),
-    }
-    const additionalEvents: IUserStatusEvent[] = []
-    if (isUserDisabled(user)) {
-      additionalEvents.push({
-        date: new Date(),
-        status: UserEventType.ACTIF,
-        validation_type: VALIDATION_UTILISATEUR.AUTO,
-        granted_by: grantedBy || user._id.toString(),
-        reason: "re-inscription",
-      })
-    }
-    const updateDoc = additionalEvents.length ? { $set: setFields, $push: { status: { $each: additionalEvents } } } : { $set: setFields }
-    const updatedUser = await getDbCollection("userswithaccounts").findOneAndUpdate({ _id: user._id }, updateDoc, { returnDocument: "after" })
-    if (!updatedUser) {
-      throw internal(`utilisateur avec id=${user._id} non trouvé`)
-    }
-    user = updatedUser
+    return { user: userFields, created: true }
   }
-  return user
+  return { user: existingUser, created: false }
 }
 
 export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], reason = "validation de l'email par l'utilisateur"): Promise<IUserWithAccount> => {
