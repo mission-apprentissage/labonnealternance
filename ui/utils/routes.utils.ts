@@ -671,6 +671,10 @@ export const PAGES = {
       getPath: () => `/alternance/ville/${villeSlug}`,
       title: `Trouver une alternance à ${villeSlug}`,
     }),
+    seoMetier: (metierSlug: string): IPage => ({
+      getPath: () => `/alternance/metier/${metierSlug}`,
+      title: `Trouver une alternance en ${metierSlug}`,
+    }),
   },
   notion: {},
 } as const satisfies IPages
