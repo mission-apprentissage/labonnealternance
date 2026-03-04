@@ -120,7 +120,7 @@ const updateRecruteursSiretInfosInError = async () => {
       },
       {
         $lookup: {
-          from: "userwithaccounts",
+          from: "userswithaccounts",
           localField: "role.user_id",
           foreignField: "_id",
           as: "user",
