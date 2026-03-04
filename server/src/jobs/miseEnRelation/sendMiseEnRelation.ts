@@ -135,7 +135,7 @@ export const sendMiseEnRelation = async () => {
             job_creation_date: dayjs(job.created_at).format("DD/MM/YYYY"),
             job_title: jobTitle,
             job_type: job.contract_type.join(", "),
-            job_level_label: job.offer_target_diploma,
+            job_level_label: job.offer_target_diploma?.label,
             job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             job_url: jobUrl.toString(),
             link: createMERInvitationLink(user, job._id.toString(), establishmentId),
