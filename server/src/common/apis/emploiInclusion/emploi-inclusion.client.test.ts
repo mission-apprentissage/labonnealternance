@@ -1,0 +1,47 @@
+import nock from "nock"
+import { describe, expect, it } from "vitest"
+
+import { getAllEmploiInclusionJobsByDepartement } from "./emploi-inclusion.client"
+import { generateEmploiInclusionJobFixture, nockEmploiInclusionNextPage, nockEmploiInclusionPage } from "./emploi-inclusion.client.fixture"
+import config from "@/config"
+
+describe("getAllEmploiInclusionJobsByDepartement", () => {
+  it("should return results from a single page", async () => {
+    const job = generateEmploiInclusionJobFixture()
+    nockEmploiInclusionPage("75", { count: 1, next: null, previous: null, results: [job] })
+
+    const result = await getAllEmploiInclusionJobsByDepartement("75")
+
+    expect(result).toEqual([job])
+    expect(nock.isDone()).toBe(true)
+  })
+
+  it("should paginate through multiple pages and aggregate all results", async () => {
+    const job1 = generateEmploiInclusionJobFixture({ id: "497f6eca-6276-4993-bfeb-53cbbbba6f08" })
+    const job2 = generateEmploiInclusionJobFixture({ id: "507f6eca-6276-4993-bfeb-53cbbbba6f09" })
+    const nextUrl = `${config.emploi_inclusion.url}/api/v1/siaes/?departement=75&page=2`
+
+    nockEmploiInclusionPage("75", { count: 2, next: nextUrl, previous: null, results: [job1] })
+    nockEmploiInclusionNextPage(nextUrl, { count: 2, next: null, previous: null, results: [job2] })
+
+    const result = await getAllEmploiInclusionJobsByDepartement("75")
+
+    expect(result).toEqual([job1, job2])
+    expect(nock.isDone()).toBe(true)
+  })
+
+  it("should return an empty array when results is empty", async () => {
+    nockEmploiInclusionPage("75", { count: 0, next: null, previous: null, results: [] })
+
+    const result = await getAllEmploiInclusionJobsByDepartement("75")
+
+    expect(result).toEqual([])
+    expect(nock.isDone()).toBe(true)
+  })
+
+  it("should throw when the response does not match the expected schema", async () => {
+    nock(config.emploi_inclusion.url).get(/.*/).reply(200, { invalid: "response" })
+
+    await expect(getAllEmploiInclusionJobsByDepartement("75")).rejects.toThrow()
+  })
+})
