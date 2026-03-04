@@ -18,7 +18,6 @@ export async function createJobPartner(data: Partial<IJobsPartnersOfferPrivate> 
     const jobPartner = {
       ...generateJobsPartnersOfferPrivate(data),
     }
-    console.log(jobPartner)
     await getDbCollection("jobs_partners").insertOne(jobPartner)
     return jobPartner
   } catch (err) {
