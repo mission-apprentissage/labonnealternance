@@ -120,9 +120,18 @@ export const createJob = async ({
   if (!codeRome) {
     throw internal(`inattendu : pas de code rome pour une création d'offre pour siret=${siret}, role._id=${mainRole._id}`)
   }
+
+  let cfa: ICFA | null = null
+  if (is_delegated) {
+    cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
+    if (!cfa) {
+      throw internal(`inattendu: cfa non trouvé pour role id=${mainRole._id}`)
+    }
+  }
+
   const newJobPartner: IJobsPartnersOfferPrivate = await jobCreateToJobsPartner({
     job,
-    is_delegated,
+    cfa: cfa ?? undefined,
     entreprise,
     user,
     status: newJobStatus,
@@ -1058,14 +1067,14 @@ export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
 
 async function jobCreateToJobsPartner({
   job,
-  is_delegated,
+  cfa,
   entreprise,
   user,
   origin,
   status,
 }: {
   job: IJobCreate
-  is_delegated: boolean
+  cfa?: ICFA
   entreprise: IEntreprise
   user: IUserWithAccount
   origin?: string
@@ -1095,7 +1104,7 @@ async function jobCreateToJobsPartner({
     created_at: now,
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
     partner_job_id: newId.toString(),
-    is_delegated,
+    is_delegated: Boolean(cfa),
     job_status_comment: null,
     job_delegation_count: job?.delegations?.length ?? 0,
     apply_url: lbaUrl,
@@ -1154,11 +1163,11 @@ async function jobCreateToJobsPartner({
 
     lba_url: lbaUrl,
 
-    cfa_siret: null,
-    cfa_legal_name: null,
+    cfa_siret: cfa?.siret,
+    cfa_legal_name: cfa?.raison_sociale,
     cfa_apply_phone: user.phone,
     cfa_apply_email: user.email,
-    cfa_address_label: null,
+    cfa_address_label: cfa?.address,
 
     stats_detail_view: 0,
     stats_postuler: 0,
@@ -1253,7 +1262,7 @@ function jobPartnersToRecruiter(
     return ijob
   })
 
-  const recruiter = {
+  const recruiter: IRecruiterWithRomeDetailAndApplicationCount = {
     _id: role._id,
     establishment_id: buildEstablishmentId(role.user_id, entreprise.siret),
     establishment_raison_sociale: entreprise.raison_sociale,
