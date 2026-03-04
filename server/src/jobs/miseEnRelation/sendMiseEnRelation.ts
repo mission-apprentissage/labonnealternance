@@ -97,7 +97,6 @@ export const sendMiseEnRelation = async () => {
           offer_target_diploma: 1,
           contract_start: 1,
           offer_rome_appellation: 1,
-          // rome_label: 1,
           offer_rome_codes: 1,
           managed_by: 1,
           user: 1,
