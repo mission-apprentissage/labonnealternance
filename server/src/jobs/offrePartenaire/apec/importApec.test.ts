@@ -21,7 +21,7 @@ describe("importApec", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     return async () => {
@@ -80,7 +80,7 @@ describe("apecJobToJobsPartners", () => {
   }
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
     return () => vi.useRealTimers()
   })
