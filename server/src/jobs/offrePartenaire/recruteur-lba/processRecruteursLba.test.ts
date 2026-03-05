@@ -33,7 +33,7 @@ const processRecruteursLbaFromObjects = async (recruteursRaw: IRecruteursLbaRaw[
 
 describe("importRecruteursLbaRaw", () => {
   beforeEach(async () => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     await getDbCollection("opcos").insertMany([
