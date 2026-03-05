@@ -30,6 +30,29 @@
           - mna_lba_ui
           - mna_lba_server
 
+    - name: List all preview databases in MongoDB
+      shell:
+        cmd: >
+          docker compose -f /opt/app/docker-compose.preview-system.yml exec -T mongodb
+          mongosh
+          "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/admin?authSource=local&directConnection=true"
+          --eval "db.adminCommand({ listDatabases: 1, nameOnly: true, filter: { name: /^preview_/ } }).databases.map(d => d.name).join('\n')"
+          --quiet
+      register: all_preview_dbs
+      changed_when: false
+
+    - name: Drop orphaned preview databases (no matching project directory)
+      shell:
+        cmd: |
+          if [ ! -d "/opt/app/projects/{{ item | replace('preview_', '') }}" ]; then
+            docker compose -f /opt/app/docker-compose.preview-system.yml exec -T mongodb \
+              mongosh \
+              "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/{{ item }}?authSource=local&directConnection=true" \
+              --eval "db.dropDatabase()" --quiet
+          fi
+      loop: "{{ all_preview_dbs.stdout_lines | select('match', '^preview_\\d+$') | list }}"
+      ignore_errors: true
+
     - name: Prune Docker Containers
       shell:
         cmd: docker container prune --force

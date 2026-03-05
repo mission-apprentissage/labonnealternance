@@ -19,6 +19,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
-            To deploy this PR just add a comment with a simple :rocket:
+            To deploy this PR, add a comment with :rocket:
+            To deploy and reset the database, add a comment with :seedling: :rocket:
           comment-tag: deployment_instructions
           mode: upsert
