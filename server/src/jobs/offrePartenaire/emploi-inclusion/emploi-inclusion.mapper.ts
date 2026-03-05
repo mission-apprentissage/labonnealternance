@@ -41,7 +41,7 @@ export const emploiInclusionJobToJobsPartners = (job: IEmploiInclusionJob, poste
     workplace_address_street_label: job.addresse_ligne_1 || null,
     offer_title: poste.appellation_modifiee || null,
     offer_description: poste.description || null,
-    offer_desired_skills: poste.profil_recherche ? [poste.profil_recherche] : null,
+    offer_desired_skills: poste.profil_recherche ? [poste.profil_recherche] : [],
     offer_opening_count: poste.nombre_postes_ouverts,
     offer_creation: dayjs.tz(poste.cree_le).toDate(),
     offer_expiration: dayjs.tz(poste.cree_le).add(2, "months").toDate(),
