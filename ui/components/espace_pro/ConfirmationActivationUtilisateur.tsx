@@ -5,9 +5,16 @@ import { Box, Typography } from "@mui/material"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 
-const ConfirmationActivationUtilisateur = (props: { isOpen: boolean; onClose: () => void; onConfirmation?: () => void; establishment_raison_sociale: string; _id: string }) => {
-  const { isOpen, onClose, establishment_raison_sociale, _id } = props
-  const { activate } = useUserPermissionsActions(_id)
+const ConfirmationActivationUtilisateur = (props: {
+  isOpen: boolean
+  onClose: () => void
+  onConfirmation?: () => void
+  establishment_raison_sociale: string
+  _id: string
+  organizationId: string
+}) => {
+  const { isOpen, onClose, establishment_raison_sociale, _id, organizationId } = props
+  const { activate } = useUserPermissionsActions(_id, organizationId)
 
   const activateUser = async () => {
     await activate()

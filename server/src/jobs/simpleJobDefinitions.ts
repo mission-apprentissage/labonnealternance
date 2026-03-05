@@ -78,6 +78,7 @@ import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
+import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { processApec } from "./offrePartenaire/apec/processApec"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -450,6 +451,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillEntrepriseEngagementJobsPartners,
     description: "Mise à jour des handi-engagement des offres actives",
+  },
+  {
+    fct: cleanClosedCompanies,
+    description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
   },
   {
     fct: processApec,
