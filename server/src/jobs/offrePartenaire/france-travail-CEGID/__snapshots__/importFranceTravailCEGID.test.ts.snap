@@ -144,7 +144,7 @@ A compétences égales, les candidatures des personnes en situation de handicap 
     "apply_phone": null,
     "apply_url": "https://recrute.francetravail.org/Pages/Offre/detailoffre.aspx?idOffre=82802&idOrigine=502&LCID=1036&offerReference=2025-82802",
     "business_error": null,
-    "contract_duration": null,
+    "contract_duration": 12,
     "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,

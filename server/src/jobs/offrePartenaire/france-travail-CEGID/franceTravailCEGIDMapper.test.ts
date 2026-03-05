@@ -39,4 +39,78 @@ describe("franceTravailCEGIDMapper", async () => {
     }
     expect.soft(omit(franceTravailCEGIDMapper(job, agences), ["_id"])).toMatchSnapshot()
   })
+
+  it("should map contract_duration from details.customFields", async () => {
+    const job: IFranceTravailCEGIDJob = {
+      ...jobBase,
+      details: {
+        customFields: {
+          offerCustomBlock4: {
+            customCodeTable2: {
+              clientCode: "12_mois",
+              type: null,
+            },
+          },
+        },
+      },
+    }
+    const result = franceTravailCEGIDMapper(job, agences)
+    expect(result).not.toBeNull()
+    expect(result?.contract_duration).toBe(12)
+  })
+
+  it("should return null for offers with contract duration < 6 months", async () => {
+    const job: IFranceTravailCEGIDJob = {
+      ...jobBase,
+      details: {
+        customFields: {
+          offerCustomBlock4: {
+            customCodeTable2: {
+              clientCode: "3_mois",
+              type: null,
+            },
+          },
+        },
+      },
+    }
+    expect(franceTravailCEGIDMapper(job, agences)).toBeNull()
+  })
+
+  it("should include offers with contract duration exactly 6 months", async () => {
+    const job: IFranceTravailCEGIDJob = {
+      ...jobBase,
+      details: {
+        customFields: {
+          offerCustomBlock4: {
+            customCodeTable2: {
+              clientCode: "6_mois",
+              type: null,
+            },
+          },
+        },
+      },
+    }
+    const result = franceTravailCEGIDMapper(job, agences)
+    expect(result).not.toBeNull()
+    expect(result?.contract_duration).toBe(6)
+  })
+
+  it("should include offers with DUREE_A_DEFINIR and contract_duration undefined", async () => {
+    const job: IFranceTravailCEGIDJob = {
+      ...jobBase,
+      details: {
+        customFields: {
+          offerCustomBlock4: {
+            customCodeTable2: {
+              clientCode: "DUREE_A_DEFINIR",
+              type: null,
+            },
+          },
+        },
+      },
+    }
+    const result = franceTravailCEGIDMapper(job, agences)
+    expect(result).not.toBeNull()
+    expect(result?.contract_duration).toBeUndefined()
+  })
 })
