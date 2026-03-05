@@ -8,12 +8,11 @@ export const mockLab = () => {
     .post(new RegExp("/model/scores", "g"))
     .reply(function (_uri, requestBody) {
       const typedBody = requestBody as { items: IGetLabClassificationBatch }
-      const apiResponse: IClassificationLabBatchResponse = typedBody.items.map(({ id, text }) => ({
+      const apiResponse: IClassificationLabBatchResponse = typedBody.items.map(({ id }) => ({
         id,
-        label: "entreprise",
+        label: "publish",
         model: "model",
-        scores: { cfa: 0, entreprise: 0.9, entreprise_cfa: 0 },
-        text,
+        scores: { publish: 0.9, unpublish: 0.1 },
       }))
       return [
         200,
