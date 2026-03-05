@@ -10,7 +10,7 @@ describe("import RH Alternance", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
 
     return async () => {
       vi.useRealTimers()
