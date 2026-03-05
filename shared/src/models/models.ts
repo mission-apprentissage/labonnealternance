@@ -35,7 +35,6 @@ import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
 import rawDecathlonModel from "./rawDecathlon.model.js"
-import rawFranceTravail from "./rawFranceTravail.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawJobteaserModel from "./rawJobteaser.model.js"
 import rawJoobleModel from "./rawJooble.model.js"
@@ -61,6 +60,7 @@ import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
 import seoVilleModel from "./seoVille.model.js"
+import seoMetierModel from "./seoMetier.model.js"
 import sessionModel from "./session.model.js"
 import sitemapModel from "./sitemap.model.js"
 import trafficSourcesModel from "./trafficSources.model.js"
@@ -70,6 +70,8 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
+import rawApecModel from "./rawApec.model.js"
+import rawFranceTravailModel from "./rawFranceTravail.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -128,6 +130,7 @@ const modelDescriptorMap = {
   [reportedCompanyModel.collectionName]: reportedCompanyModel,
   [cacheInfosSiretModel.collectionName]: cacheInfosSiretModel,
   [referentielCommuneModel.collectionName]: referentielCommuneModel,
+  [rawApecModel.collectionName]: rawApecModel,
   [rawAtlasModel.collectionName]: rawAtlasModel,
   [rawKelioModel.collectionName]: rawKelioModel,
   [rawLaposteModel.collectionName]: rawLaposteModel,
@@ -136,11 +139,12 @@ const modelDescriptorMap = {
   [rawJobteaserModel.collectionName]: rawJobteaserModel,
   [rawMeteojobModel.collectionName]: rawMeteojobModel,
   [rawRHAlternanceModel.collectionName]: rawRHAlternanceModel,
-  [rawFranceTravail.collectionName]: rawFranceTravail,
+  [rawFranceTravailModel.collectionName]: rawFranceTravailModel,
   [rawFranceTravailCEGIDModel.collectionName]: rawFranceTravailCEGIDModel,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,
+  [seoMetierModel.collectionName]: seoMetierModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

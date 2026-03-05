@@ -1883,7 +1883,7 @@ describe("createJobOffer", () => {
   }
 
   beforeEach(async () => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     return () => {
@@ -1982,7 +1982,7 @@ describe("updateJobOffer", () => {
   }
 
   beforeEach(async () => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
     await getDbCollection("jobs_partners").insertOne(originalJob)
 
@@ -2076,7 +2076,7 @@ describe("findJobOpportunityById tests", () => {
 
   describe("getJobsPartnersByIdAsJobOfferApi", () => {
     beforeEach(async () => {
-      vi.useFakeTimers()
+      vi.useFakeTimers({ toFake: ["Date"] })
       vi.setSystemTime(now)
       await getDbCollection("jobs_partners").insertOne(originalJob)
 
@@ -2199,7 +2199,7 @@ describe("findJobOpportunityById tests", () => {
 
   describe("findJobOpportunityById", () => {
     beforeEach(async () => {
-      vi.useFakeTimers()
+      vi.useFakeTimers({ toFake: ["Date"] })
       vi.setSystemTime(now)
       await getDbCollection("jobs_partners").insertOne(originalJob)
       await getDbCollection("referentielromes").insertMany(romes)

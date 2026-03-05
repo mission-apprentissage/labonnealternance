@@ -19,7 +19,6 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
-import { isEmailBlacklisted } from "@/services/application.service"
 
 const require = createRequire(import.meta.url)
 
@@ -136,14 +135,12 @@ export const importRecruteurLbaToComputed = async () => {
             }
           }
 
-          const isEmailBl = apply_email ? await isEmailBlacklisted(apply_email) : false
-
           operations.push({
             updateOne: {
               filter: { workplace_siret: rest.workplace_siret },
               update: {
                 $set: {
-                  apply_email: isEmailBl ? null : apply_email,
+                  apply_email,
                   apply_phone,
                   offer_creation,
                   updated_at: importDate,
@@ -268,4 +265,30 @@ export const removeUnsubscribedRecruteursLbaFromComputedJobPartners = async () =
     subject: `mapping Raw => computed_jobs_partners`,
     message,
   })
+}
+
+export const clearBlacklistedEmailsRecruteursLba = async () => {
+  logger.info("clearBlacklistedEmailsRecruteursLba: chargement de la blacklist emails")
+  const blacklistedEmails = new Set(
+    (
+      await getDbCollection("emailblacklists")
+        .find({}, { projection: { email: 1 } })
+        .toArray()
+    ).map((d) => d.email as string)
+  )
+  logger.info(`clearBlacklistedEmailsRecruteursLba: ${blacklistedEmails.size} emails blacklistés chargés`)
+
+  const cursor = getDbCollection("computed_jobs_partners")
+    .find({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: { $ne: null } }, { projection: { _id: 1, apply_email: 1 } })
+    .stream()
+
+  let total = 0
+  for await (const doc of cursor as AsyncIterable<{ _id: IComputedJobsPartners["_id"]; apply_email: string }>) {
+    if (blacklistedEmails.has(doc.apply_email)) {
+      await getDbCollection("computed_jobs_partners").updateOne({ _id: doc._id }, { $set: { apply_email: null } })
+      total++
+    }
+  }
+
+  logger.info(`clearBlacklistedEmailsRecruteursLba: terminé, ${total} emails supprimés`)
 }

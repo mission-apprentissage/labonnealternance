@@ -7,7 +7,11 @@ import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners
 import { fillEntrepriseEngagementComputedJobsPartners } from "./fillEntrepriseEngagementComputedJobsPartners"
 import { fillLocationInfosForPartners } from "./fillLocationInfosForPartners"
 import { fillOpcoInfosForPartners } from "./fillOpcoInfosForPartners"
-import { removeMissingRecruteursLbaFromComputedJobPartners, removeUnsubscribedRecruteursLbaFromComputedJobPartners } from "./recruteur-lba/importRecruteursLbaRaw"
+import {
+  clearBlacklistedEmailsRecruteursLba,
+  removeMissingRecruteursLbaFromComputedJobPartners,
+  removeUnsubscribedRecruteursLbaFromComputedJobPartners,
+} from "./recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -20,6 +24,7 @@ export const fillComputedRecruteursLba = async () => {
 
   await removeMissingRecruteursLbaFromComputedJobPartners()
   await removeUnsubscribedRecruteursLbaFromComputedJobPartners()
+  await clearBlacklistedEmailsRecruteursLba()
   // reset checks
   await getDbCollection("computed_jobs_partners").updateMany(computedJobFilter, { $set: { business_error: null, jobs_in_success: [], errors: [] } })
   await fillEntrepriseEngagementComputedJobsPartners(context)

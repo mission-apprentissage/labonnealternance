@@ -56,7 +56,6 @@ paths = [
   '''\.infra/files/configs/mongodb/seed\.gpg''',
   '''\.infra/env.global\.yml''',
   '''\.infra/env.production\.yml''',
-  '''\.infra/env.pentest\.yml''',
   '''\.infra/env.recette\.yml''',
   '''\.infra/env.preview\.yml''',
   '''\.infra/env.local\.yml''',

@@ -33,7 +33,7 @@ describe("fillComputedJobsPartners", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     nock("https://entreprise.api.gouv.fr").get(/.*/).reply(404)

@@ -1,4 +1,3 @@
-import type { Filter } from "mongodb"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 
@@ -9,16 +8,15 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 const fields = ["workplace_description", "workplace_name", "offer_description", "offer_title"] as const satisfies (keyof IComputedJobsPartners)[]
 
 export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
-  const filters: Filter<IComputedJobsPartners>[] = [{ workplace_description: { $ne: null } }, { workplace_name: { $ne: null } }, { offer_description: { $ne: null } }]
-  if (addedMatchFilter) filters.push(addedMatchFilter)
-
+  const job = COMPUTED_ERROR_SOURCE.SANITIZE_TEXT_FIELDS
   return fillFieldsForComputedPartnersFactory({
-    job: COMPUTED_ERROR_SOURCE.SANITIZE_TEXT_FIELDS,
-    sourceFields: ["offer_title"],
+    job,
+    sourceFields: fields,
     filledFields: fields,
     groupSize: 500,
-    addedMatchFilter,
-    replaceMatchFilter: { $and: filters },
+    replaceMatchFilter: {
+      $and: [{ $or: fields.map((f) => ({ [f]: { $ne: null } })) }, { business_error: null }, { jobs_in_success: { $nin: [job] } }, ...(addedMatchFilter ? [addedMatchFilter] : [])],
+    },
     getData: async (documents) => {
       return documents.map((document) => {
         const { _id, workplace_description, offer_description, offer_title, workplace_name } = document

@@ -40,8 +40,18 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNot
 
       if (!geolocation) {
         if (workplace_geopoint) {
-          // on est capable de geolocaliser l'offre => non bloquant
-          return []
+          // on est capable de geolocaliser l'offre => non bloquant, pas de mise à jour nécessaire
+          return [
+            {
+              _id: document._id,
+              workplace_address_label: document.workplace_address_label,
+              workplace_address_street_label: document.workplace_address_street_label,
+              workplace_address_city: document.workplace_address_city,
+              workplace_address_zipcode: document.workplace_address_zipcode,
+              workplace_geopoint: document.workplace_geopoint,
+              business_error: document.business_error,
+            },
+          ]
         }
         // on essaie de géolocaliser avec le code postal et la ville
         if (workplace_address_zipcode && workplace_address_city) {

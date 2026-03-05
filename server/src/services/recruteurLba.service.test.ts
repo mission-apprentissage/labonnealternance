@@ -1,12 +1,13 @@
 import { badRequest, notFound } from "@hapi/boom"
 import { generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import { JOB_STATUS_ENGLISH } from "shared/models/job.model"
 import { ERecruteurLbaUpdateEventType } from "shared/models/index"
 import type { IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { getCompanyContactInfo, updateContactInfo } from "./recruteurLba.service"
+import { getCompanyContactInfo, getRecruteursLbaFromDB, updateContactInfo } from "./recruteurLba.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
@@ -160,5 +161,39 @@ describe("/lbacompany/:siret/contactInfo", () => {
 
     const eventCount = await getDbCollection("recruteurlbaupdateevents").countDocuments({})
     expect.soft(eventCount).toEqual(0)
+  })
+})
+
+describe("getRecruteursLbaFromDB", () => {
+  const activeRecruteur = generateJobsPartnersOfferPrivate({
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    workplace_siret: "58006820882692",
+    offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+  }) as IJobsPartnersRecruteurAlgoPrivate
+
+  const inactiveRecruteur = generateJobsPartnersOfferPrivate({
+    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+    workplace_siret: "13002526500013",
+    offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+  }) as IJobsPartnersRecruteurAlgoPrivate
+
+  beforeEach(async () => {
+    await getDbCollection("jobs_partners").insertMany([activeRecruteur, inactiveRecruteur])
+    return async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  it("retourne uniquement les recruteurs actifs", async () => {
+    const result = await getRecruteursLbaFromDB({ geo: null, romes: null, opco: null, departements: null, partners_to_exclude: null })
+
+    expect(result).toHaveLength(1)
+    expect(result[0].workplace_siret).toBe(activeRecruteur.workplace_siret)
+  })
+
+  it("retourne un tableau vide si RECRUTEURS_LBA est exclu des partenaires", async () => {
+    const result = await getRecruteursLbaFromDB({ geo: null, romes: null, opco: null, departements: null, partners_to_exclude: [JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
+
+    expect(result).toHaveLength(0)
   })
 })
