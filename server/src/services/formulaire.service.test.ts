@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb"
-import { removeAccents } from "shared"
+import { AccessEntityType, removeAccents } from "shared"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
@@ -9,8 +9,10 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import type { IEntreprise, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 
+import omit from "lodash-es/omit"
 import { createJob, getCompetencesRomeFromPartnerJob } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 
 useMongo()
@@ -21,12 +23,18 @@ describe("createJob", () => {
   let referentielRome: IReferentielRome
 
   beforeEach(async () => {
+    const mockApiEntrepriseInstance = mockApiEntreprise.infosEntreprise()
+
     const email = "entreprise@mail.fr"
     entreprise = generateEntrepriseFixture()
-    const role = generateRoleManagementFixture()
     user = generateUserWithAccountFixture({
       _id: new ObjectId("670ce1ded6ce30c3c90a0e1d"),
       email,
+    })
+    const role = generateRoleManagementFixture({
+      authorized_type: AccessEntityType.ENTREPRISE,
+      authorized_id: entreprise._id.toString(),
+      user_id: user._id,
     })
     referentielRome = generateReferentielRome()
     await getDbCollection("userswithaccounts").insertOne(user)
@@ -35,6 +43,7 @@ describe("createJob", () => {
     await getDbCollection("entreprises").insertOne(entreprise)
 
     return async () => {
+      mockApiEntrepriseInstance.persist(false)
       await getDbCollection("userswithaccounts").deleteMany({})
       await getDbCollection("entreprises").deleteMany({})
       await getDbCollection("rolemanagements").deleteMany({})
@@ -54,6 +63,13 @@ describe("createJob", () => {
       },
     })
   }
+
+  it("should insert a job", async () => {
+    const job = generateValidJobWritable()
+    const result = await createJob({ user, siret: entreprise.siret, job })
+
+    expect.soft(omit(result, ["_id", "apply_recipient_id", "apply_url", "created_at", "lba_url", "offer_creation", "partner_job_id", "updated_at"])).toMatchSnapshot()
+  })
 
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
     const job = generateValidJobWritable()

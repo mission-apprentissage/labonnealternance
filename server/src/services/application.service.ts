@@ -48,6 +48,7 @@ import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
+const MAX_APPLICATIONS_PER_OFFER = 80
 
 const publicUrl = config.publicUrl
 
@@ -279,6 +280,7 @@ export const sendApplicationV2 = async ({
     type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
   }
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
+  await checkMaxApplicationCount(lbaJob)
 
   const recruteurEmail = job.apply_email?.toLowerCase()
   if (!recruteurEmail) {
@@ -586,6 +588,25 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
 
   if (callerApplicationCount >= MAX_MESSAGES_PAR_SIRET_PAR_CALLER) {
     throw tooManyRequests(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
+  }
+}
+
+const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
+  const { type, job } = lbaJob
+  let applicationCount: number
+  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+    applicationCount = await getDbCollection("applications").countDocuments({
+      job_id: job._id,
+    })
+  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
+    applicationCount = await getDbCollection("applications").countDocuments({
+      company_siret: job.workplace_siret,
+    })
+  } else {
+    assertUnreachable(type)
+  }
+  if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
+    await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } })
   }
 }
 

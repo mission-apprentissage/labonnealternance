@@ -13,7 +13,7 @@ describe("fillComputedJobsPartners", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     return async () => {

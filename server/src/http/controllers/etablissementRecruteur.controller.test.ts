@@ -1,9 +1,12 @@
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
+import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import mailer from "@/services/mailer.service"
@@ -29,10 +32,31 @@ describe("POST /etablissement/creation", () => {
   beforeEach(async () => {
     vi.clearAllMocks()
 
-    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+", "g")).reply(200, apiReferentielCatalogueFixture)
+    const mockEntreprise = nock("https://entreprise.api.gouv.fr/v3/insee")
+      .persist()
+      .get(new RegExp("/sirene/etablissements/diffusibles/"))
+      .reply(200, apiEntrepriseEtablissementFixture.dinum)
+
+    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
+
+    const mockGeocoding = nock("https://data.geopf.fr:443/geocodage")
+      .persist()
+      .get("/search")
+      .query(true)
+      .reply(200, {
+        features: [
+          {
+            geometry: parisFixture.centre,
+            properties: generateFeaturePropertyFixture({ city: parisFixture.nom, postcode: parisFixture.codesPostaux[0], name: "20 AVENUE DE SEGUR" }),
+          },
+        ],
+      })
 
     return async () => {
       mockCfa.persist(false)
+      mockGeocoding.persist(false)
+      mockEntreprise.persist(false)
+
       await getDbCollection("jobs_partners").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()
@@ -67,7 +91,7 @@ describe("POST /etablissement/creation", () => {
   const callCreation = (body: CreationBody) => entrepriseSdk(httpClient).create(body)
 
   describe("Création d'entreprise", () => {
-    it("Vérifie que le recruteur est créé avec une offre", async () => {
+    it.only("Vérifie que le recruteur est créé avec une offre", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
       expect.soft(response.statusCode).toBe(200)
       const { user } = response.json() as CreationResponse
