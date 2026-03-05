@@ -16,7 +16,7 @@ const basePoste = {
   recrutement_ouvert: "True",
   description: "Description détaillée du poste en alternance sur 30+ caractères",
   appellation_modifiee: "Développeur web en alternance",
-  type_contrat: "APPRENTICESHIP",
+  type_contrat: "Contrat d'apprentissage",
   nombre_postes_ouverts: 2,
   lieu: {
     nom: "Paris",
@@ -32,16 +32,20 @@ const baseJob = generateEmploiInclusionJobFixture({
 })
 
 describe("isEligiblePoste", () => {
-  it("returns true when recrutement_ouvert is True and type_contrat is APPRENTICESHIP", () => {
-    expect(isEligiblePoste(basePoste)).toBe(true)
+  it("returns true for Contrat d'apprentissage regardless of recrutement_ouvert", () => {
+    expect(isEligiblePoste({ ...basePoste, type_contrat: "Contrat d'apprentissage", recrutement_ouvert: "False" })).toBe(true)
   })
 
-  it("returns false when recrutement_ouvert is not True", () => {
-    expect(isEligiblePoste({ ...basePoste, recrutement_ouvert: "False" })).toBe(false)
+  it("returns true for Contrat de professionalisation when recrutement_ouvert is True", () => {
+    expect(isEligiblePoste({ ...basePoste, type_contrat: "Contrat de professionalisation", recrutement_ouvert: "True" })).toBe(true)
   })
 
-  it("returns false when type_contrat is not APPRENTICESHIP", () => {
-    expect(isEligiblePoste({ ...basePoste, type_contrat: "PROFESSIONAL_TRAINING" })).toBe(false)
+  it("returns false for Contrat de professionalisation when recrutement_ouvert is not True", () => {
+    expect(isEligiblePoste({ ...basePoste, type_contrat: "Contrat de professionalisation", recrutement_ouvert: "False" })).toBe(false)
+  })
+
+  it("returns false for other contract types", () => {
+    expect(isEligiblePoste({ ...basePoste, type_contrat: "Contrat à durée indéterminée" })).toBe(false)
   })
 })
 
@@ -78,7 +82,7 @@ describe("emploiInclusionJobToJobsPartners", () => {
       offer_multicast: false,
       offer_opening_count: 2,
       offer_origin: null,
-      offer_rome_codes: ["M1805"],
+      offer_rome_codes: null,
       offer_status: "Active",
       offer_target_diploma: null,
       offer_title: "Développeur web en alternance",

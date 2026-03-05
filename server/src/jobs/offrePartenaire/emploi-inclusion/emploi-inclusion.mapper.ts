@@ -10,9 +10,8 @@ import type { IEmploiInclusionJob } from "@/common/apis/emploiInclusion/emploi-i
 
 type IEmploiInclusionPoste = IEmploiInclusionJob["postes"][number]
 
-const APPRENTICESHIP_CONTRACT_TYPE = "APPRENTICESHIP"
-
-export const isEligiblePoste = (poste: IEmploiInclusionPoste): boolean => poste.recrutement_ouvert === "True" && poste.type_contrat === APPRENTICESHIP_CONTRACT_TYPE
+export const isEligiblePoste = (poste: IEmploiInclusionPoste): boolean =>
+  (poste.recrutement_ouvert == "True" && poste.type_contrat == "Contrat de professionalisation") || poste.type_contrat == "Contrat d'apprentissage"
 
 export const emploiInclusionJobToJobsPartners = (job: IEmploiInclusionJob, poste: IEmploiInclusionPoste): IComputedJobsPartners => {
   const now = new Date()
@@ -43,7 +42,6 @@ export const emploiInclusionJobToJobsPartners = (job: IEmploiInclusionJob, poste
     offer_title: poste.appellation_modifiee || null,
     offer_description: poste.description || null,
     offer_desired_skills: poste.profil_recherche ? [poste.profil_recherche] : null,
-    offer_rome_codes: poste.rome ? [poste.rome] : null,
     offer_opening_count: poste.nombre_postes_ouverts,
     offer_creation: dayjs.tz(poste.cree_le).toDate(),
     offer_expiration: dayjs.tz(poste.cree_le).add(2, "months").toDate(),

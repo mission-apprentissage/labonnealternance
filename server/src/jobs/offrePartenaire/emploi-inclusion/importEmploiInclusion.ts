@@ -41,52 +41,69 @@ export const importEmploiInclusionRaw = async () => {
     await getDbCollection(rawCollectionName).insertMany([...jobsById.values()].map((job) => ({ ...job, _id: new ObjectId(), createdAt: now })))
   }
 
-  logger.info(`import emploi-inclusion raw terminé : ${jobsById.size} entreprises stockées`)
+  const message = `import ${partnerLabel} terminé : ${jobsById.size} offres importées`
+  logger.info(message)
+  notifyToSlack({
+    subject: `import des offres ${partnerLabel} dans raw`,
+    message,
+  })
 }
 
 export const importEmploiInclusionToComputed = async () => {
-  logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel}`)
+  const totalRaw = await getDbCollection(rawCollectionName).countDocuments()
+  logger.info(`début d'import dans computed_jobs_partners pour partner_label=${partnerLabel} — ${totalRaw} documents raw`)
 
   const importDate = new Date()
-  const counters = { total: 0, success: 0, error: 0 }
+  const counters = { rawParseError: 0, rawOk: 0, postesTotal: 0, postesEligibles: 0, success: 0, insertError: 0 }
 
   await getDbCollection("computed_jobs_partners").deleteMany({ partner_label: partnerLabel })
 
   const cursor = getDbCollection(rawCollectionName).find({})
 
-  for await (const document of cursor) {
-    const parsed = ZEmploiInclusionJob.safeParse(document)
-    if (!parsed.success) {
-      counters.error++
-      logger.error({ err: parsed.error }, `emploi-inclusion: document raw invalide id=${document.id}`)
-      continue
-    }
+  try {
+    for await (const document of cursor) {
+      const parsed = ZEmploiInclusionJob.safeParse(document)
+      if (!parsed.success) {
+        counters.rawParseError++
+        if (counters.rawParseError <= 3) {
+          logger.error({ err: parsed.error.issues }, `emploi-inclusion: document raw invalide id=${document.id}`)
+        }
+        continue
+      }
 
-    const job = parsed.data
-    for (const poste of job.postes.filter(isEligiblePoste)) {
-      counters.total++
-      try {
-        const computedJobPartner = emploiInclusionJobToJobsPartners(job, poste)
-        await getDbCollection("computed_jobs_partners").insertOne({
-          ...computedJobPartner,
-          partner_label: partnerLabel,
-          created_at: importDate,
-          updated_at: importDate,
-        })
-        counters.success++
-      } catch (err) {
-        counters.error++
-        const newError = internal(`error converting emploi-inclusion poste id=${poste.id} for job id=${job.id}`)
-        logger.error(err, newError.message)
-        newError.cause = err
-        sentryCaptureException(newError)
+      counters.rawOk++
+      const job = parsed.data
+      counters.postesTotal += job.postes.length
+      const eligiblePostes = job.postes.filter(isEligiblePoste)
+      counters.postesEligibles += eligiblePostes.length
+
+      for (const poste of eligiblePostes) {
+        try {
+          const computedJobPartner = emploiInclusionJobToJobsPartners(job, poste)
+          console.log("computedJobPartner", computedJobPartner)
+          await getDbCollection("computed_jobs_partners").insertOne({
+            ...computedJobPartner,
+            partner_label: partnerLabel,
+            created_at: importDate,
+            updated_at: importDate,
+          })
+          counters.success++
+        } catch (err) {
+          counters.insertError++
+          const newError = internal(`error converting emploi-inclusion poste id=${poste.id} for job id=${job.id}`)
+          logger.error(err, newError.message)
+          newError.cause = err
+          sentryCaptureException(newError)
+        }
       }
     }
+  } finally {
+    logger.info({ counters }, `emploi-inclusion: fin du parcours cursor`)
   }
 
-  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. total=${counters.total}, success=${counters.success}, errors=${counters.error}`
+  const message = `import dans computed_jobs_partners pour partner_label=${partnerLabel} terminé. rawOk=${counters.rawOk}, rawParseError=${counters.rawParseError}, postesTotal=${counters.postesTotal}, postesEligibles=${counters.postesEligibles}, success=${counters.success}, insertError=${counters.insertError}`
   logger.info(message)
-  await notifyToSlack({ subject: `mapping Raw => computed_jobs_partners`, message, error: counters.error > 0 })
+  await notifyToSlack({ subject: `mapping Raw => computed_jobs_partners`, message, error: counters.rawParseError > 0 || counters.insertError > 0 })
 }
 
 export const processEmploiInclusion = async () => {
