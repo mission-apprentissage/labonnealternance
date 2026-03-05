@@ -189,8 +189,8 @@ export const createJob = async ({
     throw internal("unexpected: no job found after job creation")
   }
 
-  // if first offer creation for an Entreprise, send specific mail
-  if (jobs.length === 1 && is_delegated === false) {
+  // if first offer is pending validation, skip the publication email (it will be sent when the user validates)
+  if (jobs.length === 1 && is_delegated === false && newJobStatus !== JOB_STATUS.ACTIVE) {
     if (source) {
       await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
     }

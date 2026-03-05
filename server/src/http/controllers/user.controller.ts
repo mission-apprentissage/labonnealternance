@@ -11,7 +11,7 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { deleteFormulaire, getFormulaireFromUserId, getFormulaireFromUserIdWithOpco } from "@/services/formulaire.service"
+import { deleteFormulaire } from "@/services/formulaire.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -209,11 +209,14 @@ export default (server: Server) => {
       if (!requestUser) throw badRequest()
 
       const { userId } = req.params
-      const role = await getDbCollection("rolemanagements").findOne({
-        user_id: new ObjectId(userId),
-        // TODO à activer lorsque le frontend passe organizationId correctement
-        // authorized_id: organizationId,
-      })
+      // Prefer GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
+      const allRoles = await getDbCollection("rolemanagements")
+        .find({ user_id: new ObjectId(userId) })
+        .toArray()
+      const role =
+        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
+        allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
+        allRoles[0]
       if (!role) {
         throw badRequest("role not found")
       }
@@ -246,7 +249,11 @@ export default (server: Server) => {
       const opco: OPCOS_LABEL | null = opcoOrAdminRole?.authorized_type === AccessEntityType.OPCO ? parseEnum(OPCOS_LABEL, opcoOrAdminRole.authorized_id) : null
 
       if (type === ENTREPRISE) {
-        formulaire = opco ? await getFormulaireFromUserIdWithOpco(userId, opco) : await getFormulaireFromUserId(userId)
+        formulaire = await getDbCollection("recruiters").findOne({
+          managed_by: userId,
+          establishment_siret: organization!.siret,
+          ...(opco ? { opco } : {}),
+        })
         jobs = formulaire?.jobs ?? []
       }
 
@@ -261,7 +268,7 @@ export default (server: Server) => {
           event.user = `${user.first_name} ${user.last_name}`
         })
       }
-      return res.status(200).send({ ...userRecruteur, jobs })
+      return res.status(200).send({ ...userRecruteur, jobs, organizationId: role.authorized_id })
     }
   )
 
@@ -324,13 +331,13 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { reason } = req.body
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.post["/user/:userId/organization/:organizationId/deactivate"]).value
       if (!requestUser) throw badRequest()
       await deactivateUserRole({
         reason,
         userId,
+        organizationId: organizationId.toString(),
         requestedBy: requestUser,
       })
       return res.status(200).send({})
@@ -344,12 +351,12 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.post["/user/:userId/organization/:organizationId/activate"])],
     },
     async (req, res) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.post["/user/:userId/organization/:organizationId/activate"]).value
       if (!requestUser) throw badRequest()
       await activateUserRole({
         userId,
+        organizationId: organizationId.toString(),
         requestedBy: requestUser,
       })
       return res.status(200).send({})
@@ -370,7 +377,6 @@ export default (server: Server) => {
       }
 
       const { reason } = req.body
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId, organizationId } = req.params
       const requestUser = getUserFromRequest(req, zRoutes.post["/user/:userId/organization/:organizationId/not-my-opco"]).value
       if (!requestUser) throw badRequest()
@@ -378,6 +384,7 @@ export default (server: Server) => {
         reason,
         requestedBy: requestUser,
         userId,
+        organizationId: organizationId.toString(),
       })
       return res.status(200).send({})
     }

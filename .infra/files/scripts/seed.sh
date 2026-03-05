@@ -34,5 +34,4 @@ echo "Restoring database $TARGET_DB..."
   --nsTo="$TARGET_DB.*" \
   --drop \
   --gzip \
-  --noIndexRestore \
   "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/?authSource=local&directConnection=true"
