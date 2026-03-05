@@ -151,10 +151,6 @@ export const getPublicUserRecruteurProps = async (
       return { error: `inattendu : entreprise non trouvée pour user id=${userId}` }
     }
     const { siret } = entreprise
-    const recruiter = await getDbCollection("recruiters").findOne({ managed_by: userId.toString(), establishment_siret: siret })
-    if (!recruiter) {
-      return { error: `inattendu : recruiter non trouvé pour user id=${userId} et siret=${siret}` }
-    }
     const establishment_id = buildEstablishmentId(userId, entreprise.siret)
     return { ...commonFields, establishment_siret: siret, establishment_id }
   }

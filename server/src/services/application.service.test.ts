@@ -480,7 +480,6 @@ describe("checkMaxApplicationCount", () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applications").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
-    await getDbCollection("recruiters").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
   })
 

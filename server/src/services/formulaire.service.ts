@@ -334,7 +334,14 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
 
 export const getFormulaireWithRomeDetail = async ({ establishment_id }: { establishment_id: string }): Promise<IRecruiter | null> => {
   const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
-  return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: false })
+  const recruiter = await getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: false })
+  recruiter?.jobs.forEach((job) => {
+    // @ts-expect-error
+    delete job.rome_detail.couple_appellation_rome
+    // @ts-expect-error
+    delete job.rome_detail._id
+  })
+  return recruiter
 }
 
 export const getFormulaireWithRomeDetailAndApplicationCount = async ({
