@@ -142,6 +142,10 @@ async function getCEGIDOfferDetail(url: string, token: string) {
   if (parseResult.success) {
     return parseResult.data
   } else {
+    console.warn("Failed to parse CEGID offer detail", {
+      url,
+      error: parseResult.error,
+    })
     return null
   }
 }
