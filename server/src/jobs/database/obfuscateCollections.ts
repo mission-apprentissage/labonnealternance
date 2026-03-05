@@ -18,6 +18,8 @@ import config from "@/config"
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
+// leave this function to be used.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function reduceModel(model: CollectionName, limit = 20000) {
   logger.info(`reducing collection ${model} to ${limit} latest documents`)
   try {
@@ -150,6 +152,18 @@ const obfuscatePartnerJobs = async () => {
   )
 }
 
+const reduceRecruteursLba = async (limit = 75_000) => {
+  logger.info(`reducing jobs_partners recruteurs_lba to ${limit} latest documents`)
+  const result = await getDbCollection("jobs_partners")
+    .aggregate([{ $match: { partner_label: "recruteurs_lba" } }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }])
+    .toArray()
+  const idsToDelete = result.map((val) => val._id)
+  const chunks = chunk(idsToDelete, 1_000)
+  if (chunks.length) {
+    await Promise.all(chunks.map(async (chunk) => await getDbCollection("jobs_partners").deleteMany({ _id: { $in: chunk } })))
+  }
+}
+
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
   const role = await getDbCollection("rolemanagements").findOne({ authorized_type: type })
   const replacement = {
@@ -265,48 +279,54 @@ export async function obfuscateCollections(): Promise<void> {
   await dropUnknownCollections()
 
   const collectionsToEmpty: CollectionName[] = [
-    "apicalls",
-    "applicants",
-    "applications",
-    "appointments",
-    "cache_geolocation",
-    "cache_siret",
-    "unsubscribedrecruteurslba",
-    "unsubscribedofs",
-    "trafficsources",
-    "sessions",
-    "rolemanagement360",
-    "reported_companies",
-    "recruteurlbaupdateevents",
-    "jobs",
-    "eligible_trainings_for_appointments_histories",
-    "applicants_email_logs",
     "anonymized_applicants",
     "anonymized_applications",
     "anonymized_appointments",
     "anonymized_recruiters",
     "anonymized_users",
     "anonymized_userswithaccounts",
+    "apicalls",
+    "applicants",
+    "applicants_email_logs",
+    "applications",
+    "appointments",
+    "cache_classification",
+    "cache_geolocation",
+    "cache_siret",
+    "computed_jobs_partners",
+    "eligible_trainings_for_appointments_histories",
+    "emailblacklists",
+    "jobs",
+    "opcos",
+    "raw_apec",
+    "raw_atlas",
+    "raw_decathlon",
+    // "raw_emploi_inclusion",
+    "raw_engagement_jeunes",
+    "raw_france_travail_cegid",
     "raw_francetravail",
-    "raw_pass",
     "raw_hellowork",
+    "raw_jobteaser",
+    "raw_jooble",
     "raw_kelio",
     "raw_laposte",
     "raw_leboncoin",
-    "raw_jooble",
-    "raw_jobteaser",
+    "raw_meteojob",
+    "raw_monster",
+    "raw_nos_talents_nos_emplois",
+    "raw_pass",
     "raw_rhalternance",
     "raw_recruteurslba",
     "raw_toulouse_metropole",
-    "raw_engagement_jeunes",
-    "raw_france_travail_cegid",
-    "raw_monster",
-    "raw_nos_talents_nos_emplois",
     "raw_vite_un_emploi",
-    "raw_atlas",
-    "raw_meteojob",
-    "raw_decathlon",
-    "computed_jobs_partners",
+    "recruteurlbaupdateevents",
+    "reported_companies",
+    "rolemanagement360",
+    "sessions",
+    "trafficsources",
+    "unsubscribedofs",
+    "unsubscribedrecruteurslba",
+    "users",
   ]
 
   await Promise.all(
@@ -318,13 +338,10 @@ export async function obfuscateCollections(): Promise<void> {
     })
   )
 
-  await reduceModel("emailblacklists", 100)
-  await reduceModel("users", 10)
-  await reduceModel("opcos", 5000)
-
   await obfuscateApplicants()
   await obfuscateApplications()
   await obfuscatePartnerJobs()
+  await reduceRecruteursLba()
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateElligibleTrainingsForAppointment()
@@ -332,8 +349,11 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateFormations()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
+<<<<<<< lbac-3638-suppression-recruiters
   await obfuscatePartnerJobs()
   await obfuscateEntreprisesManagedByCfa()
+=======
+>>>>>>> main
 
   await recreateIndexes({ drop: true })
 }
