@@ -31,7 +31,7 @@ import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.servi
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
+import { emailHasActiveRole, isUserEmailChecked } from "./userWithAccount.service"
 
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
@@ -434,13 +434,9 @@ export const entrepriseOnboardingWorkflow = {
   ): Promise<IBusinessError | { formulaire: { establishment_id: string; opco: OPCOS_LABEL }; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
     const formatedEmail = email.toLocaleLowerCase()
-    // TODO change this into getMainRoleManagement ?
-    if (await getUserWithAccountByEmail(formatedEmail)) {
+    if (await emailHasActiveRole(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
-    // if (formulaireExist) {
-    //   return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
-    // }
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     let isSiretInternalError = false
     try {

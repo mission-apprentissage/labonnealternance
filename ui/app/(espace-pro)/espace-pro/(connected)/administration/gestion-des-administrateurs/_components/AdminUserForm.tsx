@@ -36,7 +36,7 @@ export const AdminUserForm = ({
   onUpdate?: () => void
 }) => {
   const toast = useToast()
-  const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString())
+  const { activate: activateUser, deactivate: deactivateUser } = useUserPermissionsActions(user?._id.toString(), role?.authorized_id ?? "")
 
   const errorHandler = (error: any) => {
     if (error && error instanceof ApiError && error.context?.statusCode >= 400) {

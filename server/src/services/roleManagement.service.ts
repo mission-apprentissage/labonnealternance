@@ -151,11 +151,11 @@ export const getPublicUserRecruteurProps = async (
       return { error: `inattendu : entreprise non trouvée pour user id=${userId}` }
     }
     const { siret } = entreprise
-    const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
-    if (!user) {
-      return { error: `inattendu : user non trouvé` }
+    const recruiter = await getDbCollection("recruiters").findOne({ managed_by: userId.toString(), establishment_siret: siret })
+    if (!recruiter) {
+      return { error: `inattendu : recruiter non trouvé pour user id=${userId} et siret=${siret}` }
     }
-    const establishment_id = buildEstablishmentId(user._id, entreprise.siret)
+    const establishment_id = buildEstablishmentId(userId, entreprise.siret)
     return { ...commonFields, establishment_siret: siret, establishment_id }
   }
   if (type === OPCO) {
@@ -219,27 +219,25 @@ export const getOrganizationFromRole = async (role: IRoleManagement): Promise<IC
 const adminOrOpcoUpdatePermissionToUser = async ({
   reason,
   userId,
+  organizationId,
   status,
   requestedBy,
 }: {
   reason: string
   userId: ObjectId
+  organizationId: string
   requestedBy: IUserWithAccount
   status: AccessStatus
 }) => {
-  const roles = await getDbCollection("rolemanagements").find({ user_id: userId }).toArray()
-  if (roles.length !== 1) {
-    throw internal(`inattendu : attendu 1 role, ${roles.length} roles trouvés pour user id=${userId}`)
+  const role = await getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_id: organizationId })
+  if (!role) {
+    throw internal(`inattendu : role introuvable pour user id=${userId} et organization id=${organizationId}`)
   }
-  const [mainRole] = roles
   const updatedRole = await modifyPermissionToUser(
     {
       user_id: userId,
-      authorized_id: mainRole.authorized_id,
-      // WARNING : ce code est temporaire tant qu'on sait qu'un user n'a qu'au plus 1 role
-      // authorized_id: organizationId.toString(),
-      authorized_type: mainRole.authorized_type,
-      // authorized_type: organizationType,
+      authorized_id: role.authorized_id,
+      authorized_type: role.authorized_type,
       origin: "action admin ou opco",
     },
     {
@@ -252,12 +250,23 @@ const adminOrOpcoUpdatePermissionToUser = async ({
   return updatedRole
 }
 
-export const entrepriseIsNotMyOpco = async ({ reason, userId, requestedBy }: { reason: string; userId: ObjectId; requestedBy: IUserWithAccount }) => {
+export const entrepriseIsNotMyOpco = async ({
+  reason,
+  userId,
+  organizationId,
+  requestedBy,
+}: {
+  reason: string
+  userId: ObjectId
+  organizationId: string
+  requestedBy: IUserWithAccount
+}) => {
   const updatedRole = await adminOrOpcoUpdatePermissionToUser({
     reason,
     status: AccessStatus.AWAITING_VALIDATION,
     requestedBy,
     userId,
+    organizationId,
   })
 
   const entreprise = await getDbCollection("entreprises").findOneAndUpdate(
@@ -301,13 +310,24 @@ export const sendDeactivatedRecruteurMail = async ({
   })
 }
 
-export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reason: string; userId: ObjectId; requestedBy: IUserWithAccount }) => {
+export const deactivateUserRole = async ({
+  reason,
+  userId,
+  organizationId,
+  requestedBy,
+}: {
+  reason: string
+  userId: ObjectId
+  organizationId: string
+  requestedBy: IUserWithAccount
+}) => {
   const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   if (!user) throw badRequest()
 
   const updatedRole = await adminOrOpcoUpdatePermissionToUser({
     reason,
     userId,
+    organizationId,
     requestedBy,
     status: AccessStatus.DENIED,
   })
@@ -339,13 +359,14 @@ export const deactivateUserRole = async ({ reason, userId, requestedBy }: { reas
   }
 }
 
-export const activateUserRole = async ({ userId, requestedBy }: { userId: ObjectId; requestedBy: IUserWithAccount }) => {
+export const activateUserRole = async ({ userId, organizationId, requestedBy }: { userId: ObjectId; organizationId: string; requestedBy: IUserWithAccount }) => {
   const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   if (!user) throw badRequest()
 
   const updatedRole = await adminOrOpcoUpdatePermissionToUser({
     reason: "",
     userId,
+    organizationId,
     requestedBy,
     status: AccessStatus.GRANTED,
   })
@@ -363,7 +384,7 @@ export const activateUserRole = async ({ userId, requestedBy }: { userId: Object
   await activateUser(user, requestedBy._id.toString())
 
   // validate user email addresse
-  await sendWelcomeEmailToUserRecruteur(user)
+  await sendWelcomeEmailToUserRecruteur(user, updatedRole)
   await sendEngagementHandicapEmailIfNeeded(user, updatedRole)
 }
 

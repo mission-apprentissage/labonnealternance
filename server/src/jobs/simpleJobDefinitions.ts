@@ -22,9 +22,11 @@ import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formation
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
+import { processApec } from "./offrePartenaire/apec/processApec"
 import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
+import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
@@ -47,6 +49,7 @@ import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offreParten
 import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
+import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
@@ -71,8 +74,6 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
-import { processApec } from "./offrePartenaire/apec/processApec"
-import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -414,6 +415,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillEntrepriseEngagementJobsPartners,
     description: "Mise à jour des handi-engagement des offres actives",
+  },
+  {
+    fct: cleanClosedCompanies,
+    description: "Traite les recruteurs dont l'entreprise a fermé en les archivant et en désactivant les comptes associés",
   },
   {
     fct: processApec,
