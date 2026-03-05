@@ -80,7 +80,6 @@ export const importEmploiInclusionToComputed = async () => {
       for (const poste of eligiblePostes) {
         try {
           const computedJobPartner = emploiInclusionJobToJobsPartners(job, poste)
-          console.log("computedJobPartner", computedJobPartner)
           await getDbCollection("computed_jobs_partners").insertOne({
             ...computedJobPartner,
             partner_label: partnerLabel,
