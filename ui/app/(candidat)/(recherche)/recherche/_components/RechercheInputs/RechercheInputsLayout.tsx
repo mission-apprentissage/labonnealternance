@@ -35,7 +35,7 @@ export function RechercheInputsLayout({
           xs: "stretch",
           md: forceMobileStyle ? "stretch" : "flex-start",
         },
-        gap: fr.spacing("2w"),
+        gap: fr.spacing("4v"),
       }}
     >
       {viewTypeCheckboxs && (

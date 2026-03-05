@@ -10,7 +10,7 @@ jobs:
       - uses: hmarr/debug-action@v2
 
   deploy_preview:
-    if: (startsWith(github.event.comment.body, '🚀') || startsWith(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
+    if: (contains(github.event.comment.body, '🚀') || contains(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
@@ -90,11 +90,21 @@ jobs:
         run: |
           sudo pipx inject ansible-core jmespath
 
+      - name: Detect force reseed
+        id: force_seed
+        run: |
+          if echo "${{ github.event.comment.body }}" | grep -qF '🌱'; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run playbook
         run: .bin/mna-lba app:deploy preview "${{ github.event.issue.number }}"
         env:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}
+          FORCE_SEED: ${{ steps.force_seed.outputs.value }}
 
       - name: Encrypt logs
         run: .bin/mna-lba app:deploy:log:encrypt
@@ -128,7 +138,8 @@ jobs:
 
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
-            To re-deploy just add a comment with :rocket:
+            To re-deploy just add a comment with :rocket: (data is preserved)
+            To re-deploy and reset data add a comment with :seedling: :rocket:
           comment-tag: deployment
           mode: recreate
           pr-number: ${{ github.event.issue.number }}

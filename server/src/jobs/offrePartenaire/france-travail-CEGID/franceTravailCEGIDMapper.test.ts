@@ -10,7 +10,7 @@ const now = new Date("2024-07-21T04:49:06.000+02:00")
 
 describe("franceTravailCEGIDMapper", async () => {
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     return () => {

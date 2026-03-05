@@ -36,14 +36,14 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
 
   return (
     <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+      <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Supprimer {establishment_raison_sociale ?? ""}
         </Typography>
 
         <Box
           sx={{
-            pb: 2,
+            pb: fr.spacing("4v"),
           }}
         >
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>

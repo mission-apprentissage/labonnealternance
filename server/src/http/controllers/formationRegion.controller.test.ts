@@ -13,7 +13,7 @@ describe("formationRegionV1", () => {
   const httpClient = useServer()
 
   beforeAll(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2024-08-21"))
 
     return () => {

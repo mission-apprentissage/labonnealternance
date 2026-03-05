@@ -2,7 +2,7 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
-import { ERecruteurLbaUpdateEventType, JobCollectionName } from "shared"
+import { ERecruteurLbaUpdateEventType, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
@@ -246,7 +246,7 @@ export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements, p
     return []
   }
 
-  const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
+  const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }
 
   if (romes) {
     query.offer_rome_codes = { $in: romes }
@@ -316,7 +316,7 @@ const getCompanies = async ({
   try {
     const distance = radius || 10
 
-    const query: Filter<IJobsPartnersRecruteurAlgoPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
+    const query: Filter<IJobsPartnersRecruteurAlgoPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }
 
     if (romes) {
       query.offer_rome_codes = { $in: romes?.split(",") }

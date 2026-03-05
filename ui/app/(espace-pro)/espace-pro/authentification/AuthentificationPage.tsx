@@ -70,7 +70,7 @@ export default function Authentification() {
       {errorMessage && (
         <Box
           sx={{
-            mb: 2,
+            mb: fr.spacing("4v"),
           }}
         >
           <Alert
@@ -83,7 +83,7 @@ export default function Authentification() {
       {magicLinkSent && !loading && !errorMessage && (
         <Box
           sx={{
-            mb: 2,
+            mb: fr.spacing("4v"),
           }}
         >
           <Alert severity="success" title="Un lien de connexion a été envoyé" description="Vérifiez votre boite mail et cliquez sur le lien pour vous connecter" />
@@ -158,12 +158,8 @@ export default function Authentification() {
             Je suis recruteur
           </Box>
         </Button>
-        <Box
-          sx={{
-            mt: fr.spacing("2w"),
-          }}
-        >
-          <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary" style={{ width: "100%" }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
+          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationCfa.getPath())} style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
@@ -173,16 +169,12 @@ export default function Authentification() {
             </Box>
           </Button>
         </Box>
-        <Typography sx={{ mt: fr.spacing("2w") }}>
-          <strong>Vous êtes alternant ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
+        <Typography sx={{ mt: fr.spacing("4v") }}>
+          <strong>Vous êtes candidat ?</strong> La création de compte est réservée aux entreprises et aux centres de formation. Démarrez vos recherches et postulez à toutes les
           offres d’emploi et de formation sans vous créer de compte.
         </Typography>
-        <Box
-          sx={{
-            mt: fr.spacing("2w"),
-          }}
-        >
-          <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>
+        <Box sx={{ mt: fr.spacing("4v") }}>
+          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.home.getPath())} style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",

@@ -12,7 +12,7 @@ export default async function RecruteurLayout({ children }: PropsWithChildren) {
   return (
     <>
       <PublicHeader user={user} />
-      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("4w") }}>
+      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("8v") }}>
         <Container maxWidth="xl" sx={{ marginTop: fr.spacing("4v") }}>
           {children}
         </Container>

@@ -156,13 +156,14 @@ function AdministrationOpco() {
       <ConfirmationActivationUtilisateur
         onClose={confirmationActivationUtilisateur.onClose}
         isOpen={confirmationActivationUtilisateur.isOpen}
-        _id={currentEntreprise?._id}
+        _id={currentEntreprise?._id ?? ""}
+        organizationId={currentEntreprise?.organizationId ?? ""}
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
       />
 
       <Breadcrumb pages={[PAGES.static.backOpcoHome]} />
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("3w") }}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("6v") }}>
         <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Entreprises</Typography>
       </Box>
 

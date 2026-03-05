@@ -20,14 +20,14 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
     <Box
       sx={{
         padding: {
-          xs: fr.spacing("2w"),
-          md: fr.spacing("4w"),
+          xs: fr.spacing("4v"),
+          md: fr.spacing("8v"),
         },
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("2w"),
-        borderRadius: { xs: 0, md: fr.spacing("1w") },
+        gap: fr.spacing("4v"),
+        borderRadius: { xs: 0, md: fr.spacing("2v") },
         boxShadow: "0px 2px 6px 0px #00001229",
       }}
     >

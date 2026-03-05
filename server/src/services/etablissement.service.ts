@@ -32,7 +32,7 @@ import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.servi
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
+import { emailHasActiveRole, isUserEmailChecked } from "./userWithAccount.service"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -438,8 +438,7 @@ export const entrepriseOnboardingWorkflow = {
       return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     const formatedEmail = email.toLocaleLowerCase()
-    // Faut-il rajouter un contrôle sur l'existance du couple email/siret dans la collection recruiters ?
-    if (await getUserWithAccountByEmail(formatedEmail)) {
+    if (await emailHasActiveRole(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>

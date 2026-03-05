@@ -5,6 +5,8 @@ import { zObjectId } from "./common.js"
 
 export const ZRecruteursLbaRaw = z.object({
   _id: zObjectId,
+  naf_code: z.string(),
+  naf_label: z.string(),
   createdAt: z.date(),
   siret: z.string(),
   enseigne: z.string(),
@@ -32,4 +34,5 @@ export default {
   zod: ZRecruteursLbaRaw,
   indexes: [[{ siret: 1 }, {}]],
   collectionName: "raw_recruteurslba",
+  authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

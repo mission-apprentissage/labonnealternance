@@ -88,7 +88,7 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
                   par La bonne alternance.
                 </Typography>
               }
-              sx={{ alignItems: "flex-start", mt: fr.spacing("3w") }}
+              sx={{ alignItems: "flex-start", mt: fr.spacing("6v") }}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: fr.spacing("5v") }}>
               <Box sx={{ mr: fr.spacing("5v") }}>
@@ -98,9 +98,9 @@ const Formulaire = ({ siret: establishment_siret }: { siret: string }) => {
               </Box>
               <Button type="submit" disabled={!informationForm.isValid || informationForm.isSubmitting}>
                 {informationForm.isSubmitting ? (
-                  <CircularProgress sx={{ color: "inherit", mr: fr.spacing("1w") }} thickness={4} size={20} />
+                  <CircularProgress sx={{ color: "inherit", mr: fr.spacing("2v") }} thickness={4} size={20} />
                 ) : (
-                  <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("1w") }} />
+                  <ArrowRightLine sx={{ width: 16, height: 16, mr: fr.spacing("2v") }} />
                 )}
                 Suivant
               </Button>
@@ -116,19 +116,19 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
   return (
     <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise, PAGES.dynamic.backCfaEntrepriseCreationDetail(siret)]} />
-      <Box sx={{ display: "grid", gridTemplateRows: { xs: "1fr", sm: ".5fr 2fr" }, gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("3w") }}>
+      <Box sx={{ display: "grid", gridTemplateRows: "1fr", gridTemplateColumns: { xs: "1fr", sm: "4fr 5fr" }, gap: fr.spacing("6v") }}>
         <Box>
           <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
             Informations de contact
           </Typography>
-          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("1w") }}>
+          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>
             Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
           </Typography>
         </Box>
         <Box sx={{ gridRowStart: { xs: "auto", sm: 2 } }}>
           <Formulaire siret={siret} />
         </Box>
-        <Box sx={{ gridRowStart: { xs: "auto", sm: 2 }, pt: { xs: fr.spacing("2w"), sm: fr.spacing("4w") }, minW: "0" }}>
+        <Box sx={{ gridRowStart: { xs: "auto", sm: 2 }, pt: { xs: fr.spacing("4v"), sm: fr.spacing("8v") }, minW: "0" }}>
           <InformationLegaleEntreprise siret={siret} type={ENTREPRISE} viewerType={CFA} />
         </Box>
       </Box>

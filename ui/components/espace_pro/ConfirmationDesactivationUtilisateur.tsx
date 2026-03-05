@@ -18,12 +18,12 @@ const ConfirmationDesactivationUtilisateur = ({
   onClose,
   isOpen,
   onUpdate,
-}: { userRecruteur?: IUserRecruteurJson; onUpdate?: (props: { reason: string }) => void } & ReturnType<typeof useDisclosure>) => {
-  const { establishment_raison_sociale, _id: _idObject, type } = userRecruteur ?? {}
+}: { userRecruteur?: IUserRecruteurJson & { organizationId?: string }; onUpdate?: (props: { reason: string }) => void } & ReturnType<typeof useDisclosure>) => {
+  const { establishment_raison_sociale, _id: _idObject, type, organizationId = "" } = userRecruteur ?? {}
   const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState<string>()
   const reasonComment = useDisclosure()
-  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id)
+  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id, organizationId)
 
   if (!userRecruteur) return null
 
@@ -60,12 +60,12 @@ const ConfirmationDesactivationUtilisateur = ({
 
   return (
     <ModalReadOnly isOpen={isOpen} onClose={onClose}>
-      <Box sx={{ pb: fr.spacing("2w"), px: fr.spacing("2w") }}>
-        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("1w") }} component="h2">
+      <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
+        <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Désactivation du compte
         </Typography>
 
-        <Box sx={{ pb: fr.spacing("1w") }}>
+        <Box sx={{ pb: fr.spacing("2v") }}>
           <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
             Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Pouvez-vous nous préciser pour quelle raison ?
           </Typography>
@@ -87,7 +87,7 @@ const ConfirmationDesactivationUtilisateur = ({
         </Box>
 
         {reasonComment.isOpen && (
-          <Box sx={{ pb: fr.spacing("1w") }}>
+          <Box sx={{ pb: fr.spacing("2v") }}>
             <Typography sx={{ mb: 1, color: "#3A3A3A", lineHeight: "24px" }}>
               <Input label="Autre" nativeInputProps={{ type: "text", name: "autre", minLength: 3, onChange: (e) => setReason(e.target.value) }} />
             </Typography>
