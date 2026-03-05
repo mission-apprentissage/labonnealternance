@@ -128,33 +128,10 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
         },
         {
           $lookup: {
-            from: "recruiters",
-            let: {
-              siret: "$entreprise_siret",
-              email: "$user_email",
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $eq: ["$establishment_siret", "$$siret"],
-                      },
-                      {
-                        $eq: ["$email", "$$email"],
-                      },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: "recruiters",
-          },
-        },
-        {
-          $unwind: {
-            path: "$recruiters",
+            from: "jobs_partners",
+            localField: "user__id",
+            foreignField: "managed_by",
+            as: "jobs_partners",
           },
         },
         {
@@ -178,7 +155,7 @@ const getRoleManagement360Stream = async (type: AccessEntityType) => {
             },
             job_count: {
               $sum: {
-                $size: "$recruiters.jobs",
+                $size: "$jobs_partners",
               },
             },
           },
