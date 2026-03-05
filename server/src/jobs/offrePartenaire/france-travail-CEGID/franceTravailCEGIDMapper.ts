@@ -118,8 +118,8 @@ function CEGIDDurationToMonths(cegidEnum?: string): number | null {
 export type IFranceTravailCEGIDJob = z.output<typeof ZFranceTravailCEGIDJob>
 
 export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: IAgenceCEGID[]): IComputedJobsPartners | null => {
-  const contract_duration = CEGIDDurationToMonths(job.details?.customFields?.offerCustomBlock4?.customCodeTable2?.clientCode ?? undefined) ?? undefined
-  if (contract_duration !== undefined && contract_duration < 6) {
+  const contract_duration = CEGIDDurationToMonths(job.details?.customFields?.offerCustomBlock4?.customCodeTable2?.clientCode ?? undefined)
+  if (contract_duration !== null && contract_duration < 6) {
     return null
   }
 
