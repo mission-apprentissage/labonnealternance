@@ -66,5 +66,15 @@
   "urlRedirectionEmployee": null,
   "urlRedirectionApplicant": null,
   "startPublicationDate": "2025-10-03T09:19:58.723",
-  "beginningDate": null
+  "beginningDate": null,
+  "details": {
+    "customFields": {
+      "offerCustomBlock4": {
+        "customCodeTable2": {
+          "clientCode": "12_mois",
+          "type": null
+        }
+      }
+    }
+  }
 }
