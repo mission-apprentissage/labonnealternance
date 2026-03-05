@@ -51,10 +51,10 @@ services:
       - HOSTNAME=0.0.0.0
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:3000/healthcheck"]
-      interval: 60s
-      timeout: 30s
-      retries: 11
-      start_period: 10s
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 30s
 
   # job_processor désactivé car inutile et permet de récupérer des ressources pour d'autres preview
   # jobs_processor:
