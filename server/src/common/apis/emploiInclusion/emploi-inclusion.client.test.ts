@@ -1,9 +1,13 @@
 import nock from "nock"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import { getAllEmploiInclusionJobsByDepartement } from "./emploi-inclusion.client"
 import { generateEmploiInclusionJobFixture, nockEmploiInclusionNextPage, nockEmploiInclusionPage } from "./emploi-inclusion.client.fixture"
 import config from "@/config"
+
+vi.mock("@/common/utils/asyncUtils", () => ({
+  delay: vi.fn().mockResolvedValue(undefined),
+}))
 
 describe("getAllEmploiInclusionJobsByDepartement", () => {
   it("should return results from a single page", async () => {
@@ -41,6 +45,28 @@ describe("getAllEmploiInclusionJobsByDepartement", () => {
 
   it("should throw when the response does not match the expected schema", async () => {
     nock(config.emploi_inclusion.url).get(/.*/).reply(200, { invalid: "response" })
+
+    await expect(getAllEmploiInclusionJobsByDepartement("75")).rejects.toThrow()
+  })
+
+  it("should retry on 429 and return result on subsequent success", async () => {
+    const job = generateEmploiInclusionJobFixture()
+
+    nock(config.emploi_inclusion.url).get("/api/v1/siaes/").query({ departement: "75", page_size: "100000" }).reply(429, "Too Many Requests", { "retry-after": "1" })
+
+    nockEmploiInclusionPage("75", { count: 1, next: null, previous: null, results: [job] })
+
+    const result = await getAllEmploiInclusionJobsByDepartement("75")
+
+    expect(result).toEqual([job])
+    expect(nock.isDone()).toBe(true)
+  })
+
+  it("should throw after exhausting all retry attempts on persistent 429", async () => {
+    nock(config.emploi_inclusion.url).get("/api/v1/siaes/").query({ departement: "75", page_size: "100000" }).reply(429, "Too Many Requests", { "retry-after": "1" })
+    nock(config.emploi_inclusion.url).get("/api/v1/siaes/").query({ departement: "75", page_size: "100000" }).reply(429, "Too Many Requests", { "retry-after": "1" })
+    nock(config.emploi_inclusion.url).get("/api/v1/siaes/").query({ departement: "75", page_size: "100000" }).reply(429, "Too Many Requests", { "retry-after": "1" })
+    nock(config.emploi_inclusion.url).get("/api/v1/siaes/").query({ departement: "75", page_size: "100000" }).reply(429, "Too Many Requests", { "retry-after": "1" })
 
     await expect(getAllEmploiInclusionJobsByDepartement("75")).rejects.toThrow()
   })

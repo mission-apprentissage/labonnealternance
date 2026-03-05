@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 import { generateEmploiInclusionJobFixture } from "@/common/apis/emploiInclusion/emploi-inclusion.client.fixture"
@@ -49,10 +49,10 @@ describe("emploiInclusionJobToJobsPartners", () => {
   beforeEach(() => {
     vi.useFakeTimers()
     vi.setSystemTime(now)
+  })
 
-    return () => {
-      vi.useRealTimers()
-    }
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it("maps a job and poste to a computed job partner", () => {

@@ -56,7 +56,7 @@ const ZEmploiInclusionResponse = z.object({
   results: z.array(ZEmploiInclusionJob),
 })
 
-const MAX_RETRIES = 3
+const MAX_ATTEMPTS = 4
 
 const getEmploiInclusionJobs = async (url: string, attempt = 1): Promise<z.output<typeof ZEmploiInclusionResponse>> => {
   try {
@@ -64,7 +64,7 @@ const getEmploiInclusionJobs = async (url: string, attempt = 1): Promise<z.outpu
     return ZEmploiInclusionResponse.parse(response.data)
   } catch (err: any) {
     logger.error({ status: err?.response?.status, data: err?.response?.data, url }, "emploi-inclusion: erreur API")
-    if (err?.response?.status === 429 && attempt <= MAX_RETRIES) {
+    if (err?.response?.status === 429 && attempt < MAX_ATTEMPTS) {
       const retryAfterMs = (parseInt(err.response.headers["retry-after"] ?? "10", 10) || 10) * 1_000
       await delay(retryAfterMs)
       return getEmploiInclusionJobs(url, attempt + 1)
