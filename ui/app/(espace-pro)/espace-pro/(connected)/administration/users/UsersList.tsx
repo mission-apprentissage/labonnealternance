@@ -319,7 +319,8 @@ function TabContent({
       <ConfirmationActivationUtilisateur
         onClose={confirmationActivationUtilisateur.onClose}
         isOpen={confirmationActivationUtilisateur.isOpen}
-        _id={currentEntreprise?._id}
+        _id={currentEntreprise?._id ?? ""}
+        organizationId={currentEntreprise?.organizationId ?? ""}
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
         onConfirmation={onInvalidateData}
       />

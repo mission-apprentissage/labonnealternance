@@ -18,12 +18,12 @@ const ConfirmationDesactivationUtilisateur = ({
   onClose,
   isOpen,
   onUpdate,
-}: { userRecruteur?: IUserRecruteurJson; onUpdate?: (props: { reason: string }) => void } & ReturnType<typeof useDisclosure>) => {
-  const { establishment_raison_sociale, _id: _idObject, type } = userRecruteur ?? {}
+}: { userRecruteur?: IUserRecruteurJson & { organizationId?: string }; onUpdate?: (props: { reason: string }) => void } & ReturnType<typeof useDisclosure>) => {
+  const { establishment_raison_sociale, _id: _idObject, type, organizationId = "" } = userRecruteur ?? {}
   const _id = (_idObject ?? "").toString()
   const [reason, setReason] = useState<string>()
   const reasonComment = useDisclosure()
-  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id)
+  const { deactivate: disableUser, waitsForValidation: reassignUserToAdmin } = useUserPermissionsActions(_id, organizationId)
 
   if (!userRecruteur) return null
 
