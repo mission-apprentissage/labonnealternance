@@ -79,6 +79,36 @@ const SeFaireAccompagnerPage = () => {
           L'avantage majeur des Missions locales ? Elles connaissent parfaitement le tissu économique local et entretiennent des relations directes avec les employeurs de votre
           région. N'hésitez pas à prendre rendez-vous dès le début de vos recherches.
         </Paragraph>
+        <Paragraph>
+          Les Missions locales font partie du{" "}
+          <Typography fontWeight={"bold"} component={"span"}>
+            Réseau pour l’emploi
+          </Typography>
+          . Le réseau pour l'emploi regroupe les organismes et acteurs qui coopèrent pour aider le public à la recherche d'un emploi ou d'une formation et accompagner les
+          entreprises dans leurs recrutements :
+        </Paragraph>
+        <ParagraphList
+          listItems={[
+            <>
+              Vous avez entre 16 et 25 ans ?{" "}
+              <DsfrLink href="https://www.unml.info/le-reseau/annuaire/?pg=1" aria-label="Consulter l'annuaire des Missions locales">
+                Contactez votre mission locale
+              </DsfrLink>
+            </>,
+            <>
+              Vous êtes demandeur d'emploi ou une entreprise ?{" "}
+              <DsfrLink href="https://www.francetravail.fr/accueil/" aria-label="Consulter le site France Travail">
+                Contactez France Travail
+              </DsfrLink>
+            </>,
+            <>
+              Vous êtes demandeur d'emploi en situation de handicap ?{" "}
+              <DsfrLink href="https://www.capemploi.info/le-reseau/" aria-label="Consulter le site Cap emploi">
+                Contactez Cap emploi
+              </DsfrLink>
+            </>,
+          ]}
+        />
       </Section>
       <Section title="Les cellules régionales interministérielles d'accompagnement">
         <Paragraph>

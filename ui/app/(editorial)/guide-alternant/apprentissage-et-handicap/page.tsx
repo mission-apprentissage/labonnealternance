@@ -141,11 +141,11 @@ const ApprentissageEtHandicapPage = () => {
         </Paragraph>
         <Paragraph>
           Dans les cas d’allongement de durée de la période de formation, le pourcentage du Smic pris en compte pour le calcul de la rémunération est majoré, pendant la période de
-          prolongation, de 15 points par rapport à celui appliqué avant cette période. Si vous êtes en situation de handicap**, vous pouvez solliciter une aide de l’
+          prolongation, de 15 points par rapport à celui appliqué avant cette période. Si vous êtes en situation de handicap, vous pouvez solliciter une aide de l’
           <DsfrLink href="https://www.agefiph.fr/" aria-label="Consulter le site de l'Agefiph">
-            Agefiph**
+            Agefiph
           </DsfrLink>{" "}
-          (si vous avez conclu un contrat avec un employeur du secteur privé), ou du
+          (si vous avez conclu un contrat avec un employeur du secteur privé), ou du{" "}
           <DsfrLink href="https://www.fiphfp.fr/" aria-label="Consulter le site du FIPHFP">
             FIPHFP
           </DsfrLink>{" "}
@@ -165,8 +165,9 @@ const ApprentissageEtHandicapPage = () => {
                 </Typography>{" "}
                 l’aide à l’embauche en contrat d’apprentissage d’une personne handicapée proposée par l’
                 <DsfrLink href="https://www.agefiph.fr/" aria-label="Consulter le site de l'Agefiph">
-                  Agefiph.
+                  Agefiph
                 </DsfrLink>
+                .
               </>,
               <Typography component="span" fontWeight={"bold"}>
                 Pour les employeurs du secteur public (non industriel et commercial) (qui ne bénéficient pas de l'aide de l'État) :
@@ -197,7 +198,7 @@ const ApprentissageEtHandicapPage = () => {
                   aria-label="Consulter l’offre d’aides financières et services de l’Agefiph"
                 >
                   Consultez l’offre d’aides financières et services de l’Agefiph
-                </DsfrLink>
+                </DsfrLink>{" "}
                 si vous avez conclu un contrat avec un employeur privé.
               </>,
             ]}

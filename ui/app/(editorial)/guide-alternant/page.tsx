@@ -287,6 +287,9 @@ const GuideAlternantPage = () => {
                 "& .fr-card__title ::after": {
                   display: "none",
                 },
+                "& .fr-card:hover": {
+                  backgroundColor: fr.colors.decisions.background.default.grey.hover,
+                },
               }}
             >
               <Card

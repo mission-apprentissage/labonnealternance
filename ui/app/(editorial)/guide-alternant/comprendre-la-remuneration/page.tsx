@@ -17,7 +17,7 @@ const ComprendreLaRemunerationPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantComprendreLaRemuneration]
 
   const descriptionParts = [
-    "Vous vous lancez dans l'alternance et vous vous demandez combien vous allez gagner ? La rémunération en alternance dépend de plusieurs facteurs : le type de contrat (apprentissage ou professionnalisation), votre âge, votre année de formation et parfois votre niveau de diplôme. Ce guide complet vous présente tous les barèmes de salaire en vigueur en 2026, avec les montants exacts calculés sur la base du SMIC actuel.",
+    "Vous vous lancez dans l'alternance et vous vous demandez combien vous allez gagner ? La rémunération en alternance dépend de plusieurs facteurs : le type de contrat (apprentissage ou professionnalisation), votre âge, votre année de formation et parfois votre niveau de diplôme. Ce guide complet vous présente tous les barèmes de salaire en vigueur en 2026.",
   ]
 
   return (

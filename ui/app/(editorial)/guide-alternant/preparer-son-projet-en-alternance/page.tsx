@@ -325,8 +325,10 @@ const PreparerSonProjetEnAlternancePage = () => {
                 le simulateur d'aides financières :{" "}
               </Typography>
               <Typography component="span" variant="body1">
-                <DsfrLink href="https://www.1jeune1solution.gouv.fr/aides-financieres/simulateur">le site 1jeune1solution</DsfrLink> vous propose un simulateur pour découvrir
-                toutes les aides auxquelles vous avez droit ;
+                <DsfrLink href="https://mes-aides.1jeune1solution.beta.gouv.fr/simulation/individu/demandeur/date_naissance?utm_source=1jeune1solution">
+                  le site 1jeune1solution
+                </DsfrLink>{" "}
+                vous propose un simulateur pour découvrir toutes les aides auxquelles vous avez droit ;
               </Typography>
             </>,
             <>

@@ -18,6 +18,9 @@ export const Conseil = ({ title, href, icon }: { title: string; href: string; ic
       "& .fr-card__end": {
         display: "none",
       },
+      "& .fr-card:hover": {
+        backgroundColor: fr.colors.decisions.background.default.grey.hover,
+      },
     }}
   >
     <Card

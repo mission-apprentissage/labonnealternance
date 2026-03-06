@@ -67,7 +67,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
         <Paragraph>
           <Typography component={"span"} fontWeight={"bold"}>
             Restez vigilant :
-          </Typography>
+          </Typography>{" "}
           Il arrive que certaines entreprises tardent à signer le contrat et changent d’avis au dernier moment avant la signature. Prenez vos précautions : si vous sentez que les
           délais se raccourcissent, anticipez en relançant l’entreprise et en poursuivant vos recherches d’entreprise en quête d’un plan B.
         </Paragraph>
