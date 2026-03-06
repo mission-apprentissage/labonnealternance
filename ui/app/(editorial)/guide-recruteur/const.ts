@@ -35,14 +35,6 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     path: PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getPath(),
     updatedAt: "30/01/2026",
   },
-  ["aides-a-l-embauche-en-alternance"]: {
-    id: "aides-a-l-embauche-en-alternance",
-    title: PAGES.static.guideRecruteurAidesALEmbaucheEnAlternance.title,
-    description: PAGES.static.guideRecruteurAidesALEmbaucheEnAlternance.getMetadata().description,
-    imageUrl: `${IMAGE_BASE_PATH}aides-a-l-embauche-en-alternance.svg`,
-    path: PAGES.static.guideRecruteurAidesALEmbaucheEnAlternance.getPath(),
-    updatedAt: "30/01/2026",
-  },
   ["prevention-des-risques-professionnels-pour-les-apprentis"]: {
     id: "prevention-des-risques-professionnels-pour-les-apprentis",
     title: PAGES.static.guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis.title,

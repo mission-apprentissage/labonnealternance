@@ -76,9 +76,6 @@ const GuideRecruteurPage = () => {
               <AllerPlusLoinItem {...ARTICLES["cerfa-apprentissage-et-professionnalisation"]} />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["aides-a-l-embauche-en-alternance"]} />
-            </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"]} />
             </Grid>
           </Grid>
@@ -196,8 +193,8 @@ const GuideRecruteurPage = () => {
                 </ListItem>
                 <ListItem sx={{ display: "list-item", flex: "1" }}>
                   Le contrat en apprentissage{" "}
-                  <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319" aria-label="Consulter le Cerfa n° 10103*11">
-                    Cerfa n° 10103*11
+                  <DsfrLink href="https://www.service-public.gouv.fr/particuliers/vosdroits/R1319" aria-label="Consulter le Cerfa">
+                    Cerfa
                   </DsfrLink>{" "}
                   doit être signé et transmis à votre OPCO{" "}
                   <Typography component="span" fontWeight={"bold"}>
@@ -208,7 +205,45 @@ const GuideRecruteurPage = () => {
                     CERFA dématérialisé
                   </DsfrLink>
                 </ListItem>
+                <ListItem sx={{ display: "list-item" }}>
+                  <Typography component="span" fontWeight={"bold"}>
+                    Les chambres consulaires
+                  </Typography>{" "}
+                  sont des organismes publics qui représentent et soutiennent les entreprises d'un secteur (comme commerce, industrie, ou artisanat) dans une région. Vous pouvez
+                  les contacter pour obtenir des conseils et informations sur le recrutement d’alternants, ainsi que pour vous faire accompagner dans les démarches administratives
+                  liées à l’apprentissage.
+                  <Typography>
+                    <DsfrLink href={"https://www.cci.fr/contact"} aria-label="Accéder à la page de contact des Chambres de Commerce et de l’Industrie">
+                      Découvrir le réseau des Chambres de Commerce et de l’Industrie
+                    </DsfrLink>
+                  </Typography>
+                  <Typography>
+                    <DsfrLink href={"https://www.artisanat.fr/nous-connaitre/contactez-cma"} aria-label="Accéder à la page de contact des Chambres de Métiers et de l’Artisanat">
+                      Découvrir le réseau des Chambres de Métiers et de l’Artisanat
+                    </DsfrLink>
+                  </Typography>
+                  <Typography>
+                    <DsfrLink href={"https://chambres-agriculture.fr/le-reseau-chambres"} aria-label="Accéder au réseau des Chambres d’Agriculture">
+                      Découvrir le réseau des Chambres d’Agriculture
+                    </DsfrLink>
+                  </Typography>
+                </ListItem>
+                <ListItem sx={{ display: "list-item" }}>
+                  Le réseau pour l'emploi regroupe les organismes et acteurs qui coopèrent pour aider le public à la recherche d'un emploi ou d'une formation et accompagner les
+                  entreprises dans leurs recrutements (Les Mission locales, Cap emploi,{" "}
+                  <DsfrLink href="https://pro.francetravail.fr/accueil/" aria-label="Accéder à la page de France Travail">
+                    France Travail
+                  </DsfrLink>
+                  ).
+                </ListItem>
                 <ListItem sx={{ display: "list-item" }}>En tant qu’employeur, vous devez conserver le contrat signé pendant 5 ans en cas de contrôle.</ListItem>
+                <ListItem sx={{ display: "list-item" }}>
+                  De façon globale, le site référence pour suivre l’actualité et la réglementation sur l’alternance est celui du{" "}
+                  <DsfrLink href="https://travail-emploi.gouv.fr/" aria-label="Accéder au site du Ministère du Travail">
+                    Ministère du Travail
+                  </DsfrLink>
+                  .
+                </ListItem>
               </List>
             </Grid>
             <Grid
@@ -311,7 +346,7 @@ const GuideRecruteurPage = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={PAGES.static.faq.getPath()} aria-label="Consulter la Foire aux questions">
+                  <DsfrLink href={`${PAGES.static.faq.getPath()}#recruteur`} aria-label="Consulter la Foire aux questions">
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

@@ -352,21 +352,12 @@ export const PAGES = {
         description: "Guide des démarches administratives pour les employeurs",
       }),
     },
-    guideRecruteurAidesALEmbaucheEnAlternance: {
-      getPath: () => `/guide-recruteur/aides-a-l-embauche-en-alternance` as string,
-      title: "Aides à l'embauche en alternance",
-      index: true,
-      getMetadata: () => ({
-        title: "Aides à l'embauche en alternance | Guide recruteur",
-        description: "Le guide complet pour les employeurs",
-      }),
-    },
     guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis: {
       getPath: () => `/guide-recruteur/prevention-des-risques-professionnels-pour-les-apprentis` as string,
-      title: "Prévention des risques professionnels pour les apprentis",
+      title: "La prévention des risques professionnels pour les apprentis",
       index: true,
       getMetadata: () => ({
-        title: "Prévention des risques professionnels pour les apprentis | Guide recruteur",
+        title: "La prévention des risques professionnels pour les apprentis | Guide recruteur",
         description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
       }),
     },
