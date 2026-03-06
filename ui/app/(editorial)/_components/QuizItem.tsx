@@ -8,7 +8,6 @@ export const QuizItem = ({ title, desc, href }: { title: string; desc: string; h
     start={
       <Badge
         style={{
-          // padding: fr.spacing("1v"),
           paddingLeft: fr.spacing("2v"),
           paddingRight: fr.spacing("2v"),
           borderRadius: fr.spacing("3v"),
@@ -36,5 +35,6 @@ export const QuizItem = ({ title, desc, href }: { title: string; desc: string; h
     }}
     border
     shadow
+    enlargeLink
   />
 )
