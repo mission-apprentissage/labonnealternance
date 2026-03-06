@@ -73,6 +73,7 @@ import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
+import rawEtudiantModel from "./rawEtudiant.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -109,6 +110,7 @@ const modelDescriptorMap = {
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
   [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
+  [rawEtudiantModel.collectionName]: rawEtudiantModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,

@@ -81,6 +81,7 @@ import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPa
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { processApec } from "./offrePartenaire/apec/processApec"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
+import { processEtudiant } from "./offrePartenaire/etudiant/processEtudiant"
 import { generateSitemap } from "@/services/sitemap.service"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
@@ -435,6 +436,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processEmploiInclusion,
     description: "Import du flux Emploi Inclusion jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEtudiant,
+    description: "Import du flux Etudiant jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: importFichesRncp,
