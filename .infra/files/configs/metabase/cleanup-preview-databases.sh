@@ -32,9 +32,9 @@ while IFS= read -r line; do
   DB_NAME=$(echo "$line" | awk '{print $2}')
   PR_NUMBER=$(echo "$DB_NAME" | grep -oE '[0-9]+$')
 
-  PR_STATE=$(curl -sSf "https://api.github.com/repos/${GITHUB_REPO}/pulls/${PR_NUMBER}" \
-    --header "Accept: application/vnd.github+json" | \
-    jq -r '.state // "not_found"')
+  PR_RESPONSE=$(curl -sS "https://api.github.com/repos/${GITHUB_REPO}/pulls/${PR_NUMBER}" \
+    --header "Accept: application/vnd.github+json")
+  PR_STATE=$(echo "$PR_RESPONSE" | jq -r '.state // "not_found"')
 
   if [[ "$PR_STATE" == "open" ]]; then
     echo "PR-${PR_NUMBER}: open — skipping"
