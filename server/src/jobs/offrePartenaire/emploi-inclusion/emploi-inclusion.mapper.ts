@@ -45,6 +45,7 @@ export const emploiInclusionJobToJobsPartners = (job: IEmploiInclusionJob, poste
     offer_opening_count: poste.nombre_postes_ouverts,
     offer_creation: dayjs.tz(poste.cree_le).toDate(),
     offer_expiration: dayjs.tz(poste.cree_le).add(2, "months").toDate(),
+    offer_multicast: true,
     contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     apply_email: job.courriel || null,
     apply_phone: job.telephone || null,
