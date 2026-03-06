@@ -816,19 +816,11 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
 }
 
 const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
-  const { type, job } = lbaJob
-  let applicationCount: number
-  if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
-    applicationCount = await getDbCollection("applications").countDocuments({
-      job_id: job._id,
-    })
-  } else if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
-    applicationCount = await getDbCollection("applications").countDocuments({
-      company_siret: job.workplace_siret,
-    })
-  } else {
-    assertUnreachable(type)
-  }
+  const { job } = lbaJob
+  const applicationCount = await getDbCollection("applications").countDocuments({
+    job_id: job._id,
+  })
+
   if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
     await getDbCollection("jobs_partners").updateOne(
       { _id: job._id },
