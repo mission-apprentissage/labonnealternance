@@ -58,9 +58,9 @@ services:
     healthcheck:
       test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
       interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
+      timeout: 20s
+      retries: 30
+      start_period: 30s
     labels:
       - autoheal=true
 
