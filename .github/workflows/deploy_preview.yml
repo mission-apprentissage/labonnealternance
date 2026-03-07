@@ -15,7 +15,7 @@ jobs:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
     name: Deploy Preview ${{ github.event.issue.number }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Get Run URL
         id: run_url
