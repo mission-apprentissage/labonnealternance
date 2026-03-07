@@ -79,7 +79,7 @@ describe("emploiInclusionJobToJobsPartners", () => {
       offer_description: "Description détaillée du poste en alternance sur 30+ caractères",
       offer_desired_skills: ["Profil recherché"],
       offer_expiration: new Date("2024-03-01T09:00:00.000Z"),
-      offer_multicast: false,
+      offer_multicast: true,
       offer_opening_count: 2,
       offer_origin: null,
       offer_rome_codes: null,
