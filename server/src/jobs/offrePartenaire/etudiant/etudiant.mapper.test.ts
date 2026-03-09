@@ -1,7 +1,6 @@
-import { ObjectId } from "bson"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import omit from "lodash-es/omit"
 
 import { etudiantJobToJobsPartners, ETUDIANT_ELIGIBLE_CONTRACT_FR, REMOTE_FR_MAP } from "./etudiant.mapper"
 import { generateJobEtudiantJobFixture } from "@/common/apis/etudiant/etudiant.client.fixture"
@@ -33,55 +32,7 @@ describe("etudiantJobToJobsPartners", () => {
   })
 
   it("maps a job to a computed job partner", () => {
-    expect(etudiantJobToJobsPartners(baseJob)).toEqual({
-      _id: expect.any(ObjectId),
-      apply_phone: null,
-      apply_url: "https://example.com/apply/123",
-      business_error: null,
-      contract_duration: null,
-      contract_is_disabled_elligible: false,
-      contract_remote: null,
-      contract_start: null,
-      contract_type: ["Apprentissage", "Professionnalisation"],
-      created_at: now,
-      errors: [],
-      jobs_in_success: [],
-      offer_access_conditions: [],
-      offer_creation: new Date("2024-01-01T09:00:00.000Z"),
-      offer_description: "Description détaillée du poste en alternance sur 30+ caractères ici",
-      offer_desired_skills: ["Profil recherché"],
-      offer_expiration: new Date("2024-03-01T09:00:00.000Z"),
-      offer_multicast: false,
-      offer_opening_count: 1,
-      offer_origin: null,
-      offer_rome_codes: null,
-      offer_status: "Active",
-      offer_status_history: [],
-      offer_target_diploma: null,
-      offer_title: "Développeur web en alternance",
-      offer_to_be_acquired_knowledge: [],
-      offer_to_be_acquired_skills: [],
-      partner_job_id: "job-abc-123",
-      partner_label: JOBPARTNERS_LABEL.JOB_ETUDIANT,
-      updated_at: now,
-      validated: false,
-      workplace_address_city: "Paris",
-      workplace_address_label: "1 Rue de la Paix Paris Paris Île-de-France France",
-      workplace_address_street_label: "Rue de la Paix",
-      workplace_address_zipcode: null,
-      workplace_brand: null,
-      workplace_description: "Description entreprise de plus de 30 caractères\nAvantages\nProcessus",
-      workplace_geopoint: null,
-      workplace_idcc: null,
-      workplace_legal_name: "Entreprise Test",
-      workplace_naf_code: null,
-      workplace_naf_label: null,
-      workplace_name: "Entreprise Test",
-      workplace_opco: null,
-      workplace_siret: null,
-      workplace_size: null,
-      workplace_website: null,
-    })
+    expect(omit(etudiantJobToJobsPartners(baseJob), ["_id"])).toMatchSnapshot()
   })
 
   it("sets business_error when offer_title is shorter than 3 characters", () => {

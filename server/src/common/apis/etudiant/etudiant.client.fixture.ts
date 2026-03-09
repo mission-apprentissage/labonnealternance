@@ -57,5 +57,7 @@ export function nockJobEtudiantNextPage(nextPageToken: string, response: IJobEtu
   const { origin, pathname, searchParams } = new URL(config.job_etudiant.url)
   const params = new URLSearchParams(searchParams)
   params.set("next-page", nextPageToken)
-  return nock(origin).get(`${pathname}?${params.toString()}`).reply(200, response)
+  return nock(origin, { reqheaders: { authorization: `Bearer ${config.job_etudiant.apiKey}` } })
+    .get(`${pathname}?${params.toString()}`)
+    .reply(200, response)
 }
