@@ -838,7 +838,7 @@ const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
           offer_status_history: {
             date: new Date(),
             status: JOB_STATUS_ENGLISH.ANNULEE,
-            reason: "nombre maximum de candidatures atteint (80)",
+            reason: `nombre maximum de candidatures atteint (${MAX_APPLICATIONS_PER_OFFER})`,
             granted_by: "application.service",
           },
         },
