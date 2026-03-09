@@ -1,6 +1,7 @@
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import omit from "lodash-es/omit"
 import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 import { generateEmploiInclusionJobFixture } from "@/common/apis/emploiInclusion/emploi-inclusion.client.fixture"
 
@@ -58,7 +59,7 @@ describe("emploiInclusionJobToJobsPartners", () => {
   })
 
   it("maps a job and poste to a computed job partner", () => {
-    expect(emploiInclusionJobToJobsPartners(baseJob, basePoste)).toMatchSnapshot()
+    expect(omit(emploiInclusionJobToJobsPartners(baseJob, basePoste), ["_id"])).toMatchSnapshot()
   })
 
   it("sets business_error when offer_title is shorter than 3 characters", () => {

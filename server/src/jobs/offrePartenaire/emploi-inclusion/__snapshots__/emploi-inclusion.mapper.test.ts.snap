@@ -2,7 +2,6 @@
 
 exports[`emploiInclusionJobToJobsPartners > maps a job and poste to a computed job partner 1`] = `
 {
-  "_id": "669c772298cd45206b8cd6aa",
   "apply_email": "contact@test.fr",
   "apply_phone": "0123456789",
   "apply_url": null,
