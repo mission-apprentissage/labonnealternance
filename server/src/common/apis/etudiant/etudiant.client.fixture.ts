@@ -41,7 +41,7 @@ export function generateJobEtudiantJobFixture(overrides: Partial<IJobEtudiantJob
   }
 }
 
-type IJobEtudiantPageResponse = { "next-page"?: string | null; jobs: IJobEtudiantJob[] }
+type IJobEtudiantPageResponse = { total?: number; totalPages?: number; "next-page"?: string | null; jobs: IJobEtudiantJob[] }
 
 function buildBaseNock() {
   const { origin, pathname, search } = new URL(config.job_etudiant.url)
@@ -49,15 +49,15 @@ function buildBaseNock() {
   return nock(origin, { reqheaders: { authorization: `Bearer ${config.job_etudiant.apiKey}` } }).get(path)
 }
 
-export function nockJobEtudiantPage(response: IJobEtudiantPageResponse) {
-  return buildBaseNock().reply(200, response)
+export function nockJobEtudiantPage({ total, totalPages, ...rest }: IJobEtudiantPageResponse) {
+  return buildBaseNock().reply(200, { total: total ?? rest.jobs.length, totalPages: totalPages ?? 1, ...rest })
 }
 
-export function nockJobEtudiantNextPage(nextPageToken: string, response: IJobEtudiantPageResponse) {
+export function nockJobEtudiantNextPage(nextPageToken: string, { total, totalPages, ...rest }: IJobEtudiantPageResponse) {
   const { origin, pathname, searchParams } = new URL(config.job_etudiant.url)
   const params = new URLSearchParams(searchParams)
   params.set("next-page", nextPageToken)
   return nock(origin, { reqheaders: { authorization: `Bearer ${config.job_etudiant.apiKey}` } })
     .get(`${pathname}?${params.toString()}`)
-    .reply(200, response)
+    .reply(200, { total: total ?? rest.jobs.length, totalPages: totalPages ?? 1, ...rest })
 }
