@@ -830,7 +830,20 @@ const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
     assertUnreachable(type)
   }
   if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
-    await getDbCollection("jobs_partners").updateOne({ _id: job._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } })
+    await getDbCollection("jobs_partners").updateOne(
+      { _id: job._id },
+      {
+        $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
+        $push: {
+          offer_status_history: {
+            date: new Date(),
+            status: JOB_STATUS_ENGLISH.ANNULEE,
+            reason: "nombre maximum de candidatures atteint (80)",
+            granted_by: "application.service",
+          },
+        },
+      }
+    )
   }
 }
 
