@@ -5,9 +5,27 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { z } from "zod"
 
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { parseEnum } from "shared"
 import type { IAgenceCEGID } from "./mappingAgences"
 import { regionsToAgence } from "./mappingAgences"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+
+export const ZCEGIDOfferDetail = z.object({
+  customFields: z
+    .object({
+      offerCustomBlock4: z
+        .object({
+          customCodeTable2: z
+            .object({
+              clientCode: z.string().nullish(),
+              type: z.string().nullish(),
+            })
+            .nullish(),
+        })
+        .nullish(),
+    })
+    .nullish(),
+})
 
 export const ZFranceTravailCEGIDJob = z
   .object({
@@ -58,12 +76,53 @@ export const ZFranceTravailCEGIDJob = z
           .passthrough()
       )
       .nullish(),
+    _links: z.array(
+      z
+        .object({
+          href: z.string(),
+          rel: z.string(),
+        })
+        .passthrough()
+    ),
+    details: ZCEGIDOfferDetail.nullish(),
   })
   .passthrough()
 
+enum CEGIDDurationCode {
+  D12_mois = "12_mois",
+  D18_mois = "18_mois",
+  D24_mois = "24_mois",
+  D3_mois = "3_mois",
+  D6_mois = "6_mois",
+  D9_mois = "9_mois",
+  DUREE_A_DEFINIR = "DUREE_A_DEFINIR",
+}
+
+function CEGIDDurationToMonths(cegidEnum?: string): number | null {
+  const enumValue = parseEnum(CEGIDDurationCode, cegidEnum)
+  if (!enumValue) {
+    return null
+  }
+  const mapping: Record<CEGIDDurationCode, number | null> = {
+    [CEGIDDurationCode.D12_mois]: 12,
+    [CEGIDDurationCode.D18_mois]: 18,
+    [CEGIDDurationCode.D24_mois]: 24,
+    [CEGIDDurationCode.D3_mois]: 3,
+    [CEGIDDurationCode.D6_mois]: 6,
+    [CEGIDDurationCode.D9_mois]: 9,
+    [CEGIDDurationCode.DUREE_A_DEFINIR]: null,
+  }
+  return mapping[enumValue]
+}
+
 export type IFranceTravailCEGIDJob = z.output<typeof ZFranceTravailCEGIDJob>
 
-export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: IAgenceCEGID[]): IComputedJobsPartners => {
+export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: IAgenceCEGID[]): IComputedJobsPartners | null => {
+  const contract_duration = CEGIDDurationToMonths(job.details?.customFields?.offerCustomBlock4?.customCodeTable2?.clientCode ?? undefined)
+  if (contract_duration !== null && contract_duration < 6) {
+    return null
+  }
+
   const now = dayjs.tz().toDate()
   const { reference, title, description1 = "", description2 = "", organisationDescription, offerUrl, startPublicationDate, beginningDate } = job
   const offerCreation = startPublicationDate ? dayjs.tz(startPublicationDate).toDate() : now
@@ -87,6 +146,7 @@ export const franceTravailCEGIDMapper = (job: IFranceTravailCEGIDJob, agences: I
 
     contract_type: contractTypes,
     contract_start: beginningDate ? new Date(beginningDate) : null,
+    contract_duration,
 
     workplace_siret: "13000548123699", // France travail
     workplace_name: "France Travail",

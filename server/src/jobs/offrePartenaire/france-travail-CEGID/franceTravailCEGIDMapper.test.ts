@@ -39,4 +39,26 @@ describe("franceTravailCEGIDMapper", async () => {
     }
     expect.soft(omit(franceTravailCEGIDMapper(job, agences), ["_id"])).toMatchSnapshot()
   })
+  it("should return null if contract duration < 6 months", async () => {
+    expect
+      .soft(
+        franceTravailCEGIDMapper(
+          {
+            ...jobBase,
+            details: {
+              customFields: {
+                offerCustomBlock4: {
+                  customCodeTable2: {
+                    clientCode: "3_mois",
+                    type: null,
+                  },
+                },
+              },
+            },
+          },
+          agences
+        )
+      )
+      .toEqual(null)
+  })
 })

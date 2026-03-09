@@ -26,7 +26,7 @@ describe("importFranceTravailCEGID", () => {
   it("should test the import of data into computed_job_partners", async () => {
     const fileStream = fs.createReadStream("server/src/jobs/offrePartenaire/france-travail-CEGID/importFranceTravailCEGID.test.input.json")
     await importFranceTravailCEGIDRaw(fileStream)
-    expect.soft(await getDbCollection("raw_france_travail_cegid").countDocuments({})).toBe(3)
+    expect.soft(await getDbCollection("raw_france_travail_cegid").countDocuments({})).toBe(4)
 
     await importFranceTravailCEGIDToComputed()
     const jobs = (
