@@ -57,12 +57,12 @@ async function fetchMetierData(metier: string) {
 function JobsCta({ href }: { href: string }) {
   return (
     <Box sx={{ textAlign: "center", mx: fr.spacing("4v") }}>
-      <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-        <DsfrLink style={{ color: "#fff" }} href={href}>
+      <DsfrLink style={{ color: "#fff" }} href={href} aria-label="Voir toutes les offres en alternance">
+        <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
           Voir toutes les offres en alternance
           <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-        </DsfrLink>
-      </Button>
+        </Button>
+      </DsfrLink>
     </Box>
   )
 }
@@ -323,12 +323,12 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
 
           <Box sx={{ textAlign: "center" }}>
-            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
-              <DsfrLink style={{ color: "#fff" }} href={formationsSearchUrl}>
+            <DsfrLink style={{ color: "#fff" }} href={formationsSearchUrl} aria-label="Voir toutes les formations en alternance">
+              <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
                 Voir toutes les formations en alternance
                 <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-              </DsfrLink>
-            </Button>
+              </Button>
+            </DsfrLink>
           </Box>
         </Box>
 
