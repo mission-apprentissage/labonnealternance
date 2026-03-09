@@ -181,6 +181,9 @@ const config = {
     login: env.get("APEC_FLUX_LOGIN").required().asString(),
     password: env.get("APEC_FLUX_PASSWORD").required().asString(),
   },
+  emploi_inclusion: {
+    url: env.get("EMPLOI_INCLUSION_FLUX_URL").required().asString(),
+  },
 }
 
 export default config

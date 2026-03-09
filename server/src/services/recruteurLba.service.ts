@@ -58,6 +58,7 @@ const transformCompany = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    status: company.offer_status,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
@@ -113,6 +114,7 @@ const transformCompanyWithMinimalData = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    status: company.offer_status,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
@@ -155,6 +157,7 @@ const transformCompanyV2 = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    status: company.offer_status,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {

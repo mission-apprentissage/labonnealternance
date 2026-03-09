@@ -15,6 +15,7 @@ import { processLeboncoin } from "./leboncoin/processLeboncoin"
 import { processDecathlon } from "./decathlon/importDecathlon"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 import { processApec } from "./apec/processApec"
+import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
 
 const timings = {
   import_source: "0 0 * * *",
@@ -139,6 +140,12 @@ export const importers: Record<string, CronDef> = {
     handler: processApec,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
+  },
+  "Import Emploi Inclusion": {
+    cron_string: timings.import_source,
+    handler: processEmploiInclusion,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
   },
 
   // Keep at the end
