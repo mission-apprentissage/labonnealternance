@@ -58,6 +58,12 @@ jobs:
           key: ${{ github.repository }}-build-cache
           path: ./.cache
 
+      - name: Mount shared dist cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-shared-dist
+          path: ./shared/dist
+
       - name: Install dependencies
         run: |
           if [ ! -f ./node_modules/.yarn-state.yml ]; then
