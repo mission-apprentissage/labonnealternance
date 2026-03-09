@@ -46,10 +46,21 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: 24
-          cache: "yarn"
+
+      - name: Mount Yarn Berry cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-yarn-berry-cache
+          path: ~/.yarn/berry/cache
+
+      - name: Mount node_modules cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-node-modules-${{ hashFiles('yarn.lock') }}
+          path: ./node_modules
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -63,9 +74,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
 
       - name: Retrieve previous version
         id: get-prev-version
@@ -103,10 +111,21 @@ jobs:
       - name: Setup SOPS
         uses: nhedger/setup-sops@v2
 
-      - uses: actions/setup-node@v6
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: 24
-          cache: "yarn"
+
+      - name: Mount Yarn Berry cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-yarn-berry-cache
+          path: ~/.yarn/berry/cache
+
+      - name: Mount node_modules cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-node-modules-${{ hashFiles('yarn.lock') }}
+          path: ./node_modules
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -120,9 +139,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
 
       - name: Build UI recette
         run: .bin/mna-lba app:build ${{ needs.release.outputs.VERSION }} push $(git rev-parse HEAD) recette
@@ -220,10 +236,21 @@ jobs:
       - name: Setup SOPS
         uses: nhedger/setup-sops@v2
 
-      - uses: actions/setup-node@v6
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: 24
-          cache: "yarn"
+
+      - name: Mount Yarn Berry cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-yarn-berry-cache
+          path: ~/.yarn/berry/cache
+
+      - name: Mount node_modules cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-node-modules-${{ hashFiles('yarn.lock') }}
+          path: ./node_modules
 
       - name: Install dependencies
         run: yarn install --immutable
