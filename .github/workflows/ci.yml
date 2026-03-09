@@ -30,7 +30,7 @@ jobs:
     needs: ["npm-packages-check"]
     timeout-minutes: 10
     name: "Tests"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
 
     steps:
       - name: Checkout project

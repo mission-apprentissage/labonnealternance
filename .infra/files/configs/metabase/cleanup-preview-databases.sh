@@ -2,7 +2,7 @@
 set -euo pipefail
 
 METABASE_URL="https://metabase.{{dns_name}}"
-GITHUB_REPO="mission-apprentissage/{{repo_name}}"
+GITHUB_REPO="mission-apprentissage/labonnealternance"
 
 SESSION_PAYLOAD=$(jq -n \
   --arg username "{{ LBA_METABASE_ADMIN_EMAIL }}" \
