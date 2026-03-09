@@ -82,7 +82,10 @@ jobs:
           path: ./node_modules
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: |
+          if [ ! -f ./node_modules/.yarn-state.yml ]; then
+            yarn install --immutable
+          fi
 
       - name: Setup Blacksmith Builder
         uses: useblacksmith/setup-docker-builder@v1

@@ -53,7 +53,10 @@ jobs:
           path: ./node_modules
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: |
+          if [ ! -f ./node_modules/.yarn-state.yml ]; then
+            yarn install --immutable
+          fi
 
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check
