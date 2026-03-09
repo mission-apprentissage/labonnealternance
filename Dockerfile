@@ -1,6 +1,5 @@
-FROM node:24-slim AS builder_root
+FROM node:24-slim AS base_deps
 WORKDIR /app
-RUN yarn set version 3.3.1
 COPY .yarn /app/.yarn
 COPY package.json package.json
 COPY yarn.lock yarn.lock
@@ -10,6 +9,12 @@ COPY server/package.json server/package.json
 COPY shared/package.json shared/package.json
 
 RUN yarn install --immutable
+
+FROM base_deps AS server_prod_deps
+RUN yarn workspaces focus --production server
+
+FROM base_deps AS builder_root
+WORKDIR /app
 
 COPY . .
 
@@ -48,8 +53,8 @@ ARG COMMIT_HASH
 ENV COMMIT_HASH=$COMMIT_HASH
 
 COPY --from=builder_server /app/server ./server
-COPY --from=builder_server /app/node_modules ./node_modules
-COPY --from=builder_server /app/server/node_modules ./server/node_modules
+COPY --from=server_prod_deps /app/node_modules ./node_modules
+COPY --from=server_prod_deps /app/server/node_modules ./server/node_modules
 COPY ./server/static /app/server/static
 
 EXPOSE 5000

@@ -2,7 +2,6 @@
   "variable": {
     "VERSION": {},
     "CHANNEL": {},
-    "DEPS_ID": {},
     "COMMIT_HASH": {}
   },
   "group": {
@@ -34,8 +33,8 @@
         "org.opencontainers.image.source": "https://github.com/mission-apprentissage/labonnealternance",
         "org.opencontainers.image.licenses": "MIT"
       },
-      "cache-from": ["type=gha,scope=${DEPS_ID}"],
-      "cache-to": ["type=gha,mode=max,scope=${DEPS_ID}"]
+      "cache-from": [],
+      "cache-to": []
     },
     "server": {
       "inherits": ["common"],

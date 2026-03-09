@@ -44,12 +44,6 @@ else
   BUILDER_ARGS=""
 fi
 
-if [[ ! -z "${CI:-}" ]]; then
-  export DEPS_ID=($(md5sum $ROOT_DIR/yarn.lock))
-else
-  export DEPS_ID=""
-fi
-
 export CHANNEL=$(get_channel $VERSION)
 
 docker buildx bake $BUILDER_ARGS --${mode} "$environement"
