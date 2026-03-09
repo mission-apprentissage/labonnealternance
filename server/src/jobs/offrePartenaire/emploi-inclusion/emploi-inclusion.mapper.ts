@@ -46,11 +46,22 @@ export const emploiInclusionJobToJobsPartners = (job: IEmploiInclusionJob, poste
     offer_creation: dayjs.tz(poste.cree_le).toDate(),
     offer_expiration: dayjs.tz(poste.cree_le).add(2, "months").toDate(),
     offer_multicast: true,
-    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    contract_type: getContractType(poste),
     apply_email: job.courriel || null,
     apply_phone: job.telephone || null,
     business_error,
   }
 
   return partnerJob
+}
+
+const getContractType = (poste: IEmploiInclusionPoste): (typeof TRAINING_CONTRACT_TYPE)[keyof typeof TRAINING_CONTRACT_TYPE][] => {
+  const contractTypes: (typeof TRAINING_CONTRACT_TYPE)[keyof typeof TRAINING_CONTRACT_TYPE][] = []
+  if (poste.type_contrat == "Contrat de professionalisation") {
+    contractTypes.push(TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION)
+  }
+  if (poste.type_contrat == "Contrat d'apprentissage") {
+    contractTypes.push(TRAINING_CONTRACT_TYPE.APPRENTISSAGE)
+  }
+  return contractTypes
 }
