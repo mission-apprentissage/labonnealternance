@@ -1,8 +1,7 @@
-import { ObjectId } from "bson"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+import omit from "lodash-es/omit"
 import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 import { generateEmploiInclusionJobFixture } from "@/common/apis/emploiInclusion/emploi-inclusion.client.fixture"
 
@@ -60,55 +59,7 @@ describe("emploiInclusionJobToJobsPartners", () => {
   })
 
   it("maps a job and poste to a computed job partner", () => {
-    expect(emploiInclusionJobToJobsPartners(baseJob, basePoste)).toEqual({
-      _id: expect.any(ObjectId),
-      apply_email: "contact@test.fr",
-      apply_phone: "0123456789",
-      apply_url: null,
-      business_error: null,
-      contract_duration: null,
-      contract_is_disabled_elligible: false,
-      contract_remote: null,
-      contract_start: null,
-      contract_type: ["Apprentissage", "Professionnalisation"],
-      created_at: now,
-      errors: [],
-      jobs_in_success: [],
-      offer_access_conditions: [],
-      offer_creation: new Date("2024-01-01T09:00:00.000Z"),
-      offer_description: "Description détaillée du poste en alternance sur 30+ caractères",
-      offer_desired_skills: ["Profil recherché"],
-      offer_expiration: new Date("2024-03-01T09:00:00.000Z"),
-      offer_multicast: false,
-      offer_opening_count: 2,
-      offer_origin: null,
-      offer_rome_codes: null,
-      offer_status: "Active",
-      offer_target_diploma: null,
-      offer_title: "Développeur web en alternance",
-      offer_to_be_acquired_knowledge: [],
-      offer_to_be_acquired_skills: [],
-      partner_job_id: "42",
-      partner_label: JOBPARTNERS_LABEL.EMPLOI_INCLUSION,
-      updated_at: now,
-      validated: false,
-      workplace_address_city: "Paris",
-      workplace_address_label: "Paris 75001",
-      workplace_address_street_label: "1 rue de la Paix",
-      workplace_address_zipcode: "75001",
-      workplace_brand: null,
-      workplace_description: "Description entreprise",
-      workplace_geopoint: null,
-      workplace_idcc: null,
-      workplace_legal_name: "Entreprise Test",
-      workplace_naf_code: null,
-      workplace_naf_label: null,
-      workplace_name: "Enseigne Test",
-      workplace_opco: null,
-      workplace_siret: "12345678901234",
-      workplace_size: null,
-      workplace_website: "https://test.fr",
-    })
+    expect(omit(emploiInclusionJobToJobsPartners(baseJob, basePoste), ["_id"])).toMatchSnapshot()
   })
 
   it("sets business_error when offer_title is shorter than 3 characters", () => {
