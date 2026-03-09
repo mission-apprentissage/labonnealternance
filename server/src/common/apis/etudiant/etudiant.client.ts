@@ -58,21 +58,25 @@ export const ZJobEtudiantJob = z.object({
 export type IJobEtudiantJob = z.output<typeof ZJobEtudiantJob>
 
 const ZJobEtudiantResponse = z.object({
+  total: z.number(),
+  totalPages: z.number(),
   "next-page": z.string().nullable().optional(),
   jobs: z.array(ZJobEtudiantJob),
 })
 
 /**
- * API Doc : https://developers.piloty.fr/feeds/feed-jobs
+ * API Doc : https://developers.piloty.fr/jobs-api/jobs/get-jobs-opened-by-media
  */
 export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
   const allJobs: IJobEtudiantJob[] = []
   let nextPageToken: string | null | undefined = undefined
+  let page = 1
+  let totalPages = 1
 
   do {
     const url = new URL(config.job_etudiant.url)
     if (nextPageToken) {
-      url.searchParams.set("next-page", nextPageToken)
+      url.searchParams.set("next-page", decodeURIComponent(nextPageToken))
     }
 
     const response = await axios
@@ -80,8 +84,10 @@ export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
         headers: { Authorization: `Bearer ${config.job_etudiant.apiKey}` },
       })
       .catch((err: any) => {
-        logger.error({ status: err?.response?.status, data: err?.response?.data, url: url.toString() }, "job-etudiant: erreur API")
-        throw err
+        const status = err?.response?.status
+        const data = err?.response?.data
+        logger.error({ status, data, url: url.toString() }, "job-etudiant: erreur API")
+        throw new Error(`job-etudiant: API error ${status} - ${JSON.stringify(data)}`)
       })
 
     const parsed = ZJobEtudiantResponse.safeParse(response.data)
@@ -91,6 +97,12 @@ export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
     }
     allJobs.push(...parsed.data.jobs)
     nextPageToken = parsed.data["next-page"]
+    totalPages = parsed.data.totalPages
+    logger.info(`job-etudiant: page ${page}/${totalPages} récupérée — ${parsed.data.jobs.length} offres (total: ${allJobs.length}/${parsed.data.total})`)
+    page++
+    if (nextPageToken) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
   } while (nextPageToken)
 
   return allJobs
