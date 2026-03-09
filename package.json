@@ -33,7 +33,7 @@
     "services:stop": "docker compose down",
     "services:clean": "yarn services:stop; docker system prune --volumes",
     "seed:update": ".bin/mna-lba seed:update",
-    "lint": "eslint --cache .",
+    "lint": "eslint --cache --cache-location .cache/eslint .",
     "lint:fix": "yarn lint --fix",
     "prettier:fix": "prettier --write  -u .",
     "prettier:check": "prettier --check -u .",

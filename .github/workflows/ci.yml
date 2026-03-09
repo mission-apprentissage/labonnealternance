@@ -52,6 +52,12 @@ jobs:
           key: ${{ github.repository }}-node-modules-${{ hashFiles('yarn.lock') }}
           path: ./node_modules
 
+      - name: Mount build cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-build-cache
+          path: ./.cache
+
       - name: Install dependencies
         run: |
           if [ ! -f ./node_modules/.yarn-state.yml ]; then
@@ -61,11 +67,13 @@ jobs:
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check
 
-      - name: typecheck
-        run: yarn typecheck
-
-      - name: lint
-        run: yarn lint
+      - name: typecheck & lint
+        run: |
+          yarn typecheck & PID1=$!
+          yarn lint & PID2=$!
+          wait $PID1 || FAILED=1
+          wait $PID2 || FAILED=1
+          [ -z "${FAILED:-}" ]
 
       - name: start mongodb service
         run: |
