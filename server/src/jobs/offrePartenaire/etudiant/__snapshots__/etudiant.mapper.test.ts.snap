@@ -28,7 +28,6 @@ exports[`etudiantJobToJobsPartners > maps a job to a computed job partner 1`] = 
   "offer_origin": null,
   "offer_rome_codes": null,
   "offer_status": "Active",
-  "offer_status_history": [],
   "offer_target_diploma": null,
   "offer_title": "Développeur web en alternance",
   "offer_to_be_acquired_knowledge": [],
