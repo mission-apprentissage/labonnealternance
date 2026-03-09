@@ -7,6 +7,7 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import type { IJobEtudiantJob } from "@/common/apis/etudiant/etudiant.client"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 
 // Seules les offres dont la traduction FR du contrat est cette valeur sont importées (filtre dans processEtudiant)
 export const ETUDIANT_ELIGIBLE_CONTRACT_FR = "Alternance - Apprentissage / Professionalisation"
@@ -17,10 +18,8 @@ export const REMOTE_FR_MAP: Record<string, TRAINING_REMOTE_TYPE> = {
   "Ouvert au télétravail": TRAINING_REMOTE_TYPE.hybrid,
 }
 
-const stripHtml = (html: string | null): string => (html ?? "").replace(/<[^>]*>/g, "").trim()
-
 const buildWorkplaceDescription = (desc: IJobEtudiantJob["description"]): string | null => {
-  const parts = [desc.company_desc, desc.benefit_desc, desc.process_desc].map(stripHtml).filter(Boolean)
+  const parts = [desc.company_desc, desc.benefit_desc, desc.process_desc].map((s) => sanitizeTextField(s)).filter(Boolean)
   return parts.length > 0 ? parts.join("\n") : null
 }
 
@@ -29,7 +28,7 @@ export const etudiantJobToJobsPartners = (job: IJobEtudiantJob): IComputedJobsPa
   let business_error: null | JOB_PARTNER_BUSINESS_ERROR = null
 
   const offerTitle = job.name?.trim() ?? null
-  const rawDescription = job.description.job_desc ? stripHtml(job.description.job_desc) : null
+  const rawDescription = job.description.job_desc ? sanitizeTextField(job.description.job_desc) : null
 
   if (!offerTitle || offerTitle.length < 3) {
     business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
@@ -64,7 +63,7 @@ export const etudiantJobToJobsPartners = (job: IJobEtudiantJob): IComputedJobsPa
     workplace_address_city: job.location.city || null,
     offer_title: offerTitle,
     offer_description: rawDescription,
-    offer_desired_skills: job.description.profile_desc ? [stripHtml(job.description.profile_desc)].filter(Boolean) : [],
+    offer_desired_skills: job.description.profile_desc ? [sanitizeTextField(job.description.profile_desc)].filter(Boolean) : [],
     offer_creation: dayjs.tz(job.publishedAt).toDate(),
     offer_expiration: dayjs.tz(job.publishedAt).add(2, "months").toDate(),
     contract_type: ["Apprentissage", "Professionnalisation"],
