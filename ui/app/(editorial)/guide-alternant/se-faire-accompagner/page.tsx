@@ -58,7 +58,7 @@ const SeFaireAccompagnerPage = () => {
             Mission locale
           </DsfrLink>{" "}
           de votre secteur. Des conseillers vous aideront dans vos recherches d'entreprise.{" "}
-          <DsfrLink href="https://www.missions-locales.org/" aria-label="Trouver ma mission locale">
+          <DsfrLink href="https://www.missions-locales.org/missions-locales/" aria-label="Trouver ma mission locale">
             Trouver ma mission locale.
           </DsfrLink>
         </Paragraph>

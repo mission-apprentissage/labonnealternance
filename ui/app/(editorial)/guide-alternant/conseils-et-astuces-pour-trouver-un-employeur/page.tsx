@@ -69,7 +69,7 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
           listItems={[
             <>
               Besoin d'aide pour construire un CV à partir de vos expériences ? Inscrivez-vous gratuitement sur{" "}
-              <DsfrLink href="https://www.diagoriente.fr/" aria-label="Consulter le site Diagoriente">
+              <DsfrLink href="https://diagoriente.fr/" aria-label="Consulter le site Diagoriente">
                 Diagoriente
               </DsfrLink>{" "}
               et laissez-vous guider dans la construction d'un CV pertinent, mettant en lumière vos compétences.{" "}

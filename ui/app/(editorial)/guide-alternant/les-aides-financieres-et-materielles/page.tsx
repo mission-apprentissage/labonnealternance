@@ -63,7 +63,10 @@ const LesAidesFinancieresEtMateriellesPage = () => {
               </DsfrLink>
             </>,
             <>
-              <DsfrLink href="https://monlogementetudiant.beta.gouv.fr/trouver-un-logement-etudiant" aria-label="Rechercher un logement étudiant sur le site Mon Logement Étudiant">
+              <DsfrLink
+                href="https://monlogementetudiant.beta.gouv.fr/?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=conseils_astuces"
+                aria-label="Rechercher un logement étudiant sur le site Mon Logement Étudiant"
+              >
                 Mon Logement Étudiant
               </DsfrLink>{" "}
               a pour objectif de faciliter l'accès aux logements étudiants à vocation sociale, en particulier pour les étudiants boursiers ou en situation de précarité. La

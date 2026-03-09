@@ -98,7 +98,11 @@ const GuideCFAPage = () => {
                   </DsfrLink>{" "}
                   vous présente des repères sur l’apprentissage. Il est issu des travaux de la DGEFP et d’une consultation des acteurs institutionnels de l’apprentissage. Il répond
                   à l’objectif d’harmoniser les pratiques des acteurs de l’apprentissage et vise à donner des repères juridiques et des clefs de compréhension autour de bases
-                  documentaires et méthodologiques communes.
+                  documentaires et méthodologiques communes. Vous y retrouverez{" "}
+                  <Typography component="span" fontWeight="bold">
+                    le modèle de Convention de formation
+                  </Typography>{" "}
+                  recommandé pour mettre en place une formation en apprentissage (voir page 73 à 77).
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Le{" "}
@@ -107,7 +111,11 @@ const GuideCFAPage = () => {
                   </DsfrLink>{" "}
                   précise les modalités pratiques de gestion des contrats d’apprentissage. Il concerne la gestion et le financement des contrats d’apprentissage conclus dans le
                   secteur privé et a été élaboré en concertation avec les têtes de réseau des Centres de Formation pour Apprentis (CFA) et la Direction Générale Emploi et Formation
-                  Professionnelle (DGEFP).
+                  Professionnelle (DGEFP). Vous y retrouverez{" "}
+                  <Typography component="span" fontWeight="bold">
+                    le modèle de Convention de mobilité
+                  </Typography>{" "}
+                  recommandé pour mettre en place une mobilité internationale pendant l’apprentissage (annexe 4).
                 </ListItem>
                 <ListItem sx={{ display: "list-item" }}>
                   Retrouvez les fiches juridiques et les actualités de la formation professionnelle sur le site{" "}

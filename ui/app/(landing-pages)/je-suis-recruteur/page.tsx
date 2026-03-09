@@ -234,21 +234,20 @@ const JeSuisRecruteurPage = () => {
             <Typography fontSize={fr.spacing("4v")}>
               Le saviez-vous ? Afin d’aider les candidats intéressés par l'alternance à trouver un contrat, nous exposons différents types d'entreprises sur notre service :{" "}
             </Typography>
+            <Typography fontWeight={"bold"} fontSize={fr.spacing("4v")}>
+              Celles ayant émis un besoin en recrutement
+            </Typography>{" "}
+            <Typography fontSize={fr.spacing("4v")}>sur notre plateforme ainsi que sur France Travail et ses sites partenaires</Typography>
             <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
               <ListItem sx={{ display: "list-item" }}>
-                <Typography component="span" variant="body1" fontWeight={"bold"} fontSize={fr.spacing("4v")}>
-                  Celles ayant émis un besoin en recrutement
-                </Typography>{" "}
-                <Typography component="span" variant="body1" fontSize={fr.spacing("4v")}>
-                  sur notre plateforme ainsi que sur France Travail et ses sites partenaires
+                <Typography>
+                  <span className="fr-text--bold">Celles ayant émis un besoin en recrutement</span> sur notre plateforme ainsi que sur France Travail et ses sites partenaires
                 </Typography>
               </ListItem>
               <ListItem sx={{ display: "list-item" }}>
-                <Typography component="span" variant="body1" fontWeight={"bold"}>
-                  Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance"
-                </Typography>{" "}
-                <Typography component="span" variant="body1" fontSize={fr.spacing("4v")}>
-                  par un algorithme prédictif de France Travail, qui analyse les recrutements des 6 années passées en CDI, CDD de plus de 30 jours et alternance. L’objectif de cet
+                <Typography>
+                  <span className="fr-text--bold">Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance"</span> par un
+                  algorithme prédictif de France Travail, qui analyse les recrutements des 6 années passées en CDI, CDD de plus de 30 jours et alternance. L’objectif de cet
                   algorithme est de rendre accessible le marché caché de l’emploi, et ainsi faciliter les démarches de candidatures spontanées des usagers du service.
                 </Typography>
               </ListItem>

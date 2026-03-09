@@ -118,7 +118,7 @@ const JeSuisCFAPage = () => {
               <Typography variant="caption">
                 *Vous pouvez à tout moment vous désinscrire de ce service en{" "}
                 <DsfrLink href={PAGES.static.contact.getPath()} aria-label="Consulter la page de contact">
-                  contactant notre équipe.
+                  <Typography variant="caption">contactant notre équipe.</Typography>
                 </DsfrLink>
               </Typography>
             </Grid>
@@ -201,7 +201,7 @@ const JeSuisCFAPage = () => {
             <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>
               <Image
                 fetchPriority="low"
-                src={"/images/je-suis-cfa/illu-partenaires.svg"}
+                src={"/images/je-suis-cfa/illu-plateforme-jeunes.svg"}
                 alt=""
                 width={504}
                 height={284}
