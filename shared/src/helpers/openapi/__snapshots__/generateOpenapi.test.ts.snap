@@ -947,6 +947,15 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
             "type": "string",
           },
+          "status": {
+            "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+            "enum": [
+              "Active",
+              "Filled",
+              "Cancelled",
+            ],
+            "type": "string",
+          },
           "title": {
             "type": [
               "string",
@@ -968,6 +977,7 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         },
         "required": [
           "ideaType",
+          "status",
           "id",
           "place",
           "company",
