@@ -36,39 +36,13 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v5
 
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
-
-      - name: Mount Yarn Berry cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-yarn-berry-cache
-          path: ~/.yarn/berry/cache
-
-      - name: Mount node_modules cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-node-modules-${{ hashFiles('yarn.lock') }}
-          path: ./node_modules
-
-      - name: Mount build cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-build-cache-${{ hashFiles('biome.json') }}
-          path: ./.cache
-
-      - name: Mount shared dist cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-shared-dist
-          path: ./shared/dist
+          cache: "yarn"
 
       - name: Install dependencies
-        run: |
-          if [ ! -f ./node_modules/.yarn-state.yml ]; then
-            yarn install --immutable
-          fi
+        run: yarn install --immutable
 
       - name: Make sure to use same dependencies version across all packages
         run: yarn dedupe --check
