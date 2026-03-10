@@ -7,7 +7,6 @@ import { redirect } from "next/navigation"
 import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
@@ -85,11 +84,15 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography>
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.job_count + data.recruteur_count}</span> offres en alternance sont disponibles:
                 <br />
-                <DsfrLink style={{ color: "#fff" }} href={`/?${utmParams}`} aria-label={`Démarrer mes recherches d'alternance à ${data.ville}`}>
-                  <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-                    Démarrer mes recherches
-                  </Button>
-                </DsfrLink>
+                <Button
+                  linkProps={{ href: `/?${utmParams}` }}
+                  aria-label={`Démarrer mes recherches d'alternance à ${data.ville}`}
+                  size="large"
+                  priority="primary"
+                  style={{ marginTop: fr.spacing("2v") }}
+                >
+                  Démarrer mes recherches
+                </Button>
               </Typography>
             </Box>
             <Box sx={{ display: { xs: "none", md: "block" }, marginLeft: "auto", mt: fr.spacing("8v") }}>
