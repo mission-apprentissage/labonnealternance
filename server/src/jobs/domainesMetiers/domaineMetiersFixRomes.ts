@@ -1,4 +1,3 @@
-// eslint-disable-next-line n/no-unsupported-features/node-builtins
 
 import type { IDomainesMetiers } from "shared"
 import { diff } from "util"
