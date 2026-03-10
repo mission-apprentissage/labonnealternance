@@ -13,6 +13,7 @@ import CustomInput from "@/app/_components/CustomInput"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { publicConfig } from "@/config.public"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
@@ -40,7 +41,7 @@ export default function Authentification() {
           case "DISABLED":
             setFieldError(
               "email",
-              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a style="text-decoration:underline;" href="mailto:labonnealternance-contact@apprentissage.beta.gouv.fr?subject=Compte CFA La bonne alternance désactivé">support</a>`
+              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=Compte CFA La bonne alternance désactivé">support</a>`
             )
             setErrorMessage("Le compte utilisateur est désactivé")
             break
