@@ -35,18 +35,20 @@ get_channel() {
   echo $channel
 }
 
-set +e
-docker buildx create --name mna-lba --driver docker-container --config "$SCRIPT_DIR/buildkitd.toml" 2> /dev/null
-set -e
-
-if [[ ! -z "${CI:-}" ]]; then
-  export DEPS_ID=($(md5sum $ROOT_DIR/yarn.lock))
+if [[ -z "${CI:-}" ]]; then
+  set +e
+  docker buildx create --name mna-lba --driver docker-container --config "$SCRIPT_DIR/buildkitd.toml" 2> /dev/null
+  set -e
+  BUILDER_ARGS="--builder mna-lba"
 else
-  export DEPS_ID=""
+  BUILDER_ARGS=""
 fi
 
 export CHANNEL=$(get_channel $VERSION)
 
-docker buildx bake --builder mna-lba --${mode} "$environement"
-docker builder prune --builder mna-lba --keep-storage 20GB --force
-docker buildx stop --builder mna-lba
+docker buildx bake $BUILDER_ARGS --${mode} "$environement"
+
+if [[ -z "${CI:-}" ]]; then
+  docker builder prune --builder mna-lba --keep-storage 20GB --force
+  docker buildx stop --builder mna-lba
+fi
