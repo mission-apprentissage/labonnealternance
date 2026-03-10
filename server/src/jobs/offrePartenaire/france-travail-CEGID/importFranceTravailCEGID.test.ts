@@ -1,11 +1,9 @@
 import fs from "node:fs"
-
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
-import { importFranceTravailCEGIDRaw, importFranceTravailCEGIDToComputed } from "./importFranceTravailCEGID"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { importFranceTravailCEGIDRaw, importFranceTravailCEGIDToComputed } from "./importFranceTravailCEGID"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 

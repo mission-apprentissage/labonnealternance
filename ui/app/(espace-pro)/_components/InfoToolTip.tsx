@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Tooltip, Typography } from "@mui/material"
-import React from "react"
+import type React from "react"
 
 export const InfoTooltip = ({ children }: { children: React.ReactNode }) => {
   return (

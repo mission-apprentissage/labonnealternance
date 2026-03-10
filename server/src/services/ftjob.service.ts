@@ -1,25 +1,21 @@
-import { setTimeout } from "timers/promises"
-
 import distance from "@turf/distance"
+import { JobCollectionName } from "shared"
 import { NIVEAUX_POUR_OFFRES_PE } from "shared/constants/index"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import type { ILbaItemPartnerJob } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-
-import { JobCollectionName } from "shared"
+import { setTimeout } from "timers/promises"
+import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
+import type { IApiError } from "@/common/utils/errorManager"
+import { manageApiError } from "@/common/utils/errorManager"
+import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import type { FTJob, FTResponse } from "./ftjob.service.types"
 import type { TLbaItemResult } from "./jobOpportunity.service.types"
 import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import type { ILbaItemCompany, ILbaItemContact, ILbaItemFtJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-
-import { matchesDepartment, roundDistance } from "@/common/utils/geolib"
-import { manageApiError } from "@/common/utils/errorManager"
-import type { IApiError } from "@/common/utils/errorManager"
-
-import { searchForFtJobs } from "@/common/apis/franceTravail/franceTravail.client"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i", "ief2i", "institut f2i", "openclassrooms", "mewo", "acp interim et recrutement", "jour j recrutement"]
 

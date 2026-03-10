@@ -1,12 +1,11 @@
-import { Readable } from "stream"
-
 import { internal } from "@hapi/boom"
 import NodeClam from "clamscan"
+import { Readable } from "stream"
 
 import { logger } from "@/common/logger"
+import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils/sentryUtils"
 
 const isClamavDisabled = config.env === "preview"
 

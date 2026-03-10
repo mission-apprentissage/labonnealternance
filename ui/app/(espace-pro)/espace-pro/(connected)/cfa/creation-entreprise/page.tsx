@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import CreationEntreprisePage from "./CreationEntreprisePage"
 import { PAGES } from "@/utils/routes.utils"
+import CreationEntreprisePage from "./CreationEntreprisePage"
 
 export const metadata: Metadata = {
   title: PAGES.static.backCfaCreationEntreprise.getMetadata().title,

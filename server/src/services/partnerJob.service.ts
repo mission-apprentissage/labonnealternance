@@ -8,18 +8,16 @@ import type { ILbaItemPartnerJob } from "shared/models/index"
 import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-
-import type { IApplicationCount } from "./application.service"
-import { getApplicationByJobCount } from "./application.service"
-import { generateApplicationToken } from "./appLinks.service"
-import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { sortLbaJobs } from "./lbajob.service"
-import { filterJobsByOpco } from "./opco.service"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { generateApplicationToken } from "./appLinks.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByJobCount } from "./application.service"
+import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sortLbaJobs } from "./lbajob.service"
+import { filterJobsByOpco } from "./opco.service"
 
 /**
  * Converti les offres issues de la mongo en objet de type ILbaItem

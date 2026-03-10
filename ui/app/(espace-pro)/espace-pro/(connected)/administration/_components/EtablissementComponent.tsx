@@ -6,12 +6,11 @@ import { createRef, useEffect, useState } from "react"
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
-import { dayjs } from "@/common/dayjs"
 import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 import { useToast } from "@/app/hooks/useToast"
-import { apiGet, apiPatch } from "@/utils/api.utils"
-
+import { dayjs } from "@/common/dayjs"
 import { Disquette } from "@/theme/components/icons"
+import { apiGet, apiPatch } from "@/utils/api.utils"
 
 const EtablissementComponent = ({ id }: { id?: string }) => {
   const emailGestionnaireFocusRef = createRef()

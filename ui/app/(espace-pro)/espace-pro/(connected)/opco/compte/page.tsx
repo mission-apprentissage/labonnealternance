@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { OPCO } from "shared/constants/recruteur"
-
-import CompteRenderer from "@/app/(espace-pro)/espace-pro/(connected)/_components/CompteRenderer"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import CompteRenderer from "@/app/(espace-pro)/espace-pro/(connected)/_components/CompteRenderer"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {

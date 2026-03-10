@@ -1,9 +1,8 @@
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-
-import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const detectClassificationJobsPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]

@@ -2,10 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
-
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import ListeOffres from "@/app/(espace-pro)/espace-pro/(connected)/_components/ListeOffres"
-import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { getFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 

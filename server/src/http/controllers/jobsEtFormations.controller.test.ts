@@ -1,9 +1,7 @@
-import assert from "assert"
-
-import { describe, expect, it } from "vitest"
-
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import assert from "assert"
+import { describe, expect, it } from "vitest"
 
 describe("jobEtFormationV1", () => {
   useMongo()

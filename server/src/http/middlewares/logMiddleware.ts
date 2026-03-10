@@ -1,8 +1,7 @@
 import type { FastifyError, FastifyLoggerOptions, FastifyReply, FastifyRequest, RawServerDefault } from "fastify"
 import type { PinoLoggerOptions, ResSerializerReply } from "fastify/types/logger"
-
-import { OneLinerLogger } from "./OneLinerLogger"
 import config from "@/config"
+import { OneLinerLogger } from "./OneLinerLogger"
 
 const withoutSensibleFields = (obj: unknown, seen: Set<unknown>) => {
   if (obj == null) return obj

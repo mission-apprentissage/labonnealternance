@@ -1,7 +1,7 @@
 import { forbidden, internal, unauthorized } from "@hapi/boom"
 import { captureException } from "@sentry/node"
-import { parseApiAlternanceToken } from "api-alternance-sdk"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
+import { parseApiAlternanceToken } from "api-alternance-sdk"
 import type { FastifyRequest } from "fastify"
 import type { JwtPayload } from "jsonwebtoken"
 import type { ComputedUserAccess, ICredential } from "shared"
@@ -10,16 +10,14 @@ import type { PathParam, QueryString } from "shared/helpers/generateUri"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import type { ISecuredRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { Role, UserWithType } from "shared/security/permissions"
-
-import type { IAccessToken } from "./accessTokenService"
-import { parseAccessToken, verifyJwtToken } from "./accessTokenService"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
+import { controlUserState } from "@/services/login.service"
 import { getSession } from "@/services/sessions.service"
 import { updateLastConnectionDate } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
-
-import { controlUserState } from "@/services/login.service"
+import type { IAccessToken } from "./accessTokenService"
+import { parseAccessToken, verifyJwtToken } from "./accessTokenService"
 
 export type AccessUser2 = UserWithType<"IUser2", IUserWithAccount>
 export type AccessUserCredential = UserWithType<"ICredential", ICredential>

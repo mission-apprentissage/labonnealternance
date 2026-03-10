@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import ProcesseurPage from "./ProcesseurPage"
 import { PAGES } from "@/utils/routes.utils"
+import ProcesseurPage from "./ProcesseurPage"
 
 export const metadata: Metadata = {
   title: PAGES.static.adminProcessor.getMetadata().title,

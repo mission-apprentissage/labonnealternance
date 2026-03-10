@@ -2,14 +2,13 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Typography, Box, Container, Stack } from "@mui/material"
+import { Box, Container, Stack, Typography } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IEtablissementJson } from "shared"
-
+import { publicConfig } from "@/config.public"
 import { SuccessCircle } from "@/theme/components/icons"
 import { apiGet, apiPost } from "@/utils/api.utils"
-import { publicConfig } from "@/config.public"
 
 type IPremiumEtablissement = {
   raison_sociale: string

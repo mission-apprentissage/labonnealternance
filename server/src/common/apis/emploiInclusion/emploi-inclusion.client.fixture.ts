@@ -1,7 +1,6 @@
 import nock from "nock"
-
-import type { IEmploiInclusionJob } from "./emploi-inclusion.client"
 import config from "@/config"
+import type { IEmploiInclusionJob } from "./emploi-inclusion.client"
 
 const API_PATH = "/api/v1/siaes/"
 

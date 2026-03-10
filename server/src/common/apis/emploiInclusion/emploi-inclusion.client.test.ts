@@ -1,9 +1,8 @@
 import nock from "nock"
 import { describe, expect, it, vi } from "vitest"
-
+import config from "@/config"
 import { getAllEmploiInclusionJobsByDepartement } from "./emploi-inclusion.client"
 import { generateEmploiInclusionJobFixture, nockEmploiInclusionNextPage, nockEmploiInclusionPage } from "./emploi-inclusion.client.fixture"
-import config from "@/config"
 
 vi.mock("@/common/utils/asyncUtils", () => ({
   delay: vi.fn().mockResolvedValue(undefined),

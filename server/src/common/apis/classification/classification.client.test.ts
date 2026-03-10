@@ -1,12 +1,11 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
 import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { describe, expect, it, vi } from "vitest"
-
-import { nockLabClassification } from "./classification.client.fixture"
 import type { TJobClassification } from "@/services/cacheClassification.service"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { nockLabClassification } from "./classification.client.fixture"
 
 useMongo()
 

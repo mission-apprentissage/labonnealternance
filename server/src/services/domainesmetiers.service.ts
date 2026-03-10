@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { removeAccents } from "shared"
+
+import { ObjectId } from "mongodb"
 import type { IDomainesMetiers } from "shared"
+import { removeAccents } from "shared"
 import z from "zod"
 import { zObjectId } from "zod-mongodb-schema"
-import { ObjectId } from "mongodb"
-import { deduplicateBy, deduplicate } from "@/common/utils/array"
+import { deduplicate, deduplicateBy } from "@/common/utils/array"
 import { ensureInitialization, getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const ZDomaineMetierSimple = z.object({
@@ -155,17 +156,24 @@ export function domaineMetierToDomaineMetierSimple(domaineMetier: IDomainesMetie
     intitules_romes_sans_accent_computed,
     codes_rncps,
     intitules_rncps,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     intitules_rncps_sans_accent_computed,
     mots_clefs,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     mots_clefs_sans_accent_computed,
     mots_clefs_specifiques,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     mots_clefs_specifiques_sans_accent_computed,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     appellations_romes,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     appellations_romes_sans_accent_computed,
     codes_fap,
     intitules_fap,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     intitules_fap_sans_accent_computed,
     sous_domaine_onisep,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     sous_domaine_onisep_sans_accent_computed,
     couples_appellations_rome_metier,
     couples_romes_metiers,

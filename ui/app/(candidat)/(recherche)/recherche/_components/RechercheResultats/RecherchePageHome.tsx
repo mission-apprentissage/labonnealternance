@@ -1,12 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-
-import { RechercheHeader } from "./RechercheHeader"
-import { RechercheMobileFormUpdate } from "./RechercheMobileFormUpdate"
-import { RechercheMobileHome } from "./RechercheMobileHome"
 import { CandidatRechercheFilters } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheFilters"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { RechercheHeader } from "./RechercheHeader"
+import { RechercheMobileFormUpdate } from "./RechercheMobileFormUpdate"
+import { RechercheMobileHome } from "./RechercheMobileHome"
 
 export function RecherchePageHome(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMobileForm } = props.rechercheParams

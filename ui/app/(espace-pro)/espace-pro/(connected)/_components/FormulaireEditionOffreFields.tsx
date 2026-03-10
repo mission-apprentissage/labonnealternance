@@ -10,8 +10,6 @@ import { useFormikContext } from "formik"
 import { useParams } from "next/navigation"
 import type { IAppellationsRomes } from "shared"
 import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
-
-import { ChampNombre } from "./ChampNombre"
 import CustomInput from "@/app/_components/CustomInput"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
@@ -19,6 +17,7 @@ import { DropdownCombobox } from "@/components/espace_pro"
 import { useAuth } from "@/context/UserContext"
 import { Warning } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
+import { ChampNombre } from "./ChampNombre"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 

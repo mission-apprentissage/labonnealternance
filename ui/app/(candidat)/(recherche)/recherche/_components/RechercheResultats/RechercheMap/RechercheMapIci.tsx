@@ -6,12 +6,11 @@ import { Box } from "@mui/material"
 import type { Map as Mapbox } from "mapbox-gl"
 import { LngLat } from "mapbox-gl"
 import { useCallback, useEffect, useState } from "react"
-
-// eslint-disable-next-line @dword-design/import-alias/prefer-alias -- Parent import needed for sibling file
-import { earthCircumferenceKm, mapboxTileSize } from "../RechercheMap"
 import { RADIUS_OPTIONS_VALUES } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+// eslint-disable-next-line @dword-design/import-alias/prefer-alias -- Parent import needed for sibling file
+import { earthCircumferenceKm, mapboxTileSize } from "../RechercheMap"
 
 type RechercheMapIciProps = {
   map: Mapbox
