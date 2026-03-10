@@ -45,6 +45,13 @@
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "biomejs.biome",
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "biome.lsp.bin": "node_modules/.bin/biome",
   "js/ts.validate.enabled": true,
   "files.eol": "\n",
   "files.insertFinalNewline": true,
