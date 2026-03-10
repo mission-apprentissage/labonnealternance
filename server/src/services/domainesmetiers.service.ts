@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// biome-ignore lint/suspicious/noUnusedVariables
 
 import { ObjectId } from "mongodb"
 import type { IDomainesMetiers } from "shared"
