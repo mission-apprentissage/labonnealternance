@@ -106,7 +106,5 @@
     "typescript": "^5.9.3",
     "zod-fixture": "^2.5.2"
   },
-  "files": [
-    "src/**/*"
-  ]
+  "files": ["src/**/*"]
 }
