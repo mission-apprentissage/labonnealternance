@@ -1,5 +1,3 @@
-// biome-ignore lint/suspicious/noUnusedVariables
-
 import { ObjectId } from "mongodb"
 import type { IDomainesMetiers } from "shared"
 import { removeAccents } from "shared"

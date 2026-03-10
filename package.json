@@ -11,11 +11,7 @@
     "node": ">=24",
     "npm": "please-use-yarn"
   },
-  "workspaces": [
-    "ui",
-    "server",
-    "shared"
-  ],
+  "workspaces": ["ui", "server", "shared"],
   "scripts": {
     "setup": ".bin/mna-lba env:init",
     "setup:mongodb": "docker compose exec -it mongodb mongosh --eval \"try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }\" --quiet",
@@ -82,20 +78,12 @@
     "vitest": "^4.0.5"
   },
   "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
+    "extends": ["@commitlint/config-conventional"]
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc}": [
-      "biome check --write --no-errors-on-unmatched"
-    ],
-    "*": [
-      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
-    ],
-    "yarn.lock": [
-      "yarn dedupe"
-    ]
+    "*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc}": ["biome check --write --no-errors-on-unmatched"],
+    "*": ["biome check --no-errors-on-unmatched --files-ignore-unknown=true"],
+    "yarn.lock": ["yarn dedupe"]
   },
   "resolutions": {
     "zod@3.21.4": "patch:zod@npm%3A3.21.4#./.yarn/patches/zod-npm-3.21.4-9f570b215c.patch"

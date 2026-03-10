@@ -9,7 +9,6 @@ import { useCallback, useEffect, useState } from "react"
 import { RADIUS_OPTIONS_VALUES } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-// biome-ignore lint: Parent import needed for sibling file
 import { earthCircumferenceKm, mapboxTileSize } from "../RechercheMap"
 
 type RechercheMapIciProps = {
