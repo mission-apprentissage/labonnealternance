@@ -55,7 +55,7 @@ jobs:
       - name: Mount build cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-build-cache
+          key: ${{ github.repository }}-build-cache-${{ hashFiles('biome.json') }}
           path: ./.cache
 
       - name: Mount shared dist cache
