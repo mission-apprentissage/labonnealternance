@@ -45,7 +45,7 @@
   },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "biomejs.biome",
-  "javascript.validate.enable": true,
+  "js/ts.validate.enabled": true,
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.exclude": {
@@ -79,8 +79,8 @@
     "**/*/lib": true,
     "server/dist": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
   "vitest.commandLine": "yarn test --single-thread",
   "vitest.workspaceConfig": "vitest.workspace.ts"
 }

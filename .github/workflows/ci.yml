@@ -51,7 +51,7 @@ jobs:
         run: yarn typecheck
 
       - name: lint & format
-        run: yarn check
+        run: yarn check:ci
 
       - name: start mongodb service
         run: |
