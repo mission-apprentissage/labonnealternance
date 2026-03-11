@@ -27,18 +27,8 @@
       "command": "npm run cli ${input:command}",
       "cwd": "${workspaceFolder}/server",
       "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/$KNOWN_TOOLS$/**"],
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "build:dev",
-        "path": "server"
-      }
+      "preLaunchTask": { "type": "npm", "script": "build:dev", "path": "server" }
     }
   ],
-  "inputs": [
-    {
-      "id": "command",
-      "description": "Cli command to run",
-      "type": "promptString"
-    }
-  ]
+  "inputs": [{ "id": "command", "description": "Cli command to run", "type": "promptString" }]
 }

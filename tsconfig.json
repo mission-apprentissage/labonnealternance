@@ -1,9 +1,5 @@
 {
-  "compilerOptions": {
-    "noErrorTruncation": true
-  },
+  "compilerOptions": { "noErrorTruncation": true },
   "exclude": ["**/node_modules", "**/public", "**/.next", "**/dist", "**/build", ".infra", ".bin", ".yarn"],
-  "typeAcquisition": {
-    "enable": false
-  }
+  "typeAcquisition": { "enable": false }
 }

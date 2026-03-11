@@ -16,9 +16,7 @@
 
     "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/*": ["./*"]
-    },
+    "paths": { "@/*": ["./*"] },
     "noErrorTruncation": true,
     "target": "ES2017"
   },

@@ -8,25 +8,9 @@
   "private": true,
   "type": "module",
   "sideEffects": ["./dist/src/helpers/zodWithOpenApi.js"],
-  "exports": {
-    ".": {
-      "import": "./dist/src/index.js",
-      "types": "./dist/src/index.d.ts"
-    },
-    "./*": {
-      "import": "./dist/src/*.js",
-      "types": "./dist/src/*.d.ts"
-    }
-  },
-  "engines": {
-    "node": ">=20",
-    "npm": "please-use-yarn"
-  },
-  "scripts": {
-    "build": "tsc -b",
-    "typecheck": "tsc -b",
-    "dev": "tsc -b -w"
-  },
+  "exports": { ".": { "import": "./dist/src/index.js", "types": "./dist/src/index.d.ts" }, "./*": { "import": "./dist/src/*.js", "types": "./dist/src/*.d.ts" } },
+  "engines": { "node": ">=20", "npm": "please-use-yarn" },
+  "scripts": { "build": "tsc -b", "typecheck": "tsc -b", "dev": "tsc -b -w" },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
     "@fastify/swagger": "^9.5.2",
@@ -43,10 +27,5 @@
     "zod-i18n-map": "^2.27.0",
     "zod-mongodb-schema": "^1.0.2"
   },
-  "devDependencies": {
-    "@tsconfig/node24": "^24.0.3",
-    "@types/node": "^24.10.0",
-    "mongodb": "^6.20.0",
-    "typescript": "^5.9.3"
-  }
+  "devDependencies": { "@tsconfig/node24": "^24.0.3", "@types/node": "^24.10.0", "mongodb": "^6.20.0", "typescript": "^5.9.3" }
 }

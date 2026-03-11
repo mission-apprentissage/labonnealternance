@@ -39,18 +39,11 @@
     "xkeysib",
     "ymag"
   ],
-  "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
-  },
+  "editor.codeActionsOnSave": { "quickfix.biome": "explicit", "source.organizeImports.biome": "explicit" },
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "biomejs.biome",
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[jsonc]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
+  "[json]": { "editor.defaultFormatter": "biomejs.biome" },
+  "[jsonc]": { "editor.defaultFormatter": "biomejs.biome" },
   "biome.lsp.bin": "node_modules/.bin/biome",
   "js/ts.validate.enabled": true,
   "files.eol": "\n",
@@ -69,13 +62,7 @@
     "**/.webpack": true,
     "**/tsconfig.tsbuildinfo": true
   },
-  "files.watcherExclude": {
-    "**/*/lib": true,
-    "**/*/coverage": true,
-    "**/*/dist": true,
-    "**/*/build": true,
-    "**/.webpack": true
-  },
+  "files.watcherExclude": { "**/*/lib": true, "**/*/coverage": true, "**/*/dist": true, "**/*/build": true, "**/.webpack": true },
   "search.exclude": {
     "**/node_modules": true,
     "**/.webpack": true,

@@ -22,8 +22,5 @@
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["**/node_modules"],
-  "typeAcquisition": {
-    "enable": false,
-    "include": ["@types/node"]
-  }
+  "typeAcquisition": { "enable": false, "include": ["@types/node"] }
 }

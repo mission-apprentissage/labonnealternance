@@ -66,10 +66,7 @@
         "useYield": "error"
       },
       "style": { "noCommonJs": "error", "noNamespace": "error", "useArrayLiterals": "error", "useAsConstAssertion": "error" },
-      "nursery": {
-        "noFloatingPromises": "error",
-        "useExhaustiveSwitchCases": "error"
-      },
+      "nursery": { "noFloatingPromises": "error", "useExhaustiveSwitchCases": "error" },
       "suspicious": {
         "noAssignInExpressions": "error",
         "noAsyncPromiseExecutor": "error",
@@ -209,6 +206,7 @@
     },
     "globals": ["exports", "require", "module", "__filename", "__dirname"]
   },
+  "json": { "formatter": { "expand": "never" } },
   "html": { "formatter": { "indentScriptAndStyle": false, "selfCloseVoidElements": "always" } },
   "overrides": [
     {
