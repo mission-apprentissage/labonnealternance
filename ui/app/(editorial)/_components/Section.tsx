@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, Divider } from "@mui/material"
+import { Box, Divider, Typography } from "@mui/material"
 import type { ReactNode } from "react"
 
 export const Section = ({ title, children }: { title?: string; children: ReactNode }) => (

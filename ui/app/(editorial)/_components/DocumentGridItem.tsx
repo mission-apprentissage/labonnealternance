@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Grid, Typography } from "@mui/material"
 import Image from "next/image"
-import Card from "@codegouvfr/react-dsfr/Card"
 
 export const DocumentGridItem = ({ title, link }: { title: string; link: string }) => {
   return (

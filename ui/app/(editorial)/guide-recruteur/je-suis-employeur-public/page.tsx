@@ -1,13 +1,13 @@
 import type { Metadata } from "next"
+import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
+import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
-import { PAGES } from "@/utils/routes.utils"
-import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { Section } from "@/app/(editorial)/_components/Section"
-import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.guideRecruteurJeSuisEmployeurPublic.getMetadata()
 

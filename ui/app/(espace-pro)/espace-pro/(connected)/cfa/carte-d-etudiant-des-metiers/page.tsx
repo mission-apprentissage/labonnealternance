@@ -1,12 +1,12 @@
-import type { Metadata } from "next"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid, Typography } from "@mui/material"
-import Image from "next/image"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Grid, Typography } from "@mui/material"
+import type { Metadata } from "next"
+import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { PAGES } from "@/utils/routes.utils"
 import { DsfrIcon } from "@/components/DsfrIcon"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.carteDEtudiantDesMetiers.getMetadata()
 

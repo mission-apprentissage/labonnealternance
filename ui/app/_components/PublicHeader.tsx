@@ -3,8 +3,7 @@ import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
-import { DsfrHeaderProps, DsfrHeaderNavigation } from "./Header"
-import { PAGES } from "@/utils/routes.utils"
+import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
 
 export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {

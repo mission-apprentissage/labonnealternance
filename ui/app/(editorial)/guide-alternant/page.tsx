@@ -1,20 +1,19 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Divider, Grid, Typography } from "@mui/material"
-
-import Image from "next/image"
 import Card from "@codegouvfr/react-dsfr/Card"
+import { Box, Divider, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
-import { ARTICLES } from "./const"
+import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { PAGES } from "@/utils/routes.utils"
 import { AllerPlusLoinItem } from "@/app/(editorial)/_components/AllerPlusLoinItem"
 import { AllerPlusLoinItemHorizontal } from "@/app/(editorial)/_components/AllerPlusLoinItemHorizontal"
 import { Conseil } from "@/app/(editorial)/_components/Conseil"
-import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { DsfrIcon } from "@/components/DsfrIcon"
 import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHeaderIllustration"
+import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
+import { DsfrIcon } from "@/components/DsfrIcon"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
+import { ARTICLES } from "./const"
 
 export const metadata: Metadata = PAGES.static.guideAlternant.getMetadata()
 

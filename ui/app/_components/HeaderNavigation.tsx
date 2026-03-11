@@ -1,7 +1,7 @@
 "use client"
 
-import { usePathname } from "next/navigation"
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
+import { usePathname } from "next/navigation"
 import { PAGES } from "@/utils/routes.utils"
 
 type NavLink = {

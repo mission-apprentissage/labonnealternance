@@ -5,13 +5,11 @@ import type { Metadata } from "next"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoHome } from "./_components/AlgoHome"
+import { CalculRemuneration } from "./_components/CalculRemuneration"
 import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
 import { HomeRechercheForm } from "./_components/HomeRechercheForm"
 import { HowTo } from "./_components/HowTo"
-import { CalculRemuneration } from "./_components/CalculRemuneration"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
-import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export const metadata: Metadata = {
   title: "La bonne alternance - Trouvez votre alternance",

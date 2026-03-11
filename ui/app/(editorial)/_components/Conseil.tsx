@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid, Typography } from "@mui/material"
 import Card from "@codegouvfr/react-dsfr/Card"
+import { Box, Grid, Typography } from "@mui/material"
 import { DsfrIcon } from "@/components/DsfrIcon"
 
 export const Conseil = ({ title, href, icon }: { title: string; href: string; icon: string }) => (

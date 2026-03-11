@@ -1,16 +1,16 @@
-import type { Metadata } from "next"
-import { Typography, Grid } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Grid, Typography } from "@mui/material"
+import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
-import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 
 export const metadata: Metadata = PAGES.static.guideAlternantAProposDesFormations.getMetadata()
 

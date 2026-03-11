@@ -1,12 +1,12 @@
-import type { Metadata } from "next"
-import { Grid, Typography, Box } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, Grid, Typography } from "@mui/material"
+import type { Metadata } from "next"
 import Image from "next/image"
-import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { PAGES } from "@/utils/routes.utils"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.jeSuisCFA.getMetadata()
 

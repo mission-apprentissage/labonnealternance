@@ -1,10 +1,10 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Divider, Grid, Typography } from "@mui/material"
 import type { ReactNode } from "react"
-import { fr } from "@codegouvfr/react-dsfr"
-import { AllerPlusLoinItem } from "./AllerPlusLoinItem"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import type { IPage } from "@/utils/routes.utils"
+import { AllerPlusLoinItem } from "./AllerPlusLoinItem"
 
 export const LayoutArticle = ({
   pages,

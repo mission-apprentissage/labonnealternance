@@ -1,13 +1,13 @@
-import type { Metadata } from "next"
-import { Box, Grid, Typography, Divider, List, ListItem } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import Image from "next/image"
 import Card from "@codegouvfr/react-dsfr/Card"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { PAGES } from "@/utils/routes.utils"
+import { Box, Divider, Grid, List, ListItem, Typography } from "@mui/material"
+import type { Metadata } from "next"
+import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.jeSuisRecruteur.getMetadata()
 const JeSuisRecruteurPage = () => {

@@ -1,14 +1,14 @@
-import type { Metadata } from "next"
 import { Typography } from "@mui/material"
+import type { Metadata } from "next"
+import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
+import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
-import { PAGES } from "@/utils/routes.utils"
-import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
-import { Section } from "@/app/(editorial)/_components/Section"
-import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getMetadata()
 

@@ -1,7 +1,7 @@
-import Card from "@codegouvfr/react-dsfr/Card"
-import Badge from "@codegouvfr/react-dsfr/Badge"
-import { Typography } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
+import Badge from "@codegouvfr/react-dsfr/Badge"
+import Card from "@codegouvfr/react-dsfr/Card"
+import { Typography } from "@mui/material"
 
 export const QuizItem = ({ title, desc, href }: { title: string; desc: string; href: string }) => (
   <Card

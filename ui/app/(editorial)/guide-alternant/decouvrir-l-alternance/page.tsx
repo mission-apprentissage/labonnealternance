@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
-import { Box } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box } from "@mui/material"
+import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
