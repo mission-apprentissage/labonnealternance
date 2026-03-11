@@ -1,22 +1,20 @@
 import { badRequest } from "@hapi/boom"
 import { ObjectId } from "bson"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
-import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { omit } from "lodash-es"
 import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 
 // Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/awsUtils", () => {
@@ -56,8 +54,6 @@ const fakeApplication = {
 
 describe("Sending application", () => {
   beforeEach(async () => {
-    const dateMoins1 = dayjs().add(-1, "day")
-
     const romes: IReferentielRome[] = [
       generateReferentielRome({
         rome: {
@@ -69,52 +65,26 @@ describe("Sending application", () => {
     ]
     await getDbCollection("referentielromes").insertMany(romes)
 
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            _id: new ObjectId("6081289803569600282e0001"),
-            rome_code: ["A1101"],
-            job_expiration_date: dateMoins1.toDate(),
-          },
-        ],
-      })
-    )
-
-    const datePlus1 = dayjs().add(1, "day")
-
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ARCHIVE,
-        jobs: [
-          {
-            _id: new ObjectId("6081289803569600282e0002"),
-            rome_code: ["A1101"],
-            job_expiration_date: datePlus1.toDate(),
-          },
-        ],
-      })
-    )
-
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            _id: new ObjectId("6081289803569600282e0003"),
-            rome_code: ["A1101"],
-            job_status: JOB_STATUS.POURVUE,
-            job_expiration_date: datePlus1.toDate(),
-          },
-        ],
-      })
-    )
-
     return async () => {
-      await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
     }
+  })
+  it("Should send an application to a job", async () => {
+    const job = await createJobPartner({
+      apply_email: "email@gmail.com",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+    const result = await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: job._id.toString() },
+      },
+    })
+    expect.soft(omit(result, ["_id"])).toMatchSnapshot()
   })
   it("Should refuse sending application to non existent job", async () => {
     await expect(
@@ -125,42 +95,6 @@ describe("Sending application", () => {
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
-  })
-
-  it("Should refuse sending application to expired job because of expiry date", async () => {
-    await expect(
-      sendApplicationV2({
-        newApplication: {
-          ...fakeApplication,
-          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0001" },
-        },
-      })
-    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
-  })
-
-  it("Should refuse sending application to expired job because of recruiter status", async () => {
-    await expect(
-      sendApplicationV2({
-        newApplication: {
-          ...fakeApplication,
-          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0002" },
-        },
-      })
-    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
-  })
-
-  it("Should refuse sending application to expired job because of job status", async () => {
-    await expect(
-      sendApplicationV2({
-        newApplication: {
-          ...fakeApplication,
-          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0003" },
-        },
-      })
-    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
-  })
-
-  it("Should refuse sending application to non existent company", async () => {
     await expect(
       sendApplicationV2({
         newApplication: {
@@ -169,6 +103,58 @@ describe("Sending application", () => {
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
+  })
+
+  it("Should refuse sending application to expired job because of expiry date", async () => {
+    const expiredJob = await createJobPartner({
+      apply_email: "email@gmail.com",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(-1, "day").toDate(),
+    })
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: expiredJob._id.toString() },
+        },
+      })
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
+  })
+
+  it("Should refuse sending application to cancelled job", async () => {
+    const canceledJob = await createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: canceledJob._id.toString() },
+        },
+      })
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
+  })
+
+  it("Should refuse sending application to provided job", async () => {
+    const providedJob = await createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.POURVUE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: providedJob._id.toString() },
+        },
+      })
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
   })
 })
 
@@ -494,7 +480,6 @@ describe("checkMaxApplicationCount", () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applications").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
-    await getDbCollection("recruiters").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
   })
 
@@ -579,20 +564,6 @@ describe("checkMaxApplicationCount", () => {
     const jobId = new ObjectId("6081289803569600282e0033")
 
     await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            _id: jobId,
-            rome_code: ["A1101"],
-            job_status: JOB_STATUS.ACTIVE,
-            job_expiration_date: new Date("2050-01-01"),
-          },
-        ],
-      })
-    )
-    // Mirror entry in jobs_partners so the status update can be verified
     await getDbCollection("jobs_partners").insertOne(
       generateJobsPartnersOfferPrivate({
         _id: jobId,

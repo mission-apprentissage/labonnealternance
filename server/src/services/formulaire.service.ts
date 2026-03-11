@@ -1,46 +1,55 @@
-import { randomUUID } from "node:crypto"
-
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, UpdateFilter } from "mongodb"
 import { ObjectId } from "mongodb"
-import type { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur } from "shared"
+import type { Filter } from "mongodb"
+import type {
+  IDelegation,
+  IJob,
+  IJobCreate,
+  IJobWithRomeDetail,
+  IRecruiter,
+  IRecruiterWithRomeDetailAndApplicationCount,
+  IReferentielRome,
+  IRoleManagement,
+  ITrackingCookies,
+  IUserRecruteur,
+  zRoutes,
+} from "shared"
 import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import type { OPCOS_LABEL } from "shared/constants/recruteur"
-import { NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import type { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import dayjs from "shared/helpers/dayjs"
+import type { ICFA } from "shared/models/cfa.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type z from "zod"
 import { getUserManagingOffer } from "./application.service"
 import { createViewDelegationLink } from "./appLinks.service"
 import { getCatalogueFormations } from "./catalogue.service"
-import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
+import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import mailer from "./mailer.service"
 import { anonymizeLbaJobsPartners } from "./partnerJob.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentielEngagementEntreprise.service"
-import { getResumeToken, storeResumeToken } from "./resumeToken.service"
-import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service"
+import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
-import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { deduplicate } from "@/common/utils/array"
 import config from "@/config"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { asyncForEach } from "@/common/utils/asyncUtils"
-import { logger } from "@/common/logger"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -53,71 +62,6 @@ export interface IOffreExtended extends IJob {
   pourvue: string
   supprimer: string
 }
-const romeDetailAndCandidatureCountAggregateStage = [
-  { $addFields: { jobs: { $cond: { if: { $isArray: "$jobs" }, then: "$jobs", else: [] } } } },
-  {
-    $facet: {
-      emptyJobs: [{ $match: { jobs: { $eq: [] } } }],
-      nonEmptyJobs: [
-        { $match: { jobs: { $ne: [] } } },
-        { $unwind: { path: "$jobs" } },
-        {
-          $lookup: {
-            from: "referentielromes",
-            let: { rome_code: { $arrayElemAt: ["$jobs.rome_code", 0] } },
-            pipeline: [{ $match: { $expr: { $eq: ["$rome.code_rome", "$$rome_code"] } } }],
-            as: "referentielrome",
-          },
-        },
-        { $unwind: { path: "$referentielrome", preserveNullAndEmptyArrays: true } },
-        { $set: { "jobs.rome_detail": "$referentielrome" } },
-        {
-          $lookup: {
-            from: "applications",
-            let: { jobId: "$jobs._id" },
-            pipeline: [{ $match: { $expr: { $eq: ["$job_id", "$$jobId"] } } }, { $project: { _id: 1 } }],
-            as: "applications",
-          },
-        },
-        { $set: { "jobs.candidatures": { $size: "$applications" } } },
-        { $group: { _id: "$_id", recruiters: { $first: "$$ROOT" }, jobs: { $push: { $mergeObjects: ["$jobs"] } } } },
-        { $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } } },
-        { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0, applications: 0 } },
-      ],
-    },
-  },
-  { $project: { result: { $cond: { if: { $gt: [{ $size: "$emptyJobs" }, 0] }, then: { $arrayElemAt: ["$emptyJobs", 0] }, else: { $arrayElemAt: ["$nonEmptyJobs", 0] } } } } },
-  { $replaceRoot: { newRoot: "$result" } },
-]
-
-// étape d'aggragation mongo permettant de récupérer le rome_detail correspondant dans chaque job d'un recruiter
-export const romeDetailAggregateStages = [
-  { $unwind: { path: "$jobs" } },
-  { $lookup: { from: "referentielromes", localField: "jobs.rome_code.0", foreignField: "rome.code_rome", as: "referentielrome" } },
-  { $unwind: { path: "$referentielrome" } },
-  { $set: { "jobs.rome_detail": "$referentielrome" } },
-  { $group: { _id: "$_id", recruiters: { $first: "$$ROOT" }, jobs: { $push: "$jobs" } } },
-  { $replaceRoot: { newRoot: { $mergeObjects: ["$recruiters", { jobs: "$jobs" }] } } },
-  { $project: { referentielrome: 0, "jobs.rome_detail._id": 0, "jobs.rome_detail.couple_appellation_rome": 0 } },
-]
-
-/**
- * @description get formulaire by offer id
- */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<{ recruiter: IRecruiter; job: IJob } | null> => {
-  const recruiterOpt = await getOffreWithRomeDetail(id)
-
-  if (!recruiterOpt) {
-    return null
-  }
-  const job = recruiterOpt.jobs.find((x) => x._id.toString() === id.toString())
-  if (!job) {
-    return null
-  }
-  recruiterOpt.jobs = [job]
-  await replaceRecruiterFieldsWithCfaFields(recruiterOpt)
-  return { recruiter: recruiterOpt, job }
-}
 
 const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: ObjectId; entrepriseId: ObjectId }) => {
   const access = getComputedUserAccess(userId.toString(), await getGrantedRoles(userId.toString()))
@@ -129,107 +73,96 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  */
 export const createJob = async ({
   job,
-  establishment_id,
+  siret,
   user,
   source,
 }: {
   job: IJobCreate
-  establishment_id: string
+  siret: string
   user: IUserWithAccount
   source?: ITrackingCookies
-}): Promise<IRecruiter> => {
+}): Promise<IJobsPartnersOfferPrivate> => {
   await validateFieldsFromReferentielRome(job)
 
+  const entreprise = await getDbCollection("entreprises").findOne({ siret })
+  if (!entreprise) {
+    throw new Error(`entreprise non trouvée pour siret=${siret}`)
+  }
+  const mainRole = await getMainRoleManagement(user._id, true)
+  if (!mainRole) {
+    throw new Error(`mainRole non trouvé pour user id=${user._id}`)
+  }
+  if (mainRole.authorized_type === AccessEntityType.CFA) {
+    const cfaId = new ObjectId(mainRole.authorized_id)
+    const entrepriseManagedByCfa = await getDbCollection("entreprise_managed_by_cfa").findOne({ cfa_id: cfaId, entreprise_id: entreprise._id })
+    if (!entrepriseManagedByCfa) {
+      throw new Error(`entreprise siret=${siret} gérée par un cfa id=${cfaId} non trouvée`)
+    }
+  }
+
   const userId = user._id
-  const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: establishment_id })
-  if (!recruiter) {
-    throw internal(`recruiter with establishment_id=${establishment_id} not found`)
-  }
-  const is_disabled_elligible = await getEntrepriseEngagementFranceTravail(recruiter.establishment_siret)
-  const { is_delegated, cfa_delegated_siret } = recruiter
-  const organization = await (cfa_delegated_siret
-    ? getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
-    : getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }))
-  if (!organization) {
-    throw internal(`inattendu : impossible retrouver l'organisation pour establishment_id=${establishment_id}`)
-  }
+
+  const is_delegated = mainRole.authorized_type === AccessEntityType.CFA
+
   let isOrganizationValid = false
   let entrepriseStatus: EntrepriseStatus | null = null
-  if (cfa_delegated_siret) {
+  if (is_delegated) {
     isOrganizationValid = true
-  } else if ("status" in organization) {
-    entrepriseStatus = getLastStatusEvent((organization as IEntreprise).status)?.status ?? null
-    isOrganizationValid = entrepriseStatus === EntrepriseStatus.VALIDE && (await isAuthorizedToPublishJob({ userId, entrepriseId: organization._id }))
+  } else if ("status" in entreprise) {
+    entrepriseStatus = getLastStatusEvent(entreprise.status)?.status ?? null
+    isOrganizationValid = entrepriseStatus === EntrepriseStatus.VALIDE && (await isAuthorizedToPublishJob({ userId, entrepriseId: entreprise._id }))
   }
   const isUserEmailConfirmed = isUserEmailChecked(user)
   const isJobActive = isOrganizationValid && isUserEmailConfirmed
 
-  const newJobStatus = isJobActive ? JOB_STATUS.ACTIVE : JOB_STATUS.EN_ATTENTE
+  const newJobStatus = isJobActive ? JOB_STATUS_ENGLISH.ACTIVE : JOB_STATUS_ENGLISH.EN_ATTENTE
   // get user activation state if not managed by a CFA
   const codeRome = job.rome_code.at(0)
   if (!codeRome) {
-    throw internal(`inattendu : pas de code rome pour une création d'offre pour le recruiter id=${establishment_id}`)
-  }
-  const creationDate = new Date()
-  const { job_start_date } = job
-  const addedFields: Partial<IJob> = {
-    job_status: newJobStatus,
-    job_start_date,
-    job_creation_date: creationDate,
-    job_expiration_date: addExpirationPeriod(creationDate).toDate(),
-    job_update_date: creationDate,
-    is_disabled_elligible,
-  }
-  const updatedJob: Partial<IJob> = Object.assign(job, addedFields)
-  // insert job
-  const updatedFormulaire = await createOffre(establishment_id, updatedJob)
-  const { jobs } = updatedFormulaire
-  const createdJob = jobs.at(jobs.length - 1)
-  if (!createdJob) {
-    throw internal("unexpected: no job found after job creation")
+    throw internal(`inattendu : pas de code rome pour une création d'offre pour siret=${siret}, role._id=${mainRole._id}`)
   }
 
-  // if first offer is pending validation, skip the publication email (it will be sent when the user validates)
-  if (jobs.length === 1 && is_delegated === false && newJobStatus !== JOB_STATUS.ACTIVE) {
-    if (source) {
-      await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
-    }
-
-    return updatedFormulaire
-  }
-
-  let contactCFA: IUserWithAccount | null = null
+  let cfa: ICFA | null = null
   if (is_delegated) {
-    if (!cfa_delegated_siret) {
-      throw internal(`unexpected: could not find user recruteur CFA that created the job`)
-    }
-    // get CFA informations if formulaire is handled by a CFA
-    contactCFA = await getUserManagingOffer(updatedFormulaire)
-    if (!contactCFA) {
-      throw internal(`unexpected: could not find user recruteur CFA that created the job`)
+    cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
+    if (!cfa) {
+      throw internal(`inattendu: cfa non trouvé pour role id=${mainRole._id}`)
     }
   }
-  await sendMailNouvelleOffre(updatedFormulaire, createdJob, contactCFA ?? undefined)
 
-  // register tracking req.cookies
+  const newJobPartner: IJobsPartnersOfferPrivate = await jobCreateToJobsPartner({
+    job,
+    cfa: cfa ?? undefined,
+    entreprise,
+    user,
+    status: newJobStatus,
+    origin: "lba",
+  })
+
+  await getDbCollection("jobs_partners").insertOne(newJobPartner)
+
+  const userJobCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret })
+
+  // if first offer creation for an Entreprise, send specific mail
+  if (!(userJobCount === 1 && is_delegated === false)) {
+    await sendMailNouvelleOffre(user, newJobPartner)
+  }
   if (source) {
-    await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
+    await saveJobTrafficSourceIfAny({ job_id: newJobPartner._id, source })
   }
-
-  return updatedFormulaire
+  return newJobPartner
 }
 
 /**
  * Create job delegations
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"] | string; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
-  const recruiter = await getOffre(jobId)
-  if (!recruiter) {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: ObjectId; etablissementCatalogueIds: string[] }): Promise<void> => {
+  const offer = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+  if (!offer) {
     throw internal("Offre not found", { jobId, etablissementCatalogueIds })
   }
-  const offre = getJobFromRecruiter(recruiter, jobId.toString())
-  const managingUser = await getUserManagingOffer(recruiter)
-  const entreprise = await getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret })
+  const managingUser = await getUserManagingOffer(offer)
+  const entreprise = await getDbCollection("entreprises").findOne({ siret: offer.workplace_siret ?? undefined })
   let shouldSentMailToCfa = false
   if (entreprise) {
     const role = await getDbCollection("rolemanagements").findOne({
@@ -276,7 +209,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       delegations.push({ siret_code, email })
 
       if (shouldSentMailToCfa) {
-        await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
+        await sendDelegationMailToCFA(email, offer, siret_code)
         sentDelegations.push({
           raison_sociale: etablissement_formateur_entreprise_raison_sociale || "",
           siret_code,
@@ -285,18 +218,18 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       }
     })
   )
-  const jobTitle = offre.offer_title_custom || offre.rome_appellation_label || offre.rome_label
-  const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offre._id}/${encodeURIComponent(jobTitle!)}`)
   if (sentDelegations.length) {
+    const jobTitle = offer.offer_title
+    const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offer._id}/${encodeURIComponent(jobTitle!)}`)
     await mailer.sendEmail({
-      to: recruiter.email,
+      to: managingUser.email,
       subject: `Votre offre a été partagée à ${sentDelegations.length} école(s)`,
       template: getStaticFilePath("./templates/mail-mer-confirmation.mjml.ejs"),
       data: {
-        first_name: recruiter.first_name,
-        last_name: recruiter.last_name,
-        email: recruiter.email,
-        phone: recruiter.phone,
+        first_name: managingUser.first_name,
+        last_name: managingUser.last_name,
+        email: managingUser.email,
+        phone: managingUser.phone,
         job_title: jobTitle,
         job_url: jobUrl,
         delegations: sentDelegations,
@@ -309,10 +242,18 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     })
   }
 
-  offre.delegations = offre.delegations?.concat(delegations) ?? delegations
-  offre.job_delegation_count = offre.delegations.length
-
-  return updateOffre(jobId, offre)
+  const newDelegations = offer.delegations?.concat(delegations) ?? delegations
+  await getDbCollection("jobs_partners").updateOne(
+    {
+      _id: offer._id,
+    },
+    {
+      $set: {
+        delegations: newDelegations,
+        job_delegation_count: newDelegations.length,
+      },
+    }
+  )
 }
 
 /**
@@ -320,205 +261,318 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
  * @param {IJob['_id']} id
  * @returns {Promise<IRecruiter>}
  */
-export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
-  const offre = await getOffre(id)
-  return offre ? true : false
+export const checkOffreExists = async (id: ObjectId): Promise<boolean> => {
+  const count = await getDbCollection("jobs_partners").countDocuments({ _id: id })
+  return count === 1
 }
+
+const romeDetailJoin = [
+  {
+    $lookup: {
+      from: "referentielromes",
+      let: { rome_code: { $arrayElemAt: ["$offer_rome_codes", 0] } },
+      pipeline: [{ $match: { $expr: { $eq: ["$rome.code_rome", "$$rome_code"] } } }],
+      as: "rome_detail",
+    },
+  },
+  { $unwind: { path: "$rome_detail", preserveNullAndEmptyArrays: true } },
+]
+
+const applicationCountJoin = [
+  {
+    $lookup: {
+      from: "applications",
+      localField: "_id",
+      foreignField: "job_id",
+      as: "applications",
+    },
+  },
+  {
+    $addFields: {
+      application_count: {
+        $size: "$applications",
+      },
+    },
+  },
+  {
+    $unset: ["applications"],
+  },
+]
 
 /**
- * @description Find formulaire by query
- * @param {Filter<IRecruiter>} query
- * @returns {Promise<IRecruiter>}
+ * @description Get job offer by its id.
  */
-export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => getDbCollection("recruiters").findOne(query)
-
-export const getFormulaireWithRomeDetail = async (query: Filter<IRecruiter>): Promise<IRecruiter | null> => {
-  const recruiterWithRomeDetail = (await getDbCollection("recruiters")
-    .aggregate([{ $match: query }, ...romeDetailAggregateStages])
-    .toArray()) as IRecruiter[]
-
-  return recruiterWithRomeDetail.length ? recruiterWithRomeDetail[0] : await getFormulaire(query)
-}
-export const getFormulaireWithRomeDetailAndApplicationCount = async (query: Filter<IRecruiter>): Promise<IRecruiterWithApplicationCount | null> => {
-  const recruiterWithRomeDetailAndApplicationCount = (await getDbCollection("recruiters")
-    .aggregate([{ $match: query }, ...romeDetailAndCandidatureCountAggregateStage])
-    .toArray()) as IRecruiterWithApplicationCount[]
-
-  return recruiterWithRomeDetailAndApplicationCount.length ? recruiterWithRomeDetailAndApplicationCount[0] : null
-}
-
-/**
- * @description Create new formulaire
- * @param {IRecruiter} payload
- * @returns {Promise<IRecruiter>}
- */
-export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>, managedBy: string): Promise<IRecruiter> => {
-  const recruiter: IRecruiter = {
-    ...payload,
-    managed_by: managedBy,
-    _id: new ObjectId(),
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    establishment_id: randomUUID(),
-    status: RECRUITER_STATUS.ACTIF,
-    email: payload.email as string,
-    establishment_siret: payload.establishment_siret as string,
-    is_delegated: payload.is_delegated ?? (false as boolean),
-    opco: payload.opco ?? null,
-    idcc: payload.idcc ?? null,
-    jobs: [],
+export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDetail | null> => {
+  const jobPartner = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(id) })
+  if (!jobPartner) {
+    return null
   }
-  await getDbCollection("recruiters").insertOne(recruiter)
+  const { managed_by, workplace_siret } = jobPartner
+  if (!managed_by) {
+    throw internal(`inattendu: managed_by vide pour offre id=${id}`)
+  }
+  if (!workplace_siret) {
+    throw internal(`inattendu: workplace_siret vide pour offre id=${id}`)
+  }
+  const recruiter = await getRecruiterFromJobsPartnerFilter({
+    userId: managed_by,
+    siret: workplace_siret,
+    addApplicationCounts: false,
+    filter: {
+      _id: new ObjectId(id),
+    },
+  })
+  const jobOpt = recruiter?.jobs.at(0) ?? null
+  if (jobOpt?.rome_detail) {
+    // @ts-expect-error
+    delete jobOpt.rome_detail.couple_appellation_rome
+    // @ts-expect-error
+    delete jobOpt.rome_detail._id
+  }
+  return jobOpt
+}
+
+export const getFormulaireWithRomeDetail = async ({ establishment_id }: { establishment_id: string }): Promise<IRecruiter | null> => {
+  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const recruiter = await getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: false })
+  recruiter?.jobs.forEach((job) => {
+    // @ts-expect-error
+    delete job.rome_detail.couple_appellation_rome
+    // @ts-expect-error
+    delete job.rome_detail._id
+  })
   return recruiter
 }
 
-/**
- * Remove formulaire by id
- */
-export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter | null> => await getDbCollection("recruiters").findOneAndDelete({ _id: id })
+export const getFormulaireWithRomeDetailAndApplicationCount = async ({
+  establishment_id,
+}: {
+  establishment_id: string
+}): Promise<IRecruiterWithRomeDetailAndApplicationCount | null> => {
+  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
+}
 
-/**
- * @description Update existing formulaire and return updated version
- */
-export const updateFormulaire = async (establishment_id: IRecruiter["establishment_id"], payload: UpdateFilter<IRecruiter>): Promise<IRecruiter> => {
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
-  if (!recruiter) {
-    throw internal("Recruiter not found")
+export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId): Promise<IRecruiter[]> => {
+  const [mainRole, entreprisesManagedByCfa, cfa, user] = await Promise.all([
+    getMainRoleManagement(userId),
+    getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray(),
+    getDbCollection("cfas").findOne({ _id: cfaId }),
+    getDbCollection("userswithaccounts").findOne({ _id: userId }),
+  ])
+  if (!mainRole) {
+    throw internal(`inattendu: mainRole vide pour userId=${userId}`)
+  }
+  if (mainRole.authorized_type !== AccessEntityType.CFA) {
+    throw internal(`inattendu: mainRole pour userId=${userId} n'est pas de type CFA`)
+  }
+  if (!cfa) {
+    throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
+  }
+  if (!user) {
+    throw internal(`inattendu: user vide pour userId=${userId}`)
+  }
+  const entrepriseIds = entreprisesManagedByCfa.map(({ entreprise_id }) => entreprise_id)
+  const entreprises = await getDbCollection("entreprises")
+    .find({ _id: { $in: entrepriseIds } })
+    .toArray()
+
+  if (entreprises.length === 0) return []
+
+  const sirets = deduplicate(entreprises.map((x) => x.siret))
+
+  const allJobsWithRomeDetail = (await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $match: {
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          workplace_siret: { $in: sirets },
+          managed_by: userId,
+        },
+      },
+      ...romeDetailJoin,
+    ])
+    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]
+
+  const entreprisesBySiret = new Map(entreprises.map((e) => [e.siret, e]))
+  const jobsBySiret = new Map<string, (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>()
+  for (const job of allJobsWithRomeDetail) {
+    if (job.workplace_siret) {
+      const jobList = jobsBySiret.get(job.workplace_siret) ?? []
+      jobList.push(job)
+      jobsBySiret.set(job.workplace_siret, jobList)
+    }
+  }
+
+  const recruiters: IRecruiter[] = []
+  for (const siret of sirets) {
+    const entreprise = entreprisesBySiret.get(siret)
+    if (!entreprise) {
+      throw internal(`inattendu: entreprise non trouvée pour siret=${siret}`)
+    }
+    const jobs = jobsBySiret.get(siret) ?? []
+    const recruiter = jobPartnersToRecruiter(jobs, mainRole, user, entreprise, cfa)
+    recruiter.jobs.forEach((job) => {
+      // @ts-expect-error
+      delete job.candidatures
+    })
+    recruiters.push(recruiter)
+  }
+  return recruiters
+}
+
+const getRecruiterFromJobsPartnerFilter = async ({
+  userId,
+  siret,
+  filter,
+  addApplicationCounts = false,
+}: {
+  userId: ObjectId
+  siret: string
+  filter?: Filter<IJobsPartnersOfferPrivate>
+  addApplicationCounts?: boolean
+}): Promise<IRecruiterWithRomeDetailAndApplicationCount | null> => {
+  const jobsWithRomeDetail = (await getDbCollection("jobs_partners")
+    .aggregate([
+      {
+        $match: {
+          $and: [
+            filter ?? {},
+            {
+              partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+              workplace_siret: siret,
+              managed_by: userId,
+            },
+          ],
+        },
+      },
+      ...romeDetailJoin,
+      ...(addApplicationCounts ? applicationCountJoin : []),
+    ])
+    .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
+
+  const [mainRole, entreprise, user] = await Promise.all([
+    getMainRoleManagement(userId, true),
+    getDbCollection("entreprises").findOne({ siret }),
+    getDbCollection("userswithaccounts").findOne({ _id: userId }),
+  ])
+  if (!mainRole) {
+    throw internal(`inattendu: mainRole vide pour userId=${userId}, siret=${siret}`)
+  }
+  if (!entreprise) {
+    throw internal(`inattendu: entreprise vide pour userId=${userId}, siret=${siret}`)
+  }
+  if (!user) {
+    throw internal(`inattendu: user vide pour userId=${userId}, siret=${siret}`)
+  }
+  let cfa: ICFA | null = null
+  if (mainRole.authorized_type === AccessEntityType.CFA) {
+    cfa = await getDbCollection("cfas").findOne({ _id: new ObjectId(mainRole.authorized_id) })
+    if (!cfa) {
+      throw internal(`inattendu: cfa non trouvé pour role id=${mainRole._id}`)
+    }
+  }
+
+  const recruiter = jobPartnersToRecruiter(jobsWithRomeDetail, mainRole, user, entreprise, cfa ?? undefined)
+  if (!addApplicationCounts) {
+    recruiter.jobs.forEach((job) => {
+      // @ts-expect-error
+      delete job.candidatures
+    })
   }
   return recruiter
 }
 
 /**
  * @description Archive existing formulaire and cancel all its job offers
- * @param {IRecruiter["establishment_id"]} establishment_id
- * @returns {Promise<boolean>}
  */
-export const archiveFormulaireByEstablishmentId = async (id: IRecruiter["establishment_id"]) => {
-  const recruiter = await getDbCollection("recruiters").findOne({ establishment_id: id })
-  if (!recruiter) {
-    throw internal("Recruiter not found")
-  }
-
-  await archiveFormulaire(recruiter)
+export const archiveFormulaireByEstablishmentId = async (id: string) => {
+  const { userId, siret } = await establishmentIdToUserIdAndSiret(id)
+  await archiveFormulaire(userId, siret)
 }
 
-export const archiveFormulaire = async (recruiter: IRecruiter) => {
-  recruiter.status = RECRUITER_STATUS.ARCHIVE
-  recruiter.jobs.map((job) => {
-    if (job.job_status !== JOB_STATUS.ANNULEE) {
-      job.job_expiration_date = new Date()
+export const archiveFormulaire = async (userId: ObjectId, siret: string) => {
+  const now = new Date()
+  await getDbCollection("jobs_partners").updateMany(
+    { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE },
+    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now, offer_expiration: now } }
+  )
+  await getDbCollection("jobs_partners").updateMany(
+    { managed_by: userId, workplace_siret: siret, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, offer_status: { $ne: JOB_STATUS_ENGLISH.ACTIVE } },
+    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now } }
+  )
+  const mainRole = await getMainRoleManagement(userId)
+  if (mainRole?.authorized_type === AccessEntityType.CFA) {
+    const entreprise = await getDbCollection("entreprises").findOne({ siret })
+    if (entreprise) {
+      await getDbCollection("entreprise_managed_by_cfa").deleteOne({
+        entreprise_id: entreprise._id,
+        cfa_id: new ObjectId(mainRole.authorized_id),
+      })
     }
-    job.job_status = JOB_STATUS.ANNULEE
-  })
-  await getDbCollection("recruiters").findOneAndUpdate({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } })
-}
-
-/**
- * @description Unarchive existing formulaire
- * @param {IRecruiter["establishment_id"]} establishment_id
- * @returns {Promise<boolean>}
- */
-export const activateRecruiter = async (id: IRecruiter["_id"]): Promise<boolean> => {
-  const recruiter = await getDbCollection("recruiters").findOne({ _id: id })
-  if (!recruiter) {
-    throw internal("Recruiter not found")
   }
-  await getDbCollection("recruiters").updateOne({ _id: id }, { $set: { status: RECRUITER_STATUS.ACTIF, updatedAt: new Date() } })
-  return true
 }
 
 /**
  * @description Archive existing delegated formulaires and cancel all its job offers
  * @param {IUserRecruteur["establishment_siret"]} establishment_siret
  */
-export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]) => {
-  const formulaires = await getDbCollection("recruiters").find({ cfa_delegated_siret: siret }).toArray()
-  if (!formulaires.length) return false
-  await asyncForEach(formulaires, archiveFormulaire)
+export const archiveDelegatedFormulaire = async (userId: ObjectId, cfaId: ObjectId) => {
+  const delegatedEntreprises = await getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray()
+  await asyncForEach(delegatedEntreprises, async (managedEntreprise) => {
+    const entreprise = await getDbCollection("entreprises").findOne({ _id: managedEntreprise._id })
+    if (entreprise) {
+      await archiveFormulaire(userId, entreprise.siret)
+    }
+  })
 }
 
-/**
- * @description Get job offer by job id
- * @param {IJob["_id"]} id
- */
-export async function getOffre(id: string | ObjectId) {
-  return getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(id.toString()) })
-}
-
-export async function getOffreWithRomeDetail(id: string | ObjectId) {
-  // return a Document type incompatible, to be checked
-  const recruiter = (await getDbCollection("recruiters")
-    .aggregate([{ $match: { "jobs._id": new ObjectId(id) } }, ...romeDetailAggregateStages])
-    .toArray()) as IRecruiter[]
-
-  return recruiter.length ? recruiter[0] : null
-}
-
-/**
- * Create job offer on existing formulaire
- */
-export async function createOffre(establishment_id: IRecruiter["establishment_id"], payload: UpdateFilter<IJob>): Promise<IRecruiter> {
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
-    { establishment_id },
-    // @ts-ignore TODO: fix
-    { $push: { jobs: { ...payload, _id: new ObjectId() } } }, // jobs timestamp are delivered in payload
-    { returnDocument: "after" }
-  )
-
-  if (!recruiter) {
-    throw internal("Recruiter not found")
-  }
-
-  return recruiter
-}
-
-/**
- * @description Update existing job offer
- * @param {IJob["_id"]} id
- * @param {object} payload
- * @returns {Promise<IRecruiter>}
- */
-export async function updateOffre(id: string | ObjectId, payload: UpdateFilter<IJob>): Promise<IRecruiter> {
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": id }, { $set: { "jobs.$": payload } }, { returnDocument: "after" })
-  if (!recruiter) {
-    throw internal("Recruiter not found")
-  }
-  return recruiter
-}
-
+type PatchOffreBody = z.output<(typeof zRoutes.put)["/formulaire/offre/:jobId"]["body"]>
 /**
  * @description Update specific field(s) in an existing job offer
- * @param {IJob["_id"]} id
- * @param {object} payload
- * @returns {Promise<IRecruiter>}
  */
-export const patchOffre = async (id: IJob["_id"], payload: Partial<IJob>): Promise<IRecruiter> => {
+export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise<void> => {
   await validateFieldsFromReferentielRome(payload)
-  const fields = {}
-  for (const key in payload) {
-    fields[`jobs.$.${key}`] = payload[key]
+
+  const job = payload
+  const now = new Date()
+
+  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
+
+  const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
+    offer_opening_count: job.job_count ?? 1,
+    offer_expiration: job.job_expiration_date,
+    contract_start: job.job_start_date ?? null,
+    offer_status: getOfferStatus(job.job_status, RECRUITER_STATUS.ACTIF),
+    contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    updated_at: now,
+    offer_rome_codes: job.rome_code ?? null,
+    offer_desired_skills:
+      job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+      romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+      [],
+    offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
+    offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+    delegations: job?.delegations,
+    job_delegation_count: job?.delegations?.length ?? 0,
+    contract_duration: job.job_duration ?? null,
+    offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
   }
 
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
-    { $set: { ...fields, "jobs.$.job_update_date": new Date(), updatedAt: new Date() } },
-    { returnDocument: "after" }
-  )
+  const found = await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: jobPartnerUpdate })
 
-  if (!recruiter) {
-    throw internal("Recruiter not found")
+  if (!found) {
+    throw internal("Job not found")
   }
-
-  return recruiter
 }
 
-export const updateJobDelegation = async (jobId: IJob["_id"], delegation: IDelegation) => {
+export const updateJobDelegation = async (jobId: ObjectId, delegation: IDelegation) => {
   const now = new Date()
-  await getDbCollection("recruiters").bulkWrite(
+  await getDbCollection("jobs_partners").bulkWrite(
     [
-      { updateOne: { filter: { "jobs._id": jobId }, update: { $set: { updatedAt: now, "jobs.$.job_update_date": now } } } },
-      { updateOne: { filter: { "jobs._id": jobId }, update: { $pull: { "jobs.$.delegations": { siret_code: delegation.siret_code } } } } },
-      { updateOne: { filter: { "jobs._id": jobId }, update: { $push: { "jobs.$.delegations": delegation } } } },
+      { updateOne: { filter: { _id: jobId }, update: { $set: { updated_at: now } } } },
+      { updateOne: { filter: { _id: jobId }, update: { $pull: { delegations: { siret_code: delegation.siret_code } } } } },
+      { updateOne: { filter: { _id: jobId }, update: { $push: { delegations: delegation } } } },
     ],
     { ordered: true }
   )
@@ -526,160 +580,156 @@ export const updateJobDelegation = async (jobId: IJob["_id"], delegation: IDeleg
 
 /**
  * @description Change job status to provided
- * @param {IJob["_id"]} id
- * @returns {Promise<boolean>}
  */
-export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
-  await getDbCollection("recruiters").findOneAndUpdate({ "jobs._id": id }, { $set: { "jobs.$.job_status": JOB_STATUS.POURVUE, "jobs.$.job_update_date": new Date() } })
-  return true
+export const provideOffre = async (id: ObjectId): Promise<void> => {
+  const now = new Date()
+  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
+    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
+    { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at: now } }
+  )
+  if (!found) {
+    throw new Error(`could not find lba offer with id=${id}`)
+  }
 }
 
 /**
  * @description Cancel job from transaction email
- * @param {IJob["_id"]} id
- * @returns {Promise<boolean>}
  */
-export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
+export const cancelOffre = async (id: ObjectId): Promise<void> => {
   const now = new Date()
-  await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
-    { $set: { "jobs.$.job_status": JOB_STATUS.ANNULEE, "jobs.$.job_update_date": now, "jobs.$.job_expiration_date": now } }
+  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
+    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
+    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: now, offer_expiration: now } }
   )
-  return true
+  if (!found) {
+    throw new Error(`could not find lba offer with id=${id}`)
+  }
 }
 
-/**
- * @description Cancel job from admin interface
- * @param {IJob["_id"]} id
- * @returns {Promise<boolean>}
- */
-export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_status, job_status_comment }): Promise<boolean> => {
+export const cancelOffreFromAdminInterface = async ({
+  id,
+  offer_status,
+  job_status_comment,
+}: {
+  id: ObjectId
+  offer_status: JOB_STATUS_ENGLISH
+  job_status_comment: string
+}): Promise<void> => {
   const now = new Date()
-  await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
+  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
+    { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, _id: id },
+    { $set: { offer_status, updated_at: now, offer_expiration: now, job_status_comment } },
     {
-      $set: {
-        "jobs.$[elem].job_status": job_status,
-        "jobs.$[elem].job_status_comment": job_status_comment,
-        "jobs.$[elem].job_update_date": now,
-        "jobs.$[elem].job_expiration_date": now,
-      },
-    },
-    { arrayFilters: [{ "elem._id": id }] }
+      returnDocument: "after",
+    }
   )
-  return true
+  if (!found) {
+    throw new Error(`could not find lba offer with id=${id}`)
+  }
 }
 
 /**
  * @description Extends job duration by 1 month.
- * @param {IJob["_id"]} id
- * @returns {Promise<boolean>}
  */
-export const extendOffre = async (id: IJob["_id"]): Promise<IJob> => {
+export const extendOffre = async (id: ObjectId): Promise<Date> => {
   const now = new Date()
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
+  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
+    {
+      _id: id,
+    },
     {
       $set: {
-        "jobs.$.job_expiration_date": addExpirationPeriod(dayjs()).toDate(),
-        "jobs.$.job_last_prolongation_date": now,
-        "jobs.$.job_update_date": now,
-        "jobs.$.relance_mail_expiration_J7": null,
-        "jobs.$.relance_mail_expiration_J1": null,
+        offer_expiration: addExpirationPeriod(dayjs()).toDate(),
+        // TODO job_last_prolongation_date
+        updated_at: now,
+        // TODO relance_mail_expiration_J7
+        // TODO relance_mail_expiration_J1
       },
-      $inc: { "jobs.$.job_prolongation_count": 1 },
+      // $inc: { "jobs.$.job_prolongation_count": 1 },
+    },
+    {
+      returnDocument: "after",
+    }
+  )
+  if (!found) {
+    throw notFound(`could not find lba offer with id=${id}`)
+  }
+  const { offer_expiration } = found
+  if (!offer_expiration) {
+    throw new Error("inattendu: offer_expiration vide")
+  }
+  return offer_expiration
+}
+
+const activateAndExtendOffre = async (id: ObjectId) => {
+  const found = await getDbCollection("jobs_partners").findOneAndUpdate(
+    {
+      _id: id,
+    },
+    {
+      $set: {
+        offer_expiration: addExpirationPeriod(dayjs()).toDate(),
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        updated_at: new Date(),
+      },
     },
     { returnDocument: "after" }
   )
-  if (!recruiter) {
-    throw notFound(`job with id=${id} not found`)
+  if (!found) {
+    throw new Error(`could not find lba offer with id=${id}`)
   }
-  const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
-  if (!job) {
-    throw internal(`unexpected: job with id=${id} not found`)
-  }
-  return job
-}
-
-const activateAndExtendOffre = async (id: IJob["_id"]): Promise<IJob> => {
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate(
-    { "jobs._id": id },
-    { $set: { "jobs.$[x].job_expiration_date": addExpirationPeriod(dayjs()).toDate(), "jobs.$[x].job_status": JOB_STATUS.ACTIVE } },
-    { arrayFilters: [{ "x._id": id }], returnDocument: "after" }
-  )
-  if (!recruiter) {
-    throw notFound(`job with id=${id} not found`)
-  }
-  const job = recruiter.jobs.find((job) => job._id.toString() === id.toString())
-  if (!job) {
-    throw internal(`unexpected: job with id=${id} not found`)
-  }
-  return job
+  return found
 }
 
 /**
  * activate offers if they are awaiting validation and the user is ready to publish its offers
- * @param recruiter entreprise
  */
-export const checkForJobActivations = async (recruiter: IRecruiter) => {
-  const awaitingJobs = recruiter.jobs.filter((job) => job.job_status === JOB_STATUS.EN_ATTENTE)
+export const checkForJobActivations = async (userId: ObjectId, entrepriseId: ObjectId) => {
+  const entreprise = await getDbCollection("entreprises").findOne({ _id: entrepriseId })
+  if (!entreprise) {
+    return
+  }
+  const awaitingJobs = await getDbCollection("jobs_partners")
+    .find({
+      managed_by: userId,
+      offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
+      workplace_siret: entreprise.siret,
+    })
+    .toArray()
   if (!awaitingJobs.length) return
-  const { managed_by } = recruiter
-  const managedByObjectId = new ObjectId(managed_by)
-  const [userOpt, entreprise, roles] = await Promise.all([
-    getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }),
-    getDbCollection("entreprises").findOne({ siret: recruiter.establishment_siret }),
-    getGrantedRoles(managed_by),
-  ])
+  const managedByObjectId = userId
+  const [userOpt, roles] = await Promise.all([getDbCollection("userswithaccounts").findOne({ _id: managedByObjectId }), getGrantedRoles(userId.toString())])
   if (!userOpt || !isUserEmailChecked(userOpt) || !entreprise) return
   const recruiterRole = roles.find((role) => role.authorized_id === entreprise._id.toString())
   if (!recruiterRole) return
   await asyncForEach(awaitingJobs, async (job) => {
-    job = await activateAndExtendOffre(job._id)
-    const delegations = job.delegations ?? []
-    await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation.email, job, recruiter, delegation.siret_code)))
+    const extendedOffer = await activateAndExtendOffre(job._id)
+    const delegations = extendedOffer.delegations ?? []
+    await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation.email, extendedOffer, delegation.siret_code)))
   })
 }
 
-/**
- * @description Get job offer by its id.
- */
-export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
-  const offre = await getOffre(id)
-  if (!offre) return null
-  return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
-}
-
-/**
- * @description Get job offer by its id.
- */
-export const getJobWithRomeDetail = async (id: string | ObjectId): Promise<IJobWithRomeDetail | null> => {
-  const formulaire = await getOffre(id)
-  if (!formulaire) return null
-
-  const job = formulaire.jobs.find((job) => job._id.toString() === id.toString())
-  if (!job) return null
-
-  const referentielRome = await getRomeDetailsFromDB(job.rome_code[0])
-
-  if (!referentielRome) return null
-
-  return { ...job, rome_detail: referentielRome }
-}
-
-const getJobOrigin = async (recruiter: IRecruiter) => {
-  const userWithAccount = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(recruiter.managed_by) })
+const getJobOrigin = async (userId: ObjectId) => {
+  const userWithAccount = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   return (userWithAccount && userWithAccount.origin && RECRUITER_USER_ORIGIN[userWithAccount.origin]) ?? "La bonne alternance"
 }
 
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
-  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
+export async function sendDelegationMailToCFA(email: string, offre: IJobsPartnersOfferPrivate, siret: string) {
+  const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret })
   if (unsubscribeOF) return
 
-  const jobOrigin = await getJobOrigin(recruiter)
+  const { managed_by, establishment_id } = offre
+  if (!managed_by) {
+    throw new Error(`inattendu: managed_by vide pour l'offre avec id=${offre._id}`)
+  }
+  if (!establishment_id) {
+    throw new Error(`inattendu: establishment_id vide pour l'offre avec id=${offre._id}`)
+  }
+
+  const jobOrigin = await getJobOrigin(managed_by)
 
   await mailer.sendEmail({
     to: email,
@@ -687,15 +737,15 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
     template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      enterpriseName: recruiter.establishment_raison_sociale,
-      jobName: offre.offer_title_custom || offre.rome_appellation_label,
-      contractType: (offre.job_type ?? []).join(", "),
-      trainingLevel: offre.job_level_label,
-      startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
-      duration: offre.job_duration,
+      enterpriseName: offre.workplace_name,
+      jobName: offre.offer_title,
+      contractType: (offre.contract_type ?? []).join(", "),
+      trainingLevel: offre.offer_target_diploma,
+      startDate: dayjs(offre.contract_start).format("DD/MM/YYYY"),
+      duration: offre.contract_duration,
       jobOrigin,
       offerButton:
-        createViewDelegationLink(email, recruiter.establishment_id, offre._id.toString(), siret_code) +
+        createViewDelegationLink(email, establishment_id, offre._id.toString(), siret) +
         "&utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_consulter-coord-entreprise",
       createAccountButton: `${config.publicUrl}/organisme-de-formation?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_creer-compte`,
       policyUrl: `${config.publicUrl}/politique-de-confidentialite?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=lba_cfa-mer-entreprise_politique-confidentialite`,
@@ -704,32 +754,33 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
   })
 }
 
-export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, contactCFA?: IUserWithAccount) {
-  const isRecruteurAwaiting = recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION
+export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPartnersOfferPrivate) {
+  const isRecruteurAwaiting = job.offer_status === JOB_STATUS_ENGLISH.EN_ATTENTE
   if (isRecruteurAwaiting) {
     return
   }
-  const { is_delegated, email, last_name, first_name, establishment_raison_sociale, establishment_siret } = recruiter
-  const establishmentTitle = establishment_raison_sociale ?? establishment_siret
+  const { email, last_name, first_name } = user
+  const { is_delegated, workplace_name, workplace_siret: siret } = job
+  const establishmentTitle = workplace_name ?? siret
   // Send mail with action links to manage offers
   await mailer.sendEmail({
-    to: is_delegated && contactCFA ? contactCFA.email : email,
+    to: email,
     subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      nom: sanitizeTextField(is_delegated ? contactCFA?.last_name : last_name),
-      prenom: sanitizeTextField(is_delegated ? contactCFA?.first_name : first_name),
+      nom: sanitizeTextField(last_name),
+      prenom: sanitizeTextField(first_name),
       raison_sociale: establishmentTitle,
-      mandataire: recruiter.is_delegated,
+      mandataire: is_delegated,
       offre: {
-        rome_appellation_label: job.rome_appellation_label,
-        job_type: job.job_type,
-        job_level_label: job.job_level_label,
-        job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
-        job_title: job.offer_title_custom,
+        rome_appellation_label: job.offer_rome_appellation,
+        job_type: job.contract_type.join(", "),
+        job_level_label: job.offer_target_diploma?.label,
+        job_start_date: dayjs(job.contract_start).format("DD/MM/YY"),
+        job_title: job.offer_title,
       },
-      lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, recruiter.establishment_siret, job.custom_job_title ?? job.rome_detail?.rome.intitule),
+      lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, siret, job.offer_title),
       publicEmail: config.publicEmail,
     },
   })
@@ -745,22 +796,6 @@ export const getJobFromRecruiter = (recruiter: IRecruiter, jobId: string): IJob 
     throw new Error(`could not find job with id=${jobId} in recruiter with id=${recruiter._id}`)
   }
   return job
-}
-
-export const getFormulaireFromUserId = async (userId: string) => {
-  return getDbCollection("recruiters").findOne({ managed_by: userId })
-}
-
-export const getFormulaireFromUserIdWithOpco = async (userId: string, opco: OPCOS_LABEL) => {
-  return getDbCollection("recruiters").findOne({ managed_by: userId, opco })
-}
-
-export const getFormulaireFromUserIdOrError = async (userId: string) => {
-  const formulaire = await getFormulaireFromUserId(userId)
-  if (!formulaire) {
-    throw internal(`inattendu : formulaire non trouvé`, { userId })
-  }
-  return formulaire
 }
 
 const generateKey = (item) => `${item.libelle}-${item.code_ogr}-${item.coeur_metier}`
@@ -799,12 +834,23 @@ const filterRomeDetails = (romeDetails, competencesRome) => {
   return filteredRome
 }
 
-const validateFieldsFromReferentielRome = async (job) => {
+const validateFieldsFromReferentielRome = async (job: IJobCreate | Partial<IJob>) => {
   const { competences_rome, rome_code, rome_appellation_label, rome_label } = job
-  const romeDetails = await getRomeDetailsFromDB(rome_code[0])
+  const firstRomeCode = rome_code?.at(0)
+  const romeDetails = firstRomeCode ? await getRomeDetailsFromDB(firstRomeCode) : null
 
   if (!romeDetails) {
     throw internal("unexpected: rome details not found")
+  }
+
+  if (!rome_appellation_label) {
+    throw new Error("rome_appellation_label est vide")
+  }
+  if (!rome_label) {
+    throw new Error("rome_label est vide")
+  }
+  if (!competences_rome) {
+    throw new Error("competences_rome est vide")
   }
 
   const {
@@ -835,9 +881,11 @@ const validateFieldsFromReferentielRome = async (job) => {
 }
 
 export const validateUserEmailFromJobId = async (jobId: ObjectId) => {
-  const recruiterOpt = await getOffre(jobId)
-  const { managed_by } = recruiterOpt ?? {}
-  await validateUserWithAccountEmail(new ObjectId(managed_by))
+  const job = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+  const { managed_by } = job ?? {}
+  if (managed_by) {
+    await validateUserWithAccountEmail(managed_by)
+  }
 }
 
 export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | IUserRecruteur, phone?: string, email?: string) => {
@@ -849,28 +897,27 @@ export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | I
   }
 }
 
-export const updateCfaManagedRecruiter = async (establishment_id: string, payload: Partial<IRecruiter>) => {
-  const recruiter = await getDbCollection("recruiters").findOneAndUpdate({ establishment_id }, { $set: { ...payload, updatedAt: new Date() } }, { returnDocument: "after" })
-  return recruiter
-}
-
-export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
-  await updateJobsPartnersFromRecruiterById(change.documentKey._id)
-}
-
-export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
-  const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
-
-  if (recruiter?.jobs?.length && recruiter.address) {
-    await asyncForEach(recruiter.jobs, async (job: IJob) => {
-      try {
-        await upsertJobPartnersFromRecruiter(recruiter, job)
-      } catch (e) {
-        logger.error(`Error while upserting job partner for job id=${job._id} and recruiter id=${recruiter._id}:`, e)
-        sentryCaptureException(e, { extra: { jobId: job._id, recruiterId: recruiter._id } })
-      }
-    })
+type UpdateCfaManagedBody = z.output<(typeof zRoutes.post)["/formulaire/:establishment_id/informations"]["body"]>
+export const updateCfaManagedRecruiter = async (user: IUserWithAccount, establishment_id: string, payload: UpdateCfaManagedBody) => {
+  const mainRole = await getMainRoleManagement(user._id)
+  if (mainRole?.authorized_type !== AccessEntityType.CFA) {
+    throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${user._id}`)
   }
+  const cfaId = new ObjectId(mainRole.authorized_id)
+  const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const entreprise = await getDbCollection("entreprises").findOne({ siret })
+  if (!entreprise) {
+    throw new Error(`inattendu: entreprise non trouvée pour l'establishment_id=${establishment_id}`)
+  }
+  await getDbCollection("entreprise_managed_by_cfa").updateOne(
+    { entreprise_id: entreprise._id, cfa_id: cfaId },
+    {
+      $set: {
+        ...payload,
+        updatedAt: new Date(),
+      },
+    }
+  )
 }
 
 function getDiplomaLevel(label: string | null | undefined): IComputedJobsPartners["offer_target_diploma"] {
@@ -904,8 +951,9 @@ function getOfferStatus(job_status: JOB_STATUS, recruiter_status: RECRUITER_STAT
     case JOB_STATUS.POURVUE:
       return JOB_STATUS_ENGLISH.POURVUE
     case JOB_STATUS.ANNULEE:
-    case JOB_STATUS.EN_ATTENTE:
       return JOB_STATUS_ENGLISH.ANNULEE
+    case JOB_STATUS.EN_ATTENTE:
+      return JOB_STATUS_ENGLISH.EN_ATTENTE
     default:
       assertUnreachable(`Unexpected job status ${job_status} in getOfferStatus` as never)
   }
@@ -918,43 +966,245 @@ function getSkillsFromRome(skills, romeDetailsSkills): string[] {
   return usedSkills.flatMap((skill) => skill.items.map((subSkill) => `${skill.libelle}\t${subSkill.libelle}`))
 }
 
-const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
-  const now = new Date()
+function getStringBefore(text: string, separator: string): readonly [string, string] | null {
+  const index = text.indexOf(separator)
+  if (index === -1) {
+    return null
+  }
+  return [text.substring(0, index), text.substring(index + separator.length)] as const
+}
 
-  const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
+export function getCompetencesRomeFromPartnerJob(jobPartner: IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null }): IJob["competences_rome"] {
+  const competences = jobPartner.rome_detail?.competences
+  if (!competences) {
+    return null
+  }
+
+  const desiredSkills = new Set(jobPartner.offer_desired_skills)
+
+  const selectedSavoirFaireByCategory = new Map<string, Set<string>>()
+  for (const value of jobPartner.offer_to_be_acquired_skills) {
+    const splitResult = getStringBefore(value, "\t")
+    if (!splitResult) {
+      continue
+    }
+    const [categoryLabel, itemLabel] = splitResult
+    const itemsByCategory = selectedSavoirFaireByCategory.get(categoryLabel) ?? new Set<string>()
+    itemsByCategory.add(itemLabel)
+    selectedSavoirFaireByCategory.set(categoryLabel, itemsByCategory)
+  }
+
+  const selectedSavoirsByCategory = new Map<string, Set<string>>()
+  for (const value of jobPartner.offer_to_be_acquired_knowledge ?? []) {
+    const splitResult = getStringBefore(value, "\t")
+    if (!splitResult) {
+      continue
+    }
+    const [categoryLabel, itemLabel] = splitResult
+    const itemsByCategory = selectedSavoirsByCategory.get(categoryLabel) ?? new Set<string>()
+    itemsByCategory.add(itemLabel)
+    selectedSavoirsByCategory.set(categoryLabel, itemsByCategory)
+  }
+
+  const savoirEtreProfessionnel = (competences.savoir_etre_professionnel ?? []).filter((item) => desiredSkills.has(item.libelle))
+
+  const savoirFaire = (competences.savoir_faire ?? [])
+    .map((category) => {
+      const selectedItems = selectedSavoirFaireByCategory.get(category.libelle)
+      if (!selectedItems) {
+        return null
+      }
+
+      const items = category.items.filter((item) => selectedItems.has(item.libelle))
+      if (!items.length) {
+        return null
+      }
+
+      return { ...category, items }
+    })
+    .filter((value): value is NonNullable<IReferentielRome["competences"]["savoir_faire"]>[number] => Boolean(value))
+
+  const savoirs = (competences.savoirs ?? [])
+    .map((category) => {
+      const selectedItems = selectedSavoirsByCategory.get(category.libelle)
+      if (!selectedItems) {
+        return null
+      }
+
+      const items = category.items.filter((item) => selectedItems.has(item.libelle))
+      if (!items.length) {
+        return null
+      }
+
+      return { ...category, items }
+    })
+    .filter((value): value is NonNullable<IReferentielRome["competences"]["savoirs"]>[number] => Boolean(value))
+
+  return {
+    savoir_etre_professionnel: savoirEtreProfessionnel,
+    savoir_faire: savoirFaire,
+    savoirs,
+  }
+}
+
+// const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
+//   const now = new Date()
+
+//   const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
+//     getRomeDetailsFromDB(job.rome_code[0]),
+//     recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
+//     getEntrepriseEngagementFranceTravail(recruiter.establishment_siret),
+//   ])
+
+//   const { definition, acces_metier } = romeDetails ?? {}
+
+//   const delegatedFields = recruiter.is_delegated
+//     ? {
+//         cfa_siret: lbaJobContactInfo?.establishment_siret || null,
+//         cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
+//         cfa_apply_phone: lbaJobContactInfo?.phone || null,
+//         cfa_apply_email: lbaJobContactInfo?.email || null,
+//         cfa_address_label: lbaJobContactInfo?.address || null,
+//       }
+//     : {
+//         cfa_siret: null,
+//         cfa_legal_name: null,
+//         cfa_apply_phone: null,
+//         cfa_apply_email: null,
+//         cfa_address_label: null,
+//       }
+
+//   const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
+//   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
+//     _id: job._id,
+//     updated_at: job.job_update_date ?? now,
+//     created_at: job.job_creation_date ?? now,
+//     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
+//     partner_job_id: job._id.toString(),
+//     is_delegated: recruiter.is_delegated,
+//     job_status_comment: job?.job_status_comment || null,
+//     job_delegation_count: job?.job_delegation_count || null,
+//     delegations: job?.delegations,
+
+//     contract_start: job.job_start_date ?? null,
+//     contract_duration: job.job_duration ?? null,
+//     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+
+//     contract_is_disabled_elligible: disabledEngagement,
+
+//     contract_rythm: job.job_rythm ?? null,
+
+//     workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
+//     workplace_brand: recruiter.establishment_enseigne,
+//     workplace_siret: recruiter.establishment_siret,
+//     workplace_geopoint: recruiter.geopoint ?? undefined,
+//     workplace_address_label: recruiter.address!,
+//     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
+//     workplace_address_city: getCity(recruiter) ?? null,
+
+//     apply_phone: (lbaJobContactInfo ? lbaJobContactInfo?.phone : recruiter.phone) ?? null,
+//     apply_email: recruiter.is_delegated ? lbaJobContactInfo?.email : recruiter.email,
+
+//     workplace_opco: recruiter.opco ?? null,
+//     workplace_idcc: recruiter.idcc ?? null,
+//     workplace_naf_code: recruiter.naf_code ?? null,
+//     workplace_naf_label: recruiter.naf_label ?? null,
+//     workplace_size: recruiter.establishment_size ?? null,
+//     offer_origin: recruiter.origin ?? null,
+//     offer_target_diploma: getDiplomaLevel(job.job_level_label),
+//     offer_desired_skills:
+//       job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+//       romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
+//       [],
+//     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
+//     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+//     offer_access_conditions: acces_metier ? [acces_metier] : [],
+//     offer_title,
+//     offer_rome_codes: job.rome_code ?? null,
+//     offer_description: job.job_description ?? definition ?? "",
+//     offer_creation: job.job_creation_date,
+//     offer_expiration: job.job_expiration_date,
+//     offer_status: getOfferStatus(job.job_status, recruiter.status),
+//     offer_opening_count: job.job_count ?? 1,
+//     offer_multicast: true,
+
+//     contract_remote: null,
+//     offer_status_history: [],
+//     workplace_address_street_label: null,
+//     workplace_description: null,
+//     workplace_name: null,
+//     workplace_website: null,
+
+//     lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, recruiter.establishment_siret, offer_title),
+
+//     ...delegatedFields,
+//   }
+
+//   await getDbCollection("jobs_partners").findOneAndUpdate(
+//     { _id: job._id },
+//     {
+//       $set: partnerJobToUpsert,
+//       $setOnInsert: {
+//         stats_detail_view: 0,
+//         stats_search_view: 0,
+//         stats_postuler: 0,
+//       },
+//     },
+//     { upsert: true }
+//   )
+// }
+
+export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
+  const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
+  const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
+  if (jobIds.length) {
+    await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
+  }
+}
+
+async function jobCreateToJobsPartner({
+  job,
+  cfa,
+  entreprise,
+  user,
+  origin,
+  status,
+}: {
+  job: IJobCreate
+  cfa?: ICFA
+  entreprise: IEntreprise
+  user: IUserWithAccount
+  origin?: string
+  status: JOB_STATUS_ENGLISH
+}) {
+  const now = new Date()
+  const { siret, geo_coordinates, address_detail } = entreprise
+
+  const addressV3 = address_detail && "libelle_commune" in address_detail ? address_detail : null
+
+  const [romeDetails, disabledEngagement, entrepriseDataRaw] = await Promise.all([
     getRomeDetailsFromDB(job.rome_code[0]),
-    recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
-    getEntrepriseEngagementFranceTravail(recruiter.establishment_siret),
+    getEntrepriseEngagementFranceTravail(siret),
+    getEntrepriseDataFromSiret({ siret, type: CFA }),
   ])
+  const entrepriseDataOpt = "error" in entrepriseDataRaw ? null : entrepriseDataRaw
 
   const { definition, acces_metier } = romeDetails ?? {}
 
-  const delegatedFields = recruiter.is_delegated
-    ? {
-        cfa_siret: lbaJobContactInfo?.establishment_siret || null,
-        cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
-        cfa_apply_phone: lbaJobContactInfo?.phone || null,
-        cfa_apply_email: lbaJobContactInfo?.email || null,
-        cfa_address_label: lbaJobContactInfo?.address || null,
-      }
-    : {
-        cfa_siret: null,
-        cfa_legal_name: null,
-        cfa_apply_phone: null,
-        cfa_apply_email: null,
-        cfa_address_label: null,
-      }
-
   const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
-  const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
-    _id: job._id,
-    updated_at: job.job_update_date ?? now,
-    created_at: job.job_creation_date ?? now,
+  const newId = new ObjectId()
+  const lbaUrl = buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, newId, siret, offer_title)
+
+  const jobPartner: IJobsPartnersOfferPrivate = {
+    _id: newId,
+    updated_at: now,
+    created_at: now,
     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-    partner_job_id: job._id.toString(),
-    is_delegated: recruiter.is_delegated,
-    job_status_comment: job?.job_status_comment || null,
-    job_delegation_count: job?.job_delegation_count || null,
+    partner_job_id: newId.toString(),
+    is_delegated: Boolean(cfa),
+    job_status_comment: null,
+    job_delegation_count: job?.delegations?.length ?? 0,
+    apply_url: lbaUrl,
     delegations: job?.delegations,
 
     contract_start: job.job_start_date ?? null,
@@ -965,24 +1215,26 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
 
     contract_rythm: job.job_rythm ?? null,
 
-    workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
-    workplace_brand: recruiter.establishment_enseigne,
-    workplace_siret: recruiter.establishment_siret,
-    workplace_geopoint: recruiter.geopoint ?? undefined,
-    workplace_address_label: recruiter.address!,
-    workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
-    workplace_address_city: getCity(recruiter) ?? null,
+    workplace_legal_name: entreprise.raison_sociale || entreprise.enseigne || UNKNOWN_COMPANY,
+    workplace_brand: entreprise.enseigne ?? null,
+    workplace_siret: siret,
+    workplace_geopoint: geo_coordinates
+      ? { type: "Point", coordinates: geo_coordinates.split(",").reverse().map(parseFloat) as [number, number] }
+      : ({ type: "Point", coordinates: [0, 0] } as const),
+    workplace_address_label: entreprise.address ?? "",
+    workplace_address_zipcode: entreprise.address_detail?.code_postal ?? null,
+    workplace_address_city: addressV3?.libelle_commune ?? null,
 
-    apply_phone: (lbaJobContactInfo ? lbaJobContactInfo?.phone : recruiter.phone) ?? null,
-    apply_email: recruiter.is_delegated ? lbaJobContactInfo?.email : recruiter.email,
+    apply_phone: user.phone ?? null,
+    apply_email: user.email,
 
-    workplace_opco: recruiter.opco ?? null,
-    workplace_idcc: recruiter.idcc ?? null,
-    workplace_naf_code: recruiter.naf_code ?? null,
-    workplace_naf_label: recruiter.naf_label ?? null,
-    workplace_size: recruiter.establishment_size ?? null,
-    offer_origin: recruiter.origin ?? null,
-    offer_target_diploma: getDiplomaLevel(job.job_level_label),
+    workplace_opco: entreprise.opco ?? null,
+    workplace_idcc: entreprise.idcc ?? null,
+    workplace_naf_code: entreprise.naf_code ?? null,
+    workplace_naf_label: entreprise.naf_label ?? null,
+    workplace_size: entrepriseDataOpt?.establishment_size ?? null,
+    offer_origin: origin ?? null,
+    offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_desired_skills:
       job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
       romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
@@ -993,9 +1245,9 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     offer_title,
     offer_rome_codes: job.rome_code ?? null,
     offer_description: job.job_description ?? definition ?? "",
-    offer_creation: job.job_creation_date,
-    offer_expiration: job.job_expiration_date,
-    offer_status: getOfferStatus(job.job_status, recruiter.status),
+    offer_creation: now,
+    offer_expiration: addExpirationPeriod(now).toDate(),
+    offer_status: status,
     offer_opening_count: job.job_count ?? 1,
     offer_multicast: true,
 
@@ -1006,106 +1258,135 @@ const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) 
     workplace_name: null,
     workplace_website: null,
 
-    lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, recruiter.establishment_siret, offer_title),
+    lba_url: lbaUrl,
 
-    ...delegatedFields,
+    cfa_siret: cfa?.siret,
+    cfa_legal_name: cfa?.raison_sociale,
+    cfa_apply_phone: user.phone,
+    cfa_apply_email: user.email,
+    cfa_address_label: cfa?.address,
+
+    stats_detail_view: 0,
+    stats_postuler: 0,
+    stats_search_view: 0,
+
+    managed_by: user._id,
+    offer_rome_appellation: job.rome_appellation_label,
+    applicationCount: 0,
+    duplicates: [],
+    apply_recipient_id: newId.toString(),
   }
-
-  await getDbCollection("jobs_partners").findOneAndUpdate(
-    { _id: job._id },
-    {
-      $set: partnerJobToUpsert,
-      $setOnInsert: {
-        stats_detail_view: 0,
-        stats_search_view: 0,
-        stats_postuler: 0,
-      },
-    },
-    { upsert: true }
-  )
+  return jobPartner
 }
 
-export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
-  const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
-  const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
-  if (jobIds.length) {
-    await anonymizeLbaJobsPartners({ partner_job_ids: jobIds })
-  }
+const isNiveauPourLbaLabel = (value: string | null | undefined): value is (typeof NIVEAUX_POUR_LBA)[keyof typeof NIVEAUX_POUR_LBA] => {
+  return Boolean(value && Object.values(NIVEAUX_POUR_LBA).includes(value as (typeof NIVEAUX_POUR_LBA)[keyof typeof NIVEAUX_POUR_LBA]))
 }
 
-//TODO: extraire une partie du code dans un service pour éviter d'avoir du code trop spécifique dans mongodbUtils.ts
-const startChangeStream = (
-  collectionName: "recruiters" | "anonymized_recruiters",
-  resumeToken: IResumeToken | null,
-  signal: AbortSignal
-  //resumeBehavior?: "startAfter" | "resumeAfter" = "resumeAfter"
-) => {
-  logger.info(`Starting change stream for ${collectionName} with resumeToken:`, resumeToken)
-  const collection = getDbCollection(collectionName)
-  const changeStream = collection.watch(
-    [],
-    //resumeToken ? (resumeBehavior === "resumeAfter" ? { resumeAfter: resumeToken.resumeTokenData } : { startAfter: resumeToken.resumeTokenData }) : {}
-    resumeToken ? { startAfter: resumeToken.resumeTokenData } : {}
-  )
+const isTrainingRythmLabel = (value: string | null | undefined): value is (typeof TRAINING_RYTHM)[keyof typeof TRAINING_RYTHM] => {
+  return Boolean(value && Object.values(TRAINING_RYTHM).includes(value as (typeof TRAINING_RYTHM)[keyof typeof TRAINING_RYTHM]))
+}
 
-  signal.addEventListener("abort", () => {
-    logger.info(`Aborting change stream for ${collectionName}`)
-    changeStream.close()
+const roleToRecruiterStatus = (role: IRoleManagement): RECRUITER_STATUS => {
+  const lastStatus = getLastStatusEvent(role.status)?.status
+  if (!lastStatus) {
+    throw new Error(`inattendu: status vide pour role id=${role._id}`)
+  }
+  const mapping: Record<AccessStatus, RECRUITER_STATUS> = {
+    [AccessStatus.AWAITING_VALIDATION]: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+    [AccessStatus.GRANTED]: RECRUITER_STATUS.ACTIF,
+    [AccessStatus.DENIED]: RECRUITER_STATUS.ARCHIVE,
+  }
+  return mapping[lastStatus]
+}
+
+const jobPartnerStatusToIJobStatus: Record<JOB_STATUS_ENGLISH, JOB_STATUS> = {
+  [JOB_STATUS_ENGLISH.ACTIVE]: JOB_STATUS.ACTIVE,
+  [JOB_STATUS_ENGLISH.POURVUE]: JOB_STATUS.POURVUE,
+  [JOB_STATUS_ENGLISH.ANNULEE]: JOB_STATUS.ANNULEE,
+  [JOB_STATUS_ENGLISH.EN_ATTENTE]: JOB_STATUS.EN_ATTENTE,
+}
+
+function jobPartnersToRecruiter(
+  jobPartners: (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null; application_count?: number })[],
+  role: IRoleManagement,
+  user: IUserWithAccount,
+  entreprise: IEntreprise,
+  cfa?: ICFA
+): IRecruiterWithRomeDetailAndApplicationCount {
+  const recruiterJobs: IRecruiterWithRomeDetailAndApplicationCount["jobs"] = jobPartners.map((jobPartner) => {
+    const jobLevelLabel = jobPartner.offer_target_diploma?.label
+    const resolvedJobLevelLabel: IJob["job_level_label"] = isNiveauPourLbaLabel(jobLevelLabel) ? jobLevelLabel : null
+    const resolvedJobRythm: IJob["job_rythm"] = isTrainingRythmLabel(jobPartner.contract_rythm) ? jobPartner.contract_rythm : null
+    const customTitle = jobPartner.offer_rome_appellation && jobPartner.offer_title !== jobPartner.offer_rome_appellation ? jobPartner.offer_title : null
+
+    const ijob: IRecruiterWithRomeDetailAndApplicationCount["jobs"][number] = {
+      _id: jobPartner._id,
+      rome_label: jobPartner.rome_detail?.rome.intitule ?? null,
+      rome_appellation_label: jobPartner.offer_rome_appellation ?? null,
+      job_level_label: resolvedJobLevelLabel,
+      job_start_date: jobPartner.contract_start ?? jobPartner.offer_creation ?? jobPartner.created_at,
+      job_description: jobPartner.offer_description,
+      job_employer_description: jobPartner.workplace_description,
+      rome_code: jobPartner.offer_rome_codes ?? [],
+      rome_detail: jobPartner.rome_detail,
+      job_creation_date: jobPartner.offer_creation ?? jobPartner.created_at,
+      job_expiration_date: jobPartner.offer_expiration,
+      job_update_date: jobPartner.updated_at,
+      job_last_prolongation_date: null,
+      job_prolongation_count: null,
+      relance_mail_expiration_J7: jobPartner.relance_mail_expiration_J7,
+      relance_mail_expiration_J1: jobPartner.relance_mail_expiration_J1,
+      job_status: jobPartnerStatusToIJobStatus[jobPartner.offer_status],
+      job_status_comment: jobPartner.job_status_comment,
+      job_type: jobPartner.contract_type,
+      job_delegation_count: jobPartner.job_delegation_count,
+      delegations: jobPartner.delegations,
+      is_disabled_elligible: jobPartner.contract_is_disabled_elligible,
+      job_count: jobPartner.offer_opening_count,
+      job_duration: jobPartner.contract_duration,
+      job_rythm: resolvedJobRythm,
+      custom_address: null,
+      custom_geo_coordinates: null,
+      custom_job_title: null,
+      stats_detail_view: jobPartner.stats_detail_view,
+      stats_search_view: jobPartner.stats_search_view,
+      competences_rome: getCompetencesRomeFromPartnerJob(jobPartner),
+      mer_sent: jobPartner.mer_sent,
+      offer_title_custom: customTitle,
+      candidatures: jobPartner.application_count ?? 0,
+    }
+    return ijob
   })
 
-  changeStream
-    .on("change", async (change) => {
-      logger.info("change detected in change stream for", collectionName, ":", change)
-      if (collectionName === "recruiters") {
-        switch (change.operationType) {
-          case "insert":
-          case "update":
-            await updateJobsPartnersFromRecruiterUpdate(change)
-            await storeResumeToken("recruiters", change._id as IResumeTokenData)
-            break
-          case "rename":
-          case "drop":
-          case "delete":
-            // n'arrivera pas car les formulaires ne sont pas supprimés, mais archivés
-            break
-          case "invalidate": {
-            // provoqué par des événement de type "drop" ou "rename" sur la collection
-            logger.info(`Change stream for ${collectionName} invalidated, restarting after 10 seconds...`)
-            await new Promise((resolve) => setTimeout(resolve, 10000))
-            // on relance le change stream sans le token de reprise
-            startChangeStream("recruiters", null, signal)
-            break
-          }
-          default:
-            assertUnreachable(`Unexpected change operation type ${change.operationType}` as never)
-        }
-      } else if (collectionName === "anonymized_recruiters") {
-        if (change.operationType === "insert") {
-          await updateJobsPartnersFromRecruiterDelete(change.documentKey._id)
-          await storeResumeToken("anonymized_recruiters", change._id as IResumeTokenData)
-        }
-      }
-    })
-    .once("error", (error) => {
-      logger.error(`Error in change stream for ${collectionName}:`, error)
-      changeStream.close()
-      startChangeStream(collectionName, null, signal)
-    })
-    .on("close", () => {
-      logger.info("deleting change stream for", collectionName)
-      changeStreams.delete(changeStream)
-    })
+  const recruiter: IRecruiterWithRomeDetailAndApplicationCount = {
+    _id: role._id,
+    establishment_id: buildEstablishmentId(role.user_id, entreprise.siret),
+    establishment_raison_sociale: entreprise.raison_sociale,
+    establishment_enseigne: entreprise.enseigne,
+    establishment_siret: entreprise.siret,
+    address: entreprise.address,
+    geo_coordinates: entreprise.geo_coordinates,
+    is_delegated: Boolean(cfa),
+    cfa_delegated_siret: cfa?.siret,
 
-  changeStreams.add(changeStream)
-  return changeStream
-}
+    last_name: user.last_name,
+    first_name: user.first_name,
+    phone: user.phone,
+    email: user.email,
+    jobs: recruiterJobs,
+    origin: role.origin,
+    opco: entreprise.opco,
+    idcc: entreprise.idcc,
+    status: roleToRecruiterStatus(role),
+    naf_code: entreprise.naf_code,
+    naf_label: entreprise.naf_label,
+    establishment_size: jobPartners.at(0)?.workplace_size,
+    establishment_creation_date: null,
+    managed_by: user._id.toString(),
+    createdAt: role.createdAt,
+    updatedAt: role.updatedAt,
+  }
 
-export const startRecruiterChangeStream = async (signal: AbortSignal) => {
-  logger.info("Starting recruiter change stream")
-
-  const resumeRecruiterToken = await getResumeToken("recruiters")
-  startChangeStream("recruiters", resumeRecruiterToken, signal)
-
-  const resumeAnonymizedRecruiterToken = await getResumeToken("anonymized_recruiters")
-  startChangeStream("anonymized_recruiters", resumeAnonymizedRecruiterToken, signal)
+  return recruiter
 }

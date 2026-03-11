@@ -29,7 +29,6 @@ import formationsV1Route from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
-import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
@@ -140,7 +139,6 @@ export async function bind(app: Server) {
       jobsV1Route(typedSubApp)
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
-      jobsEtFormationsV1Route(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       seoRouteController(typedSubApp)

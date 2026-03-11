@@ -1,19 +1,16 @@
 import { ObjectId } from "bson"
-import { RECRUITER_STATUS } from "shared/constants/index"
-import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
 import type { OfferRef } from "./detectDuplicateJobPartners"
-import { checkSimilarity, detectDuplicateJobPartners, FAKE_RECRUITERS_JOB_PARTNER, isCanonicalForDuplicate } from "./detectDuplicateJobPartners"
+import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate } from "./detectDuplicateJobPartners"
 import { getPairs } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 
 const siret = "42476141900045"
 
@@ -24,7 +21,6 @@ describe("detectDuplicateJobPartners", () => {
     return async () => {
       await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("computed_jobs_partners").deleteMany({})
-      await getDbCollection("recruiters").deleteMany({})
     }
   })
   const offerTitle = "Coiffeur(euse) H/F"
@@ -109,50 +105,6 @@ describe("detectDuplicateJobPartners", () => {
     expect.soft(job.business_error).toEqual(null)
     expect.soft(job2.offer_status).toEqual(JOB_STATUS_ENGLISH.ANNULEE)
   }, 10_000)
-  it("should detect a duplicate with an exact match in the offer title and the siret (recruiter)", async () => {
-    // given
-    await givenSomeComputedJobPartners([
-      {
-        _id: new ObjectId("60646425184afd00e017c1ab"),
-        partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
-        workplace_siret: siret,
-        offer_title: offerTitle,
-        workplace_address_zipcode: "75007",
-      },
-    ])
-    const recruiter = await saveRecruiter(
-      generateRecruiterFixture({
-        _id: new ObjectId("62646425184afd00e017c1ab"),
-        establishment_siret: siret,
-        status: RECRUITER_STATUS.ACTIF,
-        address_detail: {
-          ...generateRecruiterFixture().address_detail,
-          code_postal: "75007",
-        },
-        jobs: [
-          generateJobFixture({
-            rome_appellation_label: offerTitle,
-            job_status: JOB_STATUS.ACTIVE,
-          }),
-        ],
-      })
-    )
-    // when
-    await detectDuplicateJobPartners()
-    // then
-    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
-    const [job] = jobs
-    const recruiterJob = recruiter.jobs[0]
-    expect.soft(job.duplicates).toEqual([
-      {
-        partner_job_id: recruiterJob._id.toString(),
-        partner_label: FAKE_RECRUITERS_JOB_PARTNER,
-        collectionName: "recruiters",
-        reason: "identical workplace_siret, identical offer_title",
-      },
-    ])
-    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.DUPLICATE)
-  }, 10_000)
   it("should not detect a duplicate with an exact match in the offer title and the siret but a different zip code (computed_job_partner)", async () => {
     // given
     await givenSomeComputedJobPartners([
@@ -218,22 +170,14 @@ describe("detectDuplicateJobPartners", () => {
         workplace_address_zipcode: "75002",
       },
     ])
-    await saveRecruiter(
-      generateRecruiterFixture({
-        establishment_siret: siret,
-        status: RECRUITER_STATUS.ACTIF,
-        address_detail: {
-          ...generateRecruiterFixture().address_detail,
-          code_postal: "75007",
-        },
-        jobs: [
-          generateJobFixture({
-            rome_appellation_label: offerTitle,
-            job_status: JOB_STATUS.ACTIVE,
-          }),
-        ],
-      })
-    )
+    await givenSomeComputedJobPartners([
+      {
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        workplace_siret: siret,
+        offer_title: offerTitle,
+        workplace_address_zipcode: "75007",
+      },
+    ])
     // when
     await detectDuplicateJobPartners()
     // then
@@ -270,13 +214,13 @@ describe("detectDuplicateJobPartners", () => {
   describe("isCanonicalForDuplicate", () => {
     describe("doit être une relation d ordre", () => {
       const offerRefs: OfferRef[] = [
-        { collectionName: "computed_jobs_partners", rank: 0, created_at: new Date("2023-07-04T23:24:58.995Z") },
-        { collectionName: "computed_jobs_partners", rank: 20, created_at: new Date("2024-07-04T23:24:58.995Z") },
-        { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2025-07-04T23:24:58.995Z") },
-        { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2024-07-04T23:24:58.995Z") },
-        { collectionName: "recruiters", created_at: new Date("2024-07-04T23:24:58.995Z") },
-        { collectionName: "recruiters", created_at: new Date("2026-07-04T23:24:58.995Z") },
-        { collectionName: "recruiters", created_at: new Date("2025-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 0, created_at: new Date("2023-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 20, created_at: new Date("2024-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 10, created_at: new Date("2025-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 10, created_at: new Date("2024-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, created_at: new Date("2024-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, created_at: new Date("2026-07-04T23:24:58.995Z") },
+        { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, created_at: new Date("2025-07-04T23:24:58.995Z") },
       ]
       it("la relation doit être reflexive (xRx)", () => {
         offerRefs.forEach((offerRef) => expect(isCanonicalForDuplicate(offerRef, offerRef)).toBe(true))
@@ -304,13 +248,13 @@ describe("detectDuplicateJobPartners", () => {
       it("should sort the documents", () => {
         const sorted = [...offerRefs].sort((a, b) => (isCanonicalForDuplicate(a, b) ? -1 : 1))
         expect(sorted).toEqual([
-          { collectionName: "recruiters", created_at: new Date("2024-07-04T23:24:58.995Z") },
-          { collectionName: "recruiters", created_at: new Date("2025-07-04T23:24:58.995Z") },
-          { collectionName: "recruiters", created_at: new Date("2026-07-04T23:24:58.995Z") },
-          { collectionName: "computed_jobs_partners", rank: 20, created_at: new Date("2024-07-04T23:24:58.995Z") },
-          { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2024-07-04T23:24:58.995Z") },
-          { collectionName: "computed_jobs_partners", rank: 10, created_at: new Date("2025-07-04T23:24:58.995Z") },
-          { collectionName: "computed_jobs_partners", rank: 0, created_at: new Date("2023-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, created_at: new Date("2024-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, created_at: new Date("2025-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, created_at: new Date("2026-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 20, created_at: new Date("2024-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 10, created_at: new Date("2024-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 10, created_at: new Date("2025-07-04T23:24:58.995Z") },
+          { collectionName: "computed_jobs_partners", partner_label: JOBPARTNERS_LABEL.DECATHLON, rank: 0, created_at: new Date("2023-07-04T23:24:58.995Z") },
         ])
       })
     })

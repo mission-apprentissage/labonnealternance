@@ -2,7 +2,7 @@ import { zObjectId } from "zod-mongodb-schema"
 
 import { z } from "../helpers/zodWithOpenApi.js"
 import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
-import { ZRecruiter, ZRecruiterWithApplicationCount } from "../models/recruiter.model.js"
+import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
@@ -14,13 +14,13 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "200": ZRecruiterWithApplicationCount,
+        "200": ZRecruiterWithRomeDetailAndApplicationCount,
       },
       securityScheme: {
         auth: "cookie-session",
         access: { some: ["recruiter:manage", "recruiter:add_job"] },
         resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },
@@ -29,13 +29,13 @@ export const zFormulaireRoute = {
       path: "/formulaire/:establishment_id/by-token",
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "200": ZRecruiterWithApplicationCount,
+        "200": ZRecruiterWithRomeDetailAndApplicationCount,
       },
       securityScheme: {
         auth: "access-token",
         access: { some: ["recruiter:manage", "recruiter:add_job"] },
         resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },
@@ -85,7 +85,9 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        "200": ZRecruiter,
+        "200": z.object({
+          establishment_id: z.string(),
+        }),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -109,7 +111,7 @@ export const zFormulaireRoute = {
         auth: "cookie-session",
         access: "recruiter:manage",
         resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },
@@ -121,18 +123,13 @@ export const zFormulaireRoute = {
       // TODO nonstrict TO BE FIXED on the frontend
       body: ZJobCreate.nonstrict(),
       response: {
-        "200": z
-          .object({
-            recruiter: ZRecruiter,
-            token: z.string().optional(),
-          })
-          .strict(),
+        "200": z.object({ _id: zObjectId }),
       },
       securityScheme: {
         auth: "cookie-session",
         access: "recruiter:add_job",
         resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },
@@ -146,7 +143,7 @@ export const zFormulaireRoute = {
       response: {
         "200": z
           .object({
-            recruiter: ZRecruiter,
+            job_id: z.string(),
             token: z.string(),
           })
           .strict(),
@@ -155,7 +152,7 @@ export const zFormulaireRoute = {
         auth: "access-token",
         access: "recruiter:add_job",
         resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },
@@ -169,7 +166,7 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        "200": ZRecruiter,
+        "200": z.object({}),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -189,7 +186,7 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        "200": ZRecruiter,
+        "200": z.object({}),
       },
       securityScheme: {
         auth: "access-token",
@@ -217,13 +214,10 @@ export const zFormulaireRoute = {
         job_count: true,
         job_duration: true,
         job_rythm: true,
-        job_delegation_count: true,
         competences_rome: true,
         offer_title_custom: true,
       }).extend({
         job_start_date: z.coerce.date(),
-        job_update_date: z.coerce.date(),
-        job_creation_date: z.coerce.date(),
         job_expiration_date: z.coerce.date(),
       }),
       response: {
@@ -293,7 +287,11 @@ export const zFormulaireRoute = {
       path: "/formulaire/offre/:jobId/extend",
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "200": ZJob.strict(),
+        "200": z
+          .object({
+            job_expiration_date: z.date(),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "cookie-session",
@@ -334,7 +332,7 @@ export const zFormulaireRoute = {
         auth: "cookie-session",
         access: "recruiter:manage",
         resources: {
-          recruiter: [{ establishment_id: { type: "params", key: "establishment_id" } }],
+          job: [{ establishment_id: { type: "params", key: "establishment_id" } }],
         },
       },
     },

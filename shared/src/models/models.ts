@@ -49,13 +49,11 @@ import rawRecruteursLbaModel from "./rawRecruteursLba.model.js"
 import rawRHAlternanceModel from "./rawRHAlternance.model.js"
 import rawToulouseMetropoleModel from "./rawToulouseMetropole.model.js"
 import rawViteUnEmploiModel from "./rawViteUnEmploi.model.js"
-import recruiterModel from "./recruiter.model.js"
 import recruteurLbaUpdateEventModel from "./recruteurLbaUpdateEvent.model.js"
 import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentielEngagementEntreprise.model.js"
 import referentielOnisepModel from "./referentielOnisep.model.js"
 import reportedCompanyModel from "./reportedCompany.model.js"
-import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
@@ -70,8 +68,10 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
+import entreprisesManagedByCfaModel from "./entreprisesManagedByCfa.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
+import recruiterModel from "./recruiter.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
 
 const modelDescriptorMap = {
@@ -116,11 +116,9 @@ const modelDescriptorMap = {
   [rawViteUnEmploiModel.collectionName]: rawViteUnEmploiModel,
   [rawNosTalentsNosEmploisModel.collectionName]: rawNosTalentsNosEmploisModel,
   [rawToulouseMetropoleModel.collectionName]: rawToulouseMetropoleModel,
-  [recruiterModel.collectionName]: recruiterModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielEngagementEntrepriseModel.collectionName]: referentielEngagementEntrepriseModel,
-  [resumeTokensModel.collectionName]: resumeTokensModel,
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,
@@ -146,6 +144,8 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,
+  [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
+  [recruiterModel.collectionName]: recruiterModel,
   [seoMetierModel.collectionName]: seoMetierModel,
 } as const satisfies Record<string, IModelDescriptor>
 

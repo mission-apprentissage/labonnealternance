@@ -1,12 +1,12 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
 import anonymizeAppointments from "./anonymization/anonymizeAppointments"
 import anonymizeIndividual from "./anonymization/anonymizeIndividual"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
-import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeUsers } from "./anonymization/anonymizeUsers"
 import { removeBrevoContacts } from "./anonymization/removeBrevoContacts"
 import { processApplications } from "./applications/processApplications"
@@ -17,7 +17,6 @@ import { updateDiplomeMetier } from "./diplomesMetiers/updateDiplomesMetiers"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { create as createMigration, status as statusMigration, up as upMigration } from "./migrations/migrations"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
@@ -39,11 +38,11 @@ import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtabli
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
 import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtablissementParcoursupToPremiumFollowUp"
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
+import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { cancelOfferJob } from "./recruiters/cancelOfferJob"
 import { createApiUser } from "./recruiters/createApiUser"
 import { disableApiUser } from "./recruiters/disableApiUser"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
@@ -55,7 +54,6 @@ import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinition
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
-import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { generateSitemap } from "@/services/sitemap.service"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import config from "@/config"
@@ -112,11 +110,6 @@ export async function setupJobProcessor() {
             handler: anonymizeApplications,
             tag: "main",
           },
-          "Annulation des offres expirées": {
-            cron_string: "15 0 * * *",
-            handler: cancelOfferJob,
-            tag: "main",
-          },
           "Génération du sitemap pour les offres": {
             cron_string: "20 0 * * *",
             handler: generateSitemap,
@@ -143,11 +136,6 @@ export async function setupJobProcessor() {
           "Active tous les établissements qui ont souscrits à l'opt-out": {
             cron_string: "50 0 * * *",
             handler: activateOptoutOnEtablissementAndUpdateReferrersOnETFA,
-            tag: "main",
-          },
-          "Creation de la collection JOBS pour metabase": {
-            cron_string: "55 0 * * *",
-            handler: createJobsCollectionForMetabase,
             tag: "main",
           },
           "Envoi des invitations de mise en relation pour les offres à faibles candidatures": {

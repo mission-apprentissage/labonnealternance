@@ -3,12 +3,13 @@ import { ObjectId } from "mongodb"
 import type { INewSuperUser } from "shared"
 import { ADMIN, OPCO } from "shared/constants/index"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
-import { AccessStatus } from "shared/models/roleManagement.model"
+import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserStatusEvent, IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
 
 import { checkForJobActivations } from "./formulaire.service"
+import { getGrantedRoles } from "./roleManagement.service"
 import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -84,8 +85,9 @@ export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], 
   if (!newUser) {
     throw internal(`utilisateur avec id=${id} non trouvé`)
   }
-  const recruiters = await getDbCollection("recruiters").find({ managed_by: userOpt._id.toString() }).toArray()
-  await asyncForEach(recruiters, async (recruiter) => checkForJobActivations(recruiter))
+  const grantedRoles = await getGrantedRoles(userOpt._id.toString())
+  const entrepriseRoles = grantedRoles.filter((role) => role.authorized_type === AccessEntityType.ENTREPRISE)
+  await asyncForEach(entrepriseRoles, async (role) => checkForJobActivations(userOpt._id, new ObjectId(role.authorized_id)))
   return newUser
 }
 

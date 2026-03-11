@@ -104,7 +104,6 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
           job_count: offre?.job_count ?? 1,
           job_duration: offre?.job_duration ?? 12,
           job_rythm: offre?.job_rythm ?? null,
-          job_delegation_count: offre?.job_delegation_count ?? 0,
           offer_title_custom: offre?.offer_title_custom ?? "",
         }}
         validationSchema={Yup.object().shape({

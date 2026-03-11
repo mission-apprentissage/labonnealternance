@@ -1,20 +1,16 @@
 import { groupBy } from "lodash-es"
 import type { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
-import { RECRUITER_STATUS } from "shared/constants/index"
-import type { IJob } from "shared/models/index"
-import { JOB_STATUS, JOB_STATUS_ENGLISH, ZGlobalAddress } from "shared/models/index"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobPartnersDuplicateRef } from "shared/models/jobPartnersDuplicateRef"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import jobsPartnersModel from "shared/models/jobsPartners.model"
+import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import jobsPartnersComputedModel, { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import type { IRecruiter } from "shared/models/recruiter.model"
-import recruiterModel from "shared/models/recruiter.model"
 import { removeAccents } from "shared/utils/index"
 import * as stringSimilarity from "string-similarity"
 
-import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -32,31 +28,22 @@ const fieldsRead = [
   "rank",
   "created_at",
 ] as const satisfies (keyof IComputedJobsPartners)[]
-const recruiterFieldsRead = ["_id", "status", "address_detail", "createdAt"] as const satisfies (keyof IRecruiter)[]
-const jobFieldsRead = ["_id", "rome_appellation_label", "job_status", "offer_title_custom"] as const satisfies (keyof IJob)[]
 
-export const FAKE_RECRUITERS_JOB_PARTNER = "recruiters"
-
-const recruiterCollection = recruiterModel.collectionName
 const jobPartnerCollection = jobsPartnersModel.collectionName
 const computedJobPartnerCollection = jobsPartnersComputedModel.collectionName
 
 type ReadFields = (typeof fieldsRead)[number]
-type RecruiterFields = (typeof recruiterFieldsRead)[number]
-type JobFields = (typeof jobFieldsRead)[number]
 
 type ProjectedComputedJobPartner = Pick<IComputedJobsPartners, ReadFields>
-type ProjectedIRecruiter = Pick<IRecruiter, RecruiterFields> & { jobs: Pick<IJob, JobFields>[] }
 type ProjectedJobPartner = ProjectedComputedJobPartner & Pick<IJobsPartnersOfferPrivate, "offer_status">
 
 type AggregationResult = {
   _id: string
   documents: ProjectedComputedJobPartner[]
-  recruiters?: ProjectedIRecruiter[]
   jobPartners?: ProjectedJobPartner[]
 }
 type TreatedDocument = ProjectedComputedJobPartner & {
-  collectionName: typeof recruiterCollection | typeof jobPartnerCollection | typeof computedJobPartnerCollection
+  collectionName: typeof jobPartnerCollection | typeof computedJobPartnerCollection
 }
 
 export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
@@ -68,27 +55,13 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
 
   await getDbCollection("computed_jobs_partners").updateMany(computedJobPartnersFilter, { $set: { duplicates: [] } })
   const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
-  const jobPartnerVsRecruiterFields: { jobPartnerField: keyof IComputedJobsPartners; recruiterField: keyof IRecruiter }[] = [
-    { jobPartnerField: "workplace_siret", recruiterField: "establishment_siret" },
-    { jobPartnerField: "workplace_brand", recruiterField: "establishment_enseigne" },
-    { jobPartnerField: "workplace_legal_name", recruiterField: "establishment_raison_sociale" },
-    { jobPartnerField: "workplace_name", recruiterField: "establishment_raison_sociale" },
-    { jobPartnerField: "workplace_name", recruiterField: "establishment_enseigne" },
-  ]
+
   await asyncForEach(jobPartnerFields, async (groupField) => {
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
       groupField,
       computedJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
     )
     const message = `detectDuplicateJobPartners: VS computed_job_partners: groupé par le champ ${groupField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
-    logger.info(message)
-  })
-  await asyncForEach(jobPartnerVsRecruiterFields, async ({ jobPartnerField, recruiterField }) => {
-    const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
-      jobPartnerField,
-      computedJobPartnerVsRecruiterStreamFactory(jobPartnerField, recruiterField, computedJobPartnersFilter)
-    )
-    const message = `detectDuplicateJobPartners: VS recruiters: groupé par le champ computed_jobs_partners.${jobPartnerField} VS recruiters.${recruiterField}. duplicateCount=${duplicateCount}, maxOfferPairCount=${maxOfferPairCount}, offerPairCount=${offerPairCount}`
     logger.info(message)
   })
   await asyncForEach(jobPartnerFields, async (groupField) => {
@@ -123,81 +96,6 @@ const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners
             input: "$documents",
             as: "document",
             in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
-          },
-        },
-      },
-    },
-  ]) as AggregationCursor<AggregationResult>
-}
-
-const computedJobPartnerVsRecruiterStreamFactory = (
-  computedJobPartnerField: keyof IComputedJobsPartners,
-  recruiterField: keyof IRecruiter,
-  computedJobPartnersFilter: Filter<IComputedJobsPartners>
-) => {
-  logger.info(
-    `début de detectDuplicateJobPartners entre computedJobPartners et recruiters, pour les champs computedJobPartnerField=${computedJobPartnerField} et recruiterField=${recruiterField}`
-  )
-
-  return getDbCollection("computed_jobs_partners").aggregate([
-    { $match: computedJobPartnersFilter },
-    {
-      $group: {
-        _id: `$${computedJobPartnerField}`,
-        documents: { $push: "$$ROOT" },
-      },
-    },
-    { $match: { _id: { $ne: null } } },
-    {
-      $project: {
-        _id: 1,
-        documents: {
-          $map: {
-            input: "$documents",
-            as: "document",
-            in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
-          },
-        },
-      },
-    },
-    {
-      $lookup: {
-        from: recruiterCollection,
-        foreignField: recruiterField,
-        localField: "_id",
-        as: "recruiters",
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        documents: 1,
-        recruiters: {
-          $map: {
-            input: {
-              $filter: {
-                input: "$recruiters",
-                as: "recruiter",
-                cond: { $eq: ["$$recruiter.status", "Actif"] },
-              },
-            },
-            as: "recruiter",
-            in: {
-              ...Object.fromEntries(recruiterFieldsRead.map((field) => [field, `$$recruiter.${field}`])),
-              jobs: {
-                $map: {
-                  input: {
-                    $filter: {
-                      input: "$$recruiter.jobs",
-                      as: "job",
-                      cond: { $eq: ["$$job.job_status", JOB_STATUS_ENGLISH.ACTIVE] },
-                    },
-                  },
-                  as: "job",
-                  in: Object.fromEntries(jobFieldsRead.map((field) => [field, `$$job.${field}`])),
-                },
-              },
-            },
           },
         },
       },
@@ -287,34 +185,10 @@ const processAggregateResult = async (groupField: string, aggregationResult: Agg
   let maxOfferPairCount = 0
   let offerPairCount = 0
 
-  const convertedRecruiters: TreatedDocument[] = (aggregationResult?.recruiters ?? []).flatMap((recruiter) => {
-    const { jobs, status, address_detail, createdAt } = recruiter
-    if (status !== RECRUITER_STATUS.ACTIF) {
-      return []
-    }
-    const parsedAddress = ZGlobalAddress.safeParse(address_detail)
-    return jobs.flatMap((job) => {
-      const { _id, rome_appellation_label, job_status, offer_title_custom } = job
-      if (job_status !== JOB_STATUS.ACTIVE) {
-        return []
-      }
-      const mapped: TreatedDocument = {
-        _id,
-        collectionName: recruiterCollection,
-        partner_job_id: _id.toString(),
-        partner_label: FAKE_RECRUITERS_JOB_PARTNER,
-        offer_title: offer_title_custom ?? rome_appellation_label,
-        workplace_address_zipcode: parsedAddress.data?.code_postal || null,
-        created_at: createdAt,
-      }
-      return [mapped]
-    })
-  })
   const partnerGroups: TreatedDocument[][] = Object.values(
     groupBy(
       [
         ...aggregationResult.documents.map((props) => ({ ...props, collectionName: computedJobPartnerCollection })),
-        ...convertedRecruiters,
         ...(aggregationResult.jobPartners ?? []).flatMap((props) => (props.offer_status === JOB_STATUS_ENGLISH.ACTIVE ? [{ ...props, collectionName: jobPartnerCollection }] : [])),
       ],
       (document) => document.partner_label
@@ -375,13 +249,16 @@ const processAggregateResult = async (groupField: string, aggregationResult: Agg
   }
 }
 
-export type OfferRef = Pick<TreatedDocument, "rank" | "collectionName" | "created_at">
+export type OfferRef = Pick<TreatedDocument, "rank" | "collectionName" | "created_at" | "partner_label">
 
 // in case of duplicates, returns true if offer1 is selected over offer2
 export const isCanonicalForDuplicate = (offer1: OfferRef, offer2: OfferRef) => {
-  if (offer1.collectionName !== offer2.collectionName) {
-    if (offer1.collectionName === recruiterCollection) return true
-    if (offer2.collectionName === recruiterCollection) return false
+  if (
+    offer1.partner_label !== offer2.partner_label &&
+    (offer1.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA || offer2.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA)
+  ) {
+    if (offer1.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) return true
+    if (offer2.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) return false
   }
   const rank1 = offer1.rank ?? 0
   const rank2 = offer2.rank ?? 0

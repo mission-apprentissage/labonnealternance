@@ -1,13 +1,13 @@
-import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { badRequest, forbidden, notFound } from "@hapi/boom"
 import type { IEntreprise } from "shared"
 import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
-import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
 import config from "@/config"
@@ -41,8 +41,9 @@ import {
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import type { Server } from "@/http/server"
+import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
+import { getFormulairesForCfaManagedEnterprises } from "@/services/formulaire.service"
 
 export default (server: Server) => {
   /**
@@ -174,18 +175,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId } = req.params
-      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
-      if (!cfa) {
-        throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
-      }
-      const cfa_delegated_siret = cfa.siret
-      if (!cfa_delegated_siret) {
-        throw internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
-      }
-      const entreprises = await getDbCollection("recruiters")
-        .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
-        .toArray()
-      return res.status(200).send(entreprises)
+      const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
+      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
+      return res.status(200).send(recruiters)
     }
   )
 

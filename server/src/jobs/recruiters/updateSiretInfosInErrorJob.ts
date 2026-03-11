@@ -1,24 +1,23 @@
 import { internal } from "@hapi/boom"
-import { ObjectId } from "mongodb"
-import type { IBusinessError, IRecruiter } from "shared"
-import { JOB_STATUS } from "shared"
+import type { IBusinessError, IEntreprise, IEntrepriseManagedByCfa, IRoleManagement, IUserWithAccount } from "shared"
+import { JOB_STATUS_ENGLISH } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
-import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
+import { AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
-import type { EntrepriseData } from "@/services/etablissement.service"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
-import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "@/services/formulaire.service"
-import { setEntrepriseInError } from "@/services/userRecruteur.service"
-import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
+import { archiveFormulaire, sendMailNouvelleOffre } from "@/services/formulaire.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
+import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")
@@ -56,8 +55,8 @@ const updateEntreprisesInfosInError = async () => {
 
 const deactivationWarningOriginExclusion = ["opcoep-HUBE", "opcoep-CRM"]
 
-export const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBusinessError) => {
-  if (!deactivationWarningOriginExclusion.includes(recruiter.origin ?? "")) {
+export const warnDeactivatedRecruteur = async (user: IUserWithAccount, entreprise: IEntreprise, error: IBusinessError) => {
+  if (!deactivationWarningOriginExclusion.includes(user.origin ?? "")) {
     let errorMessage = error.message
     if (error.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE) {
       errorMessage = "informations de l’entreprise non diffusibles"
@@ -66,64 +65,122 @@ export const warnDeactivatedRecruteur = async (recruiter: IRecruiter, error: IBu
       errorMessage = "entreprise rattachée à un code NAF 85"
     }
 
-    const { last_name, first_name, email, establishment_siret, establishment_raison_sociale, phone } = recruiter
+    const { last_name, first_name, email, phone } = user
+    const { siret, raison_sociale } = entreprise
 
-    await sendDeactivatedRecruteurMail({ email, last_name, first_name, establishment_siret, establishment_raison_sociale, phone, errorMessage })
+    await sendDeactivatedRecruteurMail({ email, last_name, first_name, establishment_siret: siret, establishment_raison_sociale: raison_sociale, phone, errorMessage })
   }
 }
 
 const updateRecruteursSiretInfosInError = async () => {
-  const recruteurs = await getDbCollection("recruiters").find({ status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION }).toArray()
+  let entreprisesManagedByCfa = (await getDbCollection("entreprise_managed_by_cfa")
+    .aggregate([
+      {
+        $lookup: {
+          from: "entreprises",
+          localField: "entreprise_id",
+          foreignField: "_id",
+          as: "entreprise",
+        },
+      },
+      {
+        $unwind: "$entreprise",
+      },
+      {
+        $match: {
+          "entreprise.status.status": EntrepriseStatus.ERROR,
+        },
+      },
+      {
+        $lookup: {
+          from: "cfas",
+          localField: "cfa_id",
+          foreignField: "_id",
+          as: "cfa",
+        },
+      },
+      {
+        $unwind: "$cfa",
+      },
+      {
+        $addFields: {
+          cfa_id_string: { $convert: { input: "$cfa_id", to: "string" } },
+        },
+      },
+      {
+        $lookup: {
+          from: "rolemanagements",
+          localField: "cfa_id_string",
+          foreignField: "authorized_id",
+          as: "role",
+        },
+      },
+      {
+        $unwind: "$role",
+      },
+      {
+        $lookup: {
+          from: "userswithaccounts",
+          localField: "role.user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+    ])
+    .toArray()) as (IEntrepriseManagedByCfa & { entreprise: IEntreprise; role: IRoleManagement; user: IUserWithAccount })[]
+
+  entreprisesManagedByCfa = entreprisesManagedByCfa.filter(({ entreprise }) => getLastStatusEvent(entreprise.status)?.status === EntrepriseStatus.ERROR)
+
   const stats = { success: 0, failure: 0, deactivated: 0 }
-  logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
-  await asyncForEach(recruteurs, async (recruteur) => {
-    const { establishment_siret, establishment_id, _id, cfa_delegated_siret } = recruteur
-    if (!cfa_delegated_siret) {
-      return
-    }
+  logger.info(`Correction des entreprises en erreur: ${entreprisesManagedByCfa.length} à mettre à jour...`)
+  await asyncForEach(entreprisesManagedByCfa, async (entrepriseManagedByCfa) => {
+    const { entreprise, user, role } = entrepriseManagedByCfa
+    const { siret } = entreprise
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, type: CFA })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, type: CFA })
       if ("error" in siretResponse) {
-        logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
-        await archiveFormulaire(recruteur)
-        await warnDeactivatedRecruteur(recruteur, siretResponse)
+        logger.warn(`Correction des recruteurs en erreur: role id=${entrepriseManagedByCfa._id}, désactivation car création interdite, raison=${siretResponse.message}`)
+        await archiveFormulaire(user._id, siret)
+
+        await warnDeactivatedRecruteur(user, entreprise, siretResponse)
         stats.deactivated++
       } else {
-        await upsertEntrepriseData(establishment_siret, "script de reprise de données entreprise", siretResponse, false)
+        await upsertEntrepriseData(siret, "script de reprise de données entreprise", siretResponse, false)
 
-        const entrepriseData: Partial<EntrepriseData> = siretResponse
-        const updatedRecruiter = await updateFormulaire(establishment_id, { ...entrepriseData, status: RECRUITER_STATUS.ACTIF })
-        const { managed_by } = updatedRecruiter
-        const managingUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
-        if (!managingUser) {
-          throw internal(`inattendu : managingUser non trouvé pour _id=${managed_by}`)
-        }
-        const cfa = await getDbCollection("cfas").findOne({ siret: cfa_delegated_siret })
-        if (!cfa) {
-          throw internal(`could not find cfa with siret=${cfa_delegated_siret}`)
-        }
-        const role = await getDbCollection("rolemanagements").findOne({ user_id: managingUser._id, authorized_type: AccessEntityType.CFA, authorized_id: cfa._id.toString() })
-        if (!role) {
-          throw internal(`could not find role with user_id=${managingUser._id} and authorized_id=${cfa._id}`)
-        }
         if (getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED) {
-          await Promise.all(
-            updatedRecruiter.jobs.flatMap((job) => {
-              if (job.job_status === JOB_STATUS.ACTIVE) {
-                return [sendMailNouvelleOffre(updatedRecruiter, job, managingUser)]
-              } else {
-                return []
-              }
-            })
-          )
+          const awaitingOffer = await getDbCollection("jobs_partners").findOne({
+            offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
+            workplace_siret: siret,
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            managed_by: role.user_id,
+          })
+          if (awaitingOffer) {
+            await getDbCollection("jobs_partners").updateOne({ _id: awaitingOffer._id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, updated_at: new Date() } })
+            await sendMailNouvelleOffre(user, awaitingOffer)
+          }
         }
         stats.success++
       }
     } catch (err) {
       const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
-      await updateFormulaire(establishment_id, { status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION })
+      await getDbCollection("jobs_partners").updateMany(
+        {
+          workplace_siret: siret,
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          managed_by: role.user_id,
+        },
+        {
+          $set: {
+            offer_status: JOB_STATUS_ENGLISH.EN_ATTENTE,
+            updated_at: new Date(),
+          },
+        }
+      )
       logger.error(err)
-      logger.error(`Correction des recruteurs en erreur: recruteur id=${_id}, erreur: ${errorMessage}`)
+      logger.error(`Correction des recruteurs en erreur: role id=${entrepriseManagedByCfa._id}, erreur: ${errorMessage}`)
       sentryCaptureException(err)
       stats.failure++
     }

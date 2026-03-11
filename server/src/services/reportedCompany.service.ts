@@ -5,7 +5,6 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { formatEntrepriseData } from "./etablissement.service"
-import { getOffre } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const reportCompany = async ({ reason, reasonDetails, itemId, type }: { reason: string; reasonDetails?: string; itemId: string; type: LBA_ITEM_TYPE }) => {
@@ -23,21 +22,6 @@ export const reportCompany = async ({ reason, reasonDetails, itemId, type }: { r
 
 export const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TYPE) => {
   switch (type) {
-    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA: {
-      const recruiterOpt = await getOffre(itemId)
-      const jobOpt = recruiterOpt?.jobs.find((job) => job._id.toString() === itemId)
-      if (!jobOpt || !recruiterOpt) {
-        return null
-      }
-      const { establishment_siret, establishment_raison_sociale, establishment_enseigne } = recruiterOpt
-      const { rome_appellation_label, offer_title_custom } = jobOpt
-      return {
-        siret: establishment_siret,
-        companyName: establishment_raison_sociale || establishment_enseigne,
-        jobTitle: offer_title_custom ?? rome_appellation_label,
-        partnerLabel: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
-      }
-    }
     case LBA_ITEM_TYPE.RECRUTEURS_LBA: {
       const recruteur = await getDbCollection("jobs_partners").findOne({ workplace_siret: itemId, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
       if (recruteur) {
@@ -59,6 +43,7 @@ export const getReportAdditionalInfos = async (itemId: string, type: LBA_ITEM_TY
       }
       return null
     }
+    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES: {
       const jobOpt = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(itemId) })
       if (!jobOpt) return null

@@ -6,10 +6,12 @@ import type { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/rout
 import type { AccessRessouces } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"
 
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { AccessUser2, AccessUserCredential, AccessUserToken } from "./authenticationService"
 import { authorizationMiddleware } from "./authorisationService"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
+import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }
@@ -41,7 +43,7 @@ const givenARoute = ({
   }
 }
 
-const everyResourceType: ResourceType[] = ["application", "appointment", "formationCatalogue", "job", "recruiter", "user"]
+const everyResourceType: ResourceType[] = ["application", "appointment", "formationCatalogue", "job", "user"]
 const everyAuthStrategy: AuthStrategy[] = ["access-token", "api-key", "cookie-session"]
 
 const givenATokenUser = (): AccessUserToken => {
@@ -72,21 +74,82 @@ const givenARequest = ({ user, resourceId }: { user: AccessUserToken | AccessUse
   }
 }
 
+const createLbaOfferFromEntreprise = (entrepriseObj: Awaited<ReturnType<typeof saveEntrepriseUserTest>>) => {
+  const { entreprise, user } = entrepriseObj
+  return createJobPartner({
+    apply_email: user.email,
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    workplace_opco: entreprise.opco,
+    workplace_siret: entreprise.siret,
+    managed_by: user._id,
+  })
+}
+
+const createLbaOfferFromCfa = (cfaObj: Awaited<ReturnType<typeof saveCfaUserTest>>) => {
+  const { entreprise, user, cfa } = cfaObj
+  return createJobPartner({
+    apply_email: user.email,
+    partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+    workplace_opco: entreprise.opco,
+    workplace_siret: entreprise.siret,
+    cfa_siret: cfa.siret,
+    managed_by: user._id,
+  })
+}
+
 describe("authorisationService", async () => {
   let adminUser: Awaited<ReturnType<typeof saveAdminUserTest>>
   let entrepriseUserA: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
   let entrepriseUserB: Awaited<ReturnType<typeof saveEntrepriseUserTest>>
+  let jobEntrepriseA: Awaited<ReturnType<typeof createJobPartner>>
+  let jobEntrepriseB: Awaited<ReturnType<typeof createJobPartner>>
   let cfaUserA: Awaited<ReturnType<typeof saveCfaUserTest>>
   let cfaUserB: Awaited<ReturnType<typeof saveCfaUserTest>>
+  let jobCfaA: Awaited<ReturnType<typeof createJobPartner>>
+  let jobCfaB: Awaited<ReturnType<typeof createJobPartner>>
   let opcoUserA: Awaited<ReturnType<typeof saveOpcoUserTest>>
   let opcoUserB: Awaited<ReturnType<typeof saveOpcoUserTest>>
 
   useMongo(async () => {
     adminUser = await saveAdminUserTest()
-    entrepriseUserA = await saveEntrepriseUserTest({}, {}, { opco: OPCOS_LABEL.AKTO })
-    entrepriseUserB = await saveEntrepriseUserTest({}, {}, { opco: OPCOS_LABEL.EP })
-    cfaUserA = await saveCfaUserTest()
-    cfaUserB = await saveCfaUserTest()
+    entrepriseUserA = await saveEntrepriseUserTest(
+      {},
+      {},
+      {
+        opco: OPCOS_LABEL.AKTO,
+        siret: "12345678900011",
+      }
+    )
+    entrepriseUserB = await saveEntrepriseUserTest(
+      {},
+      {},
+      {
+        opco: OPCOS_LABEL.EP,
+        siret: "12345678900012",
+      }
+    )
+    jobEntrepriseA = await createLbaOfferFromEntreprise(entrepriseUserA)
+    jobEntrepriseB = await createLbaOfferFromEntreprise(entrepriseUserB)
+    cfaUserA = await saveCfaUserTest(
+      {},
+      {
+        siret: "12345678900021",
+      },
+      {
+        siret: "12345678900031",
+      }
+    )
+    cfaUserB = await saveCfaUserTest(
+      {},
+      {
+        siret: "12345678900022",
+      },
+      {
+        siret: "12345678900032",
+      }
+    )
+    jobCfaA = await createLbaOfferFromCfa(cfaUserA)
+    jobCfaB = await createLbaOfferFromCfa(cfaUserB)
     opcoUserA = await saveOpcoUserTest(OPCOS_LABEL.AKTO)
     opcoUserB = await saveOpcoUserTest(OPCOS_LABEL.EP)
   }, "beforeAll")
@@ -185,39 +248,36 @@ describe("authorisationService", async () => {
     })
     describe("job access", () => {
       it("an entreprise user should have access to its jobs", async () => {
-        const { user, recruiter } = entrepriseUserA
-        const [job] = recruiter.jobs
+        const { user } = entrepriseUserA
+        const job = jobEntrepriseA
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).resolves.toBe(undefined)
       })
       it("an entreprise user should NOT have access to another entreprise's jobs", async () => {
         const user = entrepriseUserA.user
-        const { recruiter } = entrepriseUserB
-        const [job] = recruiter.jobs
+        const job = jobEntrepriseB
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).rejects.toThrow("non autorisé")
       })
       it("a cfa user should have access to its jobs", async () => {
-        const { user, recruiter } = cfaUserA
-        const [job] = recruiter.jobs
+        const { user } = cfaUserA
+        const job = jobCfaA
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).resolves.toBe(undefined)
       })
       it("a cfa user should NOT have access to another cfa's job", async () => {
         const user = cfaUserA.user
-        const { recruiter } = cfaUserB
-        const [job] = recruiter.jobs
+        const job = jobCfaB
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).rejects.toThrow("non autorisé")
       })
       it("a cfa user should NOT have access to another entreprise job", async () => {
         const user = cfaUserA.user
-        const { recruiter } = entrepriseUserA
-        const [job] = recruiter.jobs
+        const job = jobEntrepriseA
         await expect(
           authorizationMiddleware(givenARoute({ authStrategy: "cookie-session", resourceType: "job" }), givenARequest({ user: givenACookieUser(user), resourceId: job._id }))
         ).rejects.toThrow("non autorisé")

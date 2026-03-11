@@ -175,7 +175,7 @@ export const zJobsRoutesV3 = {
         auth: "api-apprentissage",
         access: "api-apprentissage:jobs",
         resources: {
-          jobPartner: [{ _id: { type: "params", key: "id" } }],
+          job: [{ _id: { type: "params", key: "id" } }],
         },
       },
       openapi: {
