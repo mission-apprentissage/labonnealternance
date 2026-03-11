@@ -130,7 +130,7 @@ function InformationsCfa() {
             <Box>
               <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en
               apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page{" "}
-              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
+              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" aria-label="Site intercariforef.org - nouvelle fenêtre">
                 référencer son offre de formation
               </CatalogueLink>
             </Box>
