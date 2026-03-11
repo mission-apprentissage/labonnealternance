@@ -1,5 +1,21 @@
 {
-  "LABEL": { "name": ":warning: Pull request title needs formatting", "color": "D93F0B" },
-  "CHECKS": { "prefixes": ["fix: ", "feat: ", "refactor: ", "chore: ", "docs: "], "regexp": "^(fix|feat|refactor|chore|docs)(\\([a-zA-Z0-9_-]+\\))?: .+" },
-  "MESSAGES": { "success": "PR title OK", "failure": "Failing CI test", "notice": "" }
+  "LABEL": {
+    "name": ":warning: Pull request title needs formatting",
+    "color": "D93F0B"
+  },
+  "CHECKS": {
+    "prefixes": [
+      "fix: ",
+      "feat: ",
+      "refactor: ",
+      "chore: ",
+      "docs: "
+    ],
+    "regexp": "^(fix|feat|refactor|chore|docs)(\\([a-zA-Z0-9_-]+\\))?: .+"
+  },
+  "MESSAGES": {
+    "success": "PR title OK",
+    "failure": "Failing CI test",
+    "notice": ""
+  }
 }

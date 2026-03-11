@@ -1,7 +1,13 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.6/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": { "ignoreUnknown": false },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -65,8 +71,16 @@
         "useValidTypeof": "error",
         "useYield": "error"
       },
-      "style": { "noCommonJs": "error", "noNamespace": "error", "useArrayLiterals": "error", "useAsConstAssertion": "error" },
-      "nursery": { "noFloatingPromises": "error", "useExhaustiveSwitchCases": "error" },
+      "style": {
+        "noCommonJs": "error",
+        "noNamespace": "error",
+        "useArrayLiterals": "error",
+        "useAsConstAssertion": "error"
+      },
+      "nursery": {
+        "noFloatingPromises": "error",
+        "useExhaustiveSwitchCases": "error"
+      },
       "suspicious": {
         "noAssignInExpressions": "error",
         "noAsyncPromiseExecutor": "error",
@@ -204,16 +218,38 @@
       "attributePosition": "auto",
       "bracketSpacing": true
     },
-    "globals": ["exports", "require", "module", "__filename", "__dirname"]
+    "globals": [
+      "exports",
+      "require",
+      "module",
+      "__filename",
+      "__dirname"
+    ]
   },
-  "json": { "formatter": { "expand": "never" } },
-  "html": { "formatter": { "indentScriptAndStyle": false, "selfCloseVoidElements": "always" } },
+  "json": {
+    "formatter": {
+      "expand": "always"
+    }
+  },
+  "html": {
+    "formatter": {
+      "indentScriptAndStyle": false,
+      "selfCloseVoidElements": "always"
+    }
+  },
   "overrides": [
     {
-      "includes": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.mts",
+        "**/*.cts"
+      ],
       "linter": {
         "rules": {
-          "complexity": { "noArguments": "error" },
+          "complexity": {
+            "noArguments": "error"
+          },
           "correctness": {
             "noConstAssign": "off",
             "noGlobalObjectCalls": "off",
@@ -224,7 +260,9 @@
             "noUnreachable": "off",
             "noUnreachableSuper": "off"
           },
-          "style": { "useConst": "error" },
+          "style": {
+            "useConst": "error"
+          },
           "suspicious": {
             "noClassAssign": "off",
             "noDuplicateClassMembers": "off",
@@ -241,45 +279,125 @@
         }
       }
     },
-    { "includes": ["**/*.{js,mjs,cjs,ts,tsx,jsx}"], "javascript": { "globals": ["exports"] }, "linter": { "rules": {} } },
     {
-      "includes": ["**/*.{ts,tsx}"],
-      "javascript": { "globals": [] },
+      "includes": [
+        "**/*.{js,mjs,cjs,ts,tsx,jsx}"
+      ],
+      "javascript": {
+        "globals": [
+          "exports"
+        ]
+      },
       "linter": {
-        "rules": {
-          "correctness": { "noUnusedVariables": "error" },
-          "style": { "useImportType": { "level": "error", "options": {} } },
-          "suspicious": { "noExplicitAny": "off", "noTsIgnore": "off" }
-        }
-      }
-    },
-    { "includes": ["server/**/*.{js,mjs,cjs,ts,tsx,jsx}"], "linter": { "rules": {} } },
-    {
-      "includes": ["ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"],
-      "linter": {
-        "rules": {
-          "correctness": { "noNextAsyncClientComponent": "warn" },
-          "performance": { "noImgElement": "warn", "noUnwantedPolyfillio": "warn", "useGoogleFontPreconnect": "warn" },
-          "style": { "noHeadElement": "warn" },
-          "suspicious": { "noDocumentImportInPage": "error", "noHeadImportInDocument": "error", "useGoogleFontDisplay": "warn" }
-        }
+        "rules": {}
       }
     },
     {
-      "includes": ["ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"],
+      "includes": [
+        "**/*.{ts,tsx}"
+      ],
+      "javascript": {
+        "globals": []
+      },
       "linter": {
         "rules": {
-          "correctness": { "noNextAsyncClientComponent": "warn" },
-          "performance": { "noImgElement": "warn", "noUnwantedPolyfillio": "warn", "useGoogleFontPreconnect": "warn" },
-          "style": { "noHeadElement": "warn" },
-          "suspicious": { "noDocumentImportInPage": "error", "noHeadImportInDocument": "error", "useGoogleFontDisplay": "warn" }
+          "correctness": {
+            "noUnusedVariables": "error"
+          },
+          "style": {
+            "useImportType": {
+              "level": "error",
+              "options": {}
+            }
+          },
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noTsIgnore": "off"
+          }
         }
       }
     },
     {
-      "includes": ["ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"],
-      "linter": { "rules": { "correctness": { "useExhaustiveDependencies": "off", "useHookAtTopLevel": "error" }, "nursery": { "noFloatingPromises": "off" } } }
+      "includes": [
+        "server/**/*.{js,mjs,cjs,ts,tsx,jsx}"
+      ],
+      "linter": {
+        "rules": {}
+      }
+    },
+    {
+      "includes": [
+        "ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNextAsyncClientComponent": "warn"
+          },
+          "performance": {
+            "noImgElement": "warn",
+            "noUnwantedPolyfillio": "warn",
+            "useGoogleFontPreconnect": "warn"
+          },
+          "style": {
+            "noHeadElement": "warn"
+          },
+          "suspicious": {
+            "noDocumentImportInPage": "error",
+            "noHeadImportInDocument": "error",
+            "useGoogleFontDisplay": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNextAsyncClientComponent": "warn"
+          },
+          "performance": {
+            "noImgElement": "warn",
+            "noUnwantedPolyfillio": "warn",
+            "useGoogleFontPreconnect": "warn"
+          },
+          "style": {
+            "noHeadElement": "warn"
+          },
+          "suspicious": {
+            "noDocumentImportInPage": "error",
+            "noHeadImportInDocument": "error",
+            "useGoogleFontDisplay": "warn"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "ui/**/*.{js,mjs,cjs,ts,tsx,jsx}"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useExhaustiveDependencies": "off",
+            "useHookAtTopLevel": "error"
+          },
+          "nursery": {
+            "noFloatingPromises": "off"
+          }
+        }
+      }
     }
   ],
-  "assist": { "enabled": true, "actions": { "source": { "organizeImports": "on" } } }
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
 }

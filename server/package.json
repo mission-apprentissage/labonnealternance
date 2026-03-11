@@ -6,7 +6,10 @@
   "author": "Mission apprentissage",
   "license": "MIT",
   "type": "module",
-  "engines": { "node": ">=20", "npm": "please-use-yarn" },
+  "engines": {
+    "node": ">=20",
+    "npm": "please-use-yarn"
+  },
   "scripts": {
     "cli": "LBA_LOG_DESTINATIONS=stderr node dist/index.js",
     "build:dev": "tsup-node",
@@ -103,5 +106,7 @@
     "typescript": "^5.9.3",
     "zod-fixture": "^2.5.2"
   },
-  "files": ["src/**/*"]
+  "files": [
+    "src/**/*"
+  ]
 }
