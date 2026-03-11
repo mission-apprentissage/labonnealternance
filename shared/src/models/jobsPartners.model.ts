@@ -40,6 +40,7 @@ export enum JOBPARTNERS_LABEL {
   ENGAGEMENT_JEUNES = "Engagement Jeunes",
   JOBTEASER = "Jobteaser",
   APEC = "APEC",
+  EMPLOI_INCLUSION = "Les emplois de l'inclusion",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }

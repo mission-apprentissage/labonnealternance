@@ -72,6 +72,7 @@ import entreprisesManagedByCfaModel from "./entreprisesManagedByCfa.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
 import recruiterModel from "./recruiter.model.js"
+import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -107,6 +108,7 @@ const modelDescriptorMap = {
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
+  [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,

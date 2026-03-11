@@ -333,7 +333,7 @@ export async function obfuscateCollections(): Promise<void> {
     collectionsToEmpty.map(async (collectionToEmpty) => {
       logger.info(`dropping ${collectionToEmpty}`)
       await getDatabase()
-        .dropCollection(collectionToEmpty)
+        .dropCollection(collectionToEmpty as string)
         .catch(() => {})
     })
   )
@@ -349,11 +349,8 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateFormations()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
-<<<<<<< lbac-3638-suppression-recruiters
   await obfuscatePartnerJobs()
   await obfuscateEntreprisesManagedByCfa()
-=======
->>>>>>> main
 
   await recreateIndexes({ drop: true })
 }

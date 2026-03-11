@@ -27,6 +27,7 @@ import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPa
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
+import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/importEmploiInclusion"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
@@ -399,6 +400,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processEngagementJeunes,
     description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEmploiInclusion,
+    description: "Import du flux Emploi Inclusion jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: importFichesRncp,
