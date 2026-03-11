@@ -356,7 +356,7 @@ const GuideAlternantPage = () => {
                   Vous avez une question sur le fonctionnement de notre plateforme ?
                 </Typography>
                 <Box>
-                  <DsfrLink href={PAGES.static.faq.getPath()} aria-label="Consulter la foire aux questions">
+                  <DsfrLink href={`${PAGES.static.faq.getPath()}#candidat`} aria-label="Consulter la foire aux questions">
                     Consulter la FAQ
                     <DsfrIcon name="fr-icon-arrow-right-line" size={16} ml={fr.spacing("2v")} marginRight={"0 !important"} />
                   </DsfrLink>

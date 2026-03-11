@@ -159,7 +159,7 @@ export default function Authentification() {
           </Box>
         </Button>
         <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationCfa.getPath())} style={{ width: "100%" }}>
+          <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary" style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
@@ -174,7 +174,7 @@ export default function Authentification() {
           offres d’emploi et de formation sans vous créer de compte.
         </Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.home.getPath())} style={{ width: "100%" }}>
+          <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
