@@ -10,7 +10,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   npm-packages-check:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
       PREV_VERSION: ${{ steps.get-prev-version.outputs.VERSION }}
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v6
@@ -54,8 +54,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Setup Blacksmith Builder
-        uses: useblacksmith/setup-docker-builder@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+          install: true
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -85,7 +88,7 @@ jobs:
   build-ui-recette:
     needs: ["release"]
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v6
@@ -111,8 +114,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Setup Blacksmith Builder
-        uses: useblacksmith/setup-docker-builder@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+          install: true
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -132,7 +138,7 @@ jobs:
   docker-scout-server:
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Authenticate to Docker
         uses: docker/login-action@v3
@@ -159,7 +165,7 @@ jobs:
   docker-scout-ui:
     if: needs.release.outputs.VERSION != needs.release.outputs.PREV_VERSION
     needs: ["release"]
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Authenticate to Docker
         uses: docker/login-action@v3
@@ -201,7 +207,7 @@ jobs:
 
   sentry:
     needs: ["release"]
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v6
