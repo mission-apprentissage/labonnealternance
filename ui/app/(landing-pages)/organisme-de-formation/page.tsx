@@ -1,9 +1,8 @@
 import type { Metadata } from "next"
-
-import { HeroCFA } from "./_components/HeroCFA"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PAGES } from "@/utils/routes.utils"
+import { HeroCFA } from "./_components/HeroCFA"
 
 export const metadata: Metadata = {
   title: PAGES.static.organismeDeFormation.getMetadata().title,

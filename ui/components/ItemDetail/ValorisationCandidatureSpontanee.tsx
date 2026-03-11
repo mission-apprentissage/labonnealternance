@@ -3,12 +3,10 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
-
-import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { PAGES } from "@/utils/routes.utils"
-
 import { classNames } from "@/utils/classNames"
+import { PAGES } from "@/utils/routes.utils"
+import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
 export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {}, onClick }: { overridenQueryParams?: Record<string, string>; onClick?: () => void }) => {
   const router = useRouter()

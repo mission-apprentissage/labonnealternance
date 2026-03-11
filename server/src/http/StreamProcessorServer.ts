@@ -3,12 +3,11 @@ import fastify from "fastify"
 import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { zRoutes } from "shared"
-
+import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
 import type { Server } from "./server"
-import config from "@/config"
-import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
 
 const getHealthCheck = async () => {
   ensureInitialization()

@@ -1,10 +1,9 @@
+import { unauthorized } from "@hapi/boom"
+import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
-
-import { addJob } from "job-processor"
-import { unauthorized } from "@hapi/boom"
-import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
 
 type IModelTraining = {
   label: string
@@ -72,7 +71,20 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
     const jobPartners = await getDbCollection("jobs_partners").findOne({ partner_job_id: job.partner_job_id })
     if (jobPartners) {
       await Promise.all([
-        getDbCollection("jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() } }),
+        getDbCollection("jobs_partners").updateOne(
+          { partner_job_id: job.partner_job_id },
+          {
+            $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
+            $push: {
+              offer_status_history: {
+                date: new Date(),
+                status: JOB_STATUS_ENGLISH.ANNULEE,
+                reason: "classification humaine non conforme",
+                granted_by: "classification.controller",
+              },
+            },
+          }
+        ),
         getDbCollection("computed_jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { business_error: null, errors: [], validated: false } }),
       ])
     } else {

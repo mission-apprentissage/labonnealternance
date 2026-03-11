@@ -1,6 +1,6 @@
-import type { Metadata } from "next"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
+import type { Metadata } from "next"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 

@@ -1,12 +1,12 @@
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isValidEmail } from "@/common/utils/isValidEmail"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import mailer from "@/services/mailer.service"
 import { createRdvaPremiumAffelnetPageLink } from "@/services/appLinks.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import mailer from "@/services/mailer.service"
 
 interface IEtablissementsToInviteToPremium {
   _id: {

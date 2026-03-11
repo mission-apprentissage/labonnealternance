@@ -8,16 +8,15 @@ import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleMa
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { parseEnum, parseEnumOrError } from "shared/utils/index"
-
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
 import { activateRecruiter, archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations } from "./formulaire.service"
+import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser } from "./userWithAccount.service"
-import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,

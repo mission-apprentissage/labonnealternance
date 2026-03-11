@@ -5,11 +5,9 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants/index"
-
-import { CustomTabs } from "./CustomTabs"
-import { InfoCircle } from "@/theme/components/icons"
-
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { InfoCircle } from "@/theme/components/icons"
+import { CustomTabs } from "./CustomTabs"
 
 const panels = [
   {

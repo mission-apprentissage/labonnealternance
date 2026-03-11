@@ -1,7 +1,7 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { fr } from "@codegouvfr/react-dsfr"
 
 const detailActivityProperties = {
   fontSize: "1rem",

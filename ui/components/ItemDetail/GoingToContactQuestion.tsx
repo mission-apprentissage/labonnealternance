@@ -4,9 +4,8 @@ import { Box, Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
 import type { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
-import { SendPlausibleEvent } from "@/utils/plausible"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
 interface GoingToContactQuestionProps {
   kind: LBA_ITEM_TYPE

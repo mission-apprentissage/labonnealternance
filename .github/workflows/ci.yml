@@ -36,7 +36,7 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: "yarn"
@@ -50,8 +50,8 @@ jobs:
       - name: typecheck
         run: yarn typecheck
 
-      - name: lint
-        run: yarn lint
+      - name: lint & format
+        run: yarn check:ci
 
       - name: start mongodb service
         run: |
@@ -60,9 +60,6 @@ jobs:
 
       - name: test
         run: yarn test:ci
-
-      - name: prettier
-        run: yarn prettier:check
 
       - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v5

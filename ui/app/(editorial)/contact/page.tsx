@@ -1,13 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Typography, Box, Grid } from "@mui/material"
+import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { PAGES } from "@/utils/routes.utils"
 import { publicConfig } from "@/config.public"
+import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
   title: PAGES.static.contact.getMetadata().title,

@@ -4,9 +4,8 @@ import path from "node:path"
 import type { Options as CsvParseOptions } from "csv-parse"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
-
-import { FTPClient } from "./ftpUtils"
 import { __dirname } from "./dirname"
+import { FTPClient } from "./ftpUtils"
 
 export const CURRENT_DIR_PATH = __dirname(import.meta.url)
 
@@ -45,6 +44,7 @@ export async function parseCsvContent(content: string, options: CsvParseOptions 
     // Use the readable stream api to consume records
     parser.on("readable", function () {
       let record
+      // biome-ignore lint/suspicious/noAssignInExpressions: migration
       while ((record = parser.read()) !== null) {
         records.push(record)
       }

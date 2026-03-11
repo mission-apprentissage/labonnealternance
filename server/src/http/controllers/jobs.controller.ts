@@ -3,14 +3,11 @@ import { assertUnreachable, zRoutes } from "shared"
 
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-
+import type { Server } from "@/http/server"
 import { getJobsQueryPrivate } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView } from "@/services/lbajob.service"
-import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
-
-import type { Server } from "@/http/server"
-
 import { getPartnerJobByIdV2 } from "@/services/partnerJob.service"
+import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
 
 const config = {
   rateLimit: {

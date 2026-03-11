@@ -1,8 +1,7 @@
-import type { PropsWithChildren } from "react"
-
-import { Box } from "@mui/material"
-import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { fr } from "@codegouvfr/react-dsfr"
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
+import { Box } from "@mui/material"
+import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
 

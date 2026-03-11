@@ -33,8 +33,13 @@ import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
 import opcoModel from "./opco.model.js"
+import rawApecModel from "./rawApec.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
 import rawDecathlonModel from "./rawDecathlon.model.js"
+import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
+import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
+import rawFranceTravailModel from "./rawFranceTravail.model.js"
+import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
 import rawJobteaserModel from "./rawJobteaser.model.js"
 import rawJoobleModel from "./rawJooble.model.js"
@@ -59,8 +64,8 @@ import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
-import seoVilleModel from "./seoVille.model.js"
 import seoMetierModel from "./seoMetier.model.js"
+import seoVilleModel from "./seoVille.model.js"
 import sessionModel from "./session.model.js"
 import sitemapModel from "./sitemap.model.js"
 import trafficSourcesModel from "./trafficSources.model.js"
@@ -68,10 +73,6 @@ import unsubscribedLbaCompanyModel from "./unsubscribedRecruteurLba.model.js"
 import unsubscribeOFModel from "./unsubscribeOF.model.js"
 import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
-import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
-import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
-import rawApecModel from "./rawApec.model.js"
-import rawFranceTravailModel from "./rawFranceTravail.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -107,6 +108,7 @@ const modelDescriptorMap = {
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
+  [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,

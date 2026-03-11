@@ -1,10 +1,9 @@
 import type { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { CollectionName } from "shared/models/models"
-
-import { cleverConnectJobToJobsPartners, ZCleverConnectJob } from "./cleverConnectMapper"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { cleverConnectJobToJobsPartners, ZCleverConnectJob } from "./cleverConnectMapper"
 
 const offerXmlTag = "job"
 

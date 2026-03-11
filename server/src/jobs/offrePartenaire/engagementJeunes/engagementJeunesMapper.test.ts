@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
 import omit from "lodash-es/omit"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { IEngagementJeunesJob } from "./engagementJeunesMapper"
 import { engagementJeunesJobToJobsPartners } from "./engagementJeunesMapper"
 

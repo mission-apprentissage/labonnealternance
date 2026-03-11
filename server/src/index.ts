@@ -4,6 +4,7 @@ config({ path: ".env" })
 config({ path: ".env.local", override: true })
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
+// biome-ignore lint/nursery/noFloatingPromises: migration
 import("./common/sentry/sentry.js")
   .then(async ({ initSentry }) => {
     initSentry()

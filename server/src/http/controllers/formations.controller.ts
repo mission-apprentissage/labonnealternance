@@ -3,8 +3,8 @@ import { zRoutes } from "shared"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
-import { getFormationDetailByCleME, getFormationQuery, getFormationsQuery } from "@/services/formation.service"
 import type { Server } from "@/http/server"
+import { getFormationDetailByCleME, getFormationQuery, getFormationsQuery } from "@/services/formation.service"
 
 const config = {
   rateLimit: {
@@ -47,6 +47,7 @@ export default (server: Server) => {
       }
 
       if (caller && "results" in result) {
+        // biome-ignore lint/nursery/noFloatingPromises: migration
         trackApiCall({
           caller: caller,
           api_path: "formationV1",
@@ -94,6 +95,7 @@ export default (server: Server) => {
       try {
         const result = await getFormationQuery({ id })
         if (caller) {
+          // biome-ignore lint/nursery/noFloatingPromises: migration
           trackApiCall({
             caller,
             api_path: "formationV1/formation",
@@ -105,7 +107,7 @@ export default (server: Server) => {
         return res.send(result)
       } catch (err) {
         if (caller) {
-          trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
+          await trackApiCall({ caller, api_path: "formationV1/formation", response: "Error" })
         }
         throw err
       }

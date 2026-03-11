@@ -7,10 +7,9 @@ import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-
+import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { logger } from "@/common/logger"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
 

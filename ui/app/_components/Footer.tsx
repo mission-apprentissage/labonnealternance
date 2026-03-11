@@ -1,11 +1,9 @@
 import { Typography } from "@mui/material"
-
-import { DsfrHeaderProps } from "./Header"
-import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
-import { PAGES } from "@/utils/routes.utils"
-
+import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { publicConfig } from "@/config.public"
+import { PAGES } from "@/utils/routes.utils"
+import { DsfrHeaderProps } from "./Header"
 
 type LinkItem = {
   linkProps: {
@@ -181,6 +179,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
           <div className="fr-footer__brand fr-enlarge-link">
             <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
             <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
+              {/** biome-ignore lint/performance/noImgElement: migration */}
               <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
             </a>
           </div>

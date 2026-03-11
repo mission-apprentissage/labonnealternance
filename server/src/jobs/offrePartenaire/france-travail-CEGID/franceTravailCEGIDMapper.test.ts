@@ -1,7 +1,6 @@
 import fs from "node:fs/promises"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import omit from "lodash-es/omit"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { IFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
 import { franceTravailCEGIDMapper } from "./franceTravailCEGIDMapper"
 import { parseAgences } from "./mappingAgences"
