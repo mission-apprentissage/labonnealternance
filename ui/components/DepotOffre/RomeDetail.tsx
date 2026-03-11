@@ -4,9 +4,8 @@ import styled from "@emotion/styled"
 import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
 import { useState } from "react"
 import type { IReferentielRomeForJobJson } from "shared"
-
-import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import Badge from "@/app/(espace-pro)/_components/Badge"
+import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { classNames } from "@/utils/classNames"
 
 const CompetenceSelectionDiv = styled.div`

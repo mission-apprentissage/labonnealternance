@@ -1,9 +1,8 @@
 import { notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { zRoutes } from "shared/index"
-
-import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
 
 /**
  * @description Etablissement server.

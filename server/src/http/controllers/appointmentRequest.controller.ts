@@ -2,11 +2,13 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { EApplicantRole } from "shared/constants/rdva"
-import { zRoutes } from "shared/index"
-
 import dayjs from "shared/helpers/dayjs"
+import { zRoutes } from "shared/index"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
+import type { Server } from "@/http/server"
 import { createRdvaShortRecapToken } from "@/services/appLinks.service"
 import * as appointmentService from "@/services/appointment.service"
 import { sendCandidateAppointmentEmail, sendFormateurAppointmentEmail } from "@/services/appointment.service"
@@ -15,9 +17,6 @@ import { findElligibleTrainingForAppointment, getParameterByCleMinistereEducatif
 import mailer from "@/services/mailer.service"
 import { getReferrerByKeyName } from "@/services/referrers.service"
 import * as users from "@/services/user.service"
-import type { Server } from "@/http/server"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 export default (server: Server) => {
   server.post(

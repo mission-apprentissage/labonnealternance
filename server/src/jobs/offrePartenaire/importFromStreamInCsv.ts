@@ -2,11 +2,10 @@ import { pipeline, Writable } from "node:stream"
 
 import { ObjectId } from "mongodb"
 import type { CollectionName } from "shared/models/models"
-
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { parseCsv } from "@/common/utils/fileUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 export const importFromStreamInCsv = async ({
   stream,
@@ -53,6 +52,7 @@ export const importFromStreamInCsv = async ({
           logger.info("Pipeline succeeded.")
           const message = `import ${partnerLabel} terminé : ${offerInsertCount} offres importées`
           logger.info(message)
+          // biome-ignore lint/nursery/noFloatingPromises: migration
           notifyToSlack({
             subject: `import des offres ${partnerLabel} dans raw`,
             message,

@@ -1,12 +1,12 @@
 import { zRoutes } from "shared"
-import { LBA_ITEM_TYPE, allLbaItemType } from "shared/constants/lbaitem"
+import { allLbaItemType, LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import type { Server } from "@/http/server"
 import { getFormationsQuery } from "@/services/formation.service"
 import { getJobsFromApi } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { jobsEtFormationsQueryValidator } from "@/services/queryValidator.service"
-import type { Server } from "@/http/server"
 
 const config = {
   rateLimit: {
@@ -108,6 +108,7 @@ export default (server: Server) => {
 
         const training_count = formations && "results" in formations ? formations.results.length : 0
 
+        // biome-ignore lint/nursery/noFloatingPromises: migration
         trackApiCall({
           caller,
           api_path: "jobEtFormationV1",

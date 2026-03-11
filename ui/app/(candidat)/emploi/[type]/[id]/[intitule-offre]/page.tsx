@@ -3,10 +3,9 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
-import JobDetailRendererClient from "./JobDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { ApiError, apiGet } from "@/utils/api.utils"
+import JobDetailRendererClient from "./JobDetailRendererClient"
 
 // Désactive le streaming SSR pour éviter l'erreur "transformAlgorithm is not a function"
 // avec Next.js 16 quand les connexions sont interrompues (healthchecks, timeouts, etc.)

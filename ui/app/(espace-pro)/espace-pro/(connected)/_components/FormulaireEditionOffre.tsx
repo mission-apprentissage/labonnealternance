@@ -1,5 +1,6 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -10,13 +11,11 @@ import type { IJobJson } from "shared/models/job.model"
 import { JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
-
-import { fr } from "@codegouvfr/react-dsfr"
-import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
-import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { getRomeDetail } from "@/utils/api"
+import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
+import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"

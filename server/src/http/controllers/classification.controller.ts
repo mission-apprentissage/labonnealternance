@@ -1,10 +1,9 @@
+import { unauthorized } from "@hapi/boom"
+import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
-
-import { addJob } from "job-processor"
-import { unauthorized } from "@hapi/boom"
-import type { Server } from "@/http/server"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
 
 type IModelTraining = {
   label: string

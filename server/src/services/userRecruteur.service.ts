@@ -13,13 +13,6 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import { createAuthMagicLink } from "./appLinks.service"
-import { getFormulaireFromUserIdOrError } from "./formulaire.service"
-import mailer from "./mailer.service"
-import type { Organization, UserAndOrganization } from "./organization.service"
-import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
-import { findOrCreateUserWithAccount, isUserDisabled, isUserEmailChecked } from "./userWithAccount.service"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -27,6 +20,12 @@ import config from "@/config"
 import type { RoleManagement360Document } from "@/jobs/metabase/metabaseRoleManagement360"
 import { roleManagement360AggregationStages } from "@/jobs/metabase/metabaseRoleManagement360"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { createAuthMagicLink } from "./appLinks.service"
+import { getFormulaireFromUserIdOrError } from "./formulaire.service"
+import mailer from "./mailer.service"
+import type { Organization, UserAndOrganization } from "./organization.service"
+import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
+import { findOrCreateUserWithAccount, isUserDisabled, isUserEmailChecked } from "./userWithAccount.service"
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { reason, validation_type, granted_by } = entrepriseStatusEvent

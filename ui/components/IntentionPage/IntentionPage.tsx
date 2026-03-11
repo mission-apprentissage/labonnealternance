@@ -2,17 +2,17 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 import { ApplicationIntention, ApplicationIntentionDefaultText } from "shared/constants/application"
-
-import { IntensionPageResult } from "./IntensionPageResult"
-import type { IntentionPageFormValues } from "./IntentionPageForm"
-import { IntentionPageForm } from "./IntentionPageForm"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { MailCard } from "@/components/MailCard"
 import { SuccessCircle } from "@/theme/components/icons"
 import { cancelIntentionComment, getApplicationDataForIntention, sendIntentionComment } from "@/utils/api"
+import { IntensionPageResult } from "./IntensionPageResult"
+import type { IntentionPageFormValues } from "./IntentionPageForm"
+import { IntentionPageForm } from "./IntentionPageForm"
 
 export type IntentionPageProps = {
   company_recruitment_intention: ApplicationIntention

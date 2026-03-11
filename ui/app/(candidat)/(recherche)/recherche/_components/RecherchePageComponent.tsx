@@ -2,10 +2,13 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
+import type { Virtualizer } from "@tanstack/react-virtual"
 import { useRef } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-
-import type { Virtualizer } from "@tanstack/react-virtual"
+import { Footer } from "@/app/_components/Footer"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { CandidatRechercheFilters } from "./CandidatRechercheFilters"
 import { RechercheBackToTopButton } from "./RechercheResultats/RechercheBackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
@@ -14,12 +17,8 @@ import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileF
 import { RechercheMobileToggleMapButton } from "./RechercheResultats/RechercheMobileToggleMapButton"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsList"
-import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 import type { ResultCardData } from "./RechercheResultats/ResultCardData"
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { Footer } from "@/app/_components/Footer"
+import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMap, displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams

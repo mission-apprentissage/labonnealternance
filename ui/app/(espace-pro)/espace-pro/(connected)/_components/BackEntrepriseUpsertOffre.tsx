@@ -2,12 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { ENTREPRISE } from "shared/constants/recruteur"
-
-import UpsertOffre from "./UpsertOffre"
-import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { PAGES } from "@/utils/routes.utils"
+import UpsertOffre from "./UpsertOffre"
 
 export function BackEntrepriseUpsertOffre({ establishment_id, job_id }: { establishment_id: string; job_id?: string }) {
   const router = useRouter()

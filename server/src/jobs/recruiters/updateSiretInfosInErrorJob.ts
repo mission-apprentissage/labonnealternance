@@ -7,18 +7,17 @@ import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import type { EntrepriseData } from "@/services/etablissement.service"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import type { EntrepriseData } from "@/services/etablissement.service"
 import { getEntrepriseDataFromSiret } from "@/services/etablissement.service"
 import { archiveFormulaire, sendMailNouvelleOffre, updateFormulaire } from "@/services/formulaire.service"
-import { setEntrepriseInError } from "@/services/userRecruteur.service"
-import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sendDeactivatedRecruteurMail } from "@/services/roleManagement.service"
+import { setEntrepriseInError } from "@/services/userRecruteur.service"
 
 const updateEntreprisesInfosInError = async () => {
   const entreprises = await getDbCollection("entreprises")

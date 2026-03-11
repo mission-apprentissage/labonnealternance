@@ -1,12 +1,11 @@
 import { ObjectId } from "bson"
-import dayjs from "shared/helpers/dayjs"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type { IEmploiInclusionJob } from "@/common/apis/emploiInclusion/emploi-inclusion.client"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 type IEmploiInclusionPoste = IEmploiInclusionJob["postes"][number]
 

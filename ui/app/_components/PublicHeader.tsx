@@ -1,10 +1,9 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
-
+import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderProps } from "./Header"
-import { PAGES } from "@/utils/routes.utils"
 
 export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import { AccessibilitePage } from "./AccessibilitePage"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
+import { AccessibilitePage } from "./AccessibilitePage"
 
 export const metadata: Metadata = {
   title: PAGES.static.accessibilite.getMetadata().title,

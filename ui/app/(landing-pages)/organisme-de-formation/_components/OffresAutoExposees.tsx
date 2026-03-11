@@ -1,7 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
