@@ -37,6 +37,8 @@ const JeSuisEmployeurPublicPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["je-suis-employeur-public"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["cerfa-apprentissage-et-professionnalisation"], ARTICLES["apprentissage-et-handicap"]]}
+      parentPage={PAGES.static.guideRecruteur}
+      page={PAGES.static.guideRecruteurJeSuisEmployeurPublic}
     >
       <Section title="Démarches à suivre">
         <Paragraph>

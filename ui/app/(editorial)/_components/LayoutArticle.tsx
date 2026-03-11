@@ -3,7 +3,9 @@ import { Box, Divider, Grid, Typography } from "@mui/material"
 import type { ReactNode } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import type { IPage } from "@/utils/routes.utils"
+import { metadata } from "@/app/(editorial)/guide-cfa/decouvrir-l-alternance/page"
+import { SchemaOrg } from "@/components/SchemaOrg"
+import { type IPage, PAGES } from "@/utils/routes.utils"
 import { AllerPlusLoinItem } from "./AllerPlusLoinItem"
 
 export const LayoutArticle = ({
@@ -13,6 +15,8 @@ export const LayoutArticle = ({
   updatedAt,
   children,
   allerPlusLoinItems,
+  parentPage,
+  page,
 }: {
   pages: IPage[]
   title: ReactNode
@@ -26,8 +30,21 @@ export const LayoutArticle = ({
     imageUrl?: string
     path: string
   }>
+  parentPage: IPage
+  page: IPage
 }) => (
   <DefaultContainer sx={{ marginBottom: fr.spacing("10v"), marginTop: fr.spacing("10v") }}>
+    <SchemaOrg
+      type="Article"
+      title={page.getMetadata().title as string}
+      description={page.getMetadata().description}
+      url={page.getPath()}
+      breadcrumbs={[
+        { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
+        { name: parentPage.title, url: parentPage.getPath() },
+        { name: page.title, url: page.getPath() },
+      ]}
+    />
     <Breadcrumb pages={pages} />
     <Grid container spacing={fr.spacing("4v")}>
       <Grid size={{ md: 12, xs: 12 }}>

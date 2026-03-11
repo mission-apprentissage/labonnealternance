@@ -27,6 +27,8 @@ const AProposDesFormationsPage = () => {
       title={ARTICLES["a-propos-des-formations"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["a-propos-des-formations"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantAProposDesFormations}
     >
       <Section title="Vérifiez les résultats de l'établissement">
         <ParagraphList

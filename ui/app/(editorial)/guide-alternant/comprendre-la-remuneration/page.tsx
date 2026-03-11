@@ -31,6 +31,8 @@ const ComprendreLaRemunerationPage = () => {
         ARTICLES["comment-signer-un-contrat-en-alternance"],
         ARTICLES["la-rupture-de-contrat"],
       ]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantComprendreLaRemuneration}
     >
       <Section title="Comprendre la rémunération en alternance">
         <Paragraph>La rémunération minimale en alternance diffère selon le contrat choisi. Deux types de contrats existent :</Paragraph>

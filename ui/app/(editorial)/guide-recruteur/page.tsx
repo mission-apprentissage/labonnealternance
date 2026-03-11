@@ -11,6 +11,7 @@ import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHead
 import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES } from "./const"
 
@@ -23,6 +24,16 @@ const GuideRecruteurPage = () => {
         mb: fr.spacing("6v"),
       }}
     >
+      <SchemaOrg
+        type="WebPage"
+        title={PAGES.static.guideRecruteur.getMetadata().title}
+        description={PAGES.static.guideRecruteur.getMetadata().description}
+        url={PAGES.static.guideRecruteur.getPath()}
+        breadcrumbs={[
+          { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
+          { name: PAGES.static.guideRecruteur.title, url: PAGES.static.guideRecruteur.getPath() },
+        ]}
+      />
       <Breadcrumb pages={[PAGES.static.guideRecruteur]} />
       <DefaultContainer>
         <Box display={{ md: "flex", xs: "none" }}>

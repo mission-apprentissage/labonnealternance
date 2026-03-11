@@ -25,6 +25,8 @@ const PreventionDesRisquesProfessionnelsPourLesApprentisPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["je-suis-employeur-public"], ARTICLES["apprentissage-et-handicap"]]}
+      parentPage={PAGES.static.guideRecruteur}
+      page={PAGES.static.guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis}
     >
       <Section title="Obligations des employeurs d’apprentis">
         <Paragraph>L’employeur a une obligation légale de sécurité envers tous ses salariés, y compris les apprentis. À ce titre, il doit :</Paragraph>

@@ -33,8 +33,8 @@ export const PAGES = {
       title: "Accueil",
       index: true,
       getMetadata: () => ({
-        title: "La bonne alternance - Trouvez l'alternance idéale",
-        description: "Découvrez des offres d’alternance adaptées à votre profil et boostez votre carrière avec La bonne alternance.",
+        title: "La bonne alternance | Trouvez votre formation et emploi en alternance",
+        description: "Recherchez formations et entreprises en alternance. Offres d’emploi, candidatures spontanées et formations près de chez vous. Service public gratuit.",
       }),
     },
     authentification: {
@@ -141,8 +141,8 @@ export const PAGES = {
       title: "Je m'informe sur l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Je m'informe sur l'alternance",
-        description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
+        title: "Guide de l'alternant 2026 | Tout savoir sur l'alternance",
+        description: "Informations, conseils et outils pour réussir votre alternance : contrats, rémunération, aides, formation et recherche d'employeur. Guide complet.",
       }),
     },
     guideAlternantDecouvrirLAlternance: {
@@ -150,8 +150,8 @@ export const PAGES = {
       title: "Découvrir l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Découvrir l'alternance | Guide alternant",
-        description: "Introduction sur le fonctionnement de l'alternance",
+        title: "Découvrir l'alternance | Contrats, conditions et durée",
+        description: "Apprentissage ou professionnalisation : conditions d'accès, durée, rythme, coût de la formation et conditions de travail. Tout comprendre en 5 min.",
       }),
     },
     guideAlternantPreparerSonProjetEnAlternance: {
@@ -159,8 +159,8 @@ export const PAGES = {
       title: "Préparer son projet en alternance",
       index: true,
       getMetadata: () => ({
-        title: "Préparer son projet en alternance | Guide alternant",
-        description: "Découvrez les étapes clés d’un projet en alternance",
+        title: "Préparer son projet en alternance | Les 5 étapes clés",
+        description: "Les 5 étapes pour réussir votre entrée en alternance : choix du métier, du contrat, recherche d’entreprise, de formation et aides disponibles.",
       }),
     },
     guideAlternantSeFaireAccompagner: {
@@ -168,8 +168,8 @@ export const PAGES = {
       title: "Des professionnels pour vous accompagner",
       index: true,
       getMetadata: () => ({
-        title: "Des professionnels pour vous accompagner | Guide alternant",
-        description: "Des acteurs locaux pour accompagner les jeunes dans la recherche d’une formation ou d’un employeur",
+        title: "Accompagnement alternance | Missions locales et mentorat",
+        description: "Missions locales, cellules régionales, mentorat, 1jeune1solution : tous les dispositifs gratuits pour vous aider à trouver votre alternance.",
       }),
     },
     guideAlternantLaRuptureDeContrat: {
@@ -177,8 +177,8 @@ export const PAGES = {
       title: "Rupture d'un contrat d'alternance : guide complet",
       index: true,
       getMetadata: () => ({
-        title: "La rupture d'un contrat d'alternance : guide complet | Guide alternant",
-        description: "Découvrez comment fonctionne la rupture (contrat en apprentissage et contrat de professionnalisation)",
+        title: "Rupture de contrat en alternance | Guide complet 2026",
+        description: "Comment rompre un contrat d'apprentissage ou de professionnalisation ? Procédures, délais, droits et obligations. Guide pratique pour les alternants.",
       }),
     },
     guideAlternantComprendreLaRemuneration: {
@@ -186,8 +186,8 @@ export const PAGES = {
       title: "Comprendre la rémunération en alternance",
       index: true,
       getMetadata: () => ({
-        title: "Comprendre la rémunération en alternance | Guide alternant",
-        description: "Comprendre le calcul de la rémunération pour les alternants",
+        title: "Salaire alternant 2026 | Grilles et barèmes officiels",
+        description: "Barèmes de salaire en apprentissage et professionnalisation 2026. Grilles par âge, diplôme, calcul brut/net et exonérations fiscales.",
       }),
     },
     guideAlternantApprentissageEtHandicap: {
@@ -195,8 +195,8 @@ export const PAGES = {
       title: "Apprentissage & handicap",
       index: true,
       getMetadata: () => ({
-        title: "Apprentissage & handicap | Guide alternant",
-        description: "Pour faciliter la formation du travailleur en situation de handicap",
+        title: "Apprentissage et handicap | Droits, aides et aménagements",
+        description: "Alternance et situation de handicap : conditions d'accès, aménagements de formation, rémunération et aides spécifiques (AGEFIPH, FIPHFP). Guide 2026.",
       }),
     },
     guideAlternantCommentSignerUnContratEnAlternance: {
@@ -204,8 +204,8 @@ export const PAGES = {
       title: "Comment signer un contrat en alternance ?",
       index: true,
       getMetadata: () => ({
-        title: "Comment signer un contrat en alternance ? | Guide alternant",
-        description: "Démarches administratives pour les alternants : le guide",
+        title: "Signer un contrat en alternance | Démarches et Cerfa",
+        description: "Guide complet pour signer votre contrat d'apprentissage ou de professionnalisation : formulaires Cerfa, informations requises et étapes clés.",
       }),
     },
     guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur: {
@@ -213,8 +213,8 @@ export const PAGES = {
       title: "Le rôle et les missions du maître d'apprentissage ou tuteur",
       index: true,
       getMetadata: () => ({
-        title: "Le rôle et les missions du maître d'apprentissage ou tuteur | Guide alternant",
-        description: "Votre guide en entreprise pour monter en compétences ",
+        title: "Maître d'apprentissage et tuteur | Rôle et missions",
+        description: "Quel est le rôle du maître d'apprentissage ou tuteur en alternance ? Conditions, missions d'accompagnement et recours en cas de difficulté.",
       }),
     },
     guideAlternantPreventionDesRisquesProfessionnelsPourLesApprentis: {
@@ -222,8 +222,8 @@ export const PAGES = {
       title: "La prévention des risques professionnels pour les apprentis",
       index: true,
       getMetadata: () => ({
-        title: "La prévention des risques professionnels pour les apprentis | Guide alternant",
-        description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
+        title: "Prévention des risques professionnels | Guide apprentis",
+        description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
       }),
     },
     guideAlternantAProposDesFormations: {
@@ -231,8 +231,8 @@ export const PAGES = {
       title: "À propos des formations",
       index: true,
       getMetadata: () => ({
-        title: "À propos des formations | Guide alternant",
-        description: "Découvrez les différents types de formations en alternance et comment choisir celle qui vous convient.",
+        title: "Bien choisir sa formation en alternance | Conseils pratiques",
+        description: "Taux de réussite, insertion professionnelle, certification Qualiopi : les critères clés pour choisir votre formation en alternance.",
       }),
     },
     guideAlternantConseilsEtAstucesPourTrouverUnEmployeur: {
@@ -240,8 +240,8 @@ export const PAGES = {
       title: "Conseils et astuces pour trouver un employeur",
       index: true,
       getMetadata: () => ({
-        title: "Conseils et astuces pour trouver un employeur | Guide alternant",
-        description: "Découvrez nos conseils et astuces pour trouver un employeur en alternance et réussir votre recherche.",
+        title: "Trouver un employeur en alternance | Conseils et astuces",
+        description: "Salons, candidatures spontanées, CV, préparation aux entretiens : nos conseils pratiques pour décrocher votre contrat en alternance.",
       }),
     },
     guideAlternantLesAidesFinancieresEtMaterielles: {
@@ -249,8 +249,8 @@ export const PAGES = {
       title: "Les aides financières et matérielles pour les alternants",
       index: true,
       getMetadata: () => ({
-        title: "Les aides financières et matérielles pour les alternants | Guide alternant",
-        description: "Découvrez les différentes aides financières et matérielles auxquelles vous pouvez prétendre en tant qu'alternant.",
+        title: "Aides alternant 2026 | Logement, transport et aides financières",
+        description: "APL, Mobili-Jeune, Avance Loca-Pass, aides transport : toutes les aides financières et matérielles pour les alternants. Simulateur inclus.",
       }),
     },
     jeSuisCFA: {
@@ -258,8 +258,8 @@ export const PAGES = {
       title: "Je suis CFA",
       index: true,
       getMetadata: () => ({
-        title: "Je suis CFA - La bonne alternance",
-        description: "Découvrez comment La bonne alternance peut aider votre CFA à trouver des apprentis et à promouvoir vos formations.",
+        title: "CFA et organismes de formation | La bonne alternance",
+        description: "Diffusez gratuitement les offres de vos entreprises partenaires, recevez des candidatures et gérez la carte étudiant des métiers. Service public.",
       }),
     },
     guideCFA: {
@@ -267,8 +267,8 @@ export const PAGES = {
       title: "Je m'informe sur l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Je m'informe sur l'alternance",
-        description: "",
+        title: "Guide CFA | Ressources organismes de formation en alternance",
+        description: "Outils, liens utiles et documents pour les CFA : catalogue des formations, Vade-mecum, Cerfa, guides handicap et aides aux contrats.",
       }),
     },
     guideCFADecouvrirLAlternance: {
@@ -276,8 +276,8 @@ export const PAGES = {
       title: "Découvrir l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Découvrir l'alternance | Guide CFA",
-        description: "",
+        title: "Découvrir l'alternance | Guide CFA et organismes de formation",
+        description: "Comprendre l'alternance côté organisme de formation : contrats, financement OPCO, accompagnement des apprentis et des entreprises.",
       }),
     },
     guideCFAApprentissageEtHandicap: {
@@ -285,8 +285,8 @@ export const PAGES = {
       title: "Apprentissage & handicap",
       index: true,
       getMetadata: () => ({
-        title: "Apprentissage & handicap | Guide CFA",
-        description: "",
+        title: "Apprentissage et handicap | Guide CFA",
+        description: "Accueillir un apprenti en situation de handicap en CFA : adaptations pédagogiques, financements complémentaires et référent handicap.",
       }),
     },
     guideCFALaCarteEtudiantDesMetiers: {
@@ -294,8 +294,8 @@ export const PAGES = {
       title: "La carte étudiant des métiers",
       index: true,
       getMetadata: () => ({
-        title: "La carte étudiant des métiers | Guide CFA",
-        description: "La carte d'étudiant des métiers permet d'ouvrir droit à de nombreuses réductions",
+        title: "Carte étudiant des métiers | Délivrance et avantages",
+        description: "Délivrance de la carte d'étudiant des métiers par les CFA : obligations, délais (30 jours), avantages et réductions pour les alternants.",
       }),
     },
     jeSuisRecruteur: {
@@ -303,8 +303,8 @@ export const PAGES = {
       title: "Je suis recruteur",
       index: true,
       getMetadata: () => ({
-        title: "Je suis recruteur - La bonne alternance",
-        description: "Découvrez comment La bonne alternance peut aider votre entreprise à trouver des apprentis.",
+        title: "Recruteur alternance | Publiez vos offres gratuitement",
+        description: "Diffusez gratuitement vos offres d'alternance sur La bonne alternance, 1jeune1solution et Parcoursup. Recevez des candidatures en quelques clics.",
       }),
     },
     guideRecruteur: {
@@ -312,8 +312,8 @@ export const PAGES = {
       title: "Je m'informe sur l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Je m'informe sur l'alternance",
-        description: "",
+        title: "Guide recruteur alternance 2026 | Ressources employeurs",
+        description: "Informations et outils pour recruter en alternance : contrats, Cerfa, aides à l'embauche, OPCO et prévention des risques. Guide complet employeur.",
       }),
     },
     guideRecruteurDecouvrirLAlternance: {
@@ -321,8 +321,8 @@ export const PAGES = {
       title: "Découvrir l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Découvrir l'alternance | Guide recruteur",
-        description: "La prise en charge financière et les démarches  administratives diffèrent du secteur privé.",
+        title: "Découvrir l'alternance | Guide employeur",
+        description: "Comprendre l'alternance côté employeur : types de contrats, obligations, avantages et démarches pour recruter un alternant.",
       }),
     },
     guideRecruteurApprentissageEtHandicap: {
@@ -330,8 +330,8 @@ export const PAGES = {
       title: "Apprentissage & handicap",
       index: true,
       getMetadata: () => ({
-        title: "Apprentissage & handicap | Guide recruteur",
-        description: "",
+        title: "Recruter un apprenti handicapé | Aides et obligations employeur",
+        description: "Embaucher un apprenti en situation de handicap : aides AGEFIPH/FIPHFP, aménagements de poste, obligations légales et avantages pour l'employeur.",
       }),
     },
     guideRecruteurJeSuisEmployeurPublic: {
@@ -339,8 +339,8 @@ export const PAGES = {
       title: "Je suis employeur public",
       index: true,
       getMetadata: () => ({
-        title: "Je suis employeur public | Guide recruteur",
-        description: "La prise en charge financière et les démarches  administratives diffèrent du secteur privé.",
+        title: "Apprentissage dans la fonction publique | Guide employeur public",
+        description: "Recrutement d'apprentis dans le secteur public : financement, démarches administratives spécifiques et dispositifs de titularisation.",
       }),
     },
     guideRecruteurCerfaApprentissageEtProfessionnalisation: {
@@ -348,17 +348,26 @@ export const PAGES = {
       title: "Cerfa apprentissage et professionnalisation : le guide complet",
       index: true,
       getMetadata: () => ({
-        title: "Cerfa apprentissage et professionnalisation | Guide recruteur",
-        description: "Guide des démarches administratives pour les employeurs",
+        title: "Cerfa apprentissage et professionnalisation | Guide complet 2026",
+        description: "Comment remplir le Cerfa d'apprentissage (n°10103) ou de professionnalisation ? Formulaires, délais OPCO et documents requis. Guide employeur.",
+      }),
+    },
+    guideRecruteurAidesALEmbaucheEnAlternance: {
+      getPath: () => `/guide-recruteur/aides-a-l-embauche-en-alternance` as string,
+      title: "Aides à l'embauche en alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Aides à l'embauche en alternance 2026 | Jusqu'à 6 000 €",
+        description: "Aide unique, aide exceptionnelle jusqu'à 6 000 €, exonérations : toutes les aides financières pour recruter un alternant en 2026.",
       }),
     },
     guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis: {
       getPath: () => `/guide-recruteur/prevention-des-risques-professionnels-pour-les-apprentis` as string,
-      title: "La prévention des risques professionnels pour les apprentis",
+      title: "Prévention des risques professionnels pour les apprentis",
       index: true,
       getMetadata: () => ({
-        title: "La prévention des risques professionnels pour les apprentis | Guide recruteur",
-        description: "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail...",
+        title: "Prévention des risques professionnels | Obligations employeur",
+        description: "Obligations de l'employeur en matière de sécurité des apprentis : DUERP, formation, EPI et encadrement renforcé pour les mineurs.",
       }),
     },
     salaireAlternant: {
@@ -366,8 +375,8 @@ export const PAGES = {
       title: "Salaire alternant",
       index: true,
       getMetadata: () => ({
-        title: "Salaire alternant : simulateur de rémunération - La bonne alternance",
-        description: "Simulez votre rémunération en alternance selon votre âge, le type de contrat et la durée de votre formation.",
+        title: "Simulateur salaire alternant 2026 | Calculez votre rémunération",
+        description: "Simulez gratuitement votre salaire en alternance selon votre âge, contrat (apprentissage ou professionnalisation) et année de formation. Barèmes 2026.",
       }),
     },
     EspaceDeveloppeurs: {

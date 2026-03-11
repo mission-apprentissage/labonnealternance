@@ -26,6 +26,8 @@ const RoleEtMissionsDuMaitreDApprentissageOuTuteurPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["comprendre-la-remuneration"], ARTICLES["la-rupture-de-contrat"], ARTICLES["se-faire-accompagner"]]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur}
     >
       <Section>
         <Paragraph>

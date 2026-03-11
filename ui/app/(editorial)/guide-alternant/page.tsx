@@ -12,6 +12,7 @@ import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHead
 import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES } from "./const"
 
@@ -24,6 +25,16 @@ const GuideAlternantPage = () => {
         mb: fr.spacing("6v"),
       }}
     >
+      <SchemaOrg
+        type="WebPage"
+        title={PAGES.static.guideAlternant.getMetadata().title}
+        description={PAGES.static.guideAlternant.getMetadata().description}
+        url={PAGES.static.guideAlternant.getPath()}
+        breadcrumbs={[
+          { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
+          { name: PAGES.static.guideAlternant.title, url: PAGES.static.guideAlternant.getPath() },
+        ]}
+      />
       <Breadcrumb pages={[PAGES.static.guideAlternant]} />
       <DefaultContainer>
         <Box display={{ md: "flex", xs: "none" }}>

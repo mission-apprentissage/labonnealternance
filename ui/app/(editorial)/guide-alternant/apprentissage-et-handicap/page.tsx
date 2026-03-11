@@ -32,6 +32,8 @@ const ApprentissageEtHandicapPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["apprentissage-et-handicap"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"], ARTICLES["se-faire-accompagner"], ARTICLES["la-rupture-de-contrat"]]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantApprentissageEtHandicap}
     >
       <InfoSection>
         <Box>

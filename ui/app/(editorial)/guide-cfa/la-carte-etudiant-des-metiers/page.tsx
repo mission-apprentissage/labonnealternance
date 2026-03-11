@@ -20,6 +20,8 @@ const LaCarteEtudiantDesMetiersPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["la-carte-etudiant-des-metiers"].updatedAt} />}
       description={<></>}
       allerPlusLoinItems={[]}
+      parentPage={PAGES.static.guideCFA}
+      page={PAGES.static.guideCFALaCarteEtudiantDesMetiers}
     >
       <Section>
         <Paragraph>

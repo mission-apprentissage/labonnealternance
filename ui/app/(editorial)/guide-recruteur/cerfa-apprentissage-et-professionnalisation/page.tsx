@@ -17,6 +17,8 @@ const JeSuisEmployeurPublicPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["cerfa-apprentissage-et-professionnalisation"].updatedAt} />}
       description={<></>}
       allerPlusLoinItems={[]}
+      parentPage={PAGES.static.guideRecruteur}
+      page={PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation}
     >
       <Paragraph>Contenu en cours de rédaction.</Paragraph>
     </LayoutArticle>

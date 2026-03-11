@@ -31,6 +31,8 @@ const SeFaireAccompagnerPage = () => {
         ARTICLES["comment-signer-un-contrat-en-alternance"],
         ARTICLES["la-rupture-de-contrat"],
       ]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantSeFaireAccompagner}
     >
       <Section title="Pourquoi se faire accompagner ?">
         <Paragraph>

@@ -32,6 +32,8 @@ const ApprentissageEtHandicapPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["apprentissage-et-handicap"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["la-carte-etudiant-des-metiers"]]}
+      parentPage={PAGES.static.guideCFA}
+      page={PAGES.static.guideCFAApprentissageEtHandicap}
     >
       <InfoSection>
         <Box>

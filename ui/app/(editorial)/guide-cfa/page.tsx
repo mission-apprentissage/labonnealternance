@@ -10,6 +10,7 @@ import { DocumentGridItem } from "@/app/(editorial)/_components/DocumentGridItem
 import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHeaderIllustration"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 import { ARTICLES } from "./const"
 
@@ -22,6 +23,16 @@ const GuideCFAPage = () => {
         mb: fr.spacing("6v"),
       }}
     >
+      <SchemaOrg
+        type="WebPage"
+        title={PAGES.static.guideCFA.getMetadata().title}
+        description={PAGES.static.guideCFA.getMetadata().description}
+        url={PAGES.static.guideCFA.getPath()}
+        breadcrumbs={[
+          { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
+          { name: PAGES.static.guideCFA.title, url: PAGES.static.guideCFA.getPath() },
+        ]}
+      />
       <Breadcrumb pages={[PAGES.static.guideCFA]} />
       <DefaultContainer>
         <Box display={{ md: "flex", xs: "none" }}>

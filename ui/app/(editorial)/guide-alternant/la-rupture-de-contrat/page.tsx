@@ -17,6 +17,8 @@ const LaRuptureDeContratPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["la-rupture-de-contrat"].updatedAt} />}
       description={<></>}
       allerPlusLoinItems={[]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantLaRuptureDeContrat}
     >
       <Paragraph>Contenu en cours de rédaction.</Paragraph>
     </LayoutArticle>

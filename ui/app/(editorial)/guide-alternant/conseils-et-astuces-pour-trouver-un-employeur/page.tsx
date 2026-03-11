@@ -25,6 +25,8 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
       title={ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur}
     >
       <Section title="Où trouver des entreprises qui recrutent ?">
         <Paragraph>

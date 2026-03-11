@@ -28,6 +28,8 @@ const PreparerSonProjetEnAlternancePage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["preparer-son-projet-en-alternance"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"], ARTICLES["comment-signer-un-contrat-en-alternance"], ARTICLES["se-faire-accompagner"]]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantPreparerSonProjetEnAlternance}
     >
       <Section>
         <Paragraph bold>Les étapes clés :</Paragraph>

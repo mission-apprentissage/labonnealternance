@@ -25,6 +25,8 @@ const LesAidesFinancieresEtMateriellesPage = () => {
       title={ARTICLES["les-aides-financieres-et-materielles"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["les-aides-financieres-et-materielles"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles}
     >
       <Section title="Vous cherchez un logement pour votre alternance ?">
         <Paragraph>Plusieurs solutions et aides existent :</Paragraph>

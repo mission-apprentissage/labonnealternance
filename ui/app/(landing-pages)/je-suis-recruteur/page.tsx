@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.jeSuisRecruteur.getMetadata()
@@ -17,6 +18,16 @@ const JeSuisRecruteurPage = () => {
         mb: fr.spacing("6v"),
       }}
     >
+      <SchemaOrg
+        type="WebPage"
+        title={PAGES.static.jeSuisRecruteur.getMetadata().title}
+        description={PAGES.static.jeSuisRecruteur.getMetadata().description}
+        url={PAGES.static.jeSuisRecruteur.getPath()}
+        breadcrumbs={[
+          { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
+          { name: PAGES.static.jeSuisRecruteur.title, url: PAGES.static.jeSuisRecruteur.getPath() },
+        ]}
+      />
       <Breadcrumb pages={[PAGES.static.jeSuisRecruteur]} />
       <DefaultContainer>
         <Grid container spacing={fr.spacing("4v")}>

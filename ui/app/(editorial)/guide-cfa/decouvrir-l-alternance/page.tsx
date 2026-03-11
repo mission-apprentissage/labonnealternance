@@ -30,6 +30,8 @@ const DecouvrirLAlternancePage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["decouvrir-l-alternance"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["apprentissage-et-handicap"], ARTICLES["la-carte-etudiant-des-metiers"]]}
+      parentPage={PAGES.static.guideCFA}
+      page={PAGES.static.guideCFADecouvrirLAlternance}
     >
       <Section title="Qui peut être alternant ?">
         <Paragraph>Les conditions pour être alternant diffèrent selon le type de contrat choisi.</Paragraph>

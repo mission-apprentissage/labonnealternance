@@ -28,6 +28,8 @@ const CommentSignerUnContratEnAlternancePage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["comment-signer-un-contrat-en-alternance"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"], ARTICLES["la-rupture-de-contrat"], ARTICLES["se-faire-accompagner"]]}
+      parentPage={PAGES.static.guideAlternant}
+      page={PAGES.static.guideAlternantCommentSignerUnContratEnAlternance}
     >
       <Section title="Pour un contrat d'apprentissage">
         <Paragraph>

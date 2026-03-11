@@ -32,6 +32,8 @@ const ApprentissageEtHandicapPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["apprentissage-et-handicap"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"], ARTICLES["je-suis-employeur-public"]]}
+      parentPage={PAGES.static.guideRecruteur}
+      page={PAGES.static.guideRecruteurApprentissageEtHandicap}
     >
       <InfoSection>
         <Box>
