@@ -60,7 +60,11 @@ const MAX_ATTEMPTS = 4
 
 const getEmploiInclusionJobs = async (url: string, attempt = 1): Promise<z.output<typeof ZEmploiInclusionResponse>> => {
   try {
-    const response = await axios.get(url)
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Token ${config.emploi_inclusion.apiKey}`,
+      },
+    })
     return ZEmploiInclusionResponse.parse(response.data)
   } catch (err: any) {
     logger.error({ status: err?.response?.status, data: err?.response?.data, url }, "emploi-inclusion: erreur API")
