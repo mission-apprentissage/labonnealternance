@@ -17,6 +17,7 @@ const JeSuisEmployeurPublicPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["cerfa-apprentissage-et-professionnalisation"].updatedAt} />}
       description={<></>}
       allerPlusLoinItems={[]}
+      sourceAllerPlusLoin="guide-recruteur"
       parentPage={PAGES.static.guideRecruteur}
       page={PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation}
     >

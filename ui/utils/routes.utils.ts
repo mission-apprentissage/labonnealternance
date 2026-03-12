@@ -127,13 +127,31 @@ export const PAGES = {
         description: "Accédez à des guides et outils pratiques pour maximiser vos chances de trouver une alternance et réussir votre parcours.",
       }),
     },
-    carteDEtudiantDesMetiers: {
-      getPath: () => `/carte-d-etudiant-des-metiers` as string,
-      title: "Carte d'étudiant des métiers",
+    guideDecouvrirLAlternance: {
+      getPath: () => `/guide/decouvrir-l-alternance` as string,
+      title: "Découvrir l'alternance",
       index: true,
       getMetadata: () => ({
-        title: "Carte d'étudiant des métiers - La bonne alternance",
-        description: "Téléchargez la carte d'étudiant des métiers",
+        title: "Découvrir l'alternance | Contrats, conditions et durée",
+        description: "Apprentissage ou professionnalisation : conditions d'accès, durée, rythme, coût de la formation et conditions de travail. Tout comprendre en 5 min.",
+      }),
+    },
+    guideApprentissageEtHandicap: {
+      getPath: () => `/guide/apprentissage-et-handicap` as string,
+      title: "Apprentissage & handicap",
+      index: true,
+      getMetadata: () => ({
+        title: "Apprentissage et handicap | Droits, aides et aménagements",
+        description: "Alternance et situation de handicap : conditions d'accès, aménagements de formation, rémunération et aides spécifiques (AGEFIPH, FIPHFP). Guide 2026.",
+      }),
+    },
+    guidePreventionDesRisquesProfessionnelsPourLesApprentis: {
+      getPath: () => `/guide/prevention-des-risques-professionnels-pour-les-apprentis` as string,
+      title: "La prévention des risques professionnels pour les apprentis",
+      index: true,
+      getMetadata: () => ({
+        title: "La prévention des risques professionnels | Guide pour les apprentis, les CFA et les recruteurs",
+        description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
       }),
     },
     guideAlternant: {
@@ -143,15 +161,6 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Guide de l'alternant 2026 | Tout savoir sur l'alternance",
         description: "Informations, conseils et outils pour réussir votre alternance : contrats, rémunération, aides, formation et recherche d'employeur. Guide complet.",
-      }),
-    },
-    guideAlternantDecouvrirLAlternance: {
-      getPath: () => `/guide-alternant/decouvrir-l-alternance` as string,
-      title: "Découvrir l'alternance",
-      index: true,
-      getMetadata: () => ({
-        title: "Découvrir l'alternance | Contrats, conditions et durée",
-        description: "Apprentissage ou professionnalisation : conditions d'accès, durée, rythme, coût de la formation et conditions de travail. Tout comprendre en 5 min.",
       }),
     },
     guideAlternantPreparerSonProjetEnAlternance: {
@@ -190,15 +199,6 @@ export const PAGES = {
         description: "Barèmes de salaire en apprentissage et professionnalisation 2026. Grilles par âge, diplôme, calcul brut/net et exonérations fiscales.",
       }),
     },
-    guideAlternantApprentissageEtHandicap: {
-      getPath: () => `/guide-alternant/apprentissage-et-handicap` as string,
-      title: "Apprentissage & handicap",
-      index: true,
-      getMetadata: () => ({
-        title: "Apprentissage et handicap | Droits, aides et aménagements",
-        description: "Alternance et situation de handicap : conditions d'accès, aménagements de formation, rémunération et aides spécifiques (AGEFIPH, FIPHFP). Guide 2026.",
-      }),
-    },
     guideAlternantCommentSignerUnContratEnAlternance: {
       getPath: () => `/guide-alternant/comment-signer-un-contrat-en-alternance` as string,
       title: "Comment signer un contrat en alternance ?",
@@ -215,15 +215,6 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Maître d'apprentissage et tuteur | Rôle et missions",
         description: "Quel est le rôle du maître d'apprentissage ou tuteur en alternance ? Conditions, missions d'accompagnement et recours en cas de difficulté.",
-      }),
-    },
-    guideAlternantPreventionDesRisquesProfessionnelsPourLesApprentis: {
-      getPath: () => `/guide-alternant/prevention-des-risques-professionnels-pour-les-apprentis` as string,
-      title: "La prévention des risques professionnels pour les apprentis",
-      index: true,
-      getMetadata: () => ({
-        title: "Prévention des risques professionnels | Guide apprentis",
-        description: "Obligations des employeurs, accueil en entreprise et rôle des CFA dans la prévention des risques professionnels pour les apprentis.",
       }),
     },
     guideAlternantAProposDesFormations: {
@@ -262,7 +253,7 @@ export const PAGES = {
         description: "Diffusez gratuitement les offres de vos entreprises partenaires, recevez des candidatures et gérez la carte étudiant des métiers. Service public.",
       }),
     },
-    guideCFA: {
+    guideCfa: {
       getPath: () => `/guide-cfa` as string,
       title: "Je m'informe sur l'alternance",
       index: true,
@@ -271,25 +262,7 @@ export const PAGES = {
         description: "Outils, liens utiles et documents pour les CFA : catalogue des formations, Vade-mecum, Cerfa, guides handicap et aides aux contrats.",
       }),
     },
-    guideCFADecouvrirLAlternance: {
-      getPath: () => `/guide-cfa/decouvrir-l-alternance` as string,
-      title: "Découvrir l'alternance",
-      index: true,
-      getMetadata: () => ({
-        title: "Découvrir l'alternance | Guide CFA et organismes de formation",
-        description: "Comprendre l'alternance côté organisme de formation : contrats, financement OPCO, accompagnement des apprentis et des entreprises.",
-      }),
-    },
-    guideCFAApprentissageEtHandicap: {
-      getPath: () => `/guide-cfa/apprentissage-et-handicap` as string,
-      title: "Apprentissage & handicap",
-      index: true,
-      getMetadata: () => ({
-        title: "Apprentissage et handicap | Guide CFA",
-        description: "Accueillir un apprenti en situation de handicap en CFA : adaptations pédagogiques, financements complémentaires et référent handicap.",
-      }),
-    },
-    guideCFALaCarteEtudiantDesMetiers: {
+    guideCfaLaCarteEtudiantDesMetiers: {
       getPath: () => `/guide-cfa/la-carte-etudiant-des-metiers` as string,
       title: "La carte étudiant des métiers",
       index: true,
@@ -314,24 +287,6 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Guide recruteur alternance 2026 | Ressources employeurs",
         description: "Informations et outils pour recruter en alternance : contrats, Cerfa, aides à l'embauche, OPCO et prévention des risques. Guide complet employeur.",
-      }),
-    },
-    guideRecruteurDecouvrirLAlternance: {
-      getPath: () => `/guide-recruteur/decouvrir-l-alternance` as string,
-      title: "Découvrir l'alternance",
-      index: true,
-      getMetadata: () => ({
-        title: "Découvrir l'alternance | Guide employeur",
-        description: "Comprendre l'alternance côté employeur : types de contrats, obligations, avantages et démarches pour recruter un alternant.",
-      }),
-    },
-    guideRecruteurApprentissageEtHandicap: {
-      getPath: () => `/guide-recruteur/apprentissage-et-handicap` as string,
-      title: "Apprentissage & handicap",
-      index: true,
-      getMetadata: () => ({
-        title: "Recruter un apprenti handicapé | Aides et obligations employeur",
-        description: "Embaucher un apprenti en situation de handicap : aides AGEFIPH/FIPHFP, aménagements de poste, obligations légales et avantages pour l'employeur.",
       }),
     },
     guideRecruteurJeSuisEmployeurPublic: {
@@ -359,15 +314,6 @@ export const PAGES = {
       getMetadata: () => ({
         title: "Aides à l'embauche en alternance 2026 | Jusqu'à 6 000 €",
         description: "Aide unique, aide exceptionnelle jusqu'à 6 000 €, exonérations : toutes les aides financières pour recruter un alternant en 2026.",
-      }),
-    },
-    guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis: {
-      getPath: () => `/guide-recruteur/prevention-des-risques-professionnels-pour-les-apprentis` as string,
-      title: "Prévention des risques professionnels pour les apprentis",
-      index: true,
-      getMetadata: () => ({
-        title: "Prévention des risques professionnels | Obligations employeur",
-        description: "Obligations de l'employeur en matière de sécurité des apprentis : DUERP, formation, EPI et encadrement renforcé pour les mineurs.",
       }),
     },
     salaireAlternant: {
@@ -445,6 +391,15 @@ export const PAGES = {
       title: "Accueil CFA",
       getMetadata: () => ({
         title: "Accueil espace CFA - La bonne alternance",
+      }),
+    },
+    espaceProCfaCarteDEtudiantDesMetiers: {
+      getPath: () => `/espace-pro/cfa/carte-d-etudiant-des-metiers` as string,
+      title: "Carte d'étudiant des métiers",
+      index: true,
+      getMetadata: () => ({
+        title: "Carte d'étudiant des métiers - La bonne alternance",
+        description: "Téléchargez la carte d'étudiant des métiers",
       }),
     },
     backCfaCreationEntreprise: {

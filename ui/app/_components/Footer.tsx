@@ -48,7 +48,7 @@ const linkListContent: LinkCategory[] = [
       },
       {
         linkProps: {
-          href: PAGES.static.guideCFA.getPath(),
+          href: PAGES.static.guideCfa.getPath(),
         },
         text: "Guide CFA",
       },

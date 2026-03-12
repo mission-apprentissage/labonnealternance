@@ -7,14 +7,43 @@ import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
-import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
+import { ARTICLES } from "@/app/(editorial)/guide/const"
+import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternant/const"
+import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
+import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideRecruteurDecouvrirLAlternance.getMetadata()
+export const metadata: Metadata = PAGES.static.guideDecouvrirLAlternance.getMetadata()
 
-const DecouvrirLAlternancePage = () => {
-  const pages = [PAGES.static.guideRecruteur, PAGES.static.guideRecruteurDecouvrirLAlternance]
+const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [
+  ARTICLES_ALTERNANT["preparer-son-projet-en-alternance"],
+  ARTICLES_ALTERNANT["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"],
+  ARTICLES_ALTERNANT["comprendre-la-remuneration"],
+]
+const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [
+  ARTICLES["apprentissage-et-handicap"],
+  ARTICLES_RECRUTEUR["je-suis-employeur-public"],
+  ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
+]
+const ALLER_PLUS_LOIN_ITEMS_CFA = [ARTICLES["apprentissage-et-handicap"], ARTICLES_CFA["la-carte-etudiant-des-metiers"]]
+const ALLER_PLUS_LOIN_ITEMS = [ARTICLES["guide-alternant"], ARTICLES["guide-recruteur"], ARTICLES["guide-cfa"]]
+
+const getAllerPlusLoinItems = (source?: string): typeof ALLER_PLUS_LOIN_ITEMS => {
+  switch (source) {
+    case "guide-alternant":
+      return ALLER_PLUS_LOIN_ITEMS_ALTERNANT
+    case "guide-recruteur":
+      return ALLER_PLUS_LOIN_ITEMS_RECRUTEUR
+    case "guide-cfa":
+      return ALLER_PLUS_LOIN_ITEMS_CFA
+    default:
+      return ALLER_PLUS_LOIN_ITEMS
+  }
+}
+
+const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promise<Record<string, string>> }) => {
+  const pages = [PAGES.static.guideDecouvrirLAlternance]
 
   const descriptionParts = [
     "L’alternance est une modalité de formation qui repose sur un temps de formation en organisme de formation et un temps de formation en entreprise.",
@@ -23,15 +52,16 @@ const DecouvrirLAlternancePage = () => {
     "Il existe deux dispositifs de formation en alternance : le contrat d’apprentissage et le contrat de professionnalisation.",
   ]
 
+  const source = new URLSearchParams(await searchParams).get("source") || undefined
+
   return (
     <LayoutArticle
       pages={pages}
       title={ARTICLES["decouvrir-l-alternance"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["decouvrir-l-alternance"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
-      allerPlusLoinItems={[ARTICLES["apprentissage-et-handicap"], ARTICLES["cerfa-apprentissage-et-professionnalisation"], ARTICLES["je-suis-employeur-public"]]}
-      parentPage={PAGES.static.guideRecruteur}
-      page={PAGES.static.guideRecruteurDecouvrirLAlternance}
+      allerPlusLoinItems={getAllerPlusLoinItems(source)}
+      page={PAGES.static.guideDecouvrirLAlternance}
     >
       <Section title="Qui peut être alternant ?">
         <Paragraph>Les conditions pour être alternant diffèrent selon le type de contrat choisi.</Paragraph>

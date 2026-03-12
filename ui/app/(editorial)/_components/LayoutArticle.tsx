@@ -14,6 +14,7 @@ export const LayoutArticle = ({
   updatedAt,
   children,
   allerPlusLoinItems,
+  sourceAllerPlusLoin,
   parentPage,
   page,
 }: {
@@ -29,7 +30,8 @@ export const LayoutArticle = ({
     imageUrl?: string
     path: string
   }>
-  parentPage: IPage
+  sourceAllerPlusLoin?: string
+  parentPage?: IPage
   page: IPage
 }) => (
   <DefaultContainer sx={{ marginBottom: fr.spacing("10v"), marginTop: fr.spacing("10v") }}>
@@ -40,7 +42,7 @@ export const LayoutArticle = ({
       url={page.getPath()}
       breadcrumbs={[
         { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
-        { name: parentPage.title, url: parentPage.getPath() },
+        ...(parentPage ? [{ name: parentPage.title, url: parentPage.getPath() }] : []),
         { name: page.title, url: page.getPath() },
       ]}
     />
@@ -74,7 +76,7 @@ export const LayoutArticle = ({
         </Grid>
         {allerPlusLoinItems.map((item, index) => (
           <Grid key={index} size={{ md: 4, xs: 12 }}>
-            <AllerPlusLoinItem {...item} />
+            <AllerPlusLoinItem {...item} source={sourceAllerPlusLoin} />
           </Grid>
         ))}
       </Grid>

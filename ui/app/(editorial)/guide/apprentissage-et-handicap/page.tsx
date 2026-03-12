@@ -9,14 +9,43 @@ import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { TableArticle } from "@/app/(editorial)/_components/TableArticle"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
-import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
+import { ARTICLES } from "@/app/(editorial)/guide/const"
+import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternant/const"
+import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
+import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideRecruteurApprentissageEtHandicap.getMetadata()
+export const metadata: Metadata = PAGES.static.guideApprentissageEtHandicap.getMetadata()
 
-const ApprentissageEtHandicapPage = () => {
-  const pages = [PAGES.static.guideRecruteur, PAGES.static.guideRecruteurApprentissageEtHandicap]
+const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [
+  ARTICLES_ALTERNANT["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"],
+  ARTICLES_ALTERNANT["comment-signer-un-contrat-en-alternance"],
+  ARTICLES_ALTERNANT["la-rupture-de-contrat"],
+]
+const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [
+  ARTICLES["decouvrir-l-alternance"],
+  ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"],
+  ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
+]
+const ALLER_PLUS_LOIN_ITEMS_CFA = [ARTICLES["decouvrir-l-alternance"], ARTICLES_CFA["la-carte-etudiant-des-metiers"]]
+const ALLER_PLUS_LOIN_ITEMS = [ARTICLES["guide-alternant"], ARTICLES["guide-recruteur"], ARTICLES["guide-cfa"]]
+
+const getAllerPlusLoinItems = (source?: string): typeof ALLER_PLUS_LOIN_ITEMS => {
+  switch (source) {
+    case "guide-alternant":
+      return ALLER_PLUS_LOIN_ITEMS_ALTERNANT
+    case "guide-recruteur":
+      return ALLER_PLUS_LOIN_ITEMS_RECRUTEUR
+    case "guide-cfa":
+      return ALLER_PLUS_LOIN_ITEMS_CFA
+    default:
+      return ALLER_PLUS_LOIN_ITEMS
+  }
+}
+
+const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Promise<Record<string, string>> }) => {
+  const pages = [PAGES.static.guideAlternant, PAGES.static.guideApprentissageEtHandicap]
 
   const descriptionParts = [
     "En France on estime que 8% de la population est en situation de handicap. Ces personnes rencontrent malheureusement des difficultés multiples pour accéder à un emploi du fait d'une méconnaissance du handicap et d'idées reçues.",
@@ -25,15 +54,16 @@ const ApprentissageEtHandicapPage = () => {
     "Pour faciliter la formation du jeune travailleur en situation de handicap, certaines règles du contrat d’apprentissage sont aménagées comme la durée du contrat, le temps de travail, le déroulement de la formation ou encore la limite d’âge.",
   ]
 
+  const source = new URLSearchParams(await searchParams).get("source") || undefined
+
   return (
     <LayoutArticle
       pages={pages}
       title={ARTICLES["apprentissage-et-handicap"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["apprentissage-et-handicap"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
-      allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"], ARTICLES["je-suis-employeur-public"]]}
-      parentPage={PAGES.static.guideRecruteur}
-      page={PAGES.static.guideRecruteurApprentissageEtHandicap}
+      allerPlusLoinItems={getAllerPlusLoinItems(source)}
+      page={PAGES.static.guideApprentissageEtHandicap}
     >
       <InfoSection>
         <Box>

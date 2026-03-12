@@ -75,7 +75,6 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </Grid>
 
         <AlgoHome />
-        <PromoRessources target="candidat" />
       </Container>
     </>
   )

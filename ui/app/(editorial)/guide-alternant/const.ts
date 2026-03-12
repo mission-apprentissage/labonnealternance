@@ -3,14 +3,6 @@ import { PAGES } from "@/utils/routes.utils"
 export const IMAGE_BASE_PATH = "/images/guides/guide-alternant/"
 
 export const ARTICLES: Record<string, { id: string; title: string; description: string; imageUrl?: string; path: string; updatedAt: string }> = {
-  ["decouvrir-l-alternance"]: {
-    id: "decouvrir-l-alternance",
-    title: PAGES.static.guideAlternantDecouvrirLAlternance.title,
-    description: PAGES.static.guideAlternantDecouvrirLAlternance.getMetadata().description,
-    imageUrl: `${IMAGE_BASE_PATH}decouvrir-l-alternance.svg`,
-    path: PAGES.static.guideAlternantDecouvrirLAlternance.getPath(),
-    updatedAt: "30/01/2026",
-  },
   ["preparer-son-projet-en-alternance"]: {
     id: "preparer-son-projet-en-alternance",
     title: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.title,
@@ -43,14 +35,6 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     path: PAGES.static.guideAlternantComprendreLaRemuneration.getPath(),
     updatedAt: "30/01/2026",
   },
-  ["apprentissage-et-handicap"]: {
-    id: "apprentissage-et-handicap",
-    title: PAGES.static.guideAlternantApprentissageEtHandicap.title,
-    description: PAGES.static.guideAlternantApprentissageEtHandicap.getMetadata().description,
-    imageUrl: `${IMAGE_BASE_PATH}apprentissage-et-handicap.svg`,
-    path: PAGES.static.guideAlternantApprentissageEtHandicap.getPath(),
-    updatedAt: "30/01/2026",
-  },
   ["comment-signer-un-contrat-en-alternance"]: {
     id: "comment-signer-un-contrat-en-alternance",
     title: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.title,
@@ -65,14 +49,6 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}role-et-missions-du-maitre-d-apprentissage-ou-tuteur.svg`,
     path: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getPath(),
-    updatedAt: "30/01/2026",
-  },
-  ["prevention-des-risques-professionnels-pour-les-apprentis"]: {
-    id: "prevention-des-risques-professionnels-pour-les-apprentis",
-    title: PAGES.static.guideAlternantPreventionDesRisquesProfessionnelsPourLesApprentis.title,
-    description: PAGES.static.guideAlternantPreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata().description,
-    imageUrl: `${IMAGE_BASE_PATH}prevention-des-risques-professionnels-pour-les-apprentis.svg`,
-    path: PAGES.static.guideAlternantPreventionDesRisquesProfessionnelsPourLesApprentis.getPath(),
     updatedAt: "30/01/2026",
   },
   ["simulateur"]: {

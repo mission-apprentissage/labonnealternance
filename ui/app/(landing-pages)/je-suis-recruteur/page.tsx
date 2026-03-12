@@ -113,14 +113,24 @@ const JeSuisRecruteurPage = () => {
                   La bonne alternance
                 </DsfrLink>
                 ,{" "}
-                <DsfrLink href="https://www.1jeune1solution.gouv.fr" aria-label="Consulter le site 1jeune1solution">
-                  1jeune1solution
+                <DsfrLink href="https://www.francetravail.fr/accueil/" aria-label="Consulter le site de France Travail">
+                  France Travail
                 </DsfrLink>
                 ,{" "}
-                <DsfrLink href="https://www.parcoursup.fr" aria-label="Consulter le site Parcoursup">
+                <DsfrLink href="https://parcoursup.fr" aria-label="Consulter le site Parcoursup">
                   Parcoursup
+                </DsfrLink>
+                ,{" "}
+                <DsfrLink href="https://www.hellowork.com" aria-label="Consulter le site HelloWork">
+                  HelloWork
                 </DsfrLink>{" "}
-                et bien d’autres.
+                et{" "}
+                <DsfrLink
+                  href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
+                  aria-label="Consulter les autres partenaires de La bonne alternance"
+                >
+                  bien d’autres.
+                </DsfrLink>
               </Typography>
             </Grid>
             <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>
@@ -186,8 +196,8 @@ const JeSuisRecruteurPage = () => {
               <Card
                 title="Je m'informe sur l'alternance"
                 desc="Les réponses à vos questions pour tout savoir sur l’alternance"
-                linkProps={{ href: PAGES.static.guideRecruteurDecouvrirLAlternance.getPath() }}
-                imageUrl="/images/guides/guide-recruteur/decouvrir-l-alternance.svg"
+                linkProps={{ href: `${PAGES.static.guideDecouvrirLAlternance.getPath()}?source=guide-recruteur` }}
+                imageUrl="/images/guides/decouvrir-l-alternance.svg"
                 imageAlt=""
                 horizontal
                 style={{

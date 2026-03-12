@@ -56,12 +56,12 @@ const SeFaireAccompagnerPage = () => {
       <Section title="Les Missions locales : votre premier point de contact">
         <Paragraph>
           Contactez la{" "}
-          <DsfrLink href="https://www.missions-locales.org/" aria-label="Consulter le site des Missions locales">
+          <DsfrLink href="https://www.unml.info/le-reseau/annuaire/" aria-label="Consulter l'annuaire site des Missions locales">
             Mission locale
           </DsfrLink>{" "}
           de votre secteur. Des conseillers vous aideront dans vos recherches d'entreprise.{" "}
-          <DsfrLink href="https://www.missions-locales.org/missions-locales/" aria-label="Trouver ma mission locale">
-            Trouver ma mission locale.
+          <DsfrLink href="https://travail-emploi.gouv.fr/les-missions-locales" aria-label="Découvrir les Missions locales">
+            Découvrir les Missions locales
           </DsfrLink>
         </Paragraph>
         <Paragraph>
@@ -93,8 +93,8 @@ const SeFaireAccompagnerPage = () => {
           listItems={[
             <>
               Vous avez entre 16 et 25 ans ?{" "}
-              <DsfrLink href="https://www.unml.info/le-reseau/annuaire/?pg=1" aria-label="Consulter l'annuaire des Missions locales">
-                Contactez votre mission locale
+              <DsfrLink href="https://www.unml.info/le-reseau/annuaire/" aria-label="Consulter l'annuaire des Missions locales">
+                Contactez votre Mission locale
               </DsfrLink>
             </>,
             <>

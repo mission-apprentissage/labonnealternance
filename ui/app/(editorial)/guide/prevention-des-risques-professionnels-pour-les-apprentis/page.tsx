@@ -5,18 +5,45 @@ import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
-import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
+import { ARTICLES } from "@/app/(editorial)/guide/const"
+import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternant/const"
+import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
+import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata()
+export const metadata: Metadata = PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata()
 
-const PreventionDesRisquesProfessionnelsPourLesApprentisPage = () => {
-  const pages = [PAGES.static.guideRecruteur, PAGES.static.guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis]
+const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [ARTICLES_ALTERNANT["comprendre-la-remuneration"], ARTICLES_ALTERNANT["la-rupture-de-contrat"], ARTICLES_ALTERNANT["se-faire-accompagner"]]
+const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [
+  ARTICLES["apprentissage-et-handicap"],
+  ARTICLES_RECRUTEUR["je-suis-employeur-public"],
+  ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
+]
+const ALLER_PLUS_LOIN_ITEMS_CFA = [ARTICLES["apprentissage-et-handicap"], ARTICLES_CFA["la-carte-etudiant-des-metiers"]]
+const ALLER_PLUS_LOIN_ITEMS = [ARTICLES["guide-alternant"], ARTICLES["guide-recruteur"], ARTICLES["guide-cfa"]]
+
+const getAllerPlusLoinItems = (source?: string): typeof ALLER_PLUS_LOIN_ITEMS => {
+  switch (source) {
+    case "guide-alternant":
+      return ALLER_PLUS_LOIN_ITEMS_ALTERNANT
+    case "guide-recruteur":
+      return ALLER_PLUS_LOIN_ITEMS_RECRUTEUR
+    case "guide-cfa":
+      return ALLER_PLUS_LOIN_ITEMS_CFA
+    default:
+      return ALLER_PLUS_LOIN_ITEMS
+  }
+}
+
+const PreventionDesRisquesProfessionnelsPourLesApprentisPage = async ({ searchParams }: { searchParams: Promise<Record<string, string>> }) => {
+  const pages = [PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis]
 
   const descriptionParts = [
     "En alternant enseignements théoriques et immersion en entreprise, les apprentis acquièrent des compétences professionnelles tout en découvrant les réalités du monde du travail. Toutefois, leur manque d’expérience et leur jeune âge peuvent davantage les exposer aux risques professionnels. La prévention de ces risques est donc un enjeu majeur et les futurs apprentis doivent pouvoir se renseigner sur le sujet.",
     "Les apprentis doivent être conscients des risques liés à la découverte de nouveaux environnements de travail, de machines, d’outils et de substances parfois dangereuses. Une meilleure connaissance des dangers professionnels, une anticipation des situations à risque permet à l’apprenti de prévenir ces risques professionnels.",
   ]
+
+  const source = new URLSearchParams(await searchParams).get("source") || undefined
 
   return (
     <LayoutArticle
@@ -24,9 +51,9 @@ const PreventionDesRisquesProfessionnelsPourLesApprentisPage = () => {
       title={ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
-      allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["je-suis-employeur-public"], ARTICLES["apprentissage-et-handicap"]]}
+      allerPlusLoinItems={getAllerPlusLoinItems(source)}
       parentPage={PAGES.static.guideRecruteur}
-      page={PAGES.static.guideRecruteurPreventionDesRisquesProfessionnelsPourLesApprentis}
+      page={PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis}
     >
       <Section title="Obligations des employeurs d’apprentis">
         <Paragraph>L’employeur a une obligation légale de sécurité envers tous ses salariés, y compris les apprentis. À ce titre, il doit :</Paragraph>

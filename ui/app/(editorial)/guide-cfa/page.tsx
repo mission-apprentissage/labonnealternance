@@ -12,11 +12,12 @@ import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
+import { ARTICLES as ARTICLES_PARTAGES } from "../guide/const"
 import { ARTICLES } from "./const"
 
-export const metadata: Metadata = PAGES.static.guideCFA.getMetadata()
+export const metadata: Metadata = PAGES.static.guideCfa.getMetadata()
 
-const GuideCFAPage = () => {
+const guideCfaPage = () => {
   return (
     <Box
       sx={{
@@ -25,15 +26,15 @@ const GuideCFAPage = () => {
     >
       <SchemaOrg
         type="WebPage"
-        title={PAGES.static.guideCFA.getMetadata().title}
-        description={PAGES.static.guideCFA.getMetadata().description}
-        url={PAGES.static.guideCFA.getPath()}
+        title={PAGES.static.guideCfa.getMetadata().title}
+        description={PAGES.static.guideCfa.getMetadata().description}
+        url={PAGES.static.guideCfa.getPath()}
         breadcrumbs={[
           { name: PAGES.static.home.title, url: PAGES.static.home.getPath() },
-          { name: PAGES.static.guideCFA.title, url: PAGES.static.guideCFA.getPath() },
+          { name: PAGES.static.guideCfa.title, url: PAGES.static.guideCfa.getPath() },
         ]}
       />
-      <Breadcrumb pages={[PAGES.static.guideCFA]} />
+      <Breadcrumb pages={[PAGES.static.guideCfa]} />
       <DefaultContainer>
         <Box display={{ md: "flex", xs: "none" }}>
           <GuideHeaderIllustration />
@@ -74,10 +75,10 @@ const GuideCFAPage = () => {
             }}
           >
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["decouvrir-l-alternance"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["decouvrir-l-alternance"]} source="guide-cfa" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["apprentissage-et-handicap"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["apprentissage-et-handicap"]} source="guide-cfa" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["la-carte-etudiant-des-metiers"]} />
@@ -235,7 +236,7 @@ const GuideCFAPage = () => {
           </Grid>
           <Grid container size={12} sx={{ px: fr.spacing("6v"), py: fr.spacing("4v") }}>
             <Grid size={{ md: 3, xs: 12 }}>
-              <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" aria-hidden={true} />
+              <Image src="/images/guides/recruteur.svg" width={200} height={120} alt="" aria-hidden={true} />
             </Grid>
             <Grid size={{ md: 9, xs: 12 }} sx={{ display: "flex", alignItems: "center" }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
@@ -275,4 +276,4 @@ const GuideCFAPage = () => {
   )
 }
 
-export default GuideCFAPage
+export default guideCfaPage

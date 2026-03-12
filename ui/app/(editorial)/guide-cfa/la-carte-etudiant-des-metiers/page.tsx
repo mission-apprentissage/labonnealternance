@@ -8,10 +8,10 @@ import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideCFALaCarteEtudiantDesMetiers.getMetadata()
+export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
 
 const LaCarteEtudiantDesMetiersPage = () => {
-  const pages = [PAGES.static.guideCFA, PAGES.static.guideCFALaCarteEtudiantDesMetiers]
+  const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaLaCarteEtudiantDesMetiers]
 
   return (
     <LayoutArticle
@@ -20,8 +20,8 @@ const LaCarteEtudiantDesMetiersPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["la-carte-etudiant-des-metiers"].updatedAt} />}
       description={<></>}
       allerPlusLoinItems={[]}
-      parentPage={PAGES.static.guideCFA}
-      page={PAGES.static.guideCFALaCarteEtudiantDesMetiers}
+      parentPage={PAGES.static.guideCfa}
+      page={PAGES.static.guideCfaLaCarteEtudiantDesMetiers}
     >
       <Section>
         <Paragraph>

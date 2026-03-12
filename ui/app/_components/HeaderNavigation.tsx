@@ -54,11 +54,11 @@ const NAV_ITEMS: NavItem[] = [
       },
       {
         text: "Je m'informe sur l'alternance",
-        href: PAGES.static.guideCFA.getPath(),
+        href: PAGES.static.guideCfa.getPath(),
       },
       {
         text: "Je télécharge la carte étudiant des métiers",
-        href: PAGES.static.guideCFALaCarteEtudiantDesMetiers.getPath(),
+        href: PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getPath(),
       },
     ],
   },

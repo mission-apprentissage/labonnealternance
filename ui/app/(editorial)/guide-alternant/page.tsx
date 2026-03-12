@@ -10,6 +10,7 @@ import { AllerPlusLoinItemHorizontal } from "@/app/(editorial)/_components/Aller
 import { Conseil } from "@/app/(editorial)/_components/Conseil"
 import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHeaderIllustration"
 import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
+import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
@@ -75,13 +76,13 @@ const GuideAlternantPage = () => {
             }}
           >
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["decouvrir-l-alternance"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["decouvrir-l-alternance"]} source="guide-alternant" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["preparer-son-projet-en-alternance"]} />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["apprentissage-et-handicap"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["apprentissage-et-handicap"]} source="guide-alternant" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"]} />
@@ -96,7 +97,7 @@ const GuideAlternantPage = () => {
               <AllerPlusLoinItem {...ARTICLES["se-faire-accompagner"]} />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"]} source="guide-alternant" />
             </Grid>
           </Grid>
           <Grid size={12} my={fr.spacing("6v")}>
@@ -351,7 +352,7 @@ const GuideAlternantPage = () => {
                 title="Ressources organisme de formation"
                 desc="Des ressources pour vous et vos alternants"
                 linkProps={{
-                  href: PAGES.static.guideCFA.getPath(),
+                  href: PAGES.static.guideCfa.getPath(),
                 }}
                 enlargeLink
                 shadow

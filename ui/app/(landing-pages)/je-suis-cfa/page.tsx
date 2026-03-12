@@ -199,14 +199,24 @@ const JeSuisCFAPage = () => {
                   La bonne alternance
                 </DsfrLink>
                 ,{" "}
-                <DsfrLink href="https://1jeune1solution.fr" aria-label="Consulter le site 1jeune1solution">
-                  1jeune1solution
+                <DsfrLink href="https://www.francetravail.fr/accueil/" aria-label="Consulter le site de France Travail">
+                  France Travail
                 </DsfrLink>
                 ,{" "}
                 <DsfrLink href="https://parcoursup.fr" aria-label="Consulter le site Parcoursup">
                   Parcoursup
+                </DsfrLink>
+                ,{" "}
+                <DsfrLink href="https://www.hellowork.com" aria-label="Consulter le site HelloWork">
+                  HelloWork
                 </DsfrLink>{" "}
-                et bien d’autres.
+                et{" "}
+                <DsfrLink
+                  href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
+                  aria-label="Consulter les autres partenaires de La bonne alternance"
+                >
+                  bien d’autres.
+                </DsfrLink>
               </Typography>
             </Grid>
             <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>
@@ -275,7 +285,7 @@ const JeSuisCFAPage = () => {
             </Typography>
           </Grid>
           <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }}>
-            <Button linkProps={{ href: PAGES.static.guideCFA.getPath() }} priority="secondary" style={{ margin: "auto" }}>
+            <Button linkProps={{ href: PAGES.static.guideCfa.getPath() }} priority="secondary" style={{ margin: "auto" }}>
               Découvrir toutes les ressources
             </Button>
           </Grid>

@@ -5,6 +5,7 @@ import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
+import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
@@ -36,7 +37,8 @@ const JeSuisEmployeurPublicPage = () => {
       title={ARTICLES["je-suis-employeur-public"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["je-suis-employeur-public"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
-      allerPlusLoinItems={[ARTICLES["decouvrir-l-alternance"], ARTICLES["cerfa-apprentissage-et-professionnalisation"], ARTICLES["apprentissage-et-handicap"]]}
+      allerPlusLoinItems={[ARTICLES_PARTAGES["decouvrir-l-alternance"], ARTICLES["cerfa-apprentissage-et-professionnalisation"], ARTICLES_PARTAGES["apprentissage-et-handicap"]]}
+      sourceAllerPlusLoin="guide-recruteur"
       parentPage={PAGES.static.guideRecruteur}
       page={PAGES.static.guideRecruteurJeSuisEmployeurPublic}
     >

@@ -9,6 +9,7 @@ import { AllerPlusLoinItem } from "@/app/(editorial)/_components/AllerPlusLoinIt
 import { DocumentGridItem } from "@/app/(editorial)/_components/DocumentGridItem"
 import { GuideHeaderIllustration } from "@/app/(editorial)/_components/GuideHeaderIllustration"
 import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
+import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
@@ -74,10 +75,10 @@ const GuideRecruteurPage = () => {
             }}
           >
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["decouvrir-l-alternance"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["decouvrir-l-alternance"]} source="guide-recruteur" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["apprentissage-et-handicap"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["apprentissage-et-handicap"]} source="guide-recruteur" />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["je-suis-employeur-public"]} />
@@ -86,7 +87,7 @@ const GuideRecruteurPage = () => {
               <AllerPlusLoinItem {...ARTICLES["cerfa-apprentissage-et-professionnalisation"]} />
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
-              <AllerPlusLoinItem {...ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"]} />
+              <AllerPlusLoinItem {...ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"]} source="guide-recruteur" />
             </Grid>
           </Grid>
           <Grid
@@ -323,7 +324,7 @@ const GuideRecruteurPage = () => {
                 title="Ressources organismes de formation"
                 desc="Des ressources pour vous et vos alternants."
                 linkProps={{
-                  href: PAGES.static.guideCFA.getPath(),
+                  href: PAGES.static.guideCfa.getPath(),
                 }}
                 enlargeLink
                 shadow
@@ -333,7 +334,7 @@ const GuideRecruteurPage = () => {
           </Grid>
           <Grid container size={12} sx={{ px: fr.spacing("6v"), py: fr.spacing("4v"), my: fr.spacing("6v") }}>
             <Grid size={{ md: 3, xs: 12 }}>
-              <Image src="/images/guides/guide-cfa/recruteur.svg" width={200} height={120} alt="" aria-hidden={true} />
+              <Image src="/images/guides/recruteur.svg" width={200} height={120} alt="" aria-hidden={true} />
             </Grid>
             <Grid size={{ md: 9, xs: 12 }} sx={{ display: "flex", alignItems: "center" }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>

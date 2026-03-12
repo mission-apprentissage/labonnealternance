@@ -8,7 +8,7 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.carteDEtudiantDesMetiers.getMetadata()
+export const metadata: Metadata = PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getMetadata()
 
 const CarteDEtudiantDesMetiersPage = () => (
   <Box
@@ -16,7 +16,7 @@ const CarteDEtudiantDesMetiersPage = () => (
       mb: fr.spacing("8w"),
     }}
   >
-    <Breadcrumb pages={[PAGES.static.carteDEtudiantDesMetiers]} />
+    <Breadcrumb pages={[PAGES.static.espaceProCfaCarteDEtudiantDesMetiers]} />
     <DefaultContainer>
       <Typography component="h1" variant="h1">
         Carte d'étudiant des métiers
