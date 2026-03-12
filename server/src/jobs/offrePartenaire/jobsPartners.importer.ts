@@ -1,32 +1,26 @@
-import type { CronDef } from "job-processor";
-import { processApec } from "./apec/processApec";
-import {
-  processAtlas,
-  processMeteojob,
-  processNosTalentsNosEmplois,
-  processToulouseMetropole,
-  processViteUnEmploi,
-} from "./clever-connect/processCleverConnect";
+import type { CronDef } from "job-processor"
+import { processApec } from "./apec/processApec"
+import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/processCleverConnect"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
-import { processDecathlon } from "./decathlon/importDecathlon";
-import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion";
+import { processDecathlon } from "./decathlon/importDecathlon"
+import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
-import { processFranceTravail } from "./france-travail/processFranceTravail";
-import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID";
-import { processHellowork } from "./hellowork-merge/processHellowork";
-import { processJobteaser } from "./jobteaser/processJobteaser";
+import { processFranceTravail } from "./france-travail/processFranceTravail"
+import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
+import { processHellowork } from "./hellowork-merge/processHellowork"
+import { processJobteaser } from "./jobteaser/processJobteaser"
 // import { processJooble } from "./jooble/processJooble"
-import { processKelio } from "./kelio/processKelio";
-import { processLaposte } from "./laposte/processLaposte";
-import { processLeboncoin } from "./leboncoin/processLeboncoin";
-import { processPass } from "./pass/processPass";
-import { processComputedAndImportToJobPartners } from "./processJobPartners";
-import { processRhAlternance } from "./rh-alternance/processRhAlternance";
+import { processKelio } from "./kelio/processKelio"
+import { processLaposte } from "./laposte/processLaposte"
+import { processLeboncoin } from "./leboncoin/processLeboncoin"
+import { processPass } from "./pass/processPass"
+import { processComputedAndImportToJobPartners } from "./processJobPartners"
+import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 
 const timings = {
   import_source: "0 0 * * *",
   process_computed: "1 0 * * *",
-};
+}
 
 export const importers: Record<string, CronDef> = {
   "Import RHAlternance": {
@@ -163,4 +157,4 @@ export const importers: Record<string, CronDef> = {
     tag: "slave",
     resumable: true,
   },
-};
+}
