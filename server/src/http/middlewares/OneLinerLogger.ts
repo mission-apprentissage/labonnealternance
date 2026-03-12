@@ -46,6 +46,7 @@ export class OneLinerLogger {
   trace(...args) {
     this.log("trace", args)
   }
+  // biome-ignore lint/suspicious/noEmptyBlockStatements: migration
   silent() {}
   child(context: object) {
     const currentPath = Object.entries(context)

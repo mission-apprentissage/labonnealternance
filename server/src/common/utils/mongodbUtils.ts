@@ -6,10 +6,9 @@ import type { IModelDescriptor } from "shared/models/common"
 import type { CollectionName, IDocument } from "shared/models/models"
 import { modelDescriptors } from "shared/models/models"
 import { zodToMongoSchema } from "zod-mongodb-schema"
-
-import { sleep } from "./asyncUtils"
-import config from "@/config"
 import { logger } from "@/common/logger"
+import config from "@/config"
+import { sleep } from "./asyncUtils"
 
 let mongodbClient: MongoClient | null = null
 let mongodbClientState: string | null = null

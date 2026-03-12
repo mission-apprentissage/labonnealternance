@@ -1,10 +1,10 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
-import { describe, expect, it, vi } from "vitest"
 
 import type { IDiagorienteClassificationResponseSchema } from "shared"
+import { describe, expect, it, vi } from "vitest"
 import { getDiagorienteRomeClassification } from "./diagoriente.client"
 import { nockDiagorienteAccessToken, nockDiagorienteRomeClassifier } from "./diagoriente.client.fixture"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 
 useMongo()
 

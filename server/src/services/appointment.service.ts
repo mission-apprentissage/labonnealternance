@@ -1,19 +1,18 @@
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
-import dayjs from "shared/helpers/dayjs"
 import type { IAppointment, IEligibleTrainingsForAppointment, IEtablissement, IUser } from "shared"
 import { mailType } from "shared/constants/appointment"
 import type { ReferrerObject } from "shared/constants/referers"
-
+import dayjs from "shared/helpers/dayjs"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
 import { createRdvaAppointmentIdPageLink } from "./appLinks.service"
 import mailer from "./mailer.service"
 import { getReferrerByKeyName } from "./referrers.service"
 import { getLBALink } from "./trainingLinks.service"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import config from "@/config"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 const createAppointment = async (params: Omit<IAppointment, "_id" | "created_at">) => {
   const appointment: IAppointment = { ...params, _id: new ObjectId(), created_at: new Date() }

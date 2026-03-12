@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Select from "@codegouvfr/react-dsfr/Select"
-import { Box, Stack, Typography, Checkbox, FormControlLabel, CircularProgress } from "@mui/material"
+import { Box, Checkbox, CircularProgress, FormControlLabel, Stack, Typography } from "@mui/material"
 import { captureException } from "@sentry/browser"
 import { useMutation } from "@tanstack/react-query"
 import { Form, FormikContext, useFormik } from "formik"
@@ -12,10 +12,10 @@ import * as Yup from "yup"
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
+import { publicConfig } from "@/config.public"
 import { Warning } from "@/theme/components/icons"
 import { unsubscribeCompany, unsubscribeCompanySirets } from "@/utils/api"
 import { ApiError } from "@/utils/api.utils"
-import { publicConfig } from "@/config.public"
 
 const unsubscribeReasons = [
   "Nous avons déjà trouvé nos alternants pour l’année en cours",

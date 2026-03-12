@@ -1,10 +1,9 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-
-import TrainingDetailRendererClient from "./TrainingDetailRendererClient"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { ApiError, apiGet } from "@/utils/api.utils"
+import TrainingDetailRendererClient from "./TrainingDetailRendererClient"
 
 async function getFormationOption(id: string) {
   try {

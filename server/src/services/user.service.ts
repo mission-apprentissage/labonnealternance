@@ -1,15 +1,13 @@
-import { randomUUID } from "crypto"
-
 import { internal } from "@hapi/boom"
+import { randomUUID } from "crypto"
 import { ObjectId } from "mongodb"
 import type { IUser } from "shared"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import type { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import { getUserRecruteursForManagement } from "./userRecruteur.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
 export const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
   const newUserId = new ObjectId()

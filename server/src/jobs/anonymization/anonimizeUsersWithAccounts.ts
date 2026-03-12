@@ -1,13 +1,12 @@
-import dayjs from "shared/helpers/dayjs"
+import { ObjectId } from "mongodb"
 import type { IRecruiter } from "shared"
+import dayjs from "shared/helpers/dayjs"
 import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 import userWithAccountModel from "shared/models/userWithAccount.model"
-
-import { ObjectId } from "mongodb"
 import { logger } from "@/common/logger"
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 const recruiterProjection: Partial<Record<keyof IRecruiter, 1>> = {
   establishment_id: 1,

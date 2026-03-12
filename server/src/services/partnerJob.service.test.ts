@@ -1,12 +1,11 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
-
-import { getPartnerJobs } from "./partnerJob.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { getPartnerJobs } from "./partnerJob.service"
 
 useMongo()
 

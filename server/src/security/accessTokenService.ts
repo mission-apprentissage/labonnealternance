@@ -8,11 +8,10 @@ import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { Jsonify } from "type-fest"
 import type { AnyZodObject, z } from "zod"
-
-import { controlUserState } from "@/services/login.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
+import { controlUserState } from "@/services/login.service"
 
 // cf https://www.sistrix.com/ask-sistrix/technical-seo/site-structure/url-length-how-long-can-a-url-be
 const INTERNET_EXPLORER_V10_MAX_LENGTH = 2083

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { joinNonNullStrings, toKebabCase, removeAccents } from "./stringUtils.js"
+import { joinNonNullStrings, removeAccents, toKebabCase } from "./stringUtils.js"
 
 describe("stringUtils", () => {
   describe("removeAccents", () => {

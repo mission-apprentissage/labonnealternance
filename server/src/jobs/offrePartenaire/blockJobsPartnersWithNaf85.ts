@@ -1,8 +1,7 @@
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 export const blockJobsPartnersWithNaf85 = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const job = COMPUTED_ERROR_SOURCE.REMOVE_NAF_85

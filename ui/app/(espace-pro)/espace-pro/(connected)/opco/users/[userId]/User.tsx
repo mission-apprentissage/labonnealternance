@@ -4,11 +4,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
-
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 

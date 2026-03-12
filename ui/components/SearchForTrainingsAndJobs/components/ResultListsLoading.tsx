@@ -1,6 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, LinearProgress, Typography } from "@mui/material"
 import React, { useEffect, useState } from "react"
-import { fr } from "@codegouvfr/react-dsfr"
 
 enum LOADING_ILLUSTRATION_TYPES {
   PARTNER = "PARTNER",

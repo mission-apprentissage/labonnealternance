@@ -1,9 +1,9 @@
 import axios from "axios"
 import z from "zod"
-import config from "@/config"
+import { logger } from "@/common/logger"
 
 import { delay } from "@/common/utils/asyncUtils"
-import { logger } from "@/common/logger"
+import config from "@/config"
 
 const ZEmploiInclusionLieu = z.object({
   nom: z.string(),

@@ -1,9 +1,8 @@
 import { zRoutes } from "shared/index"
-
+import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { sendApplicationV2 } from "@/services/application.service"
-import type { Server } from "@/http/server"
-import { getSourceFromCookies } from "@/common/utils/httpUtils"
 
 export default function (server: Server) {
   server.post(

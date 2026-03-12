@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, LinearProgress, Skeleton, Paper } from "@mui/material"
+import { Box, LinearProgress, Paper, Skeleton, Typography } from "@mui/material"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import "./ItemDetailLoading.css"
 

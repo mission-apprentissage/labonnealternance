@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, CircularProgress } from "@mui/material"
+import { Box, CircularProgress, Typography } from "@mui/material"
 import type { AutocompleteInputChangeReason, AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"

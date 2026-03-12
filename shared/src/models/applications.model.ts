@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
-import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, allLbaItemType, allLbaItemTypeOLD } from "../constants/lbaitem.js"
+import { allLbaItemType, allLbaItemTypeOLD, LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
 import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
