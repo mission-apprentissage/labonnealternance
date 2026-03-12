@@ -445,6 +445,49 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
   })
 
+  it("Should Cancel offer when too many applications", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0018"),
+      partner_job_id: "job_dev_009",
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    const helloworkPayload = generateHelloworkApplicationFixture({
+      job: {
+        jobId: "6081289803569600282e0018",
+        jobAtsUrl: "https://ats.company.com/jobs/developer",
+      },
+      applicant: {
+        firstName: "Spam",
+        lastName: "Applicant",
+        email: "spam.applicant@orange.com",
+        phoneNumber: "+33612345678",
+      },
+    })
+
+    // Create 80 applications (max is 80)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const applications = Array.from({ length: 80 }, () =>
+      generateApplicationFixture({
+        applicant_id: new ObjectId(),
+        job_id: new ObjectId("6081289803569600282e0018"),
+        company_siret: null,
+        applicant_message_to_company: "Test application",
+        created_at: new Date(),
+        last_update_at: new Date(),
+      })
+    )
+    await getDbCollection("applications").insertMany(applications)
+
+    await buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)
+
+    const cancelledJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0018") })
+    expect(cancelledJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+  })
+
   it("Should throw error when too many applications per SIRET from caller (Hellowork)", async () => {
     const partnerJob = generateJobsPartnersOfferPrivate({
       _id: new ObjectId("6081289803569600282e0019"),
