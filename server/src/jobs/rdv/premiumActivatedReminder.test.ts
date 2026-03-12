@@ -1,9 +1,8 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { describe, expect, it } from "vitest"
-
-import { getEmailsForAffelnet, getEmailsForParcoursup } from "./premiumActivatedReminder"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { getEmailsForAffelnet, getEmailsForParcoursup } from "./premiumActivatedReminder"
 
 useMongo()
 

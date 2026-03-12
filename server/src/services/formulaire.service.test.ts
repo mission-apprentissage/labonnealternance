@@ -1,3 +1,4 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { removeAccents } from "shared"
@@ -9,10 +10,8 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import type { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
-
-import { createJob } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { createJob } from "./formulaire.service"
 
 useMongo()
 

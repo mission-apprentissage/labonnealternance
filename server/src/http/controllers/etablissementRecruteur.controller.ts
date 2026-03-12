@@ -1,19 +1,21 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import type { IEntreprise } from "shared"
-import { assertUnreachable, toPublicUser, TrafficType, zRoutes } from "shared"
+import { assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession } from "@/common/utils/session.service"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+import type { Server } from "@/http/server"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -39,10 +41,6 @@ import {
   updateLastConnectionDate,
 } from "@/services/userRecruteur.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
-
-import { notifyToSlack } from "@/common/utils/slackUtils"
-import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
-import type { Server } from "@/http/server"
 
 export default (server: Server) => {
   /**

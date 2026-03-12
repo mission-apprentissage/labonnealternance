@@ -1,8 +1,7 @@
 import { notFound } from "@hapi/boom"
 import { zRoutes } from "shared/index"
-
-import { getRomesAndLabelsFromTitleQuery } from "@/services/metiers.service"
 import type { Server } from "@/http/server"
+import { getRomesAndLabelsFromTitleQuery } from "@/services/metiers.service"
 import { getRomeDetailsFromDB } from "@/services/rome.service"
 
 /**

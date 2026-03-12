@@ -7,6 +7,7 @@ import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
 import type { Server } from "@/http/server"
 import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 import {
   createJobOffer,
   findJobOpportunityById,
@@ -19,7 +20,6 @@ import {
   upsertJobOffer,
   upsertJobsPartnersMulti,
 } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
-import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
 const config = {
   rateLimit: {

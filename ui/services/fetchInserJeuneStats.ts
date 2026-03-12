@@ -1,7 +1,6 @@
 import type { ILbaItemFormation2Json } from "shared"
-
-import { logError } from "@/utils/tools"
 import { publicConfig } from "@/config.public"
+import { logError } from "@/utils/tools"
 
 const baseUrl = publicConfig.apiEndpoint
 

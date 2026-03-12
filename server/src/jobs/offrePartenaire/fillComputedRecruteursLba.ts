@@ -1,7 +1,7 @@
 import type { Filter } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillEntrepriseEngagementComputedJobsPartners } from "./fillEntrepriseEngagementComputedJobsPartners"
@@ -13,7 +13,6 @@ import {
   removeUnsubscribedRecruteursLbaFromComputedJobPartners,
 } from "./recruteur-lba/importRecruteursLbaRaw"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const computedJobFilter: Filter<IComputedJobsPartners> = {
   partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,

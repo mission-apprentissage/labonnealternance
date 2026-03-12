@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import CreationWithOriginPage from "./CreationWithOriginPage"
 import { PAGES } from "@/utils/routes.utils"
+import CreationWithOriginPage from "./CreationWithOriginPage"
 
 export const metadata: Metadata = {
   title: PAGES.static.espaceProCreationEntreprise.getMetadata().title,

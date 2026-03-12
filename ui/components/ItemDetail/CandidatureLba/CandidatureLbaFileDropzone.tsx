@@ -1,10 +1,10 @@
-import { Box, Button, Typography, CircularProgress } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Button, CircularProgress, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
 import { useState } from "react"
 import type { DropzoneOptions } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
-import { fr } from "@codegouvfr/react-dsfr"
 
 const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(

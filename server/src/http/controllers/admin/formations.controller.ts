@@ -1,8 +1,7 @@
 import { badRequest } from "@hapi/boom"
 import { zRoutes } from "shared/index"
-
-import { getCatalogueFormations } from "@/services/catalogue.service"
 import type { Server } from "@/http/server"
+import { getCatalogueFormations } from "@/services/catalogue.service"
 
 /**
  * @description Formations server.

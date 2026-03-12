@@ -1,9 +1,8 @@
-import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
-
 import type { Filter } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { buildLbaUrlFromJob } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
+import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 const sourceFields = ["workplace_siret", "_id", "partner_label", "offer_title", "workplace_naf_label"] as const satisfies (keyof IJobsPartnersOfferPrivate)[]
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import RessourcePage from "./RessourcePage"
 import { PAGES } from "@/utils/routes.utils"
+import RessourcePage from "./RessourcePage"
 
 export const metadata: Metadata = {
   title: PAGES.static.ressources.getMetadata().title,

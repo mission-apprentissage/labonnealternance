@@ -1,7 +1,6 @@
 import { zRoutes } from "shared/index"
-
-import type { Server } from "@/http/server"
 import config from "@/config"
+import type { Server } from "@/http/server"
 
 export default (server: Server) => {
   server.get(

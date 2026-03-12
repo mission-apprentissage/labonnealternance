@@ -47,7 +47,7 @@ on:
 jobs:
   version:
     name: Get Version
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
     steps:
@@ -71,7 +71,7 @@ jobs:
           APP_VERSION: ${{ inputs.app_version }}
 
   npm-packages-check:
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
     if: ${{ success() }}
     needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
-    runs-on: blacksmith-4vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
       - name: Notify new deployment on Slack
         uses: ravsamhq/notify-slack-action@v2

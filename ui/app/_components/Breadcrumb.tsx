@@ -1,9 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Breadcrumb as DSFRBreadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb"
-
-import DefaultContainer from "./Layout/DefaultContainer"
 import type { IPage } from "@/utils/routes.utils"
 import { PAGES } from "@/utils/routes.utils"
+import DefaultContainer from "./Layout/DefaultContainer"
 
 export function Breadcrumb({ pages }: { pages: IPage[] }) {
   const rest = [...pages]

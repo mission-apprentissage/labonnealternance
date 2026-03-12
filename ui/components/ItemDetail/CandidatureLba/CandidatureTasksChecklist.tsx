@@ -1,11 +1,11 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import styled from "@emotion/styled"
-import { Box, Checkbox, Typography, FormControlLabel } from "@mui/material"
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material"
 import { AnimatePresence, domAnimation, LazyMotion } from "motion/react"
 import * as motion from "motion/react-m"
 import Image from "next/image"
 import { useState } from "react"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-import { fr } from "@codegouvfr/react-dsfr"
 
 const OffreSpontaneTasks = [
   "je me suis renseigné·e sur l'entreprise (son domaine activité, ses valeurs, ...)",

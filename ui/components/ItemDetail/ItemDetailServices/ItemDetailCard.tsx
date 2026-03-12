@@ -1,7 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
 export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaItemJobsGlobal }) {

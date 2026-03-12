@@ -3,14 +3,13 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useCallback } from "react"
-
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { SendPlausibleEvent } from "@/utils/plausible"
 import { RechercheElligibleHandicapCheckbox } from "./RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheNiveauSelect } from "./RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelect } from "./RechercheInputs/RechercheRayonSelect"
 import { RechercheToggleMap } from "./RechercheInputs/RechercheToggleMap"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
-import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { SendPlausibleEvent } from "@/utils/plausible"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const { displayMap, diploma, radius, elligibleHandicapFilter } = rechercheParams
