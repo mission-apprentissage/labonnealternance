@@ -14,6 +14,6 @@ export default {
     [{ "job.reference": 1 }, {}],
     [{ ref_start: 1 }, {}],
   ],
-  collectionName: "raw_hellowork",
+  collectionName: "raw_hellowork_buddi",
   authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor
