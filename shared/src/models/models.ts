@@ -73,6 +73,7 @@ import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
+import rawHelloWorkBuddiModel from "./rawHelloWorkBuddi.model.js"
 
 const modelDescriptorMap = {
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
@@ -147,6 +148,7 @@ const modelDescriptorMap = {
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [seoMetierModel.collectionName]: seoMetierModel,
+  [rawHelloWorkBuddiModel.collectionName]: rawHelloWorkBuddiModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

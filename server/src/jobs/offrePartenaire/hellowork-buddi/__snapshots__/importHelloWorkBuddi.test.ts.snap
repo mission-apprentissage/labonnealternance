@@ -1,0 +1,243 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importHelloWorkBuddi > should test the import of hellowork Buddi data into computed_job_partners 1`] = `
+[
+  {
+    "apply_email": "apply.82788-F1vycE.bonnealternance@apply-talentdetection.com",
+    "apply_phone": null,
+    "apply_url": null,
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2026-01-15T07:54:45.000Z,
+    "offer_description": "## La mission
+Pour un restaurant partenaire spécialisé dans la restauration rapide de burgers, IDMN recrute un·e Équipier·ère Polyvalent·e de Restauration en alternance.
+
+Les missions du poste
+
+- Accueillir, servir et conseiller les clients
+- Participer à la préparation des burgers et des accompagnements selon les standards de l'établissement
+- Assurer la cuisson, l'assemblage et l'emballage des produits
+- Gérer la mise en place et le réassort des postes de travail
+- Participer à l'encaissement et au service en salle
+- Garantir la propreté du comptoir, de la salle et des espaces communs
+- Respecter strictement les règles d'hygiène, de sécurité et de qualité&nbsp;
+Tu veux apprendre un vrai métier et découvrir le fonctionnement d'un grand restaurant de burgers ?
+Rejoins l'IDMN et deviens Équipier·ère Polyvalent·e de Restauration en alternance !
+Se former en alternance
+
+- 1 jour en formation, 4 jours en entreprise
+- Entrées possibles toute l'année
+- Une montée en compétences rapide grâce à la pratique
+- La possibilité de décrocher un diplôme tout en étant rémunéré(e)
+
+Dans notre centre, tu es accompagné(e), formé(e) et préparé(e) pour réussir dans le secteur du commerce et du service.",
+    "offer_desired_skills": [
+      "- Tu souhaites préparer un CAP en alternance
+- Dynamique, motivé·e et impliqué·e
+- À l'aise avec le contact client et le travail en équipe
+- Rigoureux·se, réactif·ve et prêt·e à suivre des process précis
+- Une première expérience en restauration serait un plus
+Avec l'IDMN, tu ne fais pas qu'obtenir un diplôme : tu deviens un futur professionnel, accompagné pas à pas vers la réussite.",
+    ],
+    "offer_expiration": 2026-03-15T07:54:45.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "?????ALTERNANCE - Équipier·ère Polyvalent·e de Restauration",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "3747976/27722448AQPDR/59M",
+    "partner_label": "Hellowork buddi",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "La Chapelle-d'Armentières",
+    "workplace_address_label": "La Chapelle-d'Armentières 59930",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "59930",
+    "workplace_brand": null,
+    "workplace_description": "Nous sommes spécialisé dans la formation par apprentissage sur des titres professionnels diplômants du Ministère du travail de niveau III, Niveau V (CAP, Bac, Bac +2) et NIVEAU VI (RM2C Bachelor) dans les domaines de la vente, Management, Commerce, Assistanat commercial et Restauration.",
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Institut des Métiers Network - Lille",
+    "workplace_opco": null,
+    "workplace_siret": "81272495300029",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_email": "apply.82788-KU4bvR.bonnealternance@apply-talentdetection.com",
+    "apply_phone": null,
+    "apply_url": null,
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2026-01-15T07:54:36.000Z,
+    "offer_description": "## La mission
+Pour un restaurant partenaire spécialisé dans la restauration rapide de burgers, IDMN recrute un·e Équipier·ère Polyvalent·e de Restauration en alternance.
+
+Les missions du poste
+
+- Accueillir, servir et conseiller les clients
+- Participer à la préparation des burgers et des accompagnements selon les standards de l'établissement
+- Assurer la cuisson, l'assemblage et l'emballage des produits
+- Gérer la mise en place et le réassort des postes de travail
+- Participer à l'encaissement et au service en salle
+- Garantir la propreté du comptoir, de la salle et des espaces communs
+- Respecter strictement les règles d'hygiène, de sécurité et de qualité&nbsp;
+Tu veux apprendre un vrai métier et découvrir le fonctionnement d'un grand restaurant de burgers ?
+Rejoins l'IDMN et deviens Équipier·ère Polyvalent·e de Restauration en alternance !
+Se former en alternance
+
+- 1 jour en formation, 4 jours en entreprise
+- Entrées possibles toute l'année
+- Une montée en compétences rapide grâce à la pratique
+- La possibilité de décrocher un diplôme tout en étant rémunéré(e)
+
+Dans notre centre, tu es accompagné(e), formé(e) et préparé(e) pour réussir dans le secteur du commerce et du service.",
+    "offer_desired_skills": [
+      "- Tu souhaites préparer un CAP en alternance
+- Dynamique, motivé·e et impliqué·e
+- À l'aise avec le contact client et le travail en équipe
+- Rigoureux·se, réactif·ve et prêt·e à suivre des process précis
+- Une première expérience en restauration serait un plus
+Avec l'IDMN, tu ne fais pas qu'obtenir un diplôme : tu deviens un futur professionnel, accompagné pas à pas vers la réussite.",
+    ],
+    "offer_expiration": 2026-03-15T07:54:36.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "?????ALTERNANCE - Équipier·ère Polyvalent·e de Restauration",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "3747982/27722432AQPDR/59M",
+    "partner_label": "Hellowork buddi",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Leers",
+    "workplace_address_label": "Leers 59115",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "59115",
+    "workplace_brand": null,
+    "workplace_description": "Nous sommes spécialisé dans la formation par apprentissage sur des titres professionnels diplômants du Ministère du travail de niveau III, Niveau V (CAP, Bac, Bac +2) et NIVEAU VI (RM2C Bachelor) dans les domaines de la vente, Management, Commerce, Assistanat commercial et Restauration.",
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Institut des Métiers Network - Lille",
+    "workplace_opco": null,
+    "workplace_siret": "81272495300029",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_email": "apply.82788-1pGwj1.bonnealternance@apply-talentdetection.com",
+    "apply_phone": null,
+    "apply_url": null,
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_start": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_creation": 2026-01-15T07:54:18.000Z,
+    "offer_description": "## La mission
+Pour un restaurant partenaire spécialisé dans la restauration rapide de burgers, IDMN recrute un·e Équipier·ère Polyvalent·e de Restauration en alternance.
+
+Les missions du poste
+
+- Accueillir, servir et conseiller les clients
+- Participer à la préparation des burgers et des accompagnements selon les standards de l'établissement
+- Assurer la cuisson, l'assemblage et l'emballage des produits
+- Gérer la mise en place et le réassort des postes de travail
+- Participer à l'encaissement et au service en salle
+- Garantir la propreté du comptoir, de la salle et des espaces communs
+- Respecter strictement les règles d'hygiène, de sécurité et de qualité&nbsp;
+Tu veux apprendre un vrai métier et découvrir le fonctionnement d'un grand restaurant de burgers ?
+Rejoins l'IDMN et deviens Équipier·ère Polyvalent·e de Restauration en alternance !
+Se former en alternance
+
+- 1 jour en formation, 4 jours en entreprise
+- Entrées possibles toute l'année
+- Une montée en compétences rapide grâce à la pratique
+- La possibilité de décrocher un diplôme tout en étant rémunéré(e)
+
+Dans notre centre, tu es accompagné(e), formé(e) et préparé(e) pour réussir dans le secteur du commerce et du service.",
+    "offer_desired_skills": [
+      "- Tu souhaites préparer un CAP en alternance
+- Dynamique, motivé·e et impliqué·e
+- À l'aise avec le contact client et le travail en équipe
+- Rigoureux·se, réactif·ve et prêt·e à suivre des process précis
+- Une première expérience en restauration serait un plus
+Avec l'IDMN, tu ne fais pas qu'obtenir un diplôme : tu deviens un futur professionnel, accompagné pas à pas vers la réussite.",
+    ],
+    "offer_expiration": 2026-03-15T07:54:18.000Z,
+    "offer_multicast": false,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": null,
+    "offer_title": "?????ALTERNANCE - Équipier·ère Polyvalent·e de Restauration",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [],
+    "partner_job_id": "3747989/27722418AQPDR/59M",
+    "partner_label": "Hellowork buddi",
+    "updated_at": 2024-07-21T02:49:06.000Z,
+    "validated": false,
+    "workplace_address_city": "Marcq-en-Barœul",
+    "workplace_address_label": "Marcq-en-Barœul 59700",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": "59700",
+    "workplace_brand": null,
+    "workplace_description": "Nous sommes spécialisé dans la formation par apprentissage sur des titres professionnels diplômants du Ministère du travail de niveau III, Niveau V (CAP, Bac, Bac +2) et NIVEAU VI (RM2C Bachelor) dans les domaines de la vente, Management, Commerce, Assistanat commercial et Restauration.",
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": null,
+    "workplace_naf_label": null,
+    "workplace_name": "Institut des Métiers Network - Lille",
+    "workplace_opco": null,
+    "workplace_siret": "81272495300029",
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;

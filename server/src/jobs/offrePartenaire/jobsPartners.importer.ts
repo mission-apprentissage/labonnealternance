@@ -2,7 +2,6 @@ import type { CronDef } from "job-processor"
 
 import { processMeteojob, processAtlas, processViteUnEmploi, processNosTalentsNosEmplois, processToulouseMetropole } from "./clever-connect/processCleverConnect"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
-import { processHellowork } from "./hellowork/processHellowork"
 import { processJobteaser } from "./jobteaser/processJobteaser"
 // import { processJooble } from "./jooble/processJooble"
 import { processKelio } from "./kelio/processKelio"
@@ -16,6 +15,7 @@ import { processDecathlon } from "./decathlon/importDecathlon"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 import { processApec } from "./apec/processApec"
 import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
+import { processHellowork } from "./hellowork-merge/processHellowork"
 
 const timings = {
   import_source: "0 0 * * *",
