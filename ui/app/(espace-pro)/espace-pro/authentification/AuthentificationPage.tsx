@@ -41,7 +41,7 @@ export default function Authentification() {
           case "DISABLED":
             setFieldError(
               "email",
-              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=Compte CFA La bonne alternance désactivé">support</a>`
+              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Compte CFA La bonne alternance désactivé")}">support</a>`
             )
             setErrorMessage("Le compte utilisateur est désactivé")
             break
