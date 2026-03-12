@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
 import omit from "lodash-es/omit"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { helloWorkBuddiJobToJobsPartners } from "./helloWorkBuddiMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")

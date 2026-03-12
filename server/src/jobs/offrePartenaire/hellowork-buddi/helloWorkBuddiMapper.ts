@@ -1,13 +1,12 @@
 import { ObjectId } from "mongodb"
 import { joinNonNullStrings } from "shared"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
-
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZHelloWorkBuddiJob = z

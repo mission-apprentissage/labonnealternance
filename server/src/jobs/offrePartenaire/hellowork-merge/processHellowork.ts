@@ -1,6 +1,6 @@
-import { deduplicateHellowork } from "./deduplicateHellowork"
-import { importHelloWorkBuddiRaw, importHelloWorkBuddiToComputed } from "@/jobs/offrePartenaire/hellowork-buddi/importHelloWorkBuddi"
 import { importHelloWorkRaw, importHelloWorkToComputed } from "@/jobs/offrePartenaire/hellowork/importHelloWork"
+import { importHelloWorkBuddiRaw, importHelloWorkBuddiToComputed } from "@/jobs/offrePartenaire/hellowork-buddi/importHelloWorkBuddi"
+import { deduplicateHellowork } from "./deduplicateHellowork"
 
 export const processHellowork = async () => {
   await importHelloWorkRaw()
