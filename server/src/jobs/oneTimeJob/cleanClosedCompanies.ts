@@ -21,7 +21,7 @@ interface CsvRow {
 }
 
 export const cleanClosedCompanies = async (csvPath?: string) => {
-  const filePath = csvPath ?? join(__dirname, "companies-to-close.csv")
+  const filePath = typeof csvPath === "string" ? csvPath : join(__dirname, "companies-to-close.csv")
   const content = readFileSync(filePath, "utf-8")
   const rows: CsvRow[] = parse(content, { columns: true, skip_empty_lines: true })
 
