@@ -30,18 +30,15 @@ function isLinkActive(pathname: string, href: string): boolean {
   if (href === "/") {
     return pathname === "/"
   }
-  return pathname.startsWith(href)
+  return pathname.endsWith(href)
 }
 
 export function ConnectedHeaderNavigation() {
   const pathname = usePathname()
 
   const items = CFA_NAV_ITEMS.map((item) => ({
-    text: item.text,
-    linkProps: {
-      href: item.linkProps.href,
-      isActive: isLinkActive(pathname, item.linkProps.href),
-    },
+    ...item,
+    isActive: isLinkActive(pathname, item.linkProps.href),
   }))
 
   return <MainNavigation items={items} />

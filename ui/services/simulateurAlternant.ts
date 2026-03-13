@@ -268,6 +268,7 @@ const getTrancheSalaire = (salaire: number, round: boolean = false): TrancheSala
 
 const checkDataValidity = (input: Partial<InputSimulation>) => {
   const { typeContrat, niveauDiplome, dateSignatureContrat, dateNaissance, dureeContrat } = input
+  if (typeContrat === undefined) throw new Error("Le type de contrat est requis")
   if (typeContrat === "professionnalisation") {
     if (niveauDiplome === undefined) throw new Error("Le niveau de diplôme est requis pour un contrat de professionnalisation")
     if (niveauDiplome < 1 || niveauDiplome > 8) throw new Error("Niveau de diplôme invalide")
@@ -276,6 +277,7 @@ const checkDataValidity = (input: Partial<InputSimulation>) => {
     if (dateSignatureContrat === undefined) throw new Error("La date de signature de contrat est requise pour un contrat d'apprentissage")
     if (dateSignatureContrat < MIN_DEBUT_CONTRAT.toDate()) throw new Error(`La date de signature de contrat doit être postérieure au ${MIN_DEBUT_CONTRAT.format("DD/MM/YYYY")}`)
   }
+  if (dateNaissance === undefined) throw new Error("La date de naissance est requise")
   if (dateNaissance < MIN_DATE_NAISSANCE.toDate()) throw new Error(`La date de naissance doit être postérieure au ${MIN_DATE_NAISSANCE.format("DD/MM/YYYY")}`)
   if (dateNaissance > MAX_DATE_NAISSANCE.toDate()) throw new Error(`La date de naissance doit être antérieure au ${MAX_DATE_NAISSANCE.format("DD/MM/YYYY")}`)
   if (dureeContrat === undefined) throw new Error("La durée du contrat est requise")

@@ -2,7 +2,7 @@
 
 ## Valeurs de SMIC
 
-Pour modifier les valeurs de SMIC accéder au fichier [smic.ts](./smic.ts) et modifier les valeurs pour la métropole et pour mayotte.
+Pour modifier les valeurs de SMIC accéder au fichier [smic.ts](./smic.ts) et modifier les valeurs pour la métropole et pour Mayotte.
 
 _Note : les valeurs mensuelles ne sont pas utilisées mais doivent quand même être tenues à jour._
 
@@ -25,4 +25,4 @@ _Note : ces valeurs sont générées dynamiquement avec `dayjs` (année civile e
 
 ### Date de mise à jour
 
-En cas de mise à jour de n'importe laquelle de ces valeurs, accéder au fichier [dates.ts](./dates.ts) et modifier la valeur de `DATE_DERNIERE_MISE_A_JOUR` en la remplacant par la date du jour au format _AAAA-MM-JJ_
+En cas de mise à jour de n'importe laquelle de ces valeurs, accéder au fichier [dates.ts](./dates.ts) et modifier la valeur de `DATE_DERNIERE_MISE_A_JOUR` en la remplaçant par la date du jour au format _AAAA-MM-JJ_

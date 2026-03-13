@@ -1,7 +1,6 @@
 "use client"
 
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
-import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname, useRouter } from "next/navigation"
 import type { IUserRecruteurPublic } from "shared"
 import { DsfrHeaderProps } from "@/app/_components/Header"
@@ -11,7 +10,6 @@ import { PAGES } from "@/utils/routes.utils"
 
 export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
   const router = useRouter()
-  const _pathname = usePathname()
 
   const { quickAccessItems, ...rest } = DsfrHeaderProps
 
