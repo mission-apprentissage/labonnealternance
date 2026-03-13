@@ -41,8 +41,8 @@ const GuideRecruteurPage = () => {
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>
-          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
-            <Grid size={{ md: 7, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
+          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} pt={{ md: fr.spacing("8v") }} sx={{ position: "relative", zIndex: 2 }}>
+            <Grid size={{ md: 8, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
               <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }} gutterBottom>
                 Ressources recruteur
               </Typography>

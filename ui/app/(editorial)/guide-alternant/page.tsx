@@ -42,8 +42,8 @@ const GuideAlternantPage = () => {
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>
-          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} sx={{ position: "relative", zIndex: 2 }}>
-            <Grid size={{ md: 7, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
+          <Grid container spacing={fr.spacing("8v")} p={{ md: fr.spacing("6v") }} pt={{ md: fr.spacing("8v") }} sx={{ position: "relative", zIndex: 2 }}>
+            <Grid size={{ md: 8, xs: 12 }} gap={fr.spacing("4v")} display={"flex"} flexDirection={"column"}>
               <Typography component={"h1"} variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }} gutterBottom>
                 Ressources alternant
               </Typography>
@@ -183,7 +183,7 @@ const GuideAlternantPage = () => {
             </Grid>
             <Grid size={{ md: 3, xs: 12 }}>
               <QuizItem
-                title="Vous allez bien démarrer votre contrat ?"
+                title="Vous allez bientôt démarrer votre contrat ?"
                 desc="Familiarisez-vous avec la posture à adopter en entreprise"
                 href="https://dinum.didask.com/courses/demonstration/6283bd5ad9c7ae00003ede91"
               />
@@ -227,7 +227,13 @@ const GuideAlternantPage = () => {
                     Pour vous aider dans le suivi de vos candidatures, La bonne alternance vous propose un exemple de tableau :
                   </Typography>
                   <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("3v")}>
-                    <Box>
+                    <Box
+                      sx={{
+                        "& .fr-link::after": {
+                          display: "none",
+                        },
+                      }}
+                    >
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures-a-imprimer_La-bonne-alternance_PDF.pdf"}
                         external
@@ -240,7 +246,13 @@ const GuideAlternantPage = () => {
                         (3.9 Mo)
                       </Typography>
                     </Box>
-                    <Box>
+                    <Box
+                      sx={{
+                        "& .fr-link::after": {
+                          display: "none",
+                        },
+                      }}
+                    >
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Excel.xlsx"}
                         external
@@ -253,7 +265,13 @@ const GuideAlternantPage = () => {
                         (12 ko)
                       </Typography>
                     </Box>
-                    <Box>
+                    <Box
+                      sx={{
+                        "& .fr-link::after": {
+                          display: "none",
+                        },
+                      }}
+                    >
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_Numbers.numbers"}
                         external
@@ -266,7 +284,13 @@ const GuideAlternantPage = () => {
                         (788 ko)
                       </Typography>
                     </Box>
-                    <Box>
+                    <Box
+                      sx={{
+                        "& .fr-link::after": {
+                          display: "none",
+                        },
+                      }}
+                    >
                       <DsfrLink
                         href={"/ressources/Tableau-de-suivi-des-candidatures_La-bonne-alternance_LibreOffice.ods"}
                         external

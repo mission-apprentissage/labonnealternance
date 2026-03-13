@@ -84,7 +84,7 @@ const CommentSignerUnContratEnAlternancePage = () => {
           <Paragraph>
             <Typography component={"span"} fontWeight={"bold"}>
               À noter :
-            </Typography>
+            </Typography>{" "}
             si vous signez avec une structure publique (mairie, ministère…), les démarches sont un peu différentes. Votre employeur trouvera les informations spécifiques sur{" "}
             <DsfrLink
               href="https://www.fonction-publique.gouv.fr/devenir-agent-public/lapprentissage-dans-la-fonction-publique"

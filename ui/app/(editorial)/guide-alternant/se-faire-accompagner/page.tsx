@@ -126,9 +126,11 @@ const SeFaireAccompagnerPage = () => {
           ou un employeur.
         </Paragraph>
         <Paragraph>
-          <Typography fontWeight={"bold"}>À noter : </Typography> le jeune peut débuter sa formation sans contrat d'apprentissage. Toutefois, il aura un délai de 3 mois pour
-          trouver un employeur. Ce délai débute à la date du début de sa formation. Elles peuvent également intervenir pour aider les jeunes à trouver un nouvel employeur à la
-          suite d'une rupture de contrat.
+          <Typography fontWeight={"bold"} component="span">
+            À noter :
+          </Typography>{" "}
+          le jeune peut débuter sa formation sans contrat d'apprentissage. Toutefois, il aura un délai de 3 mois pour trouver un employeur. Ce délai débute à la date du début de sa
+          formation. Elles peuvent également intervenir pour aider les jeunes à trouver un nouvel employeur à la suite d'une rupture de contrat.
         </Paragraph>
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
           Comment les contacter ?
@@ -138,8 +140,10 @@ const SeFaireAccompagnerPage = () => {
           simplifiées ou une adresse mail, via les liens ci-dessous.
         </Paragraph>
         <Paragraph>
-          <Typography fontWeight={"bold"}>À noter : </Typography> les jeunes déjà inscrits en CFA doivent les solliciter en priorité, les CFA ayant pour mission d’accompagner les
-          jeunes dans la recherche de contrat d’apprentissage.
+          <Typography fontWeight={"bold"} component="span">
+            À noter :
+          </Typography>{" "}
+          les jeunes déjà inscrits en CFA doivent les solliciter en priorité, les CFA ayant pour mission d’accompagner les jeunes dans la recherche de contrat d’apprentissage.
         </Paragraph>
         <ParagraphList
           listItems={[

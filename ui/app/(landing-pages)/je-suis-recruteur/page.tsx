@@ -129,8 +129,9 @@ const JeSuisRecruteurPage = () => {
                   href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
                   aria-label="Consulter les autres partenaires de La bonne alternance"
                 >
-                  bien d’autres.
+                  bien d’autres
                 </DsfrLink>
+                .
               </Typography>
             </Grid>
             <Grid size={{ md: 6, xs: 12 }} sx={{ my: { md: "auto", xs: fr.spacing("4v") } }}>

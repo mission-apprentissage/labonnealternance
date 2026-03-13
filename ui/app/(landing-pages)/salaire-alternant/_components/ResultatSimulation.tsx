@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid, List, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateurAlternant"
 
@@ -139,11 +139,12 @@ const Loader = ({ simulation }: { simulation: OutputSimulation }) => {
 export const ResultatSimulation = () => {
   const { simulation } = useSimulateur()
   const [isLoading, setIsLoading] = useState(false)
+  const resultatRef = useRef<HTMLDivElement>(null)
 
   // Affichage d'un loader lors d'une nouvelle simulation
   useEffect(() => {
     if (simulation) {
-      window.scrollTo({ top: 0, behavior: "smooth" })
+      resultatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
       setIsLoading(true)
       // Simulation d'un temps de chargement
       const timer = setTimeout(() => {
@@ -155,7 +156,7 @@ export const ResultatSimulation = () => {
 
   return (
     <Box py={2}>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
+      <Box ref={resultatRef} sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 1 }}>
         <Box display={{ md: "flex", xs: "none" }}>
           <Image width={10} height={25} src="/images/triangle.svg" alt="" aria-hidden="true" />
         </Box>
