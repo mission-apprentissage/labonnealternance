@@ -1,3 +1,5 @@
+import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
@@ -23,14 +25,19 @@ import { generateFranceTravailAccess } from "./franceTravail/generateFranceTrava
 import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
+import { processApec } from "./offrePartenaire/apec/processApec"
+import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
+import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
+import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/importEmploiInclusion"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
+import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
-import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
+import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
 import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
@@ -47,6 +54,7 @@ import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offreParten
 import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
+import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
@@ -75,13 +83,6 @@ import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
-import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
-import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
-import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
-import { processApec } from "./offrePartenaire/apec/processApec"
-import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
-import { generateSitemap } from "@/services/sitemap.service"
-import { processScheduledRecruiterIntentions } from "@/services/application.service"
 
 type SimpleJobDefinition = {
   fct: (payload?: any) => Promise<unknown>
@@ -430,6 +431,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processEngagementJeunes,
     description: "Import du flux Engagement Jeunes jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEmploiInclusion,
+    description: "Import du flux Emploi Inclusion jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: importFichesRncp,

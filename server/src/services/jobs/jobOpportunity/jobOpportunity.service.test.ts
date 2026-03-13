@@ -1,4 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
@@ -15,18 +16,16 @@ import type { IRecruiter, IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Response } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import type { IJobOfferApiWriteV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import { jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Response } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-
-import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
-import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
-import config from "@/config"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { startRecruiterChangeStream } from "@/services/formulaire.service"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
 
 useMongo()
 

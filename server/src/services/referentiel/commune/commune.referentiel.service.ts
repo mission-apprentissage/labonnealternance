@@ -3,8 +3,8 @@ import type { IGeoPoint, IReferentielCommune } from "shared/models/index"
 
 import type { IGeoApiCommune } from "@/common/apis/geoApiGouv/geoApiGouv"
 import { getCommuneParCodeDepartement, getDepartements } from "@/common/apis/geoApiGouv/geoApiGouv"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sleep } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 let inseeToCodesPostaux: Record<string, string[]> | null = null
 

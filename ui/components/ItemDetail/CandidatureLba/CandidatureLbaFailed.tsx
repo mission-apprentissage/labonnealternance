@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import React from "react"
+import type React from "react"
 
 type DataDisplayForError = {
   title: string

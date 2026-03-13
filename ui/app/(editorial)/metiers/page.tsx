@@ -1,9 +1,8 @@
-import path from "path"
-
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Link from "next/link"
+import path from "path"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"

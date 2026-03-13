@@ -1,7 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, FormLabel } from "@mui/material"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import { Minus, Plus } from "@/theme/components/icons"
 
 export const ChampNombre = ({ value, max, name, handleChange, label, dataTestId }) => {

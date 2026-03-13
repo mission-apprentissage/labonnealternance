@@ -8,20 +8,19 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
-
-import type { IApplicationCount } from "./application.service"
-import { getApplicationByCompanyCount } from "./application.service"
-import { generateApplicationToken } from "./appLinks.service"
-import type { TLbaItemResult } from "./jobOpportunity.service.types"
-import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
-import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { isAllowedSource } from "@/common/utils/isAllowedSource"
+import { encryptMailWithIV } from "@/common/utils/encryptString"
 import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
-import { encryptMailWithIV } from "@/common/utils/encryptString"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
+import { isAllowedSource } from "@/common/utils/isAllowedSource"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { generateApplicationToken } from "./appLinks.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByCompanyCount } from "./application.service"
+import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
+import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
 const setDistance = (distance: number | null | undefined) => {
   if (distance != null && distance != undefined && distance >= 0) {
@@ -58,6 +57,7 @@ const transformCompany = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    status: company.offer_status,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
@@ -113,6 +113,7 @@ const transformCompanyWithMinimalData = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    status: company.offer_status,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
@@ -155,6 +156,7 @@ const transformCompanyV2 = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    status: company.offer_status,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {

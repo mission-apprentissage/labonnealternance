@@ -3,7 +3,7 @@ import { deduplicate } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { parseCsvContent } from "@/common/utils/fileUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { deleteRomeFromDomaineMetier, ajoutRomesADomaineMetiers } from "@/jobs/domainesMetiers/domaineMetiersFixRomes"
+import { ajoutRomesADomaineMetiers, deleteRomeFromDomaineMetier } from "@/jobs/domainesMetiers/domaineMetiersFixRomes"
 
 export const up = async () => {
   const filepath = getStaticFilePath("referentiel/romes renommées_changement de sous-domaines.csv")

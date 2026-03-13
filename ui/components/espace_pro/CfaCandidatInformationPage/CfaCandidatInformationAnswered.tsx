@@ -1,6 +1,5 @@
-import { Box, Typography } from "@mui/material"
-
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
 import { getCurrentDate, getCurrentHourMinute } from "@/common/utils/dateUtils"
 
 export const CfaCandidatInformationAnswered = (props: { msg: string }) => {

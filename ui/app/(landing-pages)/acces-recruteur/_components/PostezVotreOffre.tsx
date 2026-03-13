@@ -1,6 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Grid, Typography } from "@mui/material"
 import Image from "next/image"
-import { fr } from "@codegouvfr/react-dsfr"
 
 export const PostezVotreOffre = () => {
   return (

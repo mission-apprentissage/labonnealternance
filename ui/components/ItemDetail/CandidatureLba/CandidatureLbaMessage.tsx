@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, TextareaAutosize } from "@mui/material"
+import { Box, TextareaAutosize, Typography } from "@mui/material"
 
 const CandidatureLbaMessage = ({ formik }) => {
   return (

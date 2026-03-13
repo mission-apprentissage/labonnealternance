@@ -13,6 +13,7 @@ interface ItWidgetContext {
 
 const WidgetContext = createContext<ItWidgetContext>({
   widget: { isWidget: false, mobile: false },
+  // biome-ignore lint/suspicious/noEmptyBlockStatements: migration
   setWidget: () => {},
 })
 

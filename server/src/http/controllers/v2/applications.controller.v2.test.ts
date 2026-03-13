@@ -1,3 +1,6 @@
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import type { IApplicationApiPublic } from "shared"
@@ -19,15 +22,11 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it, vi } from "vitest"
-
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { buildUserForToken } from "@/services/application.service"
 import { generateApplicationReplyToken } from "@/services/appLinks.service"
+import { buildUserForToken } from "@/services/application.service"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {
@@ -396,7 +395,9 @@ describe("POST /v2/application", () => {
 
   it("Should mark offer as ANNULEE in jobs_partners when application count exceeds limit", async () => {
     // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const preExistingApplications = Array.from({ length: 80 }, () => generateApplicationFixture({ company_siret: recruteur.workplace_siret }))
+    const preExistingApplications = Array.from({ length: 80 }, () =>
+      generateApplicationFixture({ job_id: recruteur._id, company_siret: recruteur.workplace_siret, created_at: new Date() })
+    )
     await getDbCollection("applications").insertMany(preExistingApplications)
 
     const body: IApplicationApiPublic = {

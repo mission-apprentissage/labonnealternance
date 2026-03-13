@@ -2,18 +2,17 @@
 
 import { captureException } from "@sentry/nextjs"
 import { useCallback, useEffect } from "react"
-
+import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
+import { RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { apiGet } from "@/utils/api.utils"
 import { RechercheInputsLayout } from "./RechercheInputs/RechercheInputsLayout"
 import { RechercheLieuAutocomplete } from "./RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "./RechercheInputs/RechercheMetierAutocomplete"
 import { RechercheResultTypeCheckbox } from "./RechercheInputs/RechercheResultTypeCheckbox"
 import { RechercheSubmitButton } from "./RechercheInputs/RechercheSubmitButton"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
-import { RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
-import { apiGet } from "@/utils/api.utils"
 
 export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const rechercheResults = useRechercheResults(rechercheParams)

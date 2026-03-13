@@ -1,5 +1,5 @@
-import { Box, Typography } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Typography } from "@mui/material"
 
 export const CfaCandidatInformationOther = () => {
   return (

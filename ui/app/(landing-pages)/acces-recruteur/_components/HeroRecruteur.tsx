@@ -1,15 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Grid, Box } from "@mui/material"
-
+import { Box, Grid } from "@mui/material"
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
 import { AlgoRecruteur } from "./AlgoRecruter"
 import { Entreprise } from "./Entreprise"
 import { GerezOffres } from "./GerezOffres"
 import { OffresGratuites } from "./OffresGratuites"
 import { OrganismesMandataires } from "./OrganismesMandataires"
 import { PostezVotreOffre } from "./PostezVotreOffre"
-import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
-import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
 export const HeroRecruteur = () => {
   return (

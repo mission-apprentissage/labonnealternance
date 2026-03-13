@@ -1,8 +1,7 @@
 import { isEmpty } from "lodash-es"
 import type { IEtablissement } from "shared"
-
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 function findEarliestDates(objectsArray) {
   const earliestDates = {}

@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { UsersList } from "./UsersList"
-import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { PAGES } from "@/utils/routes.utils"
+import { UsersList } from "./UsersList"
 
 export const metadata: Metadata = {
   title: PAGES.static.backAdminHome.getMetadata().title,

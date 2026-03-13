@@ -1,4 +1,6 @@
 "use client"
+
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
@@ -6,8 +8,6 @@ import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson
 import { JobCollectionName } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import WidgetCandidatureLba from "@/components/ItemDetail/CandidatureLba/WidgetCandidatureLba"
 import { WidgetPostulerError } from "@/components/ItemDetail/CandidatureLba/WidgetPostulerError"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
