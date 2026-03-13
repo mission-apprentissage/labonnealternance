@@ -1,10 +1,10 @@
 "use client"
 
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import type { IUserRecruteurPublic } from "shared"
-
 import { DsfrHeaderProps } from "@/app/_components/Header"
+import { ConnectedHeaderNavigation } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeaderNavigation"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -43,6 +43,7 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
           }}
         />,
       ]}
+      navigation={user && user.type === "CFA" && <ConnectedHeaderNavigation />}
     />
   )
 }

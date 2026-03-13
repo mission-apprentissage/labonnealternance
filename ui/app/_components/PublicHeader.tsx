@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
-import { DsfrHeaderProps } from "./Header"
+import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
 
 export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
@@ -40,18 +40,18 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
 
     return {
       ...DsfrHeaderProps,
-      quickAccessItems: [...DsfrHeaderProps.quickAccessItems, ...extraItems],
+      quickAccessItems: [...(DsfrHeaderProps.quickAccessItems ?? []), ...extraItems],
     }
   }, [user, hideConnectionButton])
 
   return (
     <>
       <AuthWatcher user={user} />
-      <DsfrHeader {...props} />
+      <DsfrHeader {...props} navigation={<DsfrHeaderNavigation />} />
     </>
   )
 }
 
 export const PublicHeaderStatic = () => {
-  return <DsfrHeader {...DsfrHeaderProps} />
+  return <DsfrHeader {...DsfrHeaderProps} navigation={<DsfrHeaderNavigation />} />
 }

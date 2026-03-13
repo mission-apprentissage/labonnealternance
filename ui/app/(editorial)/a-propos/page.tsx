@@ -42,7 +42,7 @@ export default function APropos() {
             <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
                 <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
-                  A propos
+                  À propos
                 </Typography>
                 <Box
                   component="hr"
