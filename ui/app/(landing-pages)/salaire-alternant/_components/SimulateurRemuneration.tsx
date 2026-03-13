@@ -1,11 +1,11 @@
 "use client"
 
-import { Grid, Typography } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
-import { FormulaireSituation } from "./FormulaireSituation"
-import { AllerPlusLoin } from "./AllerPlusLoin"
-import { ResultatSimulation } from "./ResultatSimulation"
+import { Grid, Typography } from "@mui/material"
 import { SimulateurProvider } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
+import { AllerPlusLoin } from "./AllerPlusLoin"
+import { FormulaireSituation } from "./FormulaireSituation"
+import { ResultatSimulation } from "./ResultatSimulation"
 
 export const SimulateurRemuneration = () => (
   <SimulateurProvider>

@@ -1,7 +1,7 @@
 "use client"
 
-import { Box, Grid, List, ListItem, Typography, Skeleton, Stack } from "@mui/material"
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Grid, List, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"

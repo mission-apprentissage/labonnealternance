@@ -1,18 +1,18 @@
-import { describe, it, expect } from "vitest"
-import { getSimulationInformation, getChargesSalariales } from "./simulateurAlternant"
+import { describe, expect, it } from "vitest"
 import {
-  TAUX_APPRENTISSAGE,
-  TAUX_PROFESSIONNALISATION,
-  SMIC,
   DATE_FIN_EXONERATION_CHARGES_APPRENTISSAGE,
+  MAX_DATE_NAISSANCE,
+  MIN_DATE_NAISSANCE,
+  MIN_DEBUT_CONTRAT,
+  SMIC,
+  TAUX_APPRENTISSAGE,
   TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PRIVE,
   TAUX_COTISATIONS_SALARIALES_AVANT_EXONERATION_APPRENTISSAGE_PUBLIC,
   TAUX_COTISATIONS_SALARIALES_CONTRAT_PROFESSIONNALISATION,
   TAUX_EXONERATION_CHARGES_SALARIALES_APPRENTISSAGE_PUBLIC,
-  MIN_DEBUT_CONTRAT,
-  MIN_DATE_NAISSANCE,
-  MAX_DATE_NAISSANCE,
+  TAUX_PROFESSIONNALISATION,
 } from "@/config/simulateur-alternant"
+import { getChargesSalariales, getSimulationInformation } from "./simulateurAlternant"
 
 // ============================================
 // HELPERS POUR LES TESTS

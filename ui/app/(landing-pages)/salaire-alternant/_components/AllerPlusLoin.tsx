@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Divider, Grid, Typography } from "@mui/material"
 import { Card } from "@codegouvfr/react-dsfr/Card"
+import { Box, Divider, Grid, Typography } from "@mui/material"
 
 const CardItem = ({ title, description, href }: { title: string; description: string; href: string }) => (
   <Grid size={{ xs: 12, md: 4 }}>
