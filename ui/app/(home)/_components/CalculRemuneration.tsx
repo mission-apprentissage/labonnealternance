@@ -1,4 +1,5 @@
 import Card from "@codegouvfr/react-dsfr/Card"
+import { PAGES } from "@/utils/routes.utils"
 
 export const CalculRemuneration = () => {
   return (
@@ -12,7 +13,7 @@ export const CalculRemuneration = () => {
       imageAlt=""
       imageUrl="/images/home_pics/illu-calcul-remuneration.svg"
       linkProps={{
-        href: "/salaire-alternant",
+        href: PAGES.static.salaireAlternant.getPath(),
       }}
       ratio="33/66"
       size="medium"
