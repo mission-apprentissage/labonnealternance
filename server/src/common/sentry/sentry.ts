@@ -1,9 +1,31 @@
 import * as Sentry from "@sentry/node"
-import { nodeProfilingIntegration } from "@sentry/profiling-node"
 
 import config from "@/config"
 
+function getProfilingIntegration(): Sentry.Integration | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { nodeProfilingIntegration } = require("@sentry/profiling-node")
+    return nodeProfilingIntegration()
+  } catch {
+    // Native binary not available for this Node.js version (e.g. Node 25 non-LTS)
+    return null
+  }
+}
+
 function getOptions(): Sentry.NodeOptions {
+  const integrations: Sentry.Integration[] = [
+    Sentry.httpIntegration(),
+    Sentry.mongoIntegration(),
+    Sentry.captureConsoleIntegration({ levels: ["error"] }),
+    Sentry.extraErrorDataIntegration({ depth: 16 }),
+  ]
+
+  const profilingIntegration = getProfilingIntegration()
+  if (profilingIntegration) {
+    integrations.push(profilingIntegration)
+  }
+
   return {
     beforeSend(event, hint) {
       // Filter out 4xx errors from Boom
@@ -31,19 +53,13 @@ function getOptions(): Sentry.NodeOptions {
     },
     tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/],
     // profilesSampleRate is relative to tracesSampleRate
-    profilesSampleRate: 0.001,
+    profilesSampleRate: profilingIntegration ? 0.001 : 0,
     environment: config.env,
     release: config.version,
     enabled: config.env !== "local",
     dsn: config.serverSentryDsn,
     sendDefaultPii: true,
-    integrations: [
-      Sentry.httpIntegration(),
-      Sentry.mongoIntegration(),
-      Sentry.captureConsoleIntegration({ levels: ["error"] }),
-      Sentry.extraErrorDataIntegration({ depth: 16 }),
-      nodeProfilingIntegration(),
-    ],
+    integrations,
   }
 }
 
