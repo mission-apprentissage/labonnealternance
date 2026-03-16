@@ -255,11 +255,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             </Box>
           </Box>
           <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
-            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
-              <DsfrLink aria-label="Aller au simulateur pour calculer ma rémunération en alternance" href={`/simulateur?${utmParams}`}>
-                Calculer ma rémunération en alternance
-                <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-              </DsfrLink>
+            <Button linkProps={{ href: `/simulateur?${utmParams}` }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
+              Calculer ma rémunération en alternance
+              <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </Button>
           </Box>
         </Box> */}
