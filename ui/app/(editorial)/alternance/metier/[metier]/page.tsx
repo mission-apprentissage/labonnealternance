@@ -394,7 +394,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         {/**
          * BLOC OFFRES
          */}
-        {data.cards.length && (
+        {data.cards.length > 0 && (
           <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("16v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
             <Box sx={{ mb: fr.spacing("6v") }}>
               <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
