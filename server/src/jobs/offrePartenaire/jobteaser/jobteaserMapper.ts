@@ -42,6 +42,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
   const { title, description, url, contract_type: job_type, remote_type } = job_details
   const { start_date, first_activated_at } = job_dates
   const { location_city } = job_locations
+  const city = location_city ?? null
   const { company_name } = company
 
   let business_error: string | null = null
@@ -86,8 +87,8 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
     offer_expiration: dayjs(publicationDate).tz().add(2, "months").toDate(),
 
     workplace_name: company_name,
-    workplace_address_city: location_city,
-    workplace_address_label: location_city,
+    workplace_address_city: city,
+    workplace_address_label: city,
     apply_url: urlParsing.data ?? null,
     offer_multicast: false,
     contract_type,
