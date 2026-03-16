@@ -29,8 +29,7 @@ fi
 
 while IFS= read -r line; do
   DB_ID=$(echo "$line" | awk '{print $1}')
-  DB_NAME=$(echo "$line" | awk '{print $2}')
-  PR_NUMBER=$(echo "$DB_NAME" | grep -oE '[0-9]+$')
+  PR_NUMBER=$(echo "$line" | grep -oE '[0-9]+$')
 
   PR_RESPONSE=$(curl -sS "https://api.github.com/repos/${GITHUB_REPO}/pulls/${PR_NUMBER}" \
     --header "Accept: application/vnd.github+json")

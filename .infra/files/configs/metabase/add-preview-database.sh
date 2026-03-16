@@ -23,6 +23,15 @@ if [[ -z "$TOKEN" || "$TOKEN" == "null" ]]; then
   exit 1
 fi
 
+EXISTING_ID=$(curl -sSf "${METABASE_URL}/api/database" \
+  --header "X-Metabase-Session: $TOKEN" | \
+  jq -r --arg name "MongoDB PR-${PR_NUMBER}" '.data[] | select(.name == $name) | .id' | head -n1)
+
+if [[ -n "$EXISTING_ID" ]]; then
+  echo "Database MongoDB PR-${PR_NUMBER} already exists in Metabase (id=${EXISTING_ID}), skipping"
+  exit 0
+fi
+
 DB_PAYLOAD=$(jq -n \
   --arg name "MongoDB PR-${PR_NUMBER}" \
   --arg uri "$MONGO_URI" \
