@@ -2,7 +2,7 @@ import { internal, isBoom } from "@hapi/boom"
 import type { AxiosResponse } from "axios"
 import type FormData from "form-data"
 import type { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature } from "shared/models/index"
-import { ZPointFeature, ZPointGeometry } from "shared/models/index"
+import { ZGeometryFeature, ZPointFeature, ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
 import z from "zod"
 import getApiClient from "@/common/apis/client"
@@ -85,7 +85,7 @@ export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: numb
 }
 
 const ZApiGeolocationResponse = z.object({
-  features: z.array(ZPointFeature),
+  features: z.array(ZGeometryFeature),
 })
 
 export const getGeolocation = async (rawAddress: string): Promise<IPointFeature | null> => {
