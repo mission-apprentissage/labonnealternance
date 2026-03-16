@@ -6,6 +6,7 @@ import type { Virtualizer } from "@tanstack/react-virtual"
 import { useRef } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
+import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -31,11 +32,23 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const scrollToItem = (item: ResultCardData) => {
     const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
     if (scolledElementIndex !== -1) {
-      virtualizerRef.current.scrollToIndex(scolledElementIndex, { align: "start" })
+      virtualizerRef.current.scrollToIndex(scolledElementIndex, {
+        align: "start",
+      })
     }
   }
 
   elements.push(
+    {
+      height: 0,
+      render: () => {
+        const scrollPercentage = (virtualizerRef.current?.getVirtualIndexes().at(0) ?? 0) / elements.length
+        console.log("parent", { scrollPercentage })
+        return <EnqueteTally scrollPercentage={scrollPercentage} />
+      },
+      onRender: undefined,
+      item: undefined,
+    },
     {
       height: 122,
       render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
@@ -125,9 +138,11 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
 export function RecherchePageComponent(props: { rechercheParams: IRecherchePageParams }) {
   const rechercheResult = useRechercheResults(props.rechercheParams)
+
   if (rechercheResult.status === "disabled") {
     return (
       <>
+        <EnqueteTally />
         <Box role="main" tabIndex={-1} component="main" id="search-content-container">
           <RecherchePageEmpty {...props} />
         </Box>
@@ -135,8 +150,10 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
       </>
     )
   }
+
   return (
     <Box role="main" component="main">
+      <EnqueteTally />
       <RecherchePageComponentWithParams {...props} />
     </Box>
   )
