@@ -1,5 +1,5 @@
 import { notFound } from "@hapi/boom"
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import type { OPCOS_LABEL } from "shared/constants/index"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/index"
@@ -259,8 +259,7 @@ export const getPartnerJobs = async ({
   }
 }
 
-export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
-  const jobId = new ObjectId(id)
+export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPartnerJob> => {
   const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
 
   if (!rawPartnerJob) {
