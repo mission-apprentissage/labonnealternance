@@ -1,12 +1,11 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-
-import { FormulaireEditionOffre } from "./FormulaireEditionOffre"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useToast } from "@/app/hooks/useToast"
 import { createOffre, getOffre } from "@/utils/api"
 import { apiPut } from "@/utils/api.utils"
+import { FormulaireEditionOffre } from "./FormulaireEditionOffre"
 
 export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { establishment_id: string; job_id?: string; onSuccess: () => void }) {
   const toast = useToast()

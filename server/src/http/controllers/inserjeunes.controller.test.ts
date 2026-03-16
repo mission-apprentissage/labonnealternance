@@ -1,8 +1,7 @@
-import nock from "nock"
-import { describe, expect, it, beforeEach } from "vitest"
-
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
+import nock from "nock"
+import { beforeEach, describe, expect, it } from "vitest"
 
 const OMOGEN_BASE_URL = "https://omogen-api-pr.phm.education.gouv.fr"
 

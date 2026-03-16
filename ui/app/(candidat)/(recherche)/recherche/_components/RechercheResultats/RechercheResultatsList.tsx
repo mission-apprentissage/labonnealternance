@@ -5,11 +5,7 @@ import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { assertUnreachable } from "shared/utils/assertUnreachable"
-
-import { LbaItemCard } from "./LbaItemCard"
-import { RechercheResultatsFooter } from "./RechercheResultatsFooter"
-import type { ResultCardData } from "./ResultCardData"
-import { Whisper } from "./Whisper"
+import { Footer } from "@/app/_components/Footer"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -17,11 +13,14 @@ import { useSearchViewNotifier } from "@/app/(candidat)/(recherche)/recherche/_h
 import { useWhispers } from "@/app/(candidat)/(recherche)/recherche/_hooks/useWhispers"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { Footer } from "@/app/_components/Footer"
 import { ErrorMessage } from "@/components"
 import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
 import ResultListsLoading from "@/components/SearchForTrainingsAndJobs/components/ResultListsLoading"
 import { getObjectId } from "@/utils/api"
+import { LbaItemCard } from "./LbaItemCard"
+import { RechercheResultatsFooter } from "./RechercheResultatsFooter"
+import type { ResultCardData } from "./ResultCardData"
+import { Whisper } from "./Whisper"
 
 export function RechercheResultatsList(props: { rechercheParams: IRecherchePageParams; scrollToItem: (item: ResultCardData) => void }) {
   const { displayMap } = props.rechercheParams

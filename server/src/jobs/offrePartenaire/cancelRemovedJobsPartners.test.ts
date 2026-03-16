@@ -1,13 +1,12 @@
+import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
-
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { cancelRemovedJobsPartners } from "./cancelRemovedJobsPartners"
 import { jobPartnersByFlux } from "./processJobPartners"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 
 useMongo()
 

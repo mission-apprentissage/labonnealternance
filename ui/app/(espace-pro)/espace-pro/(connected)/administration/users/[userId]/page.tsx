@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import User from "./User"
 import { PAGES } from "@/utils/routes.utils"
+import User from "./User"
 
 export async function generateMetadata({ params }: { params: Promise<{ userId: string }> }): Promise<Metadata> {
   const { userId } = await params

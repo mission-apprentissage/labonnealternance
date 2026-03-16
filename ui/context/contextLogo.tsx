@@ -8,6 +8,7 @@ interface ItLogoContext {
 
 const LogoContext = createContext<ItLogoContext>({
   organisation: "",
+  // biome-ignore lint/suspicious/noEmptyBlockStatements: migration
   setOrganisation: () => {},
 })
 

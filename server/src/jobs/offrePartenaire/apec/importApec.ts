@@ -1,8 +1,8 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawApecModel from "shared/models/rawApec.model"
-import { apecJobToJobsPartners, ZApecJob } from "./apecMapper"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { apecJobToJobsPartners, ZApecJob } from "./apecMapper"
 
 const rawCollectionName = rawApecModel.collectionName
 const offerXmlTag = "Offre_emploi"

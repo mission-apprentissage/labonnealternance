@@ -8,8 +8,12 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["./src/*"],
-      "@tests/*": ["./tests/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@tests/*": [
+        "./tests/*"
+      ]
     },
     "resolveJsonModule": true,
     /* JavaScript Support */
@@ -23,11 +27,24 @@
     /* Output Formatting */
     "pretty": true
   },
-  "references": [{ "path": "../shared" }],
-  "include": ["./**/*.ts", "./**/*.js"],
-  "exclude": ["**/node_modules", "coverage", "dist"],
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ],
+  "include": [
+    "./**/*.ts",
+    "./**/*.js"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "coverage",
+    "dist"
+  ],
   "typeAcquisition": {
     "enable": false,
-    "include": ["@types/node"]
+    "include": [
+      "@types/node"
+    ]
   }
 }

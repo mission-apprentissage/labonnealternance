@@ -4,10 +4,9 @@ import type FormData from "form-data"
 import type { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature } from "shared/models/index"
 import { ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
-
-import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
 const API_ADRESSE_URL = "https://data.geopf.fr/geocodage"
 

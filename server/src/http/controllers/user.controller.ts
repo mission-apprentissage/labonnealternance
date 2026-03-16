@@ -11,7 +11,11 @@ import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.mod
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { stopSession } from "@/common/utils/session.service"
+import type { Server } from "@/http/server"
+import { getUserFromRequest } from "@/security/authenticationService"
 import { deleteFormulaire } from "@/services/formulaire.service"
+import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
 import { getUserAndRecruitersDataForOpcoUser, getUserNamesFromIds as getUsersFromIds } from "@/services/user.service"
 import {
   getAdminUsers,
@@ -21,11 +25,7 @@ import {
   updateUserWithAccountFields,
   userAndRoleAndOrganizationToUserRecruteur,
 } from "@/services/userRecruteur.service"
-import type { Server } from "@/http/server"
 import { createSuperUser } from "@/services/userWithAccount.service"
-import { activateUserRole, deactivateUserRole, entrepriseIsNotMyOpco, roleToUserType } from "@/services/roleManagement.service"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { stopSession } from "@/common/utils/session.service"
 
 export default (server: Server) => {
   server.get(
@@ -131,7 +131,7 @@ export default (server: Server) => {
       const { userAccess } = req
       const { userId, siret } = req.params
       // eslint-disable-next-line prefer-const
-      let { opco, ...userFields } = req.body
+      const { opco, ...userFields } = req.body
       // restreint la modification de l opco aux opcos et admin
       if (!(userAccess?.admin || userAccess?.opcos.length)) {
         throw forbidden()

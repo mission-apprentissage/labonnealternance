@@ -3,13 +3,12 @@ import { EApplicantRole } from "shared/constants/rdva"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { BlackListOrigins } from "@/services/application.service"
-import { BrevoEventStatus } from "@/services/brevo.service"
-import { processBlacklistedEmail } from "@/services/emails.service"
-
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
+import { BlackListOrigins } from "@/services/application.service"
+import { BrevoEventStatus } from "@/services/brevo.service"
+import { processBlacklistedEmail } from "@/services/emails.service"
 
 export enum BrevoBlockedReasons {
   UNSUBSCRIBED_VIA_MA = "unsubscribedViaMA",

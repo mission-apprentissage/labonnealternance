@@ -1,11 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import { redirect } from "next/navigation"
-
-import Button from "@codegouvfr/react-dsfr/Button"
 import Link from "next/link"
-import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
+import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"

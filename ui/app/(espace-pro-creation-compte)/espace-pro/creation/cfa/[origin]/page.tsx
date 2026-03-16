@@ -1,6 +1,5 @@
-import { Suspense } from "react"
-
 import type { Metadata } from "next"
+import { Suspense } from "react"
 import { AUTHTYPE } from "@/common/contants"
 import CreationCompte from "@/components/espace_pro/Authentification/CreationCompte"
 import { PAGES } from "@/utils/routes.utils"
