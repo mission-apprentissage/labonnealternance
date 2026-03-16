@@ -814,7 +814,12 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
 }
 
 const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
-  const { job } = lbaJob
+  const { job, type } = lbaJob
+
+  // règle qui ne concerne que les offres LBA
+  if (type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    return
+  }
 
   const applicationCount = await getDbCollection("applications").countDocuments({
     job_id: job._id,
@@ -822,7 +827,7 @@ const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
 
   if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
     await getDbCollection("jobs_partners").updateOne(
-      { _id: job._id },
+      { _id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
       {
         $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
         $push: {
