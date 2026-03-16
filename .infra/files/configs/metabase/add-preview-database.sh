@@ -25,7 +25,7 @@ fi
 
 EXISTING_ID=$(curl -sSf "${METABASE_URL}/api/database" \
   --header "X-Metabase-Session: $TOKEN" | \
-  jq -r --arg name "MongoDB PR-${PR_NUMBER}" '.data[] | select(.name == $name) | .id' | head -n1)
+  jq -r --arg name "MongoDB PR-${PR_NUMBER}" '[.data[] | select(.name == $name) | .id] | first // empty')
 
 if [[ -n "$EXISTING_ID" ]]; then
   echo "Database MongoDB PR-${PR_NUMBER} already exists in Metabase (id=${EXISTING_ID}), skipping"
