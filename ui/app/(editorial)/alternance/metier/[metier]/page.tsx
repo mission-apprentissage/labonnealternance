@@ -7,7 +7,6 @@ import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
@@ -57,11 +56,9 @@ async function fetchMetierData(metier: string) {
 function JobsCta({ href }: { href: string }) {
   return (
     <Box sx={{ textAlign: "center", mx: fr.spacing("4v") }}>
-      <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-        <DsfrLink style={{ color: "#fff" }} href={href}>
-          Voir toutes les offres en alternance
-          <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-        </DsfrLink>
+      <Button linkProps={{ href }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+        Voir toutes les offres en alternance
+        <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
       </Button>
     </Box>
   )
@@ -323,11 +320,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
 
           <Box sx={{ textAlign: "center" }}>
-            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
-              <DsfrLink style={{ color: "#fff" }} href={formationsSearchUrl}>
-                Voir toutes les formations en alternance
-                <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-              </DsfrLink>
+            <Button linkProps={{ href: formationsSearchUrl }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
+              Voir toutes les formations en alternance
+              <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </Button>
           </Box>
         </Box>
