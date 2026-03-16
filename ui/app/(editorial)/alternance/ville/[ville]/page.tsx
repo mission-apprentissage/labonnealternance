@@ -275,7 +275,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
         {/**
          * BLOC OFFRES
          */}
-        {data.cards.length && (
+        {data.cards?.length > 0 && (
           <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
             <Box
               sx={{
