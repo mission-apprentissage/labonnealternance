@@ -20,6 +20,10 @@ const CarteOffre = ({ card }) => {
         enlargeLink
         horizontal
         linkProps={{
+          "aria-label":
+            card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA
+              ? `Voir la société ${card.workplace_name}`
+              : `Voir l'offre d'emploi ${card.offer_title} chez ${card.workplace_name}`,
           href: card.lba_url.substring(publicConfig.baseUrl.length),
           prefetch: false,
         }}
