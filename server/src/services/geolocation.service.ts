@@ -119,7 +119,7 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
         level: "warning",
         extra: {
           cause: "error saving geolocation to cache",
-          responseData: response.features,
+          responseData: features,
           address,
         },
       })
