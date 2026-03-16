@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi.js"
-import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -9,7 +8,7 @@ export const zPartnersRoutes = {
       method: "get",
       path: "/partners/parcoursup/formations",
       response: {
-        "200": z.object({ ids: z.array(ZEligibleTrainingsForAppointmentSchema.shape.parcoursup_id) }).strict(),
+        "200": z.object({ ids: z.array(z.string()) }).strict(),
       },
       securityScheme: null,
     },

@@ -1,7 +1,7 @@
 import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import type { Server } from "../server"
 
 /**
@@ -21,6 +21,7 @@ export default (server: Server) => {
       const ids = await eligibleTrainingsForAppointmentService.find(
         {
           parcoursup_id: {
+            $exists: true,
             $ne: null,
           },
           referrers: { $in: [referrers.PARCOURSUP.name] },
@@ -28,7 +29,7 @@ export default (server: Server) => {
         { projection: { parcoursup_id: 1 } }
       )
 
-      return res.send({ ids: ids.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.parcoursup_id) })
+      return res.send({ ids: ids.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.parcoursup_id).filter((id) => id !== null) })
     }
   )
 }
