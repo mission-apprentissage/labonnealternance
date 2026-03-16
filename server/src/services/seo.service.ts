@@ -34,12 +34,19 @@ export const updateSeoVilleJobCounts = async () => {
       includePartnerLabel: true,
     })
 
+    const cards = await getJobsForVille({
+      latitude: ville.geopoint.lat,
+      longitude: ville.geopoint.long,
+      radius: DEFAULT_RADIUS_KM,
+    })
+
     await getDbCollection(seoVilleModel.collectionName).updateOne(
       { _id: ville._id },
       {
         $set: {
           job_count: jobCount,
           recruteur_count: recruteurCount,
+          cards,
         },
       }
     )
@@ -364,6 +371,50 @@ const getJobPartnerDataForSeo = (jobPartner: IJobsPartnersOfferPrivateWithDistan
     lba_url: jobPartner.lba_url || null,
     offer_creation: jobPartner.offer_creation || null,
   }
+}
+
+const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
+  const params = {
+    geo: { latitude, longitude, radius },
+    romes: null,
+    rncp: null,
+    opco: null,
+  }
+
+  const lbaJobs = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
+
+  const jobsForSeo = lbaJobs.slice(0, 6).map((job) => getJobPartnerDataForSeo(job))
+
+  const lbaCompanies = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+
+  jobsForSeo.push(...lbaCompanies.slice(0, 6).map((job) => getJobPartnerDataForSeo(job)))
+
+  const partnerJobs = await getJobsPartnersFromDBForUI({ ...params, partners_to_exclude: [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
+
+  jobsForSeo.push(...partnerJobs.slice(0, 12 - jobsForSeo.length).map((job) => getJobPartnerDataForSeo(job)))
+
+  const ids = jobsForSeo.flatMap((job) => (job.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job._id] : []))
+
+  const applicationCountByJob = await getApplicationByJobCount(ids)
+
+  applicationCountByJob.forEach((appCount) => {
+    const job = jobsForSeo.find((j) => j._id.toString() === appCount._id)
+    if (job) {
+      job.application_count = appCount.count
+    }
+  })
+
+  const sirets = jobsForSeo.flatMap((job) => (job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job.partner_job_id] : []))
+  const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+
+  applicationCountByCompany.forEach((appCount) => {
+    const job = jobsForSeo.find((j) => j.partner_job_id === appCount._id)
+    if (job) {
+      job.application_count = appCount.count
+    }
+  })
+
+  return jobsForSeo
 }
 
 const getJobsForMetier = async (romes: string[]) => {
