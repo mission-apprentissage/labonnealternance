@@ -92,7 +92,11 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography>
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.job_count + data.recruteur_count}</span> offres en alternance sont disponibles:
                 <br />
-                <JobsCta href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`} />
+                <JobsCta
+                  href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${encodeURIComponent(
+                    `${data.ville} (${data.cp})`,
+                  )}&${utmParams}`}
+                />
               </Typography>
             </Box>
             <Box sx={{ display: { xs: "none", md: "block" }, marginLeft: "auto", mt: fr.spacing("8v") }}>
