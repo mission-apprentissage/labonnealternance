@@ -22,13 +22,11 @@ export const ZJobteaserJob = z
       start_date: z.string().nullable(),
       first_activated_at: z.string(),
     }),
-    job_locations: z.object({
-      location_country_name: z.string(),
-      location_city: z.string(),
-      location_country_code: z.string(),
-      location_state: z.string(),
-      location_sub_state: z.string().nullable(),
-    }),
+    job_locations: z
+      .object({
+        location_city: z.string().nullish(),
+      })
+      .passthrough(),
     company: z.object({
       company_name: z.string(),
       company_siren: z.string().nullable(),
