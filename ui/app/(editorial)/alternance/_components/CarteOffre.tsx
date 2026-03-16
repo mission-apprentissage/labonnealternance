@@ -10,7 +10,16 @@ import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { publicConfig } from "@/config.public"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
-const CarteOffre = ({ card }) => {
+type CarteOffreProps = {
+  card: {
+    lba_url: string
+    partner_label: (typeof JOBPARTNERS_LABEL)[keyof typeof JOBPARTNERS_LABEL]
+    offer_title: string
+    workplace_naf_label: string
+  }
+}
+
+const CarteOffre = ({ card }: CarteOffreProps) => {
   return (
     <CardStyling>
       <Card
