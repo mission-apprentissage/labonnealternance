@@ -373,30 +373,18 @@ const getJobPartnerDataForSeo = (jobPartner: IJobsPartnersOfferPrivateWithDistan
   }
 }
 
-const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
-  const params = {
-    geo: { latitude, longitude, radius },
-    romes: null,
-    rncp: null,
-    opco: null,
-  }
-
+const getJobCards = async (params: { geo: { latitude: number; longitude: number; radius: number } | null; romes: string[] | null; rncp: null; opco: null }) => {
   const lbaJobs = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
-
   const jobsForSeo = lbaJobs.slice(0, 6).map((job) => getJobPartnerDataForSeo(job))
 
   const lbaCompanies = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
-
   jobsForSeo.push(...lbaCompanies.slice(0, 6).map((job) => getJobPartnerDataForSeo(job)))
 
   const partnerJobs = await getJobsPartnersFromDBForUI({ ...params, partners_to_exclude: [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
-
   jobsForSeo.push(...partnerJobs.slice(0, 12 - jobsForSeo.length).map((job) => getJobPartnerDataForSeo(job)))
 
   const ids = jobsForSeo.flatMap((job) => (job.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job._id] : []))
-
   const applicationCountByJob = await getApplicationByJobCount(ids)
-
   applicationCountByJob.forEach((appCount) => {
     const job = jobsForSeo.find((j) => j._id.toString() === appCount._id)
     if (job) {
@@ -406,7 +394,6 @@ const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number
 
   const sirets = jobsForSeo.flatMap((job) => (job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job.partner_job_id] : []))
   const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-
   applicationCountByCompany.forEach((appCount) => {
     const job = jobsForSeo.find((j) => j.partner_job_id === appCount._id)
     if (job) {
@@ -417,49 +404,26 @@ const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number
   return jobsForSeo
 }
 
+const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
+  const params = {
+    geo: { latitude, longitude, radius },
+    romes: null,
+    rncp: null,
+    opco: null,
+  }
+
+  return await getJobCards(params)
+}
+
 const getJobsForMetier = async (romes: string[]) => {
   const params = {
     geo: null,
-    radius: 30,
     romes: romes,
     rncp: null,
     opco: null,
   }
 
-  const lbaJobs = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
-
-  const jobsForSeo = lbaJobs.slice(0, 6).map((job) => getJobPartnerDataForSeo(job))
-
-  const lbaCompanies = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
-
-  jobsForSeo.push(...lbaCompanies.slice(0, 6).map((job) => getJobPartnerDataForSeo(job)))
-
-  const partnerJobs = await getJobsPartnersFromDBForUI({ ...params, partners_to_exclude: [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
-
-  jobsForSeo.push(...partnerJobs.slice(0, 12 - jobsForSeo.length).map((job) => getJobPartnerDataForSeo(job)))
-
-  const ids = jobsForSeo.flatMap((job) => (job.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job._id] : []))
-
-  const applicationCountByJob = await getApplicationByJobCount(ids)
-
-  applicationCountByJob.forEach((appCount) => {
-    const job = jobsForSeo.find((j) => j._id.toString() === appCount._id)
-    if (job) {
-      job.application_count = appCount.count
-    }
-  })
-
-  const sirets = jobsForSeo.flatMap((job) => (job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job.partner_job_id] : []))
-  const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-
-  applicationCountByCompany.forEach((appCount) => {
-    const job = jobsForSeo.find((j) => j.partner_job_id === appCount._id)
-    if (job) {
-      job.application_count = appCount.count
-    }
-  })
-
-  return jobsForSeo
+  return await getJobCards(params)
 }
 
 export const updateSeoMetierJobCounts = async () => {
