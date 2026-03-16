@@ -1,7 +1,6 @@
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-
-import useUserHistoryUpdate from "./useUserHistoryUpdate"
 import { activateUserRole, deactivateUserRole, notifyNotMyOpcoUserRole } from "@/utils/api"
+import useUserHistoryUpdate from "./useUserHistoryUpdate"
 
 export const useUserPermissionsActions = (userId: string, organizationId: string, organizationType: AccessEntityType = AccessEntityType.ENTREPRISE) => {
   const update = useUserHistoryUpdate()

@@ -1,7 +1,7 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
+import { logger } from "@/common/logger"
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
@@ -15,8 +15,6 @@ import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { formatTextFieldsJobsPartners } from "./formatTextFieldsJobsPartners"
 import { rankJobPartners } from "./rankJobPartners"
 import { validateComputedJobPartners } from "./validateComputedJobPartners"
-
-import { logger } from "@/common/logger"
 
 export type FillComputedJobsPartnersContext = {
   addedMatchFilter?: Filter<IComputedJobsPartners>

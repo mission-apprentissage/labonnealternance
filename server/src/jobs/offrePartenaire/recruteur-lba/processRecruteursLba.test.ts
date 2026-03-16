@@ -1,19 +1,17 @@
 import fs from "node:fs"
-
+import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
-import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixture"
-import { processRecruteursLba } from "./processRecruteursLba"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { stringToStream } from "@/common/utils/streamUtils"
-import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { processRecruteursLba } from "./processRecruteursLba"
 
 useMongo()
 

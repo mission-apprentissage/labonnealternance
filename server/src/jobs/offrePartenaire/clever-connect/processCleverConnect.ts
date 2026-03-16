@@ -5,9 +5,8 @@ import rawMeteojobModel from "shared/models/rawMeteojob.model"
 import rawNosTalentsNosEmploisModel from "shared/models/rawNosTalentsNosEmplois.model"
 import rawToulouseMetropoleModel from "shared/models/rawToulouseMetropole.model"
 import rawViteUnEmploiModel from "shared/models/rawViteUnEmploi.model"
-
-import { importCleverConnectRaw, importCleverConnectToComputed } from "./importCleverConnect"
 import config from "@/config"
+import { importCleverConnectRaw, importCleverConnectToComputed } from "./importCleverConnect"
 
 const cleverConnectProcessor = async (model: { collectionName: CollectionName }, label: JOBPARTNERS_LABEL, url: string) => {
   await importCleverConnectRaw(model.collectionName, label, url)

@@ -1,11 +1,9 @@
 import fs from "node:fs/promises"
 import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
-
-import { z } from "zod"
-
 import type { AggregationCursor } from "mongodb"
 import { removeAccents } from "shared"
+import { z } from "zod"
 import { deduplicate, partition } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"

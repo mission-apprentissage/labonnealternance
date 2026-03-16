@@ -1,5 +1,5 @@
-import { importApecRaw, importApecToComputed } from "./importApec"
 import { getApecJobs } from "@/common/apis/apec/apec.client"
+import { importApecRaw, importApecToComputed } from "./importApec"
 
 export const processApec = async () => {
   const sourceStream = await getApecJobs()

@@ -1,10 +1,9 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import omit from "lodash-es/omit"
 import { generateRawRHAlternanceJobFixture } from "shared/fixtures/rawRHAlternanceJob.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
-import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { rawRhAlternanceToComputedMapper } from "./importRHAlternance"
 
 describe("import RH Alternance", () => {
   useMongo()

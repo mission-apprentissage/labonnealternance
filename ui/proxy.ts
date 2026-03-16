@@ -4,8 +4,8 @@ import type { ComputedUserAccess, IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 
 import { publicConfig } from "./config.public"
-import { PAGES } from "./utils/routes.utils"
 import { apiPost } from "./utils/api.utils"
+import { PAGES } from "./utils/routes.utils"
 
 const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
 

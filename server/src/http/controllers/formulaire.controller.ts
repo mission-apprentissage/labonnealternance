@@ -4,13 +4,10 @@ import { JOB_STATUS, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
 import { entrepriseOnboardingWorkflow } from "@/services/etablissement.service"
-import { getUserRecruteurById } from "@/services/userRecruteur.service"
-import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
-
-import type { Server } from "@/http/server"
 import {
   archiveFormulaireByEstablishmentId,
   cancelOffre,
@@ -31,6 +28,8 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
+import { getUserRecruteurById } from "@/services/userRecruteur.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 export default (server: Server) => {
   /**

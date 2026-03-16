@@ -1,10 +1,10 @@
-import dayjs from "shared/helpers/dayjs"
 import { getProcessorHealthcheck } from "job-processor"
 import { zRoutes } from "shared"
+import dayjs from "shared/helpers/dayjs"
 
 import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
-import type { Server } from "@/http/server"
 import config from "@/config"
+import type { Server } from "@/http/server"
 
 const computeProcessorHealthCheck = async () => {
   const health = await getProcessorHealthcheck()

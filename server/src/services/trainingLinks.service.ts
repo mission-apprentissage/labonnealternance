@@ -1,15 +1,13 @@
-import { URL } from "url"
-
 import { getDistance } from "geolib"
 import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
-
+import { URL } from "url"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import config from "@/config.js"
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
 import { getCommuneByCodeInsee, getCommuneByCodePostal } from "./referentiel/commune/commune.referentiel.service"
 import { expandRomesV3toV4 } from "./rome.service"
-import config from "@/config.js"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 interface IWish {
   id: string

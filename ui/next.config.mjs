@@ -1,11 +1,11 @@
 // @ts-check
-import path from "path"
-import { fileURLToPath } from "url"
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import createWithBundleAnalyzer from "@next/bundle-analyzer"
 import { withSentryConfig } from "@sentry/nextjs"
 import { Config } from "next-recompose-plugins"
+import path from "path"
+import { fileURLToPath } from "url"
 
 const cacheControls = {
   month: "public, max-age=2592000, immutable",

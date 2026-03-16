@@ -3,11 +3,10 @@
 import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
-
-import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 

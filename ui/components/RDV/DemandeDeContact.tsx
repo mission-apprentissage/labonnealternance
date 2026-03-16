@@ -1,7 +1,7 @@
-import { DemandeDeContactButton } from "./DemandeDeContactButton"
-import { DemandeDeContactModal } from "./DemandeDeContactModal"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { SendPlausibleEvent } from "@/utils/plausible"
+import { DemandeDeContactButton } from "./DemandeDeContactButton"
+import { DemandeDeContactModal } from "./DemandeDeContactModal"
 
 export const DemandeDeContact = ({
   context: { cle_ministere_educatif },

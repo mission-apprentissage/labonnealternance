@@ -1,10 +1,9 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
-
-import { fr } from "@codegouvfr/react-dsfr"
-import ItemDistanceToCenter from "./ItemDistanceToCenter"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getPathLink } from "@/utils/tools"
+import ItemDistanceToCenter from "./ItemDistanceToCenter"
 
 export default function ItemLocalisation({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson }) {
   return (

@@ -9,10 +9,9 @@ import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import { entriesToTypedRecord } from "shared"
 
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
-import { UserMenu } from "./_component/UserMenu"
+import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
-import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -23,6 +22,7 @@ import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { UserMenu } from "./_component/UserMenu"
 
 const panelOrder = [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ERROR]
 const accountTypes = [CFA, ENTREPRISE] as const
@@ -71,6 +71,7 @@ export function UsersList() {
     panelOrder.map((etatUtilisateur) => {
       // c'est ok parce que le nombre de useQuery est constant
       // eslint-disable-next-line react-hooks/rules-of-hooks
+      // biome-ignore lint/correctness/useHookAtTopLevel: migration
       const useQueryResult = useQuery({
         queryKey: ["/admin/users-recruteurs", etatUtilisateur],
         queryFn: () => {

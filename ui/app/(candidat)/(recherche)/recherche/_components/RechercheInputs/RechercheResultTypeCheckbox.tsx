@@ -2,9 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, CircularProgress } from "@mui/material"
 import { useField } from "formik"
 import { assertUnreachable } from "shared"
-
-import type { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
+import type { IUseRechercheResults, QueryStatus } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 
 export const RechercheResultTypeCheckboxFormik = ({
   rechercheResults,

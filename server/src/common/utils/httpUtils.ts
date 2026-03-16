@@ -1,9 +1,8 @@
-import http from "http"
-import https from "https"
-
 import type { AxiosRequestConfig, CreateAxiosDefaults } from "axios"
 import axios from "axios"
 import type { FastifyRequest } from "fastify"
+import http from "http"
+import https from "https"
 import type { ITrackingCookies } from "shared/models/index"
 
 import { logger } from "@/common/logger"

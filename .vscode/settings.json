@@ -40,11 +40,19 @@
     "ymag"
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   },
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "javascript.validate.enable": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "biome.lsp.bin": "node_modules/.bin/biome",
+  "js/ts.validate.enabled": true,
   "files.eol": "\n",
   "files.insertFinalNewline": true,
   "files.exclude": {
@@ -78,8 +86,8 @@
     "**/*/lib": true,
     "server/dist": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
   "vitest.commandLine": "yarn test --single-thread",
   "vitest.workspaceConfig": "vitest.workspace.ts"
 }

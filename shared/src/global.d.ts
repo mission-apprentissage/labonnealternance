@@ -13,6 +13,7 @@ declare module "dayjs" {
 
   function utc(date?: any, format?: string): Dayjs
 
+  // biome-ignore lint/style/noNamespace: migration
   namespace dayjs {
     interface Tz {
       (date?: any, timezone?: string): Dayjs

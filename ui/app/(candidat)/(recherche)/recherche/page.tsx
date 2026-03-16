@@ -1,10 +1,9 @@
 import type { Metadata } from "next"
 import { permanentRedirect } from "next/navigation"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
+import { PAGES } from "@/utils/routes.utils"
 import { RecherchePageComponentServer } from "./_components/RecherchePageComponentServer"
 import { IRechercheMode, parseRecherchePageParams } from "./_utils/recherche.route.utils"
-import { PAGES } from "@/utils/routes.utils"
 
 type Props = {
   searchParams: Promise<Record<string, string>>

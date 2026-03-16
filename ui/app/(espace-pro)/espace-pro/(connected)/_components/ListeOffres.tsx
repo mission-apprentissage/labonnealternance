@@ -9,13 +9,12 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import type { IJobJson } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
-
-import { OffresTabs } from "./OffresTabs"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { Plus } from "@/theme/components/icons"
 import { getFormulaire } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { OffresTabs } from "./OffresTabs"
 
 export default function ListeOffres({ hideModify = false, showStats = false, establishment_id }: { hideModify?: boolean; showStats?: boolean; establishment_id: string }) {
   const router = useRouter()

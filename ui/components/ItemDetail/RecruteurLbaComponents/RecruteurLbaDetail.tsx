@@ -5,17 +5,16 @@ import Image from "next/image"
 import { useContext, useEffect } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemNaf } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
-import { DisplayContext } from "@/context/DisplayContextProvider"
-import { SendPlausibleEvent } from "@/utils/plausible"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getCompanyGoogleSearchLink } from "@/components/ItemDetail/ItemDetailServices/getCompanyGoogleSearchLink"
 import { getCompanySize } from "@/components/ItemDetail/ItemDetailServices/getCompanySize"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
 import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
-import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import { LbaJobEngagement } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagement"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
+import { DisplayContext } from "@/context/DisplayContextProvider"
 import { notifyJobDetailViewV3 } from "@/utils/api"
+import { SendPlausibleEvent } from "@/utils/plausible"
 
 const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompanyJson }) => {
   useEffect(() => {

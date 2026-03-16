@@ -5,12 +5,11 @@ import type { AnyBulkWriteOperation, Filter } from "mongodb"
 import jobsPartnersModel from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
-
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 const groupSize = 500
 const zodModel = jobsPartnersModel.zod

@@ -1,3 +1,4 @@
+// biome-ignore lint/style/noCommonJs: migration
 module.exports = {
   branches: ["main", { name: "hotfix", channel: "hotfix", prerelease: "hotfix" }],
   repositoryUrl: "https://github.com/mission-apprentissage/labonnealternance.git",

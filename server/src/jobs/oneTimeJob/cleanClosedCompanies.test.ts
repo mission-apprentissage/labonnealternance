@@ -1,7 +1,7 @@
 import { unlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
@@ -11,10 +11,8 @@ import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
-
-import { cleanClosedCompanies } from "./cleanClosedCompanies"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { cleanClosedCompanies } from "./cleanClosedCompanies"
 
 useMongo()
 
