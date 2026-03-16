@@ -5,7 +5,14 @@ on:
 
 jobs:
   deploy_preview:
-    if: (contains(github.event.comment.body, '🚀') || contains(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
+    if: |
+      (contains(github.event.comment.body, '🚀') || contains(github.event.comment.body, ':rocket:'))
+      && github.event.issue.pull_request
+      && (
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'
+      )
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
@@ -42,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ steps.get-branch.outputs.branch }}
           token: ${{ secrets.TOKEN_MNA_SHARED }}
@@ -52,7 +59,7 @@ jobs:
         run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
 
       - name: LFS Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .git/lfs/objects
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -87,8 +94,10 @@ jobs:
 
       - name: Detect force reseed
         id: force_seed
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          if echo "${{ github.event.comment.body }}" | grep -qF '🌱'; then
+          if echo "$COMMENT_BODY" | grep -qF '🌱'; then
             echo "value=true" >> "$GITHUB_OUTPUT"
           else
             echo "value=false" >> "$GITHUB_OUTPUT"
@@ -107,7 +116,7 @@ jobs:
 
       - name: Upload logs artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-${{ github.event.issue.number }}
           path: /tmp/deploy.log.gpg
