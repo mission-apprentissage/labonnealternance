@@ -72,16 +72,15 @@ const ZSeoMetierVille = z.object({
   geopoint: z.object({ lat: z.number(), long: z.number() }),
 })
 
-const ZSeoMetierCard = z.object({
-  title: z.string(),
+export const ZSeoJobCard = z.object({
   partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
   offer_title: z.string().nullable(),
   workplace_naf_label: z.string().nullable(),
   workplace_name: z.string().nullable(),
   application_count: z.number(),
-  partner_job_id: z.string(),
   workplace_address_city: z.string(),
   workplace_address_zipcode: z.string(),
+  lba_url: z.string(),
 })
 
 export const ZSeoMetier = z
@@ -100,7 +99,7 @@ export const ZSeoMetier = z
     formations: z.array(ZSeoMetierFormation),
     villes: z.array(ZSeoMetierVille),
     romes: z.array(z.string()),
-    cards: z.array(ZSeoMetierCard),
+    cards: z.array(ZSeoJobCard),
     created_at: z.date(),
     updated_at: z.date(),
   })
