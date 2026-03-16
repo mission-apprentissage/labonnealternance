@@ -10,10 +10,10 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
-import { publicConfig } from "@/config.public"
 
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
