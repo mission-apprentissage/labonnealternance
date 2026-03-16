@@ -24,7 +24,7 @@ const CarteOffre = ({ card }) => {
             card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA
               ? `Voir la société ${card.workplace_name}`
               : `Voir l'offre d'emploi ${card.offer_title} chez ${card.workplace_name}`,
-          href: card.lba_url.substring(publicConfig.baseUrl.length),
+          href: card.lba_url?.substring(publicConfig.baseUrl.length),
           prefetch: false,
         }}
         start={
@@ -54,7 +54,7 @@ const CarteOffre = ({ card }) => {
             sx={{
               color: fr.colors.decisions.text.actionHigh.grey.default,
             }}
-            dangerouslySetInnerHTML={{ __html: card.offer_title === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? card.workplace_naf_label : card.offer_title }}
+            dangerouslySetInnerHTML={{ __html: card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? card.workplace_naf_label : card.offer_title }}
           />
         }
         desc={
@@ -67,7 +67,7 @@ const CarteOffre = ({ card }) => {
             }}
           >
             <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
-              <Typography dangerouslySetInnerHTML={{ __html: card.workplace_name }} />
+              <Typography dangerouslySetInnerHTML={{ __html: card.workplace_name || "" }} />
             </Typography>
             <Typography
               component="span"
@@ -76,7 +76,7 @@ const CarteOffre = ({ card }) => {
               }}
               className={fr.cx("fr-text--xs")}
             >
-              {`${card.workplace_address_city} ${card.workplace_address_zipcode}`}
+              {`${card.workplace_address_city || ""} ${card.workplace_address_zipcode || ""}`}
             </Typography>
 
             <Box
