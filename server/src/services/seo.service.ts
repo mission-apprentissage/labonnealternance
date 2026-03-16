@@ -1,10 +1,11 @@
 import { JOB_STATUS_ENGLISH } from "shared"
-import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
 import seoVilleModel from "shared/models/seoVille.model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
-import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { getApplicationByCompanyCount, getApplicationByJobCount } from "@/services/application.service"
+import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 
 const DEFAULT_RADIUS_KM = 30
 
@@ -349,6 +350,67 @@ const getFormationsForMetier = async (romes: string[]) => {
     .sort((a, b) => parseInt(a.niveau) - parseInt(b.niveau))
 }
 
+const getJobPartnerDataForSeo = (jobPartner: IJobsPartnersOfferPrivateWithDistance) => {
+  return {
+    _id: jobPartner._id,
+    partner_label: jobPartner.partner_label,
+    partner_job_id: jobPartner.partner_job_id,
+    offer_title: jobPartner.offer_title,
+    workplace_naf_label: jobPartner.workplace_naf_label || null,
+    workplace_name: jobPartner.workplace_name || jobPartner.workplace_legal_name || jobPartner.workplace_brand || null,
+    workplace_address_city: jobPartner.workplace_address_city || null,
+    workplace_address_zipcode: jobPartner.workplace_address_zipcode || null,
+    application_count: 0,
+    lba_url: jobPartner.lba_url || null,
+    offer_creation: jobPartner.offer_creation || null,
+  }
+}
+
+const getJobsForMetier = async (romes: string[]) => {
+  const params = {
+    geo: null,
+    radius: 30,
+    romes: romes,
+    rncp: null,
+    opco: null,
+  }
+
+  const lbaJobs = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA })
+
+  const jobsForSeo = lbaJobs.slice(0, 6).map((job) => getJobPartnerDataForSeo(job))
+
+  const lbaCompanies = await getJobsPartnersFromDBForUI({ ...params, force_partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+
+  jobsForSeo.push(...lbaCompanies.slice(0, 6).map((job) => getJobPartnerDataForSeo(job)))
+
+  const partnerJobs = await getJobsPartnersFromDBForUI({ ...params, partners_to_exclude: [JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, JOBPARTNERS_LABEL.RECRUTEURS_LBA] })
+
+  jobsForSeo.push(...partnerJobs.slice(0, 12 - jobsForSeo.length).map((job) => getJobPartnerDataForSeo(job)))
+
+  const ids = jobsForSeo.flatMap((job) => (job.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job._id] : []))
+
+  const applicationCountByJob = await getApplicationByJobCount(ids)
+
+  applicationCountByJob.forEach((appCount) => {
+    const job = jobsForSeo.find((j) => j._id.toString() === appCount._id)
+    if (job) {
+      job.application_count = appCount.count
+    }
+  })
+
+  const sirets = jobsForSeo.flatMap((job) => (job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job.partner_job_id] : []))
+  const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+
+  applicationCountByCompany.forEach((appCount) => {
+    const job = jobsForSeo.find((j) => j.partner_job_id === appCount._id)
+    if (job) {
+      job.application_count = appCount.count
+    }
+  })
+
+  return jobsForSeo
+}
+
 export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
@@ -360,12 +422,11 @@ export const updateSeoMetierJobCounts = async () => {
     const entreprises = await getTopCompaniesForMetier(metier.romes)
     const villes = await getTopCitiesForMetier(metier.romes)
     const formations = await getFormationsForMetier(metier.romes)
-
-    // build cards: [], TODO dans un ticket à venir
+    const cards = await getJobsForMetier(metier.romes)
 
     await getDbCollection(seoMetierModel.collectionName).updateOne(
       { slug: metier.slug },
-      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations, villes, cards: [] } }
+      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations, villes, cards } }
     )
   })
 }

@@ -73,14 +73,17 @@ const ZSeoMetierVille = z.object({
 })
 
 export const ZSeoJobCard = z.object({
+  _id: zObjectId,
+  partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
   partner_label: ZJobsPartnersOfferPrivate.shape.partner_label,
   offer_title: z.string().nullable(),
   workplace_naf_label: z.string().nullable(),
   workplace_name: z.string().nullable(),
   application_count: z.number(),
-  workplace_address_city: z.string(),
-  workplace_address_zipcode: z.string(),
-  lba_url: z.string(),
+  workplace_address_city: z.string().nullable(),
+  workplace_address_zipcode: z.string().nullable(),
+  lba_url: z.string().nullable(),
+  offer_creation: z.date().nullable(),
 })
 
 export const ZSeoMetier = z
@@ -106,6 +109,7 @@ export const ZSeoMetier = z
   .strict()
 
 export type ISeoMetier = z.output<typeof ZSeoMetier>
+export type ISeoJobCard = z.output<typeof ZSeoJobCard>
 
 export default {
   zod: ZSeoMetier,
