@@ -10,11 +10,10 @@ import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { publicConfig } from "@/config.public"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
-const CarteOffre = (card) => {
+const CarteOffre = ({ card }) => {
   return (
     <CardStyling>
       <Card
-        key={card._id.toString()}
         background
         style={{ paddingBottom: fr.spacing("1v") }}
         border

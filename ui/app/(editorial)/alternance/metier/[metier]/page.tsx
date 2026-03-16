@@ -4,7 +4,6 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import type { ISeoJobCard } from "shared/models/seoMetier.model"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
@@ -419,8 +418,8 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
                 my: fr.spacing("4v"),
               }}
             >
-              {(data.cards as ISeoJobCard[]).map((card) => (
-                <CarteOffre key={card._id.toString()} {...card} />
+              {data.cards.map((card, idx) => (
+                <CarteOffre key={idx} card={card} />
               ))}
             </Box>
 
