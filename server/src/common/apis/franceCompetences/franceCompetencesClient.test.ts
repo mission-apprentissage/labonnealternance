@@ -13,6 +13,7 @@ describe("franceCompetencesClient", () => {
       expect(FCOpcoToOpcoEnum("AKTO")).toBe(OPCOS_LABEL.AKTO)
       expect(FCOpcoToOpcoEnum("OPCO EP")).toBe(OPCOS_LABEL.EP)
       expect(FCOpcoToOpcoEnum("UNIFORMATION COHESION SOCIALE")).toBe(OPCOS_LABEL.UNIFORMATION)
+      expect(FCOpcoToOpcoEnum("N/C")).toBeNull()
     })
   })
 
