@@ -85,7 +85,7 @@ export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: numb
 }
 
 const ZApiGeolocationResponse = z.object({
-  features: z.array(ZGeometryFeature),
+  features: z.array(ZPointFeature),
 })
 
 export const getGeolocation = async (rawAddress: string): Promise<IPointFeature | null> => {
