@@ -1,7 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, FormControl, FormHelperText, FormLabel } from "@mui/material"
 import { useField } from "formik"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import { Warning } from "@/theme/components/icons"
 
 export const CustomFormControl = (props) => {

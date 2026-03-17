@@ -1,10 +1,9 @@
-import { Box, Stack, Typography, Grid, List, ListItem } from "@mui/material"
-import Image from "next/image"
-
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Grid, List, ListItem, Stack, Typography } from "@mui/material"
+import Image from "next/image"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { CardForLink } from "./CardForLink"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const RessourcesRecruteur = () => {
   return (

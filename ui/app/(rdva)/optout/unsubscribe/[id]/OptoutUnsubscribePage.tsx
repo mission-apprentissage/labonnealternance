@@ -1,7 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Container, Typography, Box, Stack, TextareaAutosize, Radio, RadioGroup, FormControlLabel, FormControl } from "@mui/material"
+import { Box, Container, FormControl, FormControlLabel, Radio, RadioGroup, Stack, TextareaAutosize, Typography } from "@mui/material"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IEtablissementJson } from "shared"

@@ -1,5 +1,6 @@
 import { captureException } from "@sentry/nextjs"
 import type {
+  IBody,
   IJobCreate,
   ILbaItemLbaCompanyJson,
   ILbaItemLbaJobJson,
@@ -10,7 +11,6 @@ import type {
   IResponse,
   IRoutes,
   IUserWithAccountFields,
-  IBody,
 } from "shared"
 import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"

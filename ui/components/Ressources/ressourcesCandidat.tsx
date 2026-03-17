@@ -1,11 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, Stack, List, ListItem } from "@mui/material"
+import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import Image from "next/image" // Ou <img> classique si tu ne veux pas NextImage
-
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const RessourcesCandidat = () => {
   return (

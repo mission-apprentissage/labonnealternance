@@ -3,12 +3,12 @@ import { referrers } from "shared/constants/referers"
 
 import dayjs from "shared/helpers/dayjs"
 import { logger } from "@/common/logger"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
+import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
 import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import mailer from "@/services/mailer.service"
-import { createRdvaOptOutUnsubscribePageLink } from "@/services/appLinks.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.

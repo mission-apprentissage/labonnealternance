@@ -1,5 +1,8 @@
 import { badRequest } from "@hapi/boom"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
+import { omit } from "lodash-es"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
@@ -11,12 +14,8 @@ import type { IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-
-import { omit } from "lodash-es"
-import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
+import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 
 // Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/awsUtils", () => {

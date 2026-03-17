@@ -1,11 +1,10 @@
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import seoVilleModel from "shared/models/seoVille.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
-
-import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+import seoVilleModel from "shared/models/seoVille.model"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+import { getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 
 const DEFAULT_RADIUS_KM = 30
 

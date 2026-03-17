@@ -1,8 +1,8 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import Accordion from "@codegouvfr/react-dsfr/Accordion"
 import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
-import { fr } from "@codegouvfr/react-dsfr"
 
 const LbaJobCompetences = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   const groupedSkills = useMemo(() => {

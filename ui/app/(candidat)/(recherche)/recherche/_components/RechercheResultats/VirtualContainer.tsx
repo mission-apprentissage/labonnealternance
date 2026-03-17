@@ -2,8 +2,8 @@
 
 import type { SxProps, Theme } from "@mui/material"
 import { Box } from "@mui/material"
-import { useVirtualizer } from "@tanstack/react-virtual"
 import type { Virtualizer } from "@tanstack/react-virtual"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import type { RefObject } from "react"
 import { useEffect, useMemo, useRef } from "react"
 

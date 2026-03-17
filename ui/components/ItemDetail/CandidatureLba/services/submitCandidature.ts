@@ -2,13 +2,12 @@ import { useMutation } from "@tanstack/react-query"
 import { useContext } from "react"
 import type { IApplicationApiPrivate, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-
-import type { IApplicationSchemaInitValues } from "./getSchema"
-import { apiPost } from "@/utils/api.utils"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
+import { apiPost } from "@/utils/api.utils"
 import { sessionStorageSet } from "@/utils/localStorage"
+import type { IApplicationSchemaInitValues } from "./getSchema"
 
 export const useStoredApplicationDate = (item: ILbaItem) => {
   return useLocalStorage<number>(`application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`)

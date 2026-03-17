@@ -5,7 +5,10 @@
       "name": "Server",
       "focus": true,
       "description": "This run the server",
-      "commands": ["yarn services:start", "yarn server:dev"]
+      "commands": [
+        "yarn services:start",
+        "yarn server:dev"
+      ]
     },
     {
       "name": "Ui",

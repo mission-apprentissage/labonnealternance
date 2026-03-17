@@ -2,15 +2,11 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Button } from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography, Stack, FormLabel, Input } from "@mui/material"
+import { Box, FormLabel, Input, Stack, Typography } from "@mui/material"
 import type { FormikProps } from "formik"
 import { Formik } from "formik"
 import { useState } from "react"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-
-import { SelectFormField } from "./FormComponents/SelectFormField"
-import type { IRechercheForm } from "./RechercheForm/RechercheForm"
-import { rechercheFormToRechercheParams } from "./RechercheForm/RechercheForm"
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheMetierAutocomplete"
 import { RechercheNiveauSelectFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheNiveauSelect"
@@ -19,6 +15,9 @@ import { IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/re
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { baseUrl } from "@/config/config"
 import { PAGES } from "@/utils/routes.utils"
+import { SelectFormField } from "./FormComponents/SelectFormField"
+import type { IRechercheForm } from "./RechercheForm/RechercheForm"
+import { rechercheFormToRechercheParams } from "./RechercheForm/RechercheForm"
 
 type IFormTypeWidget = IRechercheForm & {
   job_name?: string

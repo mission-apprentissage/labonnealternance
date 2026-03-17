@@ -1,11 +1,10 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawHelloWorkModel from "shared/models/rawHelloWork.model"
-
-import { helloWorkJobToJobsPartners, ZHelloWorkJob } from "./helloWorkMapper"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { helloWorkJobToJobsPartners, ZHelloWorkJob } from "./helloWorkMapper"
 
 const rawCollectionName = rawHelloWorkModel.collectionName
 const offerXmlTag = "job"

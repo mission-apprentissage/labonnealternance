@@ -10,10 +10,10 @@ import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
 import config from "./config"
 import { bindProcessorServer } from "./http/jobProcessorServer"
+import { bindStreamProcessorServer } from "./http/StreamProcessorServer"
 import { bindFastifyServer } from "./http/server"
 import { setupJobProcessor } from "./jobs/jobs"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./jobs/simpleJobDefinitions"
-import { bindStreamProcessorServer } from "./http/StreamProcessorServer"
 import { startRecruiterChangeStream } from "./services/formulaire.service"
 
 async function setupAndStartProcessor(signal: AbortSignal, shouldStartWorker: boolean) {

@@ -5,8 +5,8 @@ import parse from "html-react-parser"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { Warning } from "@/theme/components/icons"
 import { publicConfig } from "@/config.public"
+import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)

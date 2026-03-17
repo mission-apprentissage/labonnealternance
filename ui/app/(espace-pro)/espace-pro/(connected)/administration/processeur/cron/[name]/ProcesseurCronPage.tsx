@@ -2,9 +2,8 @@
 import { Box, Typography } from "@mui/material"
 import { ProcessorStatusCronComponent } from "job-processor/dist/react"
 import { use } from "react"
-
-import { ProcessorStatusProvider } from "@/app/(espace-pro)/espace-pro/(connected)/administration/processeur/components/ProcessorStatusProvider"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import { ProcessorStatusProvider } from "@/app/(espace-pro)/espace-pro/(connected)/administration/processeur/components/ProcessorStatusProvider"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 

@@ -2,14 +2,13 @@ import { badRequest } from "@hapi/boom"
 import { matchSorter } from "match-sorter"
 import type { IAppellationRome, IAppellationsRomes, IDiplomesMetiers, IDomainesMetiers, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "shared"
 import { removeAccents, removeRegexChars } from "shared/utils/index"
-
-import { getRomesFromCatalogue } from "./catalogue.service"
-import { expandRomesV3toV4 } from "./rome.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
-import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getRomesFromCatalogue } from "./catalogue.service"
+import { expandRomesV3toV4 } from "./rome.service"
 
 let globalCacheMetiers: IDomainesMetiers[] = []
 let cacheMetierLoading = false
@@ -27,6 +26,7 @@ export const initializeCacheMetiers = async () => {
     cacheMetierLoading = false
     const roughObjSize = JSON.stringify(globalCacheMetiers).length
     if (config.env === "production") {
+      // biome-ignore lint/nursery/noFloatingPromises: migration
       notifyToSlack({
         subject: `Cache domaines metiers chargé`,
         message: `Cache domaines metiers chargé. Taille estimée ${roughObjSize} octets`,
@@ -47,6 +47,7 @@ export const initializeCacheDiplomas = async () => {
     cacheDiplomaLoading = false
     const roughObjSize = JSON.stringify(globalCacheDiplomas).length
     if (config.env === "production") {
+      // biome-ignore lint/nursery/noFloatingPromises: migration
       notifyToSlack({
         subject: `Cache diplômes metiers chargé`,
         message: `Cache diplômes metiers chargé. Taille estimée ${roughObjSize} octets`,

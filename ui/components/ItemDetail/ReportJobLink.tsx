@@ -1,21 +1,19 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Stack, Typography, TextField } from "@mui/material"
+import { Box, Stack, TextField, Typography } from "@mui/material"
 import { Formik } from "formik"
 import Image from "next/image"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
-
-import { CustomRadio } from "@/app/_components/CustomRadio"
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
+import { CustomRadio } from "@/app/_components/CustomRadio"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { reportLbaItem } from "@/utils/api"
-
 import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
+import { reportLbaItem } from "@/utils/api"
 
 const additionalMessageByMotif = {
   "Offre offensante ou discriminatoire": "Pouvez-vous préciser l'offense ou la discrimination en question (dans la description de l'annonce, lors de l'entretien, etc) ?",

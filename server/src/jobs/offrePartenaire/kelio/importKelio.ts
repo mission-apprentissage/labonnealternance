@@ -1,11 +1,10 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawKelioModel from "shared/models/rawKelio.model"
-
-import { kelioJobToJobsPartners, ZKelioJob } from "./kelioMapper"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { kelioJobToJobsPartners, ZKelioJob } from "./kelioMapper"
 
 const rawCollectionName = rawKelioModel.collectionName
 const offerXmlTag = "job"

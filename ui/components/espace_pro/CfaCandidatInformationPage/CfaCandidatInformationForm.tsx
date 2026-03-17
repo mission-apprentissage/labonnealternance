@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography, TextareaAutosize, FormControl, FormHelperText } from "@mui/material"
+import { Box, FormControl, FormHelperText, TextareaAutosize, Typography } from "@mui/material"
 
 export const CfaCandidatInformationForm = (props) => {
   const formik = props.formik

@@ -1,14 +1,13 @@
 import { PassThrough, pipeline } from "node:stream"
-
+import Boom, { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { CollectionName } from "shared/models/models"
 import * as xml2j from "xml2js"
-import Boom, { internal } from "@hapi/boom"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { notifyToSlack } from "@/common/utils/slackUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { notifyToSlack } from "@/common/utils/slackUtils"
 
 const XML_PREVIEW_LENGTH = 500
 
@@ -118,6 +117,7 @@ export const importFromStreamInXml = async ({
         logger.info("Pipeline succeeded.")
         const message = `import ${importName} terminé : ${offerInsertCount} offres importées. ${offerErrorCount} offres en erreur.`
         logger.info(message)
+        // biome-ignore lint/nursery/noFloatingPromises: migration
         notifyToSlack({
           subject: `import des offres ${importName} dans raw`,
           message,

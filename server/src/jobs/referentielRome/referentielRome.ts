@@ -3,9 +3,8 @@ import iconv from "iconv-lite"
 import { ObjectId } from "mongodb"
 import type { IReferentielRome } from "shared/index"
 import * as xml2js from "xml2js"
-
-import { asyncForEach } from "@/common/utils/asyncUtils"
 import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const getGenericItem = (genericItem: { libelle: string; items: { item: any | any[] } }) => {

@@ -2,12 +2,11 @@
 import { ObjectId } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
+import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL, NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
-
-import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const EngagementJeunesDiplome = {
@@ -76,16 +75,22 @@ export const engagementJeunesJobToJobsPartners = (job: IEngagementJeunesJob): IC
     niveau_diplome,
     societe,
     title,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     contrat,
     duree_contrat,
     duree_contrat_unit,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     location_departement,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     location_departement_code,
     location_pays,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     location_pays_code,
     mission,
     profil,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     reference,
+    // biome-ignore lint/correctness/noUnusedVariables: migration
     temps_partiel,
   } = job
 

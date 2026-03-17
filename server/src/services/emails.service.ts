@@ -1,9 +1,5 @@
 import type { IApplication } from "shared/models/index"
-
-import { BrevoEventStatus } from "./brevo.service"
-import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
-import { isHardbounceEventFromEtablissement } from "./etablissement.service"
-import { cleanHardbouncedAppointmentUser } from "./user.service"
+import { logger } from "@/common/logger"
 import {
   addEmailToBlacklist,
   BlackListOrigins,
@@ -17,7 +13,10 @@ import {
   processAppointmentToApplicantWebhookEvent,
   processAppointmentToCfaWebhookEvent,
 } from "./appointment.service"
-import { logger } from "@/common/logger"
+import { BrevoEventStatus } from "./brevo.service"
+import { disableEligibleTraininForAppointmentWithEmail } from "./eligibleTrainingsForAppointment.service"
+import { isHardbounceEventFromEtablissement } from "./etablissement.service"
+import { cleanHardbouncedAppointmentUser } from "./user.service"
 
 // webhook events excluding hardbounce
 export const processWebhookEvent = async (payload) => {

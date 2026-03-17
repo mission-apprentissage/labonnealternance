@@ -1,7 +1,6 @@
 import { zRoutes } from "shared/index"
-
-import { getCompanyContactInfo, updateContactInfo } from "@/services/recruteurLba.service"
 import type { Server } from "@/http/server"
+import { getCompanyContactInfo, updateContactInfo } from "@/services/recruteurLba.service"
 
 export default function (server: Server) {
   server.get(
