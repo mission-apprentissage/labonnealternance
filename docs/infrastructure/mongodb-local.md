@@ -270,11 +270,11 @@ Les fichiers de secrets sont en clair pour simplifier le développement :
 
 ### Déployé (preview/production)
 
-Les secrets sont gérés via Ansible Vault :
+Les secrets sont gérés via SOPS (`env.global.yml`) :
 
-| Template                                           | Variable Vault              | Destination                                    |
-| -------------------------------------------------- | --------------------------- | ---------------------------------------------- |
-| `.infra/files/configs/mongodb/mongo_keyfile.txt`   | `{{vault.MONGODB_KEYFILE}}` | `/opt/app/configs/mongodb/mongo_keyfile.txt`   |
-| `.infra/files/configs/mongodb/mongot_password.txt` | `{{vault.MONGOT_PASSWORD}}` | `/opt/app/configs/mongodb/mongot_password.txt` |
+| Template                                           | Variable SOPS              | Destination                                    |
+| -------------------------------------------------- | -------------------------- | ---------------------------------------------- |
+| `.infra/files/configs/mongodb/mongo_keyfile.txt`   | `{{ MONGODB_KEYFILE }}`    | `/opt/app/configs/mongodb/mongo_keyfile.txt`   |
+| `.infra/files/configs/mongodb/mongot_password.txt` | `{{ MONGOT_PASSWORD }}`    | `/opt/app/configs/mongodb/mongot_password.txt` |
 
 Les fichiers sont générés avec les permissions `400` (lecture seule par le propriétaire) lors du déploiement Ansible.
