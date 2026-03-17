@@ -60,4 +60,5 @@ paths = [
   '''\.infra/env.preview\.yml''',
   '''\.infra/env.local\.yml''',
   '''gitleaks-fingerprints-baseline.txt''',
+  '''docs/'''
 ]

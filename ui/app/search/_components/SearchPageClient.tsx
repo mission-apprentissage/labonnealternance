@@ -53,7 +53,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
           </Box>
 
-          <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
+          <SearchActiveFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
         </Container>
       </Box>
 

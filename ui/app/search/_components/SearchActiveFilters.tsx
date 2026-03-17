@@ -4,28 +4,29 @@ import { Box, Chip } from "@mui/material"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
+interface FacetCounts {
+  type_filter_label?: Record<string, number>
+  contract_type?: Record<string, number>
+  level?: Record<string, number>
+  activity_sector?: Record<string, number>
+}
+
 interface SearchActiveFiltersProps {
   params: ISearchPageParams
+  facets?: FacetCounts
   onNavigate: (newParams: ISearchPageParams) => void
 }
 
 type ArrayFilterKey = "type_filter_label" | "contract_type" | "level" | "activity_sector"
 
-const filterLabels: Record<ArrayFilterKey, string> = {
-  type_filter_label: "Type",
-  contract_type: "Contrat",
-  level: "Niveau",
-  activity_sector: "Secteur",
-}
-
-export function SearchActiveFilters({ params, onNavigate }: SearchActiveFiltersProps) {
+export function SearchActiveFilters({ params, facets, onNavigate }: SearchActiveFiltersProps) {
   const arrayFilters: ArrayFilterKey[] = ["type_filter_label", "contract_type", "level", "activity_sector"]
 
-  const activeFilters: Array<{ key: string; label: string; value: string; filterKey: ArrayFilterKey }> = []
+  const activeFilters: Array<{ key: string; value: string; count?: number; filterKey: ArrayFilterKey }> = []
 
   for (const key of arrayFilters) {
     for (const val of params[key] ?? []) {
-      activeFilters.push({ key: `${key}:${val}`, label: filterLabels[key], value: val, filterKey: key })
+      activeFilters.push({ key: `${key}:${val}`, value: val, count: facets?.[key]?.[val], filterKey: key })
     }
   }
 
@@ -41,25 +42,27 @@ export function SearchActiveFilters({ params, onNavigate }: SearchActiveFiltersP
   }
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: fr.spacing("2v"), mt: fr.spacing("2v") }}>
-      {activeFilters.map((filter) => (
-        <Chip
-          key={filter.key}
-          label={filter.value}
-          onDelete={() => removeFilter(filter.filterKey, filter.value)}
-          size="small"
-          sx={{
-            backgroundColor: fr.colors.decisions.background.contrast.blueCumulus.default,
-            color: fr.colors.decisions.text.actionHigh.blueCumulus.default,
-            fontWeight: 500,
-            fontSize: "0.8125rem",
-            "& .MuiChip-deleteIcon": {
+    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v"), mt: fr.spacing("5v") }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v"), flex: 1 }}>
+        {activeFilters.map((filter) => (
+          <Chip
+            key={filter.key}
+            label={filter.count != null ? `${filter.value} (${filter.count})` : filter.value}
+            onDelete={() => removeFilter(filter.filterKey, filter.value)}
+            size="small"
+            sx={{
+              backgroundColor: fr.colors.decisions.background.contrast.blueCumulus.default,
               color: fr.colors.decisions.text.actionHigh.blueCumulus.default,
-              "&:hover": { color: fr.colors.decisions.text.default.grey.default },
-            },
-          }}
-        />
-      ))}
+              fontWeight: 500,
+              fontSize: "0.8125rem",
+              "& .MuiChip-deleteIcon": {
+                color: fr.colors.decisions.text.actionHigh.blueCumulus.default,
+                "&:hover": { color: fr.colors.decisions.text.default.grey.default },
+              },
+            }}
+          />
+        ))}
+      </Box>
       {activeFilters.length > 1 && (
         <Button priority="tertiary no outline" size="small" onClick={clearAll}>
           Effacer tous les filtres
