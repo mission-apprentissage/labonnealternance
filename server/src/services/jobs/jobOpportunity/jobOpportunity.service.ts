@@ -822,6 +822,7 @@ export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJ
   return upsertJobOfferPrivate({
     data,
     partner_label: identity.organisation!,
+    partnerJobIdIfNew: data?.identifier?.partner_job_id,
     requestedByEmail: identity.email,
     current: null,
   })
