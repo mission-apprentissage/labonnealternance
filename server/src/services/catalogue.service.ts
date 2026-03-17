@@ -4,9 +4,9 @@ import { notFound } from "@hapi/boom"
 import type { AxiosInstance } from "axios"
 import axios from "axios"
 import { sortBy } from "lodash-es"
-import { ObjectId } from "mongodb"
+import { type Filter, ObjectId } from "mongodb"
+import type { IFormationCatalogue } from "shared"
 import type { IEtablissementCatalogue, IEtablissementCatalogueProche, IEtablissementCatalogueProcheWithDistance } from "shared/interface/etablissement.types"
-
 import { logger } from "@/common/logger"
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { fetchStream } from "@/common/utils/httpUtils"
@@ -152,12 +152,18 @@ export const getCatalogueEtablissements = async (query: object = {}, select: obj
  * @returns {Promise<Object[]>}
  */
 export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { rome: string[]; origin: { latitude: number; longitude: number }; limit: number }) => {
-  const formationQuery: { rome_codes: { $in: string[] } | { $regex: RegExp }; etablissement_formateur_courriel: { $nin: [null, ""] }; catalogue_published: boolean } = {
+  const formationQuery: Filter<IFormationCatalogue> = {
     rome_codes: { $in: rome },
-    etablissement_formateur_courriel: { $nin: [null, ""] },
-    catalogue_published: true,
+    $or: [
+      {
+        etablissement_formateur_courriel: { $nin: [null, ""] },
+      },
+      {
+        etablissement_gestionnaire_courriel: { $nin: [null, ""] },
+      },
+    ],
   }
-  const projection = { etablissement_formateur_id: 1, romes: 1, geo_coordonnees_etablissement_formateur: 1 }
+  const projection = { etablissement_formateur_id: 1 }
   let formations = await getCatalogueFormations(formationQuery, projection)
 
   if (formations.length === 0) {
@@ -165,8 +171,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     formations = await getCatalogueFormations(formationQuery, projection)
   }
 
-  const etablissementsToRetrieve = new Set()
-  formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
+  const etablissementsToRetrieve = new Set(formations.map((x) => x.etablissement_formateur_id))
 
   const { etablissements }: { etablissements: IEtablissementCatalogueProche[] } = await getCatalogueEtablissements(
     {
@@ -176,28 +181,23 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     { _id: 1, siret: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, localite: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
   )
 
-  let etablissementsRefined = etablissements.flatMap((etablissement) => {
+  let etablissementsRefined: IEtablissementCatalogueProcheWithDistance[] = etablissements.flatMap((etablissement) => {
+    const { geo_coordonnees } = etablissement
     // This field can be null
-    if (!etablissement.geo_coordonnees) {
+    if (!geo_coordonnees) {
       return []
     }
-
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    // biome-ignore lint/correctness/noUnsafeOptionalChaining: migration
-    const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
-
-    const distance_en_km = getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } })
-
+    const [latitude, longitude] = geo_coordonnees.split(",").map(parseFloat)
+    const distance_en_km = getDistanceInKm({ origin, destination: { latitude, longitude } })
     if (distance_en_km > DISTANCE_MAX_CFA_PROCHE) {
       return []
     }
-
     return [
       {
         ...etablissement,
         distance_en_km,
       },
-    ] as IEtablissementCatalogueProcheWithDistance[]
+    ]
   })
   etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
   const unsubscribedEtablissements = await getDbCollection("unsubscribedofs")
