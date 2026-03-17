@@ -99,17 +99,19 @@ const CarteOffre = ({ card }) => {
                     </Typography>
                   )
                 })()}
-              <Typography
-                component="span"
-                sx={{
-                  whiteSpace: "nowrap",
-                  color: fr.colors.decisions.text.default.info.default,
-                  py: fr.spacing("1v"),
-                }}
-                className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
-              >
-                {`${card.application_count} CANDIDATURE${card.application_count > 1 ? "S" : ""}`}
-              </Typography>
+              {[JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA].includes(card.partner_label) && (
+                <Typography
+                  component="span"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    color: fr.colors.decisions.text.default.info.default,
+                    py: fr.spacing("1v"),
+                  }}
+                  className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
+                >
+                  {`${card.application_count} CANDIDATURE${card.application_count > 1 ? "S" : ""}`}
+                </Typography>
+              )}
             </Box>
           </Box>
         }
