@@ -274,7 +274,9 @@ const JeSuisRecruteurPage = () => {
                 </Typography>
               </ListItem>
             </List>
-            <DsfrLink href={"#"}>Je ne souhaite plus recevoir de candidature spontanée</DsfrLink>
+            <DsfrLink href={PAGES.static.desinscription.getPath()} aria-label="Se désinscrire des candidatures spontanées">
+              Je ne souhaite plus recevoir de candidature spontanée
+            </DsfrLink>
           </Grid>
           <Grid size={{ md: 5, xs: 12 }} sx={{ mb: "auto" }}>
             <Image

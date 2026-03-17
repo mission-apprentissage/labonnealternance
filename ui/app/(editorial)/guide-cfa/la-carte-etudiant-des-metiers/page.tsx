@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { AUTHTYPE } from "shared/constants/recruteur"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
@@ -6,11 +7,19 @@ import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
 
-const LaCarteEtudiantDesMetiersPage = () => {
+const LaCarteEtudiantDesMetiersPage = async () => {
+  const { user } = await getSession()
+  const isCfaConnected = user && user.type === AUTHTYPE.CFA
+  const linkCarteEtudiantDesMetiers = isCfaConnected ? PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() : PAGES.static.authentification.getPath()
+  const ariaLabelCarteEtudiantDesMetiers = isCfaConnected
+    ? "Accédez à la page de téléchargement de la carte étudiant des métiers"
+    : "Accédez à la page d'authentification pour accéder à votre espace CFA connecté"
+
   const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaLaCarteEtudiantDesMetiers]
 
   return (
@@ -43,7 +52,7 @@ const LaCarteEtudiantDesMetiersPage = () => {
         />
         <Paragraph>
           Si vous êtes un organisme de formation{" "}
-          <DsfrLink href={PAGES.static.espaceProCreationCfa.getPath()} aria-label="Accédez à votre espace CFA connecté">
+          <DsfrLink href={linkCarteEtudiantDesMetiers} aria-label={ariaLabelCarteEtudiantDesMetiers}>
             accédez à votre espace connecté
           </DsfrLink>{" "}
           pour télécharger le modèle de la carte étudiant des métiers.

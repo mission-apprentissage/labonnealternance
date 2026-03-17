@@ -3,15 +3,20 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Grid, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Image from "next/image"
+import { AUTHTYPE } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.jeSuisCFA.getMetadata()
 
-const JeSuisCFAPage = () => {
+const JeSuisCFAPage = async () => {
+  const { user } = await getSession()
+  const isCfaConnected = user && user.type === AUTHTYPE.CFA
+
   return (
     <Box
       sx={{
@@ -265,16 +270,29 @@ const JeSuisCFAPage = () => {
               inscription.
             </Typography>
             <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("2v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
-              <Box>
-                <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
-                  Me connecter
+              {isCfaConnected ? (
+                <Button
+                  linkProps={{ href: PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() }}
+                  aria-label="Accéder à la carte des métiers"
+                  priority="primary"
+                  style={{ margin: "auto" }}
+                >
+                  Télécharger la carte des métiers
                 </Button>
-              </Box>
-              <Box>
-                <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary">
-                  Me créer un compte
-                </Button>
-              </Box>
+              ) : (
+                <>
+                  <Box>
+                    <Button linkProps={{ href: PAGES.static.authentification.getPath() }} aria-label="Accéder à la page de connexion" priority="secondary">
+                      Me connecter
+                    </Button>
+                  </Box>
+                  <Box>
+                    <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} aria-label="Accéder à la page de création de compte" priority="secondary">
+                      Me créer un compte
+                    </Button>
+                  </Box>
+                </>
+              )}
             </Box>
           </Grid>
         </Grid>
