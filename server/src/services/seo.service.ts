@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
@@ -5,6 +6,7 @@ import seoVilleModel from "shared/models/seoVille.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+import { metierData } from "@/jobs/seo/dataMetierSEO"
 import { getApplicationByCompanyCount, getApplicationByJobCount } from "@/services/application.service"
 import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
 
@@ -431,9 +433,23 @@ const getJobsForMetier = async (romes: string[]) => {
   return await getJobCards(params)
 }
 
+const getMetiersAfterRestoringDefaultMetiers = async () => {
+  const now = new Date()
+  await getDbCollection(seoMetierModel.collectionName).insertMany(
+    metierData.map((metier) => ({ ...metier, _id: new ObjectId(), created_at: now, updated_at: now })),
+    { ordered: false, bypassDocumentValidation: true }
+  )
+  return await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
+}
+
 export const updateSeoMetierJobCounts = async () => {
   logger.info("starting job updateSeoMetierJobCounts")
-  const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
+  let metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
+
+  if (metiers.length === 0) {
+    logger.warn("No metiers found in the database for updateSeoMetierJobCounts. Restoring default metiers.")
+    metiers = await getMetiersAfterRestoringDefaultMetiers()
+  }
 
   await asyncForEach(metiers, async (metier) => {
     logger.info(`updating SEO job counts for metier: ${metier.slug}`)
