@@ -64,7 +64,7 @@ function FinComponent(props: ComponentProps) {
             case "UNKNOWN":
               toast({
                 title: "Un problème est survenu.",
-                description: "L'email n'a pas pu être vérfié, merci de contacter le support.",
+                description: "L'email n'a pas pu être vérifié, merci de contacter le support.",
                 variant: "error",
                 autoHideDuration: 4000,
               })
