@@ -90,7 +90,7 @@ describe("POST /etablissement/creation", () => {
   const callCreation = (body: CreationBody) => entrepriseSdk(httpClient).create(body)
 
   describe("Création d'entreprise", () => {
-    it.only("Vérifie que le recruteur est créé avec une offre", async () => {
+    it("Vérifie que le recruteur est créé avec une offre", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
       expect.soft(response.statusCode).toBe(200)
       const { user } = response.json() as CreationResponse

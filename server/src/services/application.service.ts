@@ -277,7 +277,7 @@ export const sendApplicationV2 = async ({
     type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
   }
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
-  await checkMaxApplicationCount(lbaJob)
+  await checkMaxApplicationCount(job)
 
   const recruteurEmail = job.apply_email?.toLowerCase()
   if (!recruteurEmail) {
@@ -588,8 +588,7 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
   }
 }
 
-const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
-  const { job } = lbaJob
+const checkMaxApplicationCount = async (job: IJobsPartnersOfferPrivate) => {
   const applicationCount = await getDbCollection("applications").countDocuments({
     job_id: job._id,
     created_at: { $gte: dayjs().subtract(30, "day").toDate() },

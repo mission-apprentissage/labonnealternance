@@ -31,7 +31,6 @@ exports[`createJob > should insert a job 1`] = `
   "offer_desired_skills": [
     "Faire preuve de rigueur et de précision",
   ],
-  "offer_expiration": 2026-05-04T22:00:00.000Z,
   "offer_multicast": true,
   "offer_opening_count": 1,
   "offer_origin": "lba",

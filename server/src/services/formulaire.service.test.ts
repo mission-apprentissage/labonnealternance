@@ -67,7 +67,9 @@ describe("createJob", () => {
     const job = generateValidJobWritable()
     const result = await createJob({ user, siret: entreprise.siret, job })
 
-    expect.soft(omit(result, ["_id", "apply_recipient_id", "apply_url", "created_at", "lba_url", "offer_creation", "partner_job_id", "updated_at"])).toMatchSnapshot()
+    expect
+      .soft(omit(result, ["_id", "apply_recipient_id", "apply_url", "created_at", "lba_url", "offer_creation", "partner_job_id", "updated_at", "offer_expiration"]))
+      .toMatchSnapshot()
   })
 
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
