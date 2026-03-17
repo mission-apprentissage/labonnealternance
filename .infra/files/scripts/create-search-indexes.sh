@@ -62,10 +62,10 @@ const searchIndexes = [
         mappings: {
           dynamic: false,
           fields: {
-            title:             { type: "string", analyzer: "lucene.french" },
-            description:       { type: "string", analyzer: "lucene.french" },
-            keywords:          { type: "string", analyzer: "lucene.french" },
-            organization_name: [{ type: "string", analyzer: "lucene.french" }, { type: "token" }],
+            title:             { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            description:       { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            keywords:          { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            organization_name: [{ type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
             type:              { type: "token" },
             type_filter_label: { type: "token" },
             sub_type:          { type: "token" },
@@ -77,14 +77,21 @@ const searchIndexes = [
             publication_date:  { type: "date" },
             location:          { type: "geo" },
           }
-        }
+        },
+        synonyms: [
+          {
+            name: "lba_synonyms",
+            analyzer: "lucene.standard",
+            source: { collection: "search_synonyms" },
+          }
+        ]
       }
     }
   }
 ];
 
 let created = 0;
-let skipped = 0;
+let updated = 0;
 
 for (const { collection, index } of searchIndexes) {
   const coll = db.getCollection(collection);
@@ -92,8 +99,9 @@ for (const { collection, index } of searchIndexes) {
   const alreadyExists = existing.some(i => i.name === index.name);
 
   if (alreadyExists) {
-    print("  [skip] " + collection + "/" + index.name + " already exists");
-    skipped++;
+    coll.updateSearchIndex(index.name, index.definition);
+    print("  [updated] " + collection + "/" + index.name);
+    updated++;
   } else {
     coll.createSearchIndex(index);
     print("  [created] " + collection + "/" + index.name);
@@ -101,5 +109,5 @@ for (const { collection, index } of searchIndexes) {
   }
 }
 
-print("Done: " + created + " created, " + skipped + " skipped.");
+print("Done: " + created + " created, " + updated + " updated.");
 '

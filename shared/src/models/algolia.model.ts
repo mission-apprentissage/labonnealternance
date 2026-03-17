@@ -56,10 +56,10 @@ export default {
         mappings: {
           dynamic: false,
           fields: {
-            title: { type: "string", analyzer: "lucene.french" },
-            description: { type: "string", analyzer: "lucene.french" },
-            keywords: { type: "string", analyzer: "lucene.french" },
-            organization_name: [{ type: "string", analyzer: "lucene.french" }, { type: "token" }],
+            title: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            description: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            keywords: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            organization_name: [{ type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
             type: { type: "token" },
             type_filter_label: { type: "token" },
             sub_type: { type: "token" },
@@ -72,6 +72,13 @@ export default {
             location: { type: "geo" },
           },
         },
+        synonyms: [
+          {
+            name: "lba_synonyms",
+            analyzer: "lucene.standard",
+            source: { collection: "search_synonyms" },
+          },
+        ],
       },
     },
   ],

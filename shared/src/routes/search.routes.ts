@@ -79,7 +79,14 @@ export const zSearchRoutes = {
       headers: z.object({ referer: z.string().optional() }).passthrough(),
       response: {
         "200": z.object({
-          hits: z.array(ZAlgolia),
+          hits: z.array(
+            ZAlgolia.and(
+              z.object({
+                preview: z.array(z.object({ type: z.enum(["hit", "text"]), value: z.string() })),
+                matched_words: z.array(z.object({ word: z.string(), count: z.number() })),
+              })
+            )
+          ),
           nbHits: z.number(),
           page: z.number(),
           nbPages: z.number(),
