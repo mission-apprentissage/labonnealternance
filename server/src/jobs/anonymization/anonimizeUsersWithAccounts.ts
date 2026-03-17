@@ -1,7 +1,7 @@
+import { ObjectId } from "mongodb"
+import type { IRecruiter } from "shared"
 import dayjs from "shared/helpers/dayjs"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
-
-import { ObjectId } from "mongodb"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"

@@ -1,18 +1,14 @@
 import { readFileSync } from "node:fs"
-import { join } from "node:path"
-import { fileURLToPath } from "node:url"
 
 import { parse } from "csv-parse/sync"
 import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { JOB_STATUS } from "shared/models/job.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
-
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { logger } from "@/common/logger"
-
-const __dirname = fileURLToPath(new URL(".", import.meta.url))
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 interface CsvRow {
   id: string
@@ -22,7 +18,7 @@ interface CsvRow {
 }
 
 export const cleanClosedCompanies = async (csvPath?: string) => {
-  const filePath = csvPath ?? join(__dirname, "companies-to-close.csv")
+  const filePath = typeof csvPath === "string" ? csvPath : getStaticFilePath("companies-to-close.csv")
   const content = readFileSync(filePath, "utf-8")
   const rows: CsvRow[] = parse(content, { columns: true, skip_empty_lines: true })
 

@@ -125,8 +125,10 @@ function parseDuration(field) {
   const regexRange = /^Entre\s+(\d+)\s+et\s+(\d+)\s+mois$/
 
   let match
+  // biome-ignore lint/suspicious/noAssignInExpressions: migration
   if ((match = field.match(regexSingle))) {
     return parseInt(match[1], 10)
+    // biome-ignore lint/suspicious/noAssignInExpressions: migration
   } else if ((match = field.match(regexRange))) {
     const min = parseInt(match[1], 10)
 

@@ -1,4 +1,4 @@
-import { LazyMotion, domAnimation } from "motion/react"
+import { domAnimation, LazyMotion } from "motion/react"
 import * as motion from "motion/react-m"
 import type { PropsWithChildren } from "react"
 

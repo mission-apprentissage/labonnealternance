@@ -1,11 +1,9 @@
 import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"
-
-import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 
 export type IJobResult = {
   recruiter: Omit<IRecruiter, "jobs">

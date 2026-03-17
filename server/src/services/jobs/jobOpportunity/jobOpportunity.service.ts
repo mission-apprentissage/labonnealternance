@@ -3,11 +3,12 @@ import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
-import { JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import { assertUnreachable, JOB_STATUS_ENGLISH, JobCollectionName, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { NIVEAUX_POUR_LBA, NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
+import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
@@ -22,26 +23,23 @@ import type {
   IJobSearchApiV3Response,
 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobRecruiterApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
-
-import { buildJobUrlPath } from "shared/metier/lbaitemutils"
-import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 import { logger } from "@/common/logger"
 import type { IApiError } from "@/common/utils/errorManager"
+import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
 import type { FTJob } from "@/services/ftjob.service.types"
 import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
 import type { ILbaItemLbaCompany } from "@/services/lbaitem.shared.service.types"
 import { incrementLbaJobsViewCount } from "@/services/lbajob.service"
+import { getPartnerJobs } from "@/services/partnerJob.service"
 import { jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
-
-import { normalizeDepartementToRegex } from "@/common/utils/geolib"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getPartnerJobs } from "@/services/partnerJob.service"
 import { getEntrepriseEngagementFranceTravail } from "@/services/referentielEngagementEntreprise.service"
+import type { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 
 // TODO : QUICK FIX & TO REFACTO WITH JOBS PARTNER RETURN MODEL
 export const getJobsFromApiPrivate = async ({
@@ -122,6 +120,7 @@ export const getJobsFromApiPrivate = async ({
     return { lbaJobs, lbaCompanies, partnerJobs }
   } catch (err) {
     if (caller) {
+      // biome-ignore lint/nursery/noFloatingPromises: migration
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
     throw err
@@ -169,7 +168,7 @@ export const getJobsQueryPrivate = async (
   }
 
   if (query.caller) {
-    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
+    await trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
   return result

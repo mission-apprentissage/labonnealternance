@@ -1,8 +1,7 @@
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-
-import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { isCompanyInBlockedCfaList } from "./isCompanyInBlockedCfaList"
 
 const sourceFields = ["workplace_name"] as const satisfies (keyof IComputedJobsPartners)[]

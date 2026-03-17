@@ -2,10 +2,9 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-
-import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useUrlHash } from "@/app/hooks/useUrlHash"
 import RessourcesCandidat from "@/components/Ressources/ressourcesCandidat"
 import RessourcesCFA from "@/components/Ressources/ressourcesCFA"

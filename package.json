@@ -33,10 +33,13 @@
     "services:stop": "docker compose down",
     "services:clean": "yarn services:stop; docker system prune --volumes",
     "seed:update": ".bin/mna-lba seed:update",
-    "lint": "eslint --cache .",
-    "lint:fix": "yarn lint --fix",
-    "prettier:fix": "prettier --write  -u .",
-    "prettier:check": "prettier --check -u .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check .",
+    "check:ci": "biome ci .",
+    "check:fix": "biome check --write .",
     "release": "semantic-release",
     "release:interactive": ".bin/mna-lba app:release:interactive",
     "postinstall": "husky install",
@@ -56,34 +59,20 @@
     "knip": "knip"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.6",
     "@commitlint/cli": "^20.1.0",
     "@commitlint/config-conventional": "^20.0.0",
-    "@dword-design/eslint-plugin-import-alias": "^6.0.3",
-    "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0",
-    "@eslint/compat": "^1.4.1",
-    "@eslint/js": "^9.39.1",
-    "@next/eslint-plugin-next": "^16.0.1",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
     "@types/clamscan": "^2.4.1",
     "@types/node": "^24.10.0",
-    "@typescript-eslint/eslint-plugin": "^8.46.3",
-    "@typescript-eslint/parser": "^8.46.3",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",
-    "eslint": "^9.39.1",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import-x": "^4.16.1",
-    "eslint-plugin-n": "^17.21.3",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
     "gitleaks-secret-scanner": "^2.1.1",
-    "globals": "^16.5.0",
     "husky": "^9.1.7",
     "knip": "^5.67.1",
     "lint-staged": "^16.2.6",
-    "prettier": "^3.6.2",
     "semantic-release": "^25.0.1",
     "semantic-release-slack-bot": "^4.0.2",
     "sharp": "^0.34.1",
@@ -91,7 +80,6 @@
     "ts-node": "^10.9.2",
     "type-fest": "^5.2.0",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.46.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.5"
   },
@@ -100,20 +88,12 @@
       "@commitlint/config-conventional"
     ]
   },
-  "prettier": {
-    "semi": false,
-    "tabWidth": 2,
-    "printWidth": 180,
-    "bracketSpacing": true,
-    "trailingComma": "es5"
-  },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --cache --fix",
-      "prettier --write -u"
+    "*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc}": [
+      "biome check --write --no-errors-on-unmatched"
     ],
     "*": [
-      "prettier --write -u"
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
     ],
     "yarn.lock": [
       "yarn dedupe"

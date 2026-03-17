@@ -8,18 +8,16 @@ import { Form, Formik } from "formik"
 import type { IUserWithAccountFields } from "shared"
 import type { CFA, ENTREPRISE } from "shared/constants/recruteur"
 import * as Yup from "yup"
-
-import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
-import ModificationCompteEmail from "./ModificationCompteEmail"
-import { AUTHTYPE } from "@/common/contants"
-import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import CustomInput from "@/app/_components/CustomInput"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
+import { AUTHTYPE } from "@/common/contants"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
-
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { getUser, updateUserWithAccountFields } from "@/utils/api"
+import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
+import ModificationCompteEmail from "./ModificationCompteEmail"
 
 export default function CompteRenderer() {
   const { user } = useConnectedSessionClient()

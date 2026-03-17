@@ -1,3 +1,6 @@
+import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { AccessEntityType, removeAccents } from "shared"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
@@ -8,12 +11,8 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import type { IEntreprise, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
-
-import omit from "lodash-es/omit"
-import { createJob, getCompetencesRomeFromPartnerJob } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { createJob, getCompetencesRomeFromPartnerJob } from "./formulaire.service"
 
 useMongo()
 

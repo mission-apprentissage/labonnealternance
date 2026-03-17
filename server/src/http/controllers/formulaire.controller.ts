@@ -2,14 +2,11 @@ import { badRequest, conflict, internal, notFound } from "@hapi/boom"
 import { JOB_STATUS, JOB_STATUS_ENGLISH, zRoutes } from "shared/index"
 
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authenticationService"
 import { generateOffreToken } from "@/services/appLinks.service"
 import { buildEstablishmentId, entrepriseOnboardingWorkflow, establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
-import { getUserRecruteurById } from "@/services/userRecruteur.service"
-import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
-
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import type { Server } from "@/http/server"
 import {
   archiveFormulaireByEstablishmentId,
   cancelOffre,
@@ -28,6 +25,8 @@ import {
   validateDelegatedCompanyPhoneAndEmail,
   validateUserEmailFromJobId,
 } from "@/services/formulaire.service"
+import { getUserRecruteurById } from "@/services/userRecruteur.service"
+import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
 export default (server: Server) => {
   /**

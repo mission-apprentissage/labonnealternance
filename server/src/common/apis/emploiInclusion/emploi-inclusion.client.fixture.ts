@@ -1,7 +1,6 @@
 import nock from "nock"
-
-import type { IEmploiInclusionJob } from "./emploi-inclusion.client"
 import config from "@/config"
+import type { IEmploiInclusionJob } from "./emploi-inclusion.client"
 
 const API_PATH = "/api/v1/siaes/"
 
@@ -51,10 +50,14 @@ export function generateEmploiInclusionJobFixture(overrides: Partial<IEmploiIncl
 type IEmploiInclusionPageResponse = { count: number; next: string | null; previous: string | null; results: IEmploiInclusionJob[] }
 
 export function nockEmploiInclusionPage(departement: string, response: IEmploiInclusionPageResponse) {
-  return nock(config.emploi_inclusion.url).get(API_PATH).query({ departement, page_size: "100000" }).reply(200, response)
+  return nock(config.emploi_inclusion.url)
+    .get(API_PATH)
+    .matchHeader("Authorization", `Token ${config.emploi_inclusion.apiKey}`)
+    .query({ departement, page_size: "100000" })
+    .reply(200, response)
 }
 
 export function nockEmploiInclusionNextPage(nextUrl: string, response: IEmploiInclusionPageResponse) {
   const { pathname, search } = new URL(nextUrl)
-  return nock(config.emploi_inclusion.url).get(`${pathname}${search}`).reply(200, response)
+  return nock(config.emploi_inclusion.url).get(`${pathname}${search}`).matchHeader("Authorization", `Token ${config.emploi_inclusion.apiKey}`).reply(200, response)
 }

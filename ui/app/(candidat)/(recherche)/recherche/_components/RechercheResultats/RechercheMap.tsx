@@ -2,20 +2,19 @@
 
 import { Box } from "@mui/material"
 import { captureException } from "@sentry/nextjs"
-import { Map as Mapbox } from "mapbox-gl"
 import type { GeoJSONSource, MapMouseEvent } from "mapbox-gl"
+import { Map as Mapbox } from "mapbox-gl"
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-
-import { RechercheMapIci } from "./RechercheMap/RechercheMapIci"
-import { RechercheMapPopup } from "./RechercheMap/RechercheMapPopup"
+import { ErrorBoundary } from "@/app/_components/ErrorComponent"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useNavigateToResultItemDetail } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToResultItemDetail"
-import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { ILbaItem, IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
-import type { ItemReferenceLike, IRecherchePageParams, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import type { IRecherchePageParams, ItemReferenceLike, WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { deserializeItemReferences, isItemReferenceInList, serializeItemReferences } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { ErrorBoundary } from "@/app/_components/ErrorComponent"
+import { RechercheMapIci } from "./RechercheMap/RechercheMapIci"
+import { RechercheMapPopup } from "./RechercheMap/RechercheMapPopup"
 import "mapbox-gl/dist/mapbox-gl.css"
 
 const FRANCE_CENTER: [number, number] = [2.213749, 46.227638]

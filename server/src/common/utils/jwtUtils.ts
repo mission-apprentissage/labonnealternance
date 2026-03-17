@@ -1,4 +1,4 @@
-import { unauthorized, internal } from "@hapi/boom"
+import { internal, unauthorized } from "@hapi/boom"
 import type { SignOptions } from "jsonwebtoken"
 import jwt from "jsonwebtoken"
 

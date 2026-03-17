@@ -1,3 +1,8 @@
+import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
+import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
+import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
@@ -5,16 +10,10 @@ import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixt
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { UserEventType } from "shared/models/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import mailer from "@/services/mailer.service"
-import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
-import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
-import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 
 vi.mock("@/services/mailer.service", () => {
   return {

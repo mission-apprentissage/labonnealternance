@@ -1,17 +1,16 @@
+import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import type { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/index"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import type { AuthStrategy, IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import type { AccessRessouces } from "shared/security/permissions"
 import { describe, expect, it } from "vitest"
-
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { AccessUser2, AccessUserCredential, AccessUserToken } from "./authenticationService"
 import { authorizationMiddleware } from "./authorisationService"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveAdminUserTest, saveCfaUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
-import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 
 type MockedRequest = Pick<FastifyRequest, "params" | "query">
 const emptyRequest: MockedRequest = { params: {}, query: {} }

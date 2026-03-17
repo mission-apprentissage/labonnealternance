@@ -1,11 +1,10 @@
-import * as v8 from "v8"
-
 import { modelDescriptors } from "shared/models/models"
+import * as v8 from "v8"
 
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"
-import config from "./config"
 import { configureDbSchemaValidation, connectToMongodb } from "./common/utils/mongodbUtils"
+import config from "./config"
 
 process.on("unhandledRejection", (err) => logger.error(err, "unhandledRejection"))
 process.on("uncaughtException", (err) => logger.error(err, "uncaughtException"))

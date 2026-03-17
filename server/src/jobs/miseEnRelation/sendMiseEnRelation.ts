@@ -2,7 +2,6 @@ import type { IUserWithAccount } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
-
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"

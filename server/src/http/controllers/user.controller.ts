@@ -8,10 +8,9 @@ import type { IJob } from "shared/index"
 import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/index"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
 import { getUserFromRequest } from "@/security/authenticationService"
@@ -133,7 +132,7 @@ export default (server: Server) => {
       const { userAccess } = req
       const { userId, siret } = req.params
       // eslint-disable-next-line prefer-const
-      let { opco, ...userFields } = req.body
+      const { opco, ...userFields } = req.body
       // restreint la modification de l opco aux opcos et admin
       if (!(userAccess?.admin || userAccess?.opcos.length)) {
         throw forbidden()

@@ -1,11 +1,10 @@
+import { roleManagementEventFactory } from "@tests/utils/user.test.utils"
+import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import type { IRoleManagement } from "shared/models/index"
 import { AccessStatus } from "shared/models/index"
-import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import { describe, expect, it } from "vitest"
-
 import { isGrantedAndAutoValidatedRole } from "./roleManagement.service"
-import { roleManagementEventFactory } from "@tests/utils/user.test.utils"
 
 const roleWithEventsFactory = (events: IRoleManagement["status"]) => {
   return generateRoleManagementFixture({

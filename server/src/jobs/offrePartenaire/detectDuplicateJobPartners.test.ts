@@ -1,16 +1,16 @@
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "bson"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 
-import type { OfferRef } from "./detectDuplicateJobPartners"
-import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate } from "./detectDuplicateJobPartners"
 import { getPairs } from "@/common/utils/array"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
-import { givenSomeJobPartners } from "@tests/fixture/givenSomeJobPartners"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import type { OfferRef } from "./detectDuplicateJobPartners"
+import { checkSimilarity, detectDuplicateJobPartners, isCanonicalForDuplicate } from "./detectDuplicateJobPartners"
 
 const siret = "42476141900045"
 

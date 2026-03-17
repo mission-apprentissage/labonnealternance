@@ -1,10 +1,9 @@
+import { JOB_STATUS_ENGLISH } from "shared"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { JOB_STATUS_ENGLISH } from "shared"
-import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const fillEntrepriseEngagementJobsPartners = async () => {
   const filledFields = ["contract_is_disabled_elligible"] as const satisfies (keyof IJobsPartnersOfferPrivate)[]

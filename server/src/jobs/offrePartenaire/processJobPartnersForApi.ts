@@ -1,13 +1,12 @@
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { logger } from "@/common/logger"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { fillLbaUrl } from "./fillLbaUrl"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { logger } from "@/common/logger"
 
 const excludedJobPartnersFromApi = Object.values(JOBPARTNERS_LABEL)
 

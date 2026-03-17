@@ -1,15 +1,14 @@
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ISitemap } from "shared/models/sitemap.model"
 import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
-
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 
 const generateSitemapXml = async () => {
   const lbaJobPartners = await getDbCollection("jobs_partners")

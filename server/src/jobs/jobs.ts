@@ -1,6 +1,11 @@
 import { addJob, initJobProcessor } from "job-processor"
 import { ObjectId } from "mongodb"
 
+import { getLoggerWithContext, logger } from "@/common/logger"
+import { getDatabase } from "@/common/utils/mongodbUtils"
+import config from "@/config"
+import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
+import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
@@ -54,11 +59,6 @@ import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinition
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 import { controlApplications } from "./verifications/controlApplications"
 import { controlAppointments } from "./verifications/controlAppointments"
-import { generateSitemap } from "@/services/sitemap.service"
-import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
-import config from "@/config"
-import { getDatabase } from "@/common/utils/mongodbUtils"
-import { getLoggerWithContext, logger } from "@/common/logger"
 
 export async function setupJobProcessor() {
   logger.info("Setup job processor")
@@ -167,6 +167,8 @@ export async function setupJobProcessor() {
             cron_string: "15 2 * * *",
             handler: importCatalogueFormationJob,
             tag: "main",
+            checkinMargin: 30,
+            maxRuntimeInMinutes: 90,
           },
           "Mise à jour des champs spécifiques de la collection formations catalogue": {
             cron_string: "30 2 * * *",

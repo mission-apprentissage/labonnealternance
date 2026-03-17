@@ -1,4 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
@@ -18,13 +19,12 @@ import type { IJobOfferApiWriteV3, IJobOfferApiWriteV3Input } from "shared/route
 import { jobsRouteApiv3Converters, zJobOfferApiReadV3, zJobOfferApiWriteV3, zJobSearchApiV3Response } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
-import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { JobOpportunityRequestContext } from "./JobOpportunityRequestContext"
+import { createJobOffer, findJobOpportunityById, findJobsOpportunities, getJobsPartnersByIdAsJobOfferApi, updateJobOffer } from "./jobOpportunity.service"
 
 useMongo()
 

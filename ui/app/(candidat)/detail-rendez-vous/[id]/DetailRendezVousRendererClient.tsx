@@ -1,6 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, List, ListItem } from "@mui/material"
+import { Box, List, ListItem, Typography } from "@mui/material"
 import { useFormik } from "formik"
 import { useState } from "react"
 import type { IAppointmentRecapJson } from "shared"

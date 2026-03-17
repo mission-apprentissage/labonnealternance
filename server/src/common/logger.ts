@@ -1,9 +1,8 @@
 import { Transform, Writable } from "node:stream"
-import util from "util"
-
 import bunyan from "bunyan"
 import chalk from "chalk"
 import { isEmpty, omit } from "lodash-es"
+import util from "util"
 
 import config from "@/config"
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import { PageWithParams } from "./PageWithParams"
 import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
+import { PageWithParams } from "./PageWithParams"
 
 export async function generateMetadata({ params }: { params: Promise<{ job_id: string }> }): Promise<Metadata> {
   const { job_id } = await params

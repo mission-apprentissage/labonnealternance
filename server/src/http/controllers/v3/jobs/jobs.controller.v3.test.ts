@@ -1,3 +1,10 @@
+import { mockDiagoriente } from "@tests/mocks/mockDiagoriente"
+import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
+import { mockLab } from "@tests/mocks/mockLab"
+import { jobsV3Sdk, processComputedToJobsPartners } from "@tests/sdk/jobsV3Sdk"
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -10,19 +17,11 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model
 import type { IJobOfferApiReadV3, IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-
 import z from "zod"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
-import { mockDiagoriente } from "@tests/mocks/mockDiagoriente"
-import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
-import { mockLab } from "@tests/mocks/mockLab"
-import { jobsV3Sdk, processComputedToJobsPartners } from "@tests/sdk/jobsV3Sdk"
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/apis/franceTravail/franceTravail.client")
 vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")

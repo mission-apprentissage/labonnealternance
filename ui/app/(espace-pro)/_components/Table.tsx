@@ -1,8 +1,7 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
 import { useFlexLayout, useSortBy, useTable } from "react-table"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"

@@ -1,16 +1,15 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
-import { publicConfig } from "@/config.public"
 
 const EmailEnValidationManuelle = () => (
   <Box sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>

@@ -1,7 +1,7 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
-import { ObjectId } from "mongodb"
 import type { Filter } from "mongodb"
+import { ObjectId } from "mongodb"
 import type {
   IDelegation,
   IJob,
@@ -16,23 +16,29 @@ import type {
   zRoutes,
 } from "shared"
 import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
+import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
-import dayjs from "shared/helpers/dayjs"
-import type { ICFA } from "shared/models/cfa.model"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type z from "zod"
-import { getUserManagingOffer } from "./application.service"
+import { deduplicate } from "@/common/utils/array"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
 import { createViewDelegationLink } from "./appLinks.service"
+import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
 import { buildEstablishmentId, establishmentIdToUserIdAndSiret, getEntrepriseDataFromSiret } from "./etablissement.service"
 import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
@@ -43,13 +49,6 @@ import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from ".
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
-import { deduplicate } from "@/common/utils/array"
-import config from "@/config"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { asyncForEach } from "@/common/utils/asyncUtils"
 
 type ISentDelegation = {
   raison_sociale: string

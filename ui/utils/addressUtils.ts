@@ -1,4 +1,4 @@
-import { isNonEmptyString, countInstances } from "./strutils"
+import { countInstances, isNonEmptyString } from "./strutils"
 
 /*
  * Permet de ne retenir QUE l'adresse postale,

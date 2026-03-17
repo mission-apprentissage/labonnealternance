@@ -1,25 +1,24 @@
-import { randomUUID } from "crypto"
-
 import { ObjectId } from "bson"
+import { randomUUID } from "crypto"
 import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { modelDescriptors } from "shared/models/models"
 import type { CollectionName } from "shared/models/models"
+import { modelDescriptors } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
-
-import { recreateIndexes } from "./recreateIndexes"
 import { logger } from "@/common/logger"
 import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
+import { recreateIndexes } from "./recreateIndexes"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
 // leave this function to be used.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// biome-ignore lint/correctness/noUnusedVariables: migration
 async function reduceModel(model: CollectionName, limit = 20000) {
   logger.info(`reducing collection ${model} to ${limit} latest documents`)
   try {
@@ -333,7 +332,8 @@ export async function obfuscateCollections(): Promise<void> {
     collectionsToEmpty.map(async (collectionToEmpty) => {
       logger.info(`dropping ${collectionToEmpty}`)
       await getDatabase()
-        .dropCollection(collectionToEmpty as string)
+        .dropCollection(collectionToEmpty)
+        // biome-ignore lint/suspicious/noEmptyBlockStatements: migration
         .catch(() => {})
     })
   )

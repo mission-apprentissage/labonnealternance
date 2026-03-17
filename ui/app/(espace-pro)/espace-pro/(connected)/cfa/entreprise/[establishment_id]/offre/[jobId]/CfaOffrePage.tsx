@@ -2,9 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { CFA } from "shared/constants/recruteur"
-
-import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
+import UpsertOffre from "@/app/(espace-pro)/espace-pro/(connected)/_components/UpsertOffre"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function Page() {

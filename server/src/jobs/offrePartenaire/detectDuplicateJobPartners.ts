@@ -9,13 +9,13 @@ import jobsPartnersComputedModel, { JOB_PARTNER_BUSINESS_ERROR } from "shared/mo
 import { removeAccents } from "shared/utils/index"
 import * as stringSimilarity from "string-similarity"
 
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
-import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 
 // champs utilisés pour les projections
 const fieldsRead = [

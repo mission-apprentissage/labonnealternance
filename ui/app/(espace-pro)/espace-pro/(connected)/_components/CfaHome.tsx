@@ -9,12 +9,9 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import type { IRecruiter, IRecruiterJson } from "shared"
-
-import { CfaHomeEntrepriseMenu } from "./CfaHomeEntrepriseMenu"
-import { ConfirmationSuppressionEntreprise } from "./ConfirmationSuppressionEntreprise"
+import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -22,6 +19,8 @@ import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
+import { CfaHomeEntrepriseMenu } from "./CfaHomeEntrepriseMenu"
+import { ConfirmationSuppressionEntreprise } from "./ConfirmationSuppressionEntreprise"
 
 const EmptySpace = () => (
   <Box

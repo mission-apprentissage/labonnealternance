@@ -3,6 +3,7 @@ import type { IApiAlternanceTokenData } from "api-alternance-sdk"
 import type { FastifyRequest } from "fastify"
 import { ObjectId } from "mongodb"
 import { ADMIN, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
+import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { ComputedUserAccess, IApplication, IUserWithAccount } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -13,14 +14,12 @@ import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.rout
 import type { AccessPermission, AccessResourcePath } from "shared/security/permissions"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 import type { Primitive } from "type-fest"
-
-import type { ICFA } from "shared/models/cfa.model"
-import { getUserFromRequest } from "./authenticationService"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getApplicantFromDB } from "@/services/applicant.service"
 import { establishmentIdToUserIdAndSiret } from "@/services/etablissement.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
+import { getUserFromRequest } from "./authenticationService"
 
 type JobResource = { job: IJobsPartnersOfferPrivate; entreprise?: IEntreprise; cfa?: ICFA }
 type ApplicationResource = { application: IApplication; jobResource?: JobResource; applicantId?: string; user?: IUserWithAccount | null }
