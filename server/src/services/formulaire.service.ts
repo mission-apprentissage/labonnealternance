@@ -537,6 +537,10 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
   const now = new Date()
 
   const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
+  const existingJob = await getDbCollection("jobs_partners").findOne({ _id: id })
+  if (!existingJob) {
+    throw internal("Job not found")
+  }
 
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
     offer_opening_count: job.job_count ?? 1,
@@ -556,13 +560,11 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     job_delegation_count: job?.delegations?.length ?? 0,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
+    offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
+    offer_rome_appellation: job.rome_appellation_label,
   }
 
-  const found = await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: jobPartnerUpdate })
-
-  if (!found) {
-    throw internal("Job not found")
-  }
+  await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
 }
 
 export const updateJobDelegation = async (jobId: ObjectId, delegation: IDelegation) => {

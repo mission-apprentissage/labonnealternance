@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import type { IJob } from "shared"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useToast } from "@/app/hooks/useToast"
 import { createOffre, getOffre } from "@/utils/api"
@@ -39,5 +40,5 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
 
   if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
-  return <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
+  return <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre as unknown as IJob} />
 }

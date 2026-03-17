@@ -6,12 +6,12 @@ import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import { useState } from "react"
-import type { IReferentielRomeForJobJson } from "shared"
-import type { IJobJson } from "shared/models/job.model"
+import type { IJob, IReferentielRomeForJob } from "shared"
 import { JOB_STATUS } from "shared/models/job.model"
 import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
+import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
 import { getRomeDetail } from "@/utils/api"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
@@ -20,7 +20,7 @@ import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
 
-export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: { offre?: IJobJson; establishment_id?: string; handleSave?: (values: any) => void }) => {
+export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: { offre?: IJob; establishment_id?: string; handleSave?: (values: any) => void }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
   const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string }>(
@@ -30,12 +30,12 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
 
   const romeQuery = useQuery({
     queryKey: ["getRomeDetail", rome],
-    queryFn: () => getRomeDetail(rome),
+    queryFn: () => getRomeDetail(rome) as Promise<IReferentielRomeForJob>,
     retry: false,
     enabled: Boolean(rome),
   })
 
-  const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJobJson["competences"] | null>(offre?.competences_rome ?? null)
+  const [selectedCompetences, setSelectedCompetences] = useState<IReferentielRomeForJob["competences"] | null>(offre?.competences_rome ?? null)
   const [competencesDirty, setCompetencesDirty] = useState(false)
 
   const onRomeChange = (rome: string, appellation: string) => {
@@ -44,14 +44,14 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
     setCompetencesDirty(true)
   }
 
-  const onSelectedCompetencesChange = (selectedCompetences: Record<string, string[]>) => {
+  const onSelectedCompetencesChange = (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => {
     if (!romeQuery.data) {
       throw new Error("inattendu : pas de données ROME")
     }
-    const { competences } = romeQuery.data as IReferentielRomeForJobJson
-    const isSelected = (groupKey: string, competence: string): boolean => (selectedCompetences[groupKey] ?? []).includes(competence)
+    const { competences } = romeQuery.data as IReferentielRomeForJob
+    const isSelected = (groupKey: string, competence: string): boolean => selectedCompetences[groupKey].has(competence)
 
-    const savedCompetences: IReferentielRomeForJobJson["competences"] = {
+    const savedCompetences: IReferentielRomeForJob["competences"] = {
       savoir_etre_professionnel: competences.savoir_etre_professionnel.filter((x) => isSelected("savoir_etre_professionnel", x.libelle)),
       savoir_faire: competences.savoir_faire.flatMap((competencesGroup) => {
         const selectedItems = (competencesGroup?.items ?? []).filter(({ libelle }) => isSelected("savoir_faire", libelle))
@@ -83,6 +83,12 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
 
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
+  const jobStartDateYup = Yup.date()
+    .max(maxStartDate, `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`)
+    .required("Champ obligatoire")
+  if (!offre) {
+    jobStartDateYup.min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
+  }
 
   return (
     <>
@@ -108,10 +114,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
         validationSchema={Yup.object().shape({
           rome_label: Yup.string().required("Champ obligatoire"),
           job_level_label: Yup.string().required("Champ obligatoire"),
-          job_start_date: Yup.date()
-            .min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
-            .max(maxStartDate, `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`)
-            .required("Champ obligatoire"),
+          job_start_date: jobStartDateYup,
           job_type: Yup.array().required("Champ obligatoire"),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
@@ -154,9 +157,9 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
               {romeAndAppellation ? (
                 <RomeDetailWithQuery
                   selectedCompetences={{
-                    savoirs: (finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle)),
-                    savoir_etre_professionnel: (finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : [])),
-                    savoir_faire: (finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle)),
+                    savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                    savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+                    savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
                   }}
                   title={values.offer_title_custom || romeAndAppellation.appellation}
                   rome={romeAndAppellation.rome}

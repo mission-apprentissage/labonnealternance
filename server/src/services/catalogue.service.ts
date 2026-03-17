@@ -165,8 +165,12 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     formations = await getCatalogueFormations(formationQuery, projection)
   }
 
-  const etablissementsToRetrieve = new Set()
-  formations.forEach((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
+  const etablissementsToRetrieve = new Set<string>()
+  formations.forEach(({ etablissement_formateur_id }) => {
+    if (etablissement_formateur_id) {
+      etablissementsToRetrieve.add(etablissement_formateur_id)
+    }
+  })
 
   const { etablissements }: { etablissements: IEtablissementCatalogueProche[] } = await getCatalogueEtablissements(
     {
