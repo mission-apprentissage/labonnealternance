@@ -1,7 +1,12 @@
+.bin/scripts/env-init.sh:generic-password-assignment:pwd
+.bin/scripts/env-init.sh:mongodb-connection-string:mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true
 .infra/ansible/preview_cleanup.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/{{
 .infra/ansible/preview_cleanup.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/admin?authSource=local&directConnection=true
 .infra/ansible/tasks/preview_pr.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/preview_{{
 .infra/docker-compose.preview-system.yml:generic-secret-assignment:SECRET_KEY
+docs/infrastructure/mongodb-local.md:generic-password-assignment:pwd
+docs/infrastructure/mongodb-local.md:mongodb-connection-string:mongodb://__system:password@127.0.0.1:27017/labonnealternance?authSource=local&directConnection=true
+docs/infrastructure/mongodb-local.md:mongodb-connection-string:mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true
 LBA_CATALOGUE_URL=https://catalogue-apprentissage.intercariforef.org
 LBA_SERVER_SENTRY_DSN=https://public@sentry.example.com/1
 server/.env.test:mongodb-connection-string:mongodb://127.0.0.1:27017/lba-test

@@ -1,6 +1,4 @@
-# MongoDB Local avec Atlas Search
-
-Ce document décrit l'installation locale de MongoDB avec support Atlas Search via mongot.
+# MongoDB avec Atlas Search
 
 ## Architecture
 
@@ -20,8 +18,6 @@ Ce document décrit l'installation locale de MongoDB avec support Atlas Search v
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Composants :**
-
 - **mongodb** : MongoDB Community Server 8.2.3 avec paramètres search activés
 - **mongot** : Moteur de recherche Atlas Search (Lucene-based)
 
@@ -33,7 +29,7 @@ Ce document décrit l'installation locale de MongoDB avec support Atlas Search v
 | `.infra/local/Dockerfile.mongot` | Image mongot avec password file                    |
 | `.infra/local/mongod.conf`       | Configuration mongod (replica set + search params) |
 | `.infra/local/mongot.yml`        | Configuration mongot (sync source, gRPC)           |
-| `.infra/local/mongot_password`   | Password pour l'utilisateur mongotUser             |
+| `.infra/local/mongot_password`   | Password en clair pour l'utilisateur mongotUser (référence à la variable SOPS `MONGOT_PASSWORD`) |
 | `docker-compose.yml`             | Orchestration des services                         |
 
 ## Paramètres clés
@@ -62,30 +58,26 @@ server:
     address: "0.0.0.0:27028"
 ```
 
-## Démarrage
+---
 
-### Premier lancement (volumes vides)
+## Environnement local (développeur)
+
+### Premier lancement
+
+Si vous avez déjà des volumes MongoDB d'une version précédente, supprimez-les d'abord :
 
 ```bash
-# 1. Démarrer les services
-docker-compose up -d mongodb mongot
-
-# 2. Attendre que mongodb soit healthy
-docker-compose ps
-
-# 3. Initialiser le replica set
-docker exec labonnealternance-mongodb-1 mongosh \
-  "mongodb://__system:password@localhost:27017/?authSource=local&directConnection=true" \
-  --eval 'rs.initiate()'
-
-# 4. Créer l'utilisateur mongotUser
-docker exec labonnealternance-mongodb-1 mongosh \
-  "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
-  --eval 'db.createUser({ user: "mongotUser", pwd: "mongotPassword", roles: ["searchCoordinator"] })'
-
-# 5. Redémarrer mongot pour qu'il se connecte
-docker-compose restart mongot
+docker-compose down
+docker volume rm lba_mongodb_data
 ```
+
+Puis lancez le setup :
+
+```bash
+yarn setup
+```
+
+`yarn setup` prend en charge l'initialisation complète : démarrage des services, initialisation du replica set, création de l'utilisateur `mongotUser` (mot de passe lu depuis SOPS), redémarrage de mongot, migrations et recréation des index.
 
 ### Lancement standard (volumes existants)
 
@@ -93,9 +85,7 @@ docker-compose restart mongot
 docker-compose up -d mongodb mongot
 ```
 
-## Vérification
-
-### Status des services
+### Vérification
 
 ```bash
 docker-compose ps
@@ -109,13 +99,39 @@ labonnealternance-mongodb-1   Up (healthy)
 labonnealternance-mongot-1    Up (healthy)
 ```
 
-### Health check mongot
-
 ```bash
 docker exec labonnealternance-mongot-1 curl -s localhost:8080/health
 ```
 
 Résultat attendu : `{"status":"SERVING"}`
+
+## Serveurs (preview/production)
+
+### Gestion des secrets
+
+Les secrets sont chiffrés dans `env.global.yml` via SOPS et déployés par Ansible :
+
+| Template                                           | Variable SOPS           | Destination                                    |
+| -------------------------------------------------- | ----------------------- | ---------------------------------------------- |
+| `.infra/files/configs/mongodb/mongo_keyfile.txt`   | `{{ MONGODB_KEYFILE }}` | `/opt/app/configs/mongodb/mongo_keyfile.txt`   |
+| `.infra/files/configs/mongodb/mongot_password.txt` | `{{ MONGOT_PASSWORD }}` | `/opt/app/configs/mongodb/mongot_password.txt` |
+
+Les fichiers sont générés avec les permissions `400` (lecture seule par le propriétaire) lors du déploiement Ansible.
+
+### FCV (Feature Compatibility Version)
+
+Le FCV contrôle quelles fonctionnalités sont activées. En production, il doit correspondre à la version MongoDB déployée.
+
+Version actuelle : **8.2**
+
+```bash
+# Vérifier le FCV d'un serveur
+mongosh --eval 'db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })'
+```
+
+**Attention :** Une fois le FCV mis à jour vers une version majeure, le downgrade vers la version précédente n'est plus possible sans support MongoDB. MongoDB ne permet pas de sauter des versions majeures lors d'une migration (ex : 7.0 → 8.0 → 8.2).
+
+---
 
 ## Test rapide Atlas Search
 
@@ -196,22 +212,22 @@ docker exec labonnealternance-mongodb-1 mongosh \
   --eval 'db.articles.drop()'
 ```
 
+---
+
 ## Troubleshooting
 
-### mongot redémarre en boucle
+### mongot redémarre en boucle / AuthenticationFailed
 
-**Cause probable :** Replica set non initialisé ou utilisateur mongotUser manquant.
+**Cause probable :** L'utilisateur `mongotUser` n'existe pas dans MongoDB (volumes réinitialisés sans relancer `yarn setup`).
 
-**Solution :**
+**Solution :** Relancer `yarn setup`, ou créer l'utilisateur manuellement :
 
 ```bash
-# Vérifier les logs
-docker-compose logs mongot --tail 50
-
-# Réinitialiser si nécessaire
-docker exec labonnealternance-mongodb-1 mongosh \
-  "mongodb://__system:password@localhost:27017/?authSource=local&directConnection=true" \
-  --eval 'rs.status()'
+MONGOT_PWD=$(sops --decrypt --extract '["MONGOT_PASSWORD"]' .infra/env.global.yml)
+docker compose exec mongodb mongosh \
+  "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
+  --eval "db.createUser({ user: 'mongotUser', pwd: '${MONGOT_PWD}', roles: ['searchCoordinator'] })"
+docker compose restart mongot
 ```
 
 ### Erreur "REPLICA_SET_GHOST"
@@ -226,55 +242,23 @@ docker exec labonnealternance-mongodb-1 mongosh \
   --eval 'rs.initiate()'
 ```
 
+### Erreur "MongoServerError: not authorized"
+
+Les credentials par défaut sont dans `server/.env` :
+
+```
+LBA_MONGODB_URI=mongodb://__system:password@127.0.0.1:27017/labonnealternance?authSource=local&directConnection=true
+```
+
 ### Erreur de permissions password file
 
 **Cause :** Le fichier password a des permissions trop permissives.
 
-**Solution :** Utiliser le Dockerfile.mongot qui gère les permissions correctement.
+**Solution :** Utiliser le `Dockerfile.mongot` qui gère les permissions correctement.
 
-## Reset complet
+---
 
-```bash
-# Arrêter et supprimer les volumes
-docker-compose down -v
+## Ressources
 
-# Rebuild les images
-docker-compose build mongodb mongot
-
-# Redémarrer (suivre les étapes "Premier lancement")
-docker-compose up -d mongodb mongot
-```
-
-## Notes techniques
-
-- **Image mongod** : `mongodb/mongodb-community-server:8.2.3-ubuntu2204`
-- **Image mongot** : `mongodb/mongodb-community-search:0.60.1`
-- **Ports internes** :
-  - MongoDB : 27017
-  - mongot gRPC : 27028
-  - mongot health : 8080
-  - mongot metrics : 9946
-- **Utilisateur search** : `mongotUser` avec rôle `searchCoordinator`
-- **Authentification** : Désactivée entre mongod et mongot en local (`skipAuthenticationToSearchIndexManagementServer: true`)
-
-## Gestion des secrets
-
-### Local (développement)
-
-Les fichiers de secrets sont en clair pour simplifier le développement :
-
-| Fichier                        | Contenu          |
-| ------------------------------ | ---------------- |
-| `.infra/local/mongo_keyfile`   | `password`       |
-| `.infra/local/mongot_password` | `mongotPassword` |
-
-### Déployé (preview/production)
-
-Les secrets sont gérés via SOPS (`env.global.yml`) :
-
-| Template                                           | Variable SOPS              | Destination                                    |
-| -------------------------------------------------- | -------------------------- | ---------------------------------------------- |
-| `.infra/files/configs/mongodb/mongo_keyfile.txt`   | `{{ MONGODB_KEYFILE }}`    | `/opt/app/configs/mongodb/mongo_keyfile.txt`   |
-| `.infra/files/configs/mongodb/mongot_password.txt` | `{{ MONGOT_PASSWORD }}`    | `/opt/app/configs/mongodb/mongot_password.txt` |
-
-Les fichiers sont générés avec les permissions `400` (lecture seule par le propriétaire) lors du déploiement Ansible.
+- [Documentation officielle MongoDB 8.2](https://www.mongodb.com/docs/manual/release-notes/8.2/)
+- [Guide de migration Replica Set vers 8.2](https://www.mongodb.com/docs/manual/release-notes/8.2-upgrade-replica-set/)
