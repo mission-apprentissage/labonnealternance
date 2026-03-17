@@ -61,7 +61,7 @@ function FinComponent(props: ComponentProps) {
       .catch((error) => {
         if (error.response.error) {
           switch (error.response.reason) {
-            case "UNKNOWN":
+            case "INVALID":
               toast({
                 title: "Un problème est survenu.",
                 description: "L'email n'a pas pu être vérifié, merci de contacter le support.",

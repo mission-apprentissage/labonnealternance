@@ -45,9 +45,9 @@ export default function Authentification() {
             )
             setErrorMessage("Le compte utilisateur est désactivé")
             break
-          case "UNKNOWN":
-            setFieldError("email", "Utilisateur inconnu. Vérifiez votre adresse email ou créez un compte si vous n'en avez pas.")
-            setErrorMessage("Utilisateur inconnu")
+          case "INVALID":
+            setFieldError("email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
+            setErrorMessage("Email incorrect")
             break
           case "VALIDATION":
             setFieldError("email", "Le compte utilisateur est en attente de validation")
