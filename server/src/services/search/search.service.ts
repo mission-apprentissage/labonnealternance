@@ -130,7 +130,16 @@ const SYNONYM_MULTI_PATHS = [
   { value: "organization_name", multi: "standard" },
 ]
 
-function buildCompoundOperator(filters: ISearchFilters) {
+// Mapping filtre → nom de la facette pour le facetting disjoint (doesNotAffect)
+const FACET_FILTER_MAP: Partial<Record<keyof ISearchFilters, string>> = {
+  type_filter_label: "type_filter_label",
+  contract_type: "contract_type",
+  level: "level",
+  activity_sector: "activity_sector",
+  organization_name: "organization_name",
+}
+
+function buildCompoundOperator(filters: ISearchFilters, { disjunctiveFacets = false } = {}) {
   const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, latitude, longitude, radius } = filters
 
   // Deux clauses should pour la recherche textuelle :
@@ -146,12 +155,18 @@ function buildCompoundOperator(filters: ISearchFilters) {
 
   const filter: object[] = []
 
+  // Lorsque disjunctiveFacets=true (pipeline $searchMeta), on ajoute doesNotAffect sur chaque
+  // filtre de facette afin que la sélection d'une valeur ne masque pas les autres buckets.
+  function dna(key: keyof ISearchFilters): { doesNotAffect?: string } {
+    return disjunctiveFacets && FACET_FILTER_MAP[key] ? { doesNotAffect: FACET_FILTER_MAP[key] } : {}
+  }
+
   if (type) filter.push({ equals: { path: "type", value: type } })
-  if (type_filter_label) filter.push({ equals: { path: "type_filter_label", value: type_filter_label } })
-  if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
-  if (level) filter.push({ equals: { path: "level", value: level } })
-  if (activity_sector) filter.push({ equals: { path: "activity_sector", value: activity_sector } })
-  if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
+  if (type_filter_label) filter.push({ equals: { path: "type_filter_label", value: type_filter_label, ...dna("type_filter_label") } })
+  if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type, ...dna("contract_type") } })
+  if (level) filter.push({ equals: { path: "level", value: level, ...dna("level") } })
+  if (activity_sector) filter.push({ equals: { path: "activity_sector", value: activity_sector, ...dna("activity_sector") } })
+  if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name, ...dna("organization_name") } })
   if (latitude !== undefined && longitude !== undefined) {
     filter.push({
       geoWithin: {
@@ -182,6 +197,8 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
 }> {
   const { page, hitsPerPage } = params
   const compound = buildCompoundOperator(params)
+
+  const compoundForFacets = buildCompoundOperator(params, { disjunctiveFacets: true })
 
   const [rows, meta] = await Promise.all([
     getDbCollection("algolia")
@@ -229,7 +246,7 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
           $searchMeta: {
             index: "algolia_search",
             facet: {
-              operator: { compound },
+              operator: { compound: compoundForFacets },
               facets: {
                 type: { type: "string", path: "type" },
                 type_filter_label: { type: "string", path: "type_filter_label" },
