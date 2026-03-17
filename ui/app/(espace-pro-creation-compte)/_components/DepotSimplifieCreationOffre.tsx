@@ -9,7 +9,7 @@ import { createOffreByToken } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
-export function DepotSimplifieCreationOffre() {
+export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: boolean }) {
   const router = useRouter()
   const { displayBanner, userId, establishment_id } = useSearchParamsRecord()
   const { email, token } = useSearchParamsRecord() as { token: string; email: string }
@@ -26,7 +26,7 @@ export function DepotSimplifieCreationOffre() {
           fromDashboard: false,
           userId: userId,
           token: jobToken ?? undefined,
-          isWidget: false,
+          isWidget: isWidget,
         })
         .getPath()
     )
