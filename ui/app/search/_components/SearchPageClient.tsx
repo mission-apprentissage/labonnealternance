@@ -20,8 +20,8 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const rawSearchParams = useSearchParams()
   const params = rawSearchParams ? parseSearchPageParams(new URLSearchParams(rawSearchParams.toString())) : initialParams
 
-  const { data, isLoading, isError } = useSearchResults(params)
-  const { navigate, navigateSilent } = useNavigateToSearchPage()
+  const result = useSearchResults(params)
+  const { navigate } = useNavigateToSearchPage()
 
   function handleSearch(q: string) {
     navigate({ ...params, q: q || undefined, page: 0 })
@@ -29,10 +29,6 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   function handleFilterChange(newParams: ISearchPageParams) {
     navigate(newParams)
-  }
-
-  function handlePageChange(newPage: number) {
-    navigateSilent({ ...params, page: newPage })
   }
 
   return (
@@ -54,7 +50,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
           <SearchBar initialQ={params.q} onSubmit={handleSearch} />
 
           <Box sx={{ mt: fr.spacing("3v") }}>
-            <SearchFilters params={params} facets={data?.facets} onNavigate={handleFilterChange} />
+            <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
           </Box>
 
           <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
@@ -62,7 +58,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       </Box>
 
       <Container maxWidth="lg" sx={{ py: fr.spacing("6v") }}>
-        <SearchResultsList data={data} isLoading={isLoading} isError={isError} params={params} onPageChange={handlePageChange} />
+        <SearchResultsList result={result} params={params} />
       </Container>
     </Box>
   )

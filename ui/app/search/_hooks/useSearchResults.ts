@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
 import { apiGet } from "@/utils/api.utils"
 
@@ -7,7 +7,6 @@ import type { ISearchPageParams } from "../_utils/search.params.utils"
 function paramsToQuerystring(params: ISearchPageParams) {
   const qs: Record<string, unknown> = {
     radius: params.radius,
-    page: params.page,
     hitsPerPage: params.hitsPerPage,
   }
   if (params.q) qs.q = params.q
@@ -23,16 +22,18 @@ function paramsToQuerystring(params: ISearchPageParams) {
 }
 
 export function useSearchResults(params: ISearchPageParams) {
-  const querystring = paramsToQuerystring(params)
+  // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery
+  const baseQs = paramsToQuerystring(params)
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["/v1/search", querystring],
-    queryFn: ({ signal }) => apiGet("/v1/search", { querystring: querystring as never }, { signal }),
+  return useInfiniteQuery({
+    queryKey: ["/v1/search", baseQs],
+    queryFn: ({ signal, pageParam }) => apiGet("/v1/search", { querystring: { ...baseQs, page: pageParam } as never }, { signal }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+      if (lastPageParam + 1 < lastPage.nbPages) return lastPageParam + 1
+      return undefined
+    },
     staleTime: 1000 * 60 * 5,
     throwOnError: false,
-    // Garde les données précédentes pendant le refetch → les dropdowns ne disparaissent pas
-    placeholderData: (previousData) => previousData,
   })
-
-  return { data, isLoading, isError }
 }
