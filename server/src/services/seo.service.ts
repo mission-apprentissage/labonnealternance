@@ -2,6 +2,7 @@ import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
 import seoVilleModel from "shared/models/seoVille.model"
+import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils.js"
 import { getApplicationByCompanyCount, getApplicationByJobCount } from "@/services/application.service"
@@ -431,21 +432,30 @@ const getJobsForMetier = async (romes: string[]) => {
 }
 
 export const updateSeoMetierJobCounts = async () => {
+  logger.info("starting job updateSeoMetierJobCounts")
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
   await asyncForEach(metiers, async (metier) => {
-    const jobCount = await getJobCountForMetier(metier.romes)
-    const companyCount = await getCompanyCountForMetier(metier.romes)
-    const applicantCount = await getApplicantCountForMetier(metier.romes)
+    logger.info(`updating SEO job counts for metier: ${metier.slug}`)
 
-    const entreprises = await getTopCompaniesForMetier(metier.romes)
-    const villes = await getTopCitiesForMetier(metier.romes)
-    const formations = await getFormationsForMetier(metier.romes)
-    const cards = await getJobsForMetier(metier.romes)
+    try {
+      const jobCount = await getJobCountForMetier(metier.romes)
+      const companyCount = await getCompanyCountForMetier(metier.romes)
+      const applicantCount = await getApplicantCountForMetier(metier.romes)
 
-    await getDbCollection(seoMetierModel.collectionName).updateOne(
-      { slug: metier.slug },
-      { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations, villes, cards } }
-    )
+      const entreprises = await getTopCompaniesForMetier(metier.romes)
+      const villes = await getTopCitiesForMetier(metier.romes)
+      const formations = await getFormationsForMetier(metier.romes)
+      const cards = await getJobsForMetier(metier.romes)
+
+      await getDbCollection(seoMetierModel.collectionName).updateOne(
+        { slug: metier.slug },
+        { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations, villes, cards } }
+      )
+    } catch (error) {
+      logger.error("Error in updateSeoMetierJobCounts for metier " + metier.slug, error)
+    }
   })
+
+  logger.info("ended job updateSeoMetierJobCounts")
 }
