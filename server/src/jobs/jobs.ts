@@ -178,6 +178,8 @@ export async function setupJobProcessor() {
             cron_string: "15 2 * * *",
             handler: importCatalogueFormationJob,
             tag: "main",
+            checkinMargin: 30,
+            maxRuntimeInMinutes: 90,
           },
           "Mise à jour des champs spécifiques de la collection formations catalogue": {
             cron_string: "30 2 * * *",

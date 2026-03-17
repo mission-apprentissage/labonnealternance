@@ -13,6 +13,7 @@ describe("franceCompetencesClient", () => {
       expect(FCOpcoToOpcoEnum("AKTO")).toBe(OPCOS_LABEL.AKTO)
       expect(FCOpcoToOpcoEnum("OPCO EP")).toBe(OPCOS_LABEL.EP)
       expect(FCOpcoToOpcoEnum("UNIFORMATION COHESION SOCIALE")).toBe(OPCOS_LABEL.UNIFORMATION)
+      expect(FCOpcoToOpcoEnum("N/C")).toBeNull()
     })
   })
 
@@ -59,6 +60,26 @@ describe("franceCompetencesClient", () => {
         opcoRattachement: {
           code: "1",
           nom: "AKTO",
+        },
+      }
+
+      nockFranceCompetencesOpcoSearch(siret, response)
+
+      const result = await FCGetOpcoInfos(siret)
+
+      expect(result).toBeNull()
+      expect(nock.isDone()).toBe(true)
+    })
+
+    it("should return null for opco label N/C", async () => {
+      const siret = "12345678901234"
+      const response = {
+        code: "01" as const,
+        siret,
+        idcc: "1234",
+        opcoRattachement: {
+          code: "N/C",
+          nom: "N/C",
         },
       }
 

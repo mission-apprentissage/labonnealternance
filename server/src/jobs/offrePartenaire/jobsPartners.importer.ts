@@ -152,7 +152,7 @@ export const importers: Record<string, CronDef> = {
     cron_string: timings.process_computed,
     handler: processComputedAndImportToJobPartners,
     checkinMargin: 350,
-    maxRuntimeInMinutes: 120,
+    maxRuntimeInMinutes: 300,
     tag: "slave",
     resumable: true,
   },
