@@ -385,26 +385,30 @@ const getJobCards = async (params: { geo: { latitude: number; longitude: number;
 
   const ids = jobsForSeo.flatMap((job) => (job.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job._id] : []))
   const applicationCountByJob = await getApplicationByJobCount(ids)
-  applicationCountByJob.forEach((appCount) => {
-    const job = jobsForSeo.find((j) => j._id.toString() === appCount._id)
-    if (job) {
-      job.application_count = appCount.count
-    }
-  })
+  if (applicationCountByJob !== null) {
+    applicationCountByJob.forEach((appCount) => {
+      const job = jobsForSeo.find((j) => j._id.toString() === appCount._id)
+      if (job) {
+        job.application_count = appCount.count
+      }
+    })
+  }
 
   const sirets = jobsForSeo.flatMap((job) => (job.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? [job.partner_job_id] : []))
   const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-  applicationCountByCompany.forEach((appCount) => {
-    const job = jobsForSeo.find((j) => j.partner_job_id === appCount._id)
-    if (job) {
-      job.application_count = appCount.count
-    }
-  })
+  if (applicationCountByCompany !== null) {
+    applicationCountByCompany.forEach((appCount) => {
+      const job = jobsForSeo.find((j) => j.partner_job_id === appCount._id)
+      if (job) {
+        job.application_count = appCount.count
+      }
+    })
+  }
 
   return jobsForSeo
 }
 
-const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
+const _getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
   const params = {
     geo: { latitude, longitude, radius },
     romes: null,
@@ -426,7 +430,7 @@ const getJobsForMetier = async (romes: string[]) => {
   return await getJobCards(params)
 }
 
-export const updateSeoMetierJobCounts = async () => {
+export const _updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
   await asyncForEach(metiers, async (metier) => {
