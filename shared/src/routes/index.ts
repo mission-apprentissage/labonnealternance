@@ -24,6 +24,7 @@ import { zMetiersRoutes } from "./metiers.routes.js"
 import { zRecruiterRoutes } from "./recruiters.routes.js"
 import { zReportedCompanyRoutes } from "./reportedCompany.routes.js"
 import { zRomeRoutes } from "./rome.routes.js"
+import { zSearchRoutes } from "./search.routes.js"
 import { zSitemapRoutes } from "./sitemap.routes.js"
 import { zTrainingLinksRoutes } from "./trainingLinks.routes.js"
 import { zUnsubscribeRoute } from "./unsubscribe.routes.js"
@@ -70,6 +71,7 @@ const zRoutesGetP5 = {
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV3.get,
   ...zClassificationRoute.get,
+  ...zSearchRoutes.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 & typeof zRoutesGetP4 & typeof zRoutesGetP5 = {

@@ -1456,5 +1456,5 @@ const getDepartmentByZipCode = (zipCode: string): IDepartmentsRegionAndAcademieC
   return result
 }
 
-export { getDepartmentByZipCode }
 export type { IDepartmentsRegionAndAcademieCode }
+export { getDepartmentByZipCode }

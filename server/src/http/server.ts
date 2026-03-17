@@ -42,6 +42,7 @@ import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
+import searchRoute from "./controllers/search.controller"
 import sitemapController from "./controllers/sitemap.controller"
 import trainingLinks from "./controllers/trainingLinks.controller"
 import unsubscribeLbaCompany from "./controllers/unsubscribeRecruteurLba.controller"
@@ -177,6 +178,11 @@ export async function bind(app: Server) {
 
       /** model training */
       classificationRoutes(typedSubApp)
+
+      /**
+       * Search
+       */
+      searchRoute(typedSubApp)
 
       done()
     },
