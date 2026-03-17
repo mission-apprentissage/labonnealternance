@@ -408,7 +408,7 @@ const getJobCards = async (params: { geo: { latitude: number; longitude: number;
   return jobsForSeo
 }
 
-const _getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
+const getJobsForVille = async ({ radius, latitude, longitude }: { radius: number; latitude: number; longitude: number }) => {
   const params = {
     geo: { latitude, longitude, radius },
     romes: null,
@@ -430,7 +430,7 @@ const getJobsForMetier = async (romes: string[]) => {
   return await getJobCards(params)
 }
 
-export const _updateSeoMetierJobCounts = async () => {
+export const updateSeoMetierJobCounts = async () => {
   const metiers = await getDbCollection(seoMetierModel.collectionName).find({}).toArray()
 
   await asyncForEach(metiers, async (metier) => {
