@@ -171,17 +171,17 @@
         db_collections_count.rc != 0 or
         (db_collections_count.stdout | trim | int) == 0
 
-    - name: "[{{ pr_number }}] Create MongoDB indexes (before migrations)"
+    - name: "[{{ pr_number }}] Start Application"
+      shell:
+        chdir: "/opt/app/projects/{{ pr_number }}"
+        cmd: docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml up -d --remove-orphans --wait
+
+    - name: "[{{ pr_number }}] Create MongoDB indexes (after mongot)"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml run --rm server yarn cli indexes:recreate"
       async: 900 # max 15 minutes
       poll: 15 # check every 15s
-
-    - name: "[{{ pr_number }}] Start Application"
-      shell:
-        chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml up -d --remove-orphans --wait
 
     - name: "[{{ pr_number }}] Trigger ACME companion"
       shell:
