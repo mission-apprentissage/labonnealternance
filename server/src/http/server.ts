@@ -39,6 +39,7 @@ import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
+import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
 import sitemapController from "./controllers/sitemap.controller"
@@ -132,6 +133,7 @@ export async function bind(app: Server) {
        */
       version(typedSubApp)
       metiers(typedSubApp)
+      partnersRoute(typedSubApp)
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
       application(typedSubApp)
