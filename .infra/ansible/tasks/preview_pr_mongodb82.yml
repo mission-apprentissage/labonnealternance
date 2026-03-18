@@ -40,7 +40,7 @@
 
     - name: "[{{ pr_number }}] Créer le fichier mot de passe mongot"
       ansible.builtin.copy:
-        content: "{{ MONGODB_KEYFILE }}"
+        content: "{{ MONGOT_PASSWORD }}"
         dest: "/opt/app/projects/{{ pr_number }}/mongot_password"
         mode: "0400"
 
@@ -147,8 +147,8 @@
           docker exec lba_{{ pr_number }}_mongodb mongosh
           "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true"
           --eval "try { db.dropUser('mongotUser') } catch(e) {}
-          db.createUser({ user: 'mongotUser', pwd: '{{ MONGODB_KEYFILE }}',
-          roles: [{ role: 'clusterMonitor', db: 'admin' }, { role: 'readAnyDatabase', db: 'admin' }] })"
+          db.createUser({ user: 'mongotUser', pwd: '{{ MONGOT_PASSWORD }}',
+          roles: [{ role: 'searchCoordinator', db: 'admin' }] })"
           --quiet
 
     - name: "[{{ pr_number }}] Check if database is already seeded (MongoDB 8.2)"
