@@ -23,6 +23,26 @@ export const DsfrHeaderProps: HeaderProps = {
   id: "header-links",
   quickAccessItems: [
     <HeaderQuickAccessItem
+      key="search"
+      quickAccessItem={{
+        iconId: null,
+        text: "Recherche (liste)",
+        linkProps: {
+          href: "/search",
+        },
+      }}
+    />,
+    <HeaderQuickAccessItem
+      key="search-split"
+      quickAccessItem={{
+        iconId: null,
+        text: "Recherche split",
+        linkProps: {
+          href: "/search/split",
+        },
+      }}
+    />,
+    <HeaderQuickAccessItem
       key="candidat"
       quickAccessItem={{
         iconId: null,
