@@ -1,0 +1,62 @@
+name: "lba_preview_{{pr_number}}"
+
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:8.2-ubuntu2204
+    container_name: lba_{{pr_number}}_mongodb
+    hostname: lba_{{pr_number}}_mongodb
+    command: ["mongod", "--config", "/etc/mongod/mongod.conf"]
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    restart: always
+    volumes:
+      - mongodb82:/data/db
+      - /opt/app/projects/{{pr_number}}/mongod82.conf:/etc/mongod/mongod.conf:ro
+      - /opt/app/configs/mongodb/mongo_keyfile.txt:/tmp/mongo_keyfile:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok", "--quiet"]
+      interval: 10s
+      timeout: 20s
+      retries: 30
+      start_period: 30s
+    networks:
+      - mna_network
+    labels:
+      - autoheal=true
+
+  mongot:
+    image: mongodb/mongodb-community-search:0.60.1
+    container_name: lba_{{pr_number}}_mongot
+    hostname: lba_{{pr_number}}_mongot
+    command: ["--config", "/etc/mongot/mongot.yml"]
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    restart: always
+    volumes:
+      - mongotdata:/var/lib/mongot
+      - /opt/app/projects/{{pr_number}}/mongot82.yml:/etc/mongot/mongot.yml:ro
+      - /opt/app/projects/{{pr_number}}/mongot_password:/etc/mongot/secrets/passwordFile:ro
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - mna_network
+
+volumes:
+  mongodb82:
+  mongotdata:
+
+networks:
+  mna_network:
+    name: mna_network
+    external: true

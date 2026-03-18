@@ -1,0 +1,14 @@
+net:
+  bindIpAll: true
+
+replication:
+  replSetName: replica
+
+security:
+  keyFile: /tmp/mongo_keyfile
+
+setParameter:
+  searchIndexManagementHostAndPort: lba_{{ pr_number }}_mongot:27028
+  mongotHost: lba_{{ pr_number }}_mongot:27028
+  skipAuthenticationToSearchIndexManagementServer: true
+  useGrpcForSearch: true

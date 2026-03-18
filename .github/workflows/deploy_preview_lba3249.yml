@@ -1,4 +1,4 @@
-name: Deploy Preview
+name: Deploy Preview LBA-3249
 on:
   issue_comment:
     types: [created]
@@ -104,8 +104,8 @@ jobs:
           fi
 
       - name: Run playbook
-        if: steps.get-branch.outputs.branch != 'feat/lba-3249-poc-mongodb'
-        run: .bin/mna-lba app:deploy preview "${{ github.event.issue.number }}"
+        if: steps.get-branch.outputs.branch == 'feat/lba-3249-poc-mongodb'
+        run: .bin/mna-lba app:deploy preview_lba3249 "${{ github.event.issue.number }}"
         env:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}

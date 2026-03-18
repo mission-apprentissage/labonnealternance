@@ -1,0 +1,41 @@
+---
+- hosts: preview
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Chargement des variables chiffrées globales
+      community.sops.load_vars:
+        file: "{{ inventory_dir }}/../env.global.yml"
+        expressions: ignore
+
+    - name: Chargement des variables chiffrées de l'environnement preview
+      community.sops.load_vars:
+        file: "{{ inventory_dir }}/../env.preview.yml"
+        expressions: evaluate-on-load
+
+    - include_tasks: ./tasks/files_copy.yml
+
+    - name: lancement preview system
+      shell:
+        chdir: /opt/app
+        cmd: docker compose -f docker-compose.preview-system.yml up -d --wait
+
+    - name: Setup MongoDB ReplicaSet
+      shell:
+        chdir: /opt/app
+        cmd: 'docker compose -f docker-compose.preview-system.yml exec -it mongodb mongosh "{{ LBA_MONGODB_URI }}" --eval "try { rs.status().ok } catch (e) { if (e.code === 94) {rs.initiate();} else {throw e} }" --quiet'
+      when: env_type == 'preview'
+
+    - name: Setup Metabase preview
+      shell:
+        chdir: /opt/app
+        cmd: "bash /opt/app/configs/metabase/setup-metabase-preview.sh"
+      timeout: 600
+
+    - include_tasks: ./tasks/preview_pr_mongodb82.yml
+      vars:
+        build: true
+        repo_name: labonnealternance
+        docker_images:
+          - mna_lba_ui
+          - mna_lba_server
