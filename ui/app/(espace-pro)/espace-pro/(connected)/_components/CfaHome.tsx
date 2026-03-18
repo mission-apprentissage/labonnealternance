@@ -15,6 +15,7 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
+import { DsfrIcon } from "@/components/DsfrIcon"
 import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -222,7 +223,8 @@ function ListeEntreprise() {
             }}
           >
             <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-              Nouvelle entreprise
+              <DsfrIcon name="fr-icon-add-line" size={16} />
+              Ajouter une entreprise
             </Button>
           </Box>
         </Box>

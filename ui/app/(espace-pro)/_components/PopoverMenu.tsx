@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper } from "@mui/material"
-import type { Dispatch } from "react"
+import type { Dispatch, ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
 
 export type PopoverMenuAction = {
@@ -10,6 +10,7 @@ export type PopoverMenuAction = {
   link?: string
   ariaLabel?: string
   type: "button" | "link" | "externalLink"
+  icon?: ReactNode
 } | null
 
 export const PopoverMenu = ({
@@ -91,10 +92,10 @@ export const PopoverMenu = ({
           >
             <Paper
               sx={{
-                border: "1px solid",
                 width: "100%",
                 minWidth: "200px",
                 maxWidth: "300px",
+                boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
               }}
             >
               <ClickAwayListener onClickAway={handleClose}>
@@ -106,13 +107,11 @@ export const PopoverMenu = ({
                         onClick={handleClose}
                         disableGutters
                         sx={{
-                          py: fr.spacing("3v"),
+                          p: "0 !important",
                           mx: `0 !important`,
-                          px: `${fr.spacing("2v")} !important`,
                           mb: `0 !important`,
                           fontSize: "14px !important",
                           minHeight: "24px",
-
                           color: "#161616 !important",
                           borderLeft: "4px solid transparent",
                           ":hover": {
@@ -125,27 +124,30 @@ export const PopoverMenu = ({
                           },
                         }}
                       >
-                        {action.type === "link" || action.type === "externalLink" ? (
-                          <Link
-                            underline="none"
-                            sx={{ width: "100%", textAlign: "left", color: "#161616 !important" }}
-                            href={action.link}
-                            aria-label={action.ariaLabel || (action.label as string)}
-                            {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                          >
-                            {action.label}
-                          </Link>
-                        ) : (
-                          <Link
-                            underline="none"
-                            component="button"
-                            aria-label={action.ariaLabel || (action.label as string)}
-                            onClick={action.onClick}
-                            sx={{ width: "100%", textAlign: "left", color: "#161616 !important" }}
-                          >
-                            {action.label}
-                          </Link>
-                        )}
+                        <Box sx={{ px: fr.spacing("2v"), py: fr.spacing("3v"), display: "flex" }}>
+                          {action.icon && <Box sx={{ display: "flex", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{action.icon}</Box>}
+                          {action.type === "link" || action.type === "externalLink" ? (
+                            <Link
+                              underline="none"
+                              sx={{ display: "block", width: "100%", textAlign: "left", color: "#161616 !important" }}
+                              href={action.link}
+                              aria-label={action.ariaLabel || (action.label as string)}
+                              {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                            >
+                              {action.label}
+                            </Link>
+                          ) : (
+                            <Link
+                              underline="none"
+                              component="button"
+                              aria-label={action.ariaLabel || (action.label as string)}
+                              onClick={action.onClick}
+                              sx={{ display: "block", width: "100%", textAlign: "left", color: "#161616 !important" }}
+                            >
+                              {action.label}
+                            </Link>
+                          )}
+                        </Box>
                       </MenuItem>
                     ) : null
                   )}

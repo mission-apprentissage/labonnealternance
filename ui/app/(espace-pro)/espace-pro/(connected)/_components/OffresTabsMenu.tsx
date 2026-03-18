@@ -1,8 +1,6 @@
-import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { JOB_STATUS } from "shared"
@@ -13,6 +11,7 @@ import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { useToast } from "@/app/hooks/useToast"
+import { DsfrIcon } from "@/components/DsfrIcon"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
 import { extendOffre } from "@/utils/api"
@@ -53,10 +52,11 @@ export const OffresTabsMenu = ({
 
   const actions: PopoverMenuAction[] = [
     {
-      label: "Editer l'offre",
+      label: "Éditer l'offre",
       ariaLabel: `Éditer l'offre ${offerTitle}`,
       onClick: () => router.push(buildOfferEditionUrl(row._id)),
       type: "button",
+      icon: <DsfrIcon name="fr-icon-edit-line" size={16} />,
     },
     {
       label: "Prolonger l'offre",
@@ -75,40 +75,26 @@ export const OffresTabsMenu = ({
           )
       },
       type: "button",
+      icon: <DsfrIcon name="fr-icon-refresh-line" size={16} />,
     },
     {
       label: "Voir l'offre en ligne",
       ariaLabel: `Voir l'offre ${offerTitle} en ligne - nouvelle fenêtre`,
       link: directLink,
       type: "link",
+      icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
     },
     row.job_status !== JOB_STATUS.EN_ATTENTE
       ? {
           label: "Imprimer l'offre",
           ariaLabel: "Lien vers la page d'impression de l'offre - nouvelle fenêtre",
           link: `${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`,
-          type: "externalLink",
+          icon: <DsfrIcon name="fr-icon-printer-line" size={16} />,
+          type: "link",
         }
       : null,
     {
-      label: copied ? (
-        <Box sx={{ display: "flex" }}>
-          <Image width="17" height="24" src="/images/icons/share_copied_icon.svg" aria-hidden={true} alt="" />
-          <Typography
-            component="span"
-            sx={{
-              ml: fr.spacing("2v"),
-              fontSize: "14px",
-              mb: 0,
-              color: "#18753C",
-            }}
-          >
-            Lien copié !
-          </Typography>
-        </Box>
-      ) : (
-        "Partager l'offre"
-      ),
+      label: copied ? <Box color={copied ? "#18753C" : undefined}>Lien copié</Box> : "Partager l'offre",
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -118,6 +104,11 @@ export const OffresTabsMenu = ({
       },
       ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse-papiers" : `Partager le lien de l'offre ${offerTitle}`,
       type: "button",
+      icon: (
+        <Box color={copied ? "#18753C" : undefined}>
+          <DsfrIcon name="fr-icon-link" size={16} />
+        </Box>
+      ),
     },
     user.type !== AUTHTYPE.CFA
       ? ({
@@ -136,6 +127,7 @@ export const OffresTabsMenu = ({
         openSuppression(row)
       },
       type: "button",
+      icon: <DsfrIcon name="fr-icon-delete-line" size={16} />,
     },
   ]
 
