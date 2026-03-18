@@ -138,7 +138,7 @@
         cmd: >
           docker exec lba_{{ pr_number }}_mongodb mongosh
           "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/?authSource=local&directConnection=true"
-          --eval "try { rs.status().ok } catch (e) { if (e.code === 94) { rs.initiate({ _id: 'replica', members: [{ _id: 0, host: 'lba_{{ pr_number }}_mongodb:27017' }] }) } else { throw e } }"
+          --eval "try { rs.status().ok } catch (e) { if (e.code === 94) { rs.initiate({ _id: 'replica', members: [{ _id: 0, host: 'lba_{{ pr_number }}_mongodb:27017' }] }); var i = 0; while (rs.status().myState !== 1 && i++ < 30) { sleep(1000); } } else { throw e } }"
           --quiet
 
     - name: "[{{ pr_number }}] Créer mongotUser"
