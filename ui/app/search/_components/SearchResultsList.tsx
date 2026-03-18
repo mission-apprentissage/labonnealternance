@@ -4,6 +4,7 @@ import { Box, CircularProgress, Skeleton } from "@mui/material"
 import { useEffect, useRef } from "react"
 import type { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
+import type { Hit } from "./SearchHitCard"
 import { SearchHitCard } from "./SearchHitCard"
 
 type InfiniteResult = ReturnType<typeof useSearchResults>
@@ -11,9 +12,11 @@ type InfiniteResult = ReturnType<typeof useSearchResults>
 interface SearchResultsListProps {
   result: InfiniteResult
   params: ISearchPageParams
+  selectedHitId?: string
+  onHitSelect?: (hit: Hit) => void
 }
 
-export function SearchResultsList({ result, params }: SearchResultsListProps) {
+export function SearchResultsList({ result, params, selectedHitId, onHitSelect }: SearchResultsListProps) {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
 
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -79,7 +82,7 @@ export function SearchResultsList({ result, params }: SearchResultsListProps) {
 
       <Box>
         {allHits.map((hit) => (
-          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} />
+          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} isSelected={selectedHitId !== undefined && hit.url_id === selectedHitId} onSelect={onHitSelect} />
         ))}
       </Box>
 

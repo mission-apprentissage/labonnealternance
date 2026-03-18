@@ -14,6 +14,7 @@ export interface ISearchPageParams {
   radius: number
   page: number
   hitsPerPage: number
+  selected?: string // url_id du hit sélectionné dans le split layout
 }
 
 /**
@@ -42,10 +43,11 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     radius: parseInt(search.get("radius") ?? "30", 10),
     page: parseInt(search.get("page") ?? "0", 10),
     hitsPerPage: parseInt(search.get("hitsPerPage") ?? "20", 10),
+    selected: search.get("selected") || undefined,
   }
 }
 
-export function buildSearchUrl(params: ISearchPageParams): string {
+export function buildSearchUrl(params: ISearchPageParams, basePath = "/search"): string {
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)
@@ -62,9 +64,10 @@ export function buildSearchUrl(params: ISearchPageParams): string {
   if (params.radius !== 30) query.set("radius", params.radius.toString())
   if (params.page !== 0) query.set("page", params.page.toString())
   if (params.hitsPerPage !== 20) query.set("hitsPerPage", params.hitsPerPage.toString())
+  if (params.selected) query.set("selected", params.selected)
 
   const qs = query.toString()
-  return `/search${qs ? `?${qs}` : ""}`
+  return `${basePath}${qs ? `?${qs}` : ""}`
 }
 
 export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title: string }, currentSearchUrl: string): string {
