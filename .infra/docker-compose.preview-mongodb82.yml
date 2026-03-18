@@ -50,6 +50,12 @@ services:
       mongodb:
         condition: service_healthy
 
+services:
+  server:
+    volumes:
+      - /opt/app/scripts/create-search-indexes.sh:/app/.infra/files/scripts/create-search-indexes.sh:ro
+      - /opt/app/projects/{{pr_number}}/repository/docs/mongodb/search-synonyms.json:/app/docs/mongodb/search-synonyms.json:ro
+
 volumes:
   mongodb82:
   mongotdata:
