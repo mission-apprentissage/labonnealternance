@@ -31,7 +31,7 @@ docker exec "lba_${PR_NUMBER}_mongodb" mongosh "mongodb://__system:{{ MONGODB_KE
 
 # Restore from file copied into the container
 echo "Restoring database $TARGET_DB..."
-docker exec "lba_${PR_NUMBER}_mongodb" mongorestore \
+docker exec --user root "lba_${PR_NUMBER}_mongodb" mongorestore \
   --archive="$CONTAINER_SEED_PATH" \
   --nsFrom="labonnealternance.*" \
   --nsTo="$TARGET_DB.*" \
