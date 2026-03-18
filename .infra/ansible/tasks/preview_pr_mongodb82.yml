@@ -181,7 +181,16 @@
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml run --rm server yarn cli indexes:recreate"
       async: 900 # max 15 minutes
-      poll: 15 # check every 15s
+      poll: 15
+
+    - name: "[{{ pr_number }}] Create Atlas Search indexes"
+      shell:
+        cmd: "bash /opt/app/scripts/create-search-indexes.sh"
+      environment:
+        LBA_MONGODB_URI: "{{ LBA_MONGODB_URI }}"
+        MONGO_CONTAINER: "lba_{{ pr_number }}_mongodb"
+      async: 300
+      poll: 10 # check every 15s
 
     - name: "[{{ pr_number }}] Trigger ACME companion"
       shell:

@@ -39,9 +39,12 @@ MONGO_URI="${MONGO_URI//directConnection=true&/}"
 
 echo "Creating MongoDB Search indexes..."
 
-# Détecter mongosh : local ou via docker
+# Détecter mongosh : local, via MONGO_CONTAINER explicite, ou via docker
 if command -v mongosh &>/dev/null; then
   MONGOSH="mongosh"
+elif [[ -n "${MONGO_CONTAINER:-}" ]]; then
+  echo "  (using mongosh from container: $MONGO_CONTAINER)"
+  MONGOSH="docker exec $MONGO_CONTAINER mongosh"
 else
   CONTAINER=$(docker ps --filter "name=mongodb" --format "{% raw %}{{.Names}}{% endraw %}" | head -1)
   if [[ -z "$CONTAINER" ]]; then
