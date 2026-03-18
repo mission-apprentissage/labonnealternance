@@ -13,6 +13,7 @@ services:
     restart: always
     volumes:
       - mongodb82:/data/db
+      - /opt/app/configs/mongodb:/etc/mongod
       - /opt/app/projects/{{pr_number}}/mongod82.conf:/etc/mongod/mongod.conf:ro
       - /opt/app/configs/mongodb/mongo_keyfile.txt:/tmp/mongo_keyfile:ro
     healthcheck:

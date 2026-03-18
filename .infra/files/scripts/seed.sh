@@ -23,12 +23,13 @@ gpg -d --batch --passphrase-file "$PASSPHRASE" -o "$SEED_ARCHIVE" "/opt/app/conf
 chmod 600 "$SEED_ARCHIVE"
 
 # Drop the entire database before restore to avoid duplicate key errors
+readonly PR_NUMBER="${TARGET_DB#preview_}"
 echo "Dropping database $TARGET_DB if it exists..."
-/opt/app/tools/docker-compose.sh exec -T mongodb mongosh "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/$TARGET_DB?authSource=local&directConnection=true" --eval "db.dropDatabase()" || true
+docker exec "lba_${PR_NUMBER}_mongodb" mongosh "mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/$TARGET_DB?authSource=local&directConnection=true" --eval "db.dropDatabase()" || true
 
 # Restore from file accessible via mounted volume
 echo "Restoring database $TARGET_DB..."
-/opt/app/tools/docker-compose.sh exec -T mongodb mongorestore \
+docker exec "lba_${PR_NUMBER}_mongodb" mongorestore \
   --archive="$CONTAINER_SEED_PATH" \
   --nsFrom="labonnealternance.*" \
   --nsTo="$TARGET_DB.*" \
