@@ -29,8 +29,8 @@ services:
   mongot:
     image: mongodb/mongodb-community-search:0.60.1
     container_name: lba_{{pr_number}}_mongot
-    hostname: lba_{{pr_number}}_mongot
     command: ["--config", "/etc/mongot/mongot.yml"]
+    network_mode: "service:mongodb"
     deploy:
       resources:
         limits:
@@ -49,8 +49,6 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-    networks:
-      - mna_network
 
 volumes:
   mongodb82:

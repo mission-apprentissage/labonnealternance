@@ -8,7 +8,7 @@ security:
   keyFile: /tmp/mongo_keyfile
 
 setParameter:
-  searchIndexManagementHostAndPort: lba_{{ pr_number }}_mongot:27028
-  mongotHost: lba_{{ pr_number }}_mongot:27028
+  searchIndexManagementHostAndPort: localhost:27028
+  mongotHost: localhost:27028
   skipAuthenticationToSearchIndexManagementServer: true
   useGrpcForSearch: true
