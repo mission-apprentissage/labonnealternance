@@ -29,7 +29,6 @@ services:
   mongot:
     image: mongodb/mongodb-community-search:0.60.1
     container_name: lba_{{pr_number}}_mongot
-    command: ["--config", "/etc/mongot/mongot.yml"]
     network_mode: "service:mongodb"
     deploy:
       resources:
@@ -38,7 +37,7 @@ services:
     restart: always
     volumes:
       - mongotdata:/var/lib/mongot
-      - /opt/app/projects/{{pr_number}}/mongot82.yml:/etc/mongot/mongot.yml:ro
+      - /opt/app/projects/{{pr_number}}/mongot82.yml:/mongot-community/config.default.yml:ro
       - /opt/app/projects/{{pr_number}}/mongot_password:/etc/mongot/secrets/passwordFile:ro
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080"]
@@ -50,7 +49,6 @@ services:
       mongodb:
         condition: service_healthy
 
-services:
   server:
     volumes:
       - /opt/app/scripts/create-search-indexes.sh:/app/.infra/files/scripts/create-search-indexes.sh:ro
