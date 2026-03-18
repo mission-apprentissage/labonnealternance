@@ -14,7 +14,7 @@ services:
     volumes:
       - mongodb82:/data/db
       - /opt/app/projects/{{pr_number}}/mongod82.conf:/etc/mongod/mongod.conf:ro
-      - /opt/app/configs/mongodb/mongo_keyfile.txt:/tmp/mongo_keyfile:ro
+      - /opt/app/projects/{{pr_number}}/mongo_keyfile:/tmp/mongo_keyfile:ro
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok", "--quiet"]
       interval: 10s

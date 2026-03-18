@@ -44,6 +44,14 @@
         dest: "/opt/app/projects/{{ pr_number }}/mongot_password"
         mode: "0400"
 
+    - name: "[{{ pr_number }}] Créer le keyfile MongoDB 8.2 (uid 1000)"
+      ansible.builtin.copy:
+        content: "{{ MONGODB_KEYFILE }}"
+        dest: "/opt/app/projects/{{ pr_number }}/mongo_keyfile"
+        mode: "0400"
+        owner: 1000
+        group: 1000
+
     - name: "[{{ pr_number }}] Copier docker-compose.preview-mongodb82.yml"
       ansible.builtin.template:
         src: "{{ inventory_dir }}/../docker-compose.preview-mongodb82.yml"
