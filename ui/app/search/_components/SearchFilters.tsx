@@ -94,8 +94,7 @@ function FiltersContent({ facets, current, onChange }: { facets?: FacetCounts; c
     <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("3v"), alignItems: "center" }}>
       {/* Rayon — single select */}
       <FormControl size="small" sx={SELECT_SX}>
-        <InputLabel sx={{ fontSize: "0.875rem" }}>Rayon</InputLabel>
-        <Select value={current.radius} onChange={(e) => onChange({ ...current, radius: Number(e.target.value), page: 0 })} label="Rayon">
+        <Select value={current.radius} onChange={(e) => onChange({ ...current, radius: Number(e.target.value), page: 0 })} renderValue={(v) => `Rayon : ${v} km`} displayEmpty>
           {RADIUS_OPTIONS.map((r) => (
             <MenuItem key={r} value={r} dense>
               <ListItemText primary={`${r} km`} primaryTypographyProps={{ fontSize: "0.875rem" }} />
