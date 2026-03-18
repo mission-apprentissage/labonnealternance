@@ -54,7 +54,7 @@ export function SearchResultsList({ result, params }: SearchResultsListProps) {
   if (!data) return null
 
   const allHits = data.pages.flatMap((p) => p.hits)
-  const nbHits = data.pages[0]?.nbHits ?? 0
+  const nbHits = data.pages.at(-1)?.nbHits ?? 0
 
   if (allHits.length === 0) {
     return (

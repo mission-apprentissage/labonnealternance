@@ -4,29 +4,21 @@ import { Box, Chip } from "@mui/material"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
-interface FacetCounts {
-  type_filter_label?: Record<string, number>
-  contract_type?: Record<string, number>
-  level?: Record<string, number>
-  activity_sector?: Record<string, number>
-}
-
 interface SearchActiveFiltersProps {
   params: ISearchPageParams
-  facets?: FacetCounts
   onNavigate: (newParams: ISearchPageParams) => void
 }
 
 type ArrayFilterKey = "type_filter_label" | "contract_type" | "level" | "activity_sector"
 
-export function SearchActiveFilters({ params, facets, onNavigate }: SearchActiveFiltersProps) {
+export function SearchActiveFilters({ params, onNavigate }: SearchActiveFiltersProps) {
   const arrayFilters: ArrayFilterKey[] = ["type_filter_label", "contract_type", "level", "activity_sector"]
 
-  const activeFilters: Array<{ key: string; value: string; count?: number; filterKey: ArrayFilterKey }> = []
+  const activeFilters: Array<{ key: string; value: string; filterKey: ArrayFilterKey }> = []
 
   for (const key of arrayFilters) {
     for (const val of params[key] ?? []) {
-      activeFilters.push({ key: `${key}:${val}`, value: val, count: facets?.[key]?.[val], filterKey: key })
+      activeFilters.push({ key: `${key}:${val}`, value: val, filterKey: key })
     }
   }
 
@@ -47,7 +39,7 @@ export function SearchActiveFilters({ params, facets, onNavigate }: SearchActive
         {activeFilters.map((filter) => (
           <Chip
             key={filter.key}
-            label={filter.count != null ? `${filter.value} (${filter.count})` : filter.value}
+            label={filter.value}
             onDelete={() => removeFilter(filter.filterKey, filter.value)}
             size="small"
             sx={{

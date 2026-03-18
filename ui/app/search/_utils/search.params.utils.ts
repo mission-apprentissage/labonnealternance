@@ -3,6 +3,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 export interface ISearchPageParams {
   q?: string
+  lieu_label?: string // label affiché dans le champ lieu (ex: "Paris 75001")
   type_filter_label?: string[] // filtre par libellé de type (ex: "Offre d'emploi en alternance")
   contract_type?: string[]
   level?: string[]
@@ -30,6 +31,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
 
   return {
     q: search.get("q") || undefined,
+    lieu_label: search.get("lieu_label") || undefined,
     type_filter_label: getMulti("type_filter_label"),
     contract_type: getMulti("contract_type"),
     level: getMulti("level"),
@@ -47,6 +49,7 @@ export function buildSearchUrl(params: ISearchPageParams): string {
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)
+  if (params.lieu_label) query.set("lieu_label", params.lieu_label)
 
   for (const val of params.type_filter_label ?? []) query.append("type_filter_label", val)
   for (const val of params.contract_type ?? []) query.append("contract_type", val)

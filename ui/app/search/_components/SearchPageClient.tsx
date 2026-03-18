@@ -27,6 +27,14 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     navigate({ ...params, q: q || undefined, page: 0 })
   }
 
+  function handleLieuChange(lieu: { label: string; latitude: number; longitude: number } | null) {
+    if (lieu) {
+      navigate({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, page: 0 })
+    } else {
+      navigate({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, page: 0 })
+    }
+  }
+
   function handleFilterChange(newParams: ISearchPageParams) {
     navigate(newParams)
   }
@@ -47,13 +55,13 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         }}
       >
         <Container maxWidth="lg">
-          <SearchBar initialQ={params.q} onSubmit={handleSearch} />
+          <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
 
           <Box sx={{ mt: fr.spacing("3v") }}>
             <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
           </Box>
 
-          <SearchActiveFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
+          <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
         </Container>
       </Box>
 
