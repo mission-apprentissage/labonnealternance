@@ -32,7 +32,7 @@
         cmd: "bash /opt/app/configs/metabase/setup-metabase-preview.sh"
       timeout: 600
 
-    - include_tasks: ./tasks/preview_pr_mongodb82.yml
+    - include_tasks: ./tasks/preview_pr.yml
       vars:
         build: true
         repo_name: labonnealternance
