@@ -148,7 +148,7 @@
           "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true"
           --eval "try { db.dropUser('mongotUser') } catch(e) {}
           db.createUser({ user: 'mongotUser', pwd: '{{ MONGODB_KEYFILE }}',
-            roles: [{ role: 'clusterMonitor', db: 'admin' }, { role: 'readAnyDatabase', db: 'admin' }] })"
+          roles: [{ role: 'clusterMonitor', db: 'admin' }, { role: 'readAnyDatabase', db: 'admin' }] })"
           --quiet
 
     - name: "[{{ pr_number }}] Check if database is already seeded (MongoDB 8.2)"
