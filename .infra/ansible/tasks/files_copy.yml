@@ -62,7 +62,7 @@
 
 - name: Copie du fichier mongot password
   ansible.builtin.template:
-    src: "{{inventory_dir}}/files/configs/mongodb/mongot_password.txt"
+    src: "{{inventory_dir}}/../files/configs/mongodb/mongot_password.txt"
     dest: "/opt/app/configs/mongodb/mongot_password.txt"
     mode: "400"
     owner: 999
