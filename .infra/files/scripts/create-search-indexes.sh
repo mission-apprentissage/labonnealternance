@@ -43,7 +43,7 @@ echo "Creating MongoDB Search indexes..."
 if command -v mongosh &>/dev/null; then
   MONGOSH="mongosh"
 else
-  CONTAINER=$(docker ps --filter "name=mongodb" --format "{{.Names}}" | head -1)
+  CONTAINER=$(docker ps --filter "name=mongodb" --format "{% raw %}{{.Names}}{% endraw %}" | head -1)
   if [[ -z "$CONTAINER" ]]; then
     echo "ERROR: mongosh not found and no running mongodb container detected" >&2
     exit 1
