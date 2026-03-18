@@ -178,11 +178,6 @@
       async: 900 # max 15 minutes
       poll: 15 # check every 15s
 
-    - name: "[{{ pr_number }}] Execute MongoDB migrations"
-      shell:
-        chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: "docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml run --rm server yarn cli migrations:up"
-
     - name: "[{{ pr_number }}] Start Application"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
