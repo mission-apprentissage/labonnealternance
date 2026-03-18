@@ -124,7 +124,7 @@
     - name: "[{{ pr_number }}] Stop existing application before deploy"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml down --remove-orphans
+        cmd: docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml down --remove-orphans --volumes
       when: preview_exists.stat.exists
       ignore_errors: true
 
