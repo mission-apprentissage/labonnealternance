@@ -25,10 +25,10 @@ export const zSearchRoutes = {
               example: "offre",
             }),
           type_filter_label: z
-            .string()
+            .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
             .openapi({
-              param: { description: "Libellé de type pour l'affichage des filtres" },
+              param: { description: "Libellé de type pour l'affichage des filtres (peut être passé plusieurs fois)" },
             }),
           contract_type: z
             .union([z.array(z.string()), z.string().transform((v) => [v])])
@@ -38,17 +38,17 @@ export const zSearchRoutes = {
               example: ["Apprentissage"],
             }),
           level: z
-            .string()
+            .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
             .openapi({
-              param: { description: "Niveau de diplôme européen (3 à 7)" },
-              example: "4",
+              param: { description: "Niveau de diplôme européen (3 à 7, peut être passé plusieurs fois)" },
+              example: ["4"],
             }),
           activity_sector: z
-            .string()
+            .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
             .openapi({
-              param: { description: "Secteur d'activité" },
+              param: { description: "Secteur d'activité (peut être passé plusieurs fois)" },
             }),
           organization_name: z
             .string()

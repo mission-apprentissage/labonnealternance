@@ -32,7 +32,7 @@ function buildOptions(counts?: Record<string, number>): Array<{ value: string; l
 }
 
 const SELECT_SX = {
-  minWidth: 140,
+  width: 160,
   height: 36,
   fontSize: "0.875rem",
   ".MuiSelect-select": { py: "6px" },
@@ -150,9 +150,8 @@ export function SearchFilters({ params, facets, onNavigate }: SearchFiltersProps
       const next: FacetCounts = {}
       const keys: (keyof FacetCounts)[] = ["type_filter_label", "contract_type", "level", "activity_sector"]
       for (const key of keys) {
-        if (prev[key] || facets[key]) {
-          next[key] = { ...prev[key], ...facets[key] }
-        }
+        if (!prev[key] && !facets[key]) continue
+        next[key] = { ...prev[key], ...facets[key] }
       }
       return next
     })

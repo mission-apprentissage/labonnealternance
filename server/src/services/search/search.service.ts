@@ -97,10 +97,10 @@ export function buildSearchMatchWords(highlights: Highlight[]): Array<{ word: st
 interface ISearchFilters {
   q?: string
   type?: string
-  type_filter_label?: string
+  type_filter_label?: string[]
   contract_type?: string[]
-  level?: string
-  activity_sector?: string
+  level?: string[]
+  activity_sector?: string[]
   organization_name?: string
   latitude?: number
   longitude?: number
@@ -130,16 +130,7 @@ const SYNONYM_MULTI_PATHS = [
   { value: "organization_name", multi: "standard" },
 ]
 
-// Mapping filtre → nom de la facette pour le facetting disjoint (doesNotAffect)
-const FACET_FILTER_MAP: Partial<Record<keyof ISearchFilters, string>> = {
-  type_filter_label: "type_filter_label",
-  contract_type: "contract_type",
-  level: "level",
-  activity_sector: "activity_sector",
-  organization_name: "organization_name",
-}
-
-function buildCompoundOperator(filters: ISearchFilters, { disjunctiveFacets = false } = {}) {
+function buildCompoundOperator(filters: ISearchFilters) {
   const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, latitude, longitude, radius } = filters
 
   // Deux clauses should pour la recherche textuelle :
@@ -155,18 +146,43 @@ function buildCompoundOperator(filters: ISearchFilters, { disjunctiveFacets = fa
 
   const filter: object[] = []
 
-  // Lorsque disjunctiveFacets=true (pipeline $searchMeta), on ajoute doesNotAffect sur chaque
-  // filtre de facette afin que la sélection d'une valeur ne masque pas les autres buckets.
-  function dna(key: keyof ISearchFilters): { doesNotAffect?: string } {
-    return disjunctiveFacets && FACET_FILTER_MAP[key] ? { doesNotAffect: FACET_FILTER_MAP[key] } : {}
+  if (type) filter.push({ equals: { path: "type", value: type } })
+  if (type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
+  if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
+  if (level?.length) filter.push({ in: { path: "level", value: level } })
+  if (activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
+  if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
+  if (latitude !== undefined && longitude !== undefined) {
+    filter.push({
+      geoWithin: {
+        circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 },
+        path: "location",
+      },
+    })
   }
 
-  if (type) filter.push({ equals: { path: "type", value: type } })
-  if (type_filter_label) filter.push({ equals: { path: "type_filter_label", value: type_filter_label, ...dna("type_filter_label") } })
-  if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type, ...dna("contract_type") } })
-  if (level) filter.push({ equals: { path: "level", value: level, ...dna("level") } })
-  if (activity_sector) filter.push({ equals: { path: "activity_sector", value: activity_sector, ...dna("activity_sector") } })
-  if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name, ...dna("organization_name") } })
+  if (!should.length && !filter.length) {
+    filter.push({ exists: { path: "type" } })
+  }
+
+  return { ...(should.length ? { should, minimumShouldMatch: 1 } : {}), filter }
+}
+
+// Compound sans filtres de dimension — utilisé pour $searchMeta (faceting disjoint).
+// Les counts reflètent texte + géo seulement, indépendamment des filtres actifs,
+// ce qui permet à tous les buckets de rester visibles lors de la multi-sélection.
+function buildBaselineCompound(filters: ISearchFilters) {
+  const { q, latitude, longitude, radius } = filters
+
+  const should: object[] = q
+    ? [
+        { text: { query: q, path: ["title", "description", "keywords", "organization_name"], fuzzy: { maxEdits: 1 } } },
+        { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms" } },
+      ]
+    : []
+
+  const filter: object[] = []
+
   if (latitude !== undefined && longitude !== undefined) {
     filter.push({
       geoWithin: {
@@ -197,8 +213,7 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
 }> {
   const { page, hitsPerPage } = params
   const compound = buildCompoundOperator(params)
-
-  const compoundForFacets = buildCompoundOperator(params, { disjunctiveFacets: true })
+  const compoundBaseline = buildBaselineCompound(params)
 
   const [rows, meta] = await Promise.all([
     getDbCollection("algolia")
@@ -246,7 +261,7 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
           $searchMeta: {
             index: "algolia_search",
             facet: {
-              operator: { compound: compoundForFacets },
+              operator: { compound: compoundBaseline },
               facets: {
                 type: { type: "string", path: "type" },
                 type_filter_label: { type: "string", path: "type_filter_label" },

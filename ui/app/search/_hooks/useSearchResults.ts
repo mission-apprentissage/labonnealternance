@@ -10,11 +10,10 @@ function paramsToQuerystring(params: ISearchPageParams) {
     hitsPerPage: params.hitsPerPage,
   }
   if (params.q) qs.q = params.q
-  // type_filter_label : l'API accepte une seule valeur — on envoie le premier élément
-  if (params.type_filter_label?.length) qs.type_filter_label = params.type_filter_label[0]
+  if (params.type_filter_label?.length) qs.type_filter_label = params.type_filter_label
   if (params.contract_type?.length) qs.contract_type = params.contract_type
-  if (params.level?.length) qs.level = params.level[0]
-  if (params.activity_sector?.length) qs.activity_sector = params.activity_sector[0]
+  if (params.level?.length) qs.level = params.level
+  if (params.activity_sector?.length) qs.activity_sector = params.activity_sector
   if (params.organization_name) qs.organization_name = params.organization_name
   if (params.latitude !== undefined) qs.latitude = params.latitude
   if (params.longitude !== undefined) qs.longitude = params.longitude
