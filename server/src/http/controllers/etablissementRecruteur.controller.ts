@@ -176,6 +176,14 @@ export default (server: Server) => {
       const { cfaId } = req.params
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
       const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
+      recruiters.forEach((recruiter) => {
+        recruiter.jobs.forEach((job) => {
+          // @ts-expect-error
+          delete job.rome_detail?._id
+          // @ts-expect-error
+          delete job.rome_detail?.couple_appellation_rome
+        })
+      })
       return res.status(200).send(recruiters)
     }
   )

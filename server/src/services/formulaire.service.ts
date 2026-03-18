@@ -354,7 +354,7 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
 
 export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId): Promise<IRecruiter[]> => {
   const [mainRole, entreprisesManagedByCfa, cfa, user] = await Promise.all([
-    getMainRoleManagement(userId),
+    getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
     getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray(),
     getDbCollection("cfas").findOne({ _id: cfaId }),
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
@@ -451,7 +451,7 @@ const getRecruiterFromJobsPartnerFilter = async ({
     .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome; application_count?: number })[]
 
   const [mainRole, entreprise, user] = await Promise.all([
-    getMainRoleManagement(userId, true),
+    getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: { $in: [AccessEntityType.CFA, AccessEntityType.ENTREPRISE] } }),
     getDbCollection("entreprises").findOne({ siret }),
     getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
