@@ -40,7 +40,7 @@ services:
       - /opt/app/projects/{{pr_number}}/mongot82.yml:/mongot-community/config.default.yml:ro
       - /opt/app/projects/{{pr_number}}/mongot_password:/etc/mongot/secrets/passwordFile:ro
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080"]
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 10s
       timeout: 10s
       retries: 20
