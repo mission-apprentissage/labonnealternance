@@ -17,7 +17,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "url": null,
       },
       "contact": {
-        "email": null,
+        "hasEmail": false,
         "phone": null,
         "url": "https://apply.com",
       },
@@ -90,6 +90,9 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
           "url": null,
         },
         "siret": null,
+      },
+      "contact": {
+        "hasEmail": false,
       },
       "id": "675209e704377be3d437bbb9",
       "ideaType": "offres_emploi_partenaires",
