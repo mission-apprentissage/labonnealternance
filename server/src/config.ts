@@ -185,6 +185,10 @@ const config = {
     url: env.get("EMPLOI_INCLUSION_FLUX_URL").required().asString(),
     apiKey: env.get("EMPLOI_INCLUSION_API_KEY").required().asString(),
   },
+  taleez: {
+    url: env.get("TALEEZ_API_URL").required().asString(),
+    partnerKey: env.get("TALEEZ_API_PARTNER_KEY").required().asString(),
+  },
 }
 
 export default config
