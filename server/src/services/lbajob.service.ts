@@ -253,6 +253,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       title: offre.offer_title_custom ?? offre.rome_appellation_label ?? offre.rome_label,
       contact: {
         ...email,
+        hasEmail: recruiter.email ? true : false,
         name: recruiter.first_name + " " + recruiter.last_name,
         phone: recruiter.phone,
       },
@@ -334,6 +335,9 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       id: offre._id.toString(),
       title: offre.offer_title_custom ?? offre.rome_appellation_label ?? offre.rome_label,
+      contact: {
+        hasEmail: recruiter.email ? true : false,
+      },
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
         distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,
