@@ -378,6 +378,8 @@ export const sendApplicationV2 = async ({
     })
     await getDbCollection("applications").insertOne(application)
     await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
+    await sendApplicationDataToPartner(application, applicant, applicant_attachment_content)
+
     return { _id: application._id }
   } catch (err) {
     sentryCaptureException(err)
@@ -1666,6 +1668,59 @@ const sendApplicationStatusToHellowork = async ({ status, application }: { statu
         applicationId: application._id,
         foreign_application_status_url: application.foreign_application_status_url,
         payload,
+      },
+    })
+  }
+}
+
+const sendApplicationDataToPartner = async (application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
+  if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && application.job_id) {
+    const partnerJob: IJobsPartnersOfferPrivate | null = await getDbCollection("jobs_partners").findOne({ _id: application.job_id })
+
+    if (!partnerJob) {
+      logger.error(`Aucun job partenaire trouvé avec id=${application.job_id} pour l'application ${application._id}`)
+      return
+    }
+
+    if (partnerJob.partner_label === "Taleez") {
+      await sendApplicationDataToTaleez(partnerJob, application, applicant, applicant_attachment_content)
+    }
+  }
+}
+
+const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
+  try {
+    console.log(partnerJob)
+
+    // fake jobToken for test
+    //d1tfrrjoag66t
+    //785qs2nh75l2f
+
+    const payload = {
+      jobToken: "d1tfrrjoag66t", //partnerJob.partner_job_id,
+      firstName: applicant.firstname,
+      lastName: applicant.lastname,
+      email: applicant.email,
+      cvData: applicant_attachment_content.substring(applicant_attachment_content.indexOf("base64,") + 7),
+      cvName: application.applicant_attachment_name,
+      phone: applicant.phone,
+      coverText: application.applicant_message_to_company,
+    }
+
+    const response = await axios.post(config.taleez.url, payload, {
+      headers: {
+        "X-Partner-Key": config.taleez.partnerKey,
+      },
+    })
+
+    console.log("response : ", response)
+  } catch (err) {
+    logger.error(err)
+    console.log("error ", err)
+    captureException(err, {
+      extra: {
+        applicationId: application._id,
+        jobId: application.job_id,
       },
     })
   }
