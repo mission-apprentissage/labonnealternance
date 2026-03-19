@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Typography } from "@mui/material"
+import { Grid } from "@mui/system"
 import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
 import { useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
@@ -60,6 +61,7 @@ function TableWithPagination({
   onPageChange = null,
   defaultSortBy = [],
   caption,
+  additionalFilters,
 }: {
   data?: any[]
   columns: any
@@ -70,6 +72,7 @@ function TableWithPagination({
   onPageChange?: (newPageIndex: number) => void
   defaultSortBy?: { id: string; desc: boolean }[]
   caption: string
+  additionalFilters?: React.ReactNode
 }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
@@ -128,14 +131,19 @@ function TableWithPagination({
   return (
     <Box className="search-page">
       <Box sx={{ display: "flex", alignItems: "center", mb: fr.spacing("8v") }}>
-        <Box
-          sx={{
-            width: "90%",
-          }}
-        >
-          <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" } }}>
-            <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
-          </Box>
+        <Box sx={{ width: "100%" }}>
+          <Grid container>
+            {additionalFilters && (
+              <Grid size={{ xs: 12, md: 7 }} sx={{ mt: fr.spacing("4v") }}>
+                {additionalFilters}
+              </Grid>
+            )}
+            <Grid size={{ xs: 12, md: 5 }} sx={{ mt: fr.spacing("4v"), display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
+              <Box sx={{ minWidth: "100%" }}>
+                <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
+              </Box>
+            </Grid>
+          </Grid>
           {description && (
             <Box
               sx={{

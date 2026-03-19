@@ -1,17 +1,12 @@
-import { Box } from "@mui/material"
+import { Box, Container } from "@mui/material"
 import type { PropsWithChildren } from "react"
-
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
 export default async function Layout({ children }: PropsWithChildren) {
   return (
-    <Box
-      sx={{
-        maxWidth: 1200,
-        marginX: "auto",
-      }}
-    >
+    <DefaultContainer>
       <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
-    </Box>
+    </DefaultContainer>
   )
 }

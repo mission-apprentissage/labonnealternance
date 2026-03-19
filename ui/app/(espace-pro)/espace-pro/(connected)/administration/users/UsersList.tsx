@@ -1,15 +1,14 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link, Typography } from "@mui/material"
+import Select from "@codegouvfr/react-dsfr/Select"
+import { Box, Grid, Link, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import { entriesToTypedRecord } from "shared"
-
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
-import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
 import { useToast } from "@/app/hooks/useToast"
@@ -236,7 +235,7 @@ function TabContent({
       },
     },
     {
-      Header: "Etablissement",
+      Header: "Établissement",
       id: "establishment_raison_sociale",
       width: "350",
       accessor: "establishment_raison_sociale",
@@ -325,31 +324,38 @@ function TabContent({
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
         onConfirmation={onInvalidateData}
       />
-      <Box sx={{ display: "flex", gap: fr.spacing("4v") }}>
-        <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
-        <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
-      </Box>
-      <Typography
-        sx={{
-          fontSize: "16px",
-          lineHeight: "24px",
-          color: "#666666",
-          marginTop: fr.spacing("4v"),
-          marginBottom: fr.spacing("4v") + "!important",
-        }}
-      >
-        {userRecruteurs.length}
-        {!isCountAccurate && "+"} comptes {statusLabels[queryStatus].toLocaleLowerCase()} :
-      </Typography>
       <TableWithPagination
         caption="Liste des recruteurs"
         columns={columns}
         data={userRecruteurs}
-        description={null}
+        description={
+          <Typography
+            sx={{
+              fontSize: "16px",
+              lineHeight: "24px",
+              color: "#666666",
+              marginTop: fr.spacing("4v"),
+              marginBottom: fr.spacing("4v") + "!important",
+            }}
+          >
+            {userRecruteurs.length}
+            {!isCountAccurate && "+"} comptes {statusLabels[queryStatus].toLocaleLowerCase()} :
+          </Typography>
+        }
         exportable={null}
         pageIndex={page}
         onPageChange={onPageChange}
         defaultSortBy={[queryStatus === ETAT_UTILISATEUR.ATTENTE ? { id: "createdAt", desc: false } : { id: "createdAt", desc: true }]}
+        // additionalFilters={
+        //   <Grid container spacing={fr.spacing("4v")}>
+        //     <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+        //       <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
+        //     </Grid>
+        //     <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+        //       <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
+        //     </Grid>
+        //   </Grid>
+        // }
       />
     </>
   )
@@ -362,49 +368,51 @@ const statusLabels = {
   [ETAT_UTILISATEUR.ERROR]: `En erreur`,
 }
 
-function AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: (newValue: AccountType) => void }) {
+function _AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: (newValue: AccountType) => void }) {
   const localValue = value ?? "Tous"
   const possibleValues = ["Tous", ...accountTypes] as const
   return (
-    <SelectField
-      id="account-type"
+    <Select
       label="Type de compte"
-      style={{
-        minWidth: "200px",
-      }}
-      options={possibleValues.map((option) => ({ value: option, label: option, selected: option === value }))}
+      style={{ minWidth: "200px", maxWidth: "250px" }}
       nativeSelectProps={{
-        required: true,
         value: localValue,
         onChange: (event) => {
           const { value: newValue } = event.target
-          onChange(newValue === "Tous" ? undefined : newValue)
+          onChange(newValue === "Tous" ? undefined : (newValue as AccountType))
         },
       }}
-    />
+    >
+      {possibleValues.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </Select>
   )
 }
 
-function OpcoSelect({ value, onChange, accountType }: { value: OpcoValue; onChange: (newValue: OpcoValue) => void; accountType: AccountType }) {
+function _OpcoSelect({ value, onChange, accountType }: { value: OpcoValue; onChange: (newValue: OpcoValue) => void; accountType: AccountType }) {
   const localValue = value ?? "Tous"
   const possibleValues = ["Tous", ...opcoValues] as const
   return (
-    <SelectField
-      id="opco"
+    <Select
       label="OPCO"
-      style={{
-        minWidth: "200px",
-      }}
-      options={possibleValues.map((option) => ({ value: option, label: option, selected: option === value }))}
+      style={{ minWidth: "200px", maxWidth: "250px" }}
+      disabled={!validTypesForOpcoFilter.includes(accountType)}
       nativeSelectProps={{
-        disabled: !validTypesForOpcoFilter.includes(accountType),
-        required: true,
         value: localValue,
         onChange: (event) => {
           const { value: newValue } = event.target
-          onChange(newValue === "Tous" ? undefined : newValue)
+          onChange(newValue === "Tous" ? undefined : (newValue as OpcoValue))
         },
       }}
-    />
+    >
+      {possibleValues.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </Select>
   )
 }
