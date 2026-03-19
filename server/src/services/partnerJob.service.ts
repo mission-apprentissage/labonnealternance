@@ -108,9 +108,9 @@ function transformPartnerJob(
     },
 
     contact: {
-      email: partnerJob.apply_email,
       phone: partnerJob.apply_phone,
       url: partnerJob.apply_url,
+      hasEmail: partnerJob.apply_email ? true : false,
     },
 
     nafs: [{ label: partnerJob.workplace_naf_label, code: partnerJob.workplace_naf_code }],
@@ -155,6 +155,9 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+    },
+    contact: {
+      hasEmail: partnerJob.apply_email ? true : false,
     },
     // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
     token: "",
