@@ -9,6 +9,7 @@ import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -38,13 +39,13 @@ export default function Authentification() {
           case "DISABLED":
             setFieldError(
               "email",
-              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a style="text-decoration:underline;" href="mailto:labonnealternance-contact@apprentissage.beta.gouv.fr?subject=Compte CFA La bonne alternance désactivé">support</a>`
+              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Compte CFA La bonne alternance désactivé")}">support</a>`
             )
             setErrorMessage("Le compte utilisateur est désactivé")
             break
-          case "UNKNOWN":
-            setFieldError("email", "Adresse email invalide.")
-            setErrorMessage("Adresse email invalide")
+          case "INVALID":
+            setFieldError("email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
+            setErrorMessage("Email incorrect")
             break
           case "VALIDATION":
             setFieldError("email", "Le compte utilisateur est en attente de validation")
