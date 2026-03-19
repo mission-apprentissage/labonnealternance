@@ -125,8 +125,6 @@ function transformPartnerJob(
   return resultJob
 }
 
-//TODO: travailler toutes les urls des emails de candidatures
-
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
@@ -273,6 +271,8 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
   }
 
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
+
+  console.log("partnerJob", partnerJob)
 
   return partnerJob
 }
