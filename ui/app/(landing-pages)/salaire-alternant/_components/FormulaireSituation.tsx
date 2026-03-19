@@ -61,14 +61,14 @@ const typeContratOptions = [
 ]
 
 const niveauDiplomeOptions = [
-  { value: 8, label: "Niveau 8 (doctorat)" },
-  { value: 7, label: "Niveau 7 (master, diplôme d'école de commerce, diplôme d'ingénieur, etc.)" },
-  { value: 6, label: "Niveau 6 (licence, 1ère année de master, BUT, etc.)" },
-  { value: 5, label: "Niveau 5 (BTS, etc.)" },
-  { value: 4, label: "Niveau 4 (baccalauréat, etc.)" },
-  { value: 3, label: "Niveau 3 (CAP, BEP, etc.)" },
-  { value: 2, label: "Niveau 2 (brevet, certificat de formation générale)" },
   { value: 1, label: "Niveau 1 (aucun diplôme ou titre professionnel)" },
+  { value: 2, label: "Niveau 2 (brevet, certificat de formation générale)" },
+  { value: 3, label: "Niveau 3 (CAP, BEP, etc.)" },
+  { value: 4, label: "Niveau 4 (baccalauréat, etc.)" },
+  { value: 5, label: "Niveau 5 (BTS, etc.)" },
+  { value: 6, label: "Niveau 6 (licence, 1ère année de master, BUT, etc.)" },
+  { value: 7, label: "Niveau 7 (master, diplôme d'école de commerce, diplôme d'ingénieur, etc.)" },
+  { value: 8, label: "Niveau 8 (doctorat)" },
 ]
 
 const isDateDebutContratConnueOptions = [
@@ -340,9 +340,11 @@ export const FormulaireSituation = () => {
                     {
                       label: (
                         <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                          <Typography mb={"auto"}>Le contrat s'exécute à Mayotte</Typography>
-                          <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} m={fr.spacing("1v")} mb={"auto"} mr={0}>
-                            (optionnel)
+                          <Typography mb={"auto"}>
+                            <Typography component={"span"}>Le contrat s'exécute à Mayotte</Typography>
+                            <Typography variant="caption" color={fr.colors.decisions.text.mention.grey.default} m={fr.spacing("1v")} mr={0} component={"span"}>
+                              (optionnel)
+                            </Typography>
                           </Typography>
                           <Tooltip title={"À Mayotte, le SMIC horaire diffère du reste de la France, ce qui impacte la rémunération de l'alternant."} kind="click" />
                         </Box>
