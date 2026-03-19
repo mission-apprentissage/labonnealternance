@@ -166,7 +166,6 @@ const transformCompanyV2 = ({
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {
       phone: company.apply_phone,
-      email: company.apply_email,
       hasEmail: company.apply_email !== "null",
     },
     place: {
