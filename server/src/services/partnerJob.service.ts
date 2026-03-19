@@ -274,9 +274,6 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
   }
 
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
-
-  console.log("partnerJob", partnerJob)
-
   return partnerJob
 }
 
