@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, List, ListItem, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -109,9 +109,6 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
     { icon: "/images/seo/metier/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
   ]
 
-  const FUSION_PDA_FF = false
-  const simulateurLink = FUSION_PDA_FF ? `/simulateur-alternant?${UTM_PARAMS}` : `https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1?${UTM_PARAMS}`
-
   return (
     <Box>
       <DefaultContainer sx={{ px: 0 }}>
@@ -205,7 +202,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         {/**
          * BLOC SALAIRE
          */}
-        <Box
+        {/* <Box
           sx={{
             mb: fr.spacing("8v"),
             py: fr.spacing("8v"),
@@ -220,145 +217,50 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography variant="h5" sx={{ mb: fr.spacing("4v") }} gutterBottom>
-            Rémunération et évolution des apprentis
+          <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+            Rémunération et évolution
           </Typography>
-          <Typography variant="body1">Minimum réglementaire en pourcentage du SMIC selon l’âge et et à mesure de l’avancée dans le contrat :</Typography>
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", md: "repeat(4, minmax(0, 1fr))" },
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", md: "repeat(3, minmax(0, 1fr))" },
               gap: fr.spacing("4v"),
               alignItems: "stretch",
               mt: fr.spacing("4v"),
             }}
           >
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                Moins de 18 ans
+            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>1 ère année</Typography>
+              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                ≃ {data.salaire.salaire_1ere_annee}€
               </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    27%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    39%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    55%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
+              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
             </Box>
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                18 à 20 ans
+            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>2 ème année</Typography>
+              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                ≃ {data.salaire.salaire_2eme_annee}€
               </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    43%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    51%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    60%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
+              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
             </Box>
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                21 à 25 ans
+            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
+              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>
+                Salaire médian pour un professionnel{" "}
+                <Tooltip kind="hover" title="Le salaire médian divise les travailleurs en deux groupes, la moitié gagne davantage, l'autre moins" />
               </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    53%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    61%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    78%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
-            </Box>
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                26 ans et plus
+              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
+                ≃ {data.salaire.salaire_median}€
               </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    100%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    100%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    100%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
+              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
             </Box>
           </Box>
           <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
-            <Button
-              linkProps={{ href: simulateurLink }}
-              aria-label={
-                FUSION_PDA_FF
-                  ? "Calculer ma rémunération en alternance sur le simulateur du portail de l'alternance"
-                  : "Calculer ma rémunération en alternance sur le simulateur la bonne alternance"
-              }
-              size="large"
-              priority="secondary"
-              style={{ marginTop: fr.spacing("2v") }}
-            >
+            <Button linkProps={{ href: `/simulateur?${utmParams}` }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
               Calculer ma rémunération en alternance
-              {FUSION_PDA_FF && <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />}
+              <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </Button>
           </Box>
-        </Box>
+        </Box> */}
 
         {/**
          * BLOC ENTREPRISES
