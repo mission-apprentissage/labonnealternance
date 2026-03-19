@@ -1,6 +1,7 @@
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson } from "shared"
 
 import { rawPostalAddress } from "./addressUtils"
+
 //import * as Sentry from "@sentry/react";
 
 const getPathLink = (anyItem: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson) => {

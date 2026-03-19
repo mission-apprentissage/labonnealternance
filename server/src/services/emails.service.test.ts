@@ -1,17 +1,16 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { EApplicantRole } from "shared/constants/rdva"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateAppointmentFixture, generateEligibleTrainingEstablishmentFixture, generateEligibleTrainingFixture } from "shared/fixtures/appointment.fixture"
 import { generateUserFixture } from "shared/fixtures/user.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
+import { BlackListOrigins } from "./application.service"
 import { BrevoEventStatus } from "./brevo.service"
 import type { IBrevoWebhookEvent } from "./emails.service"
 import { processHardBounceWebhookEvent } from "./emails.service"
-import { BlackListOrigins } from "./application.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { BrevoBlockedReasons, saveBlacklistEmails } from "@/jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 
 async function cleanTest() {
   await getDbCollection("emailblacklists").deleteMany({})

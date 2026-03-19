@@ -1,9 +1,8 @@
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
-
-import { getRomesFromRncp } from "./external/api-alternance/certification.service"
-import type { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
 import { isOriginLocal } from "@/common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
+import { getRomesFromRncp } from "./external/api-alternance/certification.service"
+import type { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types"
 
 /**
  * Contrôle le format d'un code RNCP

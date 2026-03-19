@@ -1,8 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
-
-import { LbaJobEngagementTag } from "./LbaJobEngagementTag"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { LbaJobEngagementTag } from "./LbaJobEngagementTag"
 
 export function LbaJobEngagement() {
   return (

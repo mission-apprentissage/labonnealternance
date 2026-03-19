@@ -1,6 +1,5 @@
-import { Grid } from "@mui/material"
-
 import { fr } from "@codegouvfr/react-dsfr"
+import { Grid } from "@mui/material"
 import { CardForLink } from "./CardForLink"
 
 const MisesEnSituation = ({ target }: { target: "candidat" | "cfa" }) => {

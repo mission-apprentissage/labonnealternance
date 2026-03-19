@@ -1,14 +1,13 @@
 import { ObjectId } from "mongodb"
+import { parseEnum } from "shared"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
-
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
-import { parseEnum } from "shared"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 import type { IAgenceCEGID } from "./mappingAgences"
 import { regionsToAgence } from "./mappingAgences"
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZCEGIDOfferDetail = z.object({
   customFields: z

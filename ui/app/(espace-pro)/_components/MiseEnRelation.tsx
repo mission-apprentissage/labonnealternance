@@ -10,12 +10,11 @@ import { useState } from "react"
 import type { IJobWithRomeDetail } from "shared"
 import { ENTREPRISE } from "shared/constants/recruteur"
 import type { IEtablissementCatalogueProcheWithDistance, IEtablissementCatalogueProcheWithDistanceJSON } from "shared/interface/etablissement.types"
-
-import LoadingEmptySpace from "./LoadingEmptySpace"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { createEtablissementDelegation, createEtablissementDelegationByToken, getFormulaire, getFormulaireByToken, getRelatedEtablissementsFromRome } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import LoadingEmptySpace from "./LoadingEmptySpace"
 
 function InfoDelegation() {
   return (
@@ -182,17 +181,16 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
     setIsSubmitting(true)
     const etablissementCatalogueIds = checkedEtablissements.map((etablissement) => etablissement._id)
 
-    await (
-      token
-        ? createEtablissementDelegationByToken({
-            jobId: offre._id.toString(),
-            data: { etablissementCatalogueIds },
-            token: token as string,
-          })
-        : createEtablissementDelegation({
-            jobId: offre._id.toString(),
-            data: { etablissementCatalogueIds },
-          })
+    await (token
+      ? createEtablissementDelegationByToken({
+          jobId: offre._id.toString(),
+          data: { etablissementCatalogueIds },
+          token: token as string,
+        })
+      : createEtablissementDelegation({
+          jobId: offre._id.toString(),
+          data: { etablissementCatalogueIds },
+        })
     )
       .then(() => {
         setDelegationsEnregistrees(true)

@@ -2,11 +2,10 @@ import { ObjectId } from "mongodb"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getSiretInfos } from "./cacheInfosSiret.service"
 import { formatEntrepriseData } from "./etablissement.service"
 import { getOffre } from "./formulaire.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export const reportCompany = async ({ reason, reasonDetails, itemId, type }: { reason: string; reasonDetails?: string; itemId: string; type: LBA_ITEM_TYPE }) => {
   const additionalInfos = await getReportAdditionalInfos(itemId, type)

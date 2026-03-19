@@ -1,8 +1,7 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-
-import { fr } from "@codegouvfr/react-dsfr"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 export default function ItemWebsiteLink({ item }: { item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson }) {

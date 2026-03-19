@@ -13,12 +13,11 @@ import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.rout
 import type { AccessPermission, AccessResourcePath } from "shared/security/permissions"
 import { assertUnreachable, parseEnum } from "shared/utils/index"
 import type { Primitive } from "type-fest"
-
-import { getUserFromRequest } from "./authenticationService"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { getApplicantFromDB } from "@/services/applicant.service"
 import { getComputedUserAccess, getGrantedRoles } from "@/services/roleManagement.service"
 import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked } from "@/services/userWithAccount.service"
+import { getUserFromRequest } from "./authenticationService"
 
 type RecruiterResource = { recruiter: IRecruiter } & ({ type: "ENTREPRISE"; entreprise: IEntreprise } | { type: "CFA"; cfa: ICFA })
 type JobResource = { job: IJob; recruiterResource: RecruiterResource }

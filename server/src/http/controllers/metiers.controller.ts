@@ -1,7 +1,6 @@
 import { zRoutes } from "shared"
-
-import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "@/services/metiers.service"
 import type { Server } from "@/http/server"
+import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getTousLesMetiers } from "@/services/metiers.service"
 
 const config = {
   rateLimit: {

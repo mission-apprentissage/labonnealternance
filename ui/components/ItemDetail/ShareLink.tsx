@@ -1,5 +1,5 @@
-import Button from "@codegouvfr/react-dsfr/Button"
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import type { SyntheticEvent } from "react"

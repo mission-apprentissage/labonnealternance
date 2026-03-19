@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid, Typography, Stack } from "@mui/material"
+import { Box, Grid, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"

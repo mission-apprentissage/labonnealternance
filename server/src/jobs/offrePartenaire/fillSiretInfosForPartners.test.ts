@@ -1,14 +1,13 @@
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import pick from "lodash-es/pick"
 import nock from "nock"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.fixture"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
-import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { fillSiretInfosForPartners } from "./fillSiretInfosForPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 const filledFields = [

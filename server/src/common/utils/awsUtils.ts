@@ -8,9 +8,8 @@ import type { RequestPresigningArguments } from "@aws-sdk/types"
 import { internal } from "@hapi/boom"
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types"
 import { assertUnreachable } from "shared/utils/index"
-
-import config from "@/config"
 import { logger } from "@/common/logger"
+import config from "@/config"
 
 const { endpoint, region, accessKeyId, secretAccessKey, bucket: s3Buckets } = config.s3
 const configuration: S3ClientConfig = { credentials: { accessKeyId, secretAccessKey }, endpoint, region, forcePathStyle: true }

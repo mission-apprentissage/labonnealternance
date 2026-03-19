@@ -1,15 +1,14 @@
 import axios from "axios"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import z from "zod"
-
 import rawFranceTravailCEGIDModel from "shared/models/rawFranceTravailCEGID.model"
-import type { IFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
-import { franceTravailCEGIDMapper, ZCEGIDOfferDetail, ZFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
-import { parseAgences } from "./mappingAgences"
+import z from "zod"
 import { stringToStream } from "@/common/utils/streamUtils"
 import config from "@/config"
 import { importFromStreamInJson } from "@/jobs/offrePartenaire/importFromStreamInJson"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import type { IFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
+import { franceTravailCEGIDMapper, ZCEGIDOfferDetail, ZFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
+import { parseAgences } from "./mappingAgences"
 
 const rawCollectionName = rawFranceTravailCEGIDModel.collectionName
 

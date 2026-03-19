@@ -1,11 +1,10 @@
-import { pipeline } from "stream/promises"
-
 import { internal } from "@hapi/boom"
 import type { Filter } from "mongodb"
 import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { pipeline } from "stream/promises"
 
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"

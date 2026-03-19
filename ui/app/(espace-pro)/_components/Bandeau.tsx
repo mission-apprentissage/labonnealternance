@@ -1,6 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import { Box, Link } from "@mui/material"
-import { fr } from "@codegouvfr/react-dsfr"
 
 export type BandeauProps = {
   header: React.ReactNode

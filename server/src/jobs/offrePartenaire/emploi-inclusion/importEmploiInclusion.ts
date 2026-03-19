@@ -1,16 +1,15 @@
-import { ApiClient } from "api-alternance-sdk"
 import { internal } from "@hapi/boom"
+import { ApiClient } from "api-alternance-sdk"
 import { ObjectId } from "bson"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawEmploiInclusionModel from "shared/models/rawEmploiInclusion.model"
-
-import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 import { getAllEmploiInclusionJobsByDepartement, ZEmploiInclusionJob } from "@/common/apis/emploiInclusion/emploi-inclusion.client"
-import config from "@/config"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import config from "@/config"
+import { emploiInclusionJobToJobsPartners, isEligiblePoste } from "./emploi-inclusion.mapper"
 
 const partnerLabel = JOBPARTNERS_LABEL.EMPLOI_INCLUSION
 const rawCollectionName = rawEmploiInclusionModel.collectionName
@@ -43,6 +42,7 @@ export const importEmploiInclusionRaw = async () => {
 
   const message = `import ${partnerLabel} terminé : ${jobsById.size} offres importées`
   logger.info(message)
+  // biome-ignore lint/nursery/noFloatingPromises: migration
   notifyToSlack({
     subject: `import des offres ${partnerLabel} dans raw`,
     message,
