@@ -22,7 +22,9 @@ services:
       retries: 30
       start_period: 30s
     networks:
-      - mna_network
+      preview_backend:
+        aliases:
+          - mongodb82
     labels:
       - autoheal=true
 
@@ -52,9 +54,17 @@ services:
         condition: service_healthy
 
   server:
+    networks:
+      - mna_network
+      - preview_backend
     volumes:
       - /opt/app/scripts/create-search-indexes.sh:/app/.infra/files/scripts/create-search-indexes.sh:ro
       - /opt/app/projects/{{pr_number}}/repository/docs/mongodb/search-synonyms.json:/app/docs/mongodb/search-synonyms.json:ro
+
+  stream_processor:
+    networks:
+      - mna_network
+      - preview_backend
 
 volumes:
   mongodb82:
@@ -64,3 +74,4 @@ networks:
   mna_network:
     name: mna_network
     external: true
+  preview_backend:

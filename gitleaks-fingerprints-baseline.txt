@@ -7,9 +7,10 @@
 .infra/ansible/tasks/preview_pr_mongodb82.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true
 .infra/ansible/tasks/preview_pr_mongodb82.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/preview_{{
 .infra/ansible/tasks/preview_pr_mongodb82.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@lba_{{
+.infra/ansible/tasks/preview_pr_mongodb82.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@mongodb82:27017/preview_{{
 .infra/ansible/tasks/preview_pr.yml:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/preview_{{
-.infra/files/scripts/seed.sh:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/$TARGET_DB?authSource=local&directConnection=true
 .infra/docker-compose.preview-system.yml:generic-secret-assignment:SECRET_KEY
+.infra/files/scripts/seed.sh:mongodb-connection-string:mongodb://__system:{{ MONGODB_KEYFILE }}@localhost:27017/$TARGET_DB?authSource=local&directConnection=true
 docs/infrastructure/mongodb-local.md:generic-password-assignment:pwd
 docs/infrastructure/mongodb-local.md:mongodb-connection-string:mongodb://__system:password@127.0.0.1:27017/labonnealternance?authSource=local&directConnection=true
 docs/infrastructure/mongodb-local.md:mongodb-connection-string:mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true
