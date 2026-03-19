@@ -47,7 +47,7 @@ const transformCompany = ({
     email?: string
     iv?: string
     phone?: string | null
-  } = encryptMailWithIV({ value: company.apply_email !== "null" ? company.apply_email : "" })
+  } = encryptMailWithIV({ value: company.apply_email || "" })
 
   if (contactAllowedOrigin) {
     contact.phone = company.apply_phone
@@ -63,7 +63,7 @@ const transformCompany = ({
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {
       ...contact,
-      hasEmail: company.apply_email !== "null",
+      hasEmail: company.apply_email ? true : false,
     },
     place: {
       distance: setDistance(company.distance),
@@ -140,7 +140,7 @@ const transformCompanyWithMinimalData = ({
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
     contact: {
-      hasEmail: company.apply_email !== "null",
+      hasEmail: company.apply_email ? true : false,
     },
   }
 
@@ -166,7 +166,7 @@ const transformCompanyV2 = ({
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {
       phone: company.apply_phone,
-      hasEmail: company.apply_email !== "null",
+      hasEmail: company.apply_email ? true : false,
     },
     place: {
       distance: setDistance(company.distance),
