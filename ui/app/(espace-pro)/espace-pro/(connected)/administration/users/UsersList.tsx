@@ -329,33 +329,25 @@ function TabContent({
         columns={columns}
         data={userRecruteurs}
         description={
-          <Typography
-            sx={{
-              fontSize: "16px",
-              lineHeight: "24px",
-              color: "#666666",
-              marginTop: fr.spacing("4v"),
-              marginBottom: fr.spacing("4v") + "!important",
-            }}
-          >
+          <>
             {userRecruteurs.length}
             {!isCountAccurate && "+"} comptes {statusLabels[queryStatus].toLocaleLowerCase()} :
-          </Typography>
+          </>
         }
         exportable={null}
         pageIndex={page}
         onPageChange={onPageChange}
         defaultSortBy={[queryStatus === ETAT_UTILISATEUR.ATTENTE ? { id: "createdAt", desc: false } : { id: "createdAt", desc: true }]}
-        // additionalFilters={
-        //   <Grid container spacing={fr.spacing("4v")}>
-        //     <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-        //       <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
-        //     </Grid>
-        //     <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-        //       <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
-        //     </Grid>
-        //   </Grid>
-        // }
+        additionalFilters={
+          <Grid container spacing={fr.spacing("4v")}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
+            </Grid>
+          </Grid>
+        }
       />
     </>
   )
@@ -368,7 +360,7 @@ const statusLabels = {
   [ETAT_UTILISATEUR.ERROR]: `En erreur`,
 }
 
-function _AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: (newValue: AccountType) => void }) {
+function AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: (newValue: AccountType) => void }) {
   const localValue = value ?? "Tous"
   const possibleValues = ["Tous", ...accountTypes] as const
   return (
@@ -392,7 +384,7 @@ function _AccountTypeSelect({ value, onChange }: { value: AccountType; onChange:
   )
 }
 
-function _OpcoSelect({ value, onChange, accountType }: { value: OpcoValue; onChange: (newValue: OpcoValue) => void; accountType: AccountType }) {
+function OpcoSelect({ value, onChange, accountType }: { value: OpcoValue; onChange: (newValue: OpcoValue) => void; accountType: AccountType }) {
   const localValue = value ?? "Tous"
   const possibleValues = ["Tous", ...opcoValues] as const
   return (

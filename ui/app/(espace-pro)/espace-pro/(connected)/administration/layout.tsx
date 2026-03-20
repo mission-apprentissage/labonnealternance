@@ -1,4 +1,3 @@
-import { Box, Container } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
