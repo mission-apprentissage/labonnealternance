@@ -56,7 +56,7 @@ export function nockJobEtudiantPage({ total, totalPages, ...rest }: IJobEtudiant
 export function nockJobEtudiantNextPage(nextPageToken: string, { total, totalPages, ...rest }: IJobEtudiantPageResponse) {
   const { origin, pathname, searchParams } = new URL(config.job_etudiant.url)
   const params = new URLSearchParams(searchParams)
-  params.set("next-page", nextPageToken)
+  params.set("next-page", decodeURIComponent(nextPageToken))
   return nock(origin, { reqheaders: { authorization: `Bearer ${config.job_etudiant.apiKey}` } })
     .get(`${pathname}?${params.toString()}`)
     .reply(200, { total: total ?? rest.jobs.length, totalPages: totalPages ?? 1, ...rest })

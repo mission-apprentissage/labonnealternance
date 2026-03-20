@@ -30,6 +30,20 @@ describe("getJobEtudiantJobs", () => {
     expect(nock.isDone()).toBe(true)
   })
 
+  it("should paginate through an encoded next-page token", async () => {
+    const job1 = generateJobEtudiantJobFixture({ public_id: "job-1" })
+    const job2 = generateJobEtudiantJobFixture({ public_id: "job-2" })
+    const nextPageToken = "cursor%3Dpage%252F2%26sort%3Ddesc"
+
+    nockJobEtudiantPage({ "next-page": nextPageToken, jobs: [job1] })
+    nockJobEtudiantNextPage(nextPageToken, { jobs: [job2] })
+
+    const result = await getJobEtudiantJobs()
+
+    expect(result).toEqual([job1, job2])
+    expect(nock.isDone()).toBe(true)
+  })
+
   it("should return an empty array when jobs is empty", async () => {
     nockJobEtudiantPage({ jobs: [] })
 

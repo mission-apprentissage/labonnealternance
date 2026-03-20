@@ -58,20 +58,16 @@ export const ZJobEtudiantJob = z.object({
 export type IJobEtudiantJob = z.output<typeof ZJobEtudiantJob>
 
 const ZJobEtudiantResponse = z.object({
-  total: z.number(),
-  totalPages: z.number(),
   "next-page": z.string().nullable().optional(),
   jobs: z.array(ZJobEtudiantJob),
 })
 
 /**
- * API Doc : https://developers.piloty.fr/jobs-api/jobs/get-jobs-opened-by-media
+ * API Doc : https://developers.piloty.fr/feeds/feed-jobs
  */
 export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
   const allJobs: IJobEtudiantJob[] = []
   let nextPageToken: string | null | undefined = undefined
-  let page = 1
-  let totalPages = 1
 
   do {
     const url = new URL(config.job_etudiant.url)
@@ -97,12 +93,6 @@ export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
     }
     allJobs.push(...parsed.data.jobs)
     nextPageToken = parsed.data["next-page"]
-    totalPages = parsed.data.totalPages
-    logger.info(`job-etudiant: page ${page}/${totalPages} récupérée — ${parsed.data.jobs.length} offres (total: ${allJobs.length}/${parsed.data.total})`)
-    page++
-    if (nextPageToken) {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    }
   } while (nextPageToken)
 
   return allJobs
