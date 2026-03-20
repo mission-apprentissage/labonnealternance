@@ -253,6 +253,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "hasEmail": {
+            "type": "boolean",
+          },
           "info": {
             "description": "Des informations complémentaires concernant le contact de référence",
             "type": "string",
@@ -284,6 +287,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
         },
+        "required": [
+          "hasEmail",
+        ],
         "type": [
           "object",
           "null",
