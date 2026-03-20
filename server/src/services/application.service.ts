@@ -736,7 +736,10 @@ export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]
     ])
     .toArray()) as IApplicationCount[]
 
-  return applicationCountByJob
+  return applicationCountByJob.map((appCount) => ({
+    _id: appCount._id.toString(),
+    count: appCount.count,
+  }))
 }
 
 /**
