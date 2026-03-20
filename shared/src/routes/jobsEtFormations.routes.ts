@@ -1,5 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 import type { IRoutesDef } from "./common.routes.js"
+import { ZResError } from "./common.routes.js"
 
 export const zV1JobsEtFormationsRoutes = {
   get: {
@@ -7,11 +8,16 @@ export const zV1JobsEtFormationsRoutes = {
       method: "get",
       path: "/v1/jobsEtFormations",
       response: {
-        "410": z.object({
-          error: z.string(),
-          message: z.string(),
-          new_endpoint: z.string(),
-        }),
+        "410": z.union([
+          ZResError,
+          z
+            .object({
+              error: z.string(),
+              message: z.string(),
+              new_endpoint: z.string(),
+            })
+            .strict(),
+        ]),
       },
       securityScheme: null,
     },
