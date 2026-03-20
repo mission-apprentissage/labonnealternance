@@ -7,7 +7,6 @@ import { CustomTooltip } from "@/app/(espace-pro)/_components/CustomTooltip"
 import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagementTag"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagCfaDEntreprise } from "@/components/ItemDetail/TagCfaDEntreprise"
-import { TagEcole } from "@/components/ItemDetail/TagEcole"
 import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
@@ -49,7 +48,6 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
     tags.push(<TagOffreEmploi key="offre emploi" />)
   }
   if (company?.mandataire) {
-    tags.push(<TagEcole key="tag école" />)
     tags.push(<TagEmploiFormation key="tag emploi formation" />)
   }
 
