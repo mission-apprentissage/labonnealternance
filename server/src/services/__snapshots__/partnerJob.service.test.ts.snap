@@ -17,6 +17,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "url": null,
       },
       "contact": {
+        "email": "",
         "hasEmail": false,
         "phone": null,
         "url": "https://apply.com",

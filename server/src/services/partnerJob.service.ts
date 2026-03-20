@@ -108,9 +108,10 @@ function transformPartnerJob(
     },
 
     contact: {
+      email: "",
       phone: partnerJob.apply_phone,
       url: partnerJob.apply_url,
-      hasEmail: partnerJob.apply_email ? true : false, //TODO: checker des conditions en fonction des partenaires
+      hasEmail: partnerJob.apply_email ? true : false,
     },
 
     nafs: [{ label: partnerJob.workplace_naf_label, code: partnerJob.workplace_naf_code }],

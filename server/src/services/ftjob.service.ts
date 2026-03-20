@@ -56,7 +56,7 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
   const contact: ILbaItemContact | null = job.contact
     ? {
         name: job.contact.nom,
-        //email: job.contact.courriel,
+        email: "",
         hasEmail: false,
         info: job.contact.coordonnees1
           ? `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""}`
