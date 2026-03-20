@@ -8,11 +8,9 @@ import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/Lb
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagCfaDEntreprise } from "@/components/ItemDetail/TagCfaDEntreprise"
 import { TagEcole } from "@/components/ItemDetail/TagEcole"
+import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
-import { TagFormationAssociee } from "@/components/ItemDetail/TagFormationAssociee"
-import { TagLaBonneAlternance } from "@/components/ItemDetail/TagLaBonneAlternance"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { isCfaEntreprise } from "@/services/cfaEntreprise"
 
 export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILbaItem, "ideaType" | "company" | "id">; displayTooltips?: boolean }) {
@@ -52,11 +50,7 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
   }
   if (company?.mandataire) {
     tags.push(<TagEcole key="tag école" />)
-    tags.push(<TagFormationAssociee key="tag formation associée" />)
-  } else if (ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
-    tags.push(<TagLaBonneAlternance key="tag la bonne alternance" />)
-  } else if (ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
-    tags.push(<TagPartenaire key="tag partenaire" />)
+    tags.push(<TagEmploiFormation key="tag emploi formation" />)
   }
 
   if ("company" in item && item?.company?.elligibleHandicap) {
