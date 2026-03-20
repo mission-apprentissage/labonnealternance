@@ -1,3 +1,4 @@
+import { zRoutes } from "shared/routes/index"
 import type { Server } from "@/http/server"
 
 export default (server: Server) => {
@@ -10,6 +11,7 @@ export default (server: Server) => {
           timeWindow: 1000,
         },
       },
+      schema: zRoutes.get["/v1/jobsEtFormations"],
     },
     async (_req, res) =>
       res.status(410).send({

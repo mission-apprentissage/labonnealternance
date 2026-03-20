@@ -18,6 +18,7 @@ import { zV1FormationsParRegion } from "./formationsParRegion.routes.js"
 import { zFormulaireRoute } from "./formulaire.route.js"
 import { zInserJeunesRoutes } from "./inserjeunes.routes.js"
 import { zV1JobsRoutes } from "./jobs.routes.js"
+import { zV1JobsEtFormationsRoutes } from "./jobsEtFormations.routes.js"
 import { zLoginRoutes } from "./login.routes.js"
 import { zMetiersRoutes } from "./metiers.routes.js"
 import { zPartnersRoutes } from "./partners.routes.js"
@@ -50,6 +51,7 @@ const zRoutesGetP2 = {
 } as const
 
 const zRoutesGetP3 = {
+  ...zV1JobsEtFormationsRoutes.get,
   ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationsRoutes.get,
