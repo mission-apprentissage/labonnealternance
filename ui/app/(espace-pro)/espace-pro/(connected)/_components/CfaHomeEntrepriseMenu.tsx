@@ -1,4 +1,3 @@
-import { fr } from "@codegouvfr/react-dsfr"
 import type { IRecruiterJson } from "shared"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"

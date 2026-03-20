@@ -61,7 +61,14 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                     <Box key={i} as="tr" {...row.getRowProps()}>
                       {row.cells.map((cell, j) => {
                         return (
-                          <Box key={j} headers={cell.column.id} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
+                          <Box
+                            key={j}
+                            headers={cell.column.id}
+                            as="td"
+                            {...cell.getCellProps()}
+                            {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
+                            alignContent={"center"}
+                          >
                             {cell.render("Cell")}
                           </Box>
                         )

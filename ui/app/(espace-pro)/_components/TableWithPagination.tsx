@@ -202,7 +202,7 @@ function TableWithPagination({
                               headers={cell.column.id}
                               component="td"
                               {...cell.getCellProps()}
-                              padding={cell.column.id === "action" ? "4px !important" : null}
+                              {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
                               display={"flex"}
                               alignContent={"center"}
                             >

@@ -81,16 +81,16 @@ export const OffresTabsMenu = ({
       label: "Voir l'offre en ligne",
       ariaLabel: `Voir l'offre ${offerTitle} en ligne - nouvelle fenêtre`,
       link: directLink,
-      type: "link",
+      type: "externalLink",
       icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
     },
     row.job_status !== JOB_STATUS.EN_ATTENTE
       ? {
           label: "Imprimer l'offre",
-          ariaLabel: "Lien vers la page d'impression de l'offre - nouvelle fenêtre",
+          ariaLabel: "Lien vers la page d'impression de l'offre",
           link: `${publicConfig.baseUrl}/espace-pro/offre/impression/${row._id}`,
           icon: <DsfrIcon name="fr-icon-printer-line" size={16} />,
-          type: "link",
+          type: "externalLink",
         }
       : null,
     {
@@ -116,6 +116,7 @@ export const OffresTabsMenu = ({
           link: cfaOptionParams.link,
           type: cfaOptionParams.type,
           ariaLabel: cfaOptionParams.ariaLabel,
+          icon: <DsfrIcon name="fr-icon-presentation-line" size={16} />,
         } as PopoverMenuAction)
       : null,
     {
