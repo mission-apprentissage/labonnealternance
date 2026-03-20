@@ -319,7 +319,7 @@ const JeSuisRecruteurPage = () => {
           spacing={fr.spacing("8v")}
         >
           <Grid size={{ md: 9, xs: 12 }} display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")}>
-            <Typography fontWeight={"bold"}>
+            <Typography fontWeight={"bold"} textAlign={{ md: "start", xs: "center" }}>
               La bonne alternance est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP) et conçoit des services numériques qui facilitent les
               entrées en apprentissage.
             </Typography>
