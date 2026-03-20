@@ -16,6 +16,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
+import { tagCandidatureSimplifiee } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
@@ -130,14 +131,15 @@ function JobDetail({
             {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
             <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
-              <div>
+              <Box sx={{ display: "flex", flexDirection: "row", gap: fr.spacing("4v"), alignItems: "center" }}>
                 {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasValidEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
                 {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                 {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler job={selectedItem} />}
-              </div>
-              <div>
+                {hasValidEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
+              </Box>
+              <Box>
                 <ShareLink item={selectedItem} />
-              </div>
+              </Box>
             </Box>
           </Box>
         </Box>
