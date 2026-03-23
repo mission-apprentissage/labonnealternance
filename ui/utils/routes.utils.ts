@@ -33,8 +33,8 @@ export const PAGES = {
       title: "Accueil",
       index: true,
       getMetadata: () => ({
-        title: "La bonne alternance - Trouvez l'alternance idéale",
-        description: "Découvrez des offres d’alternance adaptées à votre profil et boostez votre carrière avec La bonne alternance.",
+        title: "La bonne alternance - Trouvez votre alternance",
+        description: "Trouvez votre alternance parmi des milliers d’offres d’emploi et de formations en apprentissage. Recherchez par métier et par ville, postulez en ligne.",
       }),
     },
     authentification: {
@@ -97,7 +97,7 @@ export const PAGES = {
       index: false,
       getMetadata: () => ({
         title: "Métiers en alternance - Découvrez les opportunités sur La bonne alternance",
-        description: "Explorez les différents métiers accessibles en alternance et trouvez celui qui correspond à votre projet professionnel.",
+        description: "Découvrez plus de 200 métiers accessibles en alternance : commerce, informatique, santé, BTP et bien d'autres. Trouvez la voie qui vous correspond.",
       }),
     },
     codeSources: {
@@ -474,7 +474,9 @@ export const PAGES = {
         index: false,
         getMetadata: () => ({
           title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+          description: searchTitleContext
+            ? `Trouvez des offres d'emploi en alternance et des formations en apprentissage${searchTitleContext}. Postulez directement en ligne.`
+            : "Trouvez des offres d'emploi en alternance et des formations en apprentissage près de chez vous. Filtrez par métier, ville et type de contrat.",
         }),
         title: "Offres en alternance",
       }
@@ -488,7 +490,9 @@ export const PAGES = {
         index: false,
         getMetadata: () => ({
           title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
-          description: `Recherche - Formations en alternance${searchTitleContext} sur le site de La bonne alternance`,
+          description: searchTitleContext
+            ? `Trouvez des formations en apprentissage${searchTitleContext}. Comparez les programmes et postulez en ligne.`
+            : "Trouvez des formations en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez directement en ligne.",
         }),
         title: "Formations en alternance",
       }
@@ -502,7 +506,9 @@ export const PAGES = {
         index: false,
         getMetadata: () => ({
           title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+          description: searchTitleContext
+            ? `Trouvez des offres d'emploi en alternance${searchTitleContext}. Postulez directement en ligne.`
+            : "Trouvez des offres d'emploi en alternance près de chez vous. Filtrez par métier, ville et type de contrat, postulez directement en ligne.",
         }),
         title: "Offres en alternance",
       }

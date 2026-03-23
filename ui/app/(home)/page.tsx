@@ -4,13 +4,15 @@ import { Box, Container } from "@mui/material"
 import type { Metadata } from "next"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { PAGES } from "@/utils/routes.utils"
 import { AlgoHome } from "./_components/AlgoHome"
 import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
 import { HomeRechercheForm } from "./_components/HomeRechercheForm"
 import { HowTo } from "./_components/HowTo"
 
 export const metadata: Metadata = {
-  title: "La bonne alternance - Trouvez votre alternance",
+  title: PAGES.static.home.getMetadata().title,
+  description: PAGES.static.home.getMetadata().description,
 }
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
