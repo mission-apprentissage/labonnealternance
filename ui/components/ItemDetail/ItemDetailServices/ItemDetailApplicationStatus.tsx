@@ -13,8 +13,10 @@ const blueApplicationTag = (icon, text) => (
     sx={{
       backgroundColor: fr.colors.decisions.background.contrast.info.default,
       color: fr.colors.decisions.background.actionHigh.info.default,
+      whiteSpace: "nowrap",
       px: fr.spacing("2v"),
       fontStyle: "italic",
+      width: "fit-content",
     }}
     className={fr.cx(icon, "fr-icon--sm", "fr-text--sm")}
   >
