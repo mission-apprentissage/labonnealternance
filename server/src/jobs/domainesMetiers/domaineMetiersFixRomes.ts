@@ -1,11 +1,14 @@
 import type { IDomainesMetiers } from "shared"
-import { diff } from "util"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { domaineMetierSimpleToDomaineMetier, domaineMetierToDomaineMetierSimple } from "@/services/domainesmetiers.service"
 
 export async function ajoutRomesADomaineMetiers(romeAjoutsParSousDomaine: Record<string, string[]>, dryRun = true) {
   await asyncForEach(Object.entries(romeAjoutsParSousDomaine), async ([sousDomaine, newRomes]) => {
+    if (newRomes.length === 0) {
+      console.info("skip ajout romes", sousDomaine, "aucun rome à ajouter")
+      return
+    }
     const domaineMetier = await getDbCollection("domainesmetiers").findOne({ sous_domaine: sousDomaine })
     if (!domaineMetier) {
       throw new Error(`sous domaine=${sousDomaine} non trouvé`)
@@ -56,9 +59,11 @@ async function analyzeSousDomaine(domaineMetier: IDomainesMetiers, fixedDomaineM
 
   dataGetters.forEach((getter) => {
     const [name, fct] = getter
-    const result = diff(fct(fixedDomaineMetier), fct(domaineMetier))
-    const filteredResult = result.filter(([diffResult]) => diffResult !== 0)
-    console.info("diff", name, filteredResult)
+    const before = fct(domaineMetier)
+    const after = fct(fixedDomaineMetier)
+    const added = after.filter((x) => !before.includes(x))
+    const removed = before.filter((x) => !after.includes(x))
+    console.info("diff", name, { added, removed })
   })
 }
 
