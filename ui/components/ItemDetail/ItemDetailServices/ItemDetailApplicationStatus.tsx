@@ -33,12 +33,10 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
   const { ideaType } = item
   const applicationDateString = localStorageGet(key) ?? localStorageGet(oldKey)
   if (!applicationDateString) {
-    if (ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
-      return null
-    }
     if (item?.contact?.hasEmail) {
       return tagCandidatureSimplifiee()
     }
+    return null
   }
   const date = new Date(parseInt(applicationDateString, 10))
   const dateString = date.toLocaleDateString("fr-FR", {
