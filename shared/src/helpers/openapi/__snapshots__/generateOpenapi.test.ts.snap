@@ -6035,6 +6035,18 @@ Limite : 20 appel(s) / 1 seconde(s)
                     },
                     "type": "object",
                   },
+                  "identifier": {
+                    "properties": {
+                      "partner_job_id": {
+                        "description": "Identifiant d'origine de l'offre provenant du partenaire",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "partner_job_id",
+                    ],
+                    "type": "object",
+                  },
                   "offer": {
                     "properties": {
                       "access_conditions": {
