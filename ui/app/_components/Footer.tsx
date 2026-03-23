@@ -116,6 +116,17 @@ const linkListContent: LinkCategory[] = [
       text: `${metier.metier}`,
     })),
   },
+  {
+    categoryName: "Alternance par diplôme",
+    links: [
+      {
+        linkProps: {
+          href: PAGES.dynamic.seoDiplome("bts-mco").getPath(),
+        },
+        text: "BTS MCO en alternance",
+      },
+    ],
+  },
 ]
 
 export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: boolean; hideLinkList?: boolean }) {
