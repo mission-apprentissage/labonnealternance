@@ -18,7 +18,11 @@ export const zClassificationRoute = {
           })
         ),
       },
-      securityScheme: null,
+      securityScheme: {
+        auth: "api-key",
+        access: null,
+        resources: {},
+      },
     },
   },
   post: {
