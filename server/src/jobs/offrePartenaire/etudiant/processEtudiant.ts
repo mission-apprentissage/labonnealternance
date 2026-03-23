@@ -1,13 +1,12 @@
 import { ObjectId } from "bson"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import rawEtudiantModel from "shared/models/rawEtudiant.model"
-
-import { etudiantJobToJobsPartners, ETUDIANT_ELIGIBLE_CONTRACT_FR } from "./etudiant.mapper"
 import { getJobEtudiantJobs, ZJobEtudiantJob } from "@/common/apis/etudiant/etudiant.client"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { ETUDIANT_ELIGIBLE_CONTRACT_FR, etudiantJobToJobsPartners } from "./etudiant.mapper"
 
 const partnerLabel = JOBPARTNERS_LABEL.JOB_ETUDIANT
 const rawCollectionName = rawEtudiantModel.collectionName
@@ -26,7 +25,7 @@ export const importEtudiantRaw = async () => {
 
   const message = `import ${partnerLabel} terminé : ${jobs.length} offres importées`
   logger.info(message)
-  notifyToSlack({
+  await notifyToSlack({
     subject: `import des offres ${partnerLabel} dans raw`,
     message,
   })

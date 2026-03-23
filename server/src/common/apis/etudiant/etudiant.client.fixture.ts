@@ -1,7 +1,6 @@
 import nock from "nock"
-
-import type { IJobEtudiantJob } from "./etudiant.client"
 import config from "@/config"
+import type { IJobEtudiantJob } from "./etudiant.client"
 
 export function generateJobEtudiantJobFixture(overrides: Partial<IJobEtudiantJob> = {}): IJobEtudiantJob {
   return {

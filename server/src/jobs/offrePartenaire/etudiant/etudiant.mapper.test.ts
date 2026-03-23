@@ -1,9 +1,8 @@
+import omit from "lodash-es/omit"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-import omit from "lodash-es/omit"
-
-import { etudiantJobToJobsPartners, ETUDIANT_ELIGIBLE_CONTRACT_FR, REMOTE_FR_MAP } from "./etudiant.mapper"
 import { generateJobEtudiantJobFixture } from "@/common/apis/etudiant/etudiant.client.fixture"
+import { ETUDIANT_ELIGIBLE_CONTRACT_FR, etudiantJobToJobsPartners, REMOTE_FR_MAP } from "./etudiant.mapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 

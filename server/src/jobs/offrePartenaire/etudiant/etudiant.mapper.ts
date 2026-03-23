@@ -1,13 +1,12 @@
 import { ObjectId } from "bson"
-import dayjs from "shared/helpers/dayjs"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-
-import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type { IJobEtudiantJob } from "@/common/apis/etudiant/etudiant.client"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 // Seules les offres dont la traduction FR du contrat est cette valeur sont importées (filtre dans processEtudiant)
 export const ETUDIANT_ELIGIBLE_CONTRACT_FR = "Alternance - Apprentissage / Professionalisation"

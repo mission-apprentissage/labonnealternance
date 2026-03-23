@@ -1,9 +1,8 @@
 import nock from "nock"
 import { describe, expect, it } from "vitest"
-
+import config from "@/config"
 import { getJobEtudiantJobs } from "./etudiant.client"
 import { generateJobEtudiantJobFixture, nockJobEtudiantNextPage, nockJobEtudiantPage } from "./etudiant.client.fixture"
-import config from "@/config"
 
 describe("getJobEtudiantJobs", () => {
   it("should return jobs from a single page", async () => {
