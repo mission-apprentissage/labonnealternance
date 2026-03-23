@@ -717,12 +717,11 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   }
 }
 
-type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
+type InvariantFields = "_id" | "created_at" | "partner_label"
 
 async function upsertJobOfferPrivate({
   data,
   partner_label,
-  partnerJobIdIfNew,
   requestedByEmail,
   current,
 }: {
@@ -744,7 +743,6 @@ async function upsertJobOfferPrivate({
     _id,
     created_at: current?.created_at ?? now,
     partner_label,
-    partner_job_id: current?.partner_job_id ?? partnerJobIdIfNew ?? _id.toString(),
   }
 
   const defaultOfferExpiration = current?.offer_expiration ? current.offer_expiration : dayjs.tz(invariantData.created_at, "Europe/Paris").add(2, "month").startOf("day").toDate()
@@ -776,6 +774,8 @@ async function upsertJobOfferPrivate({
     offer_origin: data.offer.origin,
     offer_status: data.offer.status,
     offer_multicast: data.offer.multicast,
+
+    partner_job_id: data?.identifier?.partner_job_id ?? current?.partner_job_id ?? _id.toString(),
 
     workplace_siret: data.workplace.siret,
     workplace_description: data.workplace.description,
@@ -822,7 +822,6 @@ export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJ
   return upsertJobOfferPrivate({
     data,
     partner_label: identity.organisation!,
-    partnerJobIdIfNew: data?.identifier?.partner_job_id,
     requestedByEmail: identity.email,
     current: null,
   })
@@ -853,7 +852,7 @@ export async function upsertJobOffer(data: IJobOfferApiWriteV3, partner_label: s
   if (!current) {
     current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
   }
-  return upsertJobOfferPrivate({ data, partner_label, partnerJobIdIfNew: partner_job_id, requestedByEmail, current })
+  return upsertJobOfferPrivate({ data, partner_label, requestedByEmail, current })
 }
 
 export async function findJobOpportunityById(id: ObjectId, context: JobOpportunityRequestContext): Promise<IJobOfferApiReadV3> {
