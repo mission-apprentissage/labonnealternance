@@ -1,8 +1,7 @@
 import { badRequest } from "@hapi/boom"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
-import type { Server } from "@/http/server"
-
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import type { Server } from "@/http/server"
 
 const config = {
   rateLimit: {

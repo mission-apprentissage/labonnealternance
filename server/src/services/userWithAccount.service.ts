@@ -7,11 +7,10 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserStatusEvent, IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
-
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { checkForJobActivations } from "./formulaire.service"
 import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { asyncForEach } from "@/common/utils/asyncUtils"
 
 export const findOrCreateUserWithAccount = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,

@@ -2,8 +2,8 @@ import { zRoutes } from "shared"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
-import { getFormationsParRegionQuery } from "@/services/formation.service"
 import type { Server } from "@/http/server"
+import { getFormationsParRegionQuery } from "@/services/formation.service"
 
 const config = {
   rateLimit: {
@@ -36,6 +36,7 @@ export default (server: Server) => {
       }
 
       if (caller) {
+        // biome-ignore lint/nursery/noFloatingPromises: migration
         trackApiCall({
           caller: caller,
           api_path: "formationRegionV1",

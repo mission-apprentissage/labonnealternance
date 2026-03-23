@@ -1,22 +1,21 @@
 import { forbidden, unauthorized } from "@hapi/boom"
 import { removeUrlsFromText } from "shared/helpers/common"
 import { toPublicUser, zRoutes } from "shared/index"
-
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { startSession, stopSession } from "@/common/utils/session.service"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
+import type { Server } from "@/http/server"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { getUserFromRequest } from "@/security/authenticationService"
+import { createAuthMagicLink } from "@/services/appLinks.service"
 import { sendUserConfirmationEmail } from "@/services/etablissement.service"
 import { controlUserState } from "@/services/login.service"
 import mailer from "@/services/mailer.service"
-import { updateLastConnectionDate } from "@/services/userRecruteur.service"
-import type { Server } from "@/http/server"
-import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 import { getComputedUserAccess, getGrantedRoles, getPublicUserRecruteurProps, getPublicUserRecruteurPropsOrError } from "@/services/roleManagement.service"
-import { createAuthMagicLink } from "@/services/appLinks.service"
-import { getUserFromRequest } from "@/security/authenticationService"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { updateLastConnectionDate } from "@/services/userRecruteur.service"
+import { getUserWithAccountByEmail, isUserDisabled, isUserEmailChecked, validateUserWithAccountEmail } from "@/services/userWithAccount.service"
 
 export default (server: Server) => {
   server.post(
@@ -29,7 +28,7 @@ export default (server: Server) => {
       const { userId } = req.params
       const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
       if (!user) {
-        return res.status(400).send({ error: true, data: "UNKNOWN" })
+        return res.status(400).send({ error: true, data: "INVALID" })
       }
       const is_email_checked = isUserEmailChecked(user)
       if (is_email_checked) {
@@ -51,7 +50,7 @@ export default (server: Server) => {
       const user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).send({ error: true, data: "UNKNOWN" })
+        return res.status(400).send({ error: true, data: "INVALID" })
       }
       if (isUserDisabled(user)) {
         return res.status(400).send({ error: true, data: "DISABLED" })

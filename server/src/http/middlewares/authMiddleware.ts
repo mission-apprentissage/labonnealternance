@@ -4,12 +4,12 @@ import type {
   FastifyRequest,
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
+  preHandlerHookHandler,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerBase,
   RawServerDefault,
   RouteGenericInterface,
-  preHandlerHookHandler,
 } from "fastify"
 import type { IRouteSchema, SecurityScheme, WithSecurityScheme } from "shared/routes/common.routes"
 

@@ -1,5 +1,4 @@
 import { internal } from "@hapi/boom"
-import dayjs from "shared/helpers/dayjs"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IJob, ILbaItemPartnerJob, IRecruiter, IReferentielRomeForJob } from "shared"
@@ -8,20 +7,19 @@ import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE_OLD, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
-
+import dayjs from "shared/helpers/dayjs"
+import { encryptMailWithIV } from "@/common/utils/encryptString"
+import { manageApiError } from "@/common/utils/errorManager"
+import { roundDistance } from "@/common/utils/geolib"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { generateApplicationToken } from "./appLinks.service"
 import type { IApplicationCount } from "./application.service"
 import { getApplicationByJobCount } from "./application.service"
-import { generateApplicationToken } from "./appLinks.service"
 import { romeDetailAggregateStages } from "./formulaire.service"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
 import type { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import { filterJobsByOpco } from "./opco.service"
-import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-
-import { roundDistance } from "@/common/utils/geolib"
-import { manageApiError } from "@/common/utils/errorManager"
-import { encryptMailWithIV } from "@/common/utils/encryptString"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const JOB_SEARCH_LIMIT = 250
 /**
@@ -255,6 +253,7 @@ function transformLbaJob({ recruiter, applicationCountByJob }: { recruiter: Part
       title: offre.offer_title_custom ?? offre.rome_appellation_label ?? offre.rome_label,
       contact: {
         ...email,
+        hasEmail: recruiter.email ? true : false,
         name: recruiter.first_name + " " + recruiter.last_name,
         phone: recruiter.phone,
       },
@@ -336,6 +335,9 @@ function transformLbaJobWithMinimalData({ recruiter, applicationCountByJob }: { 
       // ideaType: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
       id: offre._id.toString(),
       title: offre.offer_title_custom ?? offre.rome_appellation_label ?? offre.rome_label,
+      contact: {
+        hasEmail: recruiter.email ? true : false,
+      },
       place: {
         //lieu de l'offre. contient ville de l'entreprise et geoloc de l'entreprise
         distance: (recruiter.distance ?? false) ? roundDistance((recruiter?.distance ?? 0) / 1000) : null,

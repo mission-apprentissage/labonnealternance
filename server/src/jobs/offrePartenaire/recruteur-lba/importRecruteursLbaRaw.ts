@@ -10,8 +10,6 @@ import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import rawRecruteursLbaModel, { ZRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
-
-import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 import { logger } from "@/common/logger"
 import { getS3FileLastUpdate, s3ReadAsStream } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -19,6 +17,7 @@ import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import { groupStreamData } from "@/common/utils/streamUtils"
 import config from "@/config"
+import { recruteursLbaToJobPartners } from "./recruteursLbaMapper"
 
 const require = createRequire(import.meta.url)
 

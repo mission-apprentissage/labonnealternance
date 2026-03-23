@@ -1,9 +1,8 @@
-// eslint-disable-next-line n/no-unsupported-features/node-builtins
-import { diff } from "util"
 import type { IDomainesMetiers } from "shared"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { domaineMetierToDomaineMetierSimple, domaineMetierSimpleToDomaineMetier } from "@/services/domainesmetiers.service"
+import { diff } from "util"
 import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { domaineMetierSimpleToDomaineMetier, domaineMetierToDomaineMetierSimple } from "@/services/domainesmetiers.service"
 
 export async function ajoutRomesADomaineMetiers(romeAjoutsParSousDomaine: Record<string, string[]>, dryRun = true) {
   await asyncForEach(Object.entries(romeAjoutsParSousDomaine), async ([sousDomaine, newRomes]) => {

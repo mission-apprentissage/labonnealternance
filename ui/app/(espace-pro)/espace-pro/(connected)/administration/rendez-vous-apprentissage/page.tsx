@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import RendezVousApprentissagePage from "./RendezVousApprentissagePage"
 import { PAGES } from "@/utils/routes.utils"
+import RendezVousApprentissagePage from "./RendezVousApprentissagePage"
 
 export const metadata: Metadata = {
   title: PAGES.static.rendezVousApprentissageRecherche.getMetadata().title,

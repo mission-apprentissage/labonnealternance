@@ -1,15 +1,14 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Grid, Typography } from "@mui/material"
-
+import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
+import { OffresGratuites } from "@/app/(landing-pages)/acces-recruteur/_components/OffresGratuites"
 import { BientotCFA } from "./BientotCFA"
 import { CFA } from "./CFA"
 import { FacilitezRDVA } from "./FacilitezRDVA"
 import { GerezEntreprise } from "./GerezEntreprise"
 import { OffresAutoExposees } from "./OffresAutoExposees"
-import { OffresGratuites } from "@/app/(landing-pages)/acces-recruteur/_components/OffresGratuites"
-import { PromoRessources } from "@/app/(espace-pro)/_components/promoRessources"
-import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
-import { ConnectionActions } from "@/app/(espace-pro)/_components/ConnectionActions"
 
 export const HeroCFA = () => {
   return (

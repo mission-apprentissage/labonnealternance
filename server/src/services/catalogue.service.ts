@@ -11,9 +11,9 @@ import { logger } from "@/common/logger"
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { fetchStream } from "@/common/utils/httpUtils"
 import { isValidEmail } from "@/common/utils/isValidEmail"
-import config from "@/config"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import config from "@/config"
 
 const DISTANCE_MAX_CFA_PROCHE = 100
 
@@ -183,6 +183,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { 
     }
 
     // eslint-disable-next-line no-unsafe-optional-chaining
+    // biome-ignore lint/correctness/noUnsafeOptionalChaining: migration
     const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
     const distance_en_km = getDistanceInKm({ origin, destination: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } })

@@ -1,17 +1,16 @@
 import { ObjectId } from "mongodb"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import dayjs from "shared/helpers/dayjs"
 import type { IJob, IRecruiter } from "shared/models/index"
 import { JOB_STATUS } from "shared/models/index"
 import type { ISitemap } from "shared/models/sitemap.model"
 import { hashcode } from "shared/utils/index"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
-
-import dayjs from "shared/helpers/dayjs"
-import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 
 type AggregateRecruiter = Pick<Omit<IRecruiter, "jobs">, "updatedAt"> & {
   jobs: Pick<IJob, "job_update_date" | "_id" | "rome_label" | "rome_appellation_label" | "offer_title_custom">

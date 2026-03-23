@@ -2,7 +2,9 @@
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
     // Limit to ensure browser compatibility
-    "lib": ["es2022"],
+    "lib": [
+      "es2022"
+    ],
     "declaration": true,
     "sourceMap": true,
     "declarationMap": true,
@@ -20,10 +22,16 @@
     "noErrorTruncation": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["./src/**/*.ts"],
-  "exclude": ["**/node_modules"],
+  "include": [
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "**/node_modules"
+  ],
   "typeAcquisition": {
     "enable": false,
-    "include": ["@types/node"]
+    "include": [
+      "@types/node"
+    ]
   }
 }

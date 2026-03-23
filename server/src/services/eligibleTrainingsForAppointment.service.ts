@@ -3,16 +3,15 @@ import type { Filter, ObjectId } from "mongodb"
 import type { IEligibleTrainingsForAppointment, IFormationCatalogue } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { IAppointmentRequestContextCreateResponseSchema } from "shared/routes/appointments.routes"
-import type { IAppointmentContextAPI, IAppointMentResponseAvailable, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
-
+import type { IAppointMentResponseAvailable, IAppointmentContextAPI, IAppointmentResponseSchema } from "shared/routes/v2/appointments.routes.v2"
+import { logger } from "@/common/logger"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { trackApiCall } from "@/common/utils/sendTrackingEvent"
+import config from "@/config"
 import { isEmailBlacklisted } from "./application.service"
 import { getMostFrequentEmailByGestionnaireSiret } from "./formation.service"
 import { getReferrerByKeyName } from "./referrers.service"
-import { isValidEmail } from "@/common/utils/isValidEmail"
-import config from "@/config"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { logger } from "@/common/logger"
-import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 
 export const find = (conditions: Filter<IEligibleTrainingsForAppointment>, options = {}) =>
   getDbCollection("eligible_trainings_for_appointments").find(conditions, options).toArray()

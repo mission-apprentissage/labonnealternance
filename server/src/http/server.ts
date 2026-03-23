@@ -15,11 +15,19 @@ import type { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { initSentryFastify } from "@/common/sentry/sentry.fastify"
+import { localOrigin } from "@/common/utils/isOriginLocal"
+import config from "@/config"
+import { initBrevoWebhooks } from "@/services/brevo.service"
+import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
+import { geoRouteController } from "./controllers/_private/geo.private.controller"
+import { seoRouteController } from "./controllers/_private/seo.private.controller"
 import eligibleTrainingsForAppointmentRoute from "./controllers/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./controllers/admin/etablissement.controller"
 import formationsRoute from "./controllers/admin/formations.controller"
 import application from "./controllers/application.controller"
 import appointmentRequestRoute from "./controllers/appointmentRequest.controller"
+import { classificationRoutes } from "./controllers/classification.controller"
 import { coreRoutes } from "./controllers/core.controller"
 import emailsRoute from "./controllers/emails.controller"
 import etablissementRoute from "./controllers/etablissement.controller"
@@ -32,6 +40,7 @@ import jobsV1Route from "./controllers/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
+import partnersRoute from "./controllers/partners.controller"
 import reportedCompanyController from "./controllers/reportedCompany.controller"
 import rome from "./controllers/rome.controller"
 import sitemapController from "./controllers/sitemap.controller"
@@ -47,14 +56,6 @@ import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
-import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
-import { classificationRoutes } from "./controllers/classification.controller"
-import { geoRouteController } from "./controllers/_private/geo.private.controller"
-import { seoRouteController } from "./controllers/_private/seo.private.controller"
-import { initBrevoWebhooks } from "@/services/brevo.service"
-import config from "@/config"
-import { initSentryFastify } from "@/common/sentry/sentry.fastify"
-import { localOrigin } from "@/common/utils/isOriginLocal"
 
 export type Server = FastifyInstance<
   RawServerDefault,
@@ -133,6 +134,7 @@ export async function bind(app: Server) {
        */
       version(typedSubApp)
       metiers(typedSubApp)
+      partnersRoute(typedSubApp)
       rome(typedSubApp)
       updateLbaCompany(typedSubApp)
       application(typedSubApp)

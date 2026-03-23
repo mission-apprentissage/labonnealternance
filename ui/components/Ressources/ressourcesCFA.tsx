@@ -1,11 +1,10 @@
-import { Typography, Box, List, ListItem } from "@mui/material"
-import Image from "next/image"
-
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, List, ListItem, Typography } from "@mui/material"
+import Image from "next/image"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import ConseilsEtAstuces from "./conseilsEtAstuces"
 import FonctionnementPlateforme from "./fonctionnementPlateforme"
 import MisesEnSituation from "./misesEnSituation"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 
 const RessourcesCFA = () => {
   return (

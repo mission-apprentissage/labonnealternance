@@ -5,14 +5,14 @@ import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import dayjs from "shared/helpers/dayjs"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
-import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
-import mailer from "@/services/mailer.service"
 import type { Server } from "@/http/server"
+import * as eligibleTrainingsForAppointmentService from "@/services/eligibleTrainingsForAppointment.service"
 import { sendMailCfaPremiumStart } from "@/services/etablissement.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import mailer from "@/services/mailer.service"
 
 /**
  * @description Etablissement server.

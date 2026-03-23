@@ -6,13 +6,12 @@ import { useState } from "react"
 import type { IJobJson, IRecruiterJson } from "shared"
 import { JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
-
-import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
-import { OffresTabsMenu } from "./OffresTabsMenu"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate } from "@/common/utils/dateUtils"
+import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
+import { OffresTabsMenu } from "./OffresTabsMenu"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {

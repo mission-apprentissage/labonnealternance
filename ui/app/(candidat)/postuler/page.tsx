@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import PostulerPage from "./PostulerPage"
 import { PAGES } from "@/utils/routes.utils"
+import PostulerPage from "./PostulerPage"
 
 export const metadata: Metadata = {
   title: PAGES.static.postuler.getMetadata().title,

@@ -8,18 +8,16 @@ import type { ILbaItemPartnerJob } from "shared/models/index"
 import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-
-import type { IApplicationCount } from "./application.service"
-import { getApplicationByJobCount } from "./application.service"
-import { generateApplicationToken } from "./appLinks.service"
-import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { sortLbaJobs } from "./lbajob.service"
-import { filterJobsByOpco } from "./opco.service"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { generateApplicationToken } from "./appLinks.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByJobCount } from "./application.service"
+import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sortLbaJobs } from "./lbajob.service"
+import { filterJobsByOpco } from "./opco.service"
 
 /**
  * Converti les offres issues de la mongo en objet de type ILbaItem
@@ -110,9 +108,10 @@ function transformPartnerJob(
     },
 
     contact: {
-      email: partnerJob.apply_email,
+      email: "",
       phone: partnerJob.apply_phone,
       url: partnerJob.apply_url,
+      hasEmail: partnerJob.apply_email ? true : false,
     },
 
     nafs: [{ label: partnerJob.workplace_naf_label, code: partnerJob.workplace_naf_code }],
@@ -159,6 +158,9 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+    },
+    contact: {
+      hasEmail: partnerJob.apply_email ? true : false, //TODO: checker des conditions en fonction des partenaires
     },
     // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
     token: "",
