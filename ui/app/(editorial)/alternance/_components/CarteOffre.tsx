@@ -4,9 +4,7 @@ import { Box, Typography } from "@mui/material"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { CardStyling } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/CardStyling"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
-import { TagLaBonneAlternance } from "@/components/ItemDetail/TagLaBonneAlternance"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { publicConfig } from "@/config.public"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
@@ -43,8 +41,6 @@ const CarteOffre = ({ card, utmParams }) => {
             }}
           >
             {card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? <TagCandidatureSpontanee key="candidature spontanée" /> : <TagOffreEmploi key="offre emploi" />}
-            {card.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA && <TagLaBonneAlternance key="tag la bonne alternance" />}
-            {card.partner_label !== JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA && card.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA && <TagPartenaire key="tag partenaire" />}
           </Box>
         }
         title={
