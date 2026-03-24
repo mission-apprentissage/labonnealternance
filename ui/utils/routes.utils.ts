@@ -264,7 +264,7 @@ export const PAGES = {
     },
     guideCfaLaCarteEtudiantDesMetiers: {
       getPath: () => `/guide-cfa/la-carte-etudiant-des-metiers` as string,
-      title: "La carte étudiant des métiers",
+      title: "Téléchargement de la carte d'étudiant des métiers",
       index: true,
       getMetadata: () => ({
         title: "Carte étudiant des métiers | Délivrance et avantages",

@@ -9,6 +9,7 @@ import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
+import { BandeauAuthentificationCfa } from "./BandeauAuthentificationCfa"
 
 export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
 
@@ -27,6 +28,7 @@ const LaCarteEtudiantDesMetiersPage = async () => {
       pages={pages}
       title={ARTICLES["la-carte-etudiant-des-metiers"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["la-carte-etudiant-des-metiers"].updatedAt} />}
+      bandeau={!user && <BandeauAuthentificationCfa />}
       description={<></>}
       allerPlusLoinItems={[]}
       parentPage={PAGES.static.guideCfa}

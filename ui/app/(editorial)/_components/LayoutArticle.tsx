@@ -10,8 +10,9 @@ import { AllerPlusLoinItem } from "./AllerPlusLoinItem"
 export const LayoutArticle = ({
   pages,
   title,
-  description,
+  bandeau,
   updatedAt,
+  description,
   children,
   allerPlusLoinItems,
   sourceAllerPlusLoin,
@@ -20,8 +21,9 @@ export const LayoutArticle = ({
 }: {
   pages: IPage[]
   title: ReactNode
-  description: ReactNode
+  bandeau?: ReactNode
   updatedAt: ReactNode
+  description: ReactNode
   children: ReactNode
   allerPlusLoinItems?: Array<{
     id: string
@@ -58,6 +60,7 @@ export const LayoutArticle = ({
           <Grid size={{ md: 1, xs: 0 }}></Grid>
           <Grid size={{ md: 10, xs: 12 }}>
             <Box gap={fr.spacing("6v")} display={"flex"} flexDirection={"column"}>
+              {bandeau}
               {updatedAt}
               {description}
               {children}
