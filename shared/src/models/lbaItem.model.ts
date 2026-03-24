@@ -140,6 +140,7 @@ const ZLbaItemContact = z
       })
       .nullish(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
     iv: z.string().nullish(),
+    hasEmail: z.boolean(),
     name: z
       .string()
       .openapi({
