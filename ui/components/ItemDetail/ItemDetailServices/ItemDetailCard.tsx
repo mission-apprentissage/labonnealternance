@@ -18,7 +18,9 @@ export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaIte
             fill="#2A2A2A"
           />
         </svg>
-        <Typography component="span">&nbsp;Entreprise :&nbsp;</Typography>
+        <Typography sx={{ whiteSpace: "nowrap" }} component="span">
+          &nbsp;Entreprise :&nbsp;
+        </Typography>
         <Typography component="span">{selectedItem?.place?.city || "lieu non déterminé"}</Typography>
       </Stack>
       <Stack
@@ -34,7 +36,9 @@ export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaIte
             fill="#2A2A2A"
           />
         </svg>
-        <Typography component="span">&nbsp;Formation :&nbsp;</Typography>
+        <Typography sx={{ whiteSpace: "nowrap" }} component="span">
+          &nbsp;Formation :&nbsp;
+        </Typography>
         <Typography component="span">&nbsp;{selectedItem?.place?.fullAddress}</Typography>
       </Stack>
     </Box>

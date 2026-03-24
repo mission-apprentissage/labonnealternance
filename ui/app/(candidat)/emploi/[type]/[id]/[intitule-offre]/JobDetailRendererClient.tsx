@@ -147,7 +147,8 @@ function JobDetail({
                 direction="row"
                 sx={{
                   alignItems: "center",
-                  my: 0,
+                  mt: 0,
+                  mb: { xs: fr.spacing("2v"), md: 0 },
                 }}
               >
                 <Box component="span">
