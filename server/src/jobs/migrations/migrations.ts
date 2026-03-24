@@ -40,9 +40,15 @@ const myConfig = {
 }
 
 async function listMigrationFiles(): Promise<string[]> {
-  const files = await readdir(myConfig.migrationsDir, { withFileTypes: true })
-
-  return files.filter((file) => file.isFile() && file.name.endsWith(myConfig.migrationFileExtension)).map((file) => file.name)
+  try {
+    const files = await readdir(myConfig.migrationsDir, { withFileTypes: true })
+    return files.filter((file) => file.isFile() && file.name.endsWith(myConfig.migrationFileExtension)).map((file) => file.name)
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+      return []
+    }
+    throw e
+  }
 }
 
 async function getAppliedMigrations(): Promise<Map<string, Date>> {
