@@ -94,7 +94,7 @@ const guideCfaPage = () => {
               />
             </Grid>
             <Grid size={12} mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}>
-              <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
+              <List sx={{ listStyleType: "disc", ml: fr.spacing("4v"), pl: fr.spacing("4v"), mb: fr.spacing("4v") }} disablePadding dense>
                 <ListItem sx={{ display: "list-item" }}>
                   Pour rechercher une formation en alternance, le{" "}
                   <DsfrLink href="https://catalogue-apprentissage.intercariforef.org/" aria-label="Consulter le Catalogue des offres de formations en apprentissage">
@@ -169,7 +169,7 @@ const guideCfaPage = () => {
                 padding: { md: fr.spacing("8v"), xs: fr.spacing("4v") },
                 marginTop: fr.spacing("8v"),
               }}
-              spacing={2}
+              spacing={fr.spacing("4v")}
             >
               <Grid size={12} my={fr.spacing("6v")}>
                 <Typography component="h2" variant="h2">
