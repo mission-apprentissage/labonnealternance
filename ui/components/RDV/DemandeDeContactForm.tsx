@@ -141,21 +141,19 @@ export const DemandeDeContactForm = ({
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("4v") }}>
               <ReasonsField formik={formik} />
             </Box>
-            <Box
-              sx={{
-                width: "95%",
-                fontSize: "12px",
-              }}
-            >
+            <Box sx={{ width: "95%" }}>
               <Typography
+                variant="caption"
+                component="p"
                 sx={{
                   color: fr.colors.decisions.text.mention.grey.default,
                   mb: fr.spacing("4v"),
+                  display: "block",
                 }}
               >
                 * Champs obligatoires
               </Typography>
-              <Typography sx={{ mb: fr.spacing("4v") }}>
+              <Typography variant="body2" sx={{ mb: fr.spacing("4v") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
                 <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
                   Conditions générales d&apos;utilisation
