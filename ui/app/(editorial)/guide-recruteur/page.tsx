@@ -135,7 +135,7 @@ const GuideRecruteurPage = () => {
               />
             </Grid>
             <Grid size={12} mx={{ md: fr.spacing("8v"), xs: fr.spacing("2v") }}>
-              <List sx={{ listStyleType: "disc", ml: 2, pl: 2, mb: 2 }} disablePadding dense>
+              <List sx={{ listStyleType: "disc", ml: fr.spacing("4v"), pl: fr.spacing("4v"), mb: fr.spacing("4v") }} disablePadding dense>
                 <ListItem sx={{ display: "list-item", flex: "1" }}>
                   <Typography component="span" fontWeight={"bold"}>
                     Estimez le coût d’un alternant
