@@ -39,7 +39,7 @@ services:
 
   ui:
     <<: *default
-    image: "ghcr.io/mission-apprentissage/mna_lba_ui:{{pr_number}}-preview"
+    image: "ghcr.io/mission-apprentissage/mna_lba_ui:{{pr_number}}"
     container_name: lba_{{pr_number}}_ui
     env_file: .env_ui
     environment:
