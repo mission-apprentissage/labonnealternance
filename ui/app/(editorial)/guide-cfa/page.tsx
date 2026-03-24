@@ -169,7 +169,7 @@ const guideCfaPage = () => {
                 padding: { md: fr.spacing("8v"), xs: fr.spacing("4v") },
                 marginTop: fr.spacing("8v"),
               }}
-              spacing={2}
+              spacing={fr.spacing("4v")}
             >
               <Grid size={12} my={fr.spacing("6v")}>
                 <Typography component="h2" variant="h2">

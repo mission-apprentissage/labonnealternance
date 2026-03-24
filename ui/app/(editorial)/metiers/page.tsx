@@ -45,7 +45,7 @@ export default async function Metiers() {
             alternance :
           </Typography>
           <Stack
-            spacing={1}
+            spacing={fr.spacing("2v")}
             sx={{
               alignItems: "flex-start",
               mt: fr.spacing("4v"),
