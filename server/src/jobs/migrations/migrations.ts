@@ -69,7 +69,7 @@ export async function up(): Promise<number> {
         await getDatabase().collection(myConfig.changelogCollectionName).insertOne({ fileName: migrationFile, appliedAt: new Date() })
         console.info(`${migrationFile} : APPLIED`)
       } catch (e) {
-        throw withCause(internal("Error applying migration", { migrationFile }), e as Error)
+        throw withCause(internal(`Error applying migration: ${(e as Error).message}`, { migrationFile }), e as Error)
       }
     }
   }

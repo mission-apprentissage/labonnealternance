@@ -11,7 +11,8 @@ export async function ajoutRomesADomaineMetiers(romeAjoutsParSousDomaine: Record
     }
     const domaineMetier = await getDbCollection("domainesmetiers").findOne({ sous_domaine: sousDomaine })
     if (!domaineMetier) {
-      throw new Error(`sous domaine=${sousDomaine} non trouvé`)
+      console.warn(`skip ajout romes ${sousDomaine}: sous domaine non trouvé`)
+      return
     }
     const fixedDomaineMetier = await applyFix(domaineMetier, newRomes)
     await analyzeSousDomaine(domaineMetier, fixedDomaineMetier)
@@ -29,7 +30,8 @@ async function applyFix(domaineMetier: IDomainesMetiers, codeRomes: string[]) {
   const refRomes = await asyncForEach(codeRomes, async (codeRome) => {
     const refRome = await getDbCollection("referentielromes").findOne({ "rome.code_rome": codeRome })
     if (!refRome) {
-      throw new Error(`rome code=${codeRome} non trouvé`)
+      console.warn(`skip rome code=${codeRome}: non trouvé dans referentielromes`)
+      return null
     }
     return refRome
   })
@@ -38,11 +40,13 @@ async function applyFix(domaineMetier: IDomainesMetiers, codeRomes: string[]) {
 
   domaineMetierSimple.romes.push(
     ...refRomes.flatMap((refRome) =>
-      refRome.appellations.flatMap((appellation) => ({
-        codeRome: refRome.rome.code_rome,
-        intituleRome: refRome.rome.intitule,
-        intituleAppellation: appellation.libelle,
-      }))
+      refRome === null
+        ? []
+        : refRome.appellations.flatMap((appellation) => ({
+            codeRome: refRome.rome.code_rome,
+            intituleRome: refRome.rome.intitule,
+            intituleAppellation: appellation.libelle,
+          }))
     )
   )
   const domaineMetierReconstruit = domaineMetierSimpleToDomaineMetier(domaineMetierSimple)
