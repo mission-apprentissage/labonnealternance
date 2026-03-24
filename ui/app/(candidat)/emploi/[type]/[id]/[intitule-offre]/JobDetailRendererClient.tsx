@@ -1,6 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
@@ -141,6 +142,22 @@ function JobDetail({
                 <ShareLink item={selectedItem} />
               </Box>
             </Box>
+            {selectedItem.company?.mandataire && hasValidEmail(selectedItem) && (
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  my: 0,
+                }}
+              >
+                <Box component="span">
+                  <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
+                </Box>
+                <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
+                  Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l'entreprise.{" "}
+                </Typography>
+              </Stack>
+            )}
           </Box>
         </Box>
 
