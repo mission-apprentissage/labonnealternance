@@ -51,8 +51,8 @@ services:
           memory: 5g
     ulimits:
       nofile:
-        soft: 65536
-        hard: 65536
+        soft: 64000
+        hard: 64000
     ports:
       - "127.0.0.1:27017:27017"
     command: ["-f", "/etc/mongod/mongod.conf"]
