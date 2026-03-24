@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, FormLabel, Input, Radio, RadioGroup, Typography } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
@@ -199,6 +199,12 @@ const EmailField = () => {
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [field, meta, helper] = useField("email")
   const emailDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (emailDebounceRef.current) clearTimeout(emailDebounceRef.current)
+    }
+  }, [])
 
   /**
    * On email change, check if email is correct and set suggestion if not.

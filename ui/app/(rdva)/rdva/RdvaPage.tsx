@@ -44,7 +44,7 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
     }
   }, [cleMinistereEducatif, initialData])
 
-  const { data: rescuedData } = useQuery({
+  const { data: rescuedData, isFetching: isRescueFetching } = useQuery({
     queryKey: ["getPrdvForm-rescue", rescueCleMinistereEducatif],
     queryFn: () => getPrdvContext(rescueCleMinistereEducatif!, referrer ?? "lba"),
     enabled: !!rescueCleMinistereEducatif,
@@ -53,8 +53,15 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
 
   const data = initialData ?? rescuedData ?? null
 
-  const { setPrdvDone } = useFormationPrdvTracker(rescueCleMinistereEducatif ?? cleMinistereEducatif)
+  // Utilise la clé depuis la réponse API (la plus fiable) ou la clé de rescue/url
+  const trackingId = data?.cle_ministere_educatif ?? rescueCleMinistereEducatif ?? cleMinistereEducatif ?? ""
+  const { setPrdvDone } = useFormationPrdvTracker(trackingId)
   const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
+
+  // Rescue en cours : ne pas afficher le message d'erreur tant que la requête n'est pas terminée
+  if (!data && (rescueCleMinistereEducatif === null || isRescueFetching)) {
+    return null
+  }
 
   if (!data) {
     return <Box sx={{ my: "5rem", textAlign: "center" }}>La prise de rendez-vous n'est pas disponible pour cette formation.</Box>
@@ -78,7 +85,7 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
         codePostal={data.code_postal}
         ville={data.localite}
       />
-      <DemandeDeContactForm context={context} referrer={referrer} onRdvSuccess={localOnSuccess} />
+      <DemandeDeContactForm context={context} referrer={referrer ?? "lba"} onRdvSuccess={localOnSuccess} />
     </Box>
   )
 }
