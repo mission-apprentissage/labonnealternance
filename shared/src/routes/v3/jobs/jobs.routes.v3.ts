@@ -167,7 +167,7 @@ export const zJobsRoutesV3 = {
       params: z.object({
         id: zObjectId,
       }),
-      body: zJobOfferApiWriteV3,
+      body: zJobOfferApiWriteV3.omit({ identifier: true }),
       response: {
         "204": z.null(),
       },
