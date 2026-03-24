@@ -44,11 +44,10 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
   } else if (ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
     const isCfa = isCfaEntreprise(company?.siret, company?.headquarter?.siret)
     tags.push(isCfa ? <TagCfaDEntreprise key="cfa d entreprise" /> : <TagFormation key="formation" />)
+  } else if (company?.mandataire) {
+    tags.push(<TagEmploiFormation key="tag emploi formation" />)
   } else {
     tags.push(<TagOffreEmploi key="offre emploi" />)
-  }
-  if (company?.mandataire) {
-    tags.push(<TagEmploiFormation key="tag emploi formation" />)
   }
 
   if ("company" in item && item?.company?.elligibleHandicap) {
