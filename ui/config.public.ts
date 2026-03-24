@@ -83,7 +83,7 @@ function getPentestPublicConfig(): PublicConfig {
 
 function getPreviewPublicConfig(): PublicConfig {
   const version = getVersion()
-  const matches = version.match(/^0\.0\.0-(\d+)$/)
+  const matches = version.match(/^(?:0\.0\.0-)?(\d+)$/)
 
   if (!matches) {
     throw new Error(`getPreviewPublicConfig: invalid preview version ${version}`)
