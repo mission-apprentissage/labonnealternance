@@ -399,7 +399,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             <Box sx={{ mb: fr.spacing("6v") }}>
               <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
                 Découvrez les {statItems[0].value} offres disponibles pour devenir{" "}
-                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
+                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
               </Typography>
               <Box component="hr" sx={hrSx} />
             </Box>
