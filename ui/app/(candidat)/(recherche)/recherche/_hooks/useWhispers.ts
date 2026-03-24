@@ -165,6 +165,11 @@ const WHISPERS: IWhisper[] = [
     message: "Echangez avec des professionnels, découvrez leur quotidien et créer des liens qui pourraient vous aider à trouver un employeur avec My job glasses !",
     lien: "https://www.myjobglasses.com/",
   },
+  {
+    ideaType: "whisper",
+    message: "Pour vos recherches de logement, rendez-vous sur Mon Logement Étudiant pour découvrir les logements disponibles et de nombreux conseils.",
+    lien: "https://monlogementetudiant.beta.gouv.fr/?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=popin_info",
+  },
 ]
 
 function generateSeed(query: IRecherchePageParams): number {
