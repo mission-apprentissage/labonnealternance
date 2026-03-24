@@ -203,8 +203,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 
-  const _displayMap = search.get("displayMap") === "true"
-
   const opco = search.get("opco") || null
   const rncp = search.get("rncp") || null
 
