@@ -685,12 +685,13 @@ export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJ
   return upsertJobOfferPrivate({
     data,
     partner_label: identity.organisation!,
+    partnerJobIdIfNew: data?.identifier?.partner_job_id,
     requestedByEmail: identity.email,
     current: null,
   })
 }
 
-export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<void> {
+export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: Omit<IJobOfferApiWriteV3, "identifier">): Promise<void> {
   const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
 
   // TODO: Move to authorisation service
