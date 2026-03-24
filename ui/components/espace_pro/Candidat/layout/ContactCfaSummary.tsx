@@ -25,9 +25,11 @@ export const ContactCfaSummary = (props: Props) => {
         <Box
           sx={{
             mt: fr.spacing("2v"),
+            display: "flex",
+            alignItems: "center",
           }}
         >
-          <MapPin2Fill sx={{ color: "#3a55d1", mb: fr.spacing("1v") }} />
+          <MapPin2Fill sx={{ color: "#3a55d1", flexShrink: 0 }} />
           <Typography
             component="span"
             sx={{
@@ -43,7 +45,7 @@ export const ContactCfaSummary = (props: Props) => {
       )}
       <Box
         sx={{
-          mt: fr.spacing("16v"),
+          mt: fr.spacing("10v"),
           borderBottom: "1px solid #D0C9C4",
         }}
       />
