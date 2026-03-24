@@ -154,7 +154,7 @@ function JobDetail({
                   <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
                 </Box>
                 <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
-                  Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l'entreprise.{" "}
+                  Votre candidature sera envoyée à l’organisme en charge du recrutement pour le compte de l’entreprise.{" "}
                 </Typography>
               </Stack>
             )}
