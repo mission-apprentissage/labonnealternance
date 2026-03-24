@@ -8,7 +8,7 @@ import { SectionTitle } from "./SectionTitle"
 
 export function DescriptionDiplome({ title, titleHighlight, text, objectifs }: { title: string; titleHighlight?: string; text: string; objectifs: IDiplomeObjectif[] }) {
   return (
-    <Box sx={{ mb: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: 0 } }}>
+    <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
       <SectionTitle title={title} highlightedText={titleHighlight} />
       <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
 

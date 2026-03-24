@@ -10,7 +10,7 @@ import { SectionTitle } from "./SectionTitle"
 
 function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
   return (
-    <Link href={card.href} style={{ textDecoration: "none" }}>
+    <Link href={card.href} style={{ textDecoration: "none", backgroundImage: "none" }}>
       <Box
         sx={{
           p: fr.spacing("4v"),
@@ -44,7 +44,7 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
         </Box>
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", pt: fr.spacing("2v") }}>
-          <span className={fr.cx("fr-icon-arrow-right-line" as any)} aria-hidden="true" style={{ color: "#000091" }} />
+          <span className={fr.cx("fr-icon-arrow-right-line" as any)} aria-hidden="true" style={{ color: fr.colors.decisions.background.actionHigh.blueFrance.default }} />
         </Box>
       </Box>
     </Link>
@@ -53,7 +53,7 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
 
 export function EcolesSection({ title, titleHighlight, formations }: { title: string; titleHighlight?: string; formations: IDiplomeEcoleCard[] }) {
   return (
-    <Box sx={{ mb: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: 0 } }}>
+    <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
       <SectionTitle title={title} highlightedText={titleHighlight} />
 
       <Box

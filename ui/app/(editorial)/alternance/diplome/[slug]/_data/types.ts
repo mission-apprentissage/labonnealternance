@@ -154,6 +154,8 @@ export type IDiplomeSeoData = {
   }
   salaire: {
     title: string
+    titleHighlight?: string
+    titleSuffix?: string
     texteIntro: string
     lignes: IDiplomeSalaireLigne[]
   }

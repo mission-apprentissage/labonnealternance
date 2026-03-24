@@ -9,7 +9,7 @@ import { SectionTitle } from "./SectionTitle"
 
 function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
   return (
-    <Link href={ressource.href} style={{ textDecoration: "none", flex: 1 }}>
+    <Link href={ressource.href} style={{ textDecoration: "none", flex: 1, backgroundImage: "none" }}>
       <Box
         sx={{
           display: "flex",
@@ -17,6 +17,7 @@ function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
           height: { xs: "auto", md: "256px" },
           backgroundColor: fr.colors.decisions.background.default.grey.default,
           border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+          borderRadius: "5px",
           overflow: "hidden",
           "&:hover": { boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)" },
         }}
@@ -49,7 +50,6 @@ export function PreparationSection({ title, titleHighlight, text, ressources }: 
   return (
     <Box
       sx={{
-        mb: fr.spacing("8v"),
         py: fr.spacing("12v"),
         px: { xs: fr.spacing("4v"), md: fr.spacing("30v") },
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,

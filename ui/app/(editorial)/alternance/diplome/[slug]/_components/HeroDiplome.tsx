@@ -4,108 +4,66 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
 import type { IDiplomeKpi } from "../_data/types"
+import diplomeDecoration from "./diplome_decoration.svg"
 
 export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: string; titreAccent: string; sousTitre: string; kpis: IDiplomeKpi[] }) {
   const titreSuffix = titre.replace(titreAccent, "").trim()
 
   return (
     <Box sx={{ marginBottom: fr.spacing("5w") }}>
-      {/* Banner - même structure que la page métier */}
+      {/* Banner background */}
       <Box
         sx={{
           position: "relative",
-          p: fr.spacing("5w"),
-          pb: fr.spacing("20v"),
           borderRadius: "10px",
-          backgroundColor: fr.colors.decisions.background.default.grey.hover,
           overflow: "hidden",
+          pt: { xs: fr.spacing("4w"), md: fr.spacing("7w") },
+          pb: { xs: fr.spacing("15v"), md: "180px" },
+          px: { xs: fr.spacing("3w"), md: fr.spacing("8w") },
         }}
       >
-        {/* Decorative circles */}
-        <Box
-          sx={{
-            display: { xs: "none", md: "block" },
+        {/* Decoration SVG - same pattern as HomeCircleImageDecoration */}
+        <Image
+          fetchPriority="low"
+          src={diplomeDecoration.src}
+          alt=""
+          unoptimized
+          width={diplomeDecoration.width}
+          height={diplomeDecoration.height}
+          style={{
+            overflow: "visible",
+            height: "100%",
+            width: "100%",
+            top: 0,
+            left: 0,
             position: "absolute",
-            width: "80px",
-            height: "80px",
-            borderRadius: "50%",
-            backgroundColor: "rgba(224, 132, 11, 0.29)",
-            right: "200px",
-            top: fr.spacing("6v"),
-          }}
-        />
-        <Box
-          sx={{
-            display: { xs: "none", md: "block" },
-            position: "absolute",
-            width: "110px",
-            height: "110px",
-            borderRadius: "50%",
-            backgroundColor: "#E8DDC3",
-            right: "100px",
-            top: fr.spacing("4v"),
-          }}
-        />
-        <Box
-          sx={{
-            display: { xs: "none", md: "block" },
-            position: "absolute",
-            width: "56px",
-            height: "56px",
-            borderRadius: "50%",
-            backgroundColor: "rgba(255, 141, 126, 0.31)",
-            left: "42%",
-            top: "140px",
-          }}
-        />
-        <Box
-          sx={{
-            display: { xs: "none", md: "block" },
-            position: "absolute",
-            width: "70px",
-            height: "70px",
-            borderRadius: "50%",
-            border: "11px solid #DDDDF2",
-            right: "60px",
-            top: "-10px",
+            objectFit: "cover",
           }}
         />
 
-        {/* Dashed decorative ellipse */}
-        <Box
-          sx={{
-            display: { xs: "none", md: "block" },
-            position: "absolute",
-            width: "95%",
-            height: "113px",
-            left: "2%",
-            top: "76px",
-            border: "5px dashed",
-            borderColor: fr.colors.decisions.border.default.grey.default,
-            borderRadius: "50%",
-            pointerEvents: "none",
-          }}
-        />
-
-        {/* Title - structure identique à la page métier */}
-        <Box sx={{ position: "relative" }}>
-          <Typography component="h1" variant="h1" sx={{ mb: 2 }}>
-            <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
+        {/* Title */}
+        <Box sx={{ position: "relative", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <Typography
+            component="h1"
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: "32px", md: "48px" },
+              lineHeight: { xs: "40px", md: "56px" },
+            }}
+          >
+            <Typography
+              component="span"
+              sx={{
+                fontWeight: 700,
+                fontSize: "inherit",
+                lineHeight: "inherit",
+                color: fr.colors.decisions.text.default.info.default,
+              }}
+            >
               {titreAccent}
             </Typography>
             {titreSuffix && ` ${titreSuffix}`}
           </Typography>
-          <Box
-            component="hr"
-            sx={{
-              maxWidth: "93px",
-              border: "none",
-              borderBottom: "none",
-              borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`,
-              opacity: 1,
-              my: fr.spacing("3w"),
-            }}
-          />
           <Typography
             sx={{
               fontWeight: 700,
@@ -125,10 +83,10 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
           display: "grid",
           gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
           gap: fr.spacing("2v"),
-          mt: `-${fr.spacing("16v")}`,
+          mt: { xs: `-${fr.spacing("12v")}`, md: "-144px" },
           position: "relative",
           zIndex: 1,
-          px: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
+          px: { xs: fr.spacing("2v"), md: fr.spacing("5w") },
         }}
       >
         {kpis.map((kpi) => {
@@ -149,7 +107,6 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
                 alignItems: "center",
                 justifyContent: "center",
                 gap: fr.spacing("2v"),
-                minHeight: { xs: "auto", md: "274px" },
               }}
             >
               <Image src={kpi.iconSrc} alt="" width={80} height={80} aria-hidden="true" />
@@ -175,7 +132,7 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
       </Box>
 
       {/* CTA centered below KPIs */}
-      <Box sx={{ textAlign: "center", mt: fr.spacing("6v") }}>
+      <Box sx={{ textAlign: "center", mt: fr.spacing("6v"), pb: fr.spacing("2v") }}>
         <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: "/recherche-emploi" }}>
           Voir toutes les opportunités
         </Button>

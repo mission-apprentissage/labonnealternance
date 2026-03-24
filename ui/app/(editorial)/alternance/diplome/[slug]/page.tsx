@@ -37,7 +37,6 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
 
   return (
     <Box>
-      {/* TODO: Ajouter PAGES.static.alternance quand la route sera créée dans routes.utils.ts */}
       <Breadcrumb pages={[PAGES.static.home]} />
 
       <DefaultContainer>
@@ -45,24 +44,43 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
       </DefaultContainer>
 
       <DefaultContainer>
-        <DescriptionDiplome title={data.description.title} titleHighlight={data.description.titleHighlight} text={data.description.text} objectifs={data.description.objectifs} />
+        <Box sx={{ py: fr.spacing("8v") }}>
+          <DescriptionDiplome title={data.description.title} titleHighlight={data.description.titleHighlight} text={data.description.text} objectifs={data.description.objectifs} />
+        </Box>
       </DefaultContainer>
 
       <DefaultContainer>
-        <ProgrammeDiplome title={data.programme.title} titleHighlight={data.programme.titleHighlight} text={data.programme.text} sections={data.programme.sections} />
+        <Box sx={{ py: fr.spacing("8v") }}>
+          <ProgrammeDiplome title={data.programme.title} titleHighlight={data.programme.titleHighlight} text={data.programme.text} sections={data.programme.sections} />
+        </Box>
       </DefaultContainer>
 
       {/* Section pleine largeur avec fond bleu */}
       <PreparationSection title={data.preparation.title} titleHighlight={data.preparation.titleHighlight} text={data.preparation.text} ressources={data.preparation.ressources} />
 
       <DefaultContainer>
-        <Box sx={{ py: fr.spacing("4v") }}>
+        <Box sx={{ py: fr.spacing("8v") }}>
           <EcolesSection title={data.ecoles.title} titleHighlight={data.ecoles.titleHighlight} formations={data.ecoles.formations} />
+        </Box>
+      </DefaultContainer>
 
-          <SalaireSection title={data.salaire.title} texteIntro={data.salaire.texteIntro} lignes={data.salaire.lignes} />
+      {/* Section pleine largeur avec fond bleu clair */}
+      <SalaireSection
+        title={data.salaire.title}
+        titleHighlight={data.salaire.titleHighlight}
+        titleSuffix={data.salaire.titleSuffix}
+        texteIntro={data.salaire.texteIntro}
+        lignes={data.salaire.lignes}
+      />
 
+      <DefaultContainer>
+        <Box sx={{ py: fr.spacing("8v") }}>
           <MetiersSection title={data.metiers.title} text={data.metiers.text} liste={data.metiers.liste} />
+        </Box>
+      </DefaultContainer>
 
+      <DefaultContainer>
+        <Box sx={{ py: fr.spacing("8v") }}>
           <OffresSection />
         </Box>
       </DefaultContainer>

@@ -6,10 +6,10 @@ export const mockDiplomeData: IDiplomeSeoData = {
   titreAccent: "BTS MCO",
   sousTitre: "Management Commercial Opérationnel",
   kpis: [
-    { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/icon-offre-emploi.svg", labelFirst: true },
-    { label: "entreprises recrutent", value: "890", iconSrc: "/images/diplome/icon-companie-major.svg" },
-    { label: "Salaire mensuel moyen", value: "1120€-1300€", iconSrc: "/images/diplome/icon-money-major.svg" },
-    { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/icon-ecosystem-major.svg" },
+    { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
+    { label: "entreprises recrutent", value: "890", iconSrc: "/images/diplome/companie.svg" },
+    { label: "Salaire mensuel moyen", value: "1120€-1300€", iconSrc: "/images/diplome/money.svg" },
+    { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
     title: "Qu'est ce que le diplôme",
@@ -64,13 +64,13 @@ export const mockDiplomeData: IDiplomeSeoData = {
         title: "Introduction sur l'alternance",
         description: "Découvrez comment fonctionne l'alternance",
         href: "/",
-        imageSrc: "/images/diplome/illustration-intro-alternance.png",
+        imageSrc: "/images/diplome/card-left.svg",
       },
       {
         title: "Préparer son projet en alternance",
         description: "Découvrez les étapes clés d'un projet en alternance",
         href: "/",
-        imageSrc: "/images/diplome/illustration-projet-alternance.png",
+        imageSrc: "/images/diplome/card-right.svg",
       },
     ],
   },
@@ -188,7 +188,9 @@ export const mockDiplomeData: IDiplomeSeoData = {
     ],
   },
   salaire: {
-    title: "Le salaire en BTS MCO en alternance",
+    title: "Le salaire en",
+    titleHighlight: "BTS MCO",
+    titleSuffix: "en alternance",
     texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
     lignes: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
