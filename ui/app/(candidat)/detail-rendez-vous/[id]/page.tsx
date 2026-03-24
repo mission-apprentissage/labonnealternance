@@ -11,14 +11,17 @@ export const metadata: Metadata = {
 export default async function DetailRendezVousPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ token: string }> }) {
   const { id } = await params
   const { token } = await searchParams
-  const appointmentRecap = await apiGet("/appointment-request/context/recap", {
-    querystring: { appointmentId: id },
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  })
 
-  if (!appointmentRecap) redirect("/404")
+  try {
+    const appointmentRecap = await apiGet("/appointment-request/context/recap", {
+      querystring: { appointmentId: id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
 
-  return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
+    return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
+  } catch {
+    redirect("/404")
+  }
 }
