@@ -412,7 +412,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               }}
             >
               {data.cards.map((card, idx) => (
-                <CarteOffre key={idx} card={card} />
+                <CarteOffre key={idx} card={card} utmParams={UTM_PARAMS} />
               ))}
             </Box>
 

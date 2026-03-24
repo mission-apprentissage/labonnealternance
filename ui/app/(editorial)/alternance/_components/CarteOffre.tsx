@@ -10,7 +10,7 @@ import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { publicConfig } from "@/config.public"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
-const CarteOffre = ({ card }) => {
+const CarteOffre = ({ card, utmParams }) => {
   return (
     <CardStyling>
       <Card
@@ -24,7 +24,7 @@ const CarteOffre = ({ card }) => {
             card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA
               ? `Voir la société ${card.workplace_name}`
               : `Voir l'offre d'emploi ${card.offer_title} chez ${card.workplace_name}`,
-          href: card?.lba_url?.substring(publicConfig?.baseUrl?.length || 0) || "#",
+          href: `${card?.lba_url?.substring(publicConfig?.baseUrl?.length || 0) || "#"}?${utmParams}`,
           prefetch: false,
         }}
         start={
