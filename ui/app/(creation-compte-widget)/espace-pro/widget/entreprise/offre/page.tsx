@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-  return <DepotSimplifieCreationOffre />
+  return <DepotSimplifieCreationOffre isWidget />
 }

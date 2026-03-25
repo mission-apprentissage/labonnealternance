@@ -22,13 +22,11 @@ export const ZJobteaserJob = z
       start_date: z.string().nullable(),
       first_activated_at: z.string(),
     }),
-    job_locations: z.object({
-      location_country_name: z.string(),
-      location_city: z.string(),
-      location_country_code: z.string(),
-      location_state: z.string(),
-      location_sub_state: z.string().nullable(),
-    }),
+    job_locations: z
+      .object({
+        location_city: z.string().nullish(),
+      })
+      .passthrough(),
     company: z.object({
       company_name: z.string(),
       company_siren: z.string().nullable(),
@@ -44,6 +42,7 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
   const { title, description, url, contract_type: job_type, remote_type } = job_details
   const { start_date, first_activated_at } = job_dates
   const { location_city } = job_locations
+  const city = location_city ?? null
   const { company_name } = company
 
   let business_error: string | null = null
@@ -88,8 +87,8 @@ export const jobteaserJobToJobsPartners = (job: IJobteaserJob): IComputedJobsPar
     offer_expiration: dayjs(publicationDate).tz().add(2, "months").toDate(),
 
     workplace_name: company_name,
-    workplace_address_city: location_city,
-    workplace_address_label: location_city,
+    workplace_address_city: city,
+    workplace_address_label: city,
     apply_url: urlParsing.data ?? null,
     offer_multicast: false,
     contract_type,

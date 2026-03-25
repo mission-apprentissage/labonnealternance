@@ -385,6 +385,25 @@ describe("POST /jobs", async () => {
     expect(doc?.partner_label).toBe("Un super Partenaire")
   })
 
+  it("should create a new job offer with forced_partner_job_id", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/v3/jobs`,
+      body: { ...data, identifier: { partner_job_id: "forced_partner_job_id" } },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+    const responseJson = response.json()
+    expect(responseJson).toEqual({ id: expect.any(String) })
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
+    const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
+
+    // Ensure that the job offer is associated to the correct permission
+    expect(doc?.partner_label).toBe("Un super Partenaire")
+    expect(doc?.partner_job_id).toBe("forced_partner_job_id")
+  })
+
   it("should apply method be defined", async () => {
     const response = await httpClient().inject({
       method: "POST",

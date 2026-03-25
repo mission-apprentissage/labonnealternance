@@ -5,8 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
@@ -56,11 +56,9 @@ async function fetchMetierData(metier: string) {
 function JobsCta({ href }: { href: string }) {
   return (
     <Box sx={{ textAlign: "center", mx: fr.spacing("4v") }}>
-      <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-        <DsfrLink style={{ color: "#fff" }} href={href}>
-          Voir toutes les offres en alternance
-          <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-        </DsfrLink>
+      <Button linkProps={{ href }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+        Voir toutes les offres en alternance
+        <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
       </Button>
     </Box>
   )
@@ -257,11 +255,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             </Box>
           </Box>
           <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
-            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
-              <DsfrLink aria-label="Aller au simulateur pour calculer ma rémunération en alternance" href={`/simulateur?${utmParams}`}>
-                Calculer ma rémunération en alternance
-                <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-              </DsfrLink>
+            <Button linkProps={{ href: `/simulateur?${utmParams}` }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
+              Calculer ma rémunération en alternance
+              <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </Button>
           </Box>
         </Box> */}
@@ -322,11 +318,9 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
 
           <Box sx={{ textAlign: "center" }}>
-            <Button nativeButtonProps={{ tabIndex: -1 }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
-              <DsfrLink style={{ color: "#fff" }} href={formationsSearchUrl}>
-                Voir toutes les formations en alternance
-                <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-              </DsfrLink>
+            <Button linkProps={{ href: formationsSearchUrl }} size="large" priority="primary" style={{ marginTop: fr.spacing("6v") }}>
+              Voir toutes les formations en alternance
+              <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </Button>
           </Box>
         </Box>
@@ -396,6 +390,35 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             ))}
           </Box>
         </Box>
+
+        {/**
+         * BLOC OFFRES
+         */}
+        {data.cards.length > 0 && (
+          <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("16v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
+            <Box sx={{ mb: fr.spacing("6v") }}>
+              <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+                Découvrez les {statItems[0].value} offres disponibles pour devenir{" "}
+                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
+              </Typography>
+              <Box component="hr" sx={hrSx} />
+            </Box>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                gap: fr.spacing("4v"),
+                my: fr.spacing("4v"),
+              }}
+            >
+              {data.cards.map((card, idx) => (
+                <CarteOffre key={idx} card={card} utmParams={UTM_PARAMS} />
+              ))}
+            </Box>
+
+            <JobsCta href={jobsSearchUrl} />
+          </Box>
+        )}
       </DefaultContainer>
     </Box>
   )
