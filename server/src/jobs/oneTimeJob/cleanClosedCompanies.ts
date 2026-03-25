@@ -62,7 +62,7 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
         ? { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() }
         : { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE }
       await getDbCollection("rolemanagements").updateMany(roleFilter, {
-        updatedAt: now,
+        $set: { updatedAt: now },
         $push: {
           status: {
             validation_type: VALIDATION_UTILISATEUR.AUTO,
