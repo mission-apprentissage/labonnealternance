@@ -393,7 +393,7 @@ export const getJobsPartnersFromDBForUI = async ({
 }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-    offer_expiration: { $gt: new Date() },
+    offer_expiration: force_partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? null : { $gt: new Date() },
     partner_label: force_partner_label ? force_partner_label : { $not: { $in: [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] } }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
@@ -423,6 +423,8 @@ export const getJobsPartnersFromDBForUI = async ({
           },
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
+
+  console.log("Query for getJobsPartnersFromDBForUI : ", JSON.stringify(query))
 
   return await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivateWithDistance>([
