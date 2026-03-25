@@ -8,7 +8,7 @@ const CandidatureLbaMandataireMessage = ({ item }) => {
     item?.company?.mandataire && (
       <Box sx={{ display: "flex", flexDirection: "row", width: "95%", alignItems: "center" }}>
         <Image src="/images/info.svg" alt="" aria-hidden="true" width={20} height={20} />
-        <Typography sx={{ ml: fr.spacing("2v") }}>Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l&apos;entreprise.</Typography>
+        <Typography sx={{ ml: fr.spacing("2v") }}>Votre candidature sera envoyée à l’organisme en charge du recrutement pour le compte de l’entreprise.</Typography>
       </Box>
     )
   )
