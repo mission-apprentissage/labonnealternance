@@ -90,15 +90,17 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
         }}
       >
         {kpis.map((kpi) => {
-          const valueFontSize = kpi.value.length > 8 ? "32px" : "40px"
-          const valueLineHeight = kpi.value.length > 8 ? "40px" : "48px"
+          const valueFontSizeMd = kpi.value.length > 8 ? "32px" : "40px"
+          const valueLineHeightMd = kpi.value.length > 8 ? "40px" : "48px"
+          const valueFontSizeXs = kpi.value.length > 8 ? "22px" : "28px"
+          const valueLineHeightXs = kpi.value.length > 8 ? "28px" : "36px"
 
           return (
             <Box
               key={kpi.label}
               sx={{
                 textAlign: "center",
-                p: fr.spacing("6v"),
+                p: { xs: fr.spacing("3v"), md: fr.spacing("6v") },
                 backgroundColor: fr.colors.decisions.background.default.grey.default,
                 borderRadius: "5px",
                 boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
@@ -107,23 +109,48 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
                 alignItems: "center",
                 justifyContent: "center",
                 gap: fr.spacing("2v"),
+                minWidth: 0,
               }}
             >
-              <Image src={kpi.iconSrc} alt="" width={80} height={80} aria-hidden="true" />
+              <Box sx={{ width: { xs: 56, md: 80 }, height: { xs: 56, md: 80 }, flexShrink: 0 }}>
+                <Image src={kpi.iconSrc} alt="" width={80} height={80} aria-hidden="true" style={{ width: "100%", height: "100%" }} />
+              </Box>
 
               {kpi.labelFirst ? (
                 <>
-                  <Typography sx={{ fontWeight: 700, fontSize: "20px", lineHeight: "28px", color: fr.colors.decisions.text.title.grey.default }}>{kpi.label}</Typography>
-                  <Typography sx={{ fontWeight: 700, fontSize: valueFontSize, lineHeight: valueLineHeight, color: fr.colors.decisions.text.default.info.default }}>
+                  <Typography
+                    sx={{ fontWeight: 700, fontSize: { xs: "16px", md: "20px" }, lineHeight: { xs: "22px", md: "28px" }, color: fr.colors.decisions.text.title.grey.default }}
+                  >
+                    {kpi.label}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: { xs: valueFontSizeXs, md: valueFontSizeMd },
+                      lineHeight: { xs: valueLineHeightXs, md: valueLineHeightMd },
+                      color: fr.colors.decisions.text.default.info.default,
+                    }}
+                  >
                     {kpi.value}
                   </Typography>
                 </>
               ) : (
                 <>
-                  <Typography sx={{ fontWeight: 700, fontSize: valueFontSize, lineHeight: valueLineHeight, color: fr.colors.decisions.text.default.info.default }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: { xs: valueFontSizeXs, md: valueFontSizeMd },
+                      lineHeight: { xs: valueLineHeightXs, md: valueLineHeightMd },
+                      color: fr.colors.decisions.text.default.info.default,
+                    }}
+                  >
                     {kpi.value}
                   </Typography>
-                  <Typography sx={{ fontWeight: 700, fontSize: "20px", lineHeight: "28px", color: fr.colors.decisions.text.title.grey.default }}>{kpi.label}</Typography>
+                  <Typography
+                    sx={{ fontWeight: 700, fontSize: { xs: "16px", md: "20px" }, lineHeight: { xs: "22px", md: "28px" }, color: fr.colors.decisions.text.title.grey.default }}
+                  >
+                    {kpi.label}
+                  </Typography>
                 </>
               )}
             </Box>
