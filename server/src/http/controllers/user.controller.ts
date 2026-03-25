@@ -9,6 +9,7 @@ import { getUserStatus, parseEnum, parseEnumOrError, zRoutes } from "shared/inde
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -172,7 +173,14 @@ export default (server: Server) => {
 
       if (opco && entreprise) {
         await getDbCollection("entreprises").findOneAndUpdate({ siret }, { $set: { opco, updatedAt: new Date() } })
-        await getDbCollection("jobs_partners").updateMany({ workplace_siret: siret }, { $set: { workplace_opco: opco, updated_at: new Date() } })
+        await getDbCollection("jobs_partners").updateMany(
+          {
+            workplace_siret: siret,
+            partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+            managed_by: new ObjectId(userId),
+          },
+          { $set: { workplace_opco: opco, updated_at: new Date() } }
+        )
       }
 
       return res.status(200).send({ ok: true })
