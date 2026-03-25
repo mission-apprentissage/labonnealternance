@@ -35,7 +35,11 @@ export const BandeauFusionPDA = () => {
             </Typography>
             <Typography variant="body1" color={fr.colors.decisions.text.default.info.default} textAlign={"start"}>
               Retrouvez notamment de{" "}
-              <DsfrLink href="" style={{ color: fr.colors.decisions.text.default.info.default }}>
+              <DsfrLink
+                href={PAGES.static.guideDecouvrirLAlternance.getPath()}
+                aria-label="Consulter le nouveau guide sur l'alternance"
+                style={{ color: fr.colors.decisions.text.default.info.default }}
+              >
                 nouvelles ressources
               </DsfrLink>{" "}
               pour vous informer sur l’alternance et un{" "}

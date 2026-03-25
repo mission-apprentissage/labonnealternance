@@ -14,6 +14,7 @@ export const LayoutArticle = ({
   updatedAt,
   description,
   children,
+  redirectionInterne,
   allerPlusLoinItems,
   sourceAllerPlusLoin,
   parentPage,
@@ -25,6 +26,7 @@ export const LayoutArticle = ({
   updatedAt: ReactNode
   description: ReactNode
   children: ReactNode
+  redirectionInterne?: ReactNode
   allerPlusLoinItems?: Array<{
     id: string
     title: string
@@ -64,29 +66,37 @@ export const LayoutArticle = ({
               {updatedAt}
               {description}
               {children}
+              <Divider sx={{ width: "100%", height: 0, background: "none", borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}` }} />
+              {redirectionInterne}
+              {allerPlusLoinItems?.length > 0 && (
+                <>
+                  <Grid container spacing={fr.spacing("6v")} marginTop={fr.spacing("8v")}>
+                    <Grid size={12} spacing={fr.spacing("6v")}>
+                      <Typography component={"h2"} variant="h2">
+                        Pour continuer d'explorer
+                      </Typography>
+                      <Divider
+                        sx={{
+                          width: fr.spacing("16v"),
+                          height: 0,
+                          background: "none",
+                          borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}`,
+                        }}
+                      />
+                    </Grid>
+                    {allerPlusLoinItems.map((item, index) => (
+                      <Grid key={index} size={{ md: 4, xs: 12 }}>
+                        <AllerPlusLoinItem {...item} source={sourceAllerPlusLoin} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                </>
+              )}
             </Box>
           </Grid>
           <Grid size={{ md: 1, xs: 0 }}></Grid>
         </Grid>
       </Grid>
-      <Divider sx={{ width: "100%", height: 0, background: "none", borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`, my: fr.spacing("6v") }} />
-      {allerPlusLoinItems?.length > 0 && (
-        <Grid container spacing={fr.spacing("6v")} marginTop={fr.spacing("8v")}>
-          <Grid size={12} spacing={fr.spacing("6v")}>
-            <Typography component={"h2"} variant="h2">
-              Pour continuer d'explorer
-            </Typography>
-            <Divider
-              sx={{ width: fr.spacing("16v"), height: 0, background: "none", borderBottom: `${fr.spacing("1v")} solid ${fr.colors.decisions.border.default.blueFrance.default}` }}
-            />
-          </Grid>
-          {allerPlusLoinItems.map((item, index) => (
-            <Grid key={index} size={{ md: 4, xs: 12 }}>
-              <AllerPlusLoinItem {...item} source={sourceAllerPlusLoin} />
-            </Grid>
-          ))}
-        </Grid>
-      )}
     </DefaultContainer>
   </>
 )

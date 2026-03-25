@@ -4,6 +4,7 @@ import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSec
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
@@ -25,6 +26,7 @@ const RoleEtMissionsDuMaitreDApprentissageOuTuteurPage = () => {
       title={ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      redirectionInterne={<RedirectionInterne />}
       allerPlusLoinItems={[ARTICLES["comprendre-la-remuneration"], ARTICLES["la-rupture-de-contrat"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur}

@@ -6,6 +6,7 @@ import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
 import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
@@ -25,6 +26,7 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
       title={ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      redirectionInterne={<RedirectionInterne />}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur}
     >

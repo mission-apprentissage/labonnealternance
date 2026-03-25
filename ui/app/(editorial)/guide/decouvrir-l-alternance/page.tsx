@@ -5,6 +5,7 @@ import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSec
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide/const"
@@ -61,6 +62,7 @@ const DecouvrirLAlternancePage = async ({ searchParams }: { searchParams: Promis
       updatedAt={<UpdatedAtSection date={ARTICLES["decouvrir-l-alternance"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
+      redirectionInterne={<RedirectionInterne source={source} />}
       page={PAGES.static.guideDecouvrirLAlternance}
     >
       <Section title="Qui peut être alternant ?">

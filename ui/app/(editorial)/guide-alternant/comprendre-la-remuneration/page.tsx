@@ -4,6 +4,7 @@ import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSec
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { TableArticle } from "@/app/(editorial)/_components/TableArticle"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
@@ -26,6 +27,7 @@ const ComprendreLaRemunerationPage = () => {
       title={ARTICLES["comprendre-la-remuneration"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["comprendre-la-remuneration"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      redirectionInterne={<RedirectionInterne />}
       allerPlusLoinItems={[
         ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"],
         ARTICLES["comment-signer-un-contrat-en-alternance"],

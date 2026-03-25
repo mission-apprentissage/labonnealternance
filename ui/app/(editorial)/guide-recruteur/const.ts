@@ -9,7 +9,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideRecruteurJeSuisEmployeurPublic.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}je-suis-employeur-public.svg`,
     path: PAGES.static.guideRecruteurJeSuisEmployeurPublic.getPath(),
-    updatedAt: "30/01/2026",
+    updatedAt: "26/03/2026",
   },
   ["cerfa-apprentissage-et-professionnalisation"]: {
     id: "cerfa-apprentissage-et-professionnalisation",
@@ -17,6 +17,6 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}cerfa-apprentissage-et-professionnalisation.svg`,
     path: PAGES.static.guideRecruteurCerfaApprentissageEtProfessionnalisation.getPath(),
-    updatedAt: "30/01/2026",
+    updatedAt: "26/03/2026",
   },
 }

@@ -9,6 +9,6 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}la-carte-etudiant-des-metiers.svg`,
     path: PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getPath(),
-    updatedAt: "30/01/2026",
+    updatedAt: "26/03/2026",
   },
 }

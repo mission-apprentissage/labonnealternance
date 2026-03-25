@@ -6,6 +6,7 @@ import { InfoSection } from "@/app/(editorial)/_components/InfoSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { TableArticle } from "@/app/(editorial)/_components/TableArticle"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
@@ -62,6 +63,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
       title={ARTICLES["apprentissage-et-handicap"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["apprentissage-et-handicap"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      redirectionInterne={<RedirectionInterne source={source} />}
       allerPlusLoinItems={getAllerPlusLoinItems(source)}
       page={PAGES.static.guideApprentissageEtHandicap}
     >

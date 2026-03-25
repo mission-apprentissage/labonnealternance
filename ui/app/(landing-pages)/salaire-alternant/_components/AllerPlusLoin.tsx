@@ -37,7 +37,7 @@ export const AllerPlusLoin = () => (
       <CardItem
         title="Rechercher une entreprise"
         description="Renseignez le métier qui vous intéresse et votre localisation pour découvrir les entreprises qui recrutent"
-        href={PAGES.static.home.getPath()}
+        href={PAGES.dynamic.recherche(null).getPath()}
       />
       <CardItem
         title="Toutes nos ressources sur l'alternance"

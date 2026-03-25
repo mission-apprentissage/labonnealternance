@@ -6,6 +6,7 @@ import { InfoSection } from "@/app/(editorial)/_components/InfoSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
@@ -27,6 +28,7 @@ const PreparerSonProjetEnAlternancePage = () => {
       title={ARTICLES["preparer-son-projet-en-alternance"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["preparer-son-projet-en-alternance"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
+      redirectionInterne={<RedirectionInterne />}
       allerPlusLoinItems={[ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"], ARTICLES["comment-signer-un-contrat-en-alternance"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantPreparerSonProjetEnAlternance}

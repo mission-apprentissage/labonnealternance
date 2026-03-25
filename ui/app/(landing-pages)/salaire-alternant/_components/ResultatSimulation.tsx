@@ -1,11 +1,13 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Grid, List, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
 import type { AnneeSimulation, InputSimulation, OutputSimulation } from "@/services/simulateurAlternant"
+import { PAGES } from "@/utils/routes.utils"
 
 const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulation; index: number }) => {
   const annee: string = index === 0 ? "1ère année" : `${index + 1}e année`
@@ -20,9 +22,26 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
         p={fr.spacing("3v")}
         py={fr.spacing("1v")}
       >
-        <Typography variant="body1" color={fr.colors.decisions.text.title.grey.default} fontWeight={700}>
+        <Typography color={fr.colors.decisions.text.title.grey.default} fontWeight={700}>
           {annee}
         </Typography>
+      </Grid>
+      <Grid container size={{ xs: 12, md: 12 }} p={fr.spacing("3v")} py={fr.spacing("1v")} spacing={0} sx={{ backgroundColor: "white" }}>
+        <Grid size={{ xs: 12, md: 6 }} my={"auto"}>
+          <Typography color={fr.colors.decisions.text.default.grey.default}>Salaire net après exonération</Typography>
+        </Grid>
+        <Grid container size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 12 }}>
+            <Typography color={fr.colors.decisions.text.default.grey.default} fontWeight={"bold"} fontSize={"1.125rem"}>
+              Entre {simulation.salaireMensuelNet.min.toLocaleString("fr-FR")} et {simulation.salaireMensuelNet.max.toLocaleString("fr-FR")} €/mois
+            </Typography>
+          </Grid>
+          <Grid size={{ xs: 12, md: 12 }}>
+            <Typography variant="body2" color={fr.colors.decisions.text.default.grey.default}>
+              Soit entre {simulation.salaireAnnuelNet.min.toLocaleString("fr-FR")} et {simulation.salaireAnnuelNet.max.toLocaleString("fr-FR")} €/an
+            </Typography>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid
         container
@@ -36,38 +55,17 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
         }}
       >
         <Grid size={{ xs: 12, md: 6 }} my={"auto"}>
-          <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
-            Salaire brut
-          </Typography>
+          <Typography color={fr.colors.decisions.text.default.grey.default}>Salaire brut</Typography>
         </Grid>
         <Grid container size={{ xs: 12, md: 6 }}>
           <Grid size={{ xs: 12, md: 12 }}>
-            <Typography variant="body1" fontWeight={700} color={fr.colors.decisions.text.default.grey.default}>
-              {simulation.salaireAnnuelBrut.max.toLocaleString("fr-FR")} €
+            <Typography color={fr.colors.decisions.text.default.grey.default} fontWeight={"bold"} fontSize={"1.125rem"}>
+              {simulation.salaireMensuelBrut.max.toLocaleString("fr-FR")} €/mois
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, md: 12 }}>
-            <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
-              Soit {simulation.salaireMensuelBrut.max.toLocaleString("fr-FR")} €/mois
-            </Typography>
-          </Grid>
-        </Grid>
-      </Grid>
-      <Grid container size={{ xs: 12, md: 12 }} p={fr.spacing("3v")} py={fr.spacing("1v")} spacing={0} sx={{ backgroundColor: "white" }}>
-        <Grid size={{ xs: 12, md: 6 }} my={"auto"}>
-          <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
-            Salaire net après exonération
-          </Typography>
-        </Grid>
-        <Grid container size={{ xs: 12, md: 6 }}>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <Typography variant="body1" fontWeight={700} color={fr.colors.decisions.text.default.grey.default}>
-              Entre {simulation.salaireAnnuelNet.min.toLocaleString("fr-FR")} et {simulation.salaireAnnuelNet.max.toLocaleString("fr-FR")} €
-            </Typography>
-          </Grid>
-          <Grid size={{ xs: 12, md: 12 }}>
-            <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
-              Soit entre {simulation.salaireMensuelNet.min.toLocaleString("fr-FR")} et {simulation.salaireMensuelNet.max.toLocaleString("fr-FR")} €/mois
+            <Typography variant="body2" color={fr.colors.decisions.text.default.grey.default}>
+              Soit {simulation.salaireAnnuelBrut.max.toLocaleString("fr-FR")} €/an
             </Typography>
           </Grid>
         </Grid>
@@ -182,6 +180,16 @@ export const ResultatSimulation = () => {
               <Grid size={{ xs: 12, md: 12 }}>
                 <ExplicationsSalaire inputSimulation={simulation.inputSimulation} />
               </Grid>
+              <Grid size={{ xs: 12, md: 12 }} display={"flex"} justifyContent={"center"}>
+                <Button
+                  linkProps={{ href: `${PAGES.dynamic.recherche(null).getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_simulateur` }}
+                  priority="secondary"
+                  iconId="fr-icon-arrow-right-line"
+                  iconPosition="right"
+                >
+                  Découvrir les entreprises qui recrutent
+                </Button>
+              </Grid>
             </Grid>
           )
         ) : (
@@ -190,7 +198,7 @@ export const ResultatSimulation = () => {
               <Image width={200} height={130} src="/images/calculatrice_simulateur.svg" alt="" aria-hidden="true" />
             </Grid>
             <Grid size={{ xs: 12, md: 8 }} my={"auto"}>
-              <Typography variant="body1" color={fr.colors.decisions.text.default.grey.default}>
+              <Typography color={fr.colors.decisions.text.default.grey.default}>
                 Complétez les informations demandées pour avoir l’estimation de votre rémunération. Ces critères entrent dans l’équation pour déterminer votre salaire en
                 alternance.
               </Typography>
