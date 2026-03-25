@@ -424,8 +424,6 @@ export const getJobsPartnersFromDBForUI = async ({
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  console.log("Query for getJobsPartnersFromDBForUI : ", JSON.stringify(query))
-
   return await getDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivateWithDistance>([
       ...filterStages,
