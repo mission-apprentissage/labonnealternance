@@ -1,6 +1,6 @@
 import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
-
+import { OPCOS_LABEL } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types.js"
@@ -11,8 +11,6 @@ import { ZRecruiter } from "../models/recruiter.model.js"
 import { EntrepriseEngagementSources } from "../models/referentielEngagementEntreprise.model.js"
 import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccount } from "../models/userWithAccount.model.js"
-
-import { OPCOS_LABEL } from "../constants/recruteur.js"
 import type { IRoutesDef } from "./common.routes.js"
 
 export const ZEntrepriseInformations = z

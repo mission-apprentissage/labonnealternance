@@ -1,6 +1,6 @@
-import type { IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
-import { ObjectId } from "bson"
 import type { TestHttpClient } from "@tests/utils/server.test.utils"
+import { ObjectId } from "bson"
+import type { IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { processJobPartnersWithFilter } from "@/jobs/offrePartenaire/processJobPartnersForApi"
 
 export const jobsV3Sdk = (httpClient: TestHttpClient) => ({

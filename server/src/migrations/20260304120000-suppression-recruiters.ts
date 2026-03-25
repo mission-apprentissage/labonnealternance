@@ -1,8 +1,7 @@
 import { Writable } from "node:stream"
 import { pipeline } from "node:stream/promises"
-
-import { ObjectId } from "mongodb"
 import type { AnyBulkWriteOperation } from "mongodb"
+import { ObjectId } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
 import { logger } from "@/common/logger"

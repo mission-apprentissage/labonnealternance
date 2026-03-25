@@ -1,17 +1,16 @@
-import type { z } from "shared/helpers/zodWithOpenApi"
-import type { zRoutes } from "shared/routes/index"
-
-import type { IJobCreate, IUserWithAccount } from "shared"
-import { ENTREPRISE } from "shared/constants/index"
-import { expect } from "vitest"
-import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/appLinks.service"
+import { getConnectedInfos } from "@tests/fixture/connectedUser.fixture"
 import { mockApiBal } from "@tests/mocks/mockApiBal"
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import type { TestHttpClient } from "@tests/utils/server.test.utils"
-import { getConnectedInfos } from "@tests/fixture/connectedUser.fixture"
+import type { IJobCreate, IUserWithAccount } from "shared"
+import { ENTREPRISE } from "shared/constants/index"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
+import type { z } from "shared/helpers/zodWithOpenApi"
+import type { zRoutes } from "shared/routes/index"
+import { expect } from "vitest"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { createCancelJobLink, createProvidedJobLink, createValidationMagicLink, generateDepotSimplifieToken } from "@/services/appLinks.service"
 
 export type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
 export type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>

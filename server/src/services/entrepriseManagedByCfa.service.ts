@@ -1,5 +1,5 @@
-import type { IEntrepriseManagedByCfa } from "shared"
 import { ObjectId } from "mongodb"
+import type { IEntrepriseManagedByCfa } from "shared"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 export async function getEntrepriseManagedByCfa(entrepriseSiret: string, cfaSiret: string): Promise<IEntrepriseManagedByCfa | null> {
