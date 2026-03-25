@@ -638,16 +638,18 @@ export const extendOffre = async (id: ObjectId): Promise<Date> => {
     {
       _id: id,
     },
-    {
-      $set: {
-        offer_expiration: addExpirationPeriod(dayjs()).toDate(),
-        // TODO job_last_prolongation_date
-        updated_at: now,
-        // TODO relance_mail_expiration_J7
-        // TODO relance_mail_expiration_J1
+    [
+      {
+        $set: {
+          offer_expiration: addExpirationPeriod(dayjs()).toDate(),
+          job_last_prolongation_date: now,
+          job_prolongation_count: { $add: [{ $ifNull: ["$job_prolongation_count", 0] }, 1] },
+          relance_mail_expiration_J7: null,
+          relance_mail_expiration_J1: null,
+          updated_at: now,
+        },
       },
-      // $inc: { "jobs.$.job_prolongation_count": 1 },
-    },
+    ],
     {
       returnDocument: "after",
     }
@@ -1272,6 +1274,8 @@ async function jobCreateToJobsPartner({
     stats_search_view: 0,
 
     managed_by: user._id,
+    job_last_prolongation_date: null,
+    job_prolongation_count: 0,
     offer_rome_appellation: job.rome_appellation_label,
     applicationCount: 0,
     duplicates: [],
@@ -1334,8 +1338,8 @@ function jobPartnersToRecruiter(
       job_creation_date: jobPartner.offer_creation ?? jobPartner.created_at,
       job_expiration_date: jobPartner.offer_expiration,
       job_update_date: jobPartner.updated_at,
-      job_last_prolongation_date: null,
-      job_prolongation_count: null,
+      job_last_prolongation_date: jobPartner.job_last_prolongation_date ?? null,
+      job_prolongation_count: jobPartner.job_prolongation_count ?? null,
       relance_mail_expiration_J7: jobPartner.relance_mail_expiration_J7,
       relance_mail_expiration_J1: jobPartner.relance_mail_expiration_J1,
       job_status: jobPartnerStatusToIJobStatus[jobPartner.offer_status],

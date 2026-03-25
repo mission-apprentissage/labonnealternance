@@ -296,6 +296,24 @@ describe("formulaire.controller", () => {
         cookies: entrepriseCookies,
       })
       expect.soft(response.statusCode).toBe(200)
+
+      const extendedJobPartner = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+      expect.soft(extendedJobPartner?.job_prolongation_count).toBe(1)
+      expect.soft(extendedJobPartner?.job_last_prolongation_date).toBeDefined()
+      expect.soft(extendedJobPartner?.relance_mail_expiration_J7).toBeNull()
+      expect.soft(extendedJobPartner?.relance_mail_expiration_J1).toBeNull()
+
+      const formulaireResponse = await httpClient().inject({
+        method: "GET",
+        path: `/api/formulaire/${formulaire!.establishment_id}`,
+        cookies: entrepriseCookies,
+      })
+      expect.soft(formulaireResponse.statusCode).toBe(200)
+
+      const recruiter = formulaireResponse.json()
+      const extendedJob = recruiter.jobs.find((job: IJob) => job._id.toString() === jobId)
+      expect.soft(extendedJob?.job_prolongation_count).toBe(1)
+      expect.soft(extendedJob?.job_last_prolongation_date).toBeDefined()
     })
     it("renvoie une 404 si l'offre n'existe pas", async () => {
       // given
