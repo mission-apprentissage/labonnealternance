@@ -1263,11 +1263,11 @@ async function jobCreateToJobsPartner({
 
     lba_url: lbaUrl,
 
-    cfa_siret: cfa?.siret,
-    cfa_legal_name: cfa?.raison_sociale,
-    cfa_apply_phone: user.phone,
-    cfa_apply_email: user.email,
-    cfa_address_label: cfa?.address,
+    cfa_siret: cfa?.siret ?? null,
+    cfa_legal_name: cfa?.raison_sociale ?? null,
+    cfa_apply_phone: cfa ? (user.phone ?? null) : null,
+    cfa_apply_email: cfa ? user.email : null,
+    cfa_address_label: cfa?.address ?? null,
 
     stats_detail_view: 0,
     stats_postuler: 0,

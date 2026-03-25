@@ -94,6 +94,16 @@ describe("formulaire.controller", () => {
 
     // then
     expect.soft(offerResponse.statusCode).toBe(200)
+
+    const { _id: jobObjectId } = offerResponse.json() as OfferCreationResponse
+    const createdJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobObjectId) })
+
+    expect.soft(createdJob?.is_delegated).toBe(false)
+    expect.soft(createdJob?.cfa_siret).toBeNull()
+    expect.soft(createdJob?.cfa_legal_name).toBeNull()
+    expect.soft(createdJob?.cfa_apply_phone).toBeNull()
+    expect.soft(createdJob?.cfa_apply_email).toBeNull()
+    expect.soft(createdJob?.cfa_address_label).toBeNull()
   }, 10_000)
 
   describe("mise à jour", () => {
