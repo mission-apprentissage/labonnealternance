@@ -19,6 +19,14 @@ import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
 import mailer from "@/services/mailer.service"
 
+const getReminderCompanyName = ({
+  workplace_name,
+  workplace_brand,
+  workplace_legal_name,
+}: Pick<IJobsPartnersOfferPrivate, "workplace_name" | "workplace_brand" | "workplace_legal_name">) => {
+  return workplace_name ?? workplace_brand ?? workplace_legal_name ?? ""
+}
+
 export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirationDate: number /* number of days to expiration for the reminder email to be sent */) => {
   const dateRelanceFieldName = numberOfDaysToExpirationDate === 1 ? "relance_mail_expiration_J1" : numberOfDaysToExpirationDate === 7 ? "relance_mail_expiration_J7" : null
   const additionalFilter: Filter<IJobsPartnersOfferPrivate> = {}
@@ -66,7 +74,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
       if (!managed_by) {
         throw new Error(`managed_by vide pour l'offre avec id=${firstJob._id}`)
       }
-      const { is_delegated, workplace_name } = firstJob
+      const { is_delegated } = firstJob
       const contactUser = await getDbCollection("userswithaccounts").findOne({ _id: new ObjectId(managed_by) })
       if (!contactUser) {
         throw internal(`inattendu : impossible de trouver l'utilisateur gérant l'offre avec id=${firstJob._id}`)
@@ -86,7 +94,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
           },
           last_name: sanitizeTextField(contactUser.last_name),
           first_name: sanitizeTextField(contactUser.first_name),
-          establishment_raison_sociale: workplace_name,
+          establishment_raison_sociale: getReminderCompanyName(firstJob),
           is_delegated,
           offres: jobsGroup.map((job) => ({
             job_title: job.offer_title,
