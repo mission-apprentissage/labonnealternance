@@ -40,7 +40,9 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
         {
           $set: {
             status: RECRUITER_STATUS.ARCHIVE,
+            updatedAt: now,
             "jobs.$[elem].job_status": JOB_STATUS.ANNULEE,
+            "jobs.$[elem].job_update_date": now,
           },
         },
         { arrayFilters: [{ "elem.job_status": JOB_STATUS.ACTIVE }] }
@@ -60,6 +62,7 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
         ? { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE, authorized_id: entreprise._id.toString() }
         : { user_id: managedById, authorized_type: AccessEntityType.ENTREPRISE }
       await getDbCollection("rolemanagements").updateMany(roleFilter, {
+        updatedAt: now,
         $push: {
           status: {
             validation_type: VALIDATION_UTILISATEUR.AUTO,
