@@ -57,7 +57,8 @@ describe("recruiterOfferExpirationReminderJob", () => {
     await recruiterOfferExpirationReminderJob(7)
 
     expect.soft(vi.mocked(mailer.sendEmail)).toHaveBeenCalledTimes(1)
-    expect.soft(vi.mocked(mailer.sendEmail).mock.calls[0]?.[0]?.data?.establishment_raison_sociale).toBe("ACME Brand")
+    const firstEmailPayload = vi.mocked(mailer.sendEmail).mock.calls[0]?.[0] as { data?: { establishment_raison_sociale?: string } } | undefined
+    expect.soft(firstEmailPayload?.data?.establishment_raison_sociale).toBe("ACME Brand")
 
     const updatedOffer = await getDbCollection("jobs_partners").findOne({ _id: offer._id })
     expect.soft(updatedOffer?.relance_mail_expiration_J7).toBeDefined()

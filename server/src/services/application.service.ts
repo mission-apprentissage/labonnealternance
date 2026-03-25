@@ -274,10 +274,15 @@ export const sendApplicationV2 = async ({
 
   const lbaJob: IJobOrCompanyV2 = {
     job,
-    type: job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA ? LBA_ITEM_TYPE.RECRUTEURS_LBA : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+    type:
+      job.partner_label === LBA_ITEM_TYPE.RECRUTEURS_LBA
+        ? LBA_ITEM_TYPE.RECRUTEURS_LBA
+        : job.partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+          ? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+          : LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
   }
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
-  await checkMaxApplicationCount(job)
+  await checkMaxApplicationCount(lbaJob)
 
   const recruteurEmail = job.apply_email?.toLowerCase()
   if (!recruteurEmail) {

@@ -377,7 +377,7 @@ describe("POST /jobs", async () => {
     const response = await httpClient().inject({
       method: "POST",
       path: `/api/v3/jobs`,
-      body: { ...data, identifier: { partner_job_id: "forced_partner_job_id" } },
+      body: { ...jobOfferApiWriteInput, identifier: { partner_job_id: "forced_partner_job_id" } },
       headers: { authorization: `Bearer ${token}` },
     })
 
