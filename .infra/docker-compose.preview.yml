@@ -16,7 +16,7 @@ services:
       resources:
         limits:
           memory: 512m
-    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+    image: "ghcr.io/mission-apprentissage/mna_lba_server:preview-{{pr_number}}"
     container_name: lba_{{pr_number}}_server
     command: ["yarn", "cli", "start"]
     environment:
@@ -39,7 +39,7 @@ services:
 
   ui:
     <<: *default
-    image: "ghcr.io/mission-apprentissage/mna_lba_ui:0.0.0-{{pr_number}}-preview"
+    image: "ghcr.io/mission-apprentissage/mna_lba_ui:preview-{{pr_number}}"
     container_name: lba_{{pr_number}}_ui
     env_file: .env_ui
     environment:
@@ -63,7 +63,7 @@ services:
   #     resources:
   #       limits:
   #         memory: 300m
-  #   image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+  #   image: "ghcr.io/mission-apprentissage/mna_lba_server:{{pr_number}}"
   #   container_name: lba_{{pr_number}}_jobs_processor
   #   command: ["yarn", "cli", "job_processor:start"]
   #   volumes:
@@ -76,7 +76,7 @@ services:
       resources:
         limits:
           memory: 300m
-    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+    image: "ghcr.io/mission-apprentissage/mna_lba_server:preview-{{pr_number}}"
     container_name: lba_{{pr_number}}_stream_processor
     command: ["yarn", "cli", "stream_processor:start"]
     volumes:
