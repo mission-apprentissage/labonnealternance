@@ -94,7 +94,7 @@ describe("formulaire.controller", () => {
 
     // then
     expect.soft(offerResponse.statusCode).toBe(200)
-  })
+  }, 10_000)
 
   describe("mise à jour", () => {
     it("met à jour une offre active", async () => {

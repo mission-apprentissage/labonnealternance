@@ -22,6 +22,8 @@ exports[`createJob > should insert a job 1`] = `
   "duplicates": [],
   "is_delegated": false,
   "job_delegation_count": 0,
+  "job_last_prolongation_date": null,
+  "job_prolongation_count": 0,
   "job_status_comment": null,
   "managed_by": "670ce1ded6ce30c3c90a0e1d",
   "offer_access_conditions": [
