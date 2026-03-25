@@ -80,7 +80,6 @@
           "production",
           "recette",
           "pentest",
-          "preview",
           "local"
         ]
       },
@@ -91,6 +90,21 @@
       "tags": [
         "ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-${ENV}",
         "ghcr.io/mission-apprentissage/mna_lba_ui:${CHANNEL}-${ENV}"
+      ],
+      "labels": {
+        "org.opencontainers.image.description": "Ui lba"
+      },
+      "target": "ui"
+    },
+    "ui-preview": {
+      "inherits": [
+        "common"
+      ],
+      "args": {
+        "PUBLIC_ENV": "preview"
+      },
+      "tags": [
+        "ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}"
       ],
       "labels": {
         "org.opencontainers.image.description": "Ui lba"
