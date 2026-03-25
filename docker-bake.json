@@ -104,8 +104,7 @@
         "PUBLIC_ENV": "preview"
       },
       "tags": [
-        "ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}",
-        "ghcr.io/mission-apprentissage/mna_lba_ui:${CHANNEL}"
+        "ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}"
       ],
       "labels": {
         "org.opencontainers.image.description": "Ui lba"
