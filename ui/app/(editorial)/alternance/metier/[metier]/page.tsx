@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -389,6 +390,35 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             ))}
           </Box>
         </Box>
+
+        {/**
+         * BLOC OFFRES
+         */}
+        {data.cards.length > 0 && (
+          <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("16v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
+            <Box sx={{ mb: fr.spacing("6v") }}>
+              <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+                Découvrez les {statItems[0].value} offres disponibles pour devenir{" "}
+                <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
+              </Typography>
+              <Box component="hr" sx={hrSx} />
+            </Box>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                gap: fr.spacing("4v"),
+                my: fr.spacing("4v"),
+              }}
+            >
+              {data.cards.map((card, idx) => (
+                <CarteOffre key={idx} card={card} utmParams={UTM_PARAMS} />
+              ))}
+            </Box>
+
+            <JobsCta href={jobsSearchUrl} />
+          </Box>
+        )}
       </DefaultContainer>
     </Box>
   )

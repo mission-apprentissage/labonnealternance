@@ -56,7 +56,8 @@ const transformFtJob = ({ job, latitude = null, longitude = null }: { job: FTJob
   const contact: ILbaItemContact | null = job.contact
     ? {
         name: job.contact.nom,
-        email: job.contact.courriel,
+        email: "",
+        hasEmail: false,
         info: job.contact.coordonnees1
           ? `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""}`
           : "",
@@ -135,7 +136,7 @@ export const transformFtJobV2 = (job: IJobsPartnersOfferPrivate): ILbaItemPartne
     id: job._id.toString(),
     title: job.offer_title,
     contact: {
-      email: job.apply_email,
+      hasEmail: job.apply_email ? true : false,
       phone: job.apply_phone,
       url: job.apply_url,
     },
@@ -198,6 +199,9 @@ const transformFtJobWithMinimalData = ({ job, latitude = null, longitude = null 
     company,
     job: {
       creationDate: new Date(job.dateCreation),
+    },
+    contact: {
+      hasEmail: false,
     },
   }
 

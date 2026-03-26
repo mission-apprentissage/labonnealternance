@@ -2,8 +2,9 @@ import { internal, isBoom } from "@hapi/boom"
 import type { AxiosResponse } from "axios"
 import type FormData from "form-data"
 import type { IAdresseV3, IAPIAdresse, IGeometry, IGeoPoint, IPointFeature } from "shared/models/index"
-import { ZPointGeometry } from "shared/models/index"
+import { ZGeometryFeature, ZPointFeature, ZPointGeometry } from "shared/models/index"
 import { joinNonNullStrings } from "shared/utils/index"
+import z from "zod"
 import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
@@ -83,35 +84,50 @@ export const _getReverseGeolocationFromApiAdresse = async (lon: number, lat: num
   }
 }
 
+const ZApiGeolocationResponse = z.object({
+  features: z.array(ZPointFeature),
+})
+
 export const getGeolocation = async (rawAddress: string): Promise<IPointFeature | null> => {
   try {
     const address = rawAddress.toUpperCase()
 
     const cachedGeolocation = await getGeolocationFromCache(address)
     if (cachedGeolocation) {
-      return cachedGeolocation.features.at(0)!
+      return cachedGeolocation.features.at(0) ?? null
     }
 
     const response = await getGeolocationFromApiAdresse(address)
 
-    if (!response) {
+    const parseResult = ZApiGeolocationResponse.safeParse(response)
+    if (!parseResult.success) {
+      console.error("error parsing geolocation api response", { address: rawAddress, error: parseResult.error })
       return null
     }
 
-    const features = response.features
-    if (features?.at(0)?.geometry) {
-      features.at(0)!.geometry = convertGeometryToPoint(features.at(0)!.geometry)
+    const features = parseResult.data.features
+    const firstFeature = features.at(0)
+    if (!firstFeature) {
+      return null
     }
+    firstFeature.geometry = convertGeometryToPoint(firstFeature.geometry)
 
     try {
       await saveGeolocationInCache(address, features)
     } catch (updateCacheError) {
-      sentryCaptureException(updateCacheError, { level: "warning", extra: { cause: "error saving geolocation to cache", responseData: response.features, address } })
+      sentryCaptureException(updateCacheError, {
+        level: "warning",
+        extra: {
+          cause: "error saving geolocation to cache",
+          responseData: features,
+          address,
+        },
+      })
     }
 
-    return response.features.at(0)!
+    return firstFeature
   } catch (error) {
-    console.error("Error fetching or processing geolocation data:", error)
+    console.error("Error fetching or processing geolocation data:", { address: rawAddress, error })
     return null
   }
 }
