@@ -35,11 +35,6 @@ export const AllerPlusLoin = () => (
         href="https://mes-aides.1jeune1solution.beta.gouv.fr/"
       />
       <CardItem
-        title="Rechercher une entreprise"
-        description="Renseignez le métier qui vous intéresse et votre localisation pour découvrir les entreprises qui recrutent"
-        href={PAGES.dynamic.recherche(null).getPath()}
-      />
-      <CardItem
         title="Toutes nos ressources sur l'alternance"
         description="Découvrez de nombreuses informations, outils et liens utiles pour bien préparer votre alternance"
         href={PAGES.static.guideAlternant.getPath()}

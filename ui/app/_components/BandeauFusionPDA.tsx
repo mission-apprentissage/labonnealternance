@@ -3,14 +3,27 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
+import { AUTHTYPE } from "shared/constants/recruteur"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { useAuth } from "@/context/UserContext"
 import { PAGES } from "@/utils/routes.utils"
 
 const BANNER_KEY = "lba-banner-fusion-pda-dismissed"
 
+const getLinkRessourcesForUser = (user: { type?: string }) => {
+  if (user) {
+    if (user.type === AUTHTYPE.ENTREPRISE) return PAGES.static.guideRecruteur.getPath()
+    if (user.type === AUTHTYPE.CFA) return PAGES.static.guideCfa.getPath()
+  }
+  return PAGES.static.guideAlternant.getPath()
+}
+
 export const BandeauFusionPDA = () => {
+  const { user } = useAuth()
+  const link = getLinkRessourcesForUser(user)
+  // const link = PAGES.static.guideAlternant.getPath()
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
@@ -35,11 +48,7 @@ export const BandeauFusionPDA = () => {
             </Typography>
             <Typography variant="body1" color={fr.colors.decisions.text.default.info.default} textAlign={"start"}>
               Retrouvez notamment de{" "}
-              <DsfrLink
-                href={PAGES.static.guideDecouvrirLAlternance.getPath()}
-                aria-label="Consulter le nouveau guide sur l'alternance"
-                style={{ color: fr.colors.decisions.text.default.info.default }}
-              >
+              <DsfrLink href={link} aria-label="Consulter le nouveau guide sur l'alternance" style={{ color: fr.colors.decisions.text.default.info.default }}>
                 nouvelles ressources
               </DsfrLink>{" "}
               pour vous informer sur l’alternance et un{" "}

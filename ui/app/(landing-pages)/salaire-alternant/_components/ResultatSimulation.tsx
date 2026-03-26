@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Grid, List, ListItem, Skeleton, Stack, Typography } from "@mui/material"
+import { Box, Divider, Grid, List, ListItem, Skeleton, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/SimulateurContext"
@@ -26,7 +26,14 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
           {annee}
         </Typography>
       </Grid>
-      <Grid container size={{ xs: 12, md: 12 }} p={fr.spacing("3v")} py={fr.spacing("1v")} spacing={0} sx={{ backgroundColor: "white" }}>
+      <Grid
+        container
+        size={{ xs: 12, md: 12 }}
+        p={fr.spacing("3v")}
+        py={fr.spacing("1v")}
+        spacing={0}
+        sx={{ backgroundColor: "white", borderBottom: `1px solid ${fr.colors.decisions.border.actionLow.blueFrance.default}` }}
+      >
         <Grid size={{ xs: 12, md: 6 }} my={"auto"}>
           <Typography color={fr.colors.decisions.text.default.grey.default}>Salaire net après exonération</Typography>
         </Grid>
@@ -51,7 +58,6 @@ const AnneeSimulationCard = ({ simulation, index }: { simulation: AnneeSimulatio
         spacing={0}
         sx={{
           backgroundColor: "white",
-          borderBottom: `1px solid ${fr.colors.decisions.border.actionLow.blueFrance.default}`,
         }}
       >
         <Grid size={{ xs: 12, md: 6 }} my={"auto"}>
@@ -182,7 +188,7 @@ export const ResultatSimulation = () => {
               </Grid>
               <Grid size={{ xs: 12, md: 12 }} display={"flex"} justifyContent={"center"}>
                 <Button
-                  linkProps={{ href: `${PAGES.dynamic.recherche(null).getPath()}?utm_source=lba&utm_medium=website&utm_campaign=lba_simulateur` }}
+                  linkProps={{ href: `${PAGES.dynamic.recherche({ displayFormations: false }).getPath()}&utm_source=lba&utm_medium=website&utm_campaign=lba_simulateur` }}
                   priority="secondary"
                   iconId="fr-icon-arrow-right-line"
                   iconPosition="right"

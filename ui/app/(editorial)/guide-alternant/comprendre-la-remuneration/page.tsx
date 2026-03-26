@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Grid, List, ListItem, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
@@ -13,6 +14,143 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.guideAlternantComprendreLaRemuneration.getMetadata()
+
+const BlocSalaire = () => (
+  <Grid container spacing={fr.spacing("4v")} mb={fr.spacing("4v")}>
+    <Grid
+      size={{ md: 3, xs: 12 }}
+      sx={{
+        backgroundColor: "white",
+        padding: fr.spacing("7v"),
+        borderRadius: "5px",
+        boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+      }}
+    >
+      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+        Moins de 18 ans
+      </Typography>
+      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            27%
+          </Typography>{" "}
+          la 1re année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            39%
+          </Typography>{" "}
+          la 2e année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            55%
+          </Typography>{" "}
+          la 3e année
+        </ListItem>
+      </List>
+    </Grid>
+    <Grid
+      size={{ md: 3, xs: 12 }}
+      sx={{
+        backgroundColor: "white",
+        padding: fr.spacing("7v"),
+        borderRadius: "5px",
+        boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+      }}
+    >
+      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+        18 à 20 ans
+      </Typography>
+      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            43%
+          </Typography>{" "}
+          la 1re année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            51%
+          </Typography>{" "}
+          la 2e année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            60%
+          </Typography>{" "}
+          la 3e année
+        </ListItem>
+      </List>
+    </Grid>
+    <Grid
+      size={{ md: 3, xs: 12 }}
+      sx={{
+        backgroundColor: "white",
+        padding: fr.spacing("7v"),
+        borderRadius: "5px",
+        boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+      }}
+    >
+      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+        21 à 25 ans
+      </Typography>
+      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            53%
+          </Typography>{" "}
+          la 1re année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            61%
+          </Typography>{" "}
+          la 2e année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            78%
+          </Typography>{" "}
+          la 3e année
+        </ListItem>
+      </List>
+    </Grid>
+    <Grid
+      size={{ md: 3, xs: 12 }}
+      sx={{
+        backgroundColor: "white",
+        padding: fr.spacing("7v"),
+        borderRadius: "5px",
+        boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+      }}
+    >
+      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+        26 ans et plus
+      </Typography>
+      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            100%
+          </Typography>{" "}
+          la 1re année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            100%
+          </Typography>{" "}
+          la 2e année
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            100%
+          </Typography>{" "}
+          la 3e année
+        </ListItem>
+      </List>
+    </Grid>
+  </Grid>
+)
 
 const ComprendreLaRemunerationPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantComprendreLaRemuneration]
@@ -85,14 +223,7 @@ const ComprendreLaRemunerationPage = () => {
           revenu minimum plus élevé pour l’alternant. L'employeur reste libre de proposer un salaire supérieur à celui-ci. Le montant de la rémunération change au fur et à mesure
           de l’avancée dans le contrat selon les critères de la grille.
         </Paragraph>
-        <TableArticle
-          headers={["Année d’exécution du contrat", "Apprenti de moins de 18 ans", "Apprenti de 18 ans à 20 ans", "Apprenti de 21 ans à 25 ans", "Apprenti de 26 ans et plus"]}
-          data={[
-            ["1ère année", "27 %", "43 %", "53%*", "100%*"],
-            ["2ème année", "39 %", "51 %", "61%*", "100%*"],
-            ["3ème année", "55 %", "67 %", "78%*", "100%*"],
-          ]}
-        />
+        <BlocSalaire />
         <Paragraph>
           *ou du salaire minimum conventionnel (SMC) de l'emploi occupé si celui-ci est plus favorable (
           <DsfrLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038033238/" aria-label="Consulter l'article D. 6222-26 du Code du travail – Légifrance">
