@@ -32,10 +32,47 @@ describe("blockJobsPartnersFromCfaListTask", () => {
     const { business_error } = job
     expect.soft(business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED)
   })
+
+  it("should block the offer when the CFA is mentioned in offer_description", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        workplace_name: "totally valid company name",
+        offer_description: "Formation en alternance avec Iscod pour une prise de poste immediate",
+        business_error: null,
+      },
+    ])
+
+    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED)
+  })
+
+  it("should block the offer when the CFA is mentioned in workplace_description", async () => {
+    await givenSomeComputedJobPartners([
+      {
+        workplace_name: "totally valid company name",
+        workplace_description: "Entreprise partenaire du CFA Iscod pour le recrutement en alternance",
+        business_error: null,
+      },
+    ])
+
+    await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toBe(1)
+    const [job] = jobs
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED)
+  })
+
   it("should NOT block the offer", async () => {
     await givenSomeComputedJobPartners([
       {
         workplace_name: "totally valid company name",
+        offer_description: "Description d'offre legitime",
+        workplace_description: "Description d'entreprise legitime",
         business_error: null,
       },
     ])
