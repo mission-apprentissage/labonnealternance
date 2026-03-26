@@ -14,7 +14,11 @@ export const fillRomeForPartners = async ({ addedMatchFilter, shouldNotifySlack 
     $and: [
       {
         business_error: null,
-        $or: [{ offer_rome_codes: null }, { offer_rome_codes: { $size: 0 } }],
+        $or: [
+          { offer_rome_codes: { $exists: false } },
+          { offer_rome_codes: null },
+          { offer_rome_codes: { $size: 0 } },
+        ],
       },
       ...(addedMatchFilter ? [addedMatchFilter] : []),
     ],
