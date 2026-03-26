@@ -83,12 +83,11 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
 
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
-  const jobStartDateYup = Yup.date()
-    .max(maxStartDate, `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`)
-    .required("Champ obligatoire")
+  let jobStartDateYup = Yup.date()
   if (!offre) {
-    jobStartDateYup.min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
+    jobStartDateYup = jobStartDateYup.min(minStartDate, `La date de début doit être après le ${minStartDate.format(FR_DATE_FORMAT)}`)
   }
+  jobStartDateYup = jobStartDateYup.max(maxStartDate, `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`).required("Champ obligatoire")
 
   return (
     <>

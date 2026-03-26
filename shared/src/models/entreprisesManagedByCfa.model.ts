@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
-const ZEntrepriseManagedByCfa = z
+export const ZEntrepriseManagedByCfa = z
   .object({
     _id: zObjectId,
     createdAt: z.date().describe("Date de création du document dans la collection"),

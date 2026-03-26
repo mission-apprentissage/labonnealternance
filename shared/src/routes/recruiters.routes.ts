@@ -7,6 +7,7 @@ import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etabliss
 import { ZPointGeometry } from "../models/address.model.js"
 import { zCFA } from "../models/cfa.model.js"
 import { ZEntreprise } from "../models/entreprise.model.js"
+import { ZEntrepriseManagedByCfa } from "../models/entreprisesManagedByCfa.model.js"
 import { ZRecruiter } from "../models/recruiter.model.js"
 import { EntrepriseEngagementSources } from "../models/referentielEngagementEntreprise.model.js"
 import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
@@ -120,6 +121,21 @@ export const zRecruiterRoutes = {
       params: z.object({ cfaId: zObjectId }).strict(),
       response: {
         "200": z.array(ZRecruiter),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "cfaId" } }],
+        },
+      },
+    },
+    "/etablissement/cfa/:cfaId/entreprise/:establishment_id": {
+      method: "get",
+      path: "/etablissement/cfa/:cfaId/entreprise/:establishment_id",
+      params: z.object({ cfaId: z.string(), establishment_id: z.string() }).strict(),
+      response: {
+        "200": ZRecruiter,
       },
       securityScheme: {
         auth: "cookie-session",

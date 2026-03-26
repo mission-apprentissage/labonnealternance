@@ -1,11 +1,11 @@
-import { badRequest, forbidden, notFound } from "@hapi/boom"
+import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { ObjectId } from "mongodb"
 import type { IEntreprise } from "shared"
-import { assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
+import { AccessEntityType, assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -18,7 +18,9 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
+  buildEstablishmentId,
   entrepriseOnboardingWorkflow,
+  establishmentIdToUserIdAndSiret,
   etablissementUnsubscribeDemandeDelegation,
   getCfaSiretInfos,
   getEntrepriseDataFromSiret,
@@ -28,7 +30,7 @@ import {
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
-import { getFormulairesForCfaManagedEnterprises } from "@/services/formulaire.service"
+import { getFormulairesForCfaManagedEnterprises, jobPartnersToRecruiter } from "@/services/formulaire.service"
 import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
 import type { Organization, UserAndOrganization } from "@/services/organization.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
@@ -185,6 +187,49 @@ export default (server: Server) => {
         })
       })
       return res.status(200).send(recruiters)
+    }
+  )
+
+  server.get(
+    "/etablissement/cfa/:cfaId/entreprise/:establishment_id",
+    {
+      schema: zRoutes.get["/etablissement/cfa/:cfaId/entreprise/:establishment_id"],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:cfaId/entreprise/:establishment_id"])],
+    },
+    async (req, res) => {
+      const { cfaId: cfaIdString, establishment_id } = req.params
+      const { siret, userId } = await establishmentIdToUserIdAndSiret(establishment_id)
+
+      const cfaId = new ObjectId(cfaIdString)
+
+      const entreprise = await getDbCollection("entreprises").findOne({ siret })
+      if (!entreprise) {
+        throw internal(`entreprise non trouvée siret=${siret}`)
+      }
+
+      const [mainRole, entrepriseManagedByCfa, cfa, user] = await Promise.all([
+        getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
+        getDbCollection("entreprise_managed_by_cfa").findOne({ cfa_id: cfaId, entreprise_id: entreprise._id }),
+        getDbCollection("cfas").findOne({ _id: cfaId }),
+        getDbCollection("userswithaccounts").findOne({ _id: userId }),
+      ])
+      if (!mainRole) {
+        throw internal(`inattendu: mainRole vide pour userId=${userId}`)
+      }
+      if (!cfa) {
+        throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
+      }
+      if (!user) {
+        throw internal(`inattendu: user vide pour userId=${userId}`)
+      }
+      if (!entrepriseManagedByCfa) {
+        throw notFound(`Aucun entrepriseManagedByCfa cfaId=${cfaId.toString()} siret=${siret}`)
+      }
+
+      const recruiter = jobPartnersToRecruiter([], mainRole, user, entreprise, cfa)
+      const { email, first_name, last_name, phone } = entrepriseManagedByCfa
+
+      return res.status(200).send({ ...recruiter, email, first_name, last_name, phone })
     }
   )
 

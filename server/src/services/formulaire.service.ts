@@ -1280,6 +1280,7 @@ async function jobCreateToJobsPartner({
     applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
+    establishment_id: buildEstablishmentId(user._id, entreprise.siret),
   }
   return jobPartner
 }
@@ -1312,7 +1313,7 @@ const jobPartnerStatusToIJobStatus: Record<JOB_STATUS_ENGLISH, JOB_STATUS> = {
   [JOB_STATUS_ENGLISH.EN_ATTENTE]: JOB_STATUS.EN_ATTENTE,
 }
 
-function jobPartnersToRecruiter(
+export function jobPartnersToRecruiter(
   jobPartners: (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome | null; application_count?: number })[],
   role: IRoleManagement,
   user: IUserWithAccount,
