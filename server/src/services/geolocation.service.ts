@@ -8,12 +8,32 @@ import getApiClient from "@/common/apis/client"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { getGeolocationFromCache, saveGeolocationInCache } from "./cacheGeolocation.service"
 
-const API_ADRESSE_URL = "https://data.geopf.fr/geocodage"
+export const API_ADRESSE_URL = "https://data.geopf.fr/geocodage"
 
 const client = getApiClient({ timeout: 2_000 })
 const startCharRegex = () => new RegExp("[0-9a-zA-Z]")
 
-export const getGeolocationFromApiAdresse = async (address: string, trys = 0) => {
+async function reliableFetch({ maxTry = 5, url, currentTryIndex = 1 }: { maxTry?: number; url: string; currentTryIndex?: number }): Promise<IAPIAdresse | null> {
+  if (currentTryIndex > maxTry) {
+    return null
+  }
+  try {
+    const response: AxiosResponse<IAPIAdresse> | null = await client.get(url)
+    if (response?.status === 429) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      return reliableFetch({ maxTry, url, currentTryIndex: currentTryIndex + 1 })
+    }
+    return response?.data ?? null
+  } catch (error: any) {
+    if (error.code === "ECONNABORTED" || error?.response?.status === 503) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      return reliableFetch({ maxTry, url, currentTryIndex: currentTryIndex + 1 })
+    }
+    throw error
+  }
+}
+
+export const getGeolocationFromApiAdresse = async (address: string) => {
   try {
     let firstChar = address.at(0)
     while (firstChar && !startCharRegex().test(firstChar)) {
@@ -23,28 +43,8 @@ export const getGeolocationFromApiAdresse = async (address: string, trys = 0) =>
     if (!address) {
       return null
     }
-
-    let response: AxiosResponse<IAPIAdresse> | null = null
-
-    if (trys < 5) {
-      response = await client.get(`${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1`)
-      if (response?.status === 429) {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        return await getGeolocationFromApiAdresse(address, trys++)
-      }
-    }
-
-    if (response) {
-      return response.data
-    } else {
-      return null
-    }
+    return reliableFetch({ url: `${API_ADRESSE_URL}/search?q=${encodeURIComponent(address.toUpperCase())}&limit=1` })
   } catch (error: any) {
-    if (error.code === "ECONNABORTED" || error?.response?.status === 503) {
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      return await getGeolocationFromApiAdresse(address, trys++)
-    }
-
     if (isBoom(error)) {
       throw error
     }
@@ -54,7 +54,7 @@ export const getGeolocationFromApiAdresse = async (address: string, trys = 0) =>
   }
 }
 
-export const getReverseGeolocationFromApiAdresse = async (lon: number, lat: number): Promise<IPointFeature | null> => {
+export const _getReverseGeolocationFromApiAdresse = async (lon: number, lat: number): Promise<IPointFeature | null> => {
   try {
     let response: AxiosResponse<IAPIAdresse> | null = null
     let trys = 0
@@ -178,4 +178,16 @@ export const getBulkGeoLocation = async (form: FormData) => {
       ...form.getHeaders(),
     },
   })
+}
+
+export const getGeolocationFromCodeInsee = async (city: string, codeInsee: string) => {
+  try {
+    codeInsee = codeInsee.padStart(5, "0")
+    const url = `${API_ADRESSE_URL}/search?q=${encodeURIComponent(city)}&citycode=${encodeURIComponent(codeInsee)}&limit=1`
+    return reliableFetch({ url })
+  } catch (error: any) {
+    const newError = internal(`getGeolocationFromCodeInsee: erreur`, { city, codeInsee })
+    newError.cause = error
+    throw newError
+  }
 }

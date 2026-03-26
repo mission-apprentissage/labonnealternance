@@ -3,6 +3,7 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { mockGeolocApi } from "@/jobs/offrePartenaire/france-travail-CEGID/mockGeolocApi"
 import { importFranceTravailCEGIDRaw, importFranceTravailCEGIDToComputed } from "./importFranceTravailCEGID"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
@@ -13,9 +14,11 @@ describe("importFranceTravailCEGID", () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
+    const mockGeoloc = mockGeolocApi()
 
     return async () => {
       vi.useRealTimers()
+      mockGeoloc.persist(false)
       await getDbCollection("computed_jobs_partners").deleteMany({})
       await getDbCollection("raw_france_travail_cegid").deleteMany({})
     }

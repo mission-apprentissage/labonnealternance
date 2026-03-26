@@ -99,7 +99,7 @@ export const importFranceTravailCEGIDToComputed = async () => {
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
     zodInput: ZFranceTravailCEGIDJob,
-    mapper: (job) => franceTravailCEGIDMapper(job, agences),
+    mapper: (job) => franceTravailCEGIDMapper(job, { agences }),
   })
 }
 
