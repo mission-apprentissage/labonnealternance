@@ -35,8 +35,8 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
   })
 
   it("ne doit pas trouver un CFA qui n'existe pas", () => {
-    expect(isCompanyInBlockedCfaList("CFA Bidon")).toBe(false)
-    expect(isCompanyInBlockedCfaList("AFTEC Toulouse")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Boulangerie Dupont")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Plomberie Martin")).toBe(false)
     expect(isCompanyInBlockedCfaList("Université Inconnue")).toBe(false)
   })
 })
