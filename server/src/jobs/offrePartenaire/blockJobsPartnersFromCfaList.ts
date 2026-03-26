@@ -6,10 +6,10 @@ import { isCompanyInBlockedCfaList } from "./isCompanyInBlockedCfaList"
 
 const sourceFields = ["workplace_name", "offer_description", "workplace_description"] as const satisfies (keyof IComputedJobsPartners)[]
 
-// La detection actuelle reste volontairement simple. Si le cout devient trop
-// eleve sur des champs texte longs avec la taille actuelle de la blacklist,
-// privilegier un matcher Aho-Corasick en conservant `cfaCompanyList` comme
-// source de verite. Voir /docs/optimization/blocked-cfa-aho-corasick.md.
+// La détection actuelle reste volontairement simple. Si le coût devient trop
+// élevé sur des champs texte longs avec la taille actuelle de la blacklist,
+// privilégier un matcher Aho-Corasick en conservant `cfaCompanyList` comme
+// source de vérité. Voir /docs/optimization/blocked-cfa-aho-corasick.md.
 const hasBlockedCfaMention = ({
   workplace_name,
   offer_description,
