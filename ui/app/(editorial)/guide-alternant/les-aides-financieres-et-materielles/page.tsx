@@ -27,6 +27,7 @@ const LesAidesFinancieresEtMateriellesPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["les-aides-financieres-et-materielles"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       redirectionInterne={<RedirectionInterne />}
+      allerPlusLoinItems={[ARTICLES["comprendre-la-remuneration-en-alternance"], ARTICLES["preparer-son-projet-en-alternance"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles}
     >

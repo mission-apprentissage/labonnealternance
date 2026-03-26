@@ -8,7 +8,7 @@ import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2025-11-04T14:06:47.696Z")
+export const mainSitemapLastModificationDate = new Date("2026-03-26T16:30:17.696Z")
 
 export function generateMainSitemap(request: Request) {
   const txtDirectory = path.join(process.cwd(), "config")
@@ -18,15 +18,13 @@ export function generateMainSitemap(request: Request) {
 
   const paths = [
     `/a-propos`,
-    `/acces-recruteur`,
     `/contact`,
     `/developpeurs`,
     `/faq`,
-    `/ressources#recruteur`,
-    `/ressources#candidat`,
-    `/ressources#cfa`,
+    `/guide-alternant`,
+    `/guide-recruteur`,
+    `/guide-cfa`,
     `/metiers`,
-    `/organisme-de-formation`,
     `/mentions-legales`,
     `/cgu`,
     `/politique-de-confidentialite`,

@@ -1,21 +1,8 @@
-import type { Metadata } from "next"
-import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { permanentRedirect } from "next/navigation"
 import { PAGES } from "@/utils/routes.utils"
-import { HeroCFA } from "./_components/HeroCFA"
 
-export const metadata: Metadata = {
-  title: PAGES.static.organismeDeFormation.getMetadata().title,
-  description: PAGES.static.organismeDeFormation.getMetadata().description,
+const OrganismeDeFormation = () => {
+  permanentRedirect(PAGES.static.jeSuisCFA.getPath())
 }
 
-export default function OrganismeDeFormation() {
-  return (
-    <div>
-      <Breadcrumb pages={[PAGES.static.organismeDeFormation]} />
-      <DefaultContainer>
-        <HeroCFA />
-      </DefaultContainer>
-    </div>
-  )
-}
+export default OrganismeDeFormation

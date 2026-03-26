@@ -13,7 +13,7 @@ import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection
 import { ARTICLES } from "@/app/(editorial)/guide/const"
 import { ARTICLES as ARTICLES_ALTERNANT } from "@/app/(editorial)/guide-alternant/const"
 import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
-import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
+// import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -27,7 +27,7 @@ const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [
 const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [
   ARTICLES["decouvrir-l-alternance"],
   ARTICLES["prevention-des-risques-professionnels-pour-les-apprentis"],
-  ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
+  // ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
 ]
 const ALLER_PLUS_LOIN_ITEMS_CFA = [ARTICLES["decouvrir-l-alternance"], ARTICLES_CFA["la-carte-etudiant-des-metiers"]]
 const ALLER_PLUS_LOIN_ITEMS = [ARTICLES["guide-alternant"], ARTICLES["guide-recruteur"], ARTICLES["guide-cfa"]]

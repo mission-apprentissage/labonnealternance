@@ -83,9 +83,9 @@ const GuideRecruteurPage = () => {
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["je-suis-employeur-public"]} />
             </Grid>
-            <Grid size={{ md: 3, xs: 12 }}>
+            {/* <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["cerfa-apprentissage-et-professionnalisation"]} />
-            </Grid>
+            </Grid> */}
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"]} source="guide-recruteur" />
             </Grid>

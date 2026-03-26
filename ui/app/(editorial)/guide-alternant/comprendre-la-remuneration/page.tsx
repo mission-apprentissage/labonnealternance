@@ -1,5 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Grid, List, ListItem, Typography } from "@mui/material"
+import { Grid, List, ListItem, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSection"
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
@@ -29,7 +29,7 @@ const BlocSalaire = () => (
       <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
         Moins de 18 ans
       </Typography>
-      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+      <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
             27%
@@ -60,9 +60,9 @@ const BlocSalaire = () => (
       }}
     >
       <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-        18 à 20 ans
+        De 18 ans à 20 ans
       </Typography>
-      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+      <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
             43%
@@ -93,24 +93,24 @@ const BlocSalaire = () => (
       }}
     >
       <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-        21 à 25 ans
+        De 21 ans à 25 ans
       </Typography>
-      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+      <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            53%
+            53%*
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            61%
+            61%*
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            78%
+            78%*
           </Typography>{" "}
           la 3e année
         </ListItem>
@@ -128,24 +128,95 @@ const BlocSalaire = () => (
       <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
         26 ans et plus
       </Typography>
-      <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+      <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%
+            100%*
           </Typography>{" "}
           la 1re année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%
+            100%*
           </Typography>{" "}
           la 2e année
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            100%
+            100%*
           </Typography>{" "}
           la 3e année
+        </ListItem>
+      </List>
+    </Grid>
+  </Grid>
+)
+
+const BlocSalaireProfessionalisation = () => (
+  <Grid container spacing={fr.spacing("4v")} mb={fr.spacing("4v")}>
+    <Grid
+      size={{ md: 6, xs: 12 }}
+      sx={{
+        backgroundColor: "white",
+        padding: fr.spacing("7v"),
+        borderRadius: "5px",
+        boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+      }}
+    >
+      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+        Avec un diplôme actuel inférieur au Bac
+      </Typography>
+      <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            55%
+          </Typography>{" "}
+          pour les moins de 25 ans
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            70%
+          </Typography>{" "}
+          de 21 à 25 ans
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            100%
+          </Typography>{" "}
+          SMIC ou 85% SMC* pour les 26 ans et plus
+        </ListItem>
+      </List>
+    </Grid>
+    <Grid
+      size={{ md: 6, xs: 12 }}
+      sx={{
+        backgroundColor: "white",
+        padding: fr.spacing("7v"),
+        borderRadius: "5px",
+        boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+      }}
+    >
+      <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+        Diplôme actuel égal ou supérieur au Bac
+      </Typography>
+      <List sx={{ m: fr.spacing("1v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "start", listStylePosition: "inside" } }}>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            65%
+          </Typography>{" "}
+          pour les moins de 21 ans
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            80%
+          </Typography>{" "}
+          de 21 à 25 ans
+        </ListItem>
+        <ListItem>
+          <Typography component={"span"} fontWeight={"bold"}>
+            100%
+          </Typography>{" "}
+          SMIC ou 85% SMC* pour les 26 ans et plus
         </ListItem>
       </List>
     </Grid>
@@ -332,14 +403,7 @@ const ComprendreLaRemunerationPage = () => {
           rémunération minimale s'élève à 55 % du SMIC pour les moins de 21 ans sans qualification. La rémunération ne peut pas être inférieure au SMIC (1 823,03 € brut en janvier
           2026) ni à 85 % du salaire minimum conventionnel de branche.
         </Paragraph>
-        <TableArticle
-          headers={["Âge", "Diplôme actuel inférieur au Bac", "Diplôme actuel égal ou supérieur au Bac"]}
-          data={[
-            ["Moins de 21 ans", "55 %", "65 %"],
-            ["21 à 25 ans", "70 %", "80 %"],
-            ["26 ans et plus", "100 % SMIC ou 85 % SMC*", "100 % SMIC ou 85 % SMC*"],
-          ]}
-        />
+        <BlocSalaireProfessionalisation />
         <Paragraph>*La rémunération ne peut pas être inférieure au SMIC (1 823,03 €) ni à 85 % du salaire minimum conventionnel de branche (SMC)</Paragraph>
       </Section>
       <Section title="Salaire brut et salaire net en alternance">

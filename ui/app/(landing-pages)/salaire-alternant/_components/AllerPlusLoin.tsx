@@ -4,7 +4,7 @@ import { Box, Divider, Grid, Typography } from "@mui/material"
 import { PAGES } from "@/utils/routes.utils"
 
 const CardItem = ({ title, description, href }: { title: string; description: string; href: string }) => (
-  <Grid size={{ xs: 12, md: 4 }}>
+  <Grid size={{ xs: 12, md: 6 }}>
     <Card
       title={title}
       titleAs="h3"

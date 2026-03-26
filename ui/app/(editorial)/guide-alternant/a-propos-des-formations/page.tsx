@@ -9,6 +9,7 @@ import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
+import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
@@ -18,9 +19,7 @@ export const metadata: Metadata = PAGES.static.guideAlternantAProposDesFormation
 const AProposDesFormationsPage = () => {
   const pages = [PAGES.static.guideAlternant, PAGES.static.guideAlternantAProposDesFormations]
 
-  const descriptionParts = [
-    "De nombreuses aides existent pour faciliter votre entrée en alternance. Pensez à vous y prendre le plus tôt possible, certaines démarches pouvant prendre plusieurs semaines.",
-  ]
+  const descriptionParts = ["Voici quelques conseils pour bien choisir votre formation en alternance :"]
 
   return (
     <LayoutArticle
@@ -29,6 +28,7 @@ const AProposDesFormationsPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["a-propos-des-formations"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       redirectionInterne={<RedirectionInterne />}
+      allerPlusLoinItems={[ARTICLES_PARTAGES["decouvrir-l-alternance"], ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"], ARTICLES["se-faire-accompagner"]]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantAProposDesFormations}
     >

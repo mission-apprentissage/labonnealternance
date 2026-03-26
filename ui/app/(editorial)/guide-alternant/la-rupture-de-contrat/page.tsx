@@ -38,20 +38,23 @@ const LaRuptureDeContratPage = () => {
     >
       <Section title="Peut-on rompre un contrat d'apprentissage ?">
         <Paragraph>
-          Oui, un contrat d'apprentissage peut être rompu librement pendant les 45 premiers jours, par l’une de ses deux parties, en entreprise, puis uniquement par accord mutuel,
-          « démission » éventuellement, a minima pour faute grave, inaptitude médicale définitive ou obtention du titre ou du diplôme qui constitue l’objet du contrat.{" "}
+          Oui, un contrat d'apprentissage peut être rompu librement pendant les 45 premiers jours en entreprise, puis uniquement par accord mutuel, démission après avoir saisi le
+          médiateur, faute grave, inaptitude ou obtention anticipée du diplôme.
         </Paragraph>
         <Paragraph>
           Pendant les 45 premiers jours de présence en entreprise, vous pouvez rompre votre contrat librement : pas besoin de donner une raison, pas de préavis, pas d'indemnité à
-          verser. Votre employeur peut faire de même.
+          verser. Votre employeur peut également rompre le contrat de la même manière.
         </Paragraph>
-        <Paragraph>Attention : seuls les jours passés en entreprise comptent. Les semaines en CFA ne sont pas incluses.</Paragraph>
-        <Paragraph>Seule formalité : la rupture doit être notifiée par écrit, puis sa copie doit être transmise au CFA et à l'OPCO concerné.</Paragraph>
+        <Paragraph>
+          Attention : seuls les jours passés en entreprise comptent. Les semaines en CFA ne sont pas incluses. Concrètement, ces 45 jours peuvent s'étaler sur 2 à 3 mois
+          calendaires.
+        </Paragraph>
+        <Paragraph>Seule formalité : la rupture doit être notifiée par écrit (lettre recommandée ou remise en main propre), puis transmise au CFA et à l'OPCO.</Paragraph>
       </Section>
       <Section title="Comment rompre un contrat d'apprentissage après les 45 jours ?">
         <Paragraph>
-          Passé les 45 jours en entreprise, la rupture du contrat d'apprentissage n'est plus libre. Elle n'est possible que par accord mutuel, « démission » éventuellement, a
-          minima faute grave, inaptitude médicale définitive ou obtention du titre ou du diplôme qui constitue l’objet du contrat.
+          Passé les 45 jours en entreprise, la rupture du contrat d'apprentissage est possible par accord mutuel entre l’apprenti et son employeur, démission après avoir saisi le
+          médiateur de l'apprentissage, faute grave, inaptitude médicale ou obtention anticipée du diplôme.
         </Paragraph>
         <Paragraph component="h3" variant="body1" fontWeight={"bold"}>
           La rupture d'un commun accord
@@ -71,9 +74,8 @@ const LaRuptureDeContratPage = () => {
           La rupture par l'employeur
         </Paragraph>
         <Paragraph>
-          Votre employeur ne peut pas vous licencier pour motif économique, comme un salarié « classique ». Il ne peut rompre le contrat que pour des motifs précis : faute grave a
-          minima de votre part, inaptitude médicale constatée par le médecin du travail, exclusion définitive du CFA, ou cas de force majeure. Et ce en respectant les règles
-          procédurales concernées par le motif choisi.
+          Votre employeur ne peut pas vous licencier comme un salarié classique. Il ne peut rompre le contrat que pour des motifs précis : faute grave de votre part, inaptitude
+          médicale constatée par le médecin du travail, exclusion définitive du CFA, ou cas de force majeure.
         </Paragraph>
         <Paragraph component="h3" variant="body1" fontWeight={"bold"}>
           L'obtention du titre ou du diplôme
@@ -91,8 +93,8 @@ const LaRuptureDeContratPage = () => {
             <>
               <Typography fontWeight="bold">Étape 1 : Saisir le médiateur de l'apprentissage (quand il existe).</Typography>
               <Typography>
-                Contactez d'abord le médiateur de l'apprentissage (rattaché à la CCI, CMA ou chambre d'agriculture de votre département). Il dispose de 15 jours maximum pour
-                intervenir.
+                Contactez d'abord le médiateur de l'apprentissage (rattaché à la Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat ou Chambre d'agriculture
+                de votre département). Il dispose de 15 jours maximum pour intervenir.
               </Typography>
             </>,
             <>
@@ -129,18 +131,28 @@ const LaRuptureDeContratPage = () => {
       </Section>
       <Section title="Quelle est la différence entre rupture d'un contrat d'apprentissage et de professionnalisation ?">
         <Paragraph>
-          Le contrat d'apprentissage suit un régime spécifique, notamment avec 45 jours de liberté puis des cas de rupture limités. Le contrat de professionnalisation obéit au «
-          droit commun » des CDD.
+          Le contrat d'apprentissage suit un régime spécifique avec 45 jours pendant lesquels la rupture est possible sans motif puis des cas de rupture limités. Le contrat de
+          professionnalisation obéit au droit commun des CDD ou CDI.
         </Paragraph>
         <Paragraph>
-          Dans cette dernière hypothèse, après éventuellement une période « d'essai », la rupture n'est possible que par accord mutuel, a minima en cas de faute grave, d’inaptitude
-          médicale définitive sans possibilité de reclassement, de force majeure, ou si vous avez décroché un CDI ailleurs.
+          En CDD : après la période d'essai, la rupture n'est possible que par accord mutuel, en cas de faute grave, d'inaptitude médicale, de force majeure, ou si vous avez
+          décroché un CDI ailleurs.
+        </Paragraph>
+        <Paragraph>
+          En CDI : vous pouvez démissionner à tout moment en respectant le préavis prévu par votre contrat ou votre convention collective. Une rupture conventionnelle est aussi
+          envisageable.
         </Paragraph>
       </Section>
       <Section title="Quels sont les droits d'un « alternant » après une rupture de contrat ?">
         <Paragraph>
-          Après la rupture d'un contrat d'apprentissage, l'alternant peut poursuivre, s’il le souhaite, sa formation au CFA pendant 6 mois et bénéficier des allocations chômage
-          s'il a travaillé au moins 4 mois sur les 28 derniers mois.
+          Après la rupture d'un contrat d'apprentissage, l'alternant peut poursuivre sa formation au CFA pendant 6 mois et bénéficier{" "}
+          <DsfrLink
+            href="https://www.francetravail.fr/candidat/mes-droits-aux-aides-et-allocati/lessentiel-a-savoir-sur-lallocat/ai-je-droit-a-lallocation-chomag.html"
+            aria-label="Consulter les droits aux allocations chômage sur le site France Travail"
+          >
+            des allocations chômage
+          </DsfrLink>{" "}
+          selon certaines conditions.
         </Paragraph>
         <Paragraph>Le CFA doit aussi l’aider à trouver un nouvel employeur.</Paragraph>
         <Paragraph>Pensez à vous inscrire à France Travail dès que possible.</Paragraph>
@@ -188,29 +200,24 @@ const LaRuptureDeContratPage = () => {
       <Section title="Questions fréquentes">
         <Paragraph>
           <Typography fontWeight="bold">Peut-on rompre un contrat d'apprentissage ?</Typography>
-          Oui. Pendant les 45 premiers jours en entreprise, la rupture est libre et sans motif. Après ce délai, elle n'est possible que par accord mutuel, démission via le
-          médiateur de l'apprentissage éventuellement, a minima faute grave, inaptitude médicale définitive ou obtention du diplôme.
+          Oui. Pendant les 45 premiers jours en entreprise, la rupture est libre et sans motif. Après ce délai, elle n'est possible que par accord mutuel, démission après avoir
+          saisi le médiateur de l'apprentissage, faute grave, inaptitude médicale ou obtention anticipée du diplôme.
         </Paragraph>
         <Paragraph>
           <Typography fontWeight="bold">Comment « démissionner » d'un contrat d'apprentissage ?</Typography>
-          L'apprenti doit saisir le médiateur de l'apprentissage (s’il existe) (CCI, CMA ou chambre d'agriculture), attendre 5 jours calendaires, puis informer son employeur par
-          écrit. La rupture prend effet 7 jours calendaires après cette notification. Pour un apprenti mineur, l'acte de rupture doit être cosigné par le représentant légal.
+          L'apprenti doit saisir le médiateur de l'apprentissage (Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat ou Chambre d'agriculture), attendre 5
+          jours calendaires, puis informer son employeur par écrit. La rupture prend effet 7 jours calendaires après cette notification. Pour un apprenti mineur, l'acte de rupture
+          doit être cosigné par le représentant légal.
         </Paragraph>
         <Paragraph>
           <Typography fontWeight="bold">Qu'est-ce que le médiateur de l'apprentissage ? </Typography>
-          Quand il existe, le médiateur de l'apprentissage est un intervenant rattaché aux chambres consulaires (CCI, CMA, chambre d'agriculture) qui intervient obligatoirement
-          avant toute démission d'un apprenti. Il dispose de 15 jours maximum pour agir.{" "}
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight="bold">Quels sont les droits d'un apprenti après une rupture de contrat ?</Typography>
-          Il/elle peut poursuivre sa formation au CFA pendant 6 mois et bénéficier des allocations chômage (ARE) s'il a travaillé au moins 4 mois sur les 28 derniers mois.
-          L'employeur doit lui remettre le certificat de travail, l'attestation France Travail et le solde de tout compte.
+          Le médiateur de l'apprentissage est un intervenant rattaché aux chambres consulaires (Chambre de commerce et d'industrie, Chambres de métiers et de l'artisanat, chambre
+          d'agriculture) qui intervient obligatoirement avant toute démission d'un apprenti. Il dispose de 15 jours maximum pour agir.
         </Paragraph>
         <Paragraph>
           <Typography fontWeight="bold">Quelle est la différence entre rupture d'un contrat d'apprentissage et de professionnalisation ?</Typography>
-          Le contrat d'apprentissage suit un régime spécifique, notamment avec 45 jours de liberté puis des cas de rupture limités par le code du travail. Le contrat de
-          professionnalisation obéit au « droit commun » des CDD, avec des règles de rupture différentes selon la forme du contrat. Dans tous les cas, les procédures exigées par ce
-          code doivent être respectées.
+          Le contrat d'apprentissage suit un régime spécifique avec 45 jours pendant lesquels la rupture est possible sans motif puis des cas de rupture limités par le Code du
+          travail. Le contrat de professionnalisation obéit au droit commun des CDD ou CDI, avec des règles de rupture différentes selon la forme du contrat.
         </Paragraph>
         <Paragraph>
           Sources : code du travail, notamment en ses articles{" "}

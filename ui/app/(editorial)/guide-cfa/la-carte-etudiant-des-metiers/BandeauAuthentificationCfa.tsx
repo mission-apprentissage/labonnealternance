@@ -19,7 +19,7 @@ export const BandeauAuthentificationCfa = () => {
       </Box>
       <Box p={fr.spacing("3v")} display="flex" flexDirection="column" gap={fr.spacing("2v")} flex={1}>
         <Typography component="p" variant="h6">
-          Vous aviez déjà un compte CFA sur le portail de l'alternance ?
+          Vous aviez déjà un compte CFA sur le Portail de l'alternance ?
         </Typography>
         <Typography component="span" variant="body1">
           Pour les organismes de formation qui avaient déjà un compte sur le Portail de l'alternance, vous devez créer un nouveau compte CFA sur La bonne alternance pour continuer

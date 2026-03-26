@@ -207,7 +207,7 @@ const JeSuisRecruteurPage = () => {
                 enlargeLink
               />
             </Grid>
-            <Grid size={{ md: 6, xs: 12 }}>
+            {/* <Grid size={{ md: 6, xs: 12 }}>
               <Card
                 title="Cerfa apprentissage et professionnalisation : le guide complet"
                 desc="Guide des démarches administratives pour les employeurs"
@@ -220,7 +220,7 @@ const JeSuisRecruteurPage = () => {
                 }}
                 enlargeLink
               />
-            </Grid>
+            </Grid> */}
           </Grid>
           <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }}>
             <Button linkProps={{ href: PAGES.static.guideRecruteur.getPath() }} priority="secondary" style={{ margin: "auto" }}>

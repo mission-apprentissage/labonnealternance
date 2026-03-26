@@ -9,6 +9,7 @@ import { QuizItem } from "@/app/(editorial)/_components/QuizItem"
 import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
+import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-alternant/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
@@ -27,6 +28,11 @@ const ConseilsEtAstucesPourTrouverUnEmployeurPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["conseils-et-astuces-pour-trouver-un-employeur"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       redirectionInterne={<RedirectionInterne />}
+      allerPlusLoinItems={[
+        ARTICLES["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"],
+        ARTICLES["comment-signer-un-contrat-en-alternance"],
+        ARTICLES_PARTAGES["prevention-des-risques-professionnels-pour-les-apprentis"],
+      ]}
       parentPage={PAGES.static.guideAlternant}
       page={PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur}
     >

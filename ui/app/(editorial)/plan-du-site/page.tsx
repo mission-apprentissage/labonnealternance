@@ -37,22 +37,25 @@ export default function PlanDuSite() {
                 <Box component="nav" role="navigation" aria-label="Navigation du plan du site">
                   <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
                     <li>
-                      <DsfrLink href="/">Espace candidat</DsfrLink>
+                      <DsfrLink href={PAGES.static.home.getPath()}>Espace candidat</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/acces-recruteur">Accès recruteur</DsfrLink>
+                      <DsfrLink href={PAGES.static.guideAlternant.getPath()}>Guide alternant</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/organisme-de-formation">Organisme de formation</DsfrLink>
+                      <DsfrLink href={PAGES.static.guideRecruteur.getPath()}>Guide recruteur</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/espace-pro/authentification">Authentification espace pro</DsfrLink>
+                      <DsfrLink href={PAGES.static.guideCfa.getPath()}>Guide CFA</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/espace-pro/creation/entreprise">Création de compte entreprise</DsfrLink>
+                      <DsfrLink href={PAGES.static.authentification.getPath()}>Authentification espace pro</DsfrLink>
                     </li>
                     <li>
-                      <DsfrLink href="/espace-pro/creation/cfa">Création de compte CFA</DsfrLink>
+                      <DsfrLink href={PAGES.static.espaceProCreationEntreprise.getPath()}>Création de compte entreprise</DsfrLink>
+                    </li>
+                    <li>
+                      <DsfrLink href={PAGES.static.espaceProCreationCfa.getPath()}>Création de compte CFA</DsfrLink>
                     </li>
                   </Box>
                 </Box>
