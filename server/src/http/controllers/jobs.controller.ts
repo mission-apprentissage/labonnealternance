@@ -1,6 +1,7 @@
+import { badRequest } from "@hapi/boom"
+import { ObjectId } from "mongodb"
 import type { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, zRoutes } from "shared"
-
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import type { Server } from "@/http/server"
@@ -64,7 +65,10 @@ export default (server: Server) => {
           break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-          result = await getPartnerJobByIdV2(id)
+          if (!ObjectId.isValid(id)) {
+            throw badRequest("id is not valid")
+          }
+          result = await getPartnerJobByIdV2(new ObjectId(id))
           break
 
         default:
