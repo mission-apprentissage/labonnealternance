@@ -33,10 +33,12 @@ export const processMissingRomeAndImportToJobPartners = async () => {
 
     await importFromComputedToJobsPartners(processFilter, false)
 
-    if (validatedOffers.length) {
+    const BATCH_SIZE = 500
+    for (let i = 0; i < validatedOffers.length; i += BATCH_SIZE) {
+      const chunk = validatedOffers.slice(i, i + BATCH_SIZE)
       await fillLbaUrl({
         addedMatchFilter: {
-          $or: validatedOffers.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })),
+          $or: chunk.map(({ partner_label, partner_job_id }) => ({ partner_label, partner_job_id })),
         },
       })
     }
