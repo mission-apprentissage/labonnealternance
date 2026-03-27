@@ -145,7 +145,7 @@ const LaRuptureDeContratPage = () => {
       </Section>
       <Section title="Quels sont les droits d'un « alternant » après une rupture de contrat ?">
         <Paragraph>
-          Après la rupture d'un contrat d'apprentissage, l'alternant peut poursuivre sa formation au CFA pendant 6 mois et bénéficier{" "}
+          Après la rupture d'un contrat d'apprentissage, l'alternant peut poursuivre sa formation au CFA et bénéficier{" "}
           <DsfrLink
             href="https://www.francetravail.fr/candidat/mes-droits-aux-aides-et-allocati/lessentiel-a-savoir-sur-lallocat/ai-je-droit-a-lallocation-chomag.html"
             aria-label="Consulter les droits aux allocations chômage sur le site France Travail"
@@ -220,14 +220,14 @@ const LaRuptureDeContratPage = () => {
           travail. Le contrat de professionnalisation obéit au droit commun des CDD ou CDI, avec des règles de rupture différentes selon la forme du contrat.
         </Paragraph>
         <Paragraph>
-          Sources : code du travail, notamment en ses articles{" "}
+          Sources :{" "}
           <DsfrLink
-            href="https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006195912/#LEGISCTA000006195912"
-            aria-label="Consulter les articles legifrance"
+            href="https://www.legifrance.gouv.fr/search/code?tab_selection=code&searchField=ALL&query=&page=1&init=true&nomCode=mjXqUg%3D%3D"
+            aria-label="Consulter le code du travail sur le site Légifrance"
           >
-            L6222-18 à L6222-22
-          </DsfrLink>{" "}
-          (apprentissage). Informations en vigueur au 1er février 2026.
+            code du travail
+          </DsfrLink>
+          , notamment les articles dédiés à l'apprentissage.
         </Paragraph>
       </Section>
     </LayoutArticle>

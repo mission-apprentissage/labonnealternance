@@ -70,6 +70,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     id: "conseils-et-astuces-pour-trouver-un-employeur",
     title: "Conseils et astuces pour trouver un employeur",
     description: "Astuces pour réussir votre recherche d'employeur en alternance",
+    imageUrl: `${IMAGE_BASE_PATH}conseils-et-astuces-pour-trouver-un-employeur.svg`,
     path: PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur.getPath(),
     updatedAt: "26/03/2026",
   },

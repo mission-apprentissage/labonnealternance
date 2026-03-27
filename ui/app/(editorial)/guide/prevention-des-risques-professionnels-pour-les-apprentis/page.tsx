@@ -18,7 +18,7 @@ const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [ARTICLES_ALTERNANT["comprendre-la-remun
 const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [
   ARTICLES["apprentissage-et-handicap"],
   ARTICLES_RECRUTEUR["je-suis-employeur-public"],
-  // ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
+  ARTICLES_RECRUTEUR["cerfa-apprentissage-et-professionnalisation"],
 ]
 const ALLER_PLUS_LOIN_ITEMS_CFA = [ARTICLES["apprentissage-et-handicap"], ARTICLES_CFA["la-carte-etudiant-des-metiers"]]
 const ALLER_PLUS_LOIN_ITEMS = [ARTICLES["guide-alternant"], ARTICLES["guide-recruteur"], ARTICLES["guide-cfa"]]

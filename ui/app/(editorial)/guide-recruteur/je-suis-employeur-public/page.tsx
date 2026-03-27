@@ -39,11 +39,7 @@ const JeSuisEmployeurPublicPage = () => {
       updatedAt={<UpdatedAtSection date={ARTICLES["je-suis-employeur-public"].updatedAt} />}
       description={<DescriptionSection descriptionParts={descriptionParts} />}
       redirectionInterne={<RedirectionInterne source="guide-recruteur" />}
-      allerPlusLoinItems={[
-        ARTICLES_PARTAGES["decouvrir-l-alternance"],
-        // ARTICLES["cerfa-apprentissage-et-professionnalisation"],
-        ARTICLES_PARTAGES["apprentissage-et-handicap"],
-      ]}
+      allerPlusLoinItems={[ARTICLES_PARTAGES["decouvrir-l-alternance"], ARTICLES["cerfa-apprentissage-et-professionnalisation"], ARTICLES_PARTAGES["apprentissage-et-handicap"]]}
       sourceAllerPlusLoin="guide-recruteur"
       parentPage={PAGES.static.guideRecruteur}
       page={PAGES.static.guideRecruteurJeSuisEmployeurPublic}
