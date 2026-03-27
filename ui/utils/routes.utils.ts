@@ -304,7 +304,7 @@ export const PAGES = {
       index: true,
       getMetadata: () => ({
         title: "Cerfa apprentissage et professionnalisation | Guide complet 2026",
-        description: "Comment remplir le Cerfa d'apprentissage (n°10103) ou de professionnalisation ? Formulaires, délais OPCO et documents requis. Guide employeur.",
+        description: "Comment remplir le Cerfa d'apprentissage ou de professionnalisation ? Formulaires, délais OPCO et documents requis. Guide employeur.",
       }),
     },
     guideRecruteurAidesALEmbaucheEnAlternance: {
