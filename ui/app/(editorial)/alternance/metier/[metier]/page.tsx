@@ -163,7 +163,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
          */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
-            <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Le métier de <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()},</span> en alternance
             </Typography>
             <Box component="hr" sx={hrSx} />
@@ -267,7 +267,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
          */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
-            <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Entreprises qui recrutent activement en alternance
             </Typography>
             <Box component="hr" sx={hrSx} />
@@ -300,7 +300,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+          <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
             Les formations
           </Typography>
           <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #4B9F6C", opacity: 1 }} />
@@ -330,7 +330,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
          */}
         <Box sx={{ my: fr.spacing("8v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
           <Box sx={{ mb: fr.spacing("6v") }}>
-            <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+            <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
               Où trouver une alternance <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
             </Typography>
             <Box component="hr" sx={hrSx} />
@@ -397,7 +397,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         {data.cards.length > 0 && (
           <Box sx={{ mb: fr.spacing("8v"), mt: fr.spacing("16v"), px: { xs: fr.spacing("4v"), md: fr.spacing("8v") } }}>
             <Box sx={{ mb: fr.spacing("6v") }}>
-              <Typography component="h2" variant="h2" sx={{ mb: 2, color: "#161616" }}>
+              <Typography component="h2" variant="h2" sx={{ mb: fr.spacing("4v"), color: "#161616" }}>
                 Découvrez les {statItems[0].value} offres disponibles pour devenir{" "}
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
               </Typography>

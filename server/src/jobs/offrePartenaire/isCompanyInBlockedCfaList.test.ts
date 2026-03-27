@@ -29,9 +29,14 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("CIO'sup drome-ardeche")).toBe(true)
   })
 
+  it("devrait trouver les CFA lorsqu'ils sont mentionnés dans un texte", () => {
+    expect(isCompanyInBlockedCfaList("Formation en alternance avec Iscod pour une prise de poste immediate")).toBe(true)
+    expect(isCompanyInBlockedCfaList("Entreprise partenaire du CFA Iscod pour le recrutement en alternance")).toBe(true)
+  })
+
   it("ne doit pas trouver un CFA qui n'existe pas", () => {
-    expect(isCompanyInBlockedCfaList("CFA Bidon")).toBe(false)
-    expect(isCompanyInBlockedCfaList("AFTEC Toulouse")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Boulangerie Dupont")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Plomberie Martin")).toBe(false)
     expect(isCompanyInBlockedCfaList("Université Inconnue")).toBe(false)
   })
 })

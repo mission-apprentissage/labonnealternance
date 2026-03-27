@@ -83,6 +83,7 @@ describe("fillLocationInfosForPartners", () => {
       .reply(200, {
         features: [
           {
+            type: "Feature",
             geometry: clichyFixture.centre,
             properties: generateFeaturePropertyFixture({
               city: clichyFixture.nom,
