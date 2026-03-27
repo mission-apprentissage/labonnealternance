@@ -7,7 +7,6 @@ import { useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { AlgoRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruter"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { FormulaireDesinscription } from "./_components/FormulaireDesinscription"
@@ -36,9 +35,6 @@ export function DesinscriptionRecruteur() {
         {!isSuccess ? (
           <>
             <FormulaireDesinscription companyEmail={data?.company_email || ""} handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
-            <Box>
-              <AlgoRecruteur withLinks={false} />
-            </Box>
           </>
         ) : (
           <SuccesDesinscription />
