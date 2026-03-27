@@ -512,7 +512,7 @@ export const up = async () => {
   await getDbCollection("seo_villes").deleteMany({})
 
   await getDbCollection("seo_villes").insertMany(
-    villeData.map((ville) => ({ ...ville, _id: new ObjectId(), created_at: now, updated_at: now })),
+    villeData.map((ville) => ({ ...ville, _id: new ObjectId(), cards: [], created_at: now, updated_at: now })),
     { ordered: false, bypassDocumentValidation: true }
   )
 
