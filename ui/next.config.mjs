@@ -190,6 +190,16 @@ const nextConfig = {
         destination: "/detail-rendez-vous/:appointmentId",
         permanent: true,
       },
+      {
+        source: "/acces-recruteur",
+        destination: "/je-suis-recruteur",
+        permanent: true,
+      },
+      {
+        source: "/organisme-de-formation",
+        destination: "/je-suis-cfa",
+        permanent: true,
+      },
     ]
   },
 }
