@@ -134,7 +134,7 @@ const ZPointProperties = z
 
 // only type="Point" feature
 export const ZPointFeature = z.object({
-  type: z.literal("Feature").nullish(),
+  type: z.literal("Feature"),
   geometry: ZPointGeometry,
   properties: ZPointProperties,
 })
