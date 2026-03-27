@@ -42,7 +42,7 @@ export default function APropos() {
             <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
                 <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
-                  A propos
+                  À propos
                 </Typography>
                 <Box
                   component="hr"
@@ -217,7 +217,6 @@ export default function APropos() {
                   <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
                   <Image src={parcoursup} alt="Parcoursup - Entrez dans l'enseignement supérieur" style={{ width: "100%", height: "auto" }} />
                   <Image src={onisep} alt="Onisep" style={{ width: "100%", height: "auto" }} />
-                  <Image src={portailAlternance} alt="Portail de l'Alternance - Apprentissage et contrat de professionnalisation" style={{ width: "100%", height: "auto" }} />
                   <Image src={j1s} alt="#1jeune1solution" style={{ width: "100%", height: "auto" }} />
                   <Image src={affelnet} alt="Choisir son affectation - Demander une formation et un établissement après la 3ème" style={{ width: "100%", height: "auto" }} />
                   <Image src={ocapiat} alt="OPCO Ocapiat" style={{ width: "100%", height: "auto" }} />

@@ -64,7 +64,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
             Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :
           </Typography>
           <Stack
-            spacing={1}
+            spacing={fr.spacing("2v")}
             sx={{
               alignItems: "flex-start",
             }}
@@ -79,7 +79,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
               Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{relatedMetier.name}</i>
             </Typography>
 
-            <Typography sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+            <Typography sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
               <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
 
               <Link
@@ -93,7 +93,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
 
             {towns.map((currentTown, index) => {
               return (
-                <Typography key={index} sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+                <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
                   <Link
                     className={fr.cx("fr-link", "fr-text--bold")}
