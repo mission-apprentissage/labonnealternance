@@ -133,9 +133,11 @@ function JobDetail({
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
             <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
               <Box sx={{ mr: fr.spacing("4v") }}>
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasValidEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
+                {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && hasValidEmail(selectedItem) && (
+                  <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />
+                )}
                 {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler job={selectedItem} />}
+                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !hasValidEmail(selectedItem) && <PartnerJobPostuler job={selectedItem} />}
               </Box>
               <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
                 {hasValidEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
