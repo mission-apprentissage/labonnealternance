@@ -59,6 +59,8 @@ const PARTNER_NAMES = {
   Hellowork: "Hellowork",
 }
 
+const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
+
 const images: object = {
   images: {
     logoLba: `${imagePath}logo_LBA.png`,
@@ -371,14 +373,12 @@ export const sendApplicationV2 = async ({
   }
 
   try {
-    // add applicant_id to application
     const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
     await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
-    await sendApplicationDataToPartner(application, applicant, applicant_attachment_content)
 
     return { _id: application._id }
   } catch (err) {
@@ -1151,9 +1151,17 @@ export const processApplicationEmails = {
   async sendEmailsIfNeeded(application: IApplication, applicant: IApplicant) {
     const { to_company_message_id, to_applicant_message_id } = application
     const attachmentContent = await getApplicationAttachmentContent(application)
-    if (!to_company_message_id) {
-      await this.sendRecruteurEmail(application, applicant, attachmentContent)
+
+    const job = application.job_id ? await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(application.job_id) }) : null
+
+    if (job && PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
+      await sendApplicationDataToPartner(job, application, applicant, attachmentContent)
+    } else {
+      if (!to_company_message_id) {
+        await this.sendRecruteurEmail(application, applicant, attachmentContent)
+      }
     }
+
     if (!to_applicant_message_id) {
       await this.sendCandidatEmail(application, applicant)
     }
@@ -1673,31 +1681,16 @@ const sendApplicationStatusToHellowork = async ({ status, application }: { statu
   }
 }
 
-const sendApplicationDataToPartner = async (application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
-  if (application.job_origin === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && application.job_id) {
-    const partnerJob: IJobsPartnersOfferPrivate | null = await getDbCollection("jobs_partners").findOne({ _id: application.job_id })
-
-    if (!partnerJob) {
-      logger.error(`Aucun job partenaire trouvé avec id=${application.job_id} pour l'application ${application._id}`)
-      return
-    }
-
-    if (partnerJob.partner_label === "Taleez") {
-      await sendApplicationDataToTaleez(partnerJob, application, applicant, applicant_attachment_content)
-    }
+const sendApplicationDataToPartner = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
+  if (partnerJob.partner_label === "Taleez") {
+    await sendApplicationDataToTaleez(partnerJob, application, applicant, applicant_attachment_content)
   }
 }
 
 const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
   try {
-    console.log(partnerJob)
-
-    // fake jobToken for test
-    //d1tfrrjoag66t
-    //785qs2nh75l2f
-
     const payload = {
-      jobToken: "d1tfrrjoag66t", //partnerJob.partner_job_id,
+      jobToken: partnerJob.partner_job_id,
       firstName: applicant.firstname,
       lastName: applicant.lastname,
       email: applicant.email,
@@ -1707,21 +1700,19 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
       coverText: application.applicant_message_to_company,
     }
 
-    const response = await axios.post(config.taleez.url, payload, {
+    await axios.post(config.taleez.url, payload, {
       headers: {
         "X-Partner-Key": config.taleez.partnerKey,
       },
     })
-
-    console.log("response : ", response)
   } catch (err) {
-    logger.error(err)
-    console.log("error ", err)
     captureException(err, {
       extra: {
+        message: "Erreur lors de l'envoi de la candidature au partenaire Taleez",
         applicationId: application._id,
         jobId: application.job_id,
       },
     })
+    throw err
   }
 }
