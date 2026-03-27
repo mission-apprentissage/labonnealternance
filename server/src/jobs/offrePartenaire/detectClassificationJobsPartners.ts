@@ -1,32 +1,14 @@
 import type { Filter } from "mongodb"
-import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST } from "shared/models/jobsPartnersComputed.model"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-const partnerLabelWhiteList: string[] = [
-  "Jobteaser",
-  "Veritone",
-  JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
-  "L'Oréal",
-  "BPCE",
-  "Amazon",
-  "Daher",
-  "Enedis",
-  "Framatome",
-  "GRDF",
-  "Bpifrance",
-  "EDF",
-  "La Poste",
-  JOBPARTNERS_LABEL.EMPLOI_INCLUSION,
-]
-
 export const detectClassificationJobsPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
 
-  const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: partnerLabelWhiteList } }]
+  const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: PARTNER_WHITELIST } }]
   if (addedMatchFilter) {
     filters.push(addedMatchFilter)
   }
