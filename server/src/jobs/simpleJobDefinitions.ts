@@ -35,7 +35,7 @@ import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/impo
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
-import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
+import { fillLbaUrl, renewLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
 import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
@@ -420,6 +420,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillLbaUrl,
     description: "Remplit le champ lba_url dans la collection jobs_partners",
+  },
+  {
+    fct: renewLbaUrl,
+    description: "Renouvelle le champ lba_url dans la collection jobs_partners",
   },
   {
     fct: cancelRemovedJobsPartners,
