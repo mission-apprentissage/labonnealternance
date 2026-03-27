@@ -328,8 +328,8 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
         <Paragraph>✅ La rémunération respecte les minima légaux</Paragraph>
         <Paragraph>✅ Le maître d'apprentissage remplit les conditions</Paragraph>
         <Paragraph>✅ Le Cerfa est signé par toutes les parties</Paragraph>
-        <Paragraph>✅ Le CFA a visé le contrat (FA 13 uniquement)</Paragraph>
-        <Paragraph>✅ Le programme de formation est joint (EJ 20 uniquement)</Paragraph>
+        <Paragraph>✅ Le CFA a visé le contrat (apprentissage uniquement)</Paragraph>
+        <Paragraph>✅ Le programme de formation est joint (professionnalisation uniquement)</Paragraph>
       </Section>
       <Section title="Transmission à l'OPCO">
         <Paragraph component={"h3"} variant={"h3"} color={fr.colors.decisions.text.default.info.default} fontWeight={"bold"}>
@@ -514,18 +514,6 @@ const CerfaApprentissageEtProfessionnalisationPage = () => {
           >
             France Compétences - RNCP
           </DsfrLink>
-        </Paragraph>
-        <Paragraph>
-          <Typography fontWeight={"bold"} component={"span"}>
-            Guide officiel employeurs 👉
-          </Typography>{" "}
-          <DsfrLink
-            href="https://travail-emploi.gouv.fr/sites/travail-emploi/files/2025-04/Guide_employeurs_alternancemars2025.pdf"
-            aria-label="Consulter le guide pratique alternance 2025 du Ministère du Travail"
-          >
-            Guide pratique alternance 2025
-          </DsfrLink>{" "}
-          (Ministère du Travail)
         </Paragraph>
       </Section>
       <Section title="FAQ technique">
