@@ -16,7 +16,7 @@ export default async function fetchInserJeunesStats(training: ILbaItemFormation2
       }
       return null
     }
-    return response.json()
+    return await response.json()
   } catch (error) {
     captureException(error)
     return null
