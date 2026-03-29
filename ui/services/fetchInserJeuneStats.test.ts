@@ -1,6 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import fetchInserJeunesStats from "./fetchInserJeuneStats"
 
+const { captureException } = vi.hoisted(() => ({
+  captureException: vi.fn(),
+}))
+
+vi.mock("@sentry/nextjs", () => ({
+  captureException,
+}))
+
 vi.mock("@/config.public", () => ({
   publicConfig: { apiEndpoint: "https://api.test" },
 }))
@@ -18,6 +26,7 @@ const stubFetch = (status: number, body: unknown = {}) => {
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  captureException.mockReset()
 })
 
 const training = {
@@ -40,20 +49,25 @@ describe("fetchInserJeunesStats", () => {
   it("retourne null si l'API répond 404", async () => {
     stubFetch(404)
     expect(await fetchInserJeunesStats(training)).toBeNull()
+    expect(captureException).not.toHaveBeenCalled()
   })
 
   it("retourne null si l'API répond 500", async () => {
     stubFetch(500)
     expect(await fetchInserJeunesStats(training)).toBeNull()
+    expect(captureException).toHaveBeenCalledTimes(1)
   })
 
   it("retourne null si l'API répond 503", async () => {
     stubFetch(503)
     expect(await fetchInserJeunesStats(training)).toBeNull()
+    expect(captureException).toHaveBeenCalledTimes(1)
   })
 
   it("retourne null en cas d'erreur réseau", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("Network error")))
+    const error = new Error("Network error")
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(error))
     expect(await fetchInserJeunesStats(training)).toBeNull()
+    expect(captureException).toHaveBeenCalledWith(error)
   })
 })

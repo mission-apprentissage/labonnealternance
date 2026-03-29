@@ -12,6 +12,31 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { ApiError } from "@/utils/api.utils"
 
+function wasPageReloaded(): boolean {
+  const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
+  return navigationEntry?.type === "reload"
+}
+
+function shouldReloadChunkError(): boolean {
+  const storageKey = "lba:lastChunkReload"
+  const reloadThrottleMs = 30000
+  const now = Date.now()
+
+  try {
+    const storedValue = window.sessionStorage.getItem(storageKey)
+    const lastReload = storedValue ? Number(storedValue) : 0
+
+    if (!lastReload || Number.isNaN(lastReload) || now - lastReload > reloadThrottleMs) {
+      window.sessionStorage.setItem(storageKey, String(now))
+      return true
+    }
+
+    return false
+  } catch {
+    return !wasPageReloaded()
+  }
+}
+
 function getErrorDescription(error: unknown): string | null {
   if (!error) {
     return null
@@ -40,26 +65,10 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
   useEffect(() => {
     // ChunkLoadError : un chunk JS n'existe plus après un déploiement.
     // On recharge la page silencieusement pour récupérer les nouveaux chunks,
-    // avec un garde-fou sessionStorage pour éviter une boucle de refresh.
-    if (error instanceof Error && error.name === "ChunkLoadError") {
-      const storageKey = "lba:lastChunkReload"
-      const reloadThrottleMs = 30000
-      const now = Date.now()
-
-      try {
-        const storedValue = window.sessionStorage.getItem(storageKey)
-        const lastReload = storedValue ? Number(storedValue) : 0
-
-        if (!lastReload || Number.isNaN(lastReload) || now - lastReload > reloadThrottleMs) {
-          window.sessionStorage.setItem(storageKey, String(now))
-          window.location.reload()
-          return
-        }
-      } catch (_e) {
-        // sessionStorage inaccessible (navigation privée, quota) : rechargement unique
-        window.location.reload()
-        return
-      }
+    // avec un garde-fou même si sessionStorage n'est pas disponible.
+    if (error instanceof Error && error.name === "ChunkLoadError" && shouldReloadChunkError()) {
+      window.location.reload()
+      return
     }
     Sentry.captureException(error)
     console.error(error)
