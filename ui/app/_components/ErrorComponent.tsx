@@ -39,10 +39,27 @@ export type ErrorProps = { error: unknown; reset: () => void }
 export function ErrorComponent({ error, reset }: ErrorProps) {
   useEffect(() => {
     // ChunkLoadError : un chunk JS n'existe plus après un déploiement.
-    // On recharge la page silencieusement pour récupérer les nouveaux chunks.
+    // On recharge la page silencieusement pour récupérer les nouveaux chunks,
+    // avec un garde-fou sessionStorage pour éviter une boucle de refresh.
     if (error instanceof Error && error.name === "ChunkLoadError") {
-      window.location.reload()
-      return
+      const storageKey = "lba:lastChunkReload"
+      const reloadThrottleMs = 30000
+      const now = Date.now()
+
+      try {
+        const storedValue = window.sessionStorage.getItem(storageKey)
+        const lastReload = storedValue ? Number(storedValue) : 0
+
+        if (!lastReload || Number.isNaN(lastReload) || now - lastReload > reloadThrottleMs) {
+          window.sessionStorage.setItem(storageKey, String(now))
+          window.location.reload()
+          return
+        }
+      } catch (_e) {
+        // sessionStorage inaccessible (navigation privée, quota) : rechargement unique
+        window.location.reload()
+        return
+      }
     }
     Sentry.captureException(error)
     console.error(error)

@@ -196,7 +196,7 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
     const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer: referrer || "lba" } }, { timeout: 7000 })
     return data
   } catch (error) {
-    const isExpectedError = error instanceof ApiError && error.context.statusCode < 500
+    const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
     if (!isExpectedError) {
       captureException(error)
     }
