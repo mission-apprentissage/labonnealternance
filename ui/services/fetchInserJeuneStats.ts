@@ -1,6 +1,5 @@
 import type { ILbaItemFormation2Json } from "shared"
 import { publicConfig } from "@/config.public"
-import { logError } from "@/utils/tools"
 
 const baseUrl = publicConfig.apiEndpoint
 
@@ -10,18 +9,11 @@ export default async function fetchInserJeunesStats(training: ILbaItemFormation2
   }
   try {
     const response = await fetch(`${baseUrl}/inserjeunes/${training.place.zipCode}/${training.training.cfd}`)
-    if (response.status === 404) {
+    if (!response.ok) {
       return null
     }
-
     return response.json()
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === "Pas de données disponibles") {
-        return null
-      }
-    }
-    logError("InserJeunes API error", `InserJeunes API error ${error}`)
+  } catch {
+    return null
   }
-  return null
 }

@@ -38,6 +38,12 @@ export type ErrorProps = { error: unknown; reset: () => void }
 
 export function ErrorComponent({ error, reset }: ErrorProps) {
   useEffect(() => {
+    // ChunkLoadError : un chunk JS n'existe plus après un déploiement.
+    // On recharge la page silencieusement pour récupérer les nouveaux chunks.
+    if (error instanceof Error && error.name === "ChunkLoadError") {
+      window.location.reload()
+      return
+    }
     Sentry.captureException(error)
     console.error(error)
   }, [error])
