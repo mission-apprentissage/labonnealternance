@@ -43,7 +43,7 @@ export default (server: Server) => {
       })
 
       if ("error" in result) {
-        return res.status(500).send(result)
+        return res.status(result.error === "wrong_parameters" ? 400 : 500).send(result)
       }
       return res.status(200).send(result)
     }
