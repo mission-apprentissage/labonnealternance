@@ -4,12 +4,12 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Divider, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 
 import CustomInput from "@/app/_components/CustomInput"
+import { publicConfig } from "@/config.public"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -17,7 +17,6 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
   const hasError = Boolean(error === "true")
-  const router = useRouter()
 
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -40,13 +39,13 @@ export default function Authentification() {
           case "DISABLED":
             setFieldError(
               "email",
-              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a style="text-decoration:underline;" href="mailto:labonnealternance-contact@apprentissage.beta.gouv.fr?subject=Compte CFA La bonne alternance désactivé">support</a>`
+              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a href="mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Compte CFA La bonne alternance désactivé")}">support</a>`
             )
             setErrorMessage("Le compte utilisateur est désactivé")
             break
-          case "UNKNOWN":
-            setFieldError("email", "Adresse email invalide.")
-            setErrorMessage("Adresse email invalide")
+          case "INVALID":
+            setFieldError("email", "L’email saisi est incorrect. Vérifiez votre email ou créez un compte.")
+            setErrorMessage("Email incorrect")
             break
           case "VALIDATION":
             setFieldError("email", "Le compte utilisateur est en attente de validation")
@@ -151,23 +150,23 @@ export default function Authentification() {
         <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
         </Typography>
-        <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationEntreprise.getPath())} style={{ width: "100%" }}>
+        <Button linkProps={{ href: PAGES.static.espaceProCreationEntreprise.getPath() }} priority="secondary" style={{ width: "100%" }}>
           <Box
             sx={{
               margin: "auto",
             }}
           >
-            Je suis une entreprise
+            Je suis recruteur
           </Box>
         </Button>
         <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationCfa.getPath())} style={{ width: "100%" }}>
+          <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary" style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
               }}
             >
-              Je suis un organisme de formation
+              Je suis CFA
             </Box>
           </Button>
         </Box>
@@ -176,13 +175,13 @@ export default function Authentification() {
           offres d’emploi et de formation sans vous créer de compte.
         </Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.home.getPath())} style={{ width: "100%" }}>
+          <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
               }}
             >
-              Je suis un candidat
+              Je suis alternant
             </Box>
           </Button>
         </Box>

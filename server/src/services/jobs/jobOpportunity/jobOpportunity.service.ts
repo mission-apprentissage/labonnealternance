@@ -393,7 +393,7 @@ export const getJobsPartnersFromDBForUI = async ({
 }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-    offer_expiration: { $gt: new Date() },
+    offer_expiration: force_partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? null : { $gt: new Date() },
     partner_label: force_partner_label ? force_partner_label : { $not: { $in: [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] } }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
@@ -822,12 +822,13 @@ export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJ
   return upsertJobOfferPrivate({
     data,
     partner_label: identity.organisation!,
+    partnerJobIdIfNew: data?.identifier?.partner_job_id,
     requestedByEmail: identity.email,
     current: null,
   })
 }
 
-export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<void> {
+export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: Omit<IJobOfferApiWriteV3, "identifier">): Promise<void> {
   const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
 
   // TODO: Move to authorisation service
