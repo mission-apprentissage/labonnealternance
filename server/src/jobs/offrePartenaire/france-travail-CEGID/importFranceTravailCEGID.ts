@@ -7,7 +7,7 @@ import config from "@/config"
 import { importFromStreamInJson } from "@/jobs/offrePartenaire/importFromStreamInJson"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
 import type { IFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
-import { franceTravailCEGIDMapper, ZFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
+import { franceTravailCEGIDMapper, ZCEGIDOfferDetail, ZFranceTravailCEGIDJob } from "./franceTravailCEGIDMapper"
 import { parseAgences } from "./mappingAgences"
 
 const rawCollectionName = rawFranceTravailCEGIDModel.collectionName
@@ -62,30 +62,22 @@ export const importFranceTravailCEGIDRaw = async (sourceStream?: NodeJS.Readable
   if (!sourceStream) {
     const token = await getOAuth2Token()
 
-    async function getCEGIDOffers(url: string) {
-      const response = await fetch(url, {
-        headers: {
-          Authorization: `bearer ${token}`,
-        },
-      })
-      if (!response.ok) {
-        throw new Error(`Failed to fetch CEGID offers from ${url}: ${response.status} ${response.statusText}`)
-      }
-      const json = await response.json()
-      const parsedJson = ZJsonFile.parse(json)
-      const {
-        data,
-        _pagination: { links },
-      } = parsedJson
-      const nextUrl = links.find((link) => link.rel === "next")?.href
-      return { nextUrl, offers: data }
-    }
     let offers: IFranceTravailCEGIDJob[] = []
-    let nextUrl: string | undefined = `${baseUrl}/V2/offersummaries?count=100`
-    while (nextUrl) {
-      const result = await getCEGIDOffers(nextUrl)
-      nextUrl = result.nextUrl
-      offers = offers.concat(result.offers.filter((offer) => validContractTypes.includes(offer.contractType?.label ?? "")))
+    let nextSearchUrl: string | undefined = `${baseUrl}/V2/offersummaries?count=100`
+    while (nextSearchUrl) {
+      const searchResult = await searchCEGIDOffers(nextSearchUrl, token)
+      nextSearchUrl = searchResult.nextUrl
+      const selectedOffers = searchResult.offers.filter((offer) => validContractTypes.includes(offer.contractType?.label ?? ""))
+      const enrichedOffers = await Promise.all(
+        selectedOffers.map(async (offer) => {
+          const detailLink = offer._links.find((link) => link.rel === "detail")
+          if (detailLink) {
+            offer.details = await getCEGIDOfferDetail(detailLink.href, token)
+          }
+          return offer
+        })
+      )
+      offers = offers.concat(enrichedOffers)
     }
 
     sourceStream = stringToStream(JSON.stringify(offers))
@@ -107,11 +99,52 @@ export const importFranceTravailCEGIDToComputed = async () => {
     collectionSource: rawCollectionName,
     partnerLabel: JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
     zodInput: ZFranceTravailCEGIDJob,
-    mapper: (job) => franceTravailCEGIDMapper(job, agences),
+    mapper: (job) => franceTravailCEGIDMapper(job, { agences }),
   })
 }
 
 export const processFranceTravailCEGID = async () => {
   await importFranceTravailCEGIDRaw()
   await importFranceTravailCEGIDToComputed()
+}
+
+async function searchCEGIDOffers(url: string, token: string) {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `bearer ${token}`,
+    },
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to fetch CEGID offers from ${url}: ${response.status} ${response.statusText}`)
+  }
+  const json = await response.json()
+  const parsedJson = ZJsonFile.parse(json)
+  const {
+    data,
+    _pagination: { links },
+  } = parsedJson
+  const nextUrl = links.find((link) => link.rel === "next")?.href
+  return { nextUrl, offers: data }
+}
+
+async function getCEGIDOfferDetail(url: string, token: string) {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `bearer ${token}`,
+    },
+  })
+  if (!response.ok) {
+    throw new Error(`Failed to fetch CEGID offer detail from ${url}: ${response.status} ${response.statusText}`)
+  }
+  const json = await response.json()
+  const parseResult = ZCEGIDOfferDetail.safeParse(json)
+  if (parseResult.success) {
+    return parseResult.data
+  } else {
+    console.warn("Failed to parse CEGID offer detail", {
+      url,
+      error: parseResult.error,
+    })
+    return null
+  }
 }
