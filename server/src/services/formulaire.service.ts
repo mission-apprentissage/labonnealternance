@@ -242,11 +242,15 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
   const formations = await getCatalogueFormations(
     {
-      $or: [{ etablissement_gestionnaire_id: { $in: etablissementCatalogueIds } }, { etablissement_formateur_id: { $in: etablissementCatalogueIds } }],
+      $and: [
+        { $or: [{ etablissement_gestionnaire_id: { $in: etablissementCatalogueIds } }, { etablissement_formateur_id: { $in: etablissementCatalogueIds } }] },
+        { $or: [{ etablissement_formateur_courriel: { $nin: [null, ""] } }, { etablissement_gestionnaire_courriel: { $nin: [null, ""] } }] },
+      ],
       catalogue_published: true,
     },
     {
       etablissement_gestionnaire_courriel: 1,
+      etablissement_formateur_courriel: 1,
       etablissement_formateur_siret: 1,
       etablissement_gestionnaire_id: 1,
       etablissement_formateur_id: 1,
