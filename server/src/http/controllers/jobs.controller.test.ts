@@ -12,10 +12,10 @@ describe("jobs.controller", () => {
   const httpClient = useServer()
 
   describe("GET /v1/_private/jobs/min", () => {
-    it("retourne 500 avec wrong_parameters si caller et romes sont absents", async () => {
+    it("retourne 400 avec wrong_parameters si caller et romes sont absents", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v1/_private/jobs/min" })
 
-      expect(response.statusCode).toBe(500)
+      expect(response.statusCode).toBe(400)
       expect(response.json().error).toBe("wrong_parameters")
     })
 
