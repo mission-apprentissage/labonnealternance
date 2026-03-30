@@ -1,0 +1,86 @@
+import { PAGES } from "@/utils/routes.utils"
+
+export const IMAGE_BASE_PATH = "/images/guides/guide-alternant/"
+
+export const ARTICLES: Record<string, { id: string; title: string; description: string; imageUrl?: string; path: string; updatedAt: string }> = {
+  ["preparer-son-projet-en-alternance"]: {
+    id: "preparer-son-projet-en-alternance",
+    title: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.title,
+    description: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}preparer-son-projet-en-alternance.svg`,
+    path: PAGES.static.guideAlternantPreparerSonProjetEnAlternance.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["se-faire-accompagner"]: {
+    id: "se-faire-accompagner",
+    title: PAGES.static.guideAlternantSeFaireAccompagner.title,
+    description: PAGES.static.guideAlternantSeFaireAccompagner.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}se-faire-accompagner.svg`,
+    path: PAGES.static.guideAlternantSeFaireAccompagner.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["la-rupture-de-contrat"]: {
+    id: "la-rupture-de-contrat",
+    title: PAGES.static.guideAlternantLaRuptureDeContrat.title,
+    description: PAGES.static.guideAlternantLaRuptureDeContrat.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}la-rupture-de-contrat.svg`,
+    path: PAGES.static.guideAlternantLaRuptureDeContrat.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["comprendre-la-remuneration"]: {
+    id: "comprendre-la-remuneration",
+    title: PAGES.static.guideAlternantComprendreLaRemuneration.title,
+    description: PAGES.static.guideAlternantComprendreLaRemuneration.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}comprendre-la-remuneration.svg`,
+    path: PAGES.static.guideAlternantComprendreLaRemuneration.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["comment-signer-un-contrat-en-alternance"]: {
+    id: "comment-signer-un-contrat-en-alternance",
+    title: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.title,
+    description: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}comment-signer-un-contrat-en-alternance.svg`,
+    path: PAGES.static.guideAlternantCommentSignerUnContratEnAlternance.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"]: {
+    id: "role-et-missions-du-maitre-d-apprentissage-ou-tuteur",
+    title: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.title,
+    description: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}role-et-missions-du-maitre-d-apprentissage-ou-tuteur.svg`,
+    path: PAGES.static.guideAlternantRoleEtMissionsDuMaitreDApprentissageOuTuteur.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["simulateur"]: {
+    id: "simulateur",
+    title: "Je calcule ma rémunération",
+    description: "Répondez à quelques questions pour connaître votre future rémunération en alternance",
+    imageUrl: `${IMAGE_BASE_PATH}simulateur.svg`,
+    path: PAGES.static.salaireAlternant.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["a-propos-des-formations"]: {
+    id: "a-propos-des-formations",
+    title: "À propos des formations",
+    description: "Informations sur les formations en alternance",
+    imageUrl: `${IMAGE_BASE_PATH}a-propos-des-formations.svg`,
+    path: PAGES.static.guideAlternantAProposDesFormations.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["conseils-et-astuces-pour-trouver-un-employeur"]: {
+    id: "conseils-et-astuces-pour-trouver-un-employeur",
+    title: "Conseils et astuces pour trouver un employeur",
+    description: "Astuces pour réussir votre recherche d'employeur en alternance",
+    imageUrl: `${IMAGE_BASE_PATH}conseils-et-astuces-pour-trouver-un-employeur.svg`,
+    path: PAGES.static.guideAlternantConseilsEtAstucesPourTrouverUnEmployeur.getPath(),
+    updatedAt: "26/03/2026",
+  },
+  ["les-aides-financieres-et-materielles"]: {
+    id: "les-aides-financieres-et-materielles",
+    title: "Les aides financières et matérielles",
+    description: "Découvrez les différentes aides financières et matérielles disponibles pour les alternants",
+    imageUrl: `${IMAGE_BASE_PATH}les-aides-financieres-et-materielles.svg`,
+    path: PAGES.static.guideAlternantLesAidesFinancieresEtMaterielles.getPath(),
+    updatedAt: "26/03/2026",
+  },
+}

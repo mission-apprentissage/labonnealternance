@@ -20,7 +20,7 @@ export default async function HomeLayout({ children }: PropsWithChildren) {
         ]}
       />
       <ClientOnly>
-        <PublicHeader user={user} hideConnectionButton={true} />
+        <PublicHeader user={user} />
       </ClientOnly>
       {children}
       <Footer />

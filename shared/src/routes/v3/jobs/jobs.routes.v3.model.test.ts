@@ -116,6 +116,9 @@ type IJobOfferApiWriteV3Expected = {
     description?: string | null
     location?: { address?: string | null } | null
   }
+  identifier?: {
+    partner_job_id: string
+  }
 }
 
 type IJobRecruiterApiReadV3Output = z.output<typeof zJobRecruiterApiReadV3>
