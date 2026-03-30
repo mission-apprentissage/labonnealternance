@@ -42,7 +42,7 @@
     "api-alternance-sdk": "^2.14.0",
     "axios": "^1.13.2",
     "axios-cache-interceptor": "^1.8.3",
-    "basic-ftp": "^5.1.0",
+    "basic-ftp": "^5.2.0",
     "bson": "^6.10.4",
     "bunyan": "^1.8.15",
     "burner-email-providers": "^1.0.67",
