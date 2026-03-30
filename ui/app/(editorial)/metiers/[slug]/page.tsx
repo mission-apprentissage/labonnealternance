@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { redirect } from "next/navigation"
 import path from "path"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -43,7 +43,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
   const relatedMetier = getMetierBySlug(metiers, slug)
 
   if (!relatedMetier) {
-    notFound()
+    redirect("/404")
   }
   return (
     <Box>
