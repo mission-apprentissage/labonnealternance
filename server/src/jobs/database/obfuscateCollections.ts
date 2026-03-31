@@ -4,6 +4,7 @@ import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { modelToKeep } from "shared/models/model-to-keep.model"
 import type { CollectionName } from "shared/models/models"
 import { modelDescriptors } from "shared/models/models"
@@ -145,9 +146,31 @@ const fakeJobPartner: Partial<IJobsPartnersOfferPrivate> = {
 const obfuscatePartnerJobs = async () => {
   logger.info(`obfuscating jobs_partners`)
   await getDbCollection("jobs_partners").updateMany(
-    {},
+    { partner_label: { $nin: [JOBPARTNERS_LABEL.RECRUTEURS_LBA] } },
     {
       $set: fakeJobPartner,
+    }
+  )
+}
+
+const obfuscateRecruteursLba = async () => {
+  logger.info(`obfuscating jobs_partners`)
+  await getDbCollection("jobs_partners").updateMany(
+    { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: { $not: { $eq: null } } },
+    {
+      $set: {
+        apply_email: fakeEmail,
+        apply_phone: "0601010807",
+      },
+    }
+  )
+
+  await getDbCollection("jobs_partners").updateMany(
+    { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: null },
+    {
+      $set: {
+        apply_phone: "0601012020",
+      },
     }
   )
 }
@@ -353,6 +376,8 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateApplications()
   await obfuscatePartnerJobs()
   await reduceRecruteursLba()
+  await obfuscateRecruteursLba()
+
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateElligibleTrainingsForAppointment()

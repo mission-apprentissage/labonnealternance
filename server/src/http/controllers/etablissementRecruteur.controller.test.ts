@@ -45,6 +45,7 @@ describe("POST /etablissement/creation", () => {
       .reply(200, {
         features: [
           {
+            type: "Feature",
             geometry: parisFixture.centre,
             properties: generateFeaturePropertyFixture({ city: parisFixture.nom, postcode: parisFixture.codesPostaux[0], name: "20 AVENUE DE SEGUR" }),
           },

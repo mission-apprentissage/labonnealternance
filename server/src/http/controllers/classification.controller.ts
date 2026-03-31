@@ -13,6 +13,7 @@ type IModelTraining = {
   workplace_description: string
   offer_title: string
   offer_description: string
+  human_verified: boolean
 }
 
 export const classificationRoutes = (server: Server) => {
@@ -44,6 +45,35 @@ export const classificationRoutes = (server: Server) => {
             workplace_description: "$job.workplace_description",
             offer_title: "$job.offer_title",
             offer_description: "$job.offer_description",
+            human_verified: { $literal: true },
+          },
+        },
+      ])
+      .toArray()) as IModelTraining[]
+
+    const resultCacheClassificationPublished = (await getDbCollection("cache_classification")
+      .aggregate([
+        { $match: { "scores.publish": 1, classification: "publish", human_verification: { $in: [null, ""] } } },
+        { $limit: 25_000 },
+        {
+          $lookup: {
+            from: "jobs_partners",
+            localField: "partner_job_id",
+            foreignField: "partner_job_id",
+            as: "job",
+          },
+        },
+        { $unwind: "$job" },
+        {
+          $project: {
+            _id: 0,
+            partner_job_id: 1,
+            label: { $literal: "publish" },
+            workplace_name: "$job.workplace_name",
+            workplace_description: "$job.workplace_description",
+            offer_title: "$job.offer_title",
+            offer_description: "$job.offer_description",
+            human_verified: { $literal: false },
           },
         },
       ])
@@ -67,6 +97,19 @@ export const classificationRoutes = (server: Server) => {
           workplace_description: workplace_description || "",
           offer_title: offer_title || "",
           offer_description: offer_description || "",
+          human_verified: false,
+        })
+      }
+    }
+
+    for (const result of resultCacheClassificationPublished) {
+      if (!deduplicatedResults.has(result.partner_job_id)) {
+        deduplicatedResults.set(result.partner_job_id, {
+          ...result,
+          workplace_name: result.workplace_name || "",
+          workplace_description: result.workplace_description || "",
+          offer_title: result.offer_title || "",
+          offer_description: result.offer_description || "",
         })
       }
     }

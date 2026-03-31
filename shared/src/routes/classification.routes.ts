@@ -15,6 +15,7 @@ export const zClassificationRoute = {
             workplace_description: z.string().nullable(),
             offer_title: z.string(),
             offer_description: z.string(),
+            human_verified: z.boolean(),
           })
         ),
       },

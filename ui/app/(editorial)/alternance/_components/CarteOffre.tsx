@@ -34,8 +34,8 @@ const CarteOffre = ({ card, utmParams }) => {
               px: fr.spacing("2v"),
               py: fr.spacing("1v"),
               "& > *": {
-                marginRight: "4px",
-                marginBottom: "4px",
+                marginRight: fr.spacing("1v"),
+                marginBottom: fr.spacing("1v"),
                 minWidth: "fit-content",
               },
             }}
