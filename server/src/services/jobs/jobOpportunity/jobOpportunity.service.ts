@@ -965,7 +965,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED]: "The offer is blacklisted as a training entity",
   [JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY]: "The company is closed",
   [JOB_PARTNER_BUSINESS_ERROR.DUPLICATE]: "The offer is considered as a duplicate of another published offer",
-  [JOB_PARTNER_BUSINESS_ERROR.FLUX_JOB_DUPLICATE]: "The offer is second hand duplicate of the primary job partner",
+  [JOB_PARTNER_BUSINESS_ERROR.FLUX_JOB_DUPLICATE]: "The offer is a duplicate from a secondary source of the primary job partner",
   [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
   [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
   [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
