@@ -35,7 +35,7 @@ export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
   "GRDF",
   "Institut Pasteur",
   "L’Oreal",
-  "La poste",
+  JOBPARTNERS_LABEL.LAPOSTE,
   "Formaposte",
   "Serpe",
   "Thales",
