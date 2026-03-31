@@ -254,6 +254,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       etablissement_formateur_adresse: 1,
       etablissement_formateur_code_postal: 1,
       etablissement_formateur_localite: 1,
+      etablissement_formateur_courriel: 1,
     }
   )
 
