@@ -37,7 +37,7 @@ exports[`etudiantJobToJobsPartners > maps a job to a computed job partner 1`] = 
   "updated_at": 2024-07-21T02:49:06.000Z,
   "validated": false,
   "workplace_address_city": "Paris",
-  "workplace_address_label": "1 Rue de la Paix Paris Paris Île-de-France France",
+  "workplace_address_label": "Paris",
   "workplace_address_street_label": "Rue de la Paix",
   "workplace_address_zipcode": null,
   "workplace_brand": null,

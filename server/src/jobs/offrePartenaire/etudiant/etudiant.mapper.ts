@@ -37,15 +37,6 @@ export const etudiantJobToJobsPartners = (job: IJobEtudiantJob): IComputedJobsPa
     business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
   }
 
-  const addressParts = [
-    job.location.address_nbr,
-    job.location.address,
-    job.location.city,
-    job.location.administrative_area_department,
-    job.location.administrative_area_region,
-    job.location.country,
-  ].filter(Boolean)
-
   return {
     ...blankComputedJobPartner(now),
     _id: new ObjectId(),
@@ -56,7 +47,7 @@ export const etudiantJobToJobsPartners = (job: IJobEtudiantJob): IComputedJobsPa
     workplace_name: job.company.name,
     workplace_website: null,
     workplace_description: buildWorkplaceDescription(job.description),
-    workplace_address_label: addressParts.length > 0 ? addressParts.join(" ") : null,
+    workplace_address_label: job.location.city || null,
     workplace_address_street_label: job.location.address || null,
     workplace_address_zipcode: null,
     workplace_address_city: job.location.city || null,
