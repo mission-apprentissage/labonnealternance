@@ -3,6 +3,7 @@ import nock from "nock"
 import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { describe, expect, it, vi } from "vitest"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { TJobClassification } from "@/services/cacheClassification.service"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
 import { nockLabClassification } from "./classification.client.fixture"
@@ -47,5 +48,18 @@ describe("getLabClassification - get batch classification", () => {
 
     expect(await getClassificationFromLab([payload])).toEqual([apiResponse[0].label])
     expect(nock.isDone()).toBe(true)
+  })
+
+  it("should store model and created_at in cache when saving classification", async () => {
+    const before = new Date()
+    nockLabClassification([apiPayload], apiResponse)
+
+    await getClassificationFromLab([payload])
+
+    const cached = await getDbCollection("cache_classification").findOne({ partner_job_id: jobFixture.partner_job_id })
+    expect(cached).not.toBeNull()
+    expect(cached!.model).toBe("model")
+    expect(cached!.created_at).toBeInstanceOf(Date)
+    expect(cached!.created_at!.getTime()).toBeGreaterThanOrEqual(before.getTime())
   })
 })
