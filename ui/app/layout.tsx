@@ -19,6 +19,9 @@ import "@/styles/search.css"
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.baseUrl),
   manifest: "/favicon/site.webmanifest",
+  alternates: {
+    canonical: "./",
+  },
 }
 
 setupZodErrorMap()
