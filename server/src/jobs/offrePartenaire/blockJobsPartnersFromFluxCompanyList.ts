@@ -1,7 +1,8 @@
 import type { Filter } from "mongodb"
+import { stringNormaliser } from "shared"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPANIES_TO_EXCLUDE_FROM_FLUX, COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { isNormalizedStringInSetOrArray, stringNormaliser } from "@/common/utils/stringUtils"
+import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
