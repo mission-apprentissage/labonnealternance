@@ -2,6 +2,7 @@ import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { logger } from "@/common/logger"
+import { blockJobsPartnersFromFluxCompanyList } from "@/jobs/offrePartenaire/blockJobsPartnersFromFluxCompanyList"
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
 import { blockJobsPartnersWithNaf85 } from "./blockJobsPartnersWithNaf85"
@@ -30,6 +31,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
   await fillEntrepriseEngagementComputedJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
+  await blockJobsPartnersFromFluxCompanyList(context)
   await blockJobsPartnersFromCfaList(context)
   await detectClassificationJobsPartners(context)
 
