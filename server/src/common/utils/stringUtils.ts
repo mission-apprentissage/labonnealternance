@@ -1,6 +1,6 @@
 import he from "he"
 import sanitizeHtml from "sanitize-html"
-import { removeAccents } from "shared"
+import { stringNormaliser } from "shared"
 
 export const sanitizeTextField = (text: string | null | undefined, keepFormat: boolean = false) => {
   if (!text) return ""
@@ -11,13 +11,6 @@ export const sanitizeTextField = (text: string | null | undefined, keepFormat: b
   // Decode HTML entities once, then sanitize to remove dangerous content
   const decodedText = he.decode(text).trim()
   return sanitizeHtml(decodedText, sanitizeOptions)
-}
-
-export const stringNormaliser = (str: string): string => {
-  return removeAccents(str.toLowerCase())
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ")
 }
 
 export const isNormalizedStringInSetOrArray = (str: string | null | undefined, set: Set<string>, tableau: string[]) => {

@@ -2,7 +2,7 @@ import { z } from "zod"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-
+import { stringNormaliser } from "../utils/stringUtils.js"
 import type { IModelDescriptor } from "./common.js"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
@@ -34,12 +34,15 @@ export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
   "Framatome",
   "GRDF",
   "Institut Pasteur",
-  "L’Oreal",
+  "L’Oréal",
   JOBPARTNERS_LABEL.LAPOSTE,
   "Formaposte",
   "Serpe",
-  "Thales",
+  "Thalès",
 ]
+
+export const normalizedFluxList: string[] = COMPANIES_TO_EXCLUDE_FROM_FLUX.map(stringNormaliser)
+export const normalizedFluxSet: Set<string> = new Set(normalizedFluxList)
 
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",

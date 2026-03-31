@@ -1,4 +1,5 @@
-import { isNormalizedStringInSetOrArray, stringNormaliser } from "@/common/utils/stringUtils"
+import { stringNormaliser } from "shared"
+import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 
 const cfaCompanyList = [
   "13 EN FORM",
