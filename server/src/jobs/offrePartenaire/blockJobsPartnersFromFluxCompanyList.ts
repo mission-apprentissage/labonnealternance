@@ -18,7 +18,7 @@ const hasBlockedFluxCompanyMention = ({ workplace_name, workplace_legal_name }: 
 export const blockJobsPartnersFromFluxCompanyList = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
 
-  const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: PARTNER_WHITELIST } }]
+  const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: COMPANIES_TO_EXCLUDE_FROM_FLUX } }]
   if (addedMatchFilter) {
     filters.push(addedMatchFilter)
   }

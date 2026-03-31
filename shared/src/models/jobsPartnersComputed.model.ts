@@ -27,7 +27,7 @@ export const PARTNER_WHITELIST: string[] = [
 ]
 
 export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
-  "Decathlon",
+  JOBPARTNERS_LABEL.DECATHLON,
   "EDF",
   "Engie",
   "Enedis",

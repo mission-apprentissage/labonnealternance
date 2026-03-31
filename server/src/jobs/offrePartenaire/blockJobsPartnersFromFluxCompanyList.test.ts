@@ -28,7 +28,7 @@ describe("blockJobsPartnersFromFluxCompanyList", () => {
   it('should block the offer when workplace_name is "Décathlon"', async () => {
     await givenSomeComputedJobPartners([
       {
-        workplace_name: "Décathlon",
+        workplace_name: "Décathlon et associés",
         business_error: null,
       },
     ])
@@ -44,7 +44,7 @@ describe("blockJobsPartnersFromFluxCompanyList", () => {
   it('should block the offer when workplace_name is "Institut Pasteur"', async () => {
     await givenSomeComputedJobPartners([
       {
-        workplace_name: "Institut Pasteur",
+        workplace_name: "go Institut Pasteur",
         business_error: null,
       },
     ])
