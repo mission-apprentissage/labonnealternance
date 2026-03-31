@@ -1,4 +1,4 @@
-import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
+import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { typedKeys } from "../utils/objectUtils.js"
@@ -126,6 +126,20 @@ export const zDiplomaParam = z
   })
 
 export type IDiplomaParam = z.output<typeof zDiplomaParam>
+
+const typesEmploi = typedKeys(TYPE_EMPLOI_OPTIONS)
+const zTypeEmploi = z.enum([typesEmploi[0], ...typesEmploi.slice(1)])
+
+export const zTypesEmploiParam = z
+  .array(zTypeEmploi)
+  .optional()
+  .openapi({
+    param: {
+      description: "Les types d'offres d'emploi sélectionnés",
+    },
+  })
+
+export type ITypesEmploiParam = z.output<typeof zTypesEmploiParam>
 
 export const zOpcoParams = z
   .string()

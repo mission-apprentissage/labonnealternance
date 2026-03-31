@@ -9,6 +9,7 @@ import { RechercheNiveauSelectFormik } from "@/app/(candidat)/(recherche)/recher
 import { RechercheRayonSelectFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheRayonSelect"
 import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheResultTypeCheckbox"
 import { RechercheSubmitButton } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheSubmitButton"
+import { RechercheTypesEmploiSelectFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheTypeEmploiSelect"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -32,6 +33,7 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
         lieuInput={<RechercheLieuAutocomplete />}
         rayonSelect={<RechercheRayonSelectFormik />}
         niveauSelect={<RechercheNiveauSelectFormik />}
+        typesOffresEmploiSelect={<RechercheTypesEmploiSelectFormik rechercheResults={rechercheResults} />}
         handicapCheckbox={<RechercheElligibleHandicapCheckboxFormik rechercheParams={rechercheParams} />}
         submitButton={<RechercheSubmitButton forceMobileStyle={true}>C’est parti</RechercheSubmitButton>}
       />

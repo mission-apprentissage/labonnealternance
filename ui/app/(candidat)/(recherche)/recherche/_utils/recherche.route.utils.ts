@@ -1,8 +1,9 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
 import { typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
-import { zDiplomaParam } from "shared/routes/_params"
+import type { ITypeEmploi } from "shared/constants/recruteur"
+import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
+import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -70,6 +71,7 @@ const zRecherchePageParams = z.object({
     .nullable(),
   radius: z.number(),
   diploma: zDiplomaParam.nullish(),
+  typesEmploi: zTypesEmploiParam.nullish(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
   displayMap: z.boolean().optional(),
@@ -126,6 +128,9 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
 
   if (rechercheParams.diploma) {
     query.set("diploma", rechercheParams.diploma)
+  }
+  if (rechercheParams.typesEmploi?.length > 0) {
+    query.set("typesEmploi", rechercheParams.typesEmploi.join(","))
   }
   if (rechercheParams.job_name) {
     query.set("job_name", rechercheParams.job_name)
@@ -204,6 +209,8 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const radius = parseInt(search.get("radius") ?? "30", 10)
   const diploma = typedKeys(NIVEAUX_POUR_LBA).find((x) => x === search.get("diploma")) || null
+  const allTypeEmploiKeys = typedKeys(TYPE_EMPLOI_OPTIONS)
+  const typesEmploi = (search.get("typesEmploi") ?? "").split(",").filter((v): v is ITypeEmploi => allTypeEmploiKeys.includes(v as ITypeEmploi))
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 
@@ -222,6 +229,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     diploma,
     job_name,
     job_type,
+    typesEmploi,
     displayMap,
     displayMobileForm,
     elligibleHandicapFilter,

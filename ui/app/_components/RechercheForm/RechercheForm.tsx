@@ -3,6 +3,7 @@
 import { Box } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { Formik } from "formik"
+import type { ITypeEmploi } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { zDiplomaParam } from "shared/routes/_params"
 import { z } from "zod"
@@ -30,6 +31,7 @@ const ZRechercheForm = z.object({
   displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
   radius: z.string().nullish(),
   diploma: zDiplomaParam.nullish(),
+  typesEmploi: z.array(z.string()).nullish(),
   elligibleHandicapFilter: z.boolean().nullish(),
 })
 
@@ -50,7 +52,7 @@ const validate = (zodSchema: z.AnyZodObject) => (values: IRechercheForm) => {
 }
 
 export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRechercheForm>): Partial<IRecherchePageParams> => {
-  const { displayedItemTypes, lieu, metier, diploma, radius, elligibleHandicapFilter } = rechercheForm
+  const { displayedItemTypes, lieu, metier, diploma, radius, typesEmploi, elligibleHandicapFilter } = rechercheForm
   return {
     displayEntreprises: displayedItemTypes?.includes(UserItemTypes.EMPLOI),
     displayFormations: displayedItemTypes?.includes(UserItemTypes.FORMATIONS),
@@ -66,6 +68,7 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
     job_name: metier?.label,
     job_type: metier?.type,
     diploma,
+    typesEmploi: (typesEmploi as ITypeEmploi[]) ?? [],
     elligibleHandicapFilter,
   }
 }
@@ -96,6 +99,7 @@ export const rechercheParamsToRechercheForm = (rechercheParams: Partial<IRecherc
     displayedItemTypes,
     radius: rechercheParams?.radius?.toString() ?? "",
     diploma: rechercheParams?.diploma || null,
+    typesEmploi: rechercheParams?.typesEmploi ?? [],
     elligibleHandicapFilter: rechercheParams.elligibleHandicapFilter,
   }
   return rechercheForm

@@ -11,6 +11,7 @@ import type {
   IQuery,
   IResponse,
 } from "shared"
+import type { ITypeEmploi } from "shared/constants/recruteur"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
@@ -123,8 +124,6 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
     staleTime: 1000 * 60 * 60,
   })
 
-  const displayPartenariats = rechercheParams.displayEntreprises && rechercheParams.displayFormations
-
   const jobQueryResult = useMemo(() => {
     const queryStatus = getQueryStatus(jobQuery, isJobsEnabled)
     if (queryStatus === "disabled") {
@@ -146,16 +145,9 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
     if (jobData) {
       if (jobData.lbaJobs && "results" in jobData.lbaJobs) {
         lbaJobs.push(
-          ...(jobData.lbaJobs.results as any[])
-            .filter((job: ILbaItemLbaJob) => {
-              if (job.company.mandataire) {
-                return displayPartenariats
-              }
-              return rechercheParams.displayEntreprises
-            })
-            .sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
-              return a.place.distance - b.place.distance
-            })
+          ...(jobData.lbaJobs.results as any[]).sort((a: ILbaItemLbaJob, b: ILbaItemLbaJob) => {
+            return a.place.distance - b.place.distance
+          })
         )
       }
       if (rechercheParams.displayEntreprises && jobData.partnerJobs && "results" in jobData.partnerJobs) {
@@ -184,7 +176,7 @@ function useJobQuery(rechercheParams: IRecherchePageParams | null) {
             : null,
     }
     return jobQueryResult
-  }, [isJobsEnabled, jobQuery, rechercheParams.displayEntreprises, displayPartenariats])
+  }, [isJobsEnabled, jobQuery, rechercheParams.displayEntreprises])
   return { jobQueryResult }
 }
 
@@ -241,6 +233,24 @@ function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
   return { formationQueryResult }
 }
 
+export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson
+
+export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): boolean {
+  switch (typeEmploi) {
+    case "OFFRES_LBA_PARTNERS":
+      return job.ideaType === "offres_emploi_lba" || job.ideaType === "offres_emploi_partenaires"
+    case "OFFRES_MANDATEES":
+      return job.ideaType === "offres_emploi_lba" && "job" in job && job.job?.isDelegated === true
+    case "ENTREPRISES_ALGO":
+      return job.ideaType === "lba"
+  }
+}
+
+function filterJobsByTypesEmploi(jobs: DisplayedJob[], typesEmploi: ITypeEmploi[] | null | undefined): DisplayedJob[] {
+  if (!typesEmploi || typesEmploi.length === 0) return jobs
+  return jobs.filter((job) => typesEmploi.some((type) => matchesTypeEmploi(job, type)))
+}
+
 export function useRechercheResults(rechercheParams: IRecherchePageParams | null): IUseRechercheResults {
   const { jobQueryResult: allJobQueryResult } = useJobQuery({ ...rechercheParams, elligibleHandicapFilter: false })
   const { jobQueryResult: handicapJobQueryResult } = useJobQuery({ ...rechercheParams, elligibleHandicapFilter: true })
@@ -252,11 +262,13 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
     const allJobs = [...allJobQueryResult.lbaJobs, ...allJobQueryResult.partnerJobs, ...allJobQueryResult.lbaCompanies]
     const handicapJobs = [...handicapJobQueryResult.lbaJobs, ...handicapJobQueryResult.partnerJobs, ...handicapJobQueryResult.lbaCompanies]
 
-    const displayedJobs: Array<ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson> = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
+    const unfilteredJobs: DisplayedJob[] = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
+    const displayedJobs = filterJobsByTypesEmploi(unfilteredJobs, rechercheParams.typesEmploi)
+    const displayedHandicapJobs = filterJobsByTypesEmploi(handicapJobs, rechercheParams.typesEmploi)
 
     const displayedFormations = rechercheParams.elligibleHandicapFilter ? [] : formationQueryResult.formations
 
-    const elligibleHandicapCount = handicapJobs.length
+    const elligibleHandicapCount = displayedHandicapJobs.length
 
     const result: IUseRechercheResults = {
       status: reduceQueryStatus([selectedJobQuery.status, formationQueryResult.status]),
@@ -268,7 +280,7 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
       elligibleHandicapCount,
     }
     return result
-  }, [rechercheParams.elligibleHandicapFilter, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
+  }, [rechercheParams.elligibleHandicapFilter, rechercheParams.typesEmploi, handicapJobQueryResult, allJobQueryResult, formationQueryResult])
 
   return result
 }

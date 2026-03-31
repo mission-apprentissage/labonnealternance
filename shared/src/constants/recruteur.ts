@@ -134,3 +134,11 @@ export const RECRUITER_USER_ORIGIN = {
   portailalternance: "Portail de l'alternance",
   "1J1S": "1 jeune 1 solution",
 }
+
+export const TYPE_EMPLOI_OPTIONS = {
+  OFFRES_LBA_PARTNERS: "Offre d'emploi en alternance",
+  OFFRES_MANDATEES: "Offre d'emploi avec formation incluse",
+  ENTREPRISES_ALGO: "Candidatures spontanées",
+} as const
+
+export type ITypeEmploi = keyof typeof TYPE_EMPLOI_OPTIONS

@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-
+import { isCfaEntreprise } from "shared/services/isCfaEntreprise"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { CustomTooltip } from "@/app/(espace-pro)/_components/CustomTooltip"
 import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagementTag"
@@ -10,7 +10,6 @@ import { TagCfaDEntreprise } from "@/components/ItemDetail/TagCfaDEntreprise"
 import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-import { isCfaEntreprise } from "@/services/cfaEntreprise"
 
 export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILbaItem, "ideaType" | "company" | "id">; displayTooltips?: boolean }) {
   const { ideaType, company } = item

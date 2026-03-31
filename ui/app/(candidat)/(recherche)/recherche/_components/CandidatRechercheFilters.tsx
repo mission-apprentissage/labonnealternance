@@ -3,7 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useCallback } from "react"
+import { RechercheTypesEmploiSelect } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheTypeEmploiSelect"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { RechercheElligibleHandicapCheckbox } from "./RechercheInputs/RechercheElligibleHandicapCheckbox"
@@ -12,7 +14,8 @@ import { RechercheRayonSelect } from "./RechercheInputs/RechercheRayonSelect"
 import { RechercheToggleMap } from "./RechercheInputs/RechercheToggleMap"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, diploma, radius, elligibleHandicapFilter } = rechercheParams
+  const { displayMap, diploma, radius, elligibleHandicapFilter, typesEmploi, displayFormations, displayEntreprises } = rechercheParams
+  const rechercheResults = useRechercheResults(rechercheParams)
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
   const onDisplayMapChange = useCallback(
@@ -26,6 +29,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
     <Box
       sx={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "space-between",
       }}
     >
@@ -55,6 +59,15 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
             navigateToRecherchePage({ diploma: newDiploma })
           }}
         />
+        {!(displayFormations && !displayEntreprises) && (
+          <RechercheTypesEmploiSelect
+            rechercheResults={rechercheResults}
+            value={typesEmploi ?? []}
+            onChange={(newTypesEmploi) => {
+              navigateToRecherchePage({ typesEmploi: newTypesEmploi })
+            }}
+          />
+        )}
         <RechercheElligibleHandicapCheckbox
           rechercheParams={rechercheParams}
           value={elligibleHandicapFilter}
@@ -69,7 +82,8 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
       <Box
         sx={{
           alignSelf: "flex-end",
-          marginBottom: fr.spacing("2v"),
+          marginBottom: 0,
+          marginTop: fr.spacing("2v"),
         }}
       >
         <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
@@ -90,15 +104,10 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
         },
         marginTop: fr.spacing("4v"),
         marginBottom: fr.spacing("8v"),
-        paddingLeft: displayMap
-          ? {
-              md: fr.spacing("2v"),
-              lg: fr.spacing("4v"),
-            }
-          : {
-              md: fr.spacing("20v"),
-              lg: fr.spacing("28v"),
-            },
+        paddingLeft: {
+          md: fr.spacing("2v"),
+          lg: fr.spacing("4v"),
+        },
         paddingRight: {
           md: displayMap ? fr.spacing("2v") : fr.spacing("4v"),
           lg: fr.spacing("4v"),
