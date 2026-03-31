@@ -34,7 +34,7 @@ export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
   "Framatome",
   "GRDF",
   "Institut Pasteur",
-  "L’Oreal",
+  "L'Oreal",
   JOBPARTNERS_LABEL.LAPOSTE,
   "Formaposte",
   "Serpe",
