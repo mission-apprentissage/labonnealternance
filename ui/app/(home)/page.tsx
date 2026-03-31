@@ -13,7 +13,8 @@ import { HowTo } from "./_components/HowTo"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
 
 export const metadata: Metadata = {
-  title: "La bonne alternance - Trouvez votre alternance",
+  title: PAGES.static.home.getMetadata().title,
+  description: PAGES.static.home.getMetadata().description,
 }
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
