@@ -253,6 +253,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "hasEmail": {
+            "type": "boolean",
+          },
           "info": {
             "description": "Des informations complémentaires concernant le contact de référence",
             "type": "string",
@@ -284,6 +287,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
         },
+        "required": [
+          "hasEmail",
+        ],
         "type": [
           "object",
           "null",
@@ -4346,6 +4352,18 @@ Limite : 20 appel(s) / 1 seconde(s)
                         "type": "array",
                       },
                     },
+                    "type": "object",
+                  },
+                  "identifier": {
+                    "properties": {
+                      "partner_job_id": {
+                        "description": "Identifiant d'origine de l'offre provenant du partenaire",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "partner_job_id",
+                    ],
                     "type": "object",
                   },
                   "offer": {

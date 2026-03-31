@@ -7,14 +7,14 @@ import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners
 import { defaultFillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
+export const fillRomeForPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext = defaultFillComputedJobsPartnersContext) => {
   const filledFields = ["offer_rome_codes"] as const satisfies (keyof IComputedJobsPartners)[]
 
   const finalFilter: Filter<IComputedJobsPartners> = {
     $and: [
       {
         business_error: null,
-        "offer_rome_codes.0": { $exists: false },
+        $or: [{ offer_rome_codes: { $exists: false } }, { offer_rome_codes: null }, { offer_rome_codes: { $size: 0 } }],
       },
       ...(addedMatchFilter ? [addedMatchFilter] : []),
     ],
@@ -26,6 +26,7 @@ export const fillRomeForPartners = async ({ addedMatchFilter }: FillComputedJobs
     filledFields,
     groupSize: MAX_DIAGORIENTE_PAYLOAD_SIZE,
     replaceMatchFilter: finalFilter,
+    shouldNotifySlack,
     getData: async (documents) => {
       const validDocuments = documents.flatMap((document) => (document.offer_title ? [document] : []))
       const queries = validDocuments.map(({ offer_title, workplace_naf_label, offer_description, _id }) => ({

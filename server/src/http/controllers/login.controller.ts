@@ -28,7 +28,7 @@ export default (server: Server) => {
       const { userId } = req.params
       const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
       if (!user) {
-        return res.status(400).send({ error: true, data: "UNKNOWN" })
+        return res.status(400).send({ error: true, data: "INVALID" })
       }
       const is_email_checked = isUserEmailChecked(user)
       if (is_email_checked) {
@@ -50,7 +50,7 @@ export default (server: Server) => {
       const user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).send({ error: true, data: "UNKNOWN" })
+        return res.status(400).send({ error: true, data: "INVALID" })
       }
       if (isUserDisabled(user)) {
         return res.status(400).send({ error: true, data: "DISABLED" })

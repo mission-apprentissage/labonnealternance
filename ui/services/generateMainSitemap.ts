@@ -8,7 +8,8 @@ import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
-export const mainSitemapLastModificationDate = new Date()
+// Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
+export const mainSitemapLastModificationDate = new Date("2026-03-30T15:00:00.000Z")
 
 export function generateMainSitemap(request: Request) {
   const txtDirectory = path.join(process.cwd(), "config")
@@ -18,15 +19,28 @@ export function generateMainSitemap(request: Request) {
 
   const paths = [
     `/a-propos`,
-    `/acces-recruteur`,
     `/contact`,
     `/developpeurs`,
     `/faq`,
-    `/ressources#recruteur`,
-    `/ressources#candidat`,
-    `/ressources#cfa`,
+    `/guide-alternant`,
+    `/guide-alternant/preparer-son-projet-en-alternance`,
+    `/guide-alternant/se-faire-accompagner`,
+    `/guide-alternant/la-rupture-de-contrat`,
+    `/guide-alternant/comprendre-la-remuneration`,
+    `/guide-alternant/comment-signer-un-contrat-en-alternance`,
+    `/guide-alternant/role-et-missions-du-maitre-d-apprentissage-ou-tuteur`,
+    `/guide-alternant/a-propos-des-formations`,
+    `/guide-alternant/conseils-et-astuces-pour-trouver-un-employeur`,
+    `/guide-alternant/les-aides-financieres-et-materielles`,
+    `/guide-recruteur`,
+    `/guide-recruteur/je-suis-employeur-public`,
+    `/guide-recruteur/cerfa-apprentissage-et-professionnalisation`,
+    `/guide-cfa`,
+    `/guide-cfa/la-carte-etudiant-des-metiers`,
+    `/guide/decouvrir-l-alternance`,
+    `/guide/apprentissage-et-handicap`,
+    `/guide/prevention-des-risques-professionnels-pour-les-apprentis`,
     `/metiers`,
-    `/organisme-de-formation`,
     `/mentions-legales`,
     `/cgu`,
     `/politique-de-confidentialite`,
