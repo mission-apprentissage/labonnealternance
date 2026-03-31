@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PAGES } from "@/utils/routes.utils"
@@ -13,17 +14,20 @@ import { OffresSection } from "./_components/OffresSection"
 import { PreparationSection } from "./_components/PreparationSection"
 import { ProgrammeDiplome } from "./_components/ProgrammeDiplome"
 import { SalaireSection } from "./_components/SalaireSection"
-import { mockDiplomeData } from "./_data/mock"
+import { diplomesData } from "./_data/diplomes"
 
-// TODO: Remplacer par un appel API ou des données statiques
-// TODO: Ajouter la route dans PAGES (routes.utils.ts) quand la page sera finalisée
-function getDiplomeData(_slug: string) {
-  return mockDiplomeData
+function getDiplomeData(slug: string) {
+  return diplomesData[slug] ?? null
+}
+
+export function generateStaticParams() {
+  return Object.keys(diplomesData).map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const data = getDiplomeData(slug)
+  if (!data) return {}
 
   return {
     title: `${data.titre} | La bonne alternance`,
@@ -34,6 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const data = getDiplomeData(slug)
+  if (!data) notFound()
 
   return (
     <Box>

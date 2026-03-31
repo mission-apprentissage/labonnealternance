@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeMetier } from "../_data/types"
 
 import { SectionTitle } from "./SectionTitle"
@@ -35,7 +36,11 @@ export function MetiersSection({ title, text, liste }: { title: string; text: st
               {metier.offres}
             </Typography>
             <Box sx={{ mt: "auto" }}>
-              <Link href={metier.href} className={fr.cx("fr-link" as any, "fr-icon-arrow-right-line" as any, "fr-link--icon-right" as any)} style={{ fontSize: "16px" }}>
+              <Link
+                href={`${metier.href}?${UTM_PARAMS}`}
+                className={fr.cx("fr-link" as any, "fr-icon-arrow-right-line" as any, "fr-link--icon-right" as any)}
+                style={{ fontSize: "16px" }}
+              >
                 Voir les offres
               </Link>
             </Box>

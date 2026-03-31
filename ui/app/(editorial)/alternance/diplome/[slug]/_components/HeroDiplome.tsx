@@ -3,6 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeKpi } from "../_data/types"
 import diplomeDecoration from "./diplome_decoration.svg"
 
@@ -160,7 +161,7 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
 
       {/* CTA centered below KPIs */}
       <Box sx={{ textAlign: "center", mt: fr.spacing("6v"), pb: fr.spacing("2v") }}>
-        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: "/recherche-emploi" }}>
+        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/recherche-emploi?${UTM_PARAMS}` }}>
           Voir toutes les opportunités
         </Button>
       </Box>

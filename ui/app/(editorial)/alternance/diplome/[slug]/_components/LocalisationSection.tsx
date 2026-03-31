@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 import { ArrowRightLine } from "@/theme/components/icons"
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeVille } from "../_data/types"
 import { SectionTitle } from "./SectionTitle"
 
@@ -12,7 +13,7 @@ export function LocalisationSection({ title, text, villes }: { title: string; te
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("4v") }}>
         {villes.map((ville) => (
-          <Link key={ville.name} href={ville.href} style={{ textDecoration: "none" }}>
+          <Link key={ville.name} href={`${ville.href}?${UTM_PARAMS}`} style={{ textDecoration: "none" }}>
             <Box
               sx={{
                 display: "flex",

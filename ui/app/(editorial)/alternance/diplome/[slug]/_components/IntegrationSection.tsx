@@ -3,6 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Tag from "@codegouvfr/react-dsfr/Tag"
 import { Box, Typography } from "@mui/material"
 
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeEtape, IDiplomePrerequis } from "../_data/types"
 
 import { SectionTitle } from "./SectionTitle"
@@ -58,7 +59,7 @@ export function IntegrationSection({ title, prerequis, etapes }: { title: string
             {/* CTA button centered */}
             {etape.ctaLabel && etape.ctaHref && (
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Button priority="primary" size="large" linkProps={{ href: etape.ctaHref }}>
+                <Button priority="primary" size="large" linkProps={{ href: `${etape.ctaHref}?${UTM_PARAMS}` }}>
                   {etape.ctaLabel}
                 </Button>
               </Box>

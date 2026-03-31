@@ -1,9 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
-
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeSalaireLigne } from "../_data/types"
-
 import { SectionTitle } from "./SectionTitle"
 
 export function SalaireSection({
@@ -43,51 +43,54 @@ export function SalaireSection({
     <Box
       sx={{
         py: fr.spacing("12v"),
-        px: { xs: fr.spacing("4v"), md: fr.spacing("30v") },
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
       }}
     >
-      <SectionTitle title={title} highlightedText={titleHighlight} highlightedSuffix={titleSuffix} />
-      <Typography sx={{ fontWeight: 700, fontSize: "22px", lineHeight: "28px", mb: fr.spacing("6v"), color: fr.colors.decisions.text.title.grey.default }}>{texteIntro}</Typography>
+      <DefaultContainer>
+        <SectionTitle title={title} highlightedText={titleHighlight} highlightedSuffix={titleSuffix} />
+        <Typography sx={{ fontWeight: 700, fontSize: "22px", lineHeight: "28px", mb: fr.spacing("6v"), color: fr.colors.decisions.text.title.grey.default }}>
+          {texteIntro}
+        </Typography>
 
-      <Box sx={{ overflowX: "auto", mb: fr.spacing("8v") }}>
-        <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", minWidth: "500px", border: "1px solid #929292" }}>
-          <thead>
-            <tr>
-              <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
-                Âge
-              </Box>
-              <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
-                1ère année
-              </Box>
-              <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
-                2ème année
-              </Box>
-            </tr>
-          </thead>
-          <tbody>
-            {lignes.map((ligne) => (
-              <tr key={ligne.age}>
-                <Box component="td" sx={cellSx}>
-                  {ligne.age}
+        <Box sx={{ overflowX: "auto", mb: fr.spacing("8v") }}>
+          <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", minWidth: "500px", border: "1px solid #929292" }}>
+            <thead>
+              <tr>
+                <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
+                  Âge
                 </Box>
-                <Box component="td" sx={cellSx}>
-                  {ligne.premiereAnnee}
+                <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
+                  1ère année
                 </Box>
-                <Box component="td" sx={cellSx}>
-                  {ligne.deuxiemeAnnee}
+                <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
+                  2ème année
                 </Box>
               </tr>
-            ))}
-          </tbody>
+            </thead>
+            <tbody>
+              {lignes.map((ligne) => (
+                <tr key={ligne.age}>
+                  <Box component="td" sx={cellSx}>
+                    {ligne.age}
+                  </Box>
+                  <Box component="td" sx={cellSx}>
+                    {ligne.premiereAnnee}
+                  </Box>
+                  <Box component="td" sx={cellSx}>
+                    {ligne.deuxiemeAnnee}
+                  </Box>
+                </tr>
+              ))}
+            </tbody>
+          </Box>
         </Box>
-      </Box>
 
-      <Box sx={{ textAlign: "center" }}>
-        <Button priority="secondary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: "/simulateur-alternance" }}>
-          Calculer ma rémunération en alternance
-        </Button>
-      </Box>
+        <Box sx={{ textAlign: "center" }}>
+          <Button priority="secondary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/simulateur-alternance?${UTM_PARAMS}` }}>
+            Calculer ma rémunération en alternance
+          </Button>
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }

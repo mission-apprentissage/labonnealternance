@@ -3,14 +3,13 @@ import Badge from "@codegouvfr/react-dsfr/Badge"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
-
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeEcoleCard } from "../_data/types"
-
 import { SectionTitle } from "./SectionTitle"
 
 function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
   return (
-    <Link href={card.href} style={{ textDecoration: "none", backgroundImage: "none", minWidth: 0 }}>
+    <Link href={`${card.href}?${UTM_PARAMS}`} style={{ textDecoration: "none", backgroundImage: "none", minWidth: 0 }}>
       <Box
         sx={{
           p: fr.spacing("4v"),
@@ -22,7 +21,8 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
           gap: fr.spacing("4v"),
           height: "100%",
           overflow: "hidden",
-          "&:hover": { boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)" },
+          boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+          "&:hover": { backgroundColor: fr.colors.decisions.background.default.grey.hover },
         }}
       >
         <Badge severity="success">Formation</Badge>
@@ -71,7 +71,7 @@ export function EcolesSection({ title, titleHighlight, formations }: { title: st
       </Box>
 
       <Box sx={{ textAlign: "center" }}>
-        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: "/recherche-formation" }}>
+        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/recherche-formation?${UTM_PARAMS}` }}>
           Voir toutes les formations
         </Button>
       </Box>

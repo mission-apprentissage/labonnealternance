@@ -3,13 +3,16 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import Link from "next/link"
 
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+
+import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeRessource } from "../_data/types"
 
 import { SectionTitle } from "./SectionTitle"
 
 function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
   return (
-    <Link href={ressource.href} style={{ textDecoration: "none", flex: 1, backgroundImage: "none" }}>
+    <Link href={`${ressource.href}?${UTM_PARAMS}`} style={{ textDecoration: "none", flex: 1, backgroundImage: "none" }}>
       <Box
         sx={{
           display: "flex",
@@ -51,18 +54,19 @@ export function PreparationSection({ title, titleHighlight, text, ressources }: 
     <Box
       sx={{
         py: fr.spacing("12v"),
-        px: { xs: fr.spacing("4v"), md: fr.spacing("30v") },
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
       }}
     >
-      <SectionTitle title={title} highlightedText={titleHighlight} />
-      <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
+      <DefaultContainer>
+        <SectionTitle title={title} highlightedText={titleHighlight} />
+        <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
 
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v") }}>
-        {ressources.map((ressource) => (
-          <RessourceCard key={ressource.title} ressource={ressource} />
-        ))}
-      </Box>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v") }}>
+          {ressources.map((ressource) => (
+            <RessourceCard key={ressource.title} ressource={ressource} />
+          ))}
+        </Box>
+      </DefaultContainer>
     </Box>
   )
 }
