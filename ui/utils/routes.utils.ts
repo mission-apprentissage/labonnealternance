@@ -34,7 +34,8 @@ export const PAGES = {
       index: true,
       getMetadata: () => ({
         title: "La bonne alternance | Trouvez votre alternance, formation et emploi",
-        description: "Trouvez votre alternance parmi des milliers d’offres d’emploi et de formations. Recherchez par métier et par ville, candidatez en ligne ou en spontané. Service public gratuit.",
+        description:
+          "Trouvez votre alternance parmi des milliers d’offres d’emploi et de formations. Recherchez par métier et par ville, candidatez en ligne ou en spontané. Service public gratuit.",
       }),
     },
     authentification: {
