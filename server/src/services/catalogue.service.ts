@@ -154,6 +154,7 @@ export const getCatalogueEtablissements = async (query: object = {}, select: obj
 export const getNearEtablissementsFromRomes = async ({ rome, origin, limit }: { rome: string[]; origin: { latitude: number; longitude: number }; limit: number }) => {
   const formationQuery: Filter<IFormationCatalogue> = {
     rome_codes: { $in: rome },
+    catalogue_published: true,
     $or: [
       {
         etablissement_formateur_courriel: { $nin: [null, ""] },
