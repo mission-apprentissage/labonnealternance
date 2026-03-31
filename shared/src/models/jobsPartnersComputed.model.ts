@@ -26,9 +26,25 @@ export const PARTNER_WHITELIST: string[] = [
   "La Poste",
 ]
 
+export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
+  "Decathlon",
+  "EDF",
+  "Engie",
+  "Enedis",
+  "Framatome",
+  "GRDF",
+  "Institut Pasteur",
+  "L’Oreal",
+  "La poste",
+  "Formaposte",
+  "Serpe",
+  "Thales",
+]
+
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
   BLOCK_CFA_NAME = "BLOCK_CFA_NAME",
+  FLUX_JOB_DUPLICATE = "FLUX_JOB_DUPLICATE",
   API_SIRET = "api_siret",
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
@@ -56,6 +72,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   ROME_BLACKLISTED = "ROME_BLACKLISTED",
   WRONG_DATA = "WRONG_DATA",
   GEOLOCATION_NOT_FOUND = "GEOLOCATION_NOT_FOUND",
+  FLUX_JOB_DUPLICATE = "FLUX_JOB_DUPLICATE",
 }
 
 export const ZComputedJobsPartnersBase = extensions
