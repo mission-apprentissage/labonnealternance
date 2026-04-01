@@ -1,6 +1,6 @@
 import { removeAccents } from "shared"
 
-export const cfaCompanyList = [
+const cfaCompanyList = [
   "13 EN FORM",
   "1PULSE FORMATION",
   "2 CG",
