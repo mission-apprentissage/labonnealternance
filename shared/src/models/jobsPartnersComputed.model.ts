@@ -22,7 +22,7 @@ export const PARTNER_WHITELIST: string[] = [
   "Framatome",
   "GRDF",
   "Bpifrance",
-  "EDF",
+  JOBPARTNERS_LABEL.EDF,
   "La Poste",
 ]
 

@@ -3,6 +3,7 @@ import { processApec } from "./apec/processApec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/processCleverConnect"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./decathlon/importDecathlon"
+import { processEdf } from "./edf/processEdf"
 import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
@@ -133,6 +134,12 @@ export const importers: Record<string, CronDef> = {
   "Import Decathlon": {
     cron_string: timings.import_source,
     handler: processDecathlon,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import EDF": {
+    cron_string: timings.import_source,
+    handler: processEdf,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
