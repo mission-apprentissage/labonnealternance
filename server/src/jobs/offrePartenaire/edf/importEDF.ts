@@ -1,12 +1,13 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import rawEdfModel from "shared/models/rawEdf.model"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { edfJobToJobsPartners, ZEdfJob } from "./edfMapper"
 
-//const rawCollectionName = rawEdf.collectionName
-const rawCollectionName = "raw_edf"
-const offerXmlTag = "job"
+const rawCollectionName = rawEdfModel.collectionName
+const offerXmlTag = "offer"
 
 export const importEdfRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {

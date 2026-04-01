@@ -159,6 +159,7 @@ const config = {
   jobteaserPassword: env.get("JOBTEASER_FLUX_PASSWORD").required().asString(),
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
+  edfUrl: "https://edf-recrute.talent-soft.com/handlers/offerxml.ashx?top=10000",
   franceTravailCegidFlux: {
     url: env.get("FRANCE_TRAVAIL_CEGID_FLUX_URL").required().asString(),
     clientId: env.get("FRANCE_TRAVAIL_CEGID_FLUX_CLIENT_ID").required().asString(),
