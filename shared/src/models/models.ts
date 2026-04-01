@@ -37,6 +37,7 @@ import rawApecModel from "./rawApec.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
 import rawDecathlonModel from "./rawDecathlon.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
+import rawEnedisModel from "./rawEnedis.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
 import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
@@ -107,6 +108,7 @@ const modelDescriptorMap = {
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
+  [rawEnedisModel.collectionName]: rawEnedisModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
   [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,

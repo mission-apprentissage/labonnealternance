@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<offers>
+  <offer>
+    <id>100001</id>
+    <reference>2025-100001</reference>
+    <entityDescription>Acteur majeur du secteur de l'énergie en France, Enedis distribue l'électricité via le plus grand réseau électrique d'Europe.</entityDescription>
+    <origin />
+    <customFields>
+      <list3 id="4105" clientcode="_TS_STANDARD_PERIMETRE_PUBLICATION" customCodeTableTypeId="4104" label="Périmètre de publication">Standard</list3>
+    </customFields>
+    <creationDate>20250101</creationDate>
+    <modificationDate>20250115</modificationDate>
+    <entity id="267775" clientcode="1306M">1306M-DR IDF EST</entity>
+    <entityAdress>
+      <adress />
+      <postalcode />
+      <city />
+      <country>France</country>
+    </entityAdress>
+    <beginningDate />
+    <directUrl>https://www.enedis.fr/emploi/100001?LCID=1036&amp;idOffre=100001&amp;idOrigine=2679&amp;offerReference=2025-100001</directUrl>
+    <UrlRedirectionApplicant />
+    <mainSupervisor>
+      <FullName>JEAN DUPONT</FullName>
+      <Name>DUPONT</Name>
+      <FirstName>JEAN</FirstName>
+      <Email>jean.dupont@enedis.fr</Email>
+      <PhoneNumber />
+    </mainSupervisor>
+    <jobDescription>
+      <description>Avec votre tuteur, vous contribuerez directement au quotidien à renforcer la satisfaction de nos clients. Vous préparez un diplôme de niveau BTS NDRC. Durée : 2ANS</description>
+      <missionDescription>Avec votre tuteur, vous contribuerez directement au quotidien à renforcer la satisfaction de nos clients.</missionDescription>
+      <missionDescriptionFormatted><![CDATA[<p>Avec votre tuteur, vous contribuerez directement au quotidien à renforcer la satisfaction de nos clients.</p>]]></missionDescriptionFormatted>
+      <applicantProfile>Vous êtes dynamique, ouvert et à l'écoute. Vous préparez un BTS NDRC.</applicantProfile>
+      <applicantProfileFormatted><![CDATA[<p>Vous êtes dynamique, ouvert et à l'écoute.</p>]]></applicantProfileFormatted>
+      <title>Alternance - Chargé de Relations Clients F/H</title>
+      <country id="79" clientcode="_TS_CO_Country_France">France</country>
+      <salaryRange id="33360" clientcode="_TS_SOCIETE_ENEDIS">Enedis</salaryRange>
+      <contract id="34948" clientcode="CONTRAT_ALTERNANCE">Alternance</contract>
+      <contractLength>24</contractLength>
+      <jobfamily id="34005" clientcode="080">REL CLIENTS &amp; PART RES ELEC</jobfamily>
+      <profile id="34912" clientcode="8001">REL CLIENTS MARCHE DE MASSE</profile>
+      <customFields>
+        <datetime1 label="Date souhaitée de début de mission">01/09/2025</datetime1>
+        <LongText1 label="Rémunération et avantages">Une prime d'intéressement avec abondement possible. 30 jours de congés payés par an.</LongText1>
+        <LongText1Formatted label="Rémunération et avantages"><![CDATA[<ul><li>Une prime d'intéressement avec abondement possible</li></ul>]]></LongText1Formatted>
+      </customFields>
+      <location>
+        <jobLocation>Evry Courcouronnes</jobLocation>
+      </location>
+      <customFields>
+        <list3 id="49434" clientcode="_TS_Langue_Offre_FR" customCodeTableTypeId="49433" label="Langue de l'offre">Français</list3>
+      </customFields>
+    </jobDescription>
+    <applicantCriteria>
+      <country id="79" clientcode="_TS_CO_Country_France">France</country>
+      <diploma id="120" clientcode="BAC2_BAC3" />
+      <specialisations>
+        <specialisation>
+          <specialisation id="35005" clientcode="FILIERE_ELECTRICITE">Electricité</specialisation>
+        </specialisation>
+      </specialisations>
+      <language />
+      <freeCriteria1 />
+      <freeCriteria1Formatted />
+      <freeCriteria2 />
+      <freeCriteria2Formatted />
+    </applicantCriteria>
+  </offer>
+  <offer>
+    <id>100002</id>
+    <reference>2025-100002</reference>
+    <entityDescription>Acteur majeur du secteur de l'énergie en France, Enedis distribue l'électricité via le plus grand réseau électrique d'Europe.</entityDescription>
+    <origin />
+    <customFields>
+      <list3 id="4105" clientcode="_TS_STANDARD_PERIMETRE_PUBLICATION" customCodeTableTypeId="4104" label="Périmètre de publication">Standard</list3>
+    </customFields>
+    <creationDate>20250201</creationDate>
+    <modificationDate>20250210</modificationDate>
+    <entity id="267647" clientcode="13067361A">13067361A-CROISSY (PV)</entity>
+    <entityAdress>
+      <adress />
+      <postalcode />
+      <city />
+      <country>France</country>
+    </entityAdress>
+    <beginningDate />
+    <directUrl>https://www.enedis.fr/emploi/100002?LCID=1036&amp;idOffre=100002&amp;idOrigine=2679&amp;offerReference=2025-100002</directUrl>
+    <UrlRedirectionApplicant />
+    <mainSupervisor>
+      <FullName>MARIE MARTIN</FullName>
+      <Name>MARTIN</Name>
+      <FirstName>MARIE</FirstName>
+      <Email>marie.martin@enedis.fr</Email>
+      <PhoneNumber />
+    </mainSupervisor>
+    <jobDescription>
+      <description>Vous interviendrez sur le terrain et préparerez les chantiers Haute Tension A/Basse Tension en garantissant la sécurité. Vous êtes titulaire d'un BAC+2.</description>
+      <missionDescription>Vous interviendrez sur le terrain et préparerez les chantiers.</missionDescription>
+      <missionDescriptionFormatted><![CDATA[<p>Vous interviendrez sur le terrain.</p>]]></missionDescriptionFormatted>
+      <applicantProfile>Vous avez un fort esprit de sécurité, capable de travailler en autonomie.</applicantProfile>
+      <applicantProfileFormatted><![CDATA[<p>Vous avez un fort esprit de sécurité.</p>]]></applicantProfileFormatted>
+      <title>CDI - Technicien Réseau Electrique F/H</title>
+      <country id="79" clientcode="_TS_CO_Country_France">France</country>
+      <salaryRange id="33360" clientcode="_TS_SOCIETE_ENEDIS">Enedis</salaryRange>
+      <contract id="34950" clientcode="Permanent">CDI</contract>
+      <contractLength />
+      <jobfamily id="34006" clientcode="081">INTERVENTIONS RESEAU ELEC</jobfamily>
+      <profile id="35767" clientcode="8101">INTERVENTIONS DE PROXIMITE</profile>
+      <customFields>
+        <datetime1 label="Date souhaitée de début de mission">01/04/2025</datetime1>
+        <LongText1 label="Rémunération et avantages">De 27 800€ à 29 300€ brut annuel minimum.</LongText1>
+        <LongText1Formatted label="Rémunération et avantages"><![CDATA[<ul><li>De 27 800€ à 29 300€ brut annuel minimum</li></ul>]]></LongText1Formatted>
+      </customFields>
+      <location>
+        <jobLocation>La Defense</jobLocation>
+      </location>
+      <customFields>
+        <list3 id="49434" clientcode="_TS_Langue_Offre_FR" customCodeTableTypeId="49433" label="Langue de l'offre">Français</list3>
+      </customFields>
+    </jobDescription>
+    <applicantCriteria>
+      <country id="79" clientcode="_TS_CO_Country_France">France</country>
+      <diploma id="120" clientcode="BAC2_BAC3" />
+      <specialisations>
+        <specialisation>
+          <specialisation id="35005" clientcode="FILIERE_ELECTRICITE">Electricité</specialisation>
+        </specialisation>
+        <specialisation>
+          <specialisation id="35006" clientcode="FILIERE_ELECTROTECHNIQUE">Electrotechnique</specialisation>
+        </specialisation>
+      </specialisations>
+      <language />
+      <freeCriteria1 />
+      <freeCriteria1Formatted />
+      <freeCriteria2 />
+      <freeCriteria2Formatted />
+      <customFields>
+        <list1 id="49670" clientcode="_TS_remu" customCodeTableTypeId="49665" label="Rémunération">De 27 800€ à 29 300€ brut annuel minimum</list1>
+      </customFields>
+    </applicantCriteria>
+  </offer>
+</offers>

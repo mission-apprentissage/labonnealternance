@@ -1,12 +1,13 @@
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import rawEnedisModel from "shared/models/rawEnedis.model"
 import config from "@/config"
 import { importFromStreamInXml } from "@/jobs/offrePartenaire/importFromStreamInXml"
 import { importFromUrlInXml } from "@/jobs/offrePartenaire/importFromUrlInXml"
 import { rawToComputedJobsPartners } from "@/jobs/offrePartenaire/rawToComputedJobsPartners"
+import { enedisJobToJobsPartners, ZEnedisJob } from "./enedisMapper"
 
-//const rawCollectionName = rawEnedis.collectionName
-const rawCollectionName = "raw_enedis"
-const offerXmlTag = "job"
+const rawCollectionName = rawEnedisModel.collectionName
+const offerXmlTag = "offer"
 
 export const importEnedisRaw = async (sourceStream?: NodeJS.ReadableStream) => {
   if (sourceStream) {

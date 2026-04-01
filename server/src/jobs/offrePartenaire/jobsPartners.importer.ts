@@ -4,6 +4,7 @@ import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToul
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./decathlon/importDecathlon"
 import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
+import { processEnedis } from "./enedis/processEnedis"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 import { processHellowork } from "./hellowork/processHellowork"
@@ -133,6 +134,12 @@ export const importers: Record<string, CronDef> = {
   "Import Decathlon": {
     cron_string: timings.import_source,
     handler: processDecathlon,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 30,
+  },
+  "Import Enedis": {
+    cron_string: timings.import_source,
+    handler: processEnedis,
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
