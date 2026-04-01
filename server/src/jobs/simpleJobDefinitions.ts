@@ -1,3 +1,4 @@
+import { analyzeCfaBlockList } from "@/scripts/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
@@ -472,5 +473,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: analyzeCfaBlockList,
+    description: "",
   },
 ]
