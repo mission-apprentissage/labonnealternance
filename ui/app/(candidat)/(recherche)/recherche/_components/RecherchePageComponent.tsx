@@ -40,16 +40,6 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
   elements.push(
     {
-      height: 0,
-      render: () => {
-        const scrollPercentage = (virtualizerRef.current?.getVirtualIndexes().at(0) ?? 0) / elements.length
-        console.log("parent", { scrollPercentage })
-        return <EnqueteTally scrollPercentage={scrollPercentage} />
-      },
-      onRender: undefined,
-      item: undefined,
-    },
-    {
       height: 122,
       render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
       onRender: undefined,
