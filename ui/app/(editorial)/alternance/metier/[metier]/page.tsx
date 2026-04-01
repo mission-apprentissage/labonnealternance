@@ -9,6 +9,7 @@ import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 const UTM_PARAMS = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
 
@@ -108,9 +109,6 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
     { icon: "/images/seo/metier/usine.svg", value: data.company_count, label: "entreprises recrutent activement" },
     { icon: "/images/seo/metier/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
   ]
-
-  const FUSION_PDA_FF = false
-  const simulateurLink = FUSION_PDA_FF ? `/simulateur-alternant?${UTM_PARAMS}` : `https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1?${UTM_PARAMS}`
 
   return (
     <Box>
@@ -223,7 +221,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           <Typography variant="h5" sx={{ mb: fr.spacing("4v") }} gutterBottom>
             Rémunération et évolution des apprentis
           </Typography>
-          <Typography variant="body1">Minimum réglementaire en pourcentage du SMIC selon l’âge et et à mesure de l’avancée dans le contrat :</Typography>
+          <Typography variant="body1">Minimum réglementaire en pourcentage du SMIC selon l’âge et à mesure de l’avancée dans le contrat :</Typography>
           <Box
             sx={{
               display: "grid",
@@ -344,18 +342,14 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
           <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
             <Button
-              linkProps={{ href: simulateurLink }}
-              aria-label={
-                FUSION_PDA_FF
-                  ? "Calculer ma rémunération en alternance sur le simulateur du portail de l'alternance"
-                  : "Calculer ma rémunération en alternance sur le simulateur la bonne alternance"
-              }
+              linkProps={{ href: `${PAGES.static.salaireAlternant.getPath()}?${UTM_PARAMS}` }}
+              aria-label={"Calculer ma rémunération en alternance sur le simulateur la bonne alternance"}
               size="large"
               priority="secondary"
               style={{ marginTop: fr.spacing("2v") }}
             >
               Calculer ma rémunération en alternance
-              {FUSION_PDA_FF && <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />}
+              <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
             </Button>
           </Box>
         </Box>
