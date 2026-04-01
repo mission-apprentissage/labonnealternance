@@ -4,7 +4,6 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Divider, Typography } from "@mui/material"
 import { Form, Formik } from "formik"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
@@ -18,7 +17,6 @@ import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 export default function Authentification() {
   const { error } = useSearchParamsRecord()
   const hasError = Boolean(error === "true")
-  const router = useRouter()
 
   const [magicLinkSent, setMagicLinkSent] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -152,23 +150,23 @@ export default function Authentification() {
         <Typography variant="h5" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("6v") }}>
           Vous n'avez pas de compte ?
         </Typography>
-        <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationEntreprise.getPath())} style={{ width: "100%" }}>
+        <Button linkProps={{ href: PAGES.static.espaceProCreationEntreprise.getPath() }} priority="secondary" style={{ width: "100%" }}>
           <Box
             sx={{
               margin: "auto",
             }}
           >
-            Je suis une entreprise
+            Je suis recruteur
           </Box>
         </Button>
         <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.espaceProCreationCfa.getPath())} style={{ width: "100%" }}>
+          <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="secondary" style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
               }}
             >
-              Je suis un organisme de formation
+              Je suis CFA
             </Box>
           </Button>
         </Box>
@@ -177,13 +175,13 @@ export default function Authentification() {
           offres d’emploi et de formation sans vous créer de compte.
         </Typography>
         <Box sx={{ mt: fr.spacing("4v") }}>
-          <Button priority="secondary" type="button" onClick={() => router.push(PAGES.static.home.getPath())} style={{ width: "100%" }}>
+          <Button linkProps={{ href: PAGES.static.home.getPath() }} priority="secondary" style={{ width: "100%" }}>
             <Box
               sx={{
                 margin: "auto",
               }}
             >
-              Je suis un candidat
+              Je suis alternant
             </Box>
           </Button>
         </Box>

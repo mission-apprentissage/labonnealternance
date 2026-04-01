@@ -2,6 +2,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
+import { ZSeoJobCard } from "./seoMetier.model.js"
 
 const collectionName = "seo_villes" as const
 
@@ -70,6 +71,7 @@ export const ZSeoVille = z
     job_count: z.number(),
     recruteur_count: z.number(),
     content: ZSeoVilleContent,
+    cards: z.array(ZSeoJobCard),
     created_at: z.date(),
     updated_at: z.date(),
   })

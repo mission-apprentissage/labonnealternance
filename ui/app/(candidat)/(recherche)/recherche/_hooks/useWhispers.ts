@@ -4,6 +4,7 @@ import MersenneTwister from "mersenne-twister"
 import { useMemo } from "react"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export type IWhisper = {
   ideaType: "whisper"
@@ -97,8 +98,8 @@ const WHISPERS: IWhisper[] = [
   },
   {
     ideaType: "whisper",
-    message: "Quel sera votre salaire en alternance ? Faites une simulation sur le portail de l’alternance.",
-    lien: "https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1",
+    message: "Quel sera votre salaire en alternance ? Accéder au simulateur de rémunération alternance pour le découvrir !",
+    lien: PAGES.static.salaireAlternant.getPath(),
   },
   {
     ideaType: "whisper",

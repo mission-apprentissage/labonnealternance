@@ -145,7 +145,7 @@ export default function StatistiquesClient() {
           </TabPanel>
 
           <TabPanel value={value} index={2}>
-            <Grid container spacing={6}>
+            <Grid container spacing={fr.spacing("12v")}>
               <Grid size={{ xs: 12, md: 6 }}>
                 <TabContent title="Les signatures de contrat">
                   <iframe

@@ -1815,12 +1815,19 @@ const cfaCompanyList = [
 
 const stringNormaliser = (str: string): string => {
   return removeAccents(str.toLowerCase())
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ")
 }
 
-const normalizedCfaSet = new Set(cfaCompanyList.map(stringNormaliser))
+const normalizedCfaList = cfaCompanyList.map(stringNormaliser)
+const normalizedCfaSet = new Set(normalizedCfaList)
 
 export const isCompanyInBlockedCfaList = (nom: string | null | undefined): boolean => {
   if (!nom) return false
   const nomNormalise = stringNormaliser(nom)
-  return normalizedCfaSet.has(nomNormalise)
+  if (normalizedCfaSet.has(nomNormalise)) return true
+
+  const normalizedSentence = ` ${nomNormalise} `
+  return normalizedCfaList.some((cfaName) => normalizedSentence.includes(` ${cfaName} `))
 }

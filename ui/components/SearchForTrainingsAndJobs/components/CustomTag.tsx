@@ -35,6 +35,7 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
         paddingLeft: icon ? "4px" : "6px",
         borderRadius: "4px",
         maxHeight: "20px",
+        whiteSpace: "nowrap",
         fontWeight: 700,
         ...customTagColors[color],
       }}
