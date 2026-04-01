@@ -724,15 +724,16 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret })
   if (unsubscribeOF) return
 
-  const { managed_by, establishment_id } = offre
+  const { managed_by, workplace_siret } = offre
   if (!managed_by) {
     throw new Error(`inattendu: managed_by vide pour l'offre avec id=${offre._id}`)
   }
-  if (!establishment_id) {
-    throw new Error(`inattendu: establishment_id vide pour l'offre avec id=${offre._id}`)
+  if (!workplace_siret) {
+    throw new Error(`inattendu: workplace_siret vide pour l'offre avec id=${offre._id}`)
   }
 
   const jobOrigin = await getJobOrigin(managed_by)
+  const establishment_id = buildEstablishmentId(managed_by, workplace_siret)
 
   await mailer.sendEmail({
     to: email,
