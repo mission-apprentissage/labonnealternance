@@ -7319,7 +7319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.11.0, axios@npm:^1.14.0, axios@npm:^1.6.8":
+"axios@npm:1.14.0, axios@npm:^1.11.0, axios@npm:^1.6.8":
   version: 1.14.0
   resolution: "axios@npm:1.14.0"
   dependencies:
@@ -16905,7 +16905,7 @@ __metadata:
     "@types/string-similarity": ^4.0.2
     adm-zip: ^0.5.16
     api-alternance-sdk: ^2.14.0
-    axios: ^1.14.0
+    axios: 1.14.0
     axios-cache-interceptor: ^1.12.0
     basic-ftp: ^5.2.0
     bson: ^6.10.4
