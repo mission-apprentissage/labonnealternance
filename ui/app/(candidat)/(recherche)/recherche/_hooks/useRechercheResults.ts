@@ -237,11 +237,11 @@ export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILb
 
 export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): boolean {
   switch (typeEmploi) {
-    case "OFFRES_LBA_PARTNERS":
+    case "alternance":
       return job.ideaType === "offres_emploi_lba" || job.ideaType === "offres_emploi_partenaires"
-    case "OFFRES_MANDATEES":
+    case "formation_incluse":
       return job.ideaType === "offres_emploi_lba" && "job" in job && job.job?.isDelegated === true
-    case "ENTREPRISES_ALGO":
+    case "candidatures_spontanees":
       return job.ideaType === "lba"
   }
 }

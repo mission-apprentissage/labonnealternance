@@ -39,6 +39,15 @@ function deserializeItemReference(item: string): ItemReference | null {
   }
 }
 
+export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
+  return typesEmploi.join(",")
+}
+
+function deserializeTypesEmploi(typesEmploiRaw: string | null): ITypeEmploi[] {
+  if (!typesEmploiRaw) return []
+  return typesEmploiRaw.split(",").filter((v): v is ITypeEmploi => v in TYPE_EMPLOI_OPTIONS)
+}
+
 export function getItemReference(item: ItemReferenceLike): ItemReference {
   return {
     id: item.id,
@@ -130,7 +139,7 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
     query.set("diploma", rechercheParams.diploma)
   }
   if (rechercheParams.typesEmploi?.length > 0) {
-    query.set("typesEmploi", rechercheParams.typesEmploi.join(","))
+    query.set("typesEmploi", serializeTypesEmploi(rechercheParams.typesEmploi))
   }
   if (rechercheParams.job_name) {
     query.set("job_name", rechercheParams.job_name)
@@ -209,8 +218,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const radius = parseInt(search.get("radius") ?? "30", 10)
   const diploma = typedKeys(NIVEAUX_POUR_LBA).find((x) => x === search.get("diploma")) || null
-  const allTypeEmploiKeys = typedKeys(TYPE_EMPLOI_OPTIONS)
-  const typesEmploi = (search.get("typesEmploi") ?? "").split(",").filter((v): v is ITypeEmploi => allTypeEmploiKeys.includes(v as ITypeEmploi))
+  const typesEmploi = deserializeTypesEmploi(search.get("typesEmploi"))
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 

@@ -136,9 +136,9 @@ export const RECRUITER_USER_ORIGIN = {
 }
 
 export const TYPE_EMPLOI_OPTIONS = {
-  OFFRES_LBA_PARTNERS: "Offre d'emploi en alternance",
-  OFFRES_MANDATEES: "Offre d'emploi avec formation incluse",
-  ENTREPRISES_ALGO: "Candidatures spontanées",
+  alternance: "Offre d'emploi en alternance",
+  formation_incluse: "Offre d'emploi avec formation incluse",
+  candidatures_spontanees: "Candidatures spontanées",
 } as const
 
 export type ITypeEmploi = keyof typeof TYPE_EMPLOI_OPTIONS

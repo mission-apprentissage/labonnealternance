@@ -8,10 +8,11 @@ import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteu
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { type DisplayedJob, matchesTypeEmploi } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 const TYPE_EMPLOI_DESCRIPTIONS: Partial<Record<ITypeEmploi, string>> = {
-  OFFRES_MANDATEES: "Vous devrez vous inscrire dans la formation associée à l'offre",
-  ENTREPRISES_ALGO: "Entreprises susceptibles de recruter en alternance",
+  formation_incluse: "Vous devrez vous inscrire dans la formation associée à l'offre",
+  candidatures_spontanees: "Entreprises susceptibles de recruter en alternance",
 }
 
 const typeEmploiEntries = typedEntries(TYPE_EMPLOI_OPTIONS)
@@ -51,7 +52,17 @@ export function RechercheTypesEmploiSelect({
   )
 
   return (
-    <Box ref={anchorRef} sx={{ display: "inline-block", position: "relative", maxWidth: { md: "fit-content", xs: "100%" } }} onClick={() => setOpen((prev) => !prev)}>
+    <Box
+      ref={anchorRef}
+      sx={{ display: "inline-block", position: "relative", maxWidth: { md: "650px", xs: "100%" } }}
+      onClick={() => {
+        setOpen((prev) => !prev)
+        pushMatomoEvent({
+          event: MATOMO_EVENTS.FILTER_DROPDOWN_OPENED,
+          filter_name: "type_offres_emploi",
+        })
+      }}
+    >
       <SelectField
         id="type-emploi"
         label="Type d'offres d'emploi"
@@ -93,6 +104,7 @@ export function RechercheTypesEmploiSelect({
               "& .fr-checkbox-group": {
                 minHeight: "auto",
                 marginTop: "0 !important",
+                display: "flex",
               },
               "& .fr-checkbox-group label": {
                 margin: "auto !important",
@@ -120,7 +132,22 @@ export function RechercheTypesEmploiSelect({
                   hintText: description,
                   nativeInputProps: {
                     checked: value.includes(key),
-                    onChange: () => toggle(key),
+                    onChange: () => {
+                      toggle(key)
+                      pushMatomoEvent({
+                        event: "filter_type_offer_changed",
+                        filter_label: key,
+                        // Le nouvel état du filtre après le changement (true = cochée, false = décochée)
+                        filter_checked: !value.includes(key),
+                        // Le nombre des résultats affichés après le changement de filtre. On utilise countByTypeEmploi pour calculer ce nombre en fonction du nouvel état du filtre
+                        filter_result_count: count ?? 0,
+                        // L'état complet des filtres APRÈS le changement
+                        filter_state: typeEmploiEntries.reduce(
+                          (acc, [k]) => ({ ...acc, [k]: k === key ? !value.includes(k) : value.includes(k) }),
+                          {} as Record<ITypeEmploi, boolean>
+                        ),
+                      })
+                    },
                   },
                 }
               })}

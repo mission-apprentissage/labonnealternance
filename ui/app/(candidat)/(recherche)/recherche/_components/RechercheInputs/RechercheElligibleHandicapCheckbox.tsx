@@ -6,8 +6,17 @@ import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hoo
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 const infoIconButtonId = "recherche-elligible-handicap-tooltip-button"
+
+const trackOnChange = (newValue: boolean, rechercheResults: ReturnType<typeof useRechercheResults>) => {
+  pushMatomoEvent({
+    event: MATOMO_EVENTS.FILTER_HANDI_CHANGED,
+    filter_checked: newValue, // false = filtre désactivé ou true = filtre activé
+    filter_total_results: rechercheResults.elligibleHandicapCount, // Nombre total de résultats affichés après application du filtre
+  })
+}
 
 export function RechercheElligibleHandicapCheckboxFormik({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const [field, _meta, helper] = useField({ name: "elligibleHandicapFilter" })
@@ -81,6 +90,7 @@ export function RechercheElligibleHandicapCheckbox({
               return false
             }
             onChange(!value)
+            trackOnChange(!value, rechercheResults)
             return false
           }}
         >
