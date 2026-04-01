@@ -1,6 +1,6 @@
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-const MON_LOGEMENT_ETUDIANT_LINK = `<a href="https://monlogementetudiant.beta.gouv.fr/trouver-un-logement-etudiant?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=page_ville" target="_blank" rel="noopener noreferrer" class="lba-link-external" aria-label="Consulter le site Mon Logement Étudiant">Mon Logement Étudiant</a>`
+const MON_LOGEMENT_ETUDIANT_LINK = `<a href="https://monlogementetudiant.beta.gouv.fr/trouver-un-logement-etudiant?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=page_ville" target="_blank" rel="noopener noreferrer" class="lba-link-external" aria-label="Consulter le site Mon Logement Étudiant (ouverture dans un nouvel onglet)">Mon Logement Étudiant</a>`
 
 const updates: Array<{ slug: string; logementText: string }> = [
   {
@@ -13,7 +13,7 @@ const updates: Array<{ slug: string; logementText: string }> = [
   },
   {
     slug: "marseille",
-    logementText: `Trouver un logement à Marseille demande de l\'anticipation mais reste plus accessible financièrement qu\'à Paris ou Lyon.<br /><br /><span style="font-weight: bold;color:#0063cb">Pour un studio, comptez entre 400€ et 600€ par mois</span> selon le quartier et l\'état du bien, tandis qu\'un T2 <span style="font-weight: bold;color:#0063cb">se situe généralement entre 550€ et 800€</span>.<br /><br />Les quartiers prisés par les alternants et étudiants incluent le 5ème arrondissement (Baille, Saint-Pierre), le 6ème (Castellane, Vauban, Notre-Dame du Mont) et certains secteurs du 1er et 7ème arrondissements, proches du centre et bien desservis. Le 4ème arrondissement, notamment autour de la Joliette et Euroméditerranée, se développe rapidement avec des logements neufs mais à des prix plus élevés.<br /><br /><span style="font-weight: bold;color:#0063cb">Les résidences étudiantes du CROUS proposent des chambres entre 300€ et 450€</span>, mais les places sont limitées et la demande forte. Consultez ${MON_LOGEMENT_ETUDIANT_LINK}, pour découvrir de nombreux conseils et consultez les logements disponibles dans votre secteur. Plusieurs résidences privées pour étudiants et jeunes actifs (Studéa, Cardinal Campus) offrent des alternatives avec services inclus, à partir de 500€. Il est conseillé de commencer ses recherches dès avril-mai pour une rentrée en septembre, via les plateformes classiques (Leboncoin, SeLoger) et les groupes Facebook dédiés.<br /><br /><span style="font-weight: bold;color:#0063cb">Attention aux arnaques</span> : visitez toujours le logement avant de verser un quelconque acompte. Les aides au logement (APL) peuvent réduire significativement votre loyer, pensez à faire votre demande sur le site de la CAF dès votre installation.`,
+    logementText: `Trouver un logement à Marseille demande de l\'anticipation mais reste plus accessible financièrement qu\'à Paris ou Lyon.<br /><br /><span style="font-weight: bold;color:#0063cb">Pour un studio, comptez entre 400€ et 600€ par mois</span> selon le quartier et l\'état du bien, tandis qu\'un T2 <span style="font-weight: bold;color:#0063cb">se situe généralement entre 550€ et 800€</span>.<br /><br />Les quartiers prisés par les alternants et étudiants incluent le 5ème arrondissement (Baille, Saint-Pierre), le 6ème (Castellane, Vauban, Notre-Dame du Mont) et certains secteurs du 1er et 7ème arrondissements, proches du centre et bien desservis. Le 4ème arrondissement, notamment autour de la Joliette et Euroméditerranée, se développe rapidement avec des logements neufs mais à des prix plus élevés.<br /><br /><span style="font-weight: bold;color:#0063cb">Les résidences étudiantes du CROUS proposent des chambres entre 300€ et 450€</span>, mais les places sont limitées et la demande forte. Consultez ${MON_LOGEMENT_ETUDIANT_LINK}, pour découvrir de nombreux conseils et les logements disponibles dans votre secteur. Plusieurs résidences privées pour étudiants et jeunes actifs (Studéa, Cardinal Campus) offrent des alternatives avec services inclus, à partir de 500€. Il est conseillé de commencer ses recherches dès avril-mai pour une rentrée en septembre, via les plateformes classiques (Leboncoin, SeLoger) et les groupes Facebook dédiés.<br /><br /><span style="font-weight: bold;color:#0063cb">Attention aux arnaques</span> : visitez toujours le logement avant de verser un quelconque acompte. Les aides au logement (APL) peuvent réduire significativement votre loyer, pensez à faire votre demande sur le site de la CAF dès votre installation.`,
   },
   {
     slug: "toulouse",
@@ -23,7 +23,10 @@ const updates: Array<{ slug: string; logementText: string }> = [
 
 export const up = async () => {
   for (const { slug, logementText } of updates) {
-    await getDbCollection("seo_villes").updateOne({ slug }, { $set: { "content.logement.text": logementText } })
+    const result = await getDbCollection("seo_villes").updateOne({ slug }, { $set: { "content.logement.text": logementText } })
+    if (result.matchedCount === 0) {
+      throw new Error(`Migration 20260323180547-update-seo-ville: no document found for slug "${slug}"`)
+    }
   }
 }
 
