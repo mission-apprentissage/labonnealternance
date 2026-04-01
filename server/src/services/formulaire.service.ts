@@ -740,10 +740,10 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobsPartner
     template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
-      enterpriseName: offre.workplace_name,
+      enterpriseName: offre.workplace_brand || offre.workplace_name || offre.workplace_legal_name,
       jobName: offre.offer_title,
       contractType: (offre.contract_type ?? []).join(", "),
-      trainingLevel: offre.offer_target_diploma,
+      trainingLevel: offre.offer_target_diploma?.label ?? "Indifférent",
       startDate: dayjs(offre.contract_start).format("DD/MM/YYYY"),
       duration: offre.contract_duration,
       jobOrigin,
@@ -779,7 +779,7 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
       offre: {
         rome_appellation_label: job.offer_rome_appellation,
         job_type: job.contract_type.join(", "),
-        job_level_label: job.offer_target_diploma?.label,
+        job_level_label: job.offer_target_diploma?.label ?? "Indifférent",
         job_start_date: dayjs(job.contract_start).format("DD/MM/YY"),
         job_title: job.offer_title,
       },

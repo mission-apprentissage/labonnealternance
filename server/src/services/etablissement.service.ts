@@ -639,7 +639,7 @@ export const sendEmailConfirmationEntreprise = async (userId: ObjectId, accessSt
           job_title: offre.offer_title,
           rome_appellation_label: referentielRomeOpt?.rome.intitule,
           job_type: offre.contract_type.join(", "),
-          job_level_label: offre.offer_target_diploma?.label,
+          job_level_label: offre.offer_target_diploma?.label ?? "Indifférent",
           job_start_date: dayjs(offre.contract_start).format("DD/MM/YY"),
           delegations: offre.delegations,
         },

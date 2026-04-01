@@ -100,7 +100,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
             job_title: job.offer_title,
             rome_appellation_label: job.offer_rome_appellation,
             job_type: job.contract_type.join(", "),
-            job_level_label: job.offer_target_diploma?.label,
+            job_level_label: job.offer_target_diploma?.label ?? "Indifférent",
             job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
