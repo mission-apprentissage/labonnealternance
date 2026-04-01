@@ -23,7 +23,11 @@ init({
     reportingObserverIntegration({ types: ["crash", "deprecation", "intervention"] }),
   ],
   sendDefaultPii: true,
-  ignoreErrors: ["AbortError"],
+  ignoreErrors: [
+    "AbortError",
+    // Erreur provenant de l'extension navigateur MetaMask (inpage.js), non actionnable
+    "func sseError not found",
+  ],
   beforeSend(event) {
     // Hydratation error comes from DSFR
     if (event.extra?.arguments && Array.isArray(event.extra?.arguments) && event.extra?.arguments?.includes("https://react.dev/link/hydration-mismatch")) {

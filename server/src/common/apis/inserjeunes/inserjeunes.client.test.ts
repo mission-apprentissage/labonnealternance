@@ -54,6 +54,11 @@ describe("InserJeunes Client", () => {
       nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/12345678").reply(500, { error: "Internal error" })
 
       await expect(fetchInserJeunesStats("75001", "12345678")).rejects.toThrow()
+
+      // Mock 502 error
+      nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/12345678").reply(502, { error: "Bad Gateway" })
+
+      await expect(fetchInserJeunesStats("75001", "12345678")).rejects.toThrow()
     })
   })
 })

@@ -337,6 +337,38 @@ fileignoreconfig:
   checksum: 1ad48425b890a5ed3de19d079692e2ef7eac76483339a469a6cd9bc6d796ad26
 - filename: ui/utils/api.utils.ts
   checksum: 324cd501354cfff65447c2599c4cc8966aa8aac30dda7854623dd6f7f7b0d34e
+- filename: ui/app/(editorial)/guide-alternant/se-faire-accompagner/page.tsx
+  checksum: 79a65270f76376f1f35bb1fbab8dd32455596cc2b004ee70d3065a6f1205ef77
+- filename: ui/app/(editorial)/guide-alternant/conseils-et-astuces-pour-trouver-un-employeur/page.tsx
+  checksum: cec6d1bf0741dd7f7ccadb34f247d036091c08c5732d674a53fb7a42f04c9a33
+- filename: ui/app/(editorial)/guide-cfa/page.tsx
+  checksum: 3cd8cce155eb16d8483b7f919e072a163c57f4beb65bd8aea275520179020955
+- filename: ui/public/images/je-suis-cfa/illu-liste-offres.svg
+  checksum: a5f804e6eae9efb1b135a47da8e450ce20dc6dfe6ef1425e520e904989357f1b
+- filename: ui/public/images/je-suis-cfa/illu-contact-candidat.svg
+  checksum: ddf93b9548b28194265fb3c14075f5a2deccaa95bd322141d4bfb9268e869d77
+- filename: ui/public/images/je-suis-cfa/illu-partenaires.svg
+  checksum: d10ed366d82c769bea996d9d5d7bb678a9d9bb4d25104b71eb385e16e608c1e2
+- filename: ui/public/images/je-suis-cfa/illu-bientot.svg
+  checksum: 673f6c161b966008e723732697a50406ce561bb1744c2ace28aac0ded9fbe967
+- filename: ui/public/images/je-suis-cfa/illu-entreprises-mandatees.svg
+  checksum: 4d9115f5049604671475af3e8d4aeab6311f191da9c7f3c535867e16577dd404
+- filename: ui/public/images/je-suis-cfa/illu-rdv.svg
+  checksum: 1d95b449b567541721c560d2252a10ff4b66e5ad98cfce222f36914f43509ad4
+- filename: ui/public/images/je-suis-recruteur/illu-plateforme-jeunes.svg
+  checksum: b9aa46f82991a1d5045090339cffe37c2a765b117cbe01924a76c3c0d359707a
+- filename: ui/public/images/je-suis-recruteur/illu-offre-emploi.svg
+  checksum: 5d3568bddff3853df6a18ebb3a2349e1d0f5af874e5c1f1b4b75d3e786a1475e
+- filename: ui/public/images/je-suis-recruteur/illu-votre-besoin.svg
+  checksum: 84cc3fd064bf939cb58e7f9c76ec3c5d3a74d610a7079c2d28afe1be02469b06
+- filename: ui/public/images/je-suis-recruteur/illu-soliciter-cfa.svg
+  checksum: f833257e7c45ca006e092a1cb7a35ecd4739e42ff4af255773780cebc657190a
+- filename: ui/public/images/je-suis-recruteur/illu-marche-cache.svg
+  checksum: 5a13c08d8065bacda87209f99a6dfa656fb17747593163938e3e95224903bd6d
+- filename: ui/public/images/carte-d-etudiant-des-metiers-verso.svg
+  checksum: ca6266d0beefd063a14ad95ed89418648bc06f662967bdb115bda1ac8ac33022
+- filename: ui/public/images/carte-d-etudiant-des-metiers-recto.svg
+  checksum: bac506d94b942fa69f278be21e59afa095289482ec3f311025d8b380b3cb3b46
 - filename: yarn.lock
   checksum: 21c8c4f9064194196622ad215768893c1756eec1cbc175efffcb1428d8821c9f
 scopeconfig:
