@@ -209,7 +209,6 @@ export const zFormulaireRoute = {
         job_level_label: true,
         job_status: true,
         job_type: true,
-        delegations: true,
         is_disabled_elligible: true,
         job_count: true,
         job_duration: true,

@@ -23,6 +23,7 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
     if (job_id) {
       delete values.job_creation_date
       delete values.job_update_date
+      delete values.delegations
       await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: values }).then(() => {
         toast({
           title: "Offre mise à jour avec succès.",
