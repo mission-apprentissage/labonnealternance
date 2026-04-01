@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, FormLabel, Input, Radio, RadioGroup, Typography } from "@mui/material"
 import emailMisspelled, { top100 } from "email-misspelled"
 import { Formik, useField } from "formik"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { EReasonsKey } from "shared"
 import { EApplicantType } from "shared/constants/rdva"
 import * as Yup from "yup"
@@ -37,6 +37,8 @@ export const DemandeDeContactForm = ({
         applicantType: EApplicantType.ETUDIANT,
         applicantReasons: [],
       }}
+      validateOnChange={false}
+      validateOnBlur={true}
       validationSchema={Yup.object({
         firstname: Yup.string().required("⚠ Le prénom est obligatoire"),
         lastname: Yup.string().required("⚠ Le nom est obligatoire"),
@@ -85,7 +87,7 @@ export const DemandeDeContactForm = ({
           <form onSubmit={formik.handleSubmit}>
             <FormControl>
               <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("4v") }}>
-                <Typography sx={{ mr: { xs: 0, md: 3 }, mb: { xs: 1, sm: 1, md: 0 } }}>Vous êtes * :</Typography>
+                <Typography sx={{ mr: { xs: 0, md: fr.spacing("2v") }, mb: { xs: fr.spacing("2v"), sm: fr.spacing("2v"), md: 0 } }}>Vous êtes * :</Typography>
                 <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={async (_, value) => formik.setFieldValue("applicantType", value)}>
                   <FormControlLabel value={EApplicantType.ETUDIANT} label="L'étudiant" control={<Radio />} />
                   <FormControlLabel value={EApplicantType.PARENT} label="Le parent" control={<Radio />} />
@@ -139,21 +141,19 @@ export const DemandeDeContactForm = ({
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mb: fr.spacing("4v") }}>
               <ReasonsField formik={formik} />
             </Box>
-            <Box
-              sx={{
-                width: "95%",
-                fontSize: "12px",
-              }}
-            >
+            <Box sx={{ width: "95%" }}>
               <Typography
+                variant="caption"
+                component="p"
                 sx={{
                   color: fr.colors.decisions.text.mention.grey.default,
                   mb: fr.spacing("4v"),
+                  display: "block",
                 }}
               >
                 * Champs obligatoires
               </Typography>
-              <Typography sx={{ mb: fr.spacing("4v") }}>
+              <Typography variant="body2" sx={{ mb: fr.spacing("4v") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
                 <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
                   Conditions générales d&apos;utilisation
@@ -198,14 +198,24 @@ export const DemandeDeContactForm = ({
 const EmailField = () => {
   const [suggestedEmails, setSuggestedEmails] = useState([])
   const [field, meta, helper] = useField("email")
+  const emailDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (emailDebounceRef.current) clearTimeout(emailDebounceRef.current)
+    }
+  }, [])
 
   /**
    * On email change, check if email is correct and set suggestion if not.
    */
   const onEmailChange = (e) => {
-    const suggestedEmails = emailChecker(e.target.value)
-    setSuggestedEmails(suggestedEmails)
     field.onChange(e)
+    const value = e.target.value
+    if (emailDebounceRef.current) clearTimeout(emailDebounceRef.current)
+    emailDebounceRef.current = setTimeout(() => {
+      setSuggestedEmails(emailChecker(value))
+    }, 300)
   }
 
   /**

@@ -45,7 +45,7 @@ export default async function Metiers() {
             alternance :
           </Typography>
           <Stack
-            spacing={1}
+            spacing={fr.spacing("2v")}
             sx={{
               alignItems: "flex-start",
               mt: fr.spacing("4v"),
@@ -57,7 +57,7 @@ export default async function Metiers() {
 
             {jobs.map((job, index) => {
               return (
-                <Typography key={index} sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+                <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
                   <Link className={fr.cx("fr-link", "fr-text--bold")} href={`/metiers/${job.slug}`} aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
                     {job.name}
