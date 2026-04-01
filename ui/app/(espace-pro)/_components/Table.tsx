@@ -66,7 +66,7 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                             headers={cell.column.id}
                             as="td"
                             {...cell.getCellProps()}
-                            {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
+                            {...(cell.column.id === "action" ? { sx: { padding: `${fr.spacing("1v")} !important` } } : {})}
                             alignContent={"center"}
                           >
                             {cell.render("Cell")}

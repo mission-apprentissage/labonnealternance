@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
@@ -7,7 +8,6 @@ import { JOB_STATUS } from "shared"
 import { AUTHTYPE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
-
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { useToast } from "@/app/hooks/useToast"
@@ -105,7 +105,7 @@ export const OffresTabsMenu = ({
       ariaLabel: copied ? "Lien de partage de l'offre copié dans le presse-papiers" : `Partager le lien de l'offre ${offerTitle}`,
       type: "button",
       icon: (
-        <Box color={copied ? "#18753C" : undefined}>
+        <Box color={copied ? fr.colors.decisions.text.default.success.default : undefined}>
           <DsfrIcon name="fr-icon-link" size={16} />
         </Box>
       ),
