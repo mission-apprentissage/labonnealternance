@@ -284,7 +284,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               }}
             >
               {data.cards.map((card, idx) => (
-                <CarteOffre key={idx} card={card} />
+                <CarteOffre key={idx} card={card} utmParams={utmParams} />
               ))}
             </Box>
 

@@ -165,6 +165,11 @@ export const zJobOfferApiWriteV3 = z.object({
       remote: ZJobsPartnersOfferPrivate.shape.contract_remote.default(null),
     })
     .default({}),
+  identifier: z
+    .object({
+      partner_job_id: ZJobsPartnersOfferPrivate.shape.partner_job_id,
+    })
+    .optional(),
   offer: z.object({
     title: ZJobsPartnersOfferPrivate.shape.offer_title,
     rome_codes: ZJobsPartnersOfferPrivate.shape.offer_rome_codes.nullable().default(null),

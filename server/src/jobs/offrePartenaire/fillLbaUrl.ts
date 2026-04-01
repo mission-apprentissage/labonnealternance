@@ -1,6 +1,7 @@
 import type { Filter } from "mongodb"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { buildLbaUrlFromJob } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { fillFieldsForPartnersFactory } from "./fillFieldsForPartnersFactory"
 
@@ -25,4 +26,9 @@ export const fillLbaUrl = async ({ addedMatchFilter }: { addedMatchFilter?: Filt
       })
     },
   })
+}
+
+export const renewLbaUrl = async () => {
+  await getDbCollection("jobs_partners").updateMany({}, { $set: { lba_url: null } })
+  await fillLbaUrl()
 }

@@ -4,13 +4,11 @@ import { Box, Typography } from "@mui/material"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { CardStyling } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/CardStyling"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
-import { TagLaBonneAlternance } from "@/components/ItemDetail/TagLaBonneAlternance"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-import { TagPartenaire } from "@/components/ItemDetail/TagPartenaire"
 import { publicConfig } from "@/config.public"
 import { getDaysSinceDate } from "@/utils/dateUtils"
 
-const CarteOffre = ({ card }) => {
+const CarteOffre = ({ card, utmParams }) => {
   return (
     <CardStyling>
       <Card
@@ -24,7 +22,7 @@ const CarteOffre = ({ card }) => {
             card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA
               ? `Voir la société ${card.workplace_name}`
               : `Voir l'offre d'emploi ${card.offer_title} chez ${card.workplace_name}`,
-          href: card?.lba_url?.substring(publicConfig?.baseUrl?.length || 0) || "#",
+          href: `${card?.lba_url?.substring(publicConfig?.baseUrl?.length || 0) || "#"}?${utmParams}`,
           prefetch: false,
         }}
         start={
@@ -36,15 +34,13 @@ const CarteOffre = ({ card }) => {
               px: fr.spacing("2v"),
               py: fr.spacing("1v"),
               "& > *": {
-                marginRight: "4px",
-                marginBottom: "4px",
+                marginRight: fr.spacing("1v"),
+                marginBottom: fr.spacing("1v"),
                 minWidth: "fit-content",
               },
             }}
           >
             {card.partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? <TagCandidatureSpontanee key="candidature spontanée" /> : <TagOffreEmploi key="offre emploi" />}
-            {card.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA && <TagLaBonneAlternance key="tag la bonne alternance" />}
-            {card.partner_label !== JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA && card.partner_label !== JOBPARTNERS_LABEL.RECRUTEURS_LBA && <TagPartenaire key="tag partenaire" />}
           </Box>
         }
         title={
