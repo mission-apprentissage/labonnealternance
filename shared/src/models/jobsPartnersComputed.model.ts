@@ -31,7 +31,7 @@ export const PARTNER_WHITELIST: string[] = [
   "Veritone",
 ]
 
-export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
+export const TRUSTED_COMPANY_JOB_PARTNERS = [
   JOBPARTNERS_LABEL.DECATHLON,
   JOBPARTNERS_LABEL.LAPOSTE,
   "Amazon",
@@ -50,13 +50,13 @@ export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
   "Thales",
 ]
 
-export const normalizedFluxList: string[] = COMPANIES_TO_EXCLUDE_FROM_FLUX.map(stringNormaliser)
+export const normalizedFluxList: string[] = TRUSTED_COMPANY_JOB_PARTNERS.map(stringNormaliser)
 export const normalizedFluxSet: Set<string> = new Set(normalizedFluxList)
 
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
   BLOCK_CFA_NAME = "BLOCK_CFA_NAME",
-  FLUX_JOB_DUPLICATE = "FLUX_JOB_DUPLICATE",
+  TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
   API_SIRET = "api_siret",
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
@@ -84,7 +84,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   ROME_BLACKLISTED = "ROME_BLACKLISTED",
   WRONG_DATA = "WRONG_DATA",
   GEOLOCATION_NOT_FOUND = "GEOLOCATION_NOT_FOUND",
-  FLUX_JOB_DUPLICATE = "FLUX_JOB_DUPLICATE",
+  TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
 }
 
 export const ZComputedJobsPartnersBase = extensions

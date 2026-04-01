@@ -22,7 +22,7 @@ describe("blockJobsPartnersFromFluxCompanyList", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
-    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.FLUX_JOB_DUPLICATE)
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE)
   })
 
   it('should block the offer when workplace_name is "Décathlon"', async () => {
@@ -38,7 +38,7 @@ describe("blockJobsPartnersFromFluxCompanyList", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
-    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.FLUX_JOB_DUPLICATE)
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE)
   })
 
   it('should block the offer when workplace_name is "Institut Pasteur"', async () => {
@@ -54,7 +54,7 @@ describe("blockJobsPartnersFromFluxCompanyList", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
-    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.FLUX_JOB_DUPLICATE)
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE)
   })
 
   it("should block the offer when workplace_legal_name is in the flux company list", async () => {
@@ -71,7 +71,7 @@ describe("blockJobsPartnersFromFluxCompanyList", () => {
     const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
     expect.soft(jobs.length).toBe(1)
     const [job] = jobs
-    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.FLUX_JOB_DUPLICATE)
+    expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE)
   })
 
   it("should NOT block the offer when the company name is not in the flux list", async () => {
