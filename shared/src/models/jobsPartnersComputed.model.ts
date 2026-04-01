@@ -28,17 +28,21 @@ export const PARTNER_WHITELIST: string[] = [
 
 export const COMPANIES_TO_EXCLUDE_FROM_FLUX = [
   JOBPARTNERS_LABEL.DECATHLON,
+  "Amazon",
+  "BPCE",
+  "BPI France",
+  "Daher",
   "EDF",
   "Engie",
   "Enedis",
   "Framatome",
   "GRDF",
   "Institut Pasteur",
-  "L’Oréal",
+  "L'Oreal",
   JOBPARTNERS_LABEL.LAPOSTE,
   "Formaposte",
   "Serpe",
-  "Thalès",
+  "Thales",
 ]
 
 export const normalizedFluxList: string[] = COMPANIES_TO_EXCLUDE_FROM_FLUX.map(stringNormaliser)
