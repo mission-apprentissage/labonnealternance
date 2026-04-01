@@ -37,9 +37,5 @@ export const PromoRessources = ({ target }: { target: Target }) => (
     >
       {textes[target]}
     </Typography>
-
-    <DsfrLink href={`${PAGES.static.ressources.getPath()}#${target}`} size="lg" className={fr.cx("fr-btn", "fr-btn--lg", "fr-btn--secondary")}>
-      Découvrir les ressources
-    </DsfrLink>
   </Box>
 )

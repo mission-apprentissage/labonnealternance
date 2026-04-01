@@ -113,7 +113,6 @@ const transformCompanyWithMinimalData = ({
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
 
   const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
-
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
     status: company.offer_status,

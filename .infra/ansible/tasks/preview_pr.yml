@@ -71,9 +71,9 @@
       with_items:
         - "/opt/app/projects/{{ pr_number }}/repository"
 
-    - name: "[{{ pr_number }}] Build local images 0.0.0-{{ pr_number }}"
+    - name: "[{{ pr_number }}] Build local images preview-{{ pr_number }}"
       shell:
-        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba app:build 0.0.0-{{ pr_number }} load commit-hash-temp preview"
+        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba app:build preview-{{ pr_number }} load commit-hash-temp preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       environment:
         CI: "{{ CI | default('true') }}"
@@ -160,11 +160,17 @@
       when: check_stat.stat.exists
       ignore_errors: true
 
-    - name: "[{{ pr_number }}] Removing {{ item }}:0.0.0-{{ pr_number }} image"
+    - name: "[{{ pr_number }}] Removing {{ item }}:preview-{{ pr_number }} image"
       shell:
-        cmd: "docker image rm -f ghcr.io/mission-apprentissage/{{ item }}:0.0.0-{{ pr_number }}"
+        cmd: "docker image rm -f ghcr.io/mission-apprentissage/{{ item }}:preview-{{ pr_number }}"
       when: check_stat.stat.exists
       loop: "{{ docker_images }}"
+
+    - name: "[{{ pr_number }}] Removing mna_lba_server:{{ pr_number }} channel image"
+      shell:
+        cmd: "docker image rm -f ghcr.io/mission-apprentissage/mna_lba_server:{{ pr_number }}"
+      when: check_stat.stat.exists
+      ignore_errors: true
 
     - name: "[{{ pr_number }}] Remove database from Metabase"
       shell:

@@ -1,6 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
@@ -16,6 +17,7 @@ import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
 import getJobPublishedTimeAndApplications from "@/components/ItemDetail/ItemDetailServices/getJobPublishedTimeAndApplications"
+import { tagCandidatureSimplifiee } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
@@ -129,16 +131,36 @@ function JobDetail({
 
             {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-            <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
-              <div>
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasValidEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
+            <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
+              <Box sx={{ mr: fr.spacing("4v") }}>
+                {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && hasValidEmail(selectedItem) && (
+                  <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />
+                )}
                 {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler job={selectedItem} />}
-              </div>
-              <div>
+                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !hasValidEmail(selectedItem) && <PartnerJobPostuler job={selectedItem} />}
+              </Box>
+              <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
+                {hasValidEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
                 <ShareLink item={selectedItem} />
-              </div>
+              </Box>
             </Box>
+            {selectedItem.company?.mandataire && hasValidEmail(selectedItem) && (
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  mt: 0,
+                  mb: { xs: fr.spacing("2v"), md: 0 },
+                }}
+              >
+                <Box component="span">
+                  <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
+                </Box>
+                <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
+                  Votre candidature sera envoyée à l’organisme en charge du recrutement pour le compte de l’entreprise.{" "}
+                </Typography>
+              </Stack>
+            )}
           </Box>
         </Box>
 

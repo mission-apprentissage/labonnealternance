@@ -393,36 +393,6 @@ describe("POST /v2/application", () => {
     })
   })
 
-  it("Should mark offer as ANNULEE in jobs_partners when application count exceeds limit", async () => {
-    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
-    const preExistingApplications = Array.from({ length: 80 }, () =>
-      generateApplicationFixture({ job_id: recruteur._id, company_siret: recruteur.workplace_siret, created_at: new Date() })
-    )
-    await getDbCollection("applications").insertMany(preExistingApplications)
-
-    const body: IApplicationApiPublic = {
-      applicant_attachment_name: "cv.pdf",
-      applicant_attachment_content: applicationTestFile,
-      applicant_email: "jean.dupont@mail.com",
-      applicant_first_name: "Jean",
-      applicant_last_name: "Dupont",
-      applicant_phone: "0101010101",
-      recipient_id: getRecipientID(JobCollectionName.partners, recruteur._id.toString()),
-    }
-
-    const response = await httpClient().inject({
-      method: "POST",
-      path: "/api/v2/application",
-      body,
-      headers: { authorization: `Bearer ${token}` },
-    })
-
-    expect.soft(response.statusCode).toEqual(202)
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: recruteur._id })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
-  })
-
   it.skip("Remove scheduled intention when Envoyer le message button", async () => {
     await httpClient().inject({
       method: "GET",

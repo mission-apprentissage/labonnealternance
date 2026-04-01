@@ -29,7 +29,10 @@ export default function User() {
   } = useQuery({
     queryKey: ["recruiter", userRecruteur?.establishment_id],
     enabled: Boolean(userRecruteur?.establishment_id),
-    queryFn: () => getFormulaire(userRecruteur.establishment_id),
+    queryFn: () => {
+      if (!userRecruteur?.establishment_id) return Promise.resolve(undefined)
+      return getFormulaire(userRecruteur.establishment_id)
+    },
   })
 
   if (isLoading || !userRecruteur || !userId || recruiterLoading) {
