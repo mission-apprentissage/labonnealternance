@@ -1,5 +1,6 @@
 import { captureException } from "@sentry/browser"
 import { useEffect } from "react"
+import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 let triggered = false
 const PERCENTAGE_TRIGGER = 0.1 // 10%
@@ -25,6 +26,25 @@ const openPopup = () => {
       return
     }
     triggered = true
+
+    const rechercheParams = parseRecherchePageParams(new URL(window.location.href).searchParams, IRechercheMode.DEFAULT)
+
+    const itemTypes: string[] = []
+    if (rechercheParams.displayEntreprises) {
+      itemTypes.push("métier")
+    }
+    if (rechercheParams.displayFormations) {
+      itemTypes.push("formation")
+    }
+
+    const hiddenFields: { checkbox?: string; libelle?: string; lieu?: string; niveau?: string; handi?: string } = {
+      libelle: rechercheParams.job_name,
+      lieu: rechercheParams.geo?.address,
+      niveau: rechercheParams.diploma,
+      handi: `${rechercheParams.elligibleHandicapFilter}`,
+      checkbox: itemTypes.join(" & "),
+    }
+
     const options: TallyOptions = {
       key: "search",
       emoji: {
@@ -34,6 +54,7 @@ const openPopup = () => {
       hideTitle: true,
       showOnce: true,
       doNotShowAfterSubmit: true,
+      hiddenFields,
     }
     // @ts-expect-error
     window.Tally.openPopup("b5xXxZ", options)
