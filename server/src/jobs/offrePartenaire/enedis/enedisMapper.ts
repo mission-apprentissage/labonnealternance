@@ -19,8 +19,9 @@ const ZEnedisJobLocation = z
 
 const ZEnedisJobDescriptionCustomFields = z
   .object({
-    datetime1: z.string().nullish(),
+    datetime1: z.union([z.string(), ZXmlAttr]).nullish(),
     LongText1: z.union([z.string(), ZXmlAttr]).nullish(),
+    LongText1Formatted: z.union([z.string(), ZXmlAttr]).nullish(),
   })
   .passthrough()
 
@@ -48,7 +49,9 @@ const ZEnedisJobDescription = z
     title: z.string(),
     description: z.string().nullish(),
     missionDescription: z.string().nullish(),
+    missionDescriptionFormatted: z.string().nullish(),
     applicantProfile: z.string().nullish(),
+    applicantProfileFormatted: z.string().nullish(),
     contract: ZEnedisContract,
     contractLength: z.coerce.string().nullish(),
     location: ZEnedisJobLocation.nullish(),
@@ -63,19 +66,31 @@ const ZEnedisApplicantCriteria = z
   .passthrough()
   .nullish()
 
-export const ZEnedisJob = z
-  .object({
-    id: z.coerce.string(),
-    reference: z.string(),
-    creationDate: z.string().nullish(),
-    modificationDate: z.string().nullish(),
-    entity: z.union([z.string(), ZXmlAttr]).nullish(),
-    beginningDate: z.string().nullish(),
-    directUrl: z.string().nullish(),
-    jobDescription: ZEnedisJobDescription,
-    applicantCriteria: ZEnedisApplicantCriteria,
-  })
-  .passthrough()
+const ZEnedisSupervisor = z.object({
+  FullName: z.string().nullish(),
+  Name: z.string().nullish(),
+  FirstName: z.string().nullish(),
+  Email: z.string().nullish(),
+  PhoneNumber: z.string().nullish(),
+})
+
+export const ZEnedisJob = z.object({
+  id: z.coerce.string(),
+  reference: z.string(),
+  entityDescription: z.string(),
+  origin: z.any().nullish(),
+  customFields: z.any().nullish(),
+  creationDate: z.string().nullish(),
+  modificationDate: z.string().nullish(),
+  entity: z.union([z.string(), ZXmlAttr]).nullish(),
+  entityAdress: z.any().nullish(),
+  beginningDate: z.string().nullish(),
+  directUrl: z.string().nullish(),
+  UrlRedirectionApplicant: z.string().nullish(),
+  mainSupervisor: ZEnedisSupervisor.nullish(),
+  jobDescription: ZEnedisJobDescription,
+  applicantCriteria: ZEnedisApplicantCriteria,
+})
 
 export type IEnedisJob = z.output<typeof ZEnedisJob>
 
@@ -141,7 +156,7 @@ const getXmlTextValue = (value: unknown): string | null => {
 }
 
 export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners => {
-  const { id, reference, creationDate, modificationDate, entity, beginningDate, directUrl, jobDescription, applicantCriteria } = job
+  const { id, creationDate, modificationDate, beginningDate, directUrl, jobDescription, applicantCriteria } = job
 
   const { title, description, missionDescription, applicantProfile, contract, contractLength, location, customFields } = jobDescription
 
@@ -184,19 +199,18 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
   const contractStartRaw = customDatetime1 ?? (beginningDate && beginningDate.trim() ? beginningDate.trim() : null)
   const contract_start = parseEnedisShortDate(contractStartRaw) ?? parseEnedisDate(beginningDate)
 
-  const entityName = getXmlTextValue(entity) ?? "Enedis"
   const urlParsing = z.string().url().safeParse(directUrl)
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.ENEDIS,
-    partner_job_id: reference ?? id,
+    partner_job_id: id,
     offer_title: title,
     offer_description,
     offer_creation: publicationDate,
     offer_expiration,
-    workplace_name: entityName,
+    workplace_name: "Enedis",
     workplace_address_city,
     workplace_address_label: workplace_address_city,
     apply_url: urlParsing.data ?? null,
