@@ -36,7 +36,7 @@ const guideCfaPage = () => {
       />
       <Breadcrumb pages={[PAGES.static.guideCfa]} />
       <DefaultContainer>
-        <Box display={{ md: "flex", xs: "none" }}>
+        <Box display={{ md: "flex", xs: "none" }} id="editorial-content-container">
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>
