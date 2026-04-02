@@ -19,6 +19,6 @@ export const jsonToXml = (json: any): string => {
       })
       .join("")
   } else {
-    throw new Error(`unsupported type: ${typeof json}`)
+    return String(json)
   }
 }
