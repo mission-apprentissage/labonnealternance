@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { AuthWatcher } from "@/app/_components/AuthWatcher"
@@ -16,8 +17,15 @@ export default async function EspaceProConnecteLayout({ children }: PropsWithChi
 
   return (
     <UserContextProvider user={user} access={access}>
+      <SkipLinks
+        links={[
+          { label: "Menu", anchor: "#header-links" },
+          { label: "Contenu", anchor: "#main-content" },
+          { label: "Pied de page", anchor: "#footer-links" },
+        ]}
+      />
       <ConnectedHeader user={user} />
-      <Box component="main" role="main" sx={{ marginBottom: fr.spacing("8v") }}>
+      <Box component="main" id="main-content" tabIndex={-1} role="main" sx={{ marginBottom: fr.spacing("8v") }}>
         {children}
       </Box>
       <Footer />
