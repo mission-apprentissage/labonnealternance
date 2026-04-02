@@ -371,7 +371,6 @@ export const sendApplicationV2 = async ({
   }
 
   try {
-    // TODO check for CFA
     // add applicant_id to application
     const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
