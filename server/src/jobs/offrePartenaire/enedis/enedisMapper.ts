@@ -156,18 +156,28 @@ const getXmlTextValue = (value: unknown): string | null => {
 }
 
 export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners => {
-  const { id, creationDate, modificationDate, beginningDate, directUrl, jobDescription, applicantCriteria } = job
+  const { id, creationDate, entityDescription, modificationDate, directUrl, jobDescription, applicantCriteria } = job
 
-  const { title, description, missionDescription, applicantProfile, contract, contractLength, location, customFields } = jobDescription
+  const { title, description, missionDescription, missionDescriptionFormatted, applicantProfile, applicantProfileFormatted, contract, contractLength, location, customFields } =
+    jobDescription
 
   // Determine contract type from the xml2js parsed value
   let business_error: string | null = null
   let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
   const contractText = getXmlTextValue(contract)
-  if (contractText === "Alternance") {
-    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-  } else {
-    business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+  switch (contractText) {
+    case "Alternance":
+      contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+      break
+    case "Stage":
+      business_error = JOB_PARTNER_BUSINESS_ERROR.STAGE
+      break
+    case "CDI":
+    case "CDD":
+      business_error = JOB_PARTNER_BUSINESS_ERROR.FULL_TIME
+      break
+    default:
+      business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
   }
 
   const contract_duration = contractLength ? parseInt(contractLength, 10) || null : null
@@ -181,10 +191,20 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
 
   // Build description by combining available fields
   const descriptionParts: string[] = []
-  if (description) descriptionParts.push(description)
-  if (missionDescription && missionDescription !== description) descriptionParts.push(`Mission :\n\n${missionDescription}`)
-  if (applicantProfile) descriptionParts.push(`Profil recherché :\n\n${applicantProfile}`)
-  const offer_description = descriptionParts.join("\n\n").trim() || null
+  if (missionDescriptionFormatted || missionDescription || description) {
+    descriptionParts.push((missionDescriptionFormatted ?? missionDescription ?? description)!)
+  }
+
+  if (applicantProfileFormatted || applicantProfile) {
+    descriptionParts.push(`Profil recherché :<br /><br />${applicantProfileFormatted ?? applicantProfile}`)
+  }
+
+  const remuneration = applicantCriteria?.customFields?.list1?._?.trim() ?? null
+  if (remuneration) {
+    descriptionParts.push(`Rémunération : ${remuneration}`)
+  }
+
+  const offer_description = descriptionParts.join("<br /><br />").trim() || null
 
   // Dates
   const now = new Date()
@@ -195,9 +215,7 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
     .toDate()
 
   // Contract start from customFields datetime1 or beginningDate
-  const customDatetime1 = typeof customFields?.datetime1 === "string" ? customFields.datetime1 : null
-  const contractStartRaw = customDatetime1 ?? (beginningDate && beginningDate.trim() ? beginningDate.trim() : null)
-  const contract_start = parseEnedisShortDate(contractStartRaw) ?? parseEnedisDate(beginningDate)
+  const contract_start = customFields?.datetime1?._?.trim() ? parseEnedisShortDate(customFields.datetime1._.trim()) : null
 
   const urlParsing = z.string().url().safeParse(directUrl)
 
@@ -213,6 +231,7 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
     workplace_name: "Enedis",
     workplace_address_city,
     workplace_address_label: workplace_address_city,
+    workplace_description: entityDescription,
     apply_url: urlParsing.data ?? null,
     contract_type,
     contract_duration,
