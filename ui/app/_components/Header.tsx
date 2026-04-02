@@ -14,6 +14,7 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
   homeLinkProps: {
     href: "/",
     title: "Accueil - La bonne alternance",
+    "aria-label": "Accueil - La bonne alternance",
   },
   operatorLogo: {
     alt: "La bonne alternance",
