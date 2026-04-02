@@ -48,9 +48,6 @@
       <location>
         <jobLocation>Evry Courcouronnes</jobLocation>
       </location>
-      <customFields>
-        <list3 id="49434" clientcode="_TS_Langue_Offre_FR" customCodeTableTypeId="49433" label="Langue de l'offre">Français</list3>
-      </customFields>
     </jobDescription>
     <applicantCriteria>
       <country id="79" clientcode="_TS_CO_Country_France">France</country>
@@ -115,9 +112,6 @@
       <location>
         <jobLocation>La Defense</jobLocation>
       </location>
-      <customFields>
-        <list3 id="49434" clientcode="_TS_Langue_Offre_FR" customCodeTableTypeId="49433" label="Langue de l'offre">Français</list3>
-      </customFields>
     </jobDescription>
     <applicantCriteria>
       <country id="79" clientcode="_TS_CO_Country_France">France</country>

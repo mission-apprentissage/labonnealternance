@@ -62,6 +62,12 @@ const ZEnedisJobDescription = z
 const ZEnedisApplicantCriteria = z
   .object({
     diploma: ZEnedisDiploma,
+    customFields: z
+      .object({
+        list1: z.union([z.string(), ZXmlAttr]).nullish(), // Used for remuneration in the mapper
+      })
+      .passthrough()
+      .nullish(),
   })
   .passthrough()
   .nullish()
@@ -199,7 +205,7 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
     descriptionParts.push(`Profil recherché :<br /><br />${applicantProfileFormatted ?? applicantProfile}`)
   }
 
-  const remuneration = applicantCriteria?.customFields?.list1?._?.trim() ?? null
+  const remuneration = getXmlTextValue(applicantCriteria?.customFields?.list1) ?? null
   if (remuneration) {
     descriptionParts.push(`Rémunération : ${remuneration}`)
   }
@@ -215,7 +221,8 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
     .toDate()
 
   // Contract start from customFields datetime1 or beginningDate
-  const contract_start = customFields?.datetime1?._?.trim() ? parseEnedisShortDate(customFields.datetime1._.trim()) : null
+  const dateTime = getXmlTextValue(customFields?.datetime1) ?? null
+  const contract_start = dateTime ? parseEnedisShortDate(dateTime) : null
 
   const urlParsing = z.string().url().safeParse(directUrl)
 
