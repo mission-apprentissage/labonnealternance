@@ -18,7 +18,7 @@ export const PARTNER_WHITELIST: string[] = [
   "BPCE",
   "Amazon",
   "Daher",
-  "Enedis",
+  JOBPARTNERS_LABEL.ENEDIS,
   "Framatome",
   "GRDF",
   "Bpifrance",

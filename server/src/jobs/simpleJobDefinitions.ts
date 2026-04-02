@@ -1,3 +1,4 @@
+import { processEdf } from "@/jobs/offrePartenaire/edf/processEdf"
 import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -409,6 +410,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEdf,
+    description: "Import du flux EDF jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: processEnedis,

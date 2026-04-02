@@ -153,6 +153,7 @@ const config = {
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
+  edfUrl: env.get("EDF_FLUX_URL").required().asString(),
   enedisUrl: env.get("ENEDIS_FLUX_URL").required().asString(),
   leboncoinUrl: env.get("LEBONCOIN_FLUX_URL").required().asString(),
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
@@ -160,7 +161,6 @@ const config = {
   jobteaserPassword: env.get("JOBTEASER_FLUX_PASSWORD").required().asString(),
   passUrl: "https://www.pass.fonction-publique.gouv.fr/flux/offres",
   decathlonUrl: env.get("DECATHLON_FLUX_URL").required().asString(),
-  edfUrl: "https://edf-recrute.talent-soft.com/handlers/offerxml.ashx?top=10000",
   franceTravailCegidFlux: {
     url: env.get("FRANCE_TRAVAIL_CEGID_FLUX_URL").required().asString(),
     clientId: env.get("FRANCE_TRAVAIL_CEGID_FLUX_CLIENT_ID").required().asString(),
