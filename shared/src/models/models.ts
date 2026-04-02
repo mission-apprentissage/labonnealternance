@@ -38,6 +38,7 @@ import rawAtlasModel from "./rawAtlas.model.js"
 import rawDecathlonModel from "./rawDecathlon.model.js"
 import rawEdfModel from "./rawEdf.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
+import rawEnedisModel from "./rawEnedis.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
 import rawEtudiantModel from "./rawEtudiant.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
@@ -110,6 +111,7 @@ const modelDescriptorMap = {
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEdfModel.collectionName]: rawEdfModel,
+  [rawEnedisModel.collectionName]: rawEnedisModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
   [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
   [rawEtudiantModel.collectionName]: rawEtudiantModel,
