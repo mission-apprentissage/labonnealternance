@@ -50,7 +50,7 @@ const ApprentissageEtHandicapPage = async ({ searchParams }: { searchParams: Pro
 
   const descriptionParts = [
     "En France on estime que 8% de la population est en situation de handicap. Ces personnes rencontrent malheureusement des difficultés multiples pour accéder à un emploi du fait d'une méconnaissance du handicap et d'idées reçues.",
-    "L’apprentissage constitue un levier privilégié pour l’accès et le maintien dans l’emploi des personnes handicapées, en garantissant une formation certifiante, une rémunération et une insertion professionnelle rapide et durable. En 2025, plus de 15 000 contrats d'apprentissage avaient été signés grâce à une politique publique volontariste et inclusive.",
+    "L’apprentissage constitue un levier privilégié pour l’accès et le maintien dans l’emploi des personnes handicapées, en garantissant une formation certifiante, une rémunération et une insertion professionnelle rapide et durable. En 2025, plus de 15 000 contrats d'apprentissage ont été signés grâce à une politique publique volontariste et inclusive.",
     "Avoir un handicap ne signifie en aucun cas être moins compétent. Pourtant, les idées reçues persistent… La réalité ? Les personnes non sensibilisées pensent uniquement au handicap moteur, pourtant 80 % des handicaps sont invisibles. Ils peuvent tout autant nécessiter des aménagements.",
     "Pour faciliter la formation du jeune travailleur en situation de handicap, certaines règles du contrat d’apprentissage sont aménagées comme la durée du contrat, le temps de travail, le déroulement de la formation ou encore la limite d’âge.",
   ]
