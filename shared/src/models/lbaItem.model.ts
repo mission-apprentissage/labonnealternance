@@ -260,8 +260,7 @@ const ZLbaItemJob = z
     offer_access_conditions: z.array(z.string()).nullish(), // partner -> offer_access_conditions
     contract_rythm: z.string().nullish(),
     isDelegated: z.boolean().nullish(), // partner -> is_delegated
-    // vient de la liste des cfa d'entreprise cf shared/src/services/isCfaEntreprise.ts
-    isCfaEntreprise: z.boolean().nullish(), //
+    isCfaEntreprise: z.boolean().nullish(), // issu de la liste des cfa d'entreprise cf shared/src/services/isCfaEntreprise.ts
   })
   .strict()
   .openapi("LbacJob") // uniquement pour pe et matcha
