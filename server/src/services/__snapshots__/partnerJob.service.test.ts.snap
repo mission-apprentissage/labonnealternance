@@ -32,6 +32,8 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "elligibleHandicap": false,
         "employeurDescription": null,
         "id": "job-id-1",
+        "isCfaEntreprise": false,
+        "isDelegated": false,
         "jobExpirationDate": 2050-01-01T00:00:00.000Z,
         "jobStartDate": null,
         "offer_access_conditions": [],
@@ -100,6 +102,8 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
       "job": {
         "creationDate": 2021-01-01T00:00:00.000Z,
         "elligibleHandicap": false,
+        "isCfaEntreprise": false,
+        "isDelegated": false,
       },
       "place": {
         "city": "PARIS",
