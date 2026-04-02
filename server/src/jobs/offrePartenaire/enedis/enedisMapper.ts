@@ -226,6 +226,23 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
 
   const urlParsing = z.string().url().safeParse(directUrl)
 
+  /*
+  Récupération du service de l'offre : il est indiqué dans jobDescription.profile et jobDescription.jobFamily , mais parfois aussi dans entity. 
+  On peut trouver des valeurs comme "Service Distribution France entière" ou "Service Client France entière", on va extraire le nom du service (Distribution, Client) 
+  pour le mettre dans workplace_name et workplace_description, et garder la mention complète dans entityDescription pour la description de l'entreprise.  
+
+  Récupération du département dans jobDescription.location.departements.departement._ à mettre dans workplace_address à la suite de workplace_address_city
+
+  Récupération de jobDescription.customFields.longText1Formatted qui contient parfois des informations complémentaires sur le poste (ex: "Poste basé à Lyon mais possibilité de télétravail 2 jours par semaine") à mettre dans offer_description
+
+  Récupération de applicantCriteria.specialisation.specialisation.specialisation qui peut rarement contenir qq chose à mettre dans offer_desired_skills
+
+  finaliser les tests EDF
+
+  corriger les tests Enedis et Edf sur les dates à Omit pour cause de différence de TZ sur GitHub Actions et en local
+
+  */
+
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
