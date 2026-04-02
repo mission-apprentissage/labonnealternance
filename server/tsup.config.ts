@@ -12,7 +12,7 @@ const __dirname = (filePath: string): string => {
 export default defineConfig((options) => {
   const isDev = options.env?.NODE_ENV !== "production"
   const isWatched = options.env?.TSUP_WATCH === "true"
-  const migrationFiles = fs.readdirSync(path.join(__dirname(import.meta.url), "./src/migrations"))
+  const migrationFiles = fs.readdirSync(path.join(__dirname(import.meta.url), "./src/migrations")).filter((f) => f.endsWith(".ts"))
 
   const entry: Record<string, string> = {
     index: "src/index.ts",

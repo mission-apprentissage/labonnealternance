@@ -40,9 +40,15 @@ const myConfig = {
 }
 
 async function listMigrationFiles(): Promise<string[]> {
-  const files = await readdir(myConfig.migrationsDir, { withFileTypes: true })
-
-  return files.filter((file) => file.isFile() && file.name.endsWith(myConfig.migrationFileExtension)).map((file) => file.name)
+  try {
+    const files = await readdir(myConfig.migrationsDir, { withFileTypes: true })
+    return files.filter((file) => file.isFile() && file.name.endsWith(myConfig.migrationFileExtension)).map((file) => file.name)
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+      return []
+    }
+    throw e
+  }
 }
 
 async function getAppliedMigrations(): Promise<Map<string, Date>> {
@@ -69,7 +75,7 @@ export async function up(): Promise<number> {
         await getDatabase().collection(myConfig.changelogCollectionName).insertOne({ fileName: migrationFile, appliedAt: new Date() })
         console.info(`${migrationFile} : APPLIED`)
       } catch (e) {
-        throw withCause(internal("Error applying migration", { migrationFile }), e as Error)
+        throw withCause(internal(`Error applying migration: ${(e as Error).message}`, { migrationFile }), e as Error)
       }
     }
   }
