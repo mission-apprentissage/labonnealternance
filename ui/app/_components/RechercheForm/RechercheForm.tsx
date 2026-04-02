@@ -1,11 +1,9 @@
-"use client"
-
 import { Box } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { Formik } from "formik"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
-import { zDiplomaParam } from "shared/routes/_params"
+import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -31,7 +29,7 @@ const ZRechercheForm = z.object({
   displayedItemTypes: z.array(extensions.buildEnum(UserItemTypes)),
   radius: z.string().nullish(),
   diploma: zDiplomaParam.nullish(),
-  typesEmploi: z.array(z.string()).nullish(),
+  typesEmploi: zTypesEmploiParam.nullish(),
   elligibleHandicapFilter: z.boolean().nullish(),
 })
 

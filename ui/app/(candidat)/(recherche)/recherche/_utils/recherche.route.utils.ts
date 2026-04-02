@@ -45,7 +45,7 @@ export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
 
 function deserializeTypesEmploi(typesEmploiRaw: string | null): ITypeEmploi[] {
   if (!typesEmploiRaw) return []
-  return typesEmploiRaw.split(",").filter((v): v is ITypeEmploi => v in TYPE_EMPLOI_OPTIONS)
+  return typesEmploiRaw.split(",").filter((typeEmploi): typeEmploi is ITypeEmploi => Object.hasOwn(TYPE_EMPLOI_OPTIONS, typeEmploi))
 }
 
 export function getItemReference(item: ItemReferenceLike): ItemReference {
