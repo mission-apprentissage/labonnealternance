@@ -103,7 +103,7 @@ export function MultiSelectField({
         }}
       />
       <Popper open={open} anchorEl={anchorRef.current} placement="bottom-start" sx={{ zIndex: 1300, minWidth: anchorRef.current?.offsetWidth, ...popperSx }} disablePortal>
-        <ClickAwayListener onClickAway={() => setOpen(false)}>
+        <ClickAwayListener mouseEvent="onMouseDown" onClickAway={() => setOpen(false)}>
           <Box
             role="listbox"
             onClick={(e) => e.stopPropagation()}
