@@ -55,7 +55,7 @@ export function RechercheTypesEmploiSelect({
   const handleToggle = useCallback(
     (toggledValue: string, checked: boolean, newValue: string[]) => {
       pushMatomoEvent({
-        event: "filter_type_offer_changed",
+        event: MATOMO_EVENTS.FILTER_TYPE_EMPLOI_CHANGED,
         filter_label: toggledValue,
         filter_checked: checked,
         filter_result_count: hasResults ? countByTypeEmploi(allJobs, toggledValue as ITypeEmploi) : 0,
