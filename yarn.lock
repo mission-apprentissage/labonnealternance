@@ -12059,14 +12059,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"katex@npm:^0.16.21":
-  version: 0.16.23
-  resolution: "katex@npm:0.16.23"
+"katex@npm:0.16.21":
+  version: 0.16.21
+  resolution: "katex@npm:0.16.21"
   dependencies:
     commander: ^8.3.0
   bin:
     katex: cli.js
-  checksum: 92bdadcb62be2a4b7f28fde89f2545d753e0d89a6d1edd9ecdf127469e736bd996ab6d7c3692dd296215989974137752da1afd1535b601b6920afa70752c1c75
+  checksum: 14180322a4e8fe9e4227a08b7d86fde9ee445859ff534e6a540b85eb5022b39ea2be70082776cce8c59b891c247fce3d1c1a090ea7821e005fd8b7bfee714936
   languageName: node
   linkType: hard
 
@@ -14291,10 +14291,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"notion-types@npm:7.10.0":
+  version: 7.10.0
+  resolution: "notion-types@npm:7.10.0"
+  checksum: 7ab8b81fddffa643a6400bf1a12b02b7774075163d990457bb1116b6cc2d7034cd854d206f71fe40f3add579d6bb9ef09795a5954bb087e9c664e6bfb2b2fd95
+  languageName: node
+  linkType: hard
+
 "notion-types@npm:7.7.1":
   version: 7.7.1
   resolution: "notion-types@npm:7.7.1"
   checksum: de1e8085ba93e31896725b6fef5642563777ae2c7f8acd2d94c80d7f8e54f1a2ed142836b0312682372508248e323b2d22243557c9de1376e5544796cff04a1e
+  languageName: node
+  linkType: hard
+
+"notion-utils@npm:7.10.0":
+  version: 7.10.0
+  resolution: "notion-utils@npm:7.10.0"
+  dependencies:
+    is-url-superb: ^6.1.0
+    memoize: ^10.1.0
+    normalize-url: ^8.0.1
+    notion-types: 7.10.0
+    p-queue: ^8.1.0
+  checksum: 24bed992fe9c892b63b30dffde30bcd3b02a651fcc35d7b4bd9e3034a8f93a18ec99e13226b72fe452a0725f46bd892b7a7c2d9f039ed8e07199f82dba86e33c
   languageName: node
   linkType: hard
 
@@ -15985,15 +16005,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-notion-x@npm:^7.7.1":
-  version: 7.7.1
-  resolution: "react-notion-x@npm:7.7.1"
+"react-notion-x@npm:^7.10.0":
+  version: 7.10.0
+  resolution: "react-notion-x@npm:7.10.0"
   dependencies:
     "@fisch0920/medium-zoom": ^1.0.7
     "@matejmazur/react-katex": ^3.1.3
-    katex: ^0.16.21
-    notion-types: 7.7.1
-    notion-utils: 7.7.1
+    katex: 0.16.21
+    notion-types: 7.10.0
+    notion-utils: 7.10.0
     prismjs: ^1.30.0
     react-fast-compare: ^3.2.0
     react-hotkeys-hook: ^4.5.1
@@ -16008,7 +16028,7 @@ __metadata:
   dependenciesMeta:
     react-pdf:
       optional: true
-  checksum: 8f20567647970e6c958b95ab34cf0339dad47d67801182811001e5cb6dce5285b42fe051a94652697ec327ff024c205866b81b96aec97c0d20d0070a8277a090
+  checksum: 36c5e0e0821cec9b2c97e4c273127bbd2216d32be3f81e500869f7fb7e4ae00b20e74998d3c73b08b690968c6a3b582039cf47dbe4eadd35f9c77358d8669d46
   languageName: node
   linkType: hard
 
@@ -18616,7 +18636,7 @@ __metadata:
     react-dates: ^21.8.0
     react-dom: 19.2.3
     react-dropzone: 14.3.8
-    react-notion-x: ^7.7.1
+    react-notion-x: ^7.10.0
     react-qr-code: ^2.0.18
     react-swipeable: 7.0.2
     react-table: ^7.8.0
