@@ -1,24 +1,26 @@
 import type { CronDef } from "job-processor"
-
-import { processMeteojob, processAtlas, processViteUnEmploi, processNosTalentsNosEmplois, processToulouseMetropole } from "./clever-connect/processCleverConnect"
+import { processApec } from "./apec/processApec"
+import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/processCleverConnect"
+// import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
+import { processDecathlon } from "./decathlon/importDecathlon"
+import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
+import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 import { processHellowork } from "./hellowork/processHellowork"
 import { processJobteaser } from "./jobteaser/processJobteaser"
 // import { processJooble } from "./jooble/processJooble"
 import { processKelio } from "./kelio/processKelio"
 import { processLaposte } from "./laposte/processLaposte"
+import { processLeboncoin } from "./leboncoin/processLeboncoin"
 import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
+import { processMissingRomeAndImportToJobPartners } from "./processMissingRomeAndImportToJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
-import { processLeboncoin } from "./leboncoin/processLeboncoin"
-// import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
-import { processDecathlon } from "./decathlon/importDecathlon"
-import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
-import { processApec } from "./apec/processApec"
 
 const timings = {
   import_source: "0 0 * * *",
   process_computed: "1 0 * * *",
+  process_missing_rome: "*/15 * * * *",
 }
 
 export const importers: Record<string, CronDef> = {
@@ -140,13 +142,27 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 30,
   },
+  "Import Emploi Inclusion": {
+    cron_string: timings.import_source,
+    handler: processEmploiInclusion,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
+  },
+  "Process missing Rome and import to Jobs Partners": {
+    cron_string: timings.process_missing_rome,
+    handler: processMissingRomeAndImportToJobPartners,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 15,
+    tag: "slave",
+    resumable: true,
+  },
 
   // Keep at the end
   "Process computed and import to Jobs Partners": {
     cron_string: timings.process_computed,
     handler: processComputedAndImportToJobPartners,
     checkinMargin: 350,
-    maxRuntimeInMinutes: 120,
+    maxRuntimeInMinutes: 300,
     tag: "slave",
     resumable: true,
   },

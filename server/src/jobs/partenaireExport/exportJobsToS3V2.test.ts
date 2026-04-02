@@ -1,16 +1,15 @@
 import fs from "node:fs/promises"
-import type Stream from "stream"
-
-import { ObjectId } from "mongodb"
-import { JOB_STATUS_ENGLISH } from "shared"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-
-import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
-import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "./exportJobsToS3V2"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { streamToString } from "@/common/utils/streamUtils"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { ObjectId } from "mongodb"
+import { JOB_STATUS_ENGLISH } from "shared"
+
+import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
+import type Stream from "stream"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { streamToString } from "@/common/utils/streamUtils"
+import { EXPORT_JOBS_TO_S3_V2_FILENAME, exportJobsToS3V2 } from "./exportJobsToS3V2"
 
 useMongo()
 
@@ -25,7 +24,7 @@ const exportJobsToS3V2ForTests = async () => {
 
 describe("exportJobsToS3V2", () => {
   beforeEach(async () => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2024-08-21"))
 
     return async () => {

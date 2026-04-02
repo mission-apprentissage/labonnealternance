@@ -49,6 +49,10 @@ services:
       resources:
         limits:
           memory: 5g
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
     ports:
       - "127.0.0.1:27017:27017"
     command: ["-f", "/etc/mongod/mongod.conf"]
@@ -58,9 +62,9 @@ services:
     healthcheck:
       test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
       interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
+      timeout: 20s
+      retries: 30
+      start_period: 30s
     labels:
       - autoheal=true
 

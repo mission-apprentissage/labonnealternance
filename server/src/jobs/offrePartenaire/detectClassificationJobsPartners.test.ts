@@ -1,13 +1,12 @@
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
-
-import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({ shouldNotifySlack: false })
 
@@ -27,7 +26,6 @@ describe("detectClassificationJobsPartners", () => {
         label: "publish",
         model: "model",
         scores: { publish: 0.6, unpublish: 0.4 },
-        text: "Software Engineer",
       },
     ]
     nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, apiResponse)
@@ -130,7 +128,6 @@ describe("detectClassificationJobsPartners", () => {
         label: "unpublish",
         model: "model",
         scores: { publish: 0.3, unpublish: 0.7 },
-        text: "Software Engineer",
       },
     ]
     nock(config.labonnealternanceLab.baseUrl).post("/model/scores").reply(200, unpublishResponse)

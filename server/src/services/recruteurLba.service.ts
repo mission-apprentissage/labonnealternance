@@ -2,26 +2,25 @@ import { badRequest, internal, notFound } from "@hapi/boom"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
-import { ERecruteurLbaUpdateEventType, JobCollectionName } from "shared"
+import { ERecruteurLbaUpdateEventType, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
-
-import type { IApplicationCount } from "./application.service"
-import { getApplicationByCompanyCount } from "./application.service"
-import { generateApplicationToken } from "./appLinks.service"
-import type { TLbaItemResult } from "./jobOpportunity.service.types"
-import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
-import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { isAllowedSource } from "@/common/utils/isAllowedSource"
+import { encryptMailWithIV } from "@/common/utils/encryptString"
 import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
-import { encryptMailWithIV } from "@/common/utils/encryptString"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
+import { isAllowedSource } from "@/common/utils/isAllowedSource"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { generateApplicationToken } from "./appLinks.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByCompanyCount } from "./application.service"
+import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import { getRecipientID } from "./jobs/jobOpportunity/jobOpportunity.service"
+import type { ILbaItemLbaCompany } from "./lbaitem.shared.service.types"
 
 const setDistance = (distance: number | null | undefined) => {
   if (distance != null && distance != undefined && distance >= 0) {
@@ -48,7 +47,7 @@ const transformCompany = ({
     email?: string
     iv?: string
     phone?: string | null
-  } = encryptMailWithIV({ value: company.apply_email !== "null" ? company.apply_email : "" })
+  } = encryptMailWithIV({ value: company.apply_email || "" })
 
   if (contactAllowedOrigin) {
     contact.phone = company.apply_phone
@@ -58,10 +57,14 @@ const transformCompany = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    status: company.offer_status,
     // ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
-    contact,
+    contact: {
+      ...contact,
+      hasEmail: company.apply_email ? true : false,
+    },
     place: {
       distance: setDistance(company.distance),
       fullAddress: company.workplace_address_label,
@@ -110,9 +113,9 @@ const transformCompanyWithMinimalData = ({
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
 
   const applicationCount = applicationCountByCompany.find((cmp) => company.workplace_siret == cmp._id)
-
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE_OLD.LBA,
+    status: company.offer_status,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     place: {
@@ -136,6 +139,9 @@ const transformCompanyWithMinimalData = ({
     applicationCount: applicationCount?.count || 0,
     token: generateApplicationToken({ company_siret: company.workplace_siret! }),
     recipient_id: getRecipientID(JobCollectionName.partners, company._id.toString()),
+    contact: {
+      hasEmail: company.apply_email ? true : false,
+    },
   }
 
   return resultCompany
@@ -155,11 +161,12 @@ const transformCompanyV2 = ({
 
   const resultCompany: ILbaItemLbaCompany = {
     ideaType: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+    status: company.offer_status,
     id: company.workplace_siret!,
     title: company.workplace_brand || company.workplace_legal_name,
     contact: {
       phone: company.apply_phone,
-      email: company.apply_email,
+      hasEmail: company.apply_email ? true : false,
     },
     place: {
       distance: setDistance(company.distance),
@@ -246,7 +253,7 @@ export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements, p
     return []
   }
 
-  const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
+  const query: Filter<IJobsPartnersOfferPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }
 
   if (romes) {
     query.offer_rome_codes = { $in: romes }
@@ -316,7 +323,7 @@ const getCompanies = async ({
   try {
     const distance = radius || 10
 
-    const query: Filter<IJobsPartnersRecruteurAlgoPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA }
+    const query: Filter<IJobsPartnersRecruteurAlgoPrivate> = { partner_label: LBA_ITEM_TYPE.RECRUTEURS_LBA, offer_status: JOB_STATUS_ENGLISH.ACTIVE }
 
     if (romes) {
       query.offer_rome_codes = { $in: romes?.split(",") }

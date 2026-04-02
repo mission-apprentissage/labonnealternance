@@ -2,14 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Card } from "@codegouvfr/react-dsfr/Card"
 import { Box, Typography } from "@mui/material"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
-
-import { CardStyling } from "./CardStyling"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useResultItemUrl } from "@/app/(candidat)/(recherche)/recherche/_hooks/useResultItemUrl"
 import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import { getDaysSinceDate } from "@/utils/dateUtils"
+import { CardStyling } from "./CardStyling"
 
 type ResultCardProps = WithRecherchePageParams<{
   active: boolean
@@ -180,7 +179,12 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
 
               <Box
                 component="span"
-                sx={{ alignItems: { xs: "left", sm: "left", md: "center" }, display: "flex", gap: fr.spacing("4v"), flexDirection: { xs: "column", sm: "column", md: "row" } }}
+                sx={{
+                  alignItems: { xs: "left", sm: "left", md: "center" },
+                  gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                }}
               >
                 <DatePublication item={item} />
                 <CandidatureCount item={item} />

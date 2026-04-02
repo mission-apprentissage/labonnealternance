@@ -90,7 +90,9 @@ export const fetchInserJeunesStats = async (zipcode: string, cfd: string) => {
     if (error.response?.status === 404) {
       return null
     }
-    sentryCaptureException(error, { extra: { responseData: error.response?.data, zipcode, cfd } })
+    if (error.response?.status !== 502) {
+      sentryCaptureException(error, { extra: { responseData: error.response?.data, zipcode, cfd } })
+    }
     throw internal("Erreur lors de la récupération des données InserJeunes")
   }
 }

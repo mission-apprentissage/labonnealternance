@@ -4,13 +4,15 @@ on:
     types: [created]
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: hmarr/debug-action@v2
-
   deploy_preview:
-    if: (startsWith(github.event.comment.body, '🚀') || startsWith(github.event.comment.body, ':rocket:')) && github.event.issue.pull_request
+    if: |
+      (contains(github.event.comment.body, '🚀') || contains(github.event.comment.body, ':rocket:'))
+      && github.event.issue.pull_request
+      && (
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'
+      )
     concurrency:
       group: ${{ github.workflow }}-${{ github.event.issue.id }}
       cancel-in-progress: true
@@ -47,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ steps.get-branch.outputs.branch }}
           token: ${{ secrets.TOKEN_MNA_SHARED }}
@@ -57,7 +59,7 @@ jobs:
         run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
 
       - name: LFS Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .git/lfs/objects
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -90,11 +92,23 @@ jobs:
         run: |
           sudo pipx inject ansible-core jmespath
 
+      - name: Detect force reseed
+        id: force_seed
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          if printf '%s' "$COMMENT_BODY" | grep -qF '🌱'; then
+            echo "value=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run playbook
         run: .bin/mna-lba app:deploy preview "${{ github.event.issue.number }}"
         env:
           ANSIBLE_REMOTE_USER: deploy
           ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS_PREVIEW }}
+          FORCE_SEED: ${{ steps.force_seed.outputs.value }}
 
       - name: Encrypt logs
         run: .bin/mna-lba app:deploy:log:encrypt
@@ -102,7 +116,7 @@ jobs:
 
       - name: Upload logs artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-${{ github.event.issue.number }}
           path: /tmp/deploy.log.gpg
@@ -128,7 +142,8 @@ jobs:
 
             You can access runner logs in ${{ steps.run_url.outputs.url }}
 
-            To re-deploy just add a comment with :rocket:
+            To re-deploy just add a comment with :rocket: (data is preserved)
+            To re-deploy and reset data add a comment with :seedling: :rocket:
           comment-tag: deployment
           mode: recreate
           pr-number: ${{ github.event.issue.number }}

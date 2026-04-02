@@ -1,19 +1,26 @@
+import type { Filter } from "mongodb"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-
-import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
-import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST } from "shared/models/jobsPartnersComputed.model"
 import { getClassificationFromLab } from "@/services/cacheClassification.service"
+import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
+import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 export const detectClassificationJobsPartners = async ({ addedMatchFilter, shouldNotifySlack }: FillComputedJobsPartnersContext) => {
   const filledFields = ["business_error"] as const satisfies (keyof IComputedJobsPartners)[]
+
+  const filters: Filter<IComputedJobsPartners>[] = [{ partner_label: { $nin: PARTNER_WHITELIST } }]
+  if (addedMatchFilter) {
+    filters.push(addedMatchFilter)
+  }
 
   return fillFieldsForComputedPartnersFactory({
     job: COMPUTED_ERROR_SOURCE.CLASSIFICATION,
     sourceFields: ["workplace_description", "workplace_name", "offer_description", "offer_title", "partner_job_id", "partner_label"],
     filledFields,
-    groupSize: 100,
-    addedMatchFilter,
+    groupSize: 50,
+    addedMatchFilter: {
+      $and: filters,
+    },
     getData: async (documents) => {
       const payload = documents.map((document) => {
         const { workplace_description, offer_description, offer_title, workplace_name, partner_job_id, partner_label } = document

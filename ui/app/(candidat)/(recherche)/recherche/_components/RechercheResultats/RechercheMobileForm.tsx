@@ -1,5 +1,6 @@
 "use client"
 
+import { RechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheElligibleHandicapCheckboxFormik } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheInputsLayout } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheInputsLayout"
 import { RechercheLieuAutocomplete } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheLieuAutocomplete"
@@ -11,7 +12,6 @@ import { RechercheSubmitButton } from "@/app/(candidat)/(recherche)/recherche/_c
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { RechercheForm, rechercheFormToRechercheParams } from "@/app/_components/RechercheForm/RechercheForm"
 
 export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)

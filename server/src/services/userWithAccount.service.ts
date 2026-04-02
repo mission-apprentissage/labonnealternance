@@ -7,22 +7,21 @@ import { AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserStatusEvent, IUserWithAccount } from "shared/models/userWithAccount.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
 import { assertUnreachable, getLastStatusEvent } from "shared/utils/index"
-
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { checkForJobActivations } from "./formulaire.service"
 import { createAdminUser, createOpcoUser } from "./userRecruteur.service"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { asyncForEach } from "@/common/utils/asyncUtils"
 
-export const createUser2IfNotExist = async (
+export const findOrCreateUserWithAccount = async (
   userProps: Omit<IUserWithAccount, "_id" | "createdAt" | "updatedAt" | "status">,
   is_email_checked: boolean,
   grantedBy: string
-): Promise<IUserWithAccount> => {
+): Promise<{ user: IUserWithAccount; created: boolean }> => {
   const { first_name, last_name, last_action_date, origin, phone } = userProps
   const formatedEmail = userProps.email.toLocaleLowerCase()
 
-  let user = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
-  if (!user) {
+  const existingUser = await getDbCollection("userswithaccounts").findOne({ email: formatedEmail })
+  if (!existingUser) {
     const id = new ObjectId()
     grantedBy = grantedBy || id.toString()
     const status: IUserStatusEvent[] = []
@@ -56,9 +55,9 @@ export const createUser2IfNotExist = async (
       updatedAt: now,
     }
     await getDbCollection("userswithaccounts").insertOne(userFields)
-    user = userFields
+    return { user: userFields, created: true }
   }
-  return user
+  return { user: existingUser, created: false }
 }
 
 export const validateUserWithAccountEmail = async (id: IUserWithAccount["_id"], reason = "validation de l'email par l'utilisateur"): Promise<IUserWithAccount> => {

@@ -1,4 +1,6 @@
-import dayjs from "shared/helpers/dayjs"
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "shared/constants/index"
@@ -8,21 +10,18 @@ import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fi
 import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { clichyFixture, generateReferentielCommuneFixtures, levalloisFixture, marseilleFixture, parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
+import dayjs from "shared/helpers/dayjs"
 import type { IGeoPoint, IRecruiter, IReferentielRome } from "shared/models/index"
 import { JOB_STATUS } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import type { IJobOfferApiWriteV3Input } from "shared/routes/v3/jobs/jobs.routes.v3.model"
+import { zJobOfferApiReadV3 } from "shared/routes/v3/jobs/jobs.routes.v3.model"
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { certificationFixtures } from "@/services/external/api-alternance/certification.fixture"
 import { startRecruiterChangeStream } from "@/services/formulaire.service"
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/apis/franceTravail/franceTravail.client")
 vi.mock("@/common/apis/apiEntreprise/apiEntreprise.client")
@@ -384,6 +383,25 @@ describe("POST /jobs", async () => {
 
     // Ensure that the job offer is associated to the correct permission
     expect(doc?.partner_label).toBe("Un super Partenaire")
+  })
+
+  it("should create a new job offer with forced_partner_job_id", async () => {
+    const response = await httpClient().inject({
+      method: "POST",
+      path: `/api/v3/jobs`,
+      body: { ...data, identifier: { partner_job_id: "forced_partner_job_id" } },
+      headers: { authorization: `Bearer ${token}` },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+    const responseJson = response.json()
+    expect(responseJson).toEqual({ id: expect.any(String) })
+    expect(await getDbCollection("computed_jobs_partners").countDocuments({ _id: new ObjectId(responseJson.id as string) })).toBe(1)
+    const doc = await getDbCollection("computed_jobs_partners").findOne({ _id: new ObjectId(responseJson.id as string) })
+
+    // Ensure that the job offer is associated to the correct permission
+    expect(doc?.partner_label).toBe("Un super Partenaire")
+    expect(doc?.partner_job_id).toBe("forced_partner_job_id")
   })
 
   it("should apply method be defined", async () => {

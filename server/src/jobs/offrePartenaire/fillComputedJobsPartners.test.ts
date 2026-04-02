@@ -1,3 +1,5 @@
+import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/index"
@@ -5,11 +7,8 @@ import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.f
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
-import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
 const filledFields = [
@@ -33,7 +32,7 @@ describe("fillComputedJobsPartners", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     nock("https://entreprise.api.gouv.fr").get(/.*/).reply(404)

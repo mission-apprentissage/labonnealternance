@@ -11,14 +11,8 @@ import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IRoleManagement, IRoleManagementEvent } from "shared/models/roleManagement.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount, IUserWithAccountFields } from "shared/models/userWithAccount.model"
+import { UserEventType } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import { createAuthMagicLink } from "./appLinks.service"
-import { getFormulaireFromUserIdOrError } from "./formulaire.service"
-import mailer from "./mailer.service"
-import type { Organization, UserAndOrganization } from "./organization.service"
-import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
-import { createUser2IfNotExist, isUserEmailChecked } from "./userWithAccount.service"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
@@ -26,6 +20,12 @@ import config from "@/config"
 import type { RoleManagement360Document } from "@/jobs/metabase/metabaseRoleManagement360"
 import { roleManagement360AggregationStages } from "@/jobs/metabase/metabaseRoleManagement360"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { createAuthMagicLink } from "./appLinks.service"
+import { getFormulaireFromUserIdOrError } from "./formulaire.service"
+import mailer from "./mailer.service"
+import type { Organization, UserAndOrganization } from "./organization.service"
+import { getOrganizationFromRole, modifyPermissionToUser } from "./roleManagement.service"
+import { findOrCreateUserWithAccount, isUserDisabled, isUserEmailChecked } from "./userWithAccount.service"
 
 const entrepriseStatusEventToUserRecruteurStatusEvent = (entrepriseStatusEvent: IEntrepriseStatusEvent, forcedStatus: ETAT_UTILISATEUR): IUserStatusValidation => {
   const { reason, validation_type, granted_by } = entrepriseStatusEvent
@@ -162,7 +162,18 @@ export const createOrganizationUser = async ({
   grantedBy?: string
   statusEvent?: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 }) => {
-  const user = await createUser2IfNotExist(userFields, is_email_checked, grantedBy ?? "")
+  const { user, created } = await findOrCreateUserWithAccount(userFields, is_email_checked, grantedBy ?? "")
+
+  if (!created) {
+    const { first_name, last_name, phone, origin, last_action_date } = userFields
+    const setFields = { first_name, last_name, phone: phone ?? user.phone, origin, last_action_date, updatedAt: new Date() }
+    const reactivationEvent = isUserDisabled(user)
+      ? [{ date: new Date(), status: UserEventType.ACTIF, validation_type: VALIDATION_UTILISATEUR.AUTO, granted_by: grantedBy || user._id.toString(), reason: "re-inscription" }]
+      : []
+    const updateDoc = reactivationEvent.length ? { $set: setFields, $push: { status: { $each: reactivationEvent } } } : { $set: setFields }
+    await getDbCollection("userswithaccounts").updateOne({ _id: user._id }, updateDoc)
+  }
+
   const org = organization.type === CFA ? organization.cfa : organization.entreprise
   const orgId = org._id
   const { type } = organization
@@ -187,7 +198,7 @@ export const createOpcoUser = async (
   opco: OPCOS_LABEL,
   { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }
 ) => {
-  const user = await createUser2IfNotExist(
+  const { user } = await findOrCreateUserWithAccount(
     {
       ...userProps,
       last_action_date: new Date(),
@@ -213,7 +224,7 @@ export const createOpcoUser = async (
 }
 
 export const createAdminUser = async (userProps: IUserWithAccountFields, { grantedBy, origin = "", reason = "" }: { reason?: string; origin?: string; grantedBy: string }) => {
-  const user = await createUser2IfNotExist(
+  const { user } = await findOrCreateUserWithAccount(
     {
       ...userProps,
       last_action_date: new Date(),
@@ -367,12 +378,8 @@ export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], rea
   return setEntrepriseStatus(entrepriseId, reason, EntrepriseStatus.DESACTIVE)
 }
 
-export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) => {
+export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount, role: IRoleManagement) => {
   const { email, first_name, last_name } = user
-  const role = await getDbCollection("rolemanagements").findOne({ user_id: user._id, authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] } })
-  if (!role) {
-    throw internal(`inattendu : pas de role pour user id=${user._id}`)
-  }
   const isCfa = role.authorized_type === AccessEntityType.CFA
   let organization
   if (isCfa) {
@@ -383,7 +390,7 @@ export const sendWelcomeEmailToUserRecruteur = async (user: IUserWithAccount) =>
   if (!organization) {
     throw internal(`inattendu : pas d'organization pour user id=${user._id} et role id=${role._id}`)
   }
-  const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString() })
+  const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString(), establishment_siret: organization.siret })
   const hasJobs = Boolean(recruiter?.jobs.length)
 
   await mailer.sendEmail({
@@ -487,7 +494,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
         origin,
         opco,
         status,
-        organizationId: organization._id,
+        organizationId: organization._id.toString(),
       }
       return userRecruteurForAdmin
     })
@@ -605,7 +612,7 @@ export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatu
       origin,
       opco,
       status,
-      organizationId: organization._id,
+      organizationId: organization._id.toString(),
     }
     return [userRecruteurForAdmin]
   })

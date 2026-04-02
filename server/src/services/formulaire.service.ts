@@ -6,9 +6,11 @@ import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, Up
 import { ObjectId } from "mongodb"
 import type { IDelegation, IJob, IJobCreate, IJobWithRomeDetail, IRecruiter, IRecruiterWithApplicationCount, ITrackingCookies, IUserRecruteur } from "shared"
 import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -17,12 +19,18 @@ import type { IResumeToken, IResumeTokenData } from "shared/models/resumeTokens.
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
-import dayjs from "shared/helpers/dayjs"
-import { getUserManagingOffer } from "./application.service"
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
+import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
 import { createViewDelegationLink } from "./appLinks.service"
+import { getUserManagingOffer } from "./application.service"
 import { getCatalogueFormations } from "./catalogue.service"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { getCity, getLbaJobContactInfo, replaceRecruiterFieldsWithCfaFields } from "./lbajob.service"
 import mailer from "./mailer.service"
 import { anonymizeLbaJobsPartners } from "./partnerJob.service"
@@ -32,15 +40,6 @@ import { getComputedUserAccess, getGrantedRoles } from "./roleManagement.service
 import { getRomeDetailsFromDB } from "./rome.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
-import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
-import config from "@/config"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { changeStreams, getDbCollection } from "@/common/utils/mongodbUtils"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { logger } from "@/common/logger"
 
 type ISentDelegation = {
   raison_sociale: string
@@ -189,8 +188,8 @@ export const createJob = async ({
     throw internal("unexpected: no job found after job creation")
   }
 
-  // if first offer creation for an Entreprise, send specific mail
-  if (jobs.length === 1 && is_delegated === false) {
+  // if first offer is pending validation, skip the publication email (it will be sent when the user validates)
+  if (jobs.length === 1 && is_delegated === false && newJobStatus !== JOB_STATUS.ACTIVE) {
     if (source) {
       await saveJobTrafficSourceIfAny({ job_id: createdJob._id, source })
     }

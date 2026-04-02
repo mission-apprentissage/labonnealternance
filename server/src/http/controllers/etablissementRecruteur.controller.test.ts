@@ -1,18 +1,19 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
+import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
+import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
+import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
 import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
 import type { zRoutes } from "shared/routes/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import mailer from "@/services/mailer.service"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
-import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 
 vi.mock("@/services/mailer.service", () => {
   return {
@@ -32,14 +33,29 @@ describe("POST /etablissement/creation", () => {
 
     const mockEntreprise = nock("https://entreprise.api.gouv.fr/v3/insee")
       .persist()
-      .get(new RegExp("/sirene/etablissements/diffusibles/", "g"))
+      .get(new RegExp("/sirene/etablissements/diffusibles/"))
       .reply(200, apiEntrepriseEtablissementFixture.dinum)
 
-    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+", "g")).reply(200, apiReferentielCatalogueFixture)
+    const mockCfa = nock("https://referentiel.apprentissage.beta.gouv.fr").persist().get(new RegExp("/api/v1/organismes/[0-9]+")).reply(200, apiReferentielCatalogueFixture)
+
+    const mockGeocoding = nock("https://data.geopf.fr:443/geocodage")
+      .persist()
+      .get("/search")
+      .query(true)
+      .reply(200, {
+        features: [
+          {
+            type: "Feature",
+            geometry: parisFixture.centre,
+            properties: generateFeaturePropertyFixture({ city: parisFixture.nom, postcode: parisFixture.codesPostaux[0], name: "20 AVENUE DE SEGUR" }),
+          },
+        ],
+      })
 
     return async () => {
       mockEntreprise.persist(false)
       mockCfa.persist(false)
+      mockGeocoding.persist(false)
       await getDbCollection("recruiters").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()
@@ -117,15 +133,14 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response2.statusCode).toBe(403)
       expect.soft(response2.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
-    it("Vérifie qu'un email ne peut pas créer un compte si l utilisateur existe déjà", async () => {
-      // given
+    it("Vérifie qu'un utilisateur existant sans rôle actif peut recréer un compte", async () => {
+      // given: user exists in DB but has no active role (e.g. previously deleted/cleaned up)
       const { email } = defaultCreationEntreprisePayload
       await saveUserWithAccount({ email })
       // when
       const response = await callCreation({ ...defaultCreationEntreprisePayload, email })
-      // then
-      expect.soft(response.statusCode).toBe(403)
-      expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
+      // then: re-registration is allowed since no active role exists
+      expect.soft(response.statusCode).toBe(200)
     })
 
     it("Envoie un email de confirmation dès la création de compte entreprise", async () => {

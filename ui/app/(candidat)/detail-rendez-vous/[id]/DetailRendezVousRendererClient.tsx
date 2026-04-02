@@ -1,6 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography, List, ListItem } from "@mui/material"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box, List, ListItem, Typography } from "@mui/material"
 import { useFormik } from "formik"
 import { useState } from "react"
 import type { IAppointmentRecapJson } from "shared"
@@ -14,61 +15,74 @@ import { CfaCandidatInformationUnreachable } from "@/components/espace_pro/CfaCa
 import { RdvReasons } from "@/components/RDV/RdvReasons"
 import { apiPost } from "@/utils/api.utils"
 
+type State = "initial" | "sending" | "answered" | "other" | "unreachable" | "error"
+
 export default function DetailRendezVousRendererClient({ appointmentId, appointment, token }: { appointmentId: string; appointment: IAppointmentRecapJson; token: string }) {
-  const [currentState, setCurrentState] = useState("initial")
+  const [currentState, setCurrentState] = useState<State>("initial")
 
   const formik = useFormik({
     initialValues: {
       message: "",
     },
+    validateOnChange: false,
+    validateOnBlur: true,
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
       setCurrentState("sending")
-
-      await apiPost("/appointment-request/reply", {
-        body: {
-          appointment_id: appointmentId,
-          cfa_intention_to_applicant: "personalised_answer",
-          cfa_message_to_applicant: values.message,
-        },
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      })
-
-      setCurrentState("answered")
+      try {
+        await apiPost("/appointment-request/reply", {
+          body: {
+            appointment_id: appointmentId,
+            cfa_intention_to_applicant: "personalised_answer",
+            cfa_message_to_applicant: values.message,
+          },
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        })
+        setCurrentState("answered")
+      } catch {
+        setCurrentState("error")
+      }
     },
   })
 
   const otherClicked = async () => {
     setCurrentState("sending")
-
-    await apiPost("/appointment-request/reply", {
-      body: {
-        appointment_id: appointmentId,
-        cfa_intention_to_applicant: "other_channel",
-        cfa_message_to_applicant: "",
-      },
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    })
-    setCurrentState("other")
+    try {
+      await apiPost("/appointment-request/reply", {
+        body: {
+          appointment_id: appointmentId,
+          cfa_intention_to_applicant: "other_channel",
+          cfa_message_to_applicant: "",
+        },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      setCurrentState("other")
+    } catch {
+      setCurrentState("error")
+    }
   }
+
   const unreachableClicked = async () => {
     setCurrentState("sending")
-
-    await apiPost("/appointment-request/reply", {
-      body: {
-        appointment_id: appointmentId,
-        cfa_intention_to_applicant: "no_answer",
-        cfa_message_to_applicant: "",
-      },
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    })
-    setCurrentState("unreachable")
+    try {
+      await apiPost("/appointment-request/reply", {
+        body: {
+          appointment_id: appointmentId,
+          cfa_intention_to_applicant: "no_answer",
+          cfa_message_to_applicant: "",
+        },
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      })
+      setCurrentState("unreachable")
+    } catch {
+      setCurrentState("error")
+    }
   }
 
   return (
@@ -130,7 +144,7 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             <Typography component="p" sx={{ mt: fr.spacing("2v") }}>
               Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Typography>
-            <Typography component="p">
+            <Typography component="div">
               <List sx={{ listStyleType: "disc", pl: fr.spacing("4v") }}>
                 {(appointment.appointment?.applicant_reasons || []).map((reason, i) => {
                   return (
@@ -164,15 +178,25 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
             )}
           </Box>
           <hr />
-          {currentState === "initial" ? (
+          {currentState === "initial" && (
             <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} otherClicked={otherClicked} unreachableClicked={unreachableClicked} />
-          ) : (
-            <></>
           )}
-          {currentState === "sending" ? <div>Envoi en cours...</div> : <></>}
-          {currentState === "answered" ? <CfaCandidatInformationAnswered msg={formik.values.message} /> : <></>}
-          {currentState === "other" ? <CfaCandidatInformationOther /> : <></>}
-          {currentState === "unreachable" ? <CfaCandidatInformationUnreachable /> : <></>}
+          {currentState === "sending" && (
+            <Box sx={{ mt: fr.spacing("8v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
+              <Typography>Envoi en cours...</Typography>
+            </Box>
+          )}
+          {currentState === "answered" && <CfaCandidatInformationAnswered msg={formik.values.message} />}
+          {currentState === "other" && <CfaCandidatInformationOther />}
+          {currentState === "unreachable" && <CfaCandidatInformationUnreachable />}
+          {currentState === "error" && (
+            <Box sx={{ mt: fr.spacing("8v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
+              <Typography sx={{ fontWeight: 700, color: "#CE0500", mb: fr.spacing("4v") }}>Une erreur est survenue. Veuillez réessayer.</Typography>
+              <Button priority="secondary" onClick={() => setCurrentState("initial")}>
+                Réessayer
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
     </FormLayoutComponent>

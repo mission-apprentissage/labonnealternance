@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-
-import FAQRendererClient from "./FAQRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
+import FAQRendererClient from "./FAQRendererClient"
 
 export const metadata: Metadata = {
   title: PAGES.static.faq.getMetadata().title,
@@ -33,3 +32,5 @@ export default async function FAQ({ searchParams }: { searchParams: Promise<Reco
     />
   )
 }
+
+export const revalidate = 3600 // revalider toutes les heures

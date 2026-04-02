@@ -7,6 +7,7 @@ import { getS3FileLastUpdate, s3SignedUrl } from "@/common/utils/awsUtils"
 import type { Server } from "@/http/server"
 import { EXPORT_JOBS_TO_S3_V2_FILENAME } from "@/jobs/partenaireExport/exportJobsToS3V2"
 import { getUserFromRequest } from "@/security/authenticationService"
+import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 import {
   createJobOffer,
   findJobOpportunityById,
@@ -19,7 +20,6 @@ import {
   upsertJobOffer,
   upsertJobsPartnersMulti,
 } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
-import { JobOpportunityRequestContext } from "@/services/jobs/jobOpportunity/JobOpportunityRequestContext"
 
 const config = {
   rateLimit: {
@@ -53,7 +53,7 @@ export const jobsApiV3Routes = (server: Server) => {
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.put["/v3/jobs/:id"]).value
       await updateJobOffer(req.params.id, user, req.body)
-      return res.status(204).send()
+      return res.status(204).send(null)
     }
   )
 
@@ -88,7 +88,7 @@ export const jobsApiV3Routes = (server: Server) => {
       const user = getUserFromRequest(req, zRoutes.post["/v4/jobs/multi-partner"]).value
       const { id, modified } = await upsertJobsPartnersMulti({ data: req.body, requestedByEmail: user.email })
       if (!modified) {
-        return res.status(304).send()
+        return res.status(304).send(null)
       }
       return res.status(200).send({ id })
     }

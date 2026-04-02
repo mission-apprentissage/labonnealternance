@@ -5,12 +5,37 @@ import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
-import { useEffect } from "react"
 import type { PropsWithChildren } from "react"
+import { useEffect } from "react"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import { ApiError } from "@/utils/api.utils"
+
+function wasPageReloaded(): boolean {
+  const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined
+  return navigationEntry?.type === "reload"
+}
+
+function shouldReloadChunkError(): boolean {
+  const storageKey = "lba:lastChunkReload"
+  const reloadThrottleMs = 30000
+  const now = Date.now()
+
+  try {
+    const storedValue = window.sessionStorage.getItem(storageKey)
+    const lastReload = storedValue ? Number(storedValue) : 0
+
+    if (!lastReload || Number.isNaN(lastReload) || now - lastReload > reloadThrottleMs) {
+      window.sessionStorage.setItem(storageKey, String(now))
+      return true
+    }
+
+    return false
+  } catch {
+    return !wasPageReloaded()
+  }
+}
 
 function getErrorDescription(error: unknown): string | null {
   if (!error) {
@@ -38,6 +63,13 @@ export type ErrorProps = { error: unknown; reset: () => void }
 
 export function ErrorComponent({ error, reset }: ErrorProps) {
   useEffect(() => {
+    // ChunkLoadError : un chunk JS n'existe plus après un déploiement.
+    // On recharge la page silencieusement pour récupérer les nouveaux chunks,
+    // avec un garde-fou même si sessionStorage n'est pas disponible.
+    if (error instanceof Error && error.name === "ChunkLoadError" && shouldReloadChunkError()) {
+      window.location.reload()
+      return
+    }
     Sentry.captureException(error)
     console.error(error)
   }, [error])

@@ -1,10 +1,9 @@
 import { Typography } from "@mui/material"
-
-import { DsfrHeaderProps } from "./Header"
+import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
-import { PAGES } from "@/utils/routes.utils"
-
 import { publicConfig } from "@/config.public"
+import { PAGES } from "@/utils/routes.utils"
+import { DsfrHeaderProps } from "./Header"
 
 type LinkItem = {
   linkProps: {
@@ -37,9 +36,21 @@ const linkListContent: LinkCategory[] = [
       },
       {
         linkProps: {
-          href: PAGES.static.ressources.getPath(),
+          href: PAGES.static.guideAlternant.getPath(),
         },
-        text: "Ressources",
+        text: "Guide alternant",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.guideRecruteur.getPath(),
+        },
+        text: "Guide recruteur",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.guideCfa.getPath(),
+        },
+        text: "Guide CFA",
       },
       {
         linkProps: {
@@ -56,7 +67,7 @@ const linkListContent: LinkCategory[] = [
         linkProps: {
           href: PAGES.static.aPropos.getPath(),
         },
-        text: "A propos",
+        text: "À propos",
       },
       {
         linkProps: {
@@ -107,6 +118,16 @@ const linkListContent: LinkCategory[] = [
       text: `Alternance à ${ville.ville}`,
     })),
   },
+  {
+    categoryName: "Alternance par métier",
+    // @ts-ignore min 1 link but here we have 10
+    links: metierData.map((metier) => ({
+      linkProps: {
+        href: PAGES.dynamic.seoMetier(metier.slug).getPath(),
+      },
+      text: `${metier.metier}`,
+    })),
+  },
 ]
 
 export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: boolean; hideLinkList?: boolean }) {
@@ -125,7 +146,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">
       {showLinkList && (
-        <nav className="fr-footer__top" role="navigation">
+        <nav className="fr-footer__top" role="navigation" aria-label="Plan du site">
           <h2 className="fr-sr-only">Informations et liens du site</h2>
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--gutters">
@@ -158,6 +179,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
           <div className="fr-footer__brand fr-enlarge-link">
             <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
             <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
+              {/** biome-ignore lint/performance/noImgElement: migration */}
               <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
             </a>
           </div>

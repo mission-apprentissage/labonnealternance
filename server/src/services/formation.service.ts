@@ -6,19 +6,17 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { referrers } from "shared/constants/referers"
 import dayjs from "shared/helpers/dayjs"
 import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-
-import { isEmailBlacklisted } from "./application.service"
-import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
-import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 import type { IApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { isValidEmail } from "@/common/utils/isValidEmail"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { isEmailBlacklisted } from "./application.service"
+import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
+import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
 const worldRadius = 21000
@@ -342,6 +340,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
 
     contact: {
       phone: rawFormation.num_tel ?? null,
+      hasEmail: false,
     },
 
     place: {
@@ -423,6 +422,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue, priseDeRendezVo
     id: rawFormation.cle_ministere_educatif!,
     contact: {
       phone: rawFormation.num_tel ?? null,
+      hasEmail: false,
     },
     place: {
       distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
@@ -676,6 +676,7 @@ export const getFormationsQuery = async ({
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
+      // biome-ignore lint/nursery/noFloatingPromises: migration
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
     return { error: "internal_error" }
@@ -731,6 +732,7 @@ export const getFormationsV2 = async ({
     const formations = (rawFormations || []).map((formation) => (isMinimalData ? transformFormationWithMinimalDataV2(formation) : transformFormationV2(formation)))
     sortFormations(formations)
     if (caller) {
+      // biome-ignore lint/nursery/noFloatingPromises: migration
       trackApiCall({
         caller: caller,
         api_path: api,
@@ -742,7 +744,7 @@ export const getFormationsV2 = async ({
     return formations
   } catch (err) {
     if (caller) {
-      trackApiCall({ caller, api_path: api, response: "Error" })
+      await trackApiCall({ caller, api_path: api, response: "Error" })
     }
     throw err
   }
@@ -828,7 +830,7 @@ export const getFormationsParRegionQuery = async ({
   } catch (err) {
     sentryCaptureException(err)
     if (caller) {
-      trackApiCall({ caller, api_path: "formationRegionV1", response: "Error" })
+      await trackApiCall({ caller, api_path: "formationRegionV1", response: "Error" })
     }
 
     return { error: "internal_error" }
@@ -882,7 +884,7 @@ export const getFormationsParRegionV2 = async ({
     const formations = rawFormations.map((formation) => transformFormationV2(formation))
     sortFormations(formations)
     if (caller) {
-      trackApiCall({
+      await trackApiCall({
         caller: caller,
         api_path: apiPath,
         training_count: formations.length,
@@ -893,7 +895,7 @@ export const getFormationsParRegionV2 = async ({
     return formations
   } catch (err) {
     if (caller) {
-      trackApiCall({ caller, api_path: apiPath, response: "Error" })
+      await trackApiCall({ caller, api_path: apiPath, response: "Error" })
     }
     throw err
   }

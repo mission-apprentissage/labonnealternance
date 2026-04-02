@@ -5,6 +5,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 import { ZJobType } from "./job.model.js"
+import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 import { ZReferentielRomeForJob } from "./rome.model.js"
 
 const ZLbaItemPlace = z
@@ -139,6 +140,7 @@ const ZLbaItemContact = z
       })
       .nullish(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
     iv: z.string().nullish(),
+    hasEmail: z.boolean(),
     name: z
       .string()
       .openapi({
@@ -533,6 +535,7 @@ export type ILbaItemPartnerJobReturnedByAPI = Jsonify<z.output<typeof ZLbaItemPa
 export const ZLbaItemLbaCompany = z
   .object({
     ideaType: z.enum([LBA_ITEM_TYPE_OLD.LBA, LBA_ITEM_TYPE.RECRUTEURS_LBA]),
+    status: ZJobsPartnersOfferPrivate.shape.offer_status,
     // ideaType: z.literal(LBA_ITEM_TYPE.RECRUTEURS_LBA),
     id: z.string().nullable().openapi({}),
     title: z.string().nullish(), // lbb/lba -> enseigne

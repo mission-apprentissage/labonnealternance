@@ -1,5 +1,4 @@
 import { z } from "zod"
-
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
@@ -15,6 +14,8 @@ const ZClassitifationJobsPartners = z.object({
     unpublish: z.number(),
   }),
   human_verification: z.enum(["publish", "unpublish"]).nullish(),
+  model: z.string().nullish(),
+  created_at: z.date().nullish(),
 })
 export type IClassificationJobsPartners = z.output<typeof ZClassitifationJobsPartners>
 
@@ -31,7 +32,6 @@ export const ZClassificationLabBatchResponse = z
     id: z.string(),
     label: z.enum(["publish", "unpublish"]),
     scores: ZClassitifationJobsPartners.shape.scores,
-    text: z.string(),
     model: z.string(),
   })
   .array()

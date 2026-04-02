@@ -1,9 +1,8 @@
-import { redirect } from "next/navigation"
-
 import type { Metadata } from "next"
-import DetailRendezVousRendererClient from "./DetailRendezVousRendererClient"
+import { redirect } from "next/navigation"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
+import DetailRendezVousRendererClient from "./DetailRendezVousRendererClient"
 
 export const metadata: Metadata = {
   title: PAGES.static.detailRendezVousApprentissage.getMetadata().title,
@@ -12,14 +11,17 @@ export const metadata: Metadata = {
 export default async function DetailRendezVousPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ token: string }> }) {
   const { id } = await params
   const { token } = await searchParams
-  const appointmentRecap = await apiGet("/appointment-request/context/recap", {
-    querystring: { appointmentId: id },
-    headers: {
-      authorization: `Bearer ${token}`,
-    },
-  })
 
-  if (!appointmentRecap) redirect("/404")
+  try {
+    const appointmentRecap = await apiGet("/appointment-request/context/recap", {
+      querystring: { appointmentId: id },
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    })
 
-  return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
+    return <DetailRendezVousRendererClient appointmentId={id} appointment={appointmentRecap} token={token} />
+  } catch {
+    redirect("/404")
+  }
 }

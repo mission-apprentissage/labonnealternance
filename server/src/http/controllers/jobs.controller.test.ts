@@ -1,22 +1,21 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { ObjectId } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it } from "vitest"
-
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 
 describe("jobs.controller", () => {
   useMongo()
   const httpClient = useServer()
 
   describe("GET /v1/_private/jobs/min", () => {
-    it("retourne 500 avec wrong_parameters si caller et romes sont absents", async () => {
+    it("retourne 400 avec wrong_parameters si caller et romes sont absents", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/v1/_private/jobs/min" })
 
-      expect(response.statusCode).toBe(500)
+      expect(response.statusCode).toBe(400)
       expect(response.json().error).toBe("wrong_parameters")
     })
 

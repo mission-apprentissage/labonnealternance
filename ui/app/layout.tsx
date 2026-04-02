@@ -3,13 +3,12 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter"
 import type { Metadata } from "next"
 import type { PropsWithChildren } from "react"
 import { setupZodErrorMap } from "shared/helpers/zodHelpers/setupZodErrorMap"
-
-import RootTemplate from "./client_only_providers"
-import { DsfrProvider, StartDsfrOnHydration } from "./dsfr-setup"
-import { DsfrHead, getHtmlAttributes } from "./dsfr-setup/server-only-index"
 import { HeadLaBonneAlternance } from "@/components/head"
 import { publicConfig } from "@/config.public"
 import { Matomo } from "@/tracking/trackingMatomo"
+import RootTemplate from "./client_only_providers"
+import { DsfrProvider, StartDsfrOnHydration } from "./dsfr-setup"
+import { DsfrHead, getHtmlAttributes } from "./dsfr-setup/server-only-index"
 
 import "react-notion-x/src/styles.css"
 import "@/public/styles/application.css"
@@ -20,6 +19,9 @@ import "@/styles/search.css"
 export const metadata: Metadata = {
   metadataBase: new URL(publicConfig.baseUrl),
   manifest: "/favicon/site.webmanifest",
+  alternates: {
+    canonical: "./",
+  },
 }
 
 setupZodErrorMap()

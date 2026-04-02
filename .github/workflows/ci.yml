@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
           persist-credentials: true
 
       - name: Clone mna-npm-check repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: mission-apprentissage/mna-npm-check
           path: mna-npm-check
@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
@@ -50,8 +50,8 @@ jobs:
       - name: typecheck
         run: yarn typecheck
 
-      - name: lint
-        run: yarn lint
+      - name: lint & format
+        run: yarn check:ci
 
       - name: start mongodb service
         run: |
@@ -60,9 +60,6 @@ jobs:
 
       - name: test
         run: yarn test:ci
-
-      - name: prettier
-        run: yarn prettier:check
 
       - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v5

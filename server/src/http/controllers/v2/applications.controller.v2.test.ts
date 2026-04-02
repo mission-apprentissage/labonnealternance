@@ -1,7 +1,10 @@
+import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { useServer } from "@tests/utils/server.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import type { IApplicationApiPublic } from "shared"
-import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JobCollectionName } from "shared"
+import { CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName } from "shared"
 import { ApplicationIntention } from "shared/constants/application"
 import { NIVEAUX_POUR_LBA, OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -19,15 +22,11 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { describe, expect, it, vi } from "vitest"
-
-import { getApiApprentissageTestingToken, getApiApprentissageTestingTokenFromInvalidPrivateKey } from "@tests/utils/jwt.test.utils"
 import { s3WriteString } from "@/common/utils/awsUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { buildUserForToken } from "@/services/application.service"
 import { generateApplicationReplyToken } from "@/services/appLinks.service"
+import { buildUserForToken } from "@/services/application.service"
 import { getRecipientID } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { useServer } from "@tests/utils/server.test.utils"
 
 vi.mock("@/common/utils/awsUtils", () => {
   return {

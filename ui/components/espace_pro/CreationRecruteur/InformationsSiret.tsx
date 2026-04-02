@@ -5,11 +5,9 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, List, ListItem, Stack, Typography } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { CFA, ENTREPRISE } from "shared/constants/index"
-
-import { CustomTabs } from "./CustomTabs"
-import { InfoCircle } from "@/theme/components/icons"
-
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { InfoCircle } from "@/theme/components/icons"
+import { CustomTabs } from "./CustomTabs"
 
 const panels = [
   {
@@ -79,6 +77,42 @@ function InformationsCfa() {
     <>
       <Stack direction="column" sx={{ gap: fr.spacing("3v"), mb: fr.spacing("5v") }}>
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700 }}>
+          Pourquoi s'inscrire en tant que CFA ?
+        </Typography>
+        <Typography>Pour créer le compte de votre organisme de formation, il faut :</Typography>
+        <List>
+          <ListItem
+            sx={{
+              m: "0 !important",
+              ml: `${fr.spacing("8v")} !important`,
+              pl: `${fr.spacing("6v")} !important`,
+              pr: `${fr.spacing("10v")} !important`,
+              listStyleType: "disc",
+              display: "list-item",
+            }}
+          >
+            <Box>
+              <span style={{ fontWeight: "bold" }}>Publier des offres en alternance</span> pour le compte de vos entreprises partenaires
+            </Box>
+          </ListItem>
+          <ListItem
+            sx={{
+              m: "0 !important",
+              ml: `${fr.spacing("8v")} !important`,
+              pl: `${fr.spacing("6v")} !important`,
+              pr: `${fr.spacing("10v")} !important`,
+              listStyleType: "disc",
+              display: "list-item",
+            }}
+          >
+            <Box>
+              <span style={{ fontWeight: "bold" }}>Pour télécharger la carte étudiant des métiers</span> et la distribuer à vos apprenants.
+            </Box>
+          </ListItem>
+        </List>
+      </Stack>
+      <Stack direction="column" sx={{ gap: fr.spacing("3v"), mb: fr.spacing("5v") }}>
+        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700 }}>
           Comment s'inscrire ?
         </Typography>
         <Typography>Pour créer le compte de votre organisme de formation, il faut :</Typography>
@@ -89,16 +123,15 @@ function InformationsCfa() {
               ml: `${fr.spacing("8v")} !important`,
               pl: `${fr.spacing("6v")} !important`,
               pr: `${fr.spacing("10v")} !important`,
-              pb: fr.spacing("6v"),
               listStyleType: "disc",
               display: "list-item",
             }}
           >
             <Box>
               <span style={{ fontWeight: "700" }}>Être référencé dans le Catalogue.</span> Pour ajouter une offre de formation au Catalogue de l’offre de formation en
-              apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page suivante :{" "}
-              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" arial-label="Site intercariforef.org - nouvelle fenêtre">
-                "référencer son offre de formation"
+              apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la page{" "}
+              <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" aria-label="Site intercariforef.org - nouvelle fenêtre">
+                référencer son offre de formation
               </CatalogueLink>
             </Box>
           </ListItem>
@@ -108,7 +141,6 @@ function InformationsCfa() {
               ml: `${fr.spacing("8v")} !important`,
               pl: `${fr.spacing("6v")} !important`,
               pr: `${fr.spacing("10v")} !important`,
-              pb: fr.spacing("6v"),
               listStyleType: "disc",
               display: "list-item",
             }}
@@ -127,29 +159,7 @@ function InformationsCfa() {
           </ListItem>
         </List>
       </Stack>
-      <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
-        Où trouver votre SIRET ?
-      </Typography>
-      <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-        <span style={{ color: "#000091" }}>
-          <InfoCircle sx={{ mr: fr.spacing("2v") }} />
-        </span>
-        <Typography>
-          Le numéro d’identification de votre organisme peut être trouvé sur le site Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
-          <CatalogueLink
-            href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements"
-            aria-label="Site du catalogue des offres de formations en apprentissage - nouvelle fenêtre"
-          >
-            le catalogue des offres de formations en apprentissage
-          </CatalogueLink>{" "}
-          ou bien sur les registres de votre organisme de formation.
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          mt: fr.spacing("10v"),
-        }}
-      >
+      <Stack direction="column" sx={{ gap: fr.spacing("3v"), mb: fr.spacing("5v") }}>
         <Typography component="h2" sx={{ fontSize: "24px", fontWeight: 700, mb: fr.spacing("3v") }}>
           Vous avez déjà déposé une offre en alternance par le passé ?
         </Typography>
@@ -159,7 +169,7 @@ function InformationsCfa() {
             Me connecter
           </Button>
         </Box>
-      </Box>
+      </Stack>
     </>
   )
 }

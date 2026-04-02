@@ -1,9 +1,9 @@
-import { HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
-
+import { HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { PAGES } from "@/utils/routes.utils"
+import { HeaderNavigation } from "./HeaderNavigation"
 
-export const DsfrHeaderProps: HeaderProps = {
+export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
   brandTop: (
     <>
       RÉPUBLIQUE
@@ -14,6 +14,7 @@ export const DsfrHeaderProps: HeaderProps = {
   homeLinkProps: {
     href: "/",
     title: "Accueil - La bonne alternance",
+    "aria-label": "Accueil - La bonne alternance",
   },
   operatorLogo: {
     alt: "La bonne alternance",
@@ -23,34 +24,16 @@ export const DsfrHeaderProps: HeaderProps = {
   id: "header-links",
   quickAccessItems: [
     <HeaderQuickAccessItem
-      key="candidat"
+      key="publier-offre"
       quickAccessItem={{
-        iconId: null,
-        text: "Candidat",
+        iconId: "fr-icon-global-line",
+        text: "Publier une offre d'emploi",
         linkProps: {
-          href: PAGES.static.home.getPath(),
-        },
-      }}
-    />,
-    <HeaderQuickAccessItem
-      key="recruteur"
-      quickAccessItem={{
-        iconId: null,
-        text: "Recruteur",
-        linkProps: {
-          href: PAGES.static.accesRecruteur.getPath(),
-        },
-      }}
-    />,
-    <HeaderQuickAccessItem
-      key="organisme"
-      quickAccessItem={{
-        iconId: null,
-        text: "Organisme de formation",
-        linkProps: {
-          href: PAGES.static.organismeDeFormation.getPath(),
+          href: PAGES.static.espaceProCreationEntreprise.getPath(),
         },
       }}
     />,
   ],
 }
+
+export const DsfrHeaderNavigation = HeaderNavigation

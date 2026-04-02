@@ -3,11 +3,10 @@
 import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
-
-import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
+import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
+import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -30,7 +29,10 @@ export default function User() {
   } = useQuery({
     queryKey: ["recruiter", userRecruteur?.establishment_id],
     enabled: Boolean(userRecruteur?.establishment_id),
-    queryFn: () => getFormulaire(userRecruteur.establishment_id),
+    queryFn: () => {
+      if (!userRecruteur?.establishment_id) return Promise.resolve(undefined)
+      return getFormulaire(userRecruteur.establishment_id)
+    },
   })
 
   if (isLoading || !userRecruteur || !userId || recruiterLoading) {

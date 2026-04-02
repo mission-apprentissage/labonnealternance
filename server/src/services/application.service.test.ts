@@ -1,5 +1,8 @@
 import { badRequest } from "@hapi/boom"
+import { useMongo } from "@tests/utils/mongo.test.utils"
+import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
+import { omit } from "lodash-es"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import { applicationTestFile, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
@@ -9,13 +12,10 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
-
-import { omit } from "lodash-es"
-import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
+import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
 
 // Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/awsUtils", () => {
@@ -445,7 +445,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_DAY)
   })
 
-  it("Should throw error when too many applications per SIRET from caller", async () => {
+  it("Should throw error when too many applications per SIRET from caller (Hellowork)", async () => {
     const partnerJob = generateJobsPartnersOfferPrivate({
       _id: new ObjectId("6081289803569600282e0019"),
       partner_job_id: "job_dev_010",
@@ -485,5 +485,109 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     await getDbCollection("applications").insertMany(applications)
 
     await expect(buildApplicationFromHelloworkAndSaveToDb(helloworkPayload)).rejects.toThrow(BusinessErrorCodes.TOO_MANY_APPLICATIONS_PER_SIRET)
+  })
+})
+
+describe("checkMaxApplicationCount", () => {
+  afterEach(async () => {
+    await getDbCollection("jobs_partners").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
+    await getDbCollection("applicants").deleteMany({})
+    await getDbCollection("recruiters").deleteMany({})
+    await getDbCollection("referentielromes").deleteMany({})
+  })
+
+  it("Should not update offer status when application count is at the limit (RECRUTEURS_LBA)", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0030"),
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+      workplace_siret: "12345678901234",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    // 79 existing + current submission = 80 total, condition (79+1) > 80 is false
+    const applications = Array.from({ length: 79 }, () => generateApplicationFixture({ company_siret: "12345678901234" }))
+    await getDbCollection("applications").insertMany(applications)
+
+    await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0030" },
+      },
+    })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0030") })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+  })
+
+  it("Should NOT update offer status to ANNULEE when application count exceeds limit (RECRUTEURS_LBA)", async () => {
+    const partnerJob = generateJobsPartnersOfferPrivate({
+      _id: new ObjectId("6081289803569600282e0031"),
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      apply_email: "employer@test.fr",
+      workplace_siret: "98765432109876",
+    })
+    await getDbCollection("jobs_partners").insertOne(partnerJob)
+
+    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
+    const applications = Array.from({ length: 80 }, () =>
+      generateApplicationFixture({ job_id: new ObjectId("6081289803569600282e0031"), company_siret: "98765432109876", created_at: new Date() })
+    )
+    await getDbCollection("applications").insertMany(applications)
+
+    await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0031" },
+      },
+    })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0031") })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
+  })
+
+  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_LBA)", async () => {
+    const jobId = new ObjectId("6081289803569600282e0033")
+
+    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
+    await saveRecruiter(
+      generateRecruiterFixture({
+        status: RECRUITER_STATUS.ACTIF,
+        jobs: [
+          {
+            _id: jobId,
+            rome_code: ["A1101"],
+            job_status: JOB_STATUS.ACTIVE,
+            job_expiration_date: new Date("2050-01-01"),
+          },
+        ],
+      })
+    )
+    // Mirror entry in jobs_partners so the status update can be verified
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        apply_email: "employer@test.fr",
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      })
+    )
+
+    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
+    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() }))
+    await getDbCollection("applications").insertMany(applications)
+
+    await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "recruiters", jobId: jobId.toString() },
+      },
+    })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
   })
 })

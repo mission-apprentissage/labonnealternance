@@ -1,11 +1,10 @@
-import type { IFormationCatalogue } from "shared/models/index"
-import { zFormationCatalogueSchema } from "shared/models/index"
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
-
-import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveDbEntity } from "@tests/utils/user.test.utils"
+import type { IFormationCatalogue } from "shared/models/index"
+import { zFormationCatalogueSchema } from "shared/models/index"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 useMongo()
 
@@ -13,7 +12,7 @@ describe("formationRegionV1", () => {
   const httpClient = useServer()
 
   beforeAll(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(new Date("2024-08-21"))
 
     return () => {

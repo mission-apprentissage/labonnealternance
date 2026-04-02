@@ -1,10 +1,10 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
-
-import { AuthWatcher } from "./AuthWatcher"
-import { DsfrHeaderProps } from "./Header"
+import { BandeauFusionPDA } from "@/app/_components/BandeauFusionPDA"
 import { PAGES } from "@/utils/routes.utils"
+import { AuthWatcher } from "./AuthWatcher"
+import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
 
 export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
@@ -41,18 +41,19 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
 
     return {
       ...DsfrHeaderProps,
-      quickAccessItems: [...DsfrHeaderProps.quickAccessItems, ...extraItems],
+      quickAccessItems: [...(DsfrHeaderProps.quickAccessItems ?? []), ...extraItems],
     }
   }, [user, hideConnectionButton])
 
   return (
     <>
       <AuthWatcher user={user} />
-      <DsfrHeader {...props} />
+      <BandeauFusionPDA />
+      <DsfrHeader {...props} navigation={<DsfrHeaderNavigation />} />
     </>
   )
 }
 
 export const PublicHeaderStatic = () => {
-  return <DsfrHeader {...DsfrHeaderProps} />
+  return <DsfrHeader {...DsfrHeaderProps} navigation={<DsfrHeaderNavigation />} />
 }

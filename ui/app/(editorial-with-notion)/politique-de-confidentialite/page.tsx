@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-
-import PolitiqueDeConfidentialiteRendererClient from "./PDCRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
+import PolitiqueDeConfidentialiteRendererClient from "./PDCRendererClient"
 
 export const metadata: Metadata = {
   title: PAGES.static.politiqueConfidentialite.getMetadata().title,
@@ -13,3 +12,5 @@ export default async function PolitiqueDeConfidentialite() {
   const politiqueDeConfidentialite = await fetchNotionPage("2d7d9cda6d9a4059baa84eacff592139")
   return <PolitiqueDeConfidentialiteRendererClient politiqueDeConfidentialite={politiqueDeConfidentialite} />
 }
+
+export const revalidate = 3600 // revalider toutes les heures

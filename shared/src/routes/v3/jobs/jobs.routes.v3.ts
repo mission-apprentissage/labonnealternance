@@ -118,6 +118,7 @@ export const zJobsRoutesV3 = {
       body: ZComputedJobsPartnersWrite,
       response: {
         "200": z.object({ id: zObjectId }),
+        "304": z.null(),
       },
       securityScheme: {
         auth: "api-key",
@@ -167,7 +168,7 @@ export const zJobsRoutesV3 = {
       params: z.object({
         id: zObjectId,
       }),
-      body: zJobOfferApiWriteV3,
+      body: zJobOfferApiWriteV3.omit({ identifier: true }),
       response: {
         "204": z.null(),
       },

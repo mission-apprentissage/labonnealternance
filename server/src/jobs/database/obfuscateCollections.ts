@@ -1,24 +1,26 @@
-import { randomUUID } from "crypto"
-
 import { ObjectId } from "bson"
+import { randomUUID } from "crypto"
 import { chunk } from "lodash-es"
 import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { modelToKeep } from "shared/models/model-to-keep.model"
-import { modelDescriptors } from "shared/models/models"
 import type { CollectionName } from "shared/models/models"
+import { modelDescriptors } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import { UserEventType } from "shared/models/userWithAccount.model"
-
-import { recreateIndexes } from "./recreateIndexes"
 import { logger } from "@/common/logger"
 import { getDatabase, getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
+import { recreateIndexes } from "./recreateIndexes"
 
 const fakeEmail = "faux_email@faux-domaine-compagnie.com"
 export const getFakeEmail = () => `${randomUUID()}@faux-domaine.fr`
 
+// leave this function to be used.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// biome-ignore lint/correctness/noUnusedVariables: migration
 async function reduceModel(model: CollectionName, limit = 20000) {
   logger.info(`reducing collection ${model} to ${limit} latest documents`)
   try {
@@ -144,11 +146,45 @@ const fakeJobPartner: Partial<IJobsPartnersOfferPrivate> = {
 const obfuscatePartnerJobs = async () => {
   logger.info(`obfuscating jobs_partners`)
   await getDbCollection("jobs_partners").updateMany(
-    {},
+    { partner_label: { $nin: [JOBPARTNERS_LABEL.RECRUTEURS_LBA] } },
     {
       $set: fakeJobPartner,
     }
   )
+}
+
+const obfuscateRecruteursLba = async () => {
+  logger.info(`obfuscating jobs_partners`)
+  await getDbCollection("jobs_partners").updateMany(
+    { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: { $not: { $eq: null } } },
+    {
+      $set: {
+        apply_email: fakeEmail,
+        apply_phone: "0601010807",
+      },
+    }
+  )
+
+  await getDbCollection("jobs_partners").updateMany(
+    { partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA, apply_email: null },
+    {
+      $set: {
+        apply_phone: "0601012020",
+      },
+    }
+  )
+}
+
+const reduceRecruteursLba = async (limit = 75_000) => {
+  logger.info(`reducing jobs_partners recruteurs_lba to ${limit} latest documents`)
+  const result = await getDbCollection("jobs_partners")
+    .aggregate([{ $match: { partner_label: "recruteurs_lba" } }, { $sort: { _id: -1 } }, { $skip: limit }, { $project: { _id: 1 } }])
+    .toArray()
+  const idsToDelete = result.map((val) => val._id)
+  const chunks = chunk(idsToDelete, 1_000)
+  if (chunks.length) {
+    await Promise.all(chunks.map(async (chunk) => await getDbCollection("jobs_partners").deleteMany({ _id: { $in: chunk } })))
+  }
 }
 
 const keepSpecificUser = async (email: string, type: AccessEntityType) => {
@@ -276,48 +312,54 @@ export async function obfuscateCollections(): Promise<void> {
   await dropUnknownCollections()
 
   const collectionsToEmpty: CollectionName[] = [
-    "apicalls",
-    "applicants",
-    "applications",
-    "appointments",
-    "cache_geolocation",
-    "cache_siret",
-    "unsubscribedrecruteurslba",
-    "unsubscribedofs",
-    "trafficsources",
-    "sessions",
-    "rolemanagement360",
-    "reported_companies",
-    "recruteurlbaupdateevents",
-    "jobs",
-    "eligible_trainings_for_appointments_histories",
-    "applicants_email_logs",
     "anonymized_applicants",
     "anonymized_applications",
     "anonymized_appointments",
     "anonymized_recruiters",
     "anonymized_users",
     "anonymized_userswithaccounts",
+    "apicalls",
+    "applicants",
+    "applicants_email_logs",
+    "applications",
+    "appointments",
+    "cache_classification",
+    "cache_geolocation",
+    "cache_siret",
+    "computed_jobs_partners",
+    "eligible_trainings_for_appointments_histories",
+    "emailblacklists",
+    "jobs",
+    "opcos",
+    "raw_apec",
+    "raw_atlas",
+    "raw_decathlon",
+    // "raw_emploi_inclusion",
+    "raw_engagement_jeunes",
+    "raw_france_travail_cegid",
     "raw_francetravail",
-    "raw_pass",
     "raw_hellowork",
+    "raw_jobteaser",
+    "raw_jooble",
     "raw_kelio",
     "raw_laposte",
     "raw_leboncoin",
-    "raw_jooble",
-    "raw_jobteaser",
+    "raw_meteojob",
+    "raw_monster",
+    "raw_nos_talents_nos_emplois",
+    "raw_pass",
     "raw_rhalternance",
     "raw_recruteurslba",
     "raw_toulouse_metropole",
-    "raw_engagement_jeunes",
-    "raw_france_travail_cegid",
-    "raw_monster",
-    "raw_nos_talents_nos_emplois",
     "raw_vite_un_emploi",
-    "raw_atlas",
-    "raw_meteojob",
-    "raw_decathlon",
-    "computed_jobs_partners",
+    "recruteurlbaupdateevents",
+    "reported_companies",
+    "rolemanagement360",
+    "sessions",
+    "trafficsources",
+    "unsubscribedofs",
+    "unsubscribedrecruteurslba",
+    "users",
   ]
 
   await Promise.all(
@@ -325,17 +367,17 @@ export async function obfuscateCollections(): Promise<void> {
       logger.info(`dropping ${collectionToEmpty}`)
       await getDatabase()
         .dropCollection(collectionToEmpty)
+        // biome-ignore lint/suspicious/noEmptyBlockStatements: migration
         .catch(() => {})
     })
   )
 
-  await reduceModel("emailblacklists", 100)
-  await reduceModel("users", 10)
-  await reduceModel("opcos", 5000)
-
   await obfuscateApplicants()
   await obfuscateApplications()
   await obfuscatePartnerJobs()
+  await reduceRecruteursLba()
+  await obfuscateRecruteursLba()
+
   await obfuscateEmailBlackList()
   await obfuscateAppointments()
   await obfuscateElligibleTrainingsForAppointment()
@@ -344,7 +386,6 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateRecruiter()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
-  await obfuscatePartnerJobs()
 
   await recreateIndexes({ drop: true })
 }

@@ -7,18 +7,15 @@ import { useMutation } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/navigation"
 import type { INewSuperUser, IUserStatusValidationJson } from "shared"
+import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import type { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/recruteur"
 import { AUTHTYPE, ETAT_UTILISATEUR } from "shared/constants/recruteur"
 import * as Yup from "yup"
-
-import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
-import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
-import { OffresTabs } from "./OffresTabs"
+import CustomInput from "@/app/_components/CustomInput"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
-import CustomInput from "@/app/_components/CustomInput"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
@@ -27,6 +24,8 @@ import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
+import { OffresTabs } from "./OffresTabs"
 
 type Variables = { userId: string; values: INewSuperUser; siret: string; setFieldError: (field: string, message: string) => void }
 
@@ -40,8 +39,8 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   const isDeclarationExactField = user.type === AUTHTYPE.CFA ? { isDeclarationExact: true } : {}
   const isDeclarationExactValidation = user.type === AUTHTYPE.CFA ? { isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations") } : {}
 
-  const ActivateUserButton = ({ userId }: { userId: string }) => {
-    const { activate } = useUserPermissionsActions(userId)
+  const ActivateUserButton = ({ userId, organizationId }: { userId: string; organizationId: string }) => {
+    const { activate } = useUserPermissionsActions(userId, organizationId)
 
     return (
       <Button
@@ -63,19 +62,19 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     )
   }
 
-  const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string) => {
+  const getActionButtons = (userHistory: IUserStatusValidationJson, userId: string, organizationId: string) => {
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return (
           <>
-            <ActivateUserButton userId={userId} />
+            <ActivateUserButton userId={userId} organizationId={organizationId} />
             <DisableUserButton />
           </>
         )
       case ETAT_UTILISATEUR.VALIDE:
         return <DisableUserButton />
       case ETAT_UTILISATEUR.DESACTIVE:
-        return <ActivateUserButton userId={userId} />
+        return <ActivateUserButton userId={userId} organizationId={organizationId} />
 
       default:
         return <></>
@@ -140,7 +139,9 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", maxW: "50%" }}>
                 <Box sx={{ ml: fr.spacing("5v") }}>{getUserBadge(lastUserState)}</Box>
               </Box>
-              <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: fr.spacing("2v") }}>{getActionButtons(lastUserState, userRecruteur._id)}</Box>
+              <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: fr.spacing("2v") }}>
+                {getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}
+              </Box>
             </Box>
           </>
         )}

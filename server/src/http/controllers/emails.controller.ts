@@ -1,8 +1,7 @@
 import { forbidden } from "@hapi/boom"
 import { zRoutes } from "shared/index"
-
-import type { Server } from "@/http/server"
 import config from "@/config"
+import type { Server } from "@/http/server"
 import type { IBrevoWebhookEvent } from "@/services/emails.service"
 import { processHardBounceWebhookEvent, processWebhookEvent } from "@/services/emails.service"
 

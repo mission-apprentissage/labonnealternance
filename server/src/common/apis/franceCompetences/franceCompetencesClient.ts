@@ -73,9 +73,18 @@ const mappingOpcoNames: Record<string, OPCOS_LABEL> = {
   "UNIFORMATION COHESION SOCIALE": OPCOS_LABEL.UNIFORMATION,
   "OPCO MOBILITES": OPCOS_LABEL.MOBILITE,
   OPCO2I: OPCOS_LABEL.OPCO2I,
+  CONSTRUCTYS: OPCOS_LABEL.CONSTRUCTYS,
+  "L'OPCOMMERCE": OPCOS_LABEL.OPCOMMERCE,
+  AFDAS: OPCOS_LABEL.AFDAS,
+  ATLAS: OPCOS_LABEL.ATLAS,
+  OCAPIAT: OPCOS_LABEL.OCAPIAT,
+  "OPCO SANTE": OPCOS_LABEL.SANTE,
 }
 
-export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS_LABEL => {
+export const FCOpcoToOpcoEnum = (fcOpco: string): OPCOS_LABEL | null => {
+  if (fcOpco === "N/C") {
+    return null
+  }
   const parsedOpco = parseEnum(OPCOS_LABEL, fcOpco)
   const finalOpco: OPCOS_LABEL | undefined = mappingOpcoNames[fcOpco] ?? parsedOpco ?? undefined
   if (!finalOpco) {

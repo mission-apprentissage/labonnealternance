@@ -1,12 +1,11 @@
-import { Transform } from "stream"
-import { pipeline } from "stream/promises"
-
 import { badRequest, internal, notFound, tooManyRequests } from "@hapi/boom"
+import { captureException } from "@sentry/node"
+import axios from "axios"
 import { isEmailBurner } from "burner-email-providers"
 import { fileTypeFromBuffer } from "file-type"
 import { ObjectId } from "mongodb"
 import type { IApplicant, IApplication, IApplicationApiPrivateOutput, IApplicationApiPublicOutput, IHelloworkApplication, IJob, INewApplicationV1, IRecruiter } from "shared"
-import { ApplicationScanStatus, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName, assertUnreachable, parseEnum } from "shared"
+import { ApplicationScanStatus, assertUnreachable, CompanyFeebackSendStatus, EMAIL_LOG_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, JobCollectionName, parseEnum } from "shared"
 import type { RefusalReasons } from "shared/constants/application"
 import { ApplicationIntention, ApplicationIntentionDefaultText, HELLOWORK_STATUS } from "shared/constants/application"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
@@ -19,20 +18,9 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ITrackingCookies } from "shared/models/trafficSources.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
+import { Transform } from "stream"
+import { pipeline } from "stream/promises"
 import { z } from "zod"
-
-import axios from "axios"
-import { captureException } from "@sentry/node"
-import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
-import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
-import type { BrevoEventStatus } from "./brevo.service"
-import { isInfected } from "./clamav.service"
-import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer from "./mailer.service"
-import { validateCaller } from "./queryValidator.service"
-import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
-import { validateUserWithAccountEmail } from "./userWithAccount.service"
-import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { logger } from "@/common/logger"
 import { s3Delete, s3ReadAsString, s3WriteString } from "@/common/utils/awsUtils"
 import { manageApiError } from "@/common/utils/errorManager"
@@ -45,10 +33,21 @@ import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { UserForAccessToken } from "@/security/accessTokenService"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
+import { createCancelJobLink, createProvidedJobLink, generateApplicationReplyToken } from "./appLinks.service"
+import { getApplicantFromDB, getOrCreateApplicant } from "./applicant.service"
+import type { BrevoEventStatus } from "./brevo.service"
+import { isInfected } from "./clamav.service"
+import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
+import mailer from "./mailer.service"
+import { validateCaller } from "./queryValidator.service"
+import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
+import { validateUserWithAccountEmail } from "./userWithAccount.service"
 
 const MAX_MESSAGES_PAR_OFFRE_PAR_CANDIDAT = 3
 const MAX_MESSAGES_PAR_SIRET_PAR_CALLER = 20
 const MAX_CANDIDATURES_PAR_CANDIDAT_PAR_JOUR = 100
+const MAX_APPLICATIONS_PER_OFFER = 80
 
 const publicUrl = config.publicUrl
 
@@ -362,6 +361,7 @@ export const sendApplicationV2 = async ({
   }
 
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
+  await checkMaxApplicationCount(lbaJob)
 
   const { type, job, recruiter } = lbaJob
   const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.apply_email)?.toLowerCase()
@@ -813,6 +813,36 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
   }
 }
 
+const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
+  const { job, type } = lbaJob
+
+  // règle qui ne concerne que les offres LBA
+  if (type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+    return
+  }
+
+  const applicationCount = await getDbCollection("applications").countDocuments({
+    job_id: job._id,
+  })
+
+  if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
+    await getDbCollection("jobs_partners").updateOne(
+      { _id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
+      {
+        $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
+        $push: {
+          offer_status_history: {
+            date: new Date(),
+            status: JOB_STATUS_ENGLISH.ANNULEE,
+            reason: `nombre maximum de candidatures atteint (${MAX_APPLICATIONS_PER_OFFER})`,
+            granted_by: "application.service",
+          },
+        },
+      }
+    )
+  }
+}
+
 const getJobSourceType = async (application: IApplication) => {
   if (LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA === application.job_origin && application.job_id) {
     const recruiter = await getDbCollection("recruiters").findOne({ "jobs._id": new ObjectId(application.job_id) })
@@ -937,7 +967,10 @@ export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]
     ])
     .toArray()) as IApplicationCount[]
 
-  return applicationCountByJob
+  return applicationCountByJob.map((appCount) => ({
+    _id: appCount._id.toString(),
+    count: appCount.count,
+  }))
 }
 
 /**

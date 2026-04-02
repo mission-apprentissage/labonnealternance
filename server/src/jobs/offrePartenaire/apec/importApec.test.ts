@@ -1,15 +1,13 @@
 import fs from "node:fs"
-
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/recruteur"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { IApecJob } from "./apecMapper"
 import { apecJobToJobsPartners } from "./apecMapper"
 import { importApecRaw, importApecToComputed } from "./importApec"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
 
 vi.mock("@/services/referentiel/commune/commune.referentiel.service", () => ({
   getCodePostalFromInsee: vi.fn().mockResolvedValue(null),
@@ -21,7 +19,7 @@ describe("importApec", () => {
   useMongo()
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
 
     return async () => {
@@ -80,7 +78,7 @@ describe("apecJobToJobsPartners", () => {
   }
 
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ toFake: ["Date"] })
     vi.setSystemTime(now)
     return () => vi.useRealTimers()
   })

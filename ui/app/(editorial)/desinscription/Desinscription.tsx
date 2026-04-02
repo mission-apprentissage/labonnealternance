@@ -5,14 +5,12 @@ import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { useState } from "react"
-
-import { FormulaireDesinscription } from "./_components/FormulaireDesinscription"
-import SuccesDesinscription from "./_components/SuccesDesinscription"
-import { AlgoRecruteur } from "@/app/(landing-pages)/acces-recruteur/_components/AlgoRecruter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { getApplicationCompanyEmailAddress } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { FormulaireDesinscription } from "./_components/FormulaireDesinscription"
+import SuccesDesinscription from "./_components/SuccesDesinscription"
 
 export function DesinscriptionRecruteur() {
   const [isSuccess, setIsSuccess] = useState(false)
@@ -37,9 +35,6 @@ export function DesinscriptionRecruteur() {
         {!isSuccess ? (
           <>
             <FormulaireDesinscription companyEmail={data?.company_email || ""} handleUnsubscribeSuccess={handleUnsubscribeSuccess} />
-            <Box>
-              <AlgoRecruteur withLinks={false} />
-            </Box>
           </>
         ) : (
           <SuccesDesinscription />

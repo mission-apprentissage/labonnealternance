@@ -1,4 +1,5 @@
 import { badRequest, internal } from "@hapi/boom"
+import { captureException } from "@sentry/node"
 import type { Filter as MongoDBFilter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IBusinessError, ICfaReferentielData, IEtablissement, IGeoPoint, IRecruiter, ITrackingCookies } from "shared"
@@ -6,6 +7,7 @@ import { parseEnum, TrafficType, ZCfaReferentielData } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE, RECRUITER_STATUS } from "shared/constants/index"
 import { OPCOS_LABEL, VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
 import type { IEtablissementGouvData } from "shared/models/cacheInfosSiret.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
@@ -14,9 +16,18 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
-
-import dayjs from "shared/helpers/dayjs"
-import { captureException } from "@sentry/node"
+import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
+import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
+import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getHttpClient } from "@/common/utils/httpUtils"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
+import config from "@/config"
+import { userWithAccountToUserForToken } from "@/security/accessTokenService"
 import { createValidationMagicLink } from "./appLinks.service"
 import { validationOrganisation } from "./bal.service"
 import { getSiretInfos } from "./cacheInfosSiret.service"
@@ -32,19 +43,7 @@ import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.servi
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
-import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import config from "@/config"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { sentryCaptureException } from "@/common/utils/sentryUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
-import { getHttpClient } from "@/common/utils/httpUtils"
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
-import { asyncForEach } from "@/common/utils/asyncUtils"
-import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
-import { logger } from "@/common/logger"
+import { emailHasActiveRole, isUserEmailChecked } from "./userWithAccount.service"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -438,8 +437,7 @@ export const entrepriseOnboardingWorkflow = {
       return errorFactory("Un compte est déjà associé à ce couple email/siret.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     const formatedEmail = email.toLocaleLowerCase()
-    // Faut-il rajouter un contrôle sur l'existance du couple email/siret dans la collection recruiters ?
-    if (await getUserWithAccountByEmail(formatedEmail)) {
+    if (await emailHasActiveRole(formatedEmail)) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
@@ -744,4 +742,5 @@ export const isHardbounceEventFromEtablissement = async (payload) => {
   return false
 }
 
+// biome-ignore lint/suspicious/noEmptyBlockStatements: migration
 export const doTasksWhenEntrepriseIsReadyToPublish = async () => {}

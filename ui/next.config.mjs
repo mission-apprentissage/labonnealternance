@@ -1,11 +1,11 @@
 // @ts-check
-import path from "path"
-import { fileURLToPath } from "url"
 
 // eslint-disable-next-line import-x/no-extraneous-dependencies
 import createWithBundleAnalyzer from "@next/bundle-analyzer"
 import { withSentryConfig } from "@sentry/nextjs"
 import { Config } from "next-recompose-plugins"
+import path from "path"
+import { fileURLToPath } from "url"
 
 const cacheControls = {
   month: "public, max-age=2592000, immutable",
@@ -188,6 +188,16 @@ const nextConfig = {
       {
         source: "/espace-pro/establishment/:etablissementId/appointments/:appointmentId",
         destination: "/detail-rendez-vous/:appointmentId",
+        permanent: true,
+      },
+      {
+        source: "/acces-recruteur",
+        destination: "/je-suis-recruteur",
+        permanent: true,
+      },
+      {
+        source: "/organisme-de-formation",
+        destination: "/je-suis-cfa",
         permanent: true,
       },
     ]

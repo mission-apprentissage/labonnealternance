@@ -1,16 +1,14 @@
+import { badRequest } from "@hapi/boom"
+import { ObjectId } from "mongodb"
 import type { ILbaItemLbaCompany, ILbaItemLbaJob, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, zRoutes } from "shared"
-
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
-
+import type { Server } from "@/http/server"
 import { getJobsQueryPrivate } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
 import { addOffreDetailView } from "@/services/lbajob.service"
-import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
-
-import type { Server } from "@/http/server"
-
 import { getPartnerJobByIdV2 } from "@/services/partnerJob.service"
+import { getRecruteurLbaFromDB } from "@/services/recruteurLba.service"
 
 const config = {
   rateLimit: {
@@ -45,7 +43,7 @@ export default (server: Server) => {
       })
 
       if ("error" in result) {
-        return res.status(500).send(result)
+        return res.status(result.error === "wrong_parameters" ? 400 : 500).send(result)
       }
       return res.status(200).send(result)
     }
@@ -67,7 +65,10 @@ export default (server: Server) => {
           break
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
         case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-          result = await getPartnerJobByIdV2(id)
+          if (!ObjectId.isValid(id)) {
+            throw badRequest("id is not valid")
+          }
+          result = await getPartnerJobByIdV2(new ObjectId(id))
           break
 
         default:

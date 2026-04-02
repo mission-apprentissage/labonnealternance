@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+// biome-ignore lint/suspicious/noShadowRestrictedNames: migration
 import type { Map } from "mapbox-gl"
 import { Popup } from "mapbox-gl"
 import Image from "next/image"

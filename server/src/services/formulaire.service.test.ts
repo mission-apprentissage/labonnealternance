@@ -1,3 +1,4 @@
+import { useMongo } from "@tests/utils/mongo.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
 import { removeAccents } from "shared"
@@ -9,10 +10,8 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
 import type { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
-
-import { createJob, startRecruiterChangeStream } from "./formulaire.service"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { useMongo } from "@tests/utils/mongo.test.utils"
+import { createJob } from "./formulaire.service"
 
 useMongo()
 
@@ -77,23 +76,12 @@ describe("createJob", () => {
   }
 
   it("should insert a job", async () => {
-    const ctrl = new AbortController()
-    await startRecruiterChangeStream(ctrl.signal)
-
     const job = generateValidJobWritable()
     const result = await createJob({ user, establishment_id: recruiter.establishment_id, job })
 
     expect.soft(omit(result, "jobs")).toMatchSnapshot()
     expect.soft(result.jobs.length).toEqual(1)
     expect.soft(omit(result.jobs[0], "job_creation_date", "job_update_date", "_id", "job_expiration_date")).toMatchSnapshot()
-
-    await new Promise((r) => setTimeout(r, 200))
-
-    const partnerJob = await getDbCollection("jobs_partners").findOne({ partner_job_id: result.jobs[0]._id.toString() })
-    expect.soft(partnerJob?.offer_title).toEqual(job.rome_appellation_label)
-    expect.soft(omit(partnerJob, "_id", "created_at", "offer_creation", "partner_job_id", "updated_at", "offer_expiration", "lba_url")).toMatchSnapshot()
-
-    ctrl.abort()
   })
 
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {

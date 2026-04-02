@@ -1,6 +1,5 @@
 import { ObjectId } from "bson"
 import type { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
-
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -22,6 +21,7 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
 }
 
 export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
+  const now = new Date()
   const cachedClassifications = await getClassificationFromDB(jobs)
   const notFoundJobs = jobs.flatMap((job, index) => {
     if (cachedClassifications[index] !== null) {
@@ -36,17 +36,20 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
 
   const classificationPayload = notFoundJobs.map((job) => ({
     id: job.partner_job_id,
-    text: [job.workplace_name, job.workplace_description, job.offer_title, job.offer_description].filter(Boolean).join("\n"),
+    workplace_name: job.workplace_name,
+    workplace_description: job.workplace_description,
+    offer_title: job.offer_title,
+    offer_description: job.offer_description,
   }))
 
   const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
 
   // Create a map from job ID to classification result for safe lookup
-  const classificationMap = new Map<string, { label: string; scores: any }>()
+  const classificationMap = new Map<string, { label: string; scores: any; model: string }>()
   if (classificationsFromLab && classificationsFromLab.length) {
     classificationsFromLab.forEach((result) => {
       if (result?.label && result?.id) {
-        classificationMap.set(result.id, { label: result.label, scores: result.scores })
+        classificationMap.set(result.id, { label: result.label, scores: result.scores, model: result.model })
       }
     })
 
@@ -62,6 +65,8 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
           partner_job_id: job.partner_job_id,
           classification: result.label,
           scores: result.scores,
+          model: result.model,
+          created_at: now,
         }
       })
       .filter((payload): payload is NonNullable<typeof payload> => payload !== null)

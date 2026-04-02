@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-
-import MentionLegalesRendererClient from "./MentionLegalesRendererClient"
 import { fetchNotionPage } from "@/services/fetchNotionPage"
 import { PAGES } from "@/utils/routes.utils"
+import MentionLegalesRendererClient from "./MentionLegalesRendererClient"
 
 export const metadata: Metadata = {
   title: PAGES.static.mentionsLegales.getMetadata().title,
@@ -14,3 +13,5 @@ export default async function MentionsLegales() {
 
   return <MentionLegalesRendererClient mentionsLegales={mentionsLegales} />
 }
+
+export const revalidate = 3600 // revalider toutes les heures

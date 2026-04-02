@@ -1,13 +1,11 @@
 import { readdir, writeFile } from "node:fs/promises"
-import path from "path"
-
 import { internal } from "@hapi/boom"
+import path from "path"
 import dayjs from "shared/helpers/dayjs"
-import { withCause } from "@/common/utils/errorManager"
 import { __dirname } from "@/common/utils/dirname"
-import config from "@/config"
-
+import { withCause } from "@/common/utils/errorManager"
 import { getDatabase, getMongodbClient } from "@/common/utils/mongodbUtils"
+import config from "@/config"
 
 const myConfig = {
   mongodb: {
@@ -42,9 +40,15 @@ const myConfig = {
 }
 
 async function listMigrationFiles(): Promise<string[]> {
-  const files = await readdir(myConfig.migrationsDir, { withFileTypes: true })
-
-  return files.filter((file) => file.isFile() && file.name.endsWith(myConfig.migrationFileExtension)).map((file) => file.name)
+  try {
+    const files = await readdir(myConfig.migrationsDir, { withFileTypes: true })
+    return files.filter((file) => file.isFile() && file.name.endsWith(myConfig.migrationFileExtension)).map((file) => file.name)
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+      return []
+    }
+    throw e
+  }
 }
 
 async function getAppliedMigrations(): Promise<Map<string, Date>> {
@@ -71,7 +75,7 @@ export async function up(): Promise<number> {
         await getDatabase().collection(myConfig.changelogCollectionName).insertOne({ fileName: migrationFile, appliedAt: new Date() })
         console.info(`${migrationFile} : APPLIED`)
       } catch (e) {
-        throw withCause(internal("Error applying migration", { migrationFile }), e as Error)
+        throw withCause(internal(`Error applying migration: ${(e as Error).message}`, { migrationFile }), e as Error)
       }
     }
   }

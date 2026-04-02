@@ -1,6 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography, TextareaAutosize, FormControl, FormHelperText } from "@mui/material"
+import { Box, FormControl, FormHelperText, TextareaAutosize, Typography } from "@mui/material"
 
 export const CfaCandidatInformationForm = (props) => {
   const formik = props.formik
@@ -8,18 +8,17 @@ export const CfaCandidatInformationForm = (props) => {
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box sx={{ mt: fr.spacing("2v"), p: fr.spacing("8v"), backgroundColor: "#F5F5FE" }}>
-        <Typography variant="h2" sx={{ fontWeight: 700, color: "#000091", fontSize: "22px", lineHeight: "36px" }}>
+        <Typography variant="h2" sx={{ fontWeight: 700, color: "#000091", fontSize: "2rem" }}>
           Votre réponse au candidat
         </Typography>
-        <Typography sx={{ fontWeight: 400, color: "#161616", fontSize: "16px", lineHeight: "24px", mt: 4 }}>Quelle est votre réponse ?</Typography>
-        <Typography sx={{ fontWeight: 400, color: "#666666", fontSize: "12px", lineHeight: "20px", mt: 1 }}>
-          Le candidat recevra votre réponse directement dans sa boîte mail.
-        </Typography>
+        <Typography sx={{ fontWeight: 400, color: "#161616", mt: fr.spacing("3v") }}>Quelle est votre réponse ?</Typography>
+        <Typography sx={{ fontWeight: 400, color: "#666666", mb: fr.spacing("3v") }}>Le candidat recevra votre réponse directement dans sa boîte mail.</Typography>
         <FormControl error={formik.touched.message && Boolean(formik.errors.message)} fullWidth sx={{ pb: fr.spacing("4v") }}>
           <TextareaAutosize
             className={fr.cx("fr-input")}
             id="message"
             name="message"
+            // minRows={4}
             onChange={formik.handleChange}
             value={formik.values.message}
             placeholder={`Bonjour,

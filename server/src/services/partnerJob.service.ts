@@ -1,5 +1,5 @@
 import { notFound } from "@hapi/boom"
-import { ObjectId } from "mongodb"
+import type { ObjectId } from "mongodb"
 import { FRANCE_LATITUDE, FRANCE_LONGITUDE } from "shared/constants/geolocation"
 import type { OPCOS_LABEL } from "shared/constants/index"
 import { TRAINING_REMOTE_TYPE } from "shared/constants/index"
@@ -8,18 +8,16 @@ import type { ILbaItemPartnerJob } from "shared/models/index"
 import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-
-import type { IApplicationCount } from "./application.service"
-import { getApplicationByJobCount } from "./application.service"
-import { generateApplicationToken } from "./appLinks.service"
-import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
-import { sortLbaJobs } from "./lbajob.service"
-import { filterJobsByOpco } from "./opco.service"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { generateApplicationToken } from "./appLinks.service"
+import type { IApplicationCount } from "./application.service"
+import { getApplicationByJobCount } from "./application.service"
+import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
+import { sortLbaJobs } from "./lbajob.service"
+import { filterJobsByOpco } from "./opco.service"
 
 /**
  * Converti les offres issues de la mongo en objet de type ILbaItem
@@ -110,9 +108,10 @@ function transformPartnerJob(
     },
 
     contact: {
-      email: partnerJob.apply_email,
+      email: "",
       phone: partnerJob.apply_phone,
       url: partnerJob.apply_url,
+      hasEmail: partnerJob.apply_email ? true : false,
     },
 
     nafs: [{ label: partnerJob.workplace_naf_label, code: partnerJob.workplace_naf_code }],
@@ -126,8 +125,6 @@ function transformPartnerJob(
 
   return resultJob
 }
-
-//TODO: travailler toutes les urls des emails de candidatures
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
@@ -159,6 +156,9 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+    },
+    contact: {
+      hasEmail: partnerJob.apply_email ? true : false, //TODO: checker des conditions en fonction des partenaires
     },
     // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
     token: "",
@@ -261,8 +261,7 @@ export const getPartnerJobs = async ({
   }
 }
 
-export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJob> => {
-  const jobId = new ObjectId(id)
+export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPartnerJob> => {
   const rawPartnerJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
 
   if (!rawPartnerJob) {
@@ -275,7 +274,6 @@ export const getPartnerJobByIdV2 = async (id: string): Promise<ILbaItemPartnerJo
   }
 
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
-
   return partnerJob
 }
 
