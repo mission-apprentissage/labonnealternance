@@ -7,7 +7,7 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.m
 import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
-import { jsonToXml } from "../../../common/utils/jsonToXml"
+import { jsonToXml } from "@/common/utils/jsonToXml"
 
 export const ZPassJob = z
   .object({
