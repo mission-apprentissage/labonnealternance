@@ -36,7 +36,7 @@ export const AlgoHome = () => (
           <Typography className={fr.cx("fr-text--lg")}>La bonne alternance expose différents types d&apos;opportunités d&apos;emplois :</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
             <Box className={fr.cx("fr-text--lg")}>
-              <Typography>
+              <Typography component="div">
                 <strong>Les offres d&apos;emploi</strong> identifiables grâce au tag <TagOffreEmploi /> qui sont de 3 types :
               </Typography>
               <ul>
@@ -45,7 +45,7 @@ export const AlgoHome = () => (
                 <li>celles publiées par des écoles qui recrutent pour le compte des entreprises de leur réseau.</li>
               </ul>
             </Box>
-            <Typography className={fr.cx("fr-text--lg")}>
+            <Typography component="div" className={fr.cx("fr-text--lg")}>
               <strong>Les candidatures spontanées :</strong> correspondant au marché caché de l'emploi. Chaque mois, un algorithme prédictif de France Travail analyse les
               recrutements des 6 années passées pour prédire ceux des 6 mois à venir. Grâce à ces données, il identifie une liste restreinte d'entreprises "à fort potentiel
               d'embauche en alternance" pour faciliter vos démarches de candidatures spontanées. Elles sont identifiées grâce au tag <TagCandidatureSpontanee />
