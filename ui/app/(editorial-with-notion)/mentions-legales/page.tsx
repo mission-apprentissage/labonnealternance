@@ -13,3 +13,5 @@ export default async function MentionsLegales() {
 
   return <MentionLegalesRendererClient mentionsLegales={mentionsLegales} />
 }
+
+export const revalidate = 3600 // revalider toutes les heures
