@@ -83,7 +83,7 @@ const ZEnedisSupervisor = z.object({
 export const ZEnedisJob = z.object({
   id: z.coerce.string(),
   reference: z.string(),
-  entityDescription: z.string(),
+  entityDescription: z.string().nullish(),
   origin: z.any().nullish(),
   customFields: z.any().nullish(),
   creationDate: z.string().nullish(),
@@ -161,7 +161,7 @@ const getXmlTextValue = (value: unknown): string | null => {
   return null
 }
 
-export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners => {
+export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: JOBPARTNERS_LABEL): IComputedJobsPartners => {
   const { id, creationDate, entityDescription, modificationDate, directUrl, jobDescription, applicantCriteria } = job
 
   const { title, description, missionDescription, missionDescriptionFormatted, applicantProfile, applicantProfileFormatted, contract, contractLength, location, customFields } =
@@ -229,16 +229,16 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
-    partner_label: JOBPARTNERS_LABEL.ENEDIS,
+    partner_label: partnerLabel,
     partner_job_id: id,
     offer_title: title,
     offer_description,
     offer_creation: publicationDate,
     offer_expiration,
-    workplace_name: "Enedis",
+    workplace_name: partnerLabel,
     workplace_address_city,
     workplace_address_label: workplace_address_city,
-    workplace_description: entityDescription,
+    workplace_description: entityDescription || null,
     apply_url: urlParsing.data ?? null,
     contract_type,
     contract_duration,
@@ -248,4 +248,8 @@ export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners 
     business_error,
   }
   return partnerJob
+}
+
+export const enedisJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners => {
+  return enedisJobToJobsPartnersProcessor(job, JOBPARTNERS_LABEL.ENEDIS)
 }
