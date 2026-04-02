@@ -10159,19 +10159,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"form-data@npm:^4.0.5":
-  version: 4.0.5
-  resolution: "form-data@npm:4.0.5"
-  dependencies:
-    asynckit: ^0.4.0
-    combined-stream: ^1.0.8
-    es-set-tostringtag: ^2.1.0
-    hasown: ^2.0.2
-    mime-types: ^2.1.12
-  checksum: af8328413c16d0cded5fccc975a44d227c5120fd46a9e81de8acf619d43ed838414cc6d7792195b30b248f76a65246949a129a4dadd148721948f90cd6d4fb69
-  languageName: node
-  linkType: hard
-
 "formatly@npm:^0.3.0":
   version: 0.3.0
   resolution: "formatly@npm:0.3.0"
@@ -17018,7 +17005,7 @@ __metadata:
     axios: 1.14.0
     axios-cache-interceptor: ^1.12.0
     basic-ftp: ^5.2.0
-    bson: ^6.10.4
+    bson: ^7.1.1
     bunyan: ^1.8.15
     burner-email-providers: ^1.0.67
     chalk: ^5.6.2

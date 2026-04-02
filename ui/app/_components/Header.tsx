@@ -24,6 +24,16 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
   id: "header-links",
   quickAccessItems: [
     <HeaderQuickAccessItem
+      key="search-split"
+      quickAccessItem={{
+        iconId: null,
+        text: "Recherche split",
+        linkProps: {
+          href: "/search/split",
+        },
+      }}
+    />,
+    <HeaderQuickAccessItem
       key="publier-offre"
       quickAccessItem={{
         iconId: "fr-icon-global-line",
