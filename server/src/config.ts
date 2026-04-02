@@ -185,6 +185,10 @@ const config = {
     url: env.get("EMPLOI_INCLUSION_FLUX_URL").required().asString(),
     apiKey: env.get("EMPLOI_INCLUSION_API_KEY").required().asString(),
   },
+  job_etudiant: {
+    url: env.get("JOB_ETUDIANT_FLUX_URL").required().asString(),
+    apiKey: env.get("JOB_ETUDIANT_API_KEY").required().asString(),
+  },
 }
 
 export default config
