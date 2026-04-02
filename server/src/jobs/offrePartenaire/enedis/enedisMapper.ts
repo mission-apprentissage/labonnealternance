@@ -14,6 +14,12 @@ const ZXmlAttr = z.object({ $: z.record(z.string()).nullish() }).passthrough()
 const ZEnedisJobLocation = z
   .object({
     jobLocation: z.string().nullish(),
+    departements: z
+      .object({
+        departement: z.union([z.string(), ZXmlAttr, z.array(z.union([z.string(), ZXmlAttr]))]).nullish(),
+      })
+      .passthrough()
+      .nullish(),
   })
   .passthrough()
 
@@ -44,6 +50,12 @@ const ZEnedisDiploma = z
   .passthrough()
   .nullish()
 
+const ZEnedisSpecialisationOuter = z
+  .object({
+    specialisation: z.union([z.string(), ZXmlAttr]).nullish(),
+  })
+  .passthrough()
+
 const ZEnedisJobDescription = z
   .object({
     title: z.string(),
@@ -56,6 +68,7 @@ const ZEnedisJobDescription = z
     contractLength: z.coerce.string().nullish(),
     location: ZEnedisJobLocation.nullish(),
     customFields: ZEnedisJobDescriptionCustomFields.nullish(),
+    salaryRange: z.union([z.string(), ZXmlAttr]).nullish(),
   })
   .passthrough()
 
@@ -65,6 +78,12 @@ const ZEnedisApplicantCriteria = z
     customFields: z
       .object({
         list1: z.union([z.string(), ZXmlAttr]).nullish(), // Used for remuneration in the mapper
+      })
+      .passthrough()
+      .nullish(),
+    specialisations: z
+      .object({
+        specialisation: z.union([ZEnedisSpecialisationOuter, z.array(ZEnedisSpecialisationOuter)]).nullish(),
       })
       .passthrough()
       .nullish(),
@@ -139,6 +158,8 @@ const parseEnedisShortDate = (raw: string | null | undefined): Date | null => {
 const diplomaClientcodeToEuropean = (clientcode: string | null | undefined): "3" | "4" | "5" | "6" | "7" | null => {
   if (!clientcode) return null
   const code = clientcode.toUpperCase()
+  if (code === "SANS_DIPLOME") return "3"
+  if (code === "CAP_BEP_BAC") return "4" // EDF-specific: range from CAP/BEP up to Bac
   if (code.includes("CAP") || code.includes("BEP")) return "3"
   if (code === "BAC" || code === "BAC_PRO") return "4"
   if (code.startsWith("BAC2") || code === "BAC2_BAC3") return "5"
@@ -152,7 +173,7 @@ const diplomaClientcodeToEuropean = (clientcode: string | null | undefined): "3"
  *   - a plain string: "Alternance"
  *   - an object with attributes: { $: { clientcode: "CONTRAT_ALTERNANCE" }, _: "Alternance" }
  */
-const getXmlTextValue = (value: unknown): string | null => {
+export const getXmlTextValue = (value: unknown): string | null => {
   if (!value) return null
   if (typeof value === "string") return value
   if (typeof value === "object" && "_" in value && typeof (value as Record<string, unknown>)._ === "string") {
@@ -162,10 +183,21 @@ const getXmlTextValue = (value: unknown): string | null => {
 }
 
 export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: JOBPARTNERS_LABEL): IComputedJobsPartners => {
-  const { id, creationDate, entityDescription, modificationDate, directUrl, jobDescription, applicantCriteria } = job
+  const { id, creationDate, entityDescription, modificationDate, directUrl, jobDescription, applicantCriteria, entity } = job
 
-  const { title, description, missionDescription, missionDescriptionFormatted, applicantProfile, applicantProfileFormatted, contract, contractLength, location, customFields } =
-    jobDescription
+  const {
+    title,
+    description,
+    missionDescription,
+    missionDescriptionFormatted,
+    applicantProfile,
+    applicantProfileFormatted,
+    contract,
+    contractLength,
+    location,
+    customFields,
+    salaryRange,
+  } = jobDescription
 
   // Determine contract type from the xml2js parsed value
   let business_error: string | null = null
@@ -186,6 +218,11 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
       business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
   }
 
+  // Title too short is a data quality error
+  if (!title || title.length < 3) {
+    business_error = business_error ?? JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+  }
+
   const contract_duration = contractLength ? parseInt(contractLength, 10) || null : null
 
   const diplomaClientcode = applicantCriteria?.diploma?.$?.clientcode ?? null
@@ -194,6 +231,15 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
 
   const cityRaw = location?.jobLocation?.trim() ?? null
   const workplace_address_city = cityRaw || null
+
+  // Extract department from location.departements.departement (xml2js may parse as object or array)
+  const rawDeptData = location?.departements?.departement
+  const rawDept = Array.isArray(rawDeptData) ? rawDeptData[0] : rawDeptData
+  const department = rawDept ? getXmlTextValue(rawDept) : null
+  const workplace_address_label = [workplace_address_city, department].filter(Boolean).join(", ") || null
+
+  // workplace_name: use salaryRange text (employer brand), fall back to entity text, then partnerLabel
+  const workplace_name = getXmlTextValue(salaryRange) ?? getXmlTextValue(entity) ?? partnerLabel
 
   // Build description by combining available fields
   const descriptionParts: string[] = []
@@ -210,7 +256,24 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     descriptionParts.push(`Rémunération : ${remuneration}`)
   }
 
+  // Additional position or benefits info from jobDescription.customFields.LongText1Formatted
+  const longText1Formatted = getXmlTextValue(customFields?.LongText1Formatted) ?? null
+  if (longText1Formatted) {
+    descriptionParts.push(longText1Formatted)
+  }
+
   const offer_description = descriptionParts.join("<br /><br />").trim() || null
+
+  // Extract specialisations for offer_desired_skills
+  // XML structure: specialisations.specialisation[*].specialisation (inner specialisation holds text)
+  const rawSpecialisations = applicantCriteria?.specialisations?.specialisation
+  const outerList = rawSpecialisations ? (Array.isArray(rawSpecialisations) ? rawSpecialisations : [rawSpecialisations]) : []
+  const offer_desired_skills = outerList
+    .map((outer) => {
+      const inner = outer?.specialisation
+      return inner ? getXmlTextValue(inner) : null
+    })
+    .filter((s): s is string => s !== null && s.trim() !== "")
 
   // Dates
   const now = new Date()
@@ -226,23 +289,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
 
   const urlParsing = z.string().url().safeParse(directUrl)
 
-  /*
-  Récupération du service de l'offre : il est indiqué dans jobDescription.profile et jobDescription.jobFamily , mais parfois aussi dans entity. 
-  On peut trouver des valeurs comme "Service Distribution France entière" ou "Service Client France entière", on va extraire le nom du service (Distribution, Client) 
-  pour le mettre dans workplace_name et workplace_description, et garder la mention complète dans entityDescription pour la description de l'entreprise.  
-
-  Récupération du département dans jobDescription.location.departements.departement._ à mettre dans workplace_address à la suite de workplace_address_city
-
-  Récupération de jobDescription.customFields.longText1Formatted qui contient parfois des informations complémentaires sur le poste (ex: "Poste basé à Lyon mais possibilité de télétravail 2 jours par semaine") à mettre dans offer_description
-
-  Récupération de applicantCriteria.specialisation.specialisation.specialisation qui peut rarement contenir qq chose à mettre dans offer_desired_skills
-
-  finaliser les tests EDF
-
-  corriger les tests Enedis et Edf sur les dates à Omit pour cause de différence de TZ sur GitHub Actions et en local
-
-  */
-
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
@@ -250,11 +296,12 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     partner_job_id: id,
     offer_title: title,
     offer_description,
+    offer_desired_skills,
     offer_creation: publicationDate,
     offer_expiration,
-    workplace_name: partnerLabel,
+    workplace_name,
     workplace_address_city,
-    workplace_address_label: workplace_address_city,
+    workplace_address_label,
     workplace_description: entityDescription || null,
     apply_url: urlParsing.data ?? null,
     contract_type,
