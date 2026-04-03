@@ -2,7 +2,7 @@
  * Analyse la présence de chaque CFA de la blocklist dans la collection computed_jobs_partners.
  *
  * Usage (depuis le dossier server/) :
- *   yarn tsx src/scripts/analyzeCfaBlockList.ts > docs/cfa-blocklist-analysis.md
+ *   yarn cli analyzeCfaBlockList.ts > docs/cfa-blocklist-analysis.md
  *
  * Le script se connecte à MongoDB, parcourt computed_jobs_partners par batches de 500,
  * et produit un tableau Markdown avec :
@@ -20,10 +20,9 @@ import { closeMongodbConnection, connectToMongodb, getDbCollection } from "@/com
 import config from "@/config"
 import { cfaCompanyList } from "@/jobs/offrePartenaire/isCompanyInBlockedCfaList"
 
-const _BATCH_SIZEEEEE = 500
-// En dev (tsx) : import.meta.dirname = server/src/scripts → ../../.. = racine du monorepo
-// En prod (dist compilé) : import.meta.dirname = server/dist → ../.. = racine du monorepo
-const OUTPUT_PATH = join(import.meta.dirname, import.meta.dirname.includes("/dist") ? "../../docs/cfa-blocklist-analysis.md" : "../../../docs/cfa-blocklist-analysis.md")
+// En dev (tsx) : import.meta.dirname = server/src/jobs/oneTimeJob → ../../../../ = racine du monorepo
+// En prod (dist compilé) : import.meta.dirname = server/dist/jobs/oneTimeJob → ../../../../ = racine du monorepo
+const OUTPUT_PATH = join(import.meta.dirname, "../../../../docs/cfa-blocklist-analysis.md")
 
 const stringNormaliser = (str: string): string => {
   return removeAccents(str.toLowerCase())

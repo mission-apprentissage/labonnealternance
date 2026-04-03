@@ -1,4 +1,4 @@
-import { analyzeCfaBlockList } from "@/scripts/analyzeCfaBlockList"
+import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
