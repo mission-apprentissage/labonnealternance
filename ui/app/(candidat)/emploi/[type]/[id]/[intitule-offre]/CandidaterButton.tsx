@@ -10,7 +10,7 @@ import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/has
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useSubmitCandidature } from "@/components/ItemDetail/CandidatureLba/services/submitCandidature"
-import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus, { tagCandidatureSimplifiee } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
@@ -57,6 +57,7 @@ export function CandidaterButton({
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>
+              {tagCandidatureSimplifiee()}
             </Box>
           </>
         ) : (

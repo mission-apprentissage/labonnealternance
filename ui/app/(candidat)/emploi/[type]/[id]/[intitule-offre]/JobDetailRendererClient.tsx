@@ -139,8 +139,7 @@ function JobDetail({
                 {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && hasEmail(selectedItem) && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                 {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !hasEmail(selectedItem) && <PartnerJobPostuler job={selectedItem} />}
               </Box>
-              <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
-                {hasEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
+              <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
                 <ShareLink item={selectedItem} />
               </Box>
             </Box>
