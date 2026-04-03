@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { z } from "zod"
-
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const ZLeboncoinJob = z
@@ -29,15 +29,16 @@ export const leboncoinJobToJobsPartners = (job: ILeboncoinJob): IComputedJobsPar
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.LEBONCOIN,
     partner_job_id: job.identifiant,
-    offer_title: job.titre,
     workplace_name: job.entreprise,
     workplace_address_city: job.ville,
     workplace_address_zipcode: job["code postal"],
     workplace_address_label: `${job.ville} ${job["code postal"]}`,
+    offer_title: job.titre,
     offer_description: job.description,
     offer_expiration: dayjs.tz(now).add(2, "months").toDate(),
-    apply_url: job.redirection,
     offer_multicast: true,
+    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
+    apply_url: job.redirection,
   }
   return partnerJob
 }
