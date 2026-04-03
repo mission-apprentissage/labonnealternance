@@ -4,6 +4,6 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { enedisJobToJobsPartnersProcessor, type IEnedisJob } from "@/jobs/offrePartenaire/enedis/enedisMapper"
 
 // The structure of the XML being imported from EDF is similar to Enedis, so we can reuse the same mapper processor with a different partner label
-export const edfJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners | null => {
+export const edfJobToJobsPartners = (job: IEnedisJob): IComputedJobsPartners => {
   return enedisJobToJobsPartnersProcessor(job, JOBPARTNERS_LABEL.EDF)
 }
