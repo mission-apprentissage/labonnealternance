@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function AccueilAdministration() {
   return (
-    <AdminLayout currentAdminPage="GESTION_RECRUTEURS">
+    <AdminLayout>
       <Breadcrumb pages={[PAGES.static.backAdminHome]} />
       <UsersList />
     </AdminLayout>

@@ -27,7 +27,7 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
   return (
     <span
       style={{
-        verticalAlign: "middle",
+        // verticalAlign: "middle",
         display: "inline-block",
         fontSize: "12px",
         lineHeight: "20px",

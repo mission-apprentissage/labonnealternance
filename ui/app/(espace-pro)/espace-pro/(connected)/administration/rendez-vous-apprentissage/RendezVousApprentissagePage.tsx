@@ -45,7 +45,7 @@ export default function RendezVousApprentissage() {
   }
 
   return (
-    <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
+    <AdminLayout>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche]} />
       <Box sx={{ border: "1px solid #E0E5ED", backgroundColor: "white" }}>
         <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("4v"), borderBottom: "1px solid #E0E5ED" }}>

@@ -1,13 +1,12 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Link, Typography } from "@mui/material"
+import { Box, Link, Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import { entriesToTypedRecord } from "shared"
-
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -18,6 +17,7 @@ import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUti
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
+import { CustomTag } from "@/components/SearchForTrainingsAndJobs/components/CustomTag"
 import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -27,16 +27,12 @@ import { UserMenu } from "./_component/UserMenu"
 const panelOrder = [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ERROR]
 const accountTypes = [CFA, ENTREPRISE] as const
 const opcoValues = [...Object.values(OPCOS_LABEL)] as const
+const validTypesForOpcoFilter: AccountType[] = [undefined, ENTREPRISE]
+const activeUserLimit = 100
+const routeBuilder = PAGES.dynamic.backAdminGestionDesRecruteurs
 
 type AccountType = (typeof accountTypes)[number] | undefined
 type OpcoValue = (typeof opcoValues)[number] | undefined
-
-const validTypesForOpcoFilter: AccountType[] = [undefined, ENTREPRISE]
-
-const activeUserLimit = 100
-
-const routeBuilder = PAGES.dynamic.backAdminGestionDesRecruteurs
-
 type RouteParams = { newUser?: string } & Partial<Parameters<typeof routeBuilder>[0]>
 
 export function UsersList() {
@@ -85,7 +81,7 @@ export function UsersList() {
         staleTime: 1000 * 60 * 20, // 20 minutes
       })
       const { data: dataRaw, refetch, isLoading } = useQueryResult
-      const data = dataRaw as IUserRecruteurJson[]
+      const data = dataRaw as IUserRecruteurForAdminJSON[]
       return [etatUtilisateur, { data, refetch, isLoading }] as const
     })
   )
@@ -158,10 +154,6 @@ export function UsersList() {
 
   return (
     <>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("6v") }}>
-        <Typography sx={{ fontSize: "2rem", fontWeight: 700 }}>Gestion des recruteurs</Typography>
-      </Box>
-
       <CustomTabs
         currentTab={currentTab}
         onChange={onStatusChange}
@@ -247,8 +239,13 @@ function TabContent({
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id, opco } = data[id]
-        const siretText = <Typography sx={{ color: "#666666", fontSize: "14px" }}>SIRET {establishment_siret}</Typography>
+        console.log("data", data)
+        const { establishment_raison_sociale, establishment_siret, _id, opco, type } = data[id]
+        const siretText = (
+          <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>
+            SIRET {establishment_siret} <CustomTag color={type === "CFA" ? "yellow" : "green"}>{type}</CustomTag>
+          </Typography>
+        )
         return (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}`} aria-label="voir les informations">
@@ -261,56 +258,47 @@ function TabContent({
                 {siretText}
               </Link>
             )}
-            <Typography sx={{ maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", color: "redmarianne", fontSize: "14px" }}>{opco}</Typography>
+            <Typography sx={{ color: "#666666", maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontSize: ".75rem" }}>
+              Opco : {opco}
+            </Typography>
           </Box>
         )
       },
       filter: "fuzzyText",
     },
     {
-      Header: "Type",
-      id: "type",
-      maxWidth: "140",
-      accessor: ({ type }) => <Typography sx={{ color: "#666666", fontSize: "14px" }}>{type}</Typography>,
-    },
-    {
-      Header: "Nom",
+      Header: "Contact",
       id: "nom",
-      width: "200",
-      accessor: ({ last_name, first_name }) => (
-        <Typography sx={{ color: "#666666", fontSize: "14px" }}>
-          {first_name} {last_name}
-        </Typography>
+      width: "300",
+      accessor: ({ last_name, first_name, email, phone }) => (
+        <Stack spacing={0.5}>
+          <Typography sx={{ color: "#666666", fontSize: ".75rem", fontWeight: 700 }}>
+            {first_name} {last_name}
+          </Typography>
+          <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>
+            {email} ~ {phone}
+          </Typography>
+        </Stack>
       ),
-    },
-    {
-      Header: "Email",
-      width: "250",
-      accessor: "email",
-      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px", ...webkitLineClamp }}>{value}</Typography>,
-      filter: "fuzzyText",
-    },
-    {
-      Header: "Téléphone",
-      accessor: "phone",
-      width: "160",
-      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px" }}>{value}</Typography>,
-      filter: "text",
     },
     {
       Header: "Créé le",
       accessor: "createdAt",
-      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px" }}>{dayjs(value).format("DD/MM/YYYY")}</Typography>,
+      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>{dayjs(value).format("DD/MM/YYYY")}</Typography>,
       width: "130",
       id: "createdAt",
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
     {
-      Header: "Origine",
-      accessor: "origin",
-      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: "14px", ...webkitLineClamp }}>{value}</Typography>,
-      width: "300",
-      id: "origine",
+      Header: "Détail",
+      accessor: "hasJobs",
+      id: "hasJobs",
+      width: "200",
+      Cell: ({ value }) => (
+        <Typography sx={{ color: "#666666", maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontSize: ".75rem" }}>
+          {value ? <CustomTag color="green">A des offres publiées</CustomTag> : <CustomTag color="pink">Aucune offre publiée</CustomTag>}
+        </Typography>
+      ),
     },
   ]
 
@@ -329,18 +317,6 @@ function TabContent({
         <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
         <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
       </Box>
-      <Typography
-        sx={{
-          fontSize: "16px",
-          lineHeight: "24px",
-          color: "#666666",
-          marginTop: fr.spacing("4v"),
-          marginBottom: fr.spacing("4v") + "!important",
-        }}
-      >
-        {userRecruteurs.length}
-        {!isCountAccurate && "+"} comptes {statusLabels[queryStatus].toLocaleLowerCase()} :
-      </Typography>
       <TableWithPagination
         caption="Liste des recruteurs"
         columns={columns}

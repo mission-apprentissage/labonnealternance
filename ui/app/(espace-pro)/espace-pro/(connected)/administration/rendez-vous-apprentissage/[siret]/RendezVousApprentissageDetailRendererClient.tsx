@@ -95,7 +95,7 @@ export default function RendezVousApprentissageDetailRendererClient({
   }
 
   return (
-    <AdminLayout currentAdminPage="RECHERCHE_RENDEZ_VOUS">
+    <AdminLayout>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
       <Typography component="h2" sx={{ fontWeight: 700, mt: fr.spacing("4v") }}>
         {title}

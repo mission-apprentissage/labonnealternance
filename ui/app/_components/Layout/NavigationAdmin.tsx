@@ -1,65 +1,39 @@
 "use client"
 
-import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Tab, Tabs } from "@mui/material"
-import { useRouter } from "next/navigation"
+import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
+import { usePathname } from "next/navigation"
 
-import { tabSx } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { PAGES } from "@/utils/routes.utils"
 
-const AdminPages = {
-  GESTION_RECRUTEURS: PAGES.static.backAdminHome.getPath(),
-  ENTREPRISES_ALGO: PAGES.static.backAdminGestionDesEntreprises.getPath(),
-  RECHERCHE_RENDEZ_VOUS: PAGES.static.rendezVousApprentissageRecherche.getPath(),
-  GESTION_ADMINISTRATEURS: PAGES.static.backAdminGestionDesAdministrateurs.getPath(),
-  GESTION_PROCESSEURS: PAGES.static.adminProcessor.getPath(),
+type AdminNavItem = {
+  text: string
+  href: string
 }
 
-export type IAdminPage = keyof typeof AdminPages
+const ADMIN_NAV_ITEMS: AdminNavItem[] = [
+  { text: "Gestion des recruteurs", href: PAGES.static.backAdminHome.getPath() },
+  { text: "Entreprises de l'algorithme", href: PAGES.static.backAdminGestionDesEntreprises.getPath() },
+  { text: "Rendez-vous apprentissage", href: PAGES.static.rendezVousApprentissageRecherche.getPath() },
+  { text: "Gestion des administrateurs", href: PAGES.static.backAdminGestionDesAdministrateurs.getPath() },
+  { text: "Gestion des jobs", href: PAGES.static.adminProcessor.getPath() },
+]
 
-const NavigationAdmin = ({ currentPage }: { currentPage: IAdminPage }) => {
-  const router = useRouter()
+function isLinkActive(pathname: string, href: string): boolean {
+  return pathname.startsWith(href)
+}
 
-  let selectedIndex = Object.keys(AdminPages).findIndex((page) => page === currentPage)
-  if (selectedIndex === -1) {
-    selectedIndex = 0
-  }
+const NavigationAdmin = () => {
+  const pathname = usePathname()
 
-  const handleTabsChange = (_: unknown, index: number) => {
-    const pageDef = Object.keys(AdminPages)[index]
-    const pagePath = AdminPages[pageDef as IAdminPage]
-    router.push(pagePath)
-  }
+  const items = ADMIN_NAV_ITEMS.map((item) => ({
+    text: item.text,
+    isActive: isLinkActive(pathname, item.href),
+    linkProps: {
+      href: item.href,
+    },
+  }))
 
-  return (
-    <Box sx={{ mt: fr.spacing("6v") }}>
-      <Tabs
-        value={selectedIndex}
-        onChange={handleTabsChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        aria-label="Choix des écrans d'administration"
-        slotProps={{
-          indicator: {
-            sx: {
-              top: 0, // ← Indicateur en haut
-              bottom: "auto",
-              height: "3px",
-              backgroundColor: "primary.main",
-            },
-          },
-        }}
-        sx={tabSx}
-      >
-        <Tab disableRipple label="Gestion des recruteurs" data-testid="recruiter_management_tab" />
-        <Tab disableRipple label="Entreprises de l'algorithme" data-testid="algo_company_tab" />
-        <Tab disableRipple label="Rendez-vous apprentissage" data-testid="recherche_rendez_vous_apprentissage_tab" />
-        <Tab disableRipple label="Gestion des administrateurs" data-testid="administrator_management_tab" />
-        <Tab disableRipple label="Gestion des jobs" data-testid="administrator_processeur_tab" />
-      </Tabs>
-    </Box>
-  )
+  return <MainNavigation items={items} />
 }
 
 export default NavigationAdmin

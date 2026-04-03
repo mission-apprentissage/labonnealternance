@@ -39,7 +39,7 @@ export default function GestionDesAdministrateurs() {
   }
 
   return (
-    <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
+    <AdminLayout>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
       <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose} size="md">
         <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>

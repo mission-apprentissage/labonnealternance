@@ -43,7 +43,7 @@ export default function User() {
   return (
     <>
       <Box component="header">
-        <NavigationAdmin currentPage="GESTION_RECRUTEURS" />
+        <NavigationAdmin />
       </Box>
       <Box
         sx={{

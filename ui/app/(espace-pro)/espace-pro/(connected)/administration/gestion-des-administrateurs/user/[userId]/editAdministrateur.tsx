@@ -34,7 +34,7 @@ export default function EditAdministrateur() {
   const { userId } = useParams() as { userId: string }
 
   return (
-    <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
+    <AdminLayout>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs, PAGES.dynamic.backEditAdministrator({ userId })]} />
       <AdminUserView userId={userId} />
     </AdminLayout>

@@ -167,7 +167,7 @@ export default function GestionEntreprises() {
   const [siret, setSiret] = useState<string>("")
 
   return (
-    <AdminLayout currentAdminPage="ENTREPRISES_ALGO">
+    <AdminLayout>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
       <Box>
         <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>

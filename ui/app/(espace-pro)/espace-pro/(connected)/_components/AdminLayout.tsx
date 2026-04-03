@@ -1,13 +1,13 @@
 "use client"
 
-import type { IAdminPage } from "@/app/_components/Layout/NavigationAdmin"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
+import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 
-export const AdminLayout = ({ currentAdminPage, children }: { currentAdminPage: IAdminPage; children: React.ReactNode }) => {
+export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <NavigationAdmin currentPage={currentAdminPage} />
-      <div>{children}</div>
+      <NavigationAdmin />
+      <DepotSimplifieStyling>{children}</DepotSimplifieStyling>
     </>
   )
 }
