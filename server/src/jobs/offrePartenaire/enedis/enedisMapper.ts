@@ -222,19 +222,17 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   const cityRaw = location?.jobLocation?.trim() ?? null
   const workplace_address_city = cityRaw || null
 
-  const rawDeptData = location?.departements?.departement
-  const rawDept = Array.isArray(rawDeptData) ? rawDeptData[0] : rawDeptData
-  const department = rawDept ? getXmlTextValue(rawDept) : null
-  const workplace_address_label = [workplace_address_city, department].filter(Boolean).join(", ") || null
+  const workplace_address_label = workplace_address_city
 
   // Build description by combining available fields
   const descriptionParts: string[] = []
   if (missionDescriptionFormatted || missionDescription || description) {
-    descriptionParts.push((missionDescriptionFormatted ?? missionDescription ?? description)!)
+    descriptionParts.push(/*missionDescriptionFormatted ?? */ (missionDescription ?? description)!)
   }
 
   if (applicantProfileFormatted || applicantProfile) {
-    descriptionParts.push(`Profil recherché :<br /><br />${applicantProfileFormatted ?? applicantProfile}`)
+    //descriptionParts.push(`Profil recherché :<br /><br />${applicantProfileFormatted ?? applicantProfile}`)
+    descriptionParts.push(`Profil recherché :\n\n${/*applicantProfileFormatted ?? */ applicantProfile}`)
   }
 
   const remuneration = getXmlTextValue(applicantCriteria?.customFields?.list1) ?? null
@@ -242,12 +240,17 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     descriptionParts.push(`Rémunération : ${remuneration}`)
   }
 
-  const longText1Formatted = getXmlTextValue(customFields?.LongText1Formatted) ?? null
-  if (longText1Formatted) {
-    descriptionParts.push(longText1Formatted)
+  // const longText1Formatted = getXmlTextValue(customFields?.LongText1Formatted) ?? null
+  // if (longText1Formatted) {
+  //   descriptionParts.push(longText1Formatted)
+  // }
+  const longText1 = getXmlTextValue(customFields?.longText1) ?? null
+  if (longText1) {
+    descriptionParts.push(longText1)
   }
 
-  const offer_description = descriptionParts.join("<br /><br />").trim() || null
+  //const offer_description = descriptionParts.join("<br /><br />").trim() || null
+  const offer_description = descriptionParts.join("\n\n").trim() || null
 
   // Extract specialisations for offer_desired_skills
   // XML structure: specialisations.specialisation[*].specialisation (inner specialisation holds text)

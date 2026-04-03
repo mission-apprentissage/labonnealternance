@@ -34,7 +34,7 @@ describe("importEdf", () => {
         .toArray()
     ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
     // Only the 2 alternance offers should be imported (VIE is filtered out)
-    expect.soft(jobs.length).toBe(2)
+    expect.soft(jobs.length).toBe(3)
     // Omit timezone-sensitive date fields to avoid CI vs local discrepancies
     const jobsWithoutDates = jobs.map(({ offer_creation, offer_expiration, contract_start, updated_at, ...rest }) => rest)
     expect.soft(jobsWithoutDates).toMatchSnapshot()

@@ -16,7 +16,11 @@ exports[`importEnedis > should test the import of Enedis data into computed_job_
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],
-    "offer_description": "<p>Avec votre tuteur, vous contribuerez directement au quotidien à renforcer la satisfaction de nos clients.</p><br /><br />Profil recherché :<br /><br /><p>Vous êtes dynamique, ouvert et à l'écoute.</p><br /><br /><ul><li>Une prime d'intéressement avec abondement possible</li></ul>",
+    "offer_description": "Avec votre tuteur, vous contribuerez directement au quotidien à renforcer la satisfaction de nos clients.
+
+Profil recherché :
+
+Vous êtes dynamique, ouvert et à l'écoute. Vous préparez un BTS NDRC.",
     "offer_desired_skills": [
       "Electricité",
     ],
@@ -64,7 +68,13 @@ exports[`importEnedis > should test the import of Enedis data into computed_job_
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],
-    "offer_description": "<p>Vous interviendrez sur le terrain.</p><br /><br />Profil recherché :<br /><br /><p>Vous avez un fort esprit de sécurité.</p><br /><br />Rémunération : De 27 800€ à 29 300€ brut annuel minimum<br /><br /><ul><li>De 27 800€ à 29 300€ brut annuel minimum</li></ul>",
+    "offer_description": "Vous interviendrez sur le terrain et préparerez les chantiers.
+
+Profil recherché :
+
+Vous avez un fort esprit de sécurité, capable de travailler en autonomie.
+
+Rémunération : De 27 800€ à 29 300€ brut annuel minimum",
     "offer_desired_skills": [
       "Electricité",
       "Electrotechnique",

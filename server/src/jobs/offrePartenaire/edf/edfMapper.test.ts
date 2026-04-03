@@ -123,7 +123,7 @@ describe("edfJobToJobsPartners", () => {
   it("should use missionDescriptionFormatted as offer_description when available", () => {
     const result = edfJobToJobsPartners(baseJob)
     expect(result?.offer_description).toBe(
-      "<p><strong>Missions :</strong></p><ul><li>Développer des applications web et mobiles.</li></ul><br /><br />Profil recherché :<br /><br /><p><strong>Niveau de diplôme préparé :</strong> Bac+3</p><br /><br />Rémunération : De 820€ à 1 823€ par mois"
+      "Développer des applications web et mobiles.\n\nProfil recherché :\n\nNiveau de diplôme préparé : Bac+3\n\nRémunération : De 820€ à 1 823€ par mois"
     )
   })
 
@@ -138,7 +138,7 @@ describe("edfJobToJobsPartners", () => {
     }
     const result = edfJobToJobsPartners(job)
     expect(result?.offer_description).toBe(
-      "Développer des applications web et mobiles pendant 2 ans.<br /><br />Profil recherché :<br /><br /><p><strong>Niveau de diplôme préparé :</strong> Bac+3</p><br /><br />Rémunération : De 820€ à 1 823€ par mois"
+      "Développer des applications web et mobiles pendant 2 ans.\n\nProfil recherché :\n\nNiveau de diplôme préparé : Bac+3\n\nRémunération : De 820€ à 1 823€ par mois"
     )
   })
 
