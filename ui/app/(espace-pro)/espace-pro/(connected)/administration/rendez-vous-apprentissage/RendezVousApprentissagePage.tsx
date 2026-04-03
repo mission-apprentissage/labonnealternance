@@ -9,7 +9,6 @@ import { useState } from "react"
 import type { IFormationCatalogueJson } from "shared"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
-import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { useToast } from "@/app/hooks/useToast"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -45,7 +44,7 @@ export default function RendezVousApprentissage() {
   }
 
   return (
-    <AdminLayout>
+    <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche]} />
       <Box sx={{ border: "1px solid #E0E5ED", backgroundColor: "white" }}>
         <Typography component="h2" sx={{ fontWeight: 700, p: fr.spacing("4v"), borderBottom: "1px solid #E0E5ED" }}>
@@ -72,6 +71,6 @@ export default function RendezVousApprentissage() {
           </Formik>
         </Box>
       </Box>
-    </AdminLayout>
+    </>
   )
 }

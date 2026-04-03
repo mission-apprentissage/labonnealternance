@@ -10,7 +10,6 @@ import { referrers } from "shared/constants/referers"
 import { z } from "zod"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
-import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import EtablissementComponent from "@/app/(espace-pro)/espace-pro/(connected)/administration/_components/EtablissementComponent"
 import { useToast } from "@/app/hooks/useToast"
 import { formatDate } from "@/common/dayjs"
@@ -95,7 +94,7 @@ export default function RendezVousApprentissageDetailRendererClient({
   }
 
   return (
-    <AdminLayout>
+    <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.rendezVousApprentissageRecherche, PAGES.dynamic.rendezVousApprentissageDetail({ siret })]} />
       <Typography component="h2" sx={{ fontWeight: 700, mt: fr.spacing("4v") }}>
         {title}
@@ -248,6 +247,6 @@ export default function RendezVousApprentissageDetailRendererClient({
           <Typography>Etablissement introuvable</Typography>
         )}
       </Box>
-    </AdminLayout>
+    </>
   )
 }
