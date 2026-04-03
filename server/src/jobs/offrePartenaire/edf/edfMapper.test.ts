@@ -1,12 +1,12 @@
 import { JOBPARTNERS_LABEL, NIVEAUX_DIPLOMES_EUROPEENS } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { IEdfJob } from "./edfMapper"
+import type { IEnedisJob } from "@/jobs/offrePartenaire/enedis/enedisMapper"
 import { edfJobToJobsPartners } from "./edfMapper"
 
 const now = new Date("2026-02-01T00:00:00.000Z")
 
-const baseJob: IEdfJob = {
+const baseJob: IEnedisJob = {
   id: "100001",
   reference: "2026-100001",
   entityDescription: "Acteur majeur du secteur de l'énergie.",
@@ -79,7 +79,7 @@ describe("edfJobToJobsPartners", () => {
   })
 
   it("should return null for non-alternance contracts (CDI, CDD, etc.)", () => {
-    const job: IEdfJob = {
+    const job: IEnedisJob = {
       ...baseJob,
       jobDescription: {
         ...baseJob.jobDescription,
@@ -92,7 +92,7 @@ describe("edfJobToJobsPartners", () => {
   })
 
   it("should return null for Stage contracts", () => {
-    const job: IEdfJob = {
+    const job: IEnedisJob = {
       ...baseJob,
       jobDescription: {
         ...baseJob.jobDescription,
@@ -105,7 +105,7 @@ describe("edfJobToJobsPartners", () => {
   })
 
   it("should set business_error to WRONG_DATA when title is too short", () => {
-    const job: IEdfJob = { ...baseJob, jobDescription: { ...baseJob.jobDescription, title: "AB" } }
+    const job: IEnedisJob = { ...baseJob, jobDescription: { ...baseJob.jobDescription, title: "AB" } }
     const result = edfJobToJobsPartners(job)
     expect(result?.business_error).toBe(JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA)
   })
@@ -128,7 +128,7 @@ describe("edfJobToJobsPartners", () => {
   })
 
   it("should fall back to missionDescription when missionDescriptionFormatted is absent", () => {
-    const job: IEdfJob = {
+    const job: IEnedisJob = {
       ...baseJob,
       jobDescription: {
         ...baseJob.jobDescription,
@@ -156,7 +156,7 @@ describe("edfJobToJobsPartners", () => {
       ["CAP_BEP_BAC", "4", NIVEAUX_DIPLOMES_EUROPEENS[1].label],
       ["SANS_DIPLOME", "3", NIVEAUX_DIPLOMES_EUROPEENS[0].label],
     ])("should map diploma clientcode %s to european level %s", (clientcode, expectedLevel, expectedLabel) => {
-      const job: IEdfJob = {
+      const job: IEnedisJob = {
         ...baseJob,
         applicantCriteria: { ...baseJob.applicantCriteria, diploma: { $: { id: "123", clientcode } } },
       }
@@ -165,7 +165,7 @@ describe("edfJobToJobsPartners", () => {
     })
 
     it("should return null for unknown diploma clientcode", () => {
-      const job: IEdfJob = {
+      const job: IEnedisJob = {
         ...baseJob,
         applicantCriteria: { ...baseJob.applicantCriteria, diploma: { $: { id: "999", clientcode: "UNKNOWN_CODE" } } },
       }
@@ -174,7 +174,7 @@ describe("edfJobToJobsPartners", () => {
     })
 
     it("should return null when diploma is absent", () => {
-      const job: IEdfJob = { ...baseJob, applicantCriteria: { ...baseJob.applicantCriteria, diploma: null } }
+      const job: IEnedisJob = { ...baseJob, applicantCriteria: { ...baseJob.applicantCriteria, diploma: null } }
       const result = edfJobToJobsPartners(job)
       expect(result?.offer_target_diploma).toBeNull()
     })
