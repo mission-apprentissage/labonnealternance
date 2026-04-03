@@ -16,7 +16,7 @@ export const customTagColors = {
     background: fr.colors.decisions.background.contrast.greenEmeraude.default,
   },
   yellow: {
-    color: "#716043",
+    color: fr.colors.decisions.background.actionHigh.greenTilleulVerveine.default,
     background: "#FEECC2",
   },
 } satisfies Record<string, CSSProperties>
