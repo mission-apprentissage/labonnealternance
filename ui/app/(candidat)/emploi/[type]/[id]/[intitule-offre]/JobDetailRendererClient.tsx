@@ -7,7 +7,7 @@ import { useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
-import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
+import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -133,18 +133,18 @@ function JobDetail({
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
             <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
               <Box sx={{ mr: fr.spacing("4v") }}>
-                {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && hasValidEmail(selectedItem) && (
+                {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && hasEmail(selectedItem) && (
                   <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />
                 )}
-                {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !hasValidEmail(selectedItem) && <PartnerJobPostuler job={selectedItem} />}
+                {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && hasEmail(selectedItem) && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
+                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !hasEmail(selectedItem) && <PartnerJobPostuler job={selectedItem} />}
               </Box>
               <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
-                {hasValidEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
+                {hasEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
                 <ShareLink item={selectedItem} />
               </Box>
             </Box>
-            {selectedItem.company?.mandataire && hasValidEmail(selectedItem) && (
+            {selectedItem.company?.mandataire && hasEmail(selectedItem) && (
               <Stack
                 direction="row"
                 sx={{
