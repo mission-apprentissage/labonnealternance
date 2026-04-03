@@ -7,6 +7,7 @@ import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.m
 import { z } from "zod"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
+import { jsonToXml } from "@/common/utils/jsonToXml"
 
 export const ZPassJob = z
   .object({
@@ -18,7 +19,7 @@ export const ZPassJob = z
         .passthrough(),
     }),
     link: z.string().nullish(),
-    description: z.string().nullish(),
+    description: z.any().nullish(),
     author: z.string().nullish(),
     pubDate: z.string().nullish(),
     "dc:identifier": z.string(),
@@ -29,7 +30,7 @@ export const ZPassJob = z
     "dc:type": z.string().nullish(),
     "dc:format": z.string().nullish(),
     "dc:coverage": z.string().nullish(),
-    "dc:creator": z.string().nullish(),
+    "dc:creator": z.string().nullish().or(z.array(z.string().nullish())),
   })
   .passthrough()
 
@@ -44,11 +45,12 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
   const dcType = job["dc:type"]
   const dcFormat = job["dc:format"]
   const dcCoverage = job["dc:coverage"]
-  const contact = job["dc:creator"]
+  const dcCreator = job["dc:creator"]
   let email: string | null = null
   let phone: string | null = null
 
-  if (contact) {
+  if (dcCreator) {
+    const contact = Array.isArray(dcCreator) ? dcCreator.filter((x) => x).join(" ") : dcCreator
     const parsedEmail = contact.split(" -")[0]
     const parsedPhone = contact.split("- ")[1]
 
@@ -90,7 +92,7 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     contract_start: contractStart,
     contract_duration: contractDuration,
     offer_title: title,
-    offer_description: description,
+    offer_description: jsonToXml(description),
     offer_target_diploma: parseDiploma(dcType),
     offer_creation: creationDate,
     offer_expiration: offerExpiration,
