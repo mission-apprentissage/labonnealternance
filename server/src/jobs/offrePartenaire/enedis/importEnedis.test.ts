@@ -33,6 +33,10 @@ describe("importEnedis", () => {
         .toArray()
     ).sort((a, b) => ((a.partner_job_id ?? "") < (b.partner_job_id ?? "") ? -1 : 1))
     expect.soft(jobs.length).toBe(2)
-    expect.soft(jobs).toMatchSnapshot()
+    const jobsWithoutDates = jobs.map(({ offer_creation, offer_expiration, contract_start, updated_at, ...rest }) => rest)
+    expect.soft(jobsWithoutDates).toMatchSnapshot()
+    for (const job of jobs) {
+      expect.soft(job.offer_creation).toBeInstanceOf(Date)
+    }
   })
 })

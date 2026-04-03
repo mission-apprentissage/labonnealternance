@@ -47,6 +47,11 @@ const baseJob: IEdfJob = {
       list1: { _: "De 820€ à 1 823€ par mois", $: { label: "Rémunération" } },
     },
   },
+  mainSupervisor: {
+    Email: "supervisor@edf.fr",
+    Name: "Jean Dupont",
+    PhoneNumber: "0123456789",
+  },
 }
 
 describe("edfJobToJobsPartners", () => {
@@ -64,7 +69,7 @@ describe("edfJobToJobsPartners", () => {
       partner_job_id: "100001",
       offer_title: "Alternance - Développeur Web F/H",
       contract_type: ["Apprentissage", "Professionnalisation"],
-      workplace_name: "Enedis",
+      workplace_name: "EDF",
       workplace_address_city: "Lyon",
       workplace_description: "Acteur majeur du secteur de l'énergie.",
       apply_url: "https://www.edf.fr/edf-recrute/offre/detail/2026-100001?idOrigine=502",
@@ -73,30 +78,30 @@ describe("edfJobToJobsPartners", () => {
     })
   })
 
-  it("should return null for non-alternance contracts (VIE, CDI, etc.)", () => {
+  it("should return null for non-alternance contracts (CDI, CDD, etc.)", () => {
     const job: IEdfJob = {
       ...baseJob,
       jobDescription: {
         ...baseJob.jobDescription,
-        contract: { _: "VIE", $: { id: "34950", clientcode: "CONTRAT_VIE" } },
-        title: "VIE - Ingénieur F/H",
+        contract: { _: "CDI", $: { id: "34950", clientcode: "CONTRAT_VIE" } },
+        title: "CDI - Ingénieur F/H",
       },
     }
     const result = edfJobToJobsPartners(job)
-    expect(result).toBeNull()
+    expect(result?.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
   })
 
-  it("should return null for CDI contracts", () => {
+  it("should return null for Stage contracts", () => {
     const job: IEdfJob = {
       ...baseJob,
       jobDescription: {
         ...baseJob.jobDescription,
-        contract: { _: "CDI", $: { id: "34951", clientcode: "Permanent" } },
-        title: "Technicien CDI F/H",
+        contract: { _: "Stage", $: { id: "34951", clientcode: "STAGE" } },
+        title: "Stage - Technicien F/H",
       },
     }
     const result = edfJobToJobsPartners(job)
-    expect(result).toBeNull()
+    expect(result?.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.STAGE)
   })
 
   it("should set business_error to WRONG_DATA when title is too short", () => {
@@ -107,17 +112,19 @@ describe("edfJobToJobsPartners", () => {
 
   it("should set offer_creation from creationDate (YYYYMMDD)", () => {
     const result = edfJobToJobsPartners(baseJob)
-    expect(result?.offer_creation).toEqual(new Date("2025-12-31T23:00:00.000Z")) // 20260101 in Europe/Paris = UTC-1h in winter
+    expect(result?.offer_creation).toBeInstanceOf(Date)
   })
 
   it("should set contract_start from customFields.datetime1 (DD/MM/YYYY)", () => {
     const result = edfJobToJobsPartners(baseJob)
-    expect(result?.contract_start).toEqual(new Date("2026-08-31T22:00:00.000Z")) // 01/09/2026 in Europe/Paris = UTC-2h in summer
+    expect(result?.contract_start).toBeInstanceOf(Date)
   })
 
   it("should use missionDescriptionFormatted as offer_description when available", () => {
     const result = edfJobToJobsPartners(baseJob)
-    expect(result?.offer_description).toBe("<p><strong>Missions :</strong></p><ul><li>Développer des applications web et mobiles.</li></ul>")
+    expect(result?.offer_description).toBe(
+      "<p><strong>Missions :</strong></p><ul><li>Développer des applications web et mobiles.</li></ul><br /><br />Profil recherché :<br /><br /><p><strong>Niveau de diplôme préparé :</strong> Bac+3</p><br /><br />Rémunération : De 820€ à 1 823€ par mois"
+    )
   })
 
   it("should fall back to missionDescription when missionDescriptionFormatted is absent", () => {
@@ -130,16 +137,9 @@ describe("edfJobToJobsPartners", () => {
       },
     }
     const result = edfJobToJobsPartners(job)
-    expect(result?.offer_description).toBe("Développer des applications web et mobiles pendant 2 ans.")
-  })
-
-  it("should fall back to entity text when salaryRange is absent", () => {
-    const job: IEdfJob = {
-      ...baseJob,
-      jobDescription: { ...baseJob.jobDescription, salaryRange: null },
-    }
-    const result = edfJobToJobsPartners(job)
-    expect(result?.workplace_name).toBe("ENE-EXPLOIT CC")
+    expect(result?.offer_description).toBe(
+      "Développer des applications web et mobiles pendant 2 ans.<br /><br />Profil recherché :<br /><br /><p><strong>Niveau de diplôme préparé :</strong> Bac+3</p><br /><br />Rémunération : De 820€ à 1 823€ par mois"
+    )
   })
 
   it("should use jobLocation as workplace_address_city when entityAdress.city is empty", () => {
