@@ -164,7 +164,18 @@ function TableWithPagination({
       <Box>
         <Box>
           <Box>
-            <Box className="fr-table__content" sx={{ "& table": { margin: "0 !important" } }}>
+            <Box
+              className="fr-table__content"
+              sx={{
+                "& table": { margin: "0 !important" },
+                "& table thead th[role=columnheader]": {
+                  backgroundSize: "100% 1px !important",
+                  backgroundRepeat: "no-repeat !important",
+                  backgroundPosition: "0 100% !important",
+                  backgroundImage: "linear-gradient(0deg, var(--border-plain-grey), var(--border-plain-grey)) !important",
+                },
+              }}
+            >
               <Box as="table" {...getTableProps()}>
                 <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
                   {caption}
