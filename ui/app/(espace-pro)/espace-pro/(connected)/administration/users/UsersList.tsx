@@ -275,7 +275,7 @@ function TabContent({
           <Typography sx={{ color: "#666666", fontSize: ".75rem", fontWeight: 700 }}>
             {first_name} {last_name}
           </Typography>
-          <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>
+          <Typography sx={{ color: "#666666", fontSize: ".75rem", whiteSpace: "normal", wordBreak: "break-all" }}>
             {email} ~ {phone}
           </Typography>
         </Stack>
