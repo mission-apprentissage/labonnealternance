@@ -161,10 +161,10 @@ function TableWithPagination({
         </Box>
         {exportable && <ExportButtonNew data={tableData} />}
       </Box>
-      <Box className="fr-table">
-        <Box className="fr-table__wrapper">
-          <Box className="fr-table__container">
-            <Box className="fr-table__content">
+      <Box>
+        <Box>
+          <Box>
+            <Box className="fr-table__content" sx={{ "& table": { margin: "0 !important" } }}>
               <Box as="table" {...getTableProps()}>
                 <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
                   {caption}
