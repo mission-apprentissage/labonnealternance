@@ -2,6 +2,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Stack, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import type { ColumnDef } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
@@ -10,7 +11,7 @@ import { entriesToTypedRecord } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
-import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
+import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
@@ -18,7 +19,6 @@ import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { CustomTag } from "@/components/SearchForTrainingsAndJobs/components/CustomTag"
-import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
@@ -38,8 +38,7 @@ type RouteParams = { newUser?: string } & Partial<Parameters<typeof routeBuilder
 export function UsersList() {
   const routeParamsRaw = useSearchParamsRecord() as RouteParams
   const [routeParams, setRouteParams] = useState<RouteParams>(routeParamsRaw)
-  const { newUser, status, accountType, opco, page: pageStr } = routeParams
-  const pageIndex = pageStr !== undefined ? parseInt(pageStr, 10) - 1 : 0
+  const { newUser, status, accountType, opco } = routeParams
   const currentTab = status ?? ETAT_UTILISATEUR.ATTENTE
   const toast = useToast()
   const router = useRouter()
@@ -93,11 +92,7 @@ export function UsersList() {
   }
 
   function onOpcoChange(newValue: OpcoValue) {
-    updateRouteParams({
-      ...routeParams,
-      opco: newValue,
-      page: undefined,
-    })
+    updateRouteParams({ ...routeParams, opco: newValue })
   }
 
   function onAccountTypeChange(newValue: AccountType) {
@@ -105,23 +100,11 @@ export function UsersList() {
       ...routeParams,
       accountType: newValue,
       opco: validTypesForOpcoFilter.includes(newValue) ? opco : undefined,
-      page: undefined,
     })
   }
 
   function onStatusChange(newStatus: ETAT_UTILISATEUR) {
-    updateRouteParams({
-      ...routeParams,
-      status: newStatus,
-      page: undefined,
-    })
-  }
-
-  function onPageChange(newValue: number) {
-    updateRouteParams({
-      ...routeParams,
-      page: (newValue + 1).toString(),
-    })
+    updateRouteParams({ ...routeParams, status: newStatus })
   }
 
   const panelsData = useMemo(() => {
@@ -157,7 +140,7 @@ export function UsersList() {
       <CustomTabs
         currentTab={currentTab}
         onChange={onStatusChange}
-        panels={panelsData.map(({ etatUtilisateur, isCountAccurate, id, title, userRecruteurs }) => {
+        panels={panelsData.map(({ etatUtilisateur, id, title, userRecruteurs }) => {
           return {
             id,
             title,
@@ -170,9 +153,6 @@ export function UsersList() {
                 opco={opco}
                 onAccountTypeChange={onAccountTypeChange}
                 onOpcoChange={onOpcoChange}
-                isCountAccurate={isCountAccurate}
-                page={pageIndex}
-                onPageChange={onPageChange}
               />
             ),
           }
@@ -190,9 +170,6 @@ function TabContent({
   onAccountTypeChange,
   opco,
   onOpcoChange,
-  isCountAccurate,
-  page,
-  onPageChange,
 }: {
   status: ETAT_UTILISATEUR
   userRecruteurs: IUserRecruteurJson[]
@@ -201,46 +178,35 @@ function TabContent({
   onAccountTypeChange: (newValue: AccountType) => void
   opco: OpcoValue
   onOpcoChange: (newValue: OpcoValue) => void
-  isCountAccurate: boolean
-  page: number
-  onPageChange: (newPage: number) => void
 }) {
   const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
 
-  const columns = [
+  const columns: ColumnDef<IUserRecruteurJson>[] = [
     {
-      Header: "",
       id: "action",
-      srOnly: "Actions sur le recruteur",
-      maxWidth: "40",
-      disableSortBy: true,
-      accessor: (row: IUserRecruteurJson) => {
-        return (
-          <UserMenu
-            row={row}
-            setCurrentEntreprise={setCurrentEntreprise}
-            confirmationActivationUtilisateur={confirmationActivationUtilisateur}
-            confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur}
-          />
-        )
-      },
+      header: "",
+      meta: { srOnly: "Actions sur le recruteur" },
+      size: 50,
+      enableSorting: false,
+      cell: (info) => (
+        <UserMenu
+          row={info.row.original}
+          setCurrentEntreprise={setCurrentEntreprise}
+          confirmationActivationUtilisateur={confirmationActivationUtilisateur}
+          confirmationDesactivationUtilisateur={confirmationDesactivationUtilisateur}
+        />
+      ),
     },
     {
-      Header: "Etablissement",
       id: "establishment_raison_sociale",
-      width: "350",
-      accessor: "establishment_raison_sociale",
-      sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
-      Cell: ({
-        data,
-        cell: {
-          row: { id },
-        },
-      }) => {
-        console.log("data", data)
-        const { establishment_raison_sociale, establishment_siret, _id, opco, type } = data[id]
+      header: "Etablissement",
+      accessorKey: "establishment_raison_sociale",
+      size: 350,
+      sortingFn: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
+      cell: (info) => {
+        const { establishment_raison_sociale, establishment_siret, _id, opco, type } = info.row.original
         const siretText = (
           <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>
             SIRET {establishment_siret} <CustomTag color={type === "CFA" ? "yellow" : "green"}>{type}</CustomTag>
@@ -264,41 +230,42 @@ function TabContent({
           </Box>
         )
       },
-      filter: "fuzzyText",
     },
     {
-      Header: "Contact",
       id: "nom",
-      width: "300",
-      accessor: ({ last_name, first_name, email, phone }) => (
-        <Stack spacing={0.5}>
-          <Typography sx={{ color: "#666666", fontSize: ".75rem", fontWeight: 700 }}>
-            {first_name} {last_name}
-          </Typography>
-          <Typography sx={{ color: "#666666", fontSize: ".75rem", whiteSpace: "normal", wordBreak: "break-all" }}>
-            {email} ~ {phone}
-          </Typography>
-        </Stack>
-      ),
+      header: "Contact",
+      size: 300,
+      enableSorting: false,
+      accessorFn: (row) => `${row.first_name} ${row.last_name} ${row.email} ${row.phone}`,
+      cell: (info) => {
+        const { last_name, first_name, email, phone } = info.row.original
+        return (
+          <Stack spacing={0.5}>
+            <Typography sx={{ color: "#666666", fontSize: ".75rem", fontWeight: 700 }}>
+              {first_name} {last_name}
+            </Typography>
+            <Typography sx={{ color: "#666666", fontSize: ".75rem", whiteSpace: "normal", wordBreak: "break-all" }}>
+              {email} ~ {phone}
+            </Typography>
+          </Stack>
+        )
+      },
     },
     {
-      Header: "Créé le",
-      accessor: "createdAt",
-      Cell: ({ value }) => <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>{dayjs(value).format("DD/MM/YYYY")}</Typography>,
-      width: "130",
       id: "createdAt",
-      sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
+      header: "Créé le",
+      accessorKey: "createdAt",
+      size: 130,
+      sortingFn: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
+      cell: (info) => <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>{dayjs(info.getValue<string>()).format("DD/MM/YYYY")}</Typography>,
     },
     {
-      Header: "Détail",
-      accessor: "hasJobs",
       id: "hasJobs",
-      width: "200",
-      Cell: ({ value }) => (
-        <Typography sx={{ color: "#666666", maxWidth: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden", fontSize: ".75rem" }}>
-          {value ? <CustomTag color="green">A des offres publiées</CustomTag> : <CustomTag color="pink">Aucune offre publiée</CustomTag>}
-        </Typography>
-      ),
+      header: "Détail",
+      accessorKey: "hasJobs",
+      size: 200,
+      enableSorting: false,
+      cell: (info) => (info.getValue<boolean>() ? <CustomTag color="green">A des offres publiées</CustomTag> : <CustomTag color="pink">Aucune offre publiée</CustomTag>),
     },
   ]
 
@@ -313,18 +280,15 @@ function TabContent({
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
         onConfirmation={onInvalidateData}
       />
-      <Box sx={{ display: "flex", gap: fr.spacing("4v") }}>
+      <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
         <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
         <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
       </Box>
-      <TableWithPagination
+      <VirtualTable
         caption="Liste des recruteurs"
         columns={columns}
         data={userRecruteurs}
-        description={null}
-        exportable={null}
-        pageIndex={page}
-        onPageChange={onPageChange}
+        searchPlaceholder="Rechercher par raison sociale, email ou téléphone..."
         defaultSortBy={[queryStatus === ETAT_UTILISATEUR.ATTENTE ? { id: "createdAt", desc: false } : { id: "createdAt", desc: true }]}
       />
     </>
@@ -345,9 +309,7 @@ function AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: 
     <SelectField
       id="account-type"
       label="Type de compte"
-      style={{
-        minWidth: "200px",
-      }}
+      style={{ minWidth: "200px" }}
       options={possibleValues.map((option) => ({ value: option, label: option, selected: option === value }))}
       nativeSelectProps={{
         required: true,
@@ -368,9 +330,7 @@ function OpcoSelect({ value, onChange, accountType }: { value: OpcoValue; onChan
     <SelectField
       id="opco"
       label="OPCO"
-      style={{
-        minWidth: "200px",
-      }}
+      style={{ minWidth: "200px" }}
       options={possibleValues.map((option) => ({ value: option, label: option, selected: option === value }))}
       nativeSelectProps={{
         disabled: !validTypesForOpcoFilter.includes(accountType),
