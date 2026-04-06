@@ -2,7 +2,7 @@
 
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { type ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, type SortingState, useReactTable } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { matchSorter } from "match-sorter"
@@ -87,6 +87,9 @@ export function VirtualTable<T>({ data, columns, caption, searchPlaceholder = "R
         <GlobalFilter value={globalFilter} onChange={setGlobalFilter} placeholder={searchPlaceholder} />
       </Box>
 
+      <Typography sx={{ mb: 2, color: "text.secondary", fontSize: ".875rem" }}>
+        {rows.length} résultat{rows.length !== 1 ? "s" : ""}
+      </Typography>
       <Box
         ref={scrollRef}
         className="fr-table__content"
