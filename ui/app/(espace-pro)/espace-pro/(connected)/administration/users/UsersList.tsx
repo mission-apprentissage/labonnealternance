@@ -1,7 +1,7 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Link, Stack, Typography } from "@mui/material"
-import { useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import type { ColumnDef } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
@@ -17,14 +17,12 @@ import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
-import { CustomTabs } from "@/components/espace_pro/CreationRecruteur/CustomTabs"
 import { CustomTag } from "@/components/SearchForTrainingsAndJobs/components/CustomTag"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 import { UserMenu } from "./_component/UserMenu"
 
-const panelOrder = [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.VALIDE, ETAT_UTILISATEUR.DESACTIVE, ETAT_UTILISATEUR.ERROR]
 const accountTypes = [CFA, ENTREPRISE] as const
 const opcoValues = [...Object.values(OPCOS_LABEL)] as const
 const validTypesForOpcoFilter: AccountType[] = [undefined, ENTREPRISE]
@@ -35,19 +33,23 @@ type AccountType = (typeof accountTypes)[number] | undefined
 type OpcoValue = (typeof opcoValues)[number] | undefined
 type RouteParams = { newUser?: string } & Partial<Parameters<typeof routeBuilder>[0]>
 
+const statusLabels = {
+  [ETAT_UTILISATEUR.ATTENTE]: "En attente de vérification",
+  [ETAT_UTILISATEUR.VALIDE]: "Actifs",
+  [ETAT_UTILISATEUR.DESACTIVE]: "Désactivés",
+  [ETAT_UTILISATEUR.ERROR]: "En erreur",
+}
+
 export function UsersList() {
   const routeParamsRaw = useSearchParamsRecord() as RouteParams
   const [routeParams, setRouteParams] = useState<RouteParams>(routeParamsRaw)
   const { newUser, status, accountType, opco } = routeParams
-  const currentTab = status ?? ETAT_UTILISATEUR.ATTENTE
+  const currentStatus = (status as ETAT_UTILISATEUR) ?? ETAT_UTILISATEUR.ATTENTE
   const toast = useToast()
   const router = useRouter()
 
   function updateRouteParams(newParams: RouteParams) {
-    const finalParams = {
-      ...routeParams,
-      ...newParams,
-    }
+    const finalParams = { ...routeParams, ...newParams }
     setRouteParams(finalParams)
     router.replace(routeBuilder(finalParams).getPath())
   }
@@ -62,122 +64,77 @@ export function UsersList() {
     }
   }, [newUser, toast])
 
-  const queryResults = entriesToTypedRecord(
-    panelOrder.map((etatUtilisateur) => {
-      // c'est ok parce que le nombre de useQuery est constant
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      // biome-ignore lint/correctness/useHookAtTopLevel: migration
-      const useQueryResult = useQuery({
-        queryKey: ["/admin/users-recruteurs", etatUtilisateur],
-        queryFn: () => {
-          return apiGet("/admin/users-recruteurs", {
-            querystring: {
-              status: etatUtilisateur,
-              ...(etatUtilisateur === ETAT_UTILISATEUR.VALIDE ? { limit: activeUserLimit.toString() } : {}),
-            },
-          })
+  const queryResult = useQuery({
+    queryKey: ["/admin/users-recruteurs", currentStatus],
+    queryFn: () =>
+      apiGet("/admin/users-recruteurs", {
+        querystring: {
+          status: currentStatus,
+          ...(currentStatus === ETAT_UTILISATEUR.VALIDE ? { limit: activeUserLimit.toString() } : {}),
         },
-        staleTime: 1000 * 60 * 20, // 20 minutes
-      })
-      const { data: dataRaw, refetch, isLoading } = useQueryResult
-      const data = dataRaw as IUserRecruteurForAdminJSON[]
-      return [etatUtilisateur, { data, refetch, isLoading }] as const
-    })
-  )
+      }),
+    staleTime: 1000 * 60 * 20,
+    placeholderData: keepPreviousData,
+  })
 
-  const isCurrentTabLoading = queryResults[currentTab].isLoading
+  const { data: dataRaw, refetch, isLoading } = queryResult
+  const allUsers = (dataRaw as IUserRecruteurForAdminJSON[]) ?? []
 
-  function refetchAll() {
-    Object.values(queryResults).map(async (x) => x.refetch())
-  }
+  const filteredUsers = useMemo(() => {
+    let users = allUsers
+    if (accountType) users = users.filter(({ type }) => type === accountType)
+    if (opco) users = users.filter((u) => u.opco === opco)
+    return users
+  }, [allUsers, accountType, opco])
 
-  function onOpcoChange(newValue: OpcoValue) {
-    updateRouteParams({ ...routeParams, opco: newValue })
-  }
-
-  function onAccountTypeChange(newValue: AccountType) {
-    updateRouteParams({
-      ...routeParams,
-      accountType: newValue,
-      opco: validTypesForOpcoFilter.includes(newValue) ? opco : undefined,
-    })
-  }
-
-  function onStatusChange(newStatus: ETAT_UTILISATEUR) {
-    updateRouteParams({ ...routeParams, status: newStatus })
-  }
-
-  const panelsData = useMemo(() => {
-    return panelOrder.map((etatUtilisateur) => {
-      let { data: userRecruteurs } = queryResults[etatUtilisateur]
-      const isCountAccurate = Boolean(userRecruteurs && userRecruteurs.length !== activeUserLimit)
-      let title = statusLabels[etatUtilisateur]
-      if (userRecruteurs) {
-        if (accountType) {
-          userRecruteurs = userRecruteurs.filter(({ type }) => type === accountType)
-        }
-        if (opco) {
-          userRecruteurs = userRecruteurs.filter((userRecruteur) => userRecruteur.opco === opco)
-        }
-        title += ` (${userRecruteurs.length}${!isCountAccurate ? "+" : ""})`
-      }
-      return {
-        id: etatUtilisateur,
-        title,
-        userRecruteurs,
-        isCountAccurate,
-        etatUtilisateur,
-      }
-    })
-  }, [queryResults])
-
-  if (isCurrentTabLoading) {
+  if (isLoading) {
     return <LoadingEmptySpace />
   }
 
+  const isCountAccurate = allUsers.length !== activeUserLimit
+  const statusLabel = `${statusLabels[currentStatus]} (${filteredUsers.length}${!isCountAccurate ? "+" : ""})`
+
   return (
-    <>
-      <CustomTabs
-        currentTab={currentTab}
-        onChange={onStatusChange}
-        panels={panelsData.map(({ etatUtilisateur, id, title, userRecruteurs }) => {
-          return {
-            id,
-            title,
-            content: (
-              <TabContent
-                status={etatUtilisateur}
-                userRecruteurs={userRecruteurs ?? []}
-                onInvalidateData={refetchAll}
-                accountType={accountType}
-                opco={opco}
-                onAccountTypeChange={onAccountTypeChange}
-                onOpcoChange={onOpcoChange}
-              />
-            ),
-          }
-        })}
-      />
-    </>
+    <UserContent
+      status={currentStatus}
+      statusLabel={statusLabel}
+      userRecruteurs={filteredUsers}
+      onInvalidateData={() => refetch()}
+      accountType={accountType as AccountType}
+      opco={opco as OpcoValue}
+      onStatusChange={(s) => updateRouteParams({ ...routeParams, status: s })}
+      onAccountTypeChange={(v) =>
+        updateRouteParams({
+          ...routeParams,
+          accountType: v,
+          opco: validTypesForOpcoFilter.includes(v) ? opco : undefined,
+        })
+      }
+      onOpcoChange={(v) => updateRouteParams({ ...routeParams, opco: v })}
+    />
   )
 }
 
-function TabContent({
+function UserContent({
   status: queryStatus,
+  statusLabel,
   userRecruteurs,
   onInvalidateData,
   accountType,
   onAccountTypeChange,
   opco,
   onOpcoChange,
+  onStatusChange,
 }: {
   status: ETAT_UTILISATEUR
+  statusLabel: string
   userRecruteurs: IUserRecruteurJson[]
   onInvalidateData: () => void
   accountType: AccountType
   onAccountTypeChange: (newValue: AccountType) => void
   opco: OpcoValue
   onOpcoChange: (newValue: OpcoValue) => void
+  onStatusChange: (newValue: ETAT_UTILISATEUR) => void
 }) {
   const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -281,11 +238,12 @@ function TabContent({
         onConfirmation={onInvalidateData}
       />
       <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
+        <StatusSelect value={queryStatus} onChange={onStatusChange} />
         <AccountTypeSelect value={accountType} onChange={onAccountTypeChange} />
         <OpcoSelect value={opco} onChange={onOpcoChange} accountType={accountType} />
       </Box>
       <VirtualTable
-        caption="Liste des recruteurs"
+        caption={statusLabel}
         columns={columns}
         data={userRecruteurs}
         searchPlaceholder="Rechercher par raison sociale, email ou téléphone..."
@@ -295,11 +253,20 @@ function TabContent({
   )
 }
 
-const statusLabels = {
-  [ETAT_UTILISATEUR.ATTENTE]: `En attente de vérification`,
-  [ETAT_UTILISATEUR.VALIDE]: "Actifs",
-  [ETAT_UTILISATEUR.DESACTIVE]: `Désactivés`,
-  [ETAT_UTILISATEUR.ERROR]: `En erreur`,
+function StatusSelect({ value, onChange }: { value: ETAT_UTILISATEUR; onChange: (newValue: ETAT_UTILISATEUR) => void }) {
+  return (
+    <SelectField
+      id="status"
+      label="Statut"
+      style={{ minWidth: "260px" }}
+      options={Object.entries(statusLabels).map(([key, label]) => ({ value: key, label, selected: key === value }))}
+      nativeSelectProps={{
+        required: true,
+        value,
+        onChange: (event) => onChange(event.target.value as ETAT_UTILISATEUR),
+      }}
+    />
+  )
 }
 
 function AccountTypeSelect({ value, onChange }: { value: AccountType; onChange: (newValue: AccountType) => void }) {
