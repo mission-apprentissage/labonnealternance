@@ -19,6 +19,10 @@ export const customTagColors = {
     color: fr.colors.decisions.background.actionHigh.greenTilleulVerveine.default,
     background: "#FEECC2",
   },
+  red: {
+    color: fr.colors.decisions.background.actionHigh.redMarianne.default,
+    background: fr.colors.decisions.background.contrast.redMarianne.default,
+  },
 } satisfies Record<string, CSSProperties>
 
 export type CustomTagColor = keyof typeof customTagColors

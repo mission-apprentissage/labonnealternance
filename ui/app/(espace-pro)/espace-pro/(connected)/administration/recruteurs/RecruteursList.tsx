@@ -2,120 +2,72 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Input from "@codegouvfr/react-dsfr/Input"
-import { Box, Checkbox, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Stack, Typography } from "@mui/material"
+import { Box, Checkbox, CircularProgress, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import type { IUserRecruteurForAdminJSON, IUserRecruteurJson } from "shared"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IUserRecruteur } from "shared/models/usersRecruteur.model"
 import { getUserStatus } from "shared/models/usersRecruteur.model"
-import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
-import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ConfirmationDesactivationUtilisateur } from "@/components/espace_pro"
 import ConfirmationActivationUtilisateur from "@/components/espace_pro/ConfirmationActivationUtilisateur"
 import { apiGet } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
-import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 import { getRecruteursColumns } from "../_utils/recruteursColumns"
+import { statusLabels } from "../users/UsersList"
 
 const accountTypes = [CFA, ENTREPRISE] as const
 const opcoValues = [...Object.values(OPCOS_LABEL)] as const
-const routeBuilder = PAGES.dynamic.backAdminRecruteursATraiter
+const allStatuses = [...Object.values(ETAT_UTILISATEUR)] as const
 
 type AccountTypeValue = (typeof accountTypes)[number]
 type OpcoValue = (typeof opcoValues)[number]
-type RouteParams = { newUser?: string } & Partial<Parameters<typeof routeBuilder>[0]>
 
-export const statusLabels = {
-  [ETAT_UTILISATEUR.ATTENTE]: "En attente de vérification",
-  [ETAT_UTILISATEUR.VALIDE]: "Actifs",
-  [ETAT_UTILISATEUR.DESACTIVE]: "Désactivés",
-  [ETAT_UTILISATEUR.ERROR]: "En erreur",
-}
-
-export const statusTagColor: Record<ETAT_UTILISATEUR, "green" | "yellow" | "red" | "pink"> = {
-  [ETAT_UTILISATEUR.VALIDE]: "green",
-  [ETAT_UTILISATEUR.ATTENTE]: "yellow",
-  [ETAT_UTILISATEUR.DESACTIVE]: "red",
-  [ETAT_UTILISATEUR.ERROR]: "pink",
-}
-
-const TRAITABLE_STATUSES = [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR] as const
-
-export function UsersList() {
-  const routeParamsRaw = useSearchParamsRecord() as RouteParams
-  const { newUser } = routeParamsRaw
-  const toast = useToast()
-
-  useEffect(() => {
-    if (newUser) {
-      toast({
-        title: "Vérification réussie",
-        description: "Votre adresse mail a été validée avec succès.",
-        autoHideDuration: 7000,
-      })
-    }
-  }, [newUser, toast])
-
-  const attenteQuery = useQuery({
-    queryKey: ["/admin/users-recruteurs", ETAT_UTILISATEUR.ATTENTE],
-    queryFn: () => apiGet("/admin/users-recruteurs", { querystring: { status: ETAT_UTILISATEUR.ATTENTE } }),
-    staleTime: 1000 * 60 * 20,
-  })
-
-  const errorQuery = useQuery({
-    queryKey: ["/admin/users-recruteurs", ETAT_UTILISATEUR.ERROR],
-    queryFn: () => apiGet("/admin/users-recruteurs", { querystring: { status: ETAT_UTILISATEUR.ERROR } }),
-    staleTime: 1000 * 60 * 20,
-  })
-
-  const isLoading = attenteQuery.isLoading || errorQuery.isLoading
-  const allUsers = useMemo(
-    () => [...((attenteQuery.data as IUserRecruteurForAdminJSON[]) ?? []), ...((errorQuery.data as IUserRecruteurForAdminJSON[]) ?? [])],
-    [attenteQuery.data, errorQuery.data]
-  )
-
+export function RecruteursList() {
   const [searchInput, setSearchInput] = useState("")
-  const [selectedStatuses, setSelectedStatuses] = useState<ETAT_UTILISATEUR[]>([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR])
+  const [submittedSearch, setSubmittedSearch] = useState("")
+  const [selectedStatuses, setSelectedStatuses] = useState<ETAT_UTILISATEUR[]>([...allStatuses])
   const [selectedAccountTypes, setSelectedAccountTypes] = useState<AccountTypeValue[]>([...accountTypes])
   const [selectedOpcos, setSelectedOpcos] = useState<OpcoValue[]>([...opcoValues])
 
+  const isEnabled = submittedSearch.length >= 2
+
+  const {
+    data: dataRaw,
+    refetch,
+    isFetching,
+  } = useQuery({
+    queryKey: ["/admin/users-recruteurs", "gestion", submittedSearch],
+    queryFn: () =>
+      apiGet("/admin/users-recruteurs", {
+        querystring: {
+          ...(submittedSearch ? { search: submittedSearch } : {}),
+        },
+      }),
+    enabled: isEnabled,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const allUsers = useMemo(() => (dataRaw as IUserRecruteurForAdminJSON[]) ?? [], [dataRaw])
+
   const filteredUsers = useMemo(() => {
     let users = allUsers
-    if (searchInput) {
-      const q = searchInput.toLowerCase()
-      users = users.filter((u) => [u.establishment_raison_sociale, u.email, u.first_name, u.last_name, u.phone, u.establishment_siret].some((v) => v?.toLowerCase().includes(q)))
-    }
     users = users.filter((u) => selectedStatuses.includes(getUserStatus(u.status as unknown as IUserRecruteur["status"]) as ETAT_UTILISATEUR))
     users = users.filter(({ type }) => selectedAccountTypes.includes(type as AccountTypeValue))
-    const isOpcoDisabled = selectedAccountTypes.length > 0 && !selectedAccountTypes.includes(ENTREPRISE)
+    const isOpcoDisabled = selectedAccountTypes.length > 0 && selectedAccountTypes.length < accountTypes.length && !selectedAccountTypes.includes(ENTREPRISE)
     if (!isOpcoDisabled) {
       users = users.filter((u) => selectedOpcos.includes(u.opco as OpcoValue))
     }
     return users
-  }, [allUsers, searchInput, selectedStatuses, selectedAccountTypes, selectedOpcos])
+  }, [allUsers, selectedStatuses, selectedAccountTypes, selectedOpcos])
 
-  if (isLoading) {
-    return <LoadingEmptySpace />
-  }
-
-  const opcoDisabled = selectedAccountTypes.length > 0 && !selectedAccountTypes.includes(ENTREPRISE)
-
-  function refetch() {
-    attenteQuery.refetch()
-    errorQuery.refetch()
-  }
+  const opcoDisabled = selectedAccountTypes.length > 0 && selectedAccountTypes.length < accountTypes.length && !selectedAccountTypes.includes(ENTREPRISE)
 
   return (
-    <UserContent
-      statusLabel={`Recruteurs à traiter (${filteredUsers.length})`}
+    <RecruteursContent
       userRecruteurs={filteredUsers}
-      onInvalidateData={refetch}
-      searchInput={searchInput}
-      onSearchInputChange={setSearchInput}
+      onInvalidateData={() => refetch()}
       selectedStatuses={selectedStatuses}
       onSelectedStatusesChange={setSelectedStatuses}
       selectedAccountTypes={selectedAccountTypes}
@@ -123,16 +75,18 @@ export function UsersList() {
       selectedOpcos={selectedOpcos}
       onSelectedOpcosChange={setSelectedOpcos}
       opcoDisabled={opcoDisabled}
+      searchInput={searchInput}
+      onSearchInputChange={setSearchInput}
+      onSearch={() => setSubmittedSearch(searchInput)}
+      isEnabled={isEnabled}
+      isFetching={isFetching}
     />
   )
 }
 
-function UserContent({
-  statusLabel,
+function RecruteursContent({
   userRecruteurs,
   onInvalidateData,
-  searchInput,
-  onSearchInputChange,
   selectedStatuses,
   onSelectedStatusesChange,
   selectedAccountTypes,
@@ -140,12 +94,14 @@ function UserContent({
   selectedOpcos,
   onSelectedOpcosChange,
   opcoDisabled,
+  searchInput,
+  onSearchInputChange,
+  onSearch,
+  isEnabled,
+  isFetching,
 }: {
-  statusLabel: string
   userRecruteurs: IUserRecruteurJson[]
   onInvalidateData: () => void
-  searchInput: string
-  onSearchInputChange: (v: string) => void
   selectedStatuses: ETAT_UTILISATEUR[]
   onSelectedStatusesChange: (v: ETAT_UTILISATEUR[]) => void
   selectedAccountTypes: AccountTypeValue[]
@@ -153,6 +109,11 @@ function UserContent({
   selectedOpcos: OpcoValue[]
   onSelectedOpcosChange: (v: OpcoValue[]) => void
   opcoDisabled: boolean
+  searchInput: string
+  onSearchInputChange: (v: string) => void
+  onSearch: () => void
+  isEnabled: boolean
+  isFetching: boolean
 }) {
   const [currentEntreprise, setCurrentEntreprise] = useState<IUserRecruteurForAdminJSON | null>(null)
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -171,6 +132,7 @@ function UserContent({
         establishment_raison_sociale={currentEntreprise?.establishment_raison_sociale}
         onConfirmation={onInvalidateData}
       />
+
       {/* Ligne 1 : recherche */}
       <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end", mb: fr.spacing("3v") }}>
         <Input
@@ -179,10 +141,13 @@ function UserContent({
             value: searchInput,
             placeholder: "Raison sociale, email, téléphone...",
             onChange: (e) => onSearchInputChange(e.target.value),
+            onKeyDown: (e) => {
+              if (e.key === "Enter") onSearch()
+            },
             style: { minWidth: "360px" },
           }}
         />
-        <Button iconId="fr-icon-search-line" priority="primary" style={{ marginBottom: "1.5rem" }}>
+        <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} style={{ marginBottom: "1.5rem" }}>
           Rechercher
         </Button>
       </Box>
@@ -190,15 +155,15 @@ function UserContent({
       {/* Ligne 2 : filtres */}
       <Box sx={{ display: "flex", gap: fr.spacing("4v"), mb: fr.spacing("4v"), alignItems: "center" }}>
         <MultiSelect
-          id="status"
+          id="status-gestion"
           label="Statut"
           width={260}
-          items={TRAITABLE_STATUSES.map((s) => ({ value: s, label: statusLabels[s] }))}
+          items={allStatuses.map((s) => ({ value: s, label: statusLabels[s] }))}
           value={selectedStatuses}
           onChange={onSelectedStatusesChange}
         />
         <MultiSelect
-          id="account-type"
+          id="account-type-gestion"
           label="Type de compte"
           width={200}
           items={accountTypes.map((t) => ({ value: t, label: t }))}
@@ -206,7 +171,7 @@ function UserContent({
           onChange={onSelectedAccountTypesChange}
         />
         <MultiSelect
-          id="opco"
+          id="opco-gestion"
           label="OPCO"
           width={220}
           items={opcoValues.map((o) => ({ value: o, label: o }))}
@@ -215,7 +180,22 @@ function UserContent({
           disabled={opcoDisabled}
         />
       </Box>
-      <VirtualTable caption={statusLabel} columns={columns} data={userRecruteurs} defaultSortBy={[{ id: "createdAt", desc: false }]} hideSearch={true} />
+
+      {!isEnabled ? (
+        <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Saisissez au moins 2 caractères pour rechercher.</Box>
+      ) : isFetching ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <VirtualTable
+          caption={`Gestion des recruteurs (${userRecruteurs.length})`}
+          columns={columns}
+          data={userRecruteurs}
+          defaultSortBy={[{ id: "createdAt", desc: true }]}
+          hideSearch={true}
+        />
+      )}
     </>
   )
 }

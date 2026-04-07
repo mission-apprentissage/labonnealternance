@@ -6,7 +6,7 @@ import { Box, Typography } from "@mui/material"
 import { type ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, type SortingState, useReactTable } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { matchSorter } from "match-sorter"
-import React, { useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { ArrowDownLine } from "@/app/_components/ArrowDownLine"
 import { ArrowUpDownLine } from "@/app/_components/ArrowUpDownLine"
 import { ArrowUpLine } from "@/app/_components/ArrowUpLine"
@@ -49,9 +49,25 @@ interface VirtualTableProps<T> {
   defaultSortBy?: { id: string; desc: boolean }[]
   rowHeight?: number
   maxHeight?: string
+  onNearEnd?: () => void
+  onSearchChange?: (value: string) => void
+  isLoadingMore?: boolean
+  hideSearch?: boolean
 }
 
-export function VirtualTable<T>({ data, columns, caption, searchPlaceholder = "Rechercher...", defaultSortBy = [], rowHeight = 60, maxHeight = "600px" }: VirtualTableProps<T>) {
+export function VirtualTable<T>({
+  data,
+  columns,
+  caption,
+  searchPlaceholder = "Rechercher...",
+  defaultSortBy = [],
+  rowHeight = 60,
+  maxHeight = "600px",
+  onNearEnd,
+  onSearchChange,
+  isLoadingMore,
+  hideSearch,
+}: VirtualTableProps<T>) {
   const [globalFilter, setGlobalFilter] = useState("")
   const [sorting, setSorting] = useState<SortingState>(defaultSortBy)
 
@@ -81,11 +97,27 @@ export function VirtualTable<T>({ data, columns, caption, searchPlaceholder = "R
 
   const virtualRows = virtualizer.getVirtualItems()
 
+  useEffect(() => {
+    const lastRow = virtualRows.at(-1)
+    if (lastRow && lastRow.index >= rows.length - 10) {
+      onNearEnd?.()
+    }
+  }, [virtualRows, rows.length, onNearEnd])
+
   return (
     <Box>
-      <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" }, mb: 3 }}>
-        <GlobalFilter value={globalFilter} onChange={setGlobalFilter} placeholder={searchPlaceholder} />
-      </Box>
+      {!hideSearch && (
+        <Box sx={{ width: { xs: "100%", sm: "75%", lg: "50%" }, mb: 3 }}>
+          <GlobalFilter
+            value={globalFilter}
+            onChange={(v) => {
+              setGlobalFilter(v)
+              onSearchChange?.(v)
+            }}
+            placeholder={searchPlaceholder}
+          />
+        </Box>
+      )}
 
       <Typography sx={{ mb: 2, color: "text.secondary", fontSize: ".875rem" }}>
         {rows.length} résultat{rows.length !== 1 ? "s" : ""}
@@ -180,6 +212,7 @@ export function VirtualTable<T>({ data, columns, caption, searchPlaceholder = "R
       </Box>
 
       {rows.length === 0 && <Box sx={{ py: 4, textAlign: "center", color: "text.secondary" }}>Aucun résultat</Box>}
+      {isLoadingMore && <Box sx={{ py: 2, textAlign: "center", color: "text.secondary", fontSize: ".875rem" }}>Chargement...</Box>}
     </Box>
   )
 }

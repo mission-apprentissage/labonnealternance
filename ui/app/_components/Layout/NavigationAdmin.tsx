@@ -11,7 +11,8 @@ type AdminNavItem = {
 }
 
 const ADMIN_NAV_ITEMS: AdminNavItem[] = [
-  { text: "Gestion des recruteurs", href: PAGES.static.backAdminHome.getPath() },
+  { text: "Recruteurs à traiter", href: PAGES.static.backAdminHome.getPath() },
+  { text: "Gestion des recruteurs", href: PAGES.static.backAdminGestionDesRecruteurs.getPath() },
   { text: "Entreprises de l'algorithme", href: PAGES.static.backAdminGestionDesEntreprises.getPath() },
   { text: "Rendez-vous apprentissage", href: PAGES.static.rendezVousApprentissageRecherche.getPath() },
   { text: "Gestion des administrateurs", href: PAGES.static.backAdminGestionDesAdministrateurs.getPath() },
