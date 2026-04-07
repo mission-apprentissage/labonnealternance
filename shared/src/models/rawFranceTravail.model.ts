@@ -68,7 +68,7 @@ export const ZFTJobRaw = z
       commune: z.string().optional(),
     }),
     romeCode: z.string(),
-    romeLibelle: z.string(),
+    romeLibelle: z.string().optional(),
     appellationlibelle: z.string().optional(),
     entreprise: ZFTEntreprise,
     typeContrat: z.string(),
