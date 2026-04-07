@@ -65,7 +65,7 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
               }}
             />,
           ]}
-          navigation={isAdminPage ? <NavigationAdmin /> : user.type === AUTHTYPE.CFA && <ConnectedHeaderNavigation />}
+          navigation={isAdminPage && user.type === AUTHTYPE.ADMIN ? <NavigationAdmin /> : user.type === AUTHTYPE.CFA && <ConnectedHeaderNavigation />}
         />
       </WithNav>
     </>
