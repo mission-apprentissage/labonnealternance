@@ -78,7 +78,7 @@ describe("edfJobToJobsPartners", () => {
     })
   })
 
-  it("should return null for non-alternance contracts (CDI, CDD, etc.)", () => {
+  it("should return with business_error for non-alternance contracts (CDI, CDD, etc.)", () => {
     const job: IEnedisJob = {
       ...baseJob,
       jobDescription: {
@@ -91,7 +91,7 @@ describe("edfJobToJobsPartners", () => {
     expect(result?.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.FULL_TIME)
   })
 
-  it("should return null for Stage contracts", () => {
+  it("should return with business_error for Stage contracts", () => {
     const job: IEnedisJob = {
       ...baseJob,
       jobDescription: {
