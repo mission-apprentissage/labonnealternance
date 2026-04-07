@@ -446,9 +446,9 @@ const getCompanyNameAndSiretFromRecruiter = async (application: IApplication): P
     if (jobOrCompany.type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
       throw internal(`inattendu : type !== ${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}`)
     }
-    const { workplace_name, workplace_siret } = jobOrCompany.job
+    const { workplace_name, workplace_siret, workplace_legal_name, workplace_brand } = jobOrCompany.job
     return {
-      company_name: workplace_name || UNKNOWN_COMPANY,
+      company_name: workplace_name || workplace_legal_name || workplace_brand || UNKNOWN_COMPANY,
       company_siret: workplace_siret,
     }
   }
@@ -461,17 +461,44 @@ const offreOrCompanyToCompanyFields = (
   const { type } = LbaJob
   if (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || type === LBA_ITEM_TYPE.RECRUTEURS_LBA || type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     const { job } = LbaJob
-    const { workplace_siret, workplace_name, workplace_naf_label, apply_phone, apply_email, offer_title, workplace_address_label, workplace_legal_name } = job
-    const application = {
-      company_siret: workplace_siret || null,
-      company_name: workplace_name || workplace_legal_name || UNKNOWN_COMPANY,
-      company_naf: workplace_naf_label || "",
-      company_phone: apply_phone,
-      company_email: apply_email || "",
-      job_title: offer_title ?? undefined,
-      company_address: workplace_address_label,
+    const {
+      workplace_siret,
+      workplace_name,
+      workplace_naf_label,
+      apply_phone,
+      apply_email,
+      offer_title,
+      workplace_address_label,
+      workplace_legal_name,
+      is_delegated,
+      cfa_siret,
+      cfa_address_label,
+      cfa_legal_name,
+      cfa_apply_phone,
+      cfa_apply_email,
+    } = job
+
+    const application: Pick<IApplication, "company_siret" | "company_name" | "company_naf" | "company_phone" | "company_email" | "job_title" | "company_address" | "job_id"> = {
       job_id: job._id,
+      job_title: offer_title ?? undefined,
+      company_naf: workplace_naf_label || "",
+      ...(is_delegated
+        ? {
+            company_siret: cfa_siret || null,
+            company_name: cfa_legal_name || UNKNOWN_COMPANY,
+            company_address: cfa_address_label,
+            company_phone: cfa_apply_phone,
+            company_email: cfa_apply_email || "",
+          }
+        : {
+            company_siret: workplace_siret || null,
+            company_name: workplace_name || workplace_legal_name || UNKNOWN_COMPANY,
+            company_address: workplace_address_label,
+            company_phone: apply_phone,
+            company_email: apply_email || "",
+          }),
     }
+
     return application
   } else {
     assertUnreachable(type)
@@ -985,6 +1012,7 @@ export const processApplicationEmails = {
   async sendCandidatEmail(application: IApplication, applicant: IApplicant) {
     const { job_origin } = application
     const { url: urlOfDetail, urlWithoutUtm: urlOfDetailNoUtm } = buildUrlsOfDetail(application)
+
     const emailCandidat = await mailer.sendEmail({
       to: applicant.email,
       subject: `Votre candidature chez ${application.company_name}`,
