@@ -17,7 +17,7 @@ export default async function RechercheLayout({ children }: PropsWithChildren) {
       />
       <Box
         sx={{
-          "& .fr-header, & .fr-header__body": {
+          "& .fr-header, & .fr-header__body, & .fr-header__brand": {
             filter: "none",
           },
         }}
