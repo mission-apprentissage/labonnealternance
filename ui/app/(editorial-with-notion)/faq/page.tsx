@@ -32,3 +32,5 @@ export default async function FAQ({ searchParams }: { searchParams: Promise<Reco
     />
   )
 }
+
+export const revalidate = 3600 // revalider toutes les heures
