@@ -15,7 +15,15 @@ export default async function RechercheLayout({ children }: PropsWithChildren) {
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
-      <DsfrHeader {...DsfrHeaderProps1J1S} />
+      <Box
+        sx={{
+          "& .fr-header, & .fr-header__body": {
+            filter: "none",
+          },
+        }}
+      >
+        <DsfrHeader {...DsfrHeaderProps1J1S} />
+      </Box>
       <Box component="main" role="main">
         {children}
       </Box>
