@@ -244,7 +244,7 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   // if (longText1Formatted) {
   //   descriptionParts.push(longText1Formatted)
   // }
-  const longText1 = getXmlTextValue(customFields?.longText1) ?? null
+  const longText1 = getXmlTextValue(customFields?.LongText1) ?? null
   if (longText1) {
     descriptionParts.push(longText1)
   }
