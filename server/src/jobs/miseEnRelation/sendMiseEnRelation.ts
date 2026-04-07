@@ -2,7 +2,7 @@ import type { IUserWithAccount } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
+import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -45,6 +45,7 @@ export const sendMiseEnRelation = async () => {
             $lte: toDate,
           },
           is_delegated: false,
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           offer_status: JOB_STATUS_ENGLISH.ACTIVE,
           $or: [
             { mer_sent: null },
