@@ -95,7 +95,7 @@ function ListeEntreprise() {
     {
       Header: "",
       id: "action",
-      maxWidth: "40",
+      maxWidth: "48",
       disableSortBy: true,
       accessor: (row: IRecruiterJson) => {
         return <CfaHomeEntrepriseMenu row={row} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
