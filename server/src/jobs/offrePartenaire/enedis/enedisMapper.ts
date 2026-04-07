@@ -59,7 +59,7 @@ const ZEnedisSpecialisationOuter = z
 const ZEnedisJobDescription = z
   .object({
     title: z.string(),
-    description: z.string().nullish(),
+    description: z.string(),
     missionDescription: z.string().nullish(),
     missionDescriptionFormatted: z.string().nullish(),
     applicantProfile: z.string().nullish(),
@@ -227,7 +227,7 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   // Build description by combining available fields
   const descriptionParts: string[] = []
   if (missionDescriptionFormatted || missionDescription || description) {
-    descriptionParts.push(/*missionDescriptionFormatted ?? */ (missionDescription ?? description)!)
+    descriptionParts.push(/*missionDescriptionFormatted ?? */ missionDescription ?? description)
   }
 
   if (applicantProfileFormatted || applicantProfile) {
