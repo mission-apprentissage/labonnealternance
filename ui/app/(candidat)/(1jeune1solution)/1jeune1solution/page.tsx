@@ -1,8 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Container, List, ListItem, Typography } from "@mui/material"
 import NextImage from "next/image"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
+import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
+import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import arrow from "@/public/images/1j1s/arrow.svg"
 import bulb from "@/public/images/1j1s/bulb.svg"
 import ciel from "@/public/images/1j1s/ciel.webp"
@@ -152,26 +154,73 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         </Typography>
         <Box sx={{ width: "13%", height: "4px", background: "#EA619E", mt: fr.spacing("9v") }} />
 
-        <Box sx={{ display: "flex", gap: fr.spacing("2v"), flexDirection: "row", marginTop: fr.spacing("4v") }}>
-          <Box>
-            La bonne alternance expose différents types d’opportunités d’emplois : Les offres d’emploi Les offres d’emploi identifiables grâce au tag TAG OFFRE EMPLOI . qui sont de
-            2 types : celles publiées directement sur notre plateforme celles issues de nos partenaires : France Travail, Hellowork, MétéoJob et bien d’autres !
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: "row", marginTop: fr.spacing("4v") }}>
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <Box>
+              <Typography sx={{ fontSize: "18px" }}>La bonne alternance expose différents types d’opportunités d’emplois :</Typography>
+              <Typography
+                sx={{
+                  background: "#FFE817",
+                  width: "fit-content",
+                  padding: "0",
+                  fontWeight: 800,
+                  lineHeight: "32px",
+                  fontSize: "20px",
+                  mt: fr.spacing("6v"),
+                  mb: fr.spacing("6v"),
+                }}
+              >
+                LES OFFRES D'EMPLOI
+              </Typography>
+              <Typography sx={{ fontSize: "18px" }}>
+                <Box component="span" sx={{ fontWeight: 700 }}>
+                  Les offres d’emploi
+                </Box>{" "}
+                identifiables grâce au tag <TagOffreEmploi /> qui sont de 2 types :
+                <List sx={{ listStyleType: "disc", pl: 4, "& .MuiListItem-root": { display: "list-item", p: 0, fontSize: "18px" } }}>
+                  <ListItem>celles publiées directement sur notre plateforme</ListItem>
+                  <ListItem>celles issues de nos partenaires : France Travail, Hellowork, MétéoJob et bien d’autres !</ListItem>
+                </List>
+              </Typography>
+            </Box>
           </Box>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <Box sx={{ display: { xs: "none", md: "block" } }}>
             <NextImage src={mobileRight.src} alt="" aria-hidden="true" width={mobileRight.width} height={mobileRight.height} unoptimized />
           </Box>
         </Box>
-        <Box sx={{ display: "flex", gap: fr.spacing("2v"), flexDirection: "row", marginTop: fr.spacing("4v") }}>
-          <Box>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              <NextImage src={mobileLeft.src} alt="" aria-hidden="true" width={mobileLeft.width} height={mobileLeft.height} unoptimized />
-            </Box>
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("6v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
+          <Box sx={{ display: { md: "block" }, margin: "auto" }}>
+            <NextImage src={mobileLeft.src} alt="" aria-hidden="true" width={mobileLeft.width} height={mobileLeft.height} unoptimized />
+          </Box>
 
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
             <Box>
-              Les candidatures spontanées C'est ce qu'on appelle le marché caché de l'emploi — et c'est là que ça devient intéressant ! Chaque semaine, La bonne alternance analyse
-              pour vous diverses données sur les entreprises (recrutements passés, données financières, candidatures déjà reçues, ...) pour vous suggérer des entreprises auxquelles
-              adresser vos candidatures spontanées.Résultat ? Vous obtenez une liste ciblée d'entreprises "à fort potentiel d'embauche en alternance", pour booster vos candidatures
-              spontanées. Ces entreprises sont identifiées grâce au tag
+              <Typography
+                sx={{
+                  background: "#FFE817",
+                  width: "fit-content",
+                  padding: "0",
+                  fontWeight: 800,
+                  lineHeight: "32px",
+                  fontSize: "20px",
+                  mt: fr.spacing("6v"),
+                  mb: fr.spacing("6v"),
+                }}
+              >
+                LES CANDIDATURES SPONTANÉES
+              </Typography>{" "}
+              <Typography sx={{ fontSize: "18px" }}>
+                C'est ce qu'on appelle le marché caché de l'emploi — et c'est là que ça devient intéressant ! Chaque semaine, La bonne alternance analyse pour vous diverses données
+                sur les entreprises (recrutements passés, données financières, candidatures déjà reçues, ...) pour vous suggérer des entreprises auxquelles adresser vos
+                candidatures spontanées.
+              </Typography>
+              <Typography sx={{ fontSize: "18px", mt: fr.spacing("3v") }}>
+                Résultat ? Vous obtenez{" "}
+                <Box component="span" sx={{ fontWeight: 700 }}>
+                  une liste ciblée d'entreprises "à fort potentiel d'embauche en alternance"
+                </Box>
+                , pour booster vos candidatures spontanées. Ces entreprises sont identifiées grâce au tag <TagCandidatureSpontanee />
+              </Typography>
             </Box>
           </Box>
         </Box>
