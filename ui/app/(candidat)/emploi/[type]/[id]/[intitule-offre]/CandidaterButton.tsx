@@ -5,7 +5,6 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-
 import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
