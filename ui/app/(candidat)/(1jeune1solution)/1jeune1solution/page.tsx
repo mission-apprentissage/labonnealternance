@@ -270,7 +270,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           py: fr.spacing("8v"),
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "row", background: "#000091", maxHeight: "280px" }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#000091", maxHeight: { xs: "unset", sm: "280px" } }}>
           <Box sx={{ p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
             <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>Retrouvez 1jeune1solution sur Instagram et Tiktok :</Typography>
             <Box sx={{ "& > a:hover": { background: "#000091" } }}>
@@ -306,7 +306,16 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               </Button>
             </Box>
           </Box>
-          <Box sx={{ position: "relative", bottom: { xs: 0, sm: 0, md: 3 }, right: { xs: 0, sm: 0, md: -1 }, overflow: { xs: "hidden", md: "visible" } }}>
+          <Box
+            sx={{
+              position: "relative",
+              bottom: { xs: 0, sm: 0, md: 3 },
+              right: { xs: -1, sm: 0, md: -1 },
+              overflow: { xs: "hidden", md: "visible" },
+              maxHeight: { xs: "150px", sm: "unset" },
+              textAlign: "right",
+            }}
+          >
             <NextImage src={jeuneGarcon.src} alt="" aria-hidden="true" width={jeuneGarcon.width} height={jeuneGarcon.height} unoptimized />
           </Box>
         </Box>
