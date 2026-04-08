@@ -1,9 +1,12 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container } from "@mui/material"
+import { Box, Container, Typography } from "@mui/material"
 import NextImage from "next/image"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
+import arrow from "@/public/images/1j1s/arrow.svg"
+import bulb from "@/public/images/1j1s/bulb.svg"
 import ciel from "@/public/images/1j1s/ciel.webp"
+import dialog from "@/public/images/1j1s/dialog.svg"
 import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
 import mobileRight from "@/public/images/1j1s/mobile-right.webp"
 import sparkLeft from "@/public/images/1j1s/sparks-left.svg"
@@ -31,6 +34,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         sx={{
           position: "relative",
           borderRadius: { xs: 0, lg: fr.spacing("2v") },
+          marginBottom: { xs: 0, md: fr.spacing("8v"), lg: fr.spacing("16v") },
         }}
       >
         <Box>
@@ -38,6 +42,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             fetchPriority="low"
             src={ciel.src}
             alt=""
+            aria-hidden="true"
             width={ciel.width}
             height={ciel.height}
             unoptimized
@@ -59,7 +64,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               position: "absolute",
             }}
           >
-            <NextImage fetchPriority="low" src={sparkLeft.src} alt="" width={sparkLeft.width} height={sparkLeft.height} unoptimized />
+            <NextImage fetchPriority="low" src={sparkLeft.src} alt="" aria-hidden="true" width={sparkLeft.width} height={sparkLeft.height} unoptimized />
           </Box>
           <Box
             sx={{
@@ -69,7 +74,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               position: "absolute",
             }}
           >
-            <NextImage fetchPriority="low" src={sparkRight.src} alt="" width={sparkRight.width} height={sparkRight.height} unoptimized />
+            <NextImage fetchPriority="low" src={sparkRight.src} alt="" aria-hidden="true" width={sparkRight.width} height={sparkRight.height} unoptimized />
           </Box>
         </Box>
         <Box
@@ -86,14 +91,67 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         </Box>
       </Box>
 
-      <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v") }}>
-        <Box>Grid Bulb.svg LE JOB DE VOS RÊVES Renseignez le métier que vous souhaitez faire et la localisation</Box>
-        <Box>arrow.svg EN UN CLIN D’OEIL Obtenez en un clin d’oeil la liste des formations et entreprises proche de chez vous</Box>
-        <Box>dialog.svg UN CONTACT FACILE Contactez facilement les centres de formations ou les entreprises pour postuler</Box>
+      <Box
+        sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 }, py: fr.spacing("8v") }}
+      >
+        <Box sx={{ flex: 1 }}>
+          <NextImage src={bulb.src} width={bulb.width} height={bulb.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <Typography
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+          >
+            LE JOB DE VOS RÊVES
+          </Typography>
+          <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+            Renseignez{" "}
+            <Box component="span" sx={{ color: "#EA619E" }}>
+              le métier
+            </Box>{" "}
+            que vous souhaitez faire et{" "}
+            <Box component="span" sx={{ color: "#EA619E" }}>
+              la localisation
+            </Box>
+          </Typography>
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          <NextImage src={arrow.src} width={arrow.width} height={arrow.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <Typography
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+          >
+            EN UN CLIN D’OEIL
+          </Typography>
+          <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+            Obtenez en un clin d’oeil la{" "}
+            <Box component="span" sx={{ color: "#EA619E" }}>
+              liste des formations et entreprises proche de chez vous
+            </Box>
+          </Typography>
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          <NextImage src={dialog.src} width={dialog.width} height={dialog.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <Typography
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+          >
+            UN CONTACT FACILE
+          </Typography>
+          <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+            <Box component="span" sx={{ color: "#EA619E" }}>
+              Contactez facilement
+            </Box>{" "}
+            les centres de formations ou les entreprises pour postuler
+          </Typography>
+        </Box>
       </Box>
 
-      <Box>
-        <Box>La bonne alternance vous révèle les entreprises qui recrutent en alternance</Box>
+      <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+        <Typography id="home-content-container" variant="h1">
+          La bonne alternance vous révèle
+          <br />
+          <Box component="span" sx={{ color: "#EA619E" }}>
+            les entreprises qui recrutent en alternance
+          </Box>
+        </Typography>
+        <Box sx={{ width: "13%", height: "4px", background: "#EA619E", mt: fr.spacing("9v") }} />
+
         <Box sx={{ display: "flex", gap: fr.spacing("2v"), flexDirection: "row", marginTop: fr.spacing("4v") }}>
           <Box>
             La bonne alternance expose différents types d’opportunités d’emplois : Les offres d’emploi Les offres d’emploi identifiables grâce au tag TAG OFFRE EMPLOI . qui sont de
