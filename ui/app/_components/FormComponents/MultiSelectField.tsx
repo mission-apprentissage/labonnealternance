@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
-import { Box, ClickAwayListener, Popper } from "@mui/material"
+import { Box, ClickAwayListener, Divider, Popper } from "@mui/material"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
@@ -23,7 +24,7 @@ export function MultiSelectField({
   options,
   value,
   onChange,
-  onToggle,
+  onConfirm,
   onOpen,
   getLabel,
   popperSx,
@@ -33,12 +34,13 @@ export function MultiSelectField({
   options: MultiSelectOption[]
   value: string[]
   onChange: (value: string[]) => void
-  onToggle?: (toggledValue: string, checked: boolean, newValue: string[]) => void
+  onConfirm?: (newValue: string[]) => void
   onOpen?: () => void
   getLabel?: (selected: MultiSelectOption[], allOptions: MultiSelectOption[]) => string
   popperSx?: Record<string, unknown>
 }) {
   const [open, setOpen] = useState(false)
+  const [pendingValue, setPendingValue] = useState<string[]>(value)
   const anchorRef = useRef<HTMLDivElement>(null)
   const selectRef = useRef<HTMLSelectElement | null>(null)
 
@@ -50,22 +52,31 @@ export function MultiSelectField({
     prevOpen.current = open
   }, [open])
 
-  const toggle = useCallback(
-    (optionValue: string) => {
-      const isSelected = value.includes(optionValue)
-      const newValue = isSelected ? value.filter((v) => v !== optionValue) : [...value, optionValue]
-      onChange(newValue)
-      onToggle?.(optionValue, !isSelected, newValue)
-    },
-    [value, onChange, onToggle]
-  )
+  useEffect(() => {
+    if (!open) {
+      setPendingValue(value)
+    }
+  }, [value, open])
+
+  const toggle = useCallback((optionValue: string) => {
+    setPendingValue((prev) => (prev.includes(optionValue) ? prev.filter((v) => v !== optionValue) : [...prev, optionValue]))
+  }, [])
+
+  const handleConfirm = useCallback(() => {
+    onChange(pendingValue)
+    onConfirm?.(pendingValue)
+    setOpen(false)
+  }, [pendingValue, onChange, onConfirm])
 
   const handleToggleOpen = useCallback(() => {
     setOpen((prev) => {
-      if (!prev) onOpen?.()
+      if (!prev) {
+        setPendingValue(value)
+        onOpen?.()
+      }
       return !prev
     })
-  }, [onOpen])
+  }, [onOpen, value])
 
   const handleSelectInteraction = useCallback(
     (e: React.MouseEvent | React.KeyboardEvent) => {
@@ -151,12 +162,17 @@ export function MultiSelectField({
                 label: option.label,
                 hintText: option.hintText,
                 nativeInputProps: {
-                  checked: value.includes(option.value),
+                  checked: pendingValue.includes(option.value),
                   autoFocus: open && index === 0,
                   onChange: () => toggle(option.value),
                 },
               }))}
             />
+            <Box sx={{ display: "flex", justifyContent: "flex-end", padding: fr.spacing("1v") }}>
+              <Button size="small" onClick={handleConfirm}>
+                Enregistrer
+              </Button>
+            </Box>
           </Box>
         </ClickAwayListener>
       </Popper>

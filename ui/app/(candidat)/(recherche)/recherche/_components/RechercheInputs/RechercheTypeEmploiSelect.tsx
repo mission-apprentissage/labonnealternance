@@ -52,14 +52,14 @@ export function RechercheTypesEmploiSelect({
     pushMatomoEvent({ event: MATOMO_EVENTS.FILTER_DROPDOWN_OPENED, filter_name: "type_offres_emploi" })
   }, [])
 
-  const handleToggle = useCallback(
-    (toggledValue: string, checked: boolean, newValue: string[]) => {
+  const handleConfirm = useCallback(
+    (newValue: string[]) => {
+      const selectedCount = newValue.reduce((sum, value) => sum + (hasResults ? countByTypeEmploi(allJobs, value as ITypeEmploi) : 0), 0)
       pushMatomoEvent({
-        event: MATOMO_EVENTS.FILTER_TYPE_EMPLOI_CHANGED,
-        filter_label: toggledValue,
-        filter_checked: checked,
-        filter_result_count: hasResults ? countByTypeEmploi(allJobs, toggledValue as ITypeEmploi) : 0,
+        event: MATOMO_EVENTS.FILTER_TYPE_OFFER_APPLIED,
+        filter_result_count: selectedCount,
         filter_state: Object.fromEntries(typeEmploiEntries.map(([k]) => [k, newValue.includes(k)])),
+        filter_changed_labels: newValue.join("|"),
       })
     },
     [allJobs, hasResults]
@@ -72,7 +72,7 @@ export function RechercheTypesEmploiSelect({
       options={options}
       value={value}
       onChange={(newValue) => onChange(newValue as ITypeEmploi[])}
-      onToggle={handleToggle}
+      onConfirm={handleConfirm}
       onOpen={handleOpen}
       getLabel={getLabel}
       popperSx={{ width: "712px", maxWidth: { xs: "100%", md: "512px" } }}

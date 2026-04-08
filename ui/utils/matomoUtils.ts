@@ -1,7 +1,7 @@
 export const MATOMO_EVENTS = {
   FILTER_HANDI_CHANGED: "filter_handi_changed",
   FILTER_DROPDOWN_OPENED: "filter_dropdown_opened",
-  FILTER_TYPE_EMPLOI_CHANGED: "filter_type_emploi_changed",
+  FILTER_TYPE_OFFER_APPLIED: "filter_type_offer_applied",
 }
 
 type MatomoEvent = {
