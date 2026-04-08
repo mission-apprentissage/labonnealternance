@@ -44,13 +44,10 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         <Box>
           <NextImage
             fetchPriority="low"
-            //@ts-ignore
             src={ciel.src}
             alt=""
             aria-hidden="true"
-            //@ts-ignore
             width={ciel.width}
-            //@ts-ignore
             height={ciel.height}
             unoptimized
             style={{
@@ -81,7 +78,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               position: "absolute",
             }}
           >
-            //@ts-ignore
             <NextImage fetchPriority="low" src={sparkRight.src} alt="" aria-hidden="true" width={sparkRight.width} height={sparkRight.height} unoptimized />
           </Box>
         </Box>
@@ -104,7 +100,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 }, py: fr.spacing("8v") }}
       >
         <Box sx={{ flex: 1 }}>
-          //@ts-ignore
           <NextImage src={bulb.src} width={bulb.width} height={bulb.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
             sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
@@ -123,7 +118,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          //@ts-ignore
           <NextImage src={arrow.src} width={arrow.width} height={arrow.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
             sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
@@ -138,7 +132,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          //@ts-ignore
           <NextImage src={dialog.src} width={dialog.width} height={dialog.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
             sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
@@ -195,13 +188,11 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", md: "block" } }}>
-            //@ts-ignore
             <NextImage src={mobileRight.src} alt="" aria-hidden="true" width={mobileRight.width} height={mobileRight.height} unoptimized />
           </Box>
         </Box>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("6v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ display: { md: "block" }, margin: "auto" }}>
-            //@ts-ignore
             <NextImage src={mobileLeft.src} alt="" aria-hidden="true" width={mobileLeft.width} height={mobileLeft.height} unoptimized />
           </Box>
 
@@ -265,7 +256,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Button>
         </Box>
         <Box sx={{ display: { xs: "none", md: "block" }, maxHeight: jeunes.height, overflow: "hidden" }}>
-          //@ts-ignore
           <NextImage src={jeunes.src} alt="" aria-hidden="true" width={jeunes.width} height={jeunes.height} unoptimized />
         </Box>
       </Box>
@@ -325,7 +315,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               textAlign: "right",
             }}
           >
-            //@ts-ignore
             <NextImage src={jeuneGarcon.src} alt="" aria-hidden="true" width={jeuneGarcon.width} height={jeuneGarcon.height} unoptimized />
           </Box>
         </Box>
@@ -352,7 +341,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             </Box>
           </Box>
           <Box sx={{ flex: 1, textAlign: "center", overflow: "hidden", mt: { xs: "-5px", lg: fr.spacing("10v") } }}>
-            //@ts-ignore
             <NextImage src={illustrationLba.src} alt="" aria-hidden="true" width={illustrationLba.width} height={illustrationLba.height} unoptimized />
           </Box>
         </Box>
