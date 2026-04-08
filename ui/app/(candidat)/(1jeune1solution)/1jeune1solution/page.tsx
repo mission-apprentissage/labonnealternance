@@ -22,7 +22,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
   return (
     <Container
-      component="main"
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -33,7 +32,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         pt: { xs: fr.spacing("6v"), sm: 0 },
       }}
       maxWidth="xl"
-      role="main"
     >
       <Box
         component="section"
@@ -84,6 +82,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Box>
         </Box>
         <Box
+          id="editorial-1j1s-content-container"
           sx={{
             position: "relative",
             display: "grid",

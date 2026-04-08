@@ -10,8 +10,7 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
     <>
       <SkipLinks
         links={[
-          { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#editorial-content-container" },
+          { label: "Contenu", anchor: "#editorial-1j1s-content-container" },
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
