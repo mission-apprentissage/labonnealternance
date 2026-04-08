@@ -1,5 +1,5 @@
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
-import { Box, Typography } from "@mui/material"
+import { Box } from "@mui/material"
 import Image from "next/image"
 
 export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
