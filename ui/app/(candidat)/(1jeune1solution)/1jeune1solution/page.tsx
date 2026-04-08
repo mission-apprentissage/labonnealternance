@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, List, ListItem, Typography } from "@mui/material"
 import NextImage from "next/image"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -9,6 +10,7 @@ import arrow from "@/public/images/1j1s/arrow.svg"
 import bulb from "@/public/images/1j1s/bulb.svg"
 import ciel from "@/public/images/1j1s/ciel.webp"
 import dialog from "@/public/images/1j1s/dialog.svg"
+import jeunes from "@/public/images/1j1s/jeunes.png"
 import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
 import mobileRight from "@/public/images/1j1s/mobile-right.webp"
 import sparkLeft from "@/public/images/1j1s/sparks-left.svg"
@@ -226,7 +228,36 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         </Box>
       </Box>
 
-      <Box>À chacun sa solution. Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir ! Bouton lien 1j1s Image des jeunes</Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          color: "#FFFFFF",
+          gap: fr.spacing("10v"),
+          background: "#566BB1",
+          pl: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 },
+          pr: { xs: fr.spacing("3v"), md: 0 },
+        }}
+      >
+        <Box sx={{ flex: 1, px: { xs: 0, md: fr.spacing("6v") }, py: fr.spacing("4v") }}>
+          <Typography sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 700, lineHeight: { xs: "36px", md: "40px" } }}>À chacun sa solution.</Typography>
+          <Typography sx={{ fontSize: { xs: "22px", md: "24px" }, fontWeight: 700, lineHeight: { xs: "28px", md: "32px" } }}>
+            Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir !
+          </Typography>
+          <Button
+            linkProps={{ href: "https://www.1jeune1solution.gouv.fr/" }}
+            size="large"
+            priority="tertiary"
+            style={{ fontSize: "16px", background: "#FFF", marginTop: fr.spacing("2v") }}
+          >
+            Visiter le site 1jeune1solution.gouv.fr
+          </Button>
+        </Box>
+        <Box sx={{ display: { xs: "none", md: "block" }, maxHeight: jeunes.height, overflow: "hidden" }}>
+          <NextImage src={jeunes.src} alt="" aria-hidden="true" width={jeunes.width} height={jeunes.height} unoptimized />
+        </Box>
+      </Box>
 
       <Box>
         <Box>Retrouvez 1jeune1solution sur Instagram et Tiktok : liens bouton vers insta liens bouton vers tiktok</Box>
