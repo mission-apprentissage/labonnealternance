@@ -12,7 +12,7 @@ import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
 import type {
   IJobOfferApiReadV3,
   IJobOfferApiWriteV3,
@@ -29,6 +29,7 @@ import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
 import { getSomeFtJobs } from "@/services/ftjob.service"
@@ -717,6 +718,14 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   }
 }
 
+const isTrustedCompany = isNormalizedStringInSetOrArray(TRUSTED_COMPANY_JOB_PARTNERS)
+const partnerWhitelistSet = new Set(PARTNER_WHITELIST)
+
+const getTrustedCompanyBusinessError = (partner_label: string, ...workplaceNames: Array<string | null | undefined>): JOB_PARTNER_BUSINESS_ERROR | null => {
+  if (partnerWhitelistSet.has(partner_label)) return null
+  return workplaceNames.some(isTrustedCompany) ? JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE : null
+}
+
 type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
 async function upsertJobOfferPrivate({
@@ -788,7 +797,7 @@ async function upsertJobOfferPrivate({
     apply_phone: data.apply.phone,
 
     updated_at: now,
-    business_error: null,
+    business_error: getTrustedCompanyBusinessError(partner_label, data.workplace.name),
     errors: [],
     validated: false,
     jobs_in_success: [],
@@ -1094,7 +1103,7 @@ export async function upsertJobsPartnersMulti({
 
   const technicalFields = {
     updated_at: now,
-    business_error: null,
+    business_error: getTrustedCompanyBusinessError(partner_label, data.workplace_name, data.workplace_legal_name),
     errors: [],
     validated: false,
     jobs_in_success: [],

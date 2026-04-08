@@ -1,4 +1,3 @@
-import { stringNormaliser } from "shared"
 import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 
 const cfaCompanyList = [
@@ -1814,9 +1813,4 @@ const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-const normalizedCfaList = cfaCompanyList.map(stringNormaliser)
-const normalizedCfaSet = new Set(normalizedCfaList)
-
-export const isCompanyInBlockedCfaList = (nom: string | null | undefined): boolean => {
-  return isNormalizedStringInSetOrArray(nom, normalizedCfaSet, normalizedCfaList)
-}
+export const isCompanyInBlockedCfaList = isNormalizedStringInSetOrArray(cfaCompanyList)

@@ -1,5 +1,4 @@
 import type { Filter } from "mongodb"
-import { stringNormaliser } from "shared"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
 import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
@@ -7,10 +6,8 @@ import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
 const sourceFields = ["workplace_name", "workplace_legal_name"] as const satisfies (keyof IComputedJobsPartners)[]
-const normalizedFluxList: string[] = TRUSTED_COMPANY_JOB_PARTNERS.map(stringNormaliser)
-const normalizedFluxSet: Set<string> = new Set(normalizedFluxList)
 
-const isCompanyInFluxList = (nom: string | null | undefined): boolean => isNormalizedStringInSetOrArray(nom, normalizedFluxSet, normalizedFluxList)
+const isCompanyInFluxList = isNormalizedStringInSetOrArray(TRUSTED_COMPANY_JOB_PARTNERS)
 
 const hasBlockedFluxCompanyMention = ({ workplace_name, workplace_legal_name }: Pick<IComputedJobsPartners, "workplace_name" | "workplace_legal_name">) => {
   return [workplace_name, workplace_legal_name].some(isCompanyInFluxList)

@@ -2,7 +2,6 @@ import { z } from "zod"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-import { stringNormaliser } from "../utils/stringUtils.js"
 import type { IModelDescriptor } from "./common.js"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
@@ -49,9 +48,6 @@ export const TRUSTED_COMPANY_JOB_PARTNERS = [
   "Serpe",
   "Thales",
 ]
-
-export const normalizedFluxList: string[] = TRUSTED_COMPANY_JOB_PARTNERS.map(stringNormaliser)
-export const normalizedFluxSet: Set<string> = new Set(normalizedFluxList)
 
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
