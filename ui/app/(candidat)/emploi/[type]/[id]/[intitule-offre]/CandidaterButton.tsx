@@ -5,12 +5,11 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-
-import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
+import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useSubmitCandidature } from "@/components/ItemDetail/CandidatureLba/services/submitCandidature"
-import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus, { tagCandidatureSimplifiee } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
@@ -38,8 +37,8 @@ export function CandidaterButton({
     // re-instancie la modal
     setModalId(Math.random())
     onOpen()
-    const hasEmail = hasValidEmail(item)
-    SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: item.id, "avec contact": hasEmail ? "oui" : "non" })
+    const emailAvailable = hasEmail(item)
+    SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: item.id, "avec contact": emailAvailable ? "oui" : "non" })
     notifyJobPostulerV3(item)
   }
 
@@ -57,6 +56,7 @@ export function CandidaterButton({
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>
+              {tagCandidatureSimplifiee()}
             </Box>
           </>
         ) : (
