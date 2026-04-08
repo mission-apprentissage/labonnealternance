@@ -3,8 +3,9 @@ import { Box, Container } from "@mui/material"
 import NextImage from "next/image"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
-import ciel from "@/public/images/1j1s/ciel.jpg"
-import mobileRight from "@/public/images/1j1s/mobile-right.png"
+import ciel from "@/public/images/1j1s/ciel.webp"
+import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
+import mobileRight from "@/public/images/1j1s/mobile-right.webp"
 import sparkLeft from "@/public/images/1j1s/sparks-left.svg"
 import sparkRight from "@/public/images/1j1s/sparks-right.svg"
 
@@ -105,7 +106,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         <Box sx={{ display: "flex", gap: fr.spacing("2v"), flexDirection: "row", marginTop: fr.spacing("4v") }}>
           <Box>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              <NextImage src={mobileRight.src} alt="" aria-hidden="true" width={mobileRight.width} height={mobileRight.height} unoptimized />
+              <NextImage src={mobileLeft.src} alt="" aria-hidden="true" width={mobileLeft.width} height={mobileLeft.height} unoptimized />
             </Box>
 
             <Box>
