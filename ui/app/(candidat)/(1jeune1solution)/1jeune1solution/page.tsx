@@ -6,17 +6,11 @@ import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(rech
 import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
-import arrow from "@/public/images/1j1s/arrow.svg"
-import bulb from "@/public/images/1j1s/bulb.svg"
-import ciel from "@/public/images/1j1s/ciel.webp"
-import dialog from "@/public/images/1j1s/dialog.svg"
 import illustrationLba from "@/public/images/1j1s/illustration-lba.svg"
 import jeuneGarcon from "@/public/images/1j1s/jeune-garcon.webp"
 import jeunes from "@/public/images/1j1s/jeunes.webp"
 import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
 import mobileRight from "@/public/images/1j1s/mobile-right.webp"
-import sparkLeft from "@/public/images/1j1s/sparks-left.svg"
-import sparkRight from "@/public/images/1j1s/sparks-right.svg"
 
 export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
@@ -44,11 +38,11 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         <Box>
           <NextImage
             fetchPriority="low"
-            src={ciel.src}
+            src="/images/1j1s/ciel.webp"
             alt=""
             aria-hidden="true"
-            width={ciel.width}
-            height={ciel.height}
+            width={1120}
+            height={334}
             unoptimized
             style={{
               overflow: "visible",
@@ -68,7 +62,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               position: "absolute",
             }}
           >
-            <NextImage fetchPriority="low" src={sparkLeft.src} alt="" aria-hidden="true" width={sparkLeft.width} height={sparkLeft.height} unoptimized />
+            <NextImage fetchPriority="low" src="/images/1j1s/sparks-left.svg" alt="" aria-hidden="true" width={108} height={133} unoptimized />
           </Box>
           <Box
             sx={{
@@ -78,7 +72,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               position: "absolute",
             }}
           >
-            <NextImage fetchPriority="low" src={sparkRight.src} alt="" aria-hidden="true" width={sparkRight.width} height={sparkRight.height} unoptimized />
+            <NextImage fetchPriority="low" src="/images/1j1s/sparks-right.svg" alt="" aria-hidden="true" width={108} height={133} unoptimized />
           </Box>
         </Box>
         <Box
@@ -100,7 +94,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 }, py: fr.spacing("8v") }}
       >
         <Box sx={{ flex: 1 }}>
-          <NextImage src={bulb.src} width={bulb.width} height={bulb.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <NextImage src="/images/1j1s/bulb.svg" width={78} height={83} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
             sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
@@ -118,7 +112,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          <NextImage src={arrow.src} width={arrow.width} height={arrow.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <NextImage src="/images/1j1s/arrow.svg" width={71} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
             sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
@@ -132,7 +126,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Typography>
         </Box>
         <Box sx={{ flex: 1 }}>
-          <NextImage src={dialog.src} width={dialog.width} height={dialog.height} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <NextImage src="/images/1j1s/dialog.svg" width={78} height={78} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
             sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
