@@ -6,7 +6,7 @@ import { generateJobEtudiantJobFixture, nockJobEtudiantNextPage, nockJobEtudiant
 
 describe("getJobEtudiantJobs", () => {
   afterEach(() => {
-    vi.useRealTimers()
+    vi.restoreAllMocks()
     nock.cleanAll()
   })
 
