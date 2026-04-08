@@ -264,14 +264,14 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
       <Box
         sx={{
           display: "flex",
-          flexDirection: { xs: "column", md: "row" },
+          flexDirection: { xs: "column", lg: "row" },
           gap: { xs: fr.spacing("3v"), md: fr.spacing("11v") },
           px: { xs: fr.spacing("3v"), md: 0 },
           py: fr.spacing("8v"),
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#000091", maxHeight: { xs: "unset", sm: "280px" } }}>
-          <Box sx={{ p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+        <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#000091", maxHeight: { xs: "unset", sm: "280px" } }}>
+          <Box sx={{ flex: 1, p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
             <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>Retrouvez 1jeune1solution sur Instagram et Tiktok :</Typography>
             <Box sx={{ "& > a:hover": { background: "#000091" } }}>
               <Button
@@ -319,8 +319,8 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             <NextImage src={jeuneGarcon.src} alt="" aria-hidden="true" width={jeuneGarcon.width} height={jeuneGarcon.height} unoptimized />
           </Box>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#EEDBF5", maxHeight: { xs: "unset", sm: "280px" } }}>
-          <Box sx={{ p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+        <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", lg: "row" }, background: "#EEDBF5", maxHeight: { xs: "unset", sm: "280px" } }}>
+          <Box sx={{ flex: 1, p: fr.spacing("6v"), alignItems: "top", display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
             <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#000091", lineHeight: "30px" }}>
               Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités :
             </Typography>
@@ -335,13 +335,13 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
                 priority="secondary"
                 iconId="fr-icon-linkedin-box-fill"
                 iconPosition="right"
-                style={{ color: "#000091", fontSize: "16px" }}
+                style={{ color: "#000091", fontSize: "16px", whiteSpace: "nowrap" }}
               >
                 LinkedIn La bonne alternance
               </Button>
             </Box>
           </Box>
-          <Box>
+          <Box sx={{ flex: 1, textAlign: "center", overflow: "hidden", mt: { xs: "-5px", lg: fr.spacing("10v") } }}>
             <NextImage src={illustrationLba.src} alt="" aria-hidden="true" width={illustrationLba.width} height={illustrationLba.height} unoptimized />
           </Box>
         </Box>
