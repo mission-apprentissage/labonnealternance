@@ -10,7 +10,9 @@ import arrow from "@/public/images/1j1s/arrow.svg"
 import bulb from "@/public/images/1j1s/bulb.svg"
 import ciel from "@/public/images/1j1s/ciel.webp"
 import dialog from "@/public/images/1j1s/dialog.svg"
-import jeunes from "@/public/images/1j1s/jeunes.png"
+import jeuneGarcon from "@/public/images/1j1s/jeune-garcon.webp"
+import jeunes from "@/public/images/1j1s/jeunes.webp"
+
 import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
 import mobileRight from "@/public/images/1j1s/mobile-right.webp"
 import sparkLeft from "@/public/images/1j1s/sparks-left.svg"
@@ -240,7 +242,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           pr: { xs: fr.spacing("3v"), md: 0 },
         }}
       >
-        <Box sx={{ flex: 1, px: { xs: 0, md: fr.spacing("6v") }, py: fr.spacing("4v") }}>
+        <Box sx={{ flex: 1, px: { xs: fr.spacing("3v"), md: fr.spacing("6v") }, py: fr.spacing("4v") }}>
           <Typography sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 700, lineHeight: { xs: "36px", md: "40px" } }}>À chacun sa solution.</Typography>
           <Typography sx={{ fontSize: { xs: "22px", md: "24px" }, fontWeight: 700, lineHeight: { xs: "28px", md: "32px" } }}>
             Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir !
@@ -259,9 +261,58 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         </Box>
       </Box>
 
-      <Box>
-        <Box>Retrouvez 1jeune1solution sur Instagram et Tiktok : liens bouton vers insta liens bouton vers tiktok</Box>
-        <Box>Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités : Image lba lien bouton vers linkedin</Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          gap: { xs: fr.spacing("3v"), md: fr.spacing("11v") },
+          px: { xs: fr.spacing("3v"), md: 0 },
+          py: fr.spacing("8v"),
+        }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "row", background: "#000091", maxHeight: "280px" }}>
+          <Box sx={{ p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+            <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>Retrouvez 1jeune1solution sur Instagram et Tiktok :</Typography>
+            <Box sx={{ "& > a:hover": { background: "#000091" } }}>
+              <Button
+                linkProps={{
+                  href: "https://www.instagram.com/1jeune1solution/",
+                  target: "_self",
+                  "aria-label": "Lien vers le compte Instagram de 1jeune1solution",
+                }}
+                size="large"
+                priority="tertiary"
+                iconId="fr-icon-instagram-fill"
+                iconPosition="right"
+                style={{ color: "#FFFFFF", fontSize: "16px" }}
+              >
+                @1jeune1solution
+              </Button>
+            </Box>
+            <Box sx={{ "& > a:hover": { background: "#000091" } }}>
+              <Button
+                linkProps={{
+                  href: "https://www.tiktok.com/@1jeune_1solution",
+                  target: "_self",
+                  "aria-label": "Lien vers le compte Tiktok de 1jeune1solution",
+                }}
+                size="large"
+                priority="tertiary"
+                iconId="fr-icon-tiktok-fill"
+                iconPosition="right"
+                style={{ color: "#FFFFFF", fontSize: "16px" }}
+              >
+                @1jeune1solution
+              </Button>
+            </Box>
+          </Box>
+          <Box sx={{ position: "relative", bottom: { xs: 0, sm: 0, md: 3 }, right: { xs: 0, sm: 0, md: -1 }, overflow: { xs: "hidden", md: "visible" } }}>
+            <NextImage src={jeuneGarcon.src} alt="" aria-hidden="true" width={jeuneGarcon.width} height={jeuneGarcon.height} unoptimized />
+          </Box>
+        </Box>
+        <Box sx={{ background: "#EEDBF5", p: fr.spacing("6v") }}>
+          Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités : Image lba lien bouton vers linkedin
+        </Box>
       </Box>
     </Container>
   )
