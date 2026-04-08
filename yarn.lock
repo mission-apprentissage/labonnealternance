@@ -6128,6 +6128,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-table@npm:^8.21.3":
+  version: 8.21.3
+  resolution: "@tanstack/react-table@npm:8.21.3"
+  dependencies:
+    "@tanstack/table-core": 8.21.3
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 1452e7bd1dd0febbfc37e656c61c2c426dc243136333a8688bfadfccfec233e87c9bbe83011d742b0e86ae52c9b3d436bdc5618be4ac675ab921f52317317780
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-virtual@npm:^3.13.12":
   version: 3.13.12
   resolution: "@tanstack/react-virtual@npm:3.13.12"
@@ -6137,6 +6149,13 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 7b64c728ae3666c22f6a1727d464f877c04ae02347480eab482c7a002c2a340167ded856e3dd52b19de34f965aeb01a1e223acdab44d646251c0aa89c3d69539
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.21.3":
+  version: 8.21.3
+  resolution: "@tanstack/table-core@npm:8.21.3"
+  checksum: ce260ab981f334ba999240cf68ae942a524a28980f6853275da90d1864a8b56fa59b952bfd2266570f36ae11f66476d1c96dacc640ba5fd9d6d4e2a78cf05187
   languageName: node
   linkType: hard
 
@@ -18330,6 +18349,7 @@ __metadata:
     "@sentry/cli": ^2.57.0
     "@sentry/nextjs": ^10.23.0
     "@tanstack/react-query": ^5.90.7
+    "@tanstack/react-table": ^8.21.3
     "@tanstack/react-virtual": ^3.13.12
     "@testing-library/dom": ^10.4.1
     "@testing-library/react": ^16.3.0
