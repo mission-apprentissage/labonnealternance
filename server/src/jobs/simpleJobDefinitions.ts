@@ -55,6 +55,7 @@ import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersFo
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
+import { OneTimeJob_AddLocationToAlgolia } from "./oneTimeJob/addLocationToAlgolia"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
@@ -388,6 +389,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: syncLbaJobsIntoJobsPartnersFull,
     description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
+  },
+  {
+    fct: OneTimeJob_AddLocationToAlgolia,
+    description: "Complète le champ location (GeoJSON Point) à partir du champ _geoloc dans la collection algolia",
   },
   {
     fct: analyzeClosedCompanies,

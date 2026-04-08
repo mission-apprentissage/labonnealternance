@@ -91,9 +91,6 @@
     "*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc}": [
       "biome check --write --no-errors-on-unmatched"
     ],
-    "*": [
-      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
-    ],
     "yarn.lock": [
       "yarn dedupe"
     ]

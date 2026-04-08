@@ -52,6 +52,20 @@ function sentry:release() {
   "${SCRIPT_DIR}/sentry-release.sh" "$@"
 }
 
+_meta_help["app:deploy"]="Deploy application to <env>"
+
+function app:deploy() {
+  local env_filter="${1:-}"
+  if [[ "$env_filter" == "preview" ]]; then
+    local pr_number="${2:-}"
+    if [[ -f "${ROOT_DIR}/.infra/ansible/preview_${pr_number}.yml" ]]; then
+      "${SCRIPT_SHARED_DIR}/run-playbook.sh" "preview_${pr_number}.yml" "$env_filter" --extra-var "pr_number=$pr_number"
+      return
+    fi
+  fi
+  "${SCRIPT_SHARED_DIR}/app-deploy.sh" "$@"
+}
+
 _meta_help["preview:cleanup"]="Remove preview from close pull-requests"
 
 function preview:cleanup() {

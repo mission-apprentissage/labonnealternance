@@ -11,4 +11,4 @@ const isAllowedClearEmail = ({ caller }) => {
   return allowedSources.split("|").indexOf(caller) >= 0
 }
 
-export { isAllowedSource, isAllowedClearEmail }
+export { isAllowedClearEmail, isAllowedSource }

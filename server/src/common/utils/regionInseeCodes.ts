@@ -40,4 +40,4 @@ const regionCodeToDepartmentList = {
   "06": ["976"],
 }
 
-export { regionCodeToNameMap, regionCodeToDepartmentList }
+export { regionCodeToDepartmentList, regionCodeToNameMap }

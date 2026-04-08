@@ -1,4 +1,5 @@
 export * from "./address.model.js"
+export * from "./algolia.model.js"
 export * from "./apicalls.model.js"
 export * from "./applicant.model.js"
 export * from "./applicantEmailLog.model.js"
