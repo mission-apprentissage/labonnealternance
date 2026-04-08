@@ -5,7 +5,7 @@ import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps1J1S } from "@/app/(candidat)/(1jeune1solution)/components/Header1J1S"
 
-export default async function RechercheLayout({ children }: PropsWithChildren) {
+export default async function UnJeuneUneSolutionLayout({ children }: PropsWithChildren) {
   return (
     <>
       <SkipLinks
