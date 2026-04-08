@@ -10,9 +10,9 @@ import arrow from "@/public/images/1j1s/arrow.svg"
 import bulb from "@/public/images/1j1s/bulb.svg"
 import ciel from "@/public/images/1j1s/ciel.webp"
 import dialog from "@/public/images/1j1s/dialog.svg"
+import illustrationLba from "@/public/images/1j1s/illustration-lba.svg"
 import jeuneGarcon from "@/public/images/1j1s/jeune-garcon.webp"
 import jeunes from "@/public/images/1j1s/jeunes.webp"
-
 import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
 import mobileRight from "@/public/images/1j1s/mobile-right.webp"
 import sparkLeft from "@/public/images/1j1s/sparks-left.svg"
@@ -319,8 +319,31 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             <NextImage src={jeuneGarcon.src} alt="" aria-hidden="true" width={jeuneGarcon.width} height={jeuneGarcon.height} unoptimized />
           </Box>
         </Box>
-        <Box sx={{ background: "#EEDBF5", p: fr.spacing("6v") }}>
-          Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités : Image lba lien bouton vers linkedin
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#EEDBF5", maxHeight: { xs: "unset", sm: "280px" } }}>
+          <Box sx={{ p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+            <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#000091", lineHeight: "30px" }}>
+              Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités :
+            </Typography>
+            <Box sx={{ "& > a:hover": { background: "#EEDBF5" } }}>
+              <Button
+                linkProps={{
+                  href: "https://www.linkedin.com/company/la-bonne-alternance/",
+                  target: "_self",
+                  "aria-label": "Lien vers le compte LinkedIn de La bonne alternance",
+                }}
+                size="large"
+                priority="secondary"
+                iconId="fr-icon-linkedin-box-fill"
+                iconPosition="right"
+                style={{ color: "#000091", fontSize: "16px" }}
+              >
+                LinkedIn La bonne alternance
+              </Button>
+            </Box>
+          </Box>
+          <Box>
+            <NextImage src={illustrationLba.src} alt="" aria-hidden="true" width={illustrationLba.width} height={illustrationLba.height} unoptimized />
+          </Box>
         </Box>
       </Box>
     </Container>
