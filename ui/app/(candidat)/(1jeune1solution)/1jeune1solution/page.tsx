@@ -7,10 +7,6 @@ import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import illustrationLba from "@/public/images/1j1s/illustration-lba.svg"
-import jeuneGarcon from "@/public/images/1j1s/jeune-garcon.webp"
-import jeunes from "@/public/images/1j1s/jeunes.webp"
-import mobileLeft from "@/public/images/1j1s/mobile-left.webp"
-import mobileRight from "@/public/images/1j1s/mobile-right.webp"
 
 export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
@@ -182,12 +178,12 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", md: "block" } }}>
-            <NextImage src={mobileRight.src} alt="" aria-hidden="true" width={mobileRight.width} height={mobileRight.height} unoptimized />
+            <NextImage src="/images/1j1s/mobile-right.webp" alt="" aria-hidden="true" width={320} height={356} unoptimized />
           </Box>
         </Box>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("6v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
           <Box sx={{ display: { md: "block" }, margin: "auto" }}>
-            <NextImage src={mobileLeft.src} alt="" aria-hidden="true" width={mobileLeft.width} height={mobileLeft.height} unoptimized />
+            <NextImage src="/images/1j1s/mobile-left.webp" alt="" aria-hidden="true" width={314} height={339} unoptimized />
           </Box>
 
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -249,8 +245,8 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
             Visiter le site 1jeune1solution.gouv.fr
           </Button>
         </Box>
-        <Box sx={{ display: { xs: "none", md: "block" }, maxHeight: jeunes.height, overflow: "hidden" }}>
-          <NextImage src={jeunes.src} alt="" aria-hidden="true" width={jeunes.width} height={jeunes.height} unoptimized />
+        <Box sx={{ display: { xs: "none", md: "block" }, maxHeight: 229, overflow: "hidden" }}>
+          <NextImage src="/images/1j1s/jeunes.webp" alt="" aria-hidden="true" width={460} height={229} unoptimized />
         </Box>
       </Box>
 
@@ -309,7 +305,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               textAlign: "right",
             }}
           >
-            <NextImage src={jeuneGarcon.src} alt="" aria-hidden="true" width={jeuneGarcon.width} height={jeuneGarcon.height} unoptimized />
+            <NextImage src="/images/1j1s/jeune-garcon.webp" alt="" aria-hidden="true" width={220} height={284} unoptimized />
           </Box>
         </Box>
         <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", lg: "row" }, background: "#EEDBF5", maxHeight: { xs: "unset", sm: "280px" } }}>
