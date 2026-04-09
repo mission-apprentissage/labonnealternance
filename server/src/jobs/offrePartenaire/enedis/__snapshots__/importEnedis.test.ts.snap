@@ -20,7 +20,9 @@ exports[`importEnedis > should test the import of Enedis data into computed_job_
 
 Profil recherché :
 
-Vous êtes dynamique, ouvert et à l'écoute. Vous préparez un BTS NDRC.",
+Vous êtes dynamique, ouvert et à l'écoute. Vous préparez un BTS NDRC.
+
+Une prime d'intéressement avec abondement possible. 30 jours de congés payés par an.",
     "offer_desired_skills": [
       "Electricité",
     ],
@@ -74,7 +76,9 @@ Profil recherché :
 
 Vous avez un fort esprit de sécurité, capable de travailler en autonomie.
 
-Rémunération : De 27 800€ à 29 300€ brut annuel minimum",
+Rémunération : De 27 800€ à 29 300€ brut annuel minimum
+
+De 27 800€ à 29 300€ brut annuel minimum.",
     "offer_desired_skills": [
       "Electricité",
       "Electrotechnique",
