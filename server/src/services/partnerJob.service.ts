@@ -106,7 +106,6 @@ function transformPartnerJob(
       offer_access_conditions: partnerJob.offer_access_conditions,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
       contract_rythm: partnerJob.contract_rythm ?? null,
-      isDelegated: partnerJob.is_delegated ? true : false,
       isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
 
@@ -159,7 +158,6 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
-      isDelegated: partnerJob.is_delegated ? true : false,
       isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
     contact: {
