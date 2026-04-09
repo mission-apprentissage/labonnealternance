@@ -119,12 +119,13 @@ export const PopoverMenu = ({
                       borderLeft: "4px solid transparent",
                       display: "flex",
                       textDecoration: "none",
+                      backgroundImage: "unset",
                       ":hover": {
-                        backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                        backgroundColor: `${fr.colors.decisions.background.contrast.info.default} !important`,
                         borderLeft: "4px solid #6A6AF4",
                       },
                       "&.Mui-focusVisible": {
-                        backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                        backgroundColor: `${fr.colors.decisions.background.contrast.info.default} !important`,
                         borderLeft: "4px solid #6A6AF4",
                       },
                     }
