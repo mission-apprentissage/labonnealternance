@@ -1,4 +1,5 @@
 import type { CronDef } from "job-processor"
+import { processEtudiant } from "@/jobs/offrePartenaire/etudiant/processEtudiant"
 import { processApec } from "./apec/processApec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/processCleverConnect"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
@@ -14,11 +15,13 @@ import { processLaposte } from "./laposte/processLaposte"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
 import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
+import { processMissingRomeAndImportToJobPartners } from "./processMissingRomeAndImportToJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 
 const timings = {
   import_source: "0 0 * * *",
   process_computed: "1 0 * * *",
+  process_missing_rome: "*/15 * * * *",
 }
 
 export const importers: Record<string, CronDef> = {
@@ -145,6 +148,20 @@ export const importers: Record<string, CronDef> = {
     handler: processEmploiInclusion,
     checkinMargin: 350,
     maxRuntimeInMinutes: 120,
+  },
+  "Import Etudiant": {
+    cron_string: timings.import_source,
+    handler: processEtudiant,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
+  },
+  "Process missing Rome and import to Jobs Partners": {
+    cron_string: timings.process_missing_rome,
+    handler: processMissingRomeAndImportToJobPartners,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 15,
+    tag: "slave",
+    resumable: true,
   },
 
   // Keep at the end
