@@ -84,7 +84,6 @@ export const PopoverMenu = ({
         role={undefined}
         placement="bottom-start"
         transition
-        disablePortal
       >
         {({ TransitionProps, placement }) => (
           <Grow
