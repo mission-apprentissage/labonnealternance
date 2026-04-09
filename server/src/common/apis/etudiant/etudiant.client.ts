@@ -1,7 +1,8 @@
-import axios from "axios"
+import axios, { type AxiosResponse } from "axios"
 import z from "zod"
 
 import { logger } from "@/common/logger"
+import { delay } from "@/common/utils/asyncUtils"
 import config from "@/config"
 
 const ZTranslation = z.object({
@@ -62,6 +63,14 @@ const ZJobEtudiantResponse = z.object({
   jobs: z.array(ZJobEtudiantJob),
 })
 
+const RATE_LIMIT_REMAINING_THRESHOLD = 2
+const MAX_RETRIES = 3
+
+function parseRetryAfterMs(value: string | undefined): number {
+  const seconds = parseInt(value ?? "", 10)
+  return isNaN(seconds) || seconds <= 0 ? 1000 : seconds * 1000
+}
+
 /**
  * API Doc : https://developers.piloty.fr/feeds/feed-jobs
  */
@@ -75,16 +84,32 @@ export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
       url.searchParams.set("next-page", decodeURIComponent(nextPageToken))
     }
 
-    const response = await axios
-      .get(url.toString(), {
-        headers: { Authorization: `Bearer ${config.job_etudiant.apiKey}` },
-      })
-      .catch((err: any) => {
+    let response!: AxiosResponse
+    let retries = 0
+
+    while (true) {
+      try {
+        response = await axios.get(url.toString(), {
+          headers: { Authorization: `Bearer ${config.job_etudiant.apiKey}` },
+        })
+        break
+      } catch (err: any) {
         const status = err?.response?.status
+        const headers = err?.response?.headers ?? {}
+
+        if (status === 429 && retries < MAX_RETRIES) {
+          const waitMs = parseRetryAfterMs(headers["retry-after"] ?? headers["retry-after-short"])
+          logger.warn({ retries, waitMs, url: url.toString() }, "job-etudiant: rate limit 429, attente avant retry")
+          await delay(waitMs)
+          retries++
+          continue
+        }
+
         const data = err?.response?.data
         logger.error({ status, data, url: url.toString() }, "job-etudiant: erreur API")
         throw new Error(`job-etudiant: API error ${status} - ${JSON.stringify(data)}`)
-      })
+      }
+    }
 
     const parsed = ZJobEtudiantResponse.safeParse(response.data)
     if (!parsed.success) {
@@ -93,6 +118,17 @@ export const getJobEtudiantJobs = async (): Promise<IJobEtudiantJob[]> => {
     }
     allJobs.push(...parsed.data.jobs)
     nextPageToken = parsed.data["next-page"]
+
+    // Throttling proactif : si le quota restant est bas et qu'une prochaine page existe, on attend le reset
+    if (nextPageToken) {
+      const remaining = parseInt(response.headers["x-ratelimit-remaining"] ?? response.headers["x-ratelimit-remaining-short"] ?? "99", 10)
+      const resetIn = parseInt(response.headers["x-ratelimit-reset"] ?? response.headers["x-ratelimit-reset-short"] ?? "0", 10)
+      if (!isNaN(remaining) && remaining <= RATE_LIMIT_REMAINING_THRESHOLD && resetIn > 0) {
+        const waitMs = resetIn * 1000
+        logger.info({ remaining, waitMs, url: url.toString() }, "job-etudiant: quota bas, pause avant prochaine requête")
+        await delay(waitMs)
+      }
+    }
   } while (nextPageToken)
 
   return allJobs
