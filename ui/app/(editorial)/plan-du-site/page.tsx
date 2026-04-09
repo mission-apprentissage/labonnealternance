@@ -37,7 +37,7 @@ export default function PlanDuSite() {
                 <Box component="nav" role="navigation" aria-label="Navigation du plan du site">
                   <Box component="ul" sx={{ my: fr.spacing("8v"), pl: fr.spacing("4v"), listStyle: "disc", "& > li": { mb: fr.spacing("6v") } }}>
                     <li>
-                      <DsfrLink href={PAGES.static.home.getPath()}>Espace candidat</DsfrLink>
+                      <DsfrLink href={PAGES.static.home.getPath()}>Page d'accueil</DsfrLink>
                     </li>
                     <li>
                       <DsfrLink href={PAGES.static.guideAlternant.getPath()}>Guide alternant</DsfrLink>

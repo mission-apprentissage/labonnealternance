@@ -66,10 +66,10 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
     switch (userHistory.status) {
       case ETAT_UTILISATEUR.ATTENTE:
         return (
-          <>
+          <Box sx={{ display: "flex", gap: fr.spacing("2v") }}>
             <ActivateUserButton userId={userId} organizationId={organizationId} />
             <DisableUserButton />
-          </>
+          </Box>
         )
       case ETAT_UTILISATEUR.VALIDE:
         return <DisableUserButton />
@@ -129,25 +129,19 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
-      <Box sx={{ px: fr.spacing("4v"), borderBottom: "1px solid #E3E3FD", mb: fr.spacing("10v") }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #E3E3FD", pb: fr.spacing("4v"), mb: fr.spacing("4v") }}>
         {user.type !== "CFA" && (
           <>
-            <Typography component="h2" sx={{ fontSize: "32px", ...webkitLineClamp }}>
+            <Typography component="h2" sx={{ fontSize: "32px", wordBreak: "break-word" }}>
               {establishmentLabel}
             </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: fr.spacing("5v") }}>
-              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", maxW: "50%" }}>
-                <Box sx={{ ml: fr.spacing("5v") }}>{getUserBadge(lastUserState)}</Box>
-              </Box>
-              <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: fr.spacing("2v") }}>
-                {getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}
-              </Box>
-            </Box>
+
+            <Box>{getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}</Box>
           </>
         )}
         {user.type === "CFA" && (
           <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-            <Typography sx={{ fontSize: "32px", mx: 0, ...webkitLineClamp }} component="h2">
+            <Typography sx={{ fontSize: "32px", mx: 0, wordBreak: "break-word" }} component="h2">
               {establishmentLabel}
             </Typography>
 
@@ -158,6 +152,46 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
         )}
       </Box>
       <Box sx={{ px: fr.spacing("4v") }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
+            <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
+              Statut:{" "}
+            </Typography>
+            {getUserBadge(lastUserState)}
+          </Box>
+          <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
+            {userRecruteur.establishment_siret && (
+              <a
+                href={`https://annuaire-entreprises.data.gouv.fr/etablissement/${userRecruteur.establishment_siret}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
+              >
+                Annuaire entreprises
+              </a>
+            )}
+            {userRecruteur.email && (
+              <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(userRecruteur.email)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
+              >
+                Rechercher l&apos;email
+              </a>
+            )}
+            {(userRecruteur.establishment_raison_sociale || userRecruteur.establishment_enseigne) && userRecruteur.address && (
+              <a
+                href={`https://www.google.com/maps/search/${encodeURIComponent(`${userRecruteur.establishment_enseigne ?? userRecruteur.establishment_raison_sociale} ${userRecruteur.address}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
+              >
+                Google Maps
+              </a>
+            )}
+          </Box>
+        </Box>
         <Formik
           validateOnMount={true}
           enableReinitialize={true}
