@@ -33,8 +33,9 @@ export const PAGES = {
       title: "Accueil",
       index: true,
       getMetadata: () => ({
-        title: "La bonne alternance | Trouvez votre formation et emploi en alternance",
-        description: "Recherchez formations et entreprises en alternance. Offres d’emploi, candidatures spontanées et formations près de chez vous. Service public gratuit.",
+        title: "La bonne alternance | Trouvez votre alternance, formation et emploi",
+        description:
+          "Trouvez votre alternance parmi des milliers d’offres d’emploi et de formations. Recherchez par métier et par ville, candidatez en ligne ou en spontané. Service public gratuit.",
       }),
     },
     authentification: {
@@ -97,7 +98,7 @@ export const PAGES = {
       index: false,
       getMetadata: () => ({
         title: "Métiers en alternance - Découvrez les opportunités sur La bonne alternance",
-        description: "Explorez les différents métiers accessibles en alternance et trouvez celui qui correspond à votre projet professionnel.",
+        description: "Découvrez plus de 200 métiers accessibles en alternance : commerce, informatique, santé, BTP et bien d'autres. Trouvez la voie qui vous correspond.",
       }),
     },
     codeSources: {
@@ -430,6 +431,13 @@ export const PAGES = {
         title: "Gestion des administrateurs - La bonne alternance",
       }),
     },
+    backAdminGestionDesRecruteurs: {
+      getPath: () => `/espace-pro/administration/recruteurs` as string,
+      title: "Gestion des recruteurs",
+      getMetadata: () => ({
+        title: "Gestion des recruteurs - La bonne alternance",
+      }),
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
@@ -681,7 +689,9 @@ export const PAGES = {
         index: false,
         getMetadata: () => ({
           title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+          description: searchTitleContext
+            ? `Trouvez des offres d'emploi en alternance et des formations en apprentissage${searchTitleContext}. Postulez directement en ligne.`
+            : "Trouvez des offres d'emploi en alternance et des formations en apprentissage près de chez vous. Filtrez par métier, ville et type de contrat.",
         }),
         title: "Offres en alternance",
       }
@@ -695,7 +705,9 @@ export const PAGES = {
         index: false,
         getMetadata: () => ({
           title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
-          description: `Recherche - Formations en alternance${searchTitleContext} sur le site de La bonne alternance`,
+          description: searchTitleContext
+            ? `Trouvez des formations en apprentissage${searchTitleContext}. Comparez les programmes et postulez en ligne.`
+            : "Trouvez des formations en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez directement en ligne.",
         }),
         title: "Formations en alternance",
       }
@@ -709,7 +721,9 @@ export const PAGES = {
         index: false,
         getMetadata: () => ({
           title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: `Recherche - Offres en alternance${searchTitleContext} sur le site de La bonne alternance`,
+          description: searchTitleContext
+            ? `Trouvez des offres d'emploi en alternance${searchTitleContext}. Postulez directement en ligne.`
+            : "Trouvez des offres d'emploi en alternance près de chez vous. Filtrez par métier, ville et type de contrat, postulez directement en ligne.",
         }),
         title: "Offres en alternance",
       }
@@ -760,7 +774,7 @@ export const PAGES = {
         title: "Création d'une offre - La bonne alternance",
       }),
     }),
-    backAdminGestionDesRecruteurs: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
+    backAdminRecruteursATraiter: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
       const searchParams = new URLSearchParams()
       Object.entries(props).forEach(([key, value]) => {
         if (value !== undefined) {

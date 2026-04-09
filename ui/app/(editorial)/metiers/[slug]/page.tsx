@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import path from "path"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -29,6 +30,9 @@ const getMetierBySlug = (jobs: IStaticMetiers[], slug: IStaticMetiers["slug"]) =
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const _params = await params
   const metier = getMetierBySlug(getMetiers(), _params.slug)
+  if (!metier) {
+    return { title: "Métier introuvable - La bonne alternance" }
+  }
   return PAGES.dynamic.metierJobById(metier.name).getMetadata()
 }
 
@@ -37,6 +41,10 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
   const towns = getTowns()
   const metiers = getMetiers()
   const relatedMetier = getMetierBySlug(metiers, slug)
+
+  if (!relatedMetier) {
+    redirect("/404")
+  }
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />

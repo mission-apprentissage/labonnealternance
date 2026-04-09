@@ -161,32 +161,71 @@ function TableWithPagination({
         </Box>
         {exportable && <ExportButtonNew data={tableData} />}
       </Box>
-      <Box className="fr-table">
-        <Box className="fr-table__wrapper">
-          <Box className="fr-table__container">
-            <Box className="fr-table__content">
+      <Box>
+        <Box>
+          <Box>
+            <Box
+              className="fr-table__content"
+              sx={{
+                "& table": { margin: "0 !important" },
+                "& table thead th[role=columnheader]": {
+                  backgroundSize: "100% 1px !important",
+                  backgroundRepeat: "no-repeat !important",
+                  backgroundPosition: "0 100% !important",
+                  backgroundImage: "linear-gradient(0deg, var(--border-plain-grey), var(--border-plain-grey)) !important",
+                },
+              }}
+            >
               <Box as="table" {...getTableProps()}>
-                <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v") }} component="caption">
+                <Box sx={{ position: "relative !important", fontSize: "20px !important", fontWeight: "700", mb: fr.spacing("2v"), textAlign: "left" }} component="caption">
                   {caption}
                 </Box>
                 <Box component="thead">
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
-                      {headerGroup.headers.map((column, i) => (
-                        <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
-                          <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                            <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
-                            <Box
-                              component="span"
-                              sx={{
-                                pl: fr.spacing("2v"),
-                              }}
-                            >
-                              {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
-                            </Box>
+                      {headerGroup.headers.map((column, i) => {
+                        const sortProps = column.getSortByToggleProps()
+                        // Séparer onClick des autres props pour le placer sur le bouton
+                        const { onClick: sortOnClick, ...headerSortProps } = sortProps
+
+                        return (
+                          <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(headerSortProps)} title={null}>
+                            {column.canSort ? (
+                              <Box
+                                component="button"
+                                type="button"
+                                onClick={sortOnClick}
+                                aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  w: "full",
+                                  alignItems: "flex-start",
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  cursor: "pointer",
+                                  font: "inherit",
+                                  color: "inherit",
+                                  "&:focus-visible": {
+                                    outline: "2px solid #0a76f6",
+                                    outlineOffset: "2px",
+                                  },
+                                }}
+                              >
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                                <Box component="span" sx={{ pl: fr.spacing("2v") }}>
+                                  {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
+                                </Box>
+                              </Box>
+                            ) : (
+                              <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                              </Box>
+                            )}
                           </Box>
-                        </Box>
-                      ))}
+                        )
+                      })}
                     </Box>
                   ))}
                 </Box>
@@ -202,7 +241,9 @@ function TableWithPagination({
                               headers={cell.column.id}
                               component="td"
                               {...cell.getCellProps()}
-                              sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}
+                              {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
+                              display={"flex"}
+                              alignContent={"center"}
                             >
                               {cell.render("Cell")}
                             </Box>

@@ -38,6 +38,7 @@ import rawAtlasModel from "./rawAtlas.model.js"
 import rawDecathlonModel from "./rawDecathlon.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
+import rawEtudiantModel from "./rawEtudiant.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
 import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
@@ -110,6 +111,7 @@ const modelDescriptorMap = {
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
   [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
+  [rawEtudiantModel.collectionName]: rawEtudiantModel,
   [rawHelloWorkModel.collectionName]: rawHelloWorkModel,
   [rawMonsterModel.collectionName]: rawMonsterModel,
   [rawPassModel.collectionName]: rawPassModel,

@@ -1,6 +1,5 @@
 import { ObjectId } from "bson"
 import type { IClassificationJobsPartners } from "shared/models/cacheClassification.model"
-
 import { getLabClassificationBatch } from "@/common/apis/classification/classification.client"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -22,6 +21,7 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
 }
 
 export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
+  const now = new Date()
   const cachedClassifications = await getClassificationFromDB(jobs)
   const notFoundJobs = jobs.flatMap((job, index) => {
     if (cachedClassifications[index] !== null) {
@@ -45,11 +45,11 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
 
   // Create a map from job ID to classification result for safe lookup
-  const classificationMap = new Map<string, { label: string; scores: any }>()
+  const classificationMap = new Map<string, { label: string; scores: any; model: string }>()
   if (classificationsFromLab && classificationsFromLab.length) {
     classificationsFromLab.forEach((result) => {
       if (result?.label && result?.id) {
-        classificationMap.set(result.id, { label: result.label, scores: result.scores })
+        classificationMap.set(result.id, { label: result.label, scores: result.scores, model: result.model })
       }
     })
 
@@ -65,6 +65,8 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
           partner_job_id: job.partner_job_id,
           classification: result.label,
           scores: result.scores,
+          model: result.model,
+          created_at: now,
         }
       })
       .filter((payload): payload is NonNullable<typeof payload> => payload !== null)
@@ -77,7 +79,7 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   // Return results in the same order as input jobs
   return jobs.map((job, index) => {
     const cached = cachedClassifications[index]
-    if (cached) return cached.classification
+    if (cached) return cached.human_verification ? cached.human_verification : cached.classification
 
     // Use the map for safe lookup
     const result = classificationMap.get(job.partner_job_id)

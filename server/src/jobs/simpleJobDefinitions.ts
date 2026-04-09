@@ -1,3 +1,4 @@
+import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
@@ -32,6 +33,7 @@ import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/importEmploiInclusion"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
+import { processEtudiant } from "./offrePartenaire/etudiant/processEtudiant"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
@@ -444,6 +446,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Import du flux Emploi Inclusion jusqu'à la collection computed_jobs_partners",
   },
   {
+    fct: processEtudiant,
+    description: "Import du flux Etudiant jusqu'à la collection computed_jobs_partners",
+  },
+  {
     fct: importFichesRncp,
     description: "Import des fichers RNCP dans la base de données",
   },
@@ -478,5 +484,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processHellowork,
     description: "Importe les offres des 2 flux Hellowork dans computed_jobs_partners",
+  },
+  {
+    fct: analyzeCfaBlockList,
+    description: "",
   },
 ]

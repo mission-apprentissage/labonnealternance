@@ -29,7 +29,10 @@ export default function User() {
   } = useQuery({
     queryKey: ["recruiter", userRecruteur?.establishment_id],
     enabled: Boolean(userRecruteur?.establishment_id),
-    queryFn: () => getFormulaire(userRecruteur.establishment_id),
+    queryFn: () => {
+      if (!userRecruteur?.establishment_id) return Promise.resolve(undefined)
+      return getFormulaire(userRecruteur.establishment_id)
+    },
   })
 
   if (isLoading || !userRecruteur || !userId || recruiterLoading) {
@@ -39,9 +42,6 @@ export default function User() {
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
   return (
     <>
-      <Box component="header">
-        <NavigationAdmin currentPage="GESTION_RECRUTEURS" />
-      </Box>
       <Box
         sx={{
           maxWidth: 1200,

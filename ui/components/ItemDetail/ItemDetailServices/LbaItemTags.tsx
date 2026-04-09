@@ -57,7 +57,7 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
   return (
     <Box
       sx={{
-        display: "block",
+        display: "flex",
         "& > *": {
           marginRight: "4px",
           minWidth: "fit-content",
