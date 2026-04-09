@@ -1162,10 +1162,10 @@ export const processApplicationEmails = {
 
     const job = application.job_id ? await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(application.job_id) }) : null
 
-    if (job && PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
-      await sendApplicationDataToPartner(job, application, applicant, attachmentContent)
-    } else {
-      if (!to_company_message_id) {
+    if (!to_company_message_id) {
+      if (job && PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
+        await sendApplicationDataToPartner(job, application, applicant, attachmentContent)
+      } else {
         await this.sendRecruteurEmail(application, applicant, attachmentContent)
       }
     }
@@ -1702,7 +1702,7 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
       firstName: applicant.firstname,
       lastName: applicant.lastname,
       email: applicant.email,
-      cvData: applicant_attachment_content.substring(applicant_attachment_content.indexOf("base64,") + 7),
+      cvData: removeDataUrlPrefix(applicant_attachment_content),
       cvName: application.applicant_attachment_name,
       phone: applicant.phone,
       coverText: application.applicant_message_to_company,
@@ -1713,6 +1713,9 @@ const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate
         "X-Partner-Key": config.taleez.partnerKey,
       },
     })
+
+    // no specific response other than http 200 by Taleez, using a placeholder value to mark the application as sent to Taleez
+    await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: "Taleez" } })
   } catch (err) {
     captureException(err, {
       extra: {
