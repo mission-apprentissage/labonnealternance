@@ -15,11 +15,6 @@ export type IWhisper = {
 const WHISPERS: IWhisper[] = [
   {
     ideaType: "whisper",
-    message: "Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aides dès maintenant.",
-    lien: "https://mes-aides.francetravail.fr/",
-  },
-  {
-    ideaType: "whisper",
     message: "Certaines communes mettent à disposition des logements pour l'hébergement des alternants.",
     lien: null,
   },
@@ -150,11 +145,6 @@ const WHISPERS: IWhisper[] = [
     ideaType: "whisper",
     message: "Vous hésitez dans le choix d'un métier ? Faites le point avec Diagoriente, un service qui vous accompagne dans la construction de votre orientation professionnelle.",
     lien: "https://diagoriente.beta.gouv.fr/",
-  },
-  {
-    ideaType: "whisper",
-    message: "Des doutes sur votre orientation ? Pensez à la Prépa-apprentissage : un dispositif qui vous permet de découvrir un ou plusieurs métiers !",
-    lien: "https://travail-emploi.gouv.fr/la-prepa-apprentissage",
   },
   {
     ideaType: "whisper",
