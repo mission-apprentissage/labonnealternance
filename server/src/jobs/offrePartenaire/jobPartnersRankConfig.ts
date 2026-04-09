@@ -5,6 +5,7 @@ export const jobPartnersRankDefaultFactor = 0.5
 /*Source du ranking sur Google drive (document "Agrégation et rediffusion d'offres partenaires")*/
 const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = {
   Hellowork: 0.69,
+  ATS_Hellowork: 0.7,
   Kelio: 0.7,
   "La Poste": 0.7,
   Meteojob: 0.66,

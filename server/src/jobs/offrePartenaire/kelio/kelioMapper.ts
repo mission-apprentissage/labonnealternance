@@ -56,7 +56,14 @@ export type IKelioJob = z.output<typeof ZKelioJob>
 
 export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners => {
   const { id, name, html_description, html_profile, address, url, company, created_at, last_activation_at, job_type, contract_duration, job_start_date, education_level } = job
-
+  let contract_type: IComputedJobsPartners["contract_type"] = []
+  let contract_remote: TRAINING_REMOTE_TYPE | null = null
+  let offer_target_diploma: IComputedJobsPartners["offer_target_diploma"] = null
+  let business_error: JOB_PARTNER_BUSINESS_ERROR | null = null
+  const urlParsing = z.string().url().safeParse(url)
+  const descriptionComputed = html_description + html_profile.trim()
+  const publicationDate = new Date(created_at)
+  const updatedDate = last_activation_at ? new Date(last_activation_at) : null
   const workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -65,18 +72,16 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
     coordinates: [parseFloat(address.longitude), parseFloat(address.latitude)],
   }
 
-  let business_error: string | null = null
-
-  let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
-  if (job_type === "Alternating") {
-    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-  } else if (job_type.toUpperCase() === "Professional Contract".toUpperCase()) {
-    contract_type = [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
-  } else if (job_type === "Internship") {
-    business_error = JOB_PARTNER_BUSINESS_ERROR.STAGE
+  if (name.length < 3 || descriptionComputed.length < 30) {
+    business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
   }
 
-  let contract_remote: TRAINING_REMOTE_TYPE | null = null
+  if (job_type === "Alternating") {
+    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+  } else {
+    contract_type = [TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION]
+  }
+
   switch (job.remote_level) {
     case "unauthorized":
     case "fulltime":
@@ -90,7 +95,6 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
       contract_remote = null
   }
 
-  let offer_target_diploma: { european: "3" | "4" | "5" | "6" | "7"; label: string } | null = null
   switch (education_level) {
     case "CAP/BEP":
       offer_target_diploma = { european: "3", label: NIVEAU_DIPLOME_LABEL["3"] }
@@ -112,41 +116,31 @@ export const kelioJobToJobsPartners = (job: IKelioJob): IComputedJobsPartners =>
       offer_target_diploma = null
   }
 
-  const urlParsing = z.string().url().safeParse(url)
-
-  const descriptionComputed = html_description + html_profile.trim()
-
-  const publicationDate = new Date(created_at)
-  const updatedDate = last_activation_at ? new Date(last_activation_at) : null
-
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.KELIO,
     partner_job_id: id,
-
+    offer_multicast: true,
+    offer_target_diploma,
     offer_title: name,
     offer_description: descriptionComputed,
     offer_creation: publicationDate,
-
     offer_expiration: dayjs(updatedDate ?? publicationDate)
       .tz()
       .add(2, "months")
       .toDate(),
-
     workplace_name: company.name,
     workplace_description: company.company_description,
     workplace_address_zipcode: address.postal_code || null,
     workplace_address_city: address.city,
     workplace_address_label: [address.street_number, address.street, address.postal_code, address.city].join(" ").trim(),
     workplace_geopoint,
-    apply_url: urlParsing.success ? urlParsing.data : null,
-    offer_multicast: true,
     contract_type,
     contract_start: new Date(job_start_date!),
     contract_remote,
-    offer_target_diploma,
     contract_duration: contract_duration ? parseInt(contract_duration) : null,
+    apply_url: urlParsing.success ? urlParsing.data : null,
     business_error,
   }
   return partnerJob

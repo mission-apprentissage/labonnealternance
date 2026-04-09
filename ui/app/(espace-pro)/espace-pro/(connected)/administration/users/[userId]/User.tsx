@@ -42,9 +42,6 @@ export default function User() {
   const establishmentLabel = userRecruteur.establishment_raison_sociale ?? userRecruteur.establishment_siret
   return (
     <>
-      <Box component="header">
-        <NavigationAdmin currentPage="GESTION_RECRUTEURS" />
-      </Box>
       <Box
         sx={{
           maxWidth: 1200,
