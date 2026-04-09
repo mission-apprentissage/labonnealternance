@@ -288,6 +288,8 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     workplace_address_city,
     workplace_address_label,
     workplace_description: entityDescription || null,
+    workplace_naf_code: partnerLabel === JOBPARTNERS_LABEL.ENEDIS ? "35.14Y" : "35.11Z",
+    workplace_naf_label: partnerLabel === JOBPARTNERS_LABEL.ENEDIS ? "Distribution d'électricité" : "Production d'électricité",
     apply_url: urlParsing.data ?? null,
     contract_type,
     contract_duration,
