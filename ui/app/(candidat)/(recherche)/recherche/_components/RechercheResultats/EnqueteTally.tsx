@@ -4,6 +4,7 @@ import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(rech
 
 let triggered = false
 const PERCENTAGE_TRIGGER = 0.1 // 10%
+const TIME_ELAPSED_TRIGGER = 15_000 // 15 secondes
 let scriptInitialized = false
 
 const insertTallyScript = () => {
@@ -92,7 +93,7 @@ export const EnqueteTally = () => {
     }, 1_000)
     const timeoutId = setTimeout(() => {
       openPopup()
-    }, 30_000)
+    }, TIME_ELAPSED_TRIGGER)
 
     return () => {
       clearTimeout(timeoutId)
