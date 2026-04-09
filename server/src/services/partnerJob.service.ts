@@ -32,13 +32,13 @@ export const transformPartnerJobs = ({
   applicationCountByJob: null | IApplicationCount[]
 }) =>
   partnerJobs.flatMap((partnerJob) =>
-    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountByJob) : transformPartnerJob(partnerJob, "V2", applicationCountByJob)
+    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountByJob) : jobPartnerToLbaItemPartnerJob(partnerJob, "V2", applicationCountByJob)
   )
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJob(
+export function jobPartnerToLbaItemPartnerJob(
   partnerJob: IJobsPartnersOfferPrivateWithDistance,
   version: "V1" | "V2" = "V1",
   applicationCountByJob?: null | IApplicationCount[]
@@ -273,7 +273,7 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
     applicationCountByJob = await getApplicationByJobCount([jobId])
   }
 
-  const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
+  const partnerJob = jobPartnerToLbaItemPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
   return partnerJob
 }
 

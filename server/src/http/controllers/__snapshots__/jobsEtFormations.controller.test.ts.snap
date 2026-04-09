@@ -1,0 +1,301 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`jobEtFormationV1 > Verifie que > la route renvoie les bonnes données 1`] = `
+{
+  "formations": {
+    "results": [],
+  },
+  "jobs": {
+    "lbaCompanies": {
+      "results": [
+        {
+          "applicationCount": 0,
+          "company": {
+            "elligibleHandicap": false,
+            "name": "workplace_legal_name",
+            "opco": {
+              "label": "ATLAS",
+              "url": null,
+            },
+            "siret": "58006820882692",
+            "size": "0-50",
+            "url": "http://workplace_website.com",
+          },
+          "contact": {
+            "hasEmail": true,
+          },
+          "ideaType": "lba",
+          "nafs": [
+            {
+              "code": "6201Z",
+              "label": "Programmation informatique",
+            },
+          ],
+          "place": {
+            "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "city": "PARIS",
+            "distance": 0,
+            "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "latitude": 48.9041,
+            "longitude": 2.3041,
+          },
+          "status": "Active",
+          "title": "workplace_brand",
+          "url": null,
+        },
+      ],
+    },
+    "lbbCompanies": null,
+    "matchas": {
+      "results": [
+        {
+          "applicationCount": 1,
+          "company": {
+            "elligibleHandicap": false,
+            "mandataire": false,
+            "name": "workplace_name",
+            "opco": {
+              "label": "ATLAS",
+              "url": null,
+            },
+            "siret": "13002526500013",
+            "size": "0-50",
+            "url": "http://workplace_website.com",
+          },
+          "contact": {
+            "hasEmail": true,
+            "phone": "0123456789",
+            "url": "https://apply.com",
+          },
+          "ideaType": "offres_emploi_lba",
+          "job": {
+            "contract_rythm": null,
+            "creationDate": "2021-01-28T15:00:00.000Z",
+            "description": "Attention il te faut une super motivation pour ce job",
+            "dureeContrat": "6 mois",
+            "elligibleHandicap": false,
+            "employeurDescription": "workplace_description",
+            "jobExpirationDate": "2050-01-01T00:00:00.000Z",
+            "jobStartDate": "2021-01-28T15:00:00.000Z",
+            "offer_access_conditions": [
+              "offer_access_conditions",
+            ],
+            "offer_desired_skills": [
+              "offer_desired_skills",
+            ],
+            "offer_to_be_acquired_skills": [
+              "offer_to_be_acquired_skills",
+            ],
+            "origin": "origin",
+            "partner_label": "offres_emploi_lba",
+            "quantiteContrat": 1,
+            "status": "Active",
+            "type": [
+              "Apprentissage",
+              "Professionnalisation",
+            ],
+          },
+          "nafs": [
+            {
+              "code": "6201Z",
+              "label": "Programmation informatique",
+            },
+          ],
+          "place": {
+            "city": "PARIS",
+            "distance": 0,
+            "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "latitude": 48.9041,
+            "longitude": 2.3041,
+            "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "remoteOnly": false,
+            "zipCode": "75007",
+          },
+          "romes": [
+            {
+              "code": "D1214",
+              "label": null,
+            },
+            {
+              "code": "D1212",
+              "label": null,
+            },
+            {
+              "code": "D1211",
+              "label": null,
+            },
+          ],
+          "target_diploma_level": "Master",
+          "title": "Une super offre d'alternance",
+        },
+      ],
+    },
+    "partnerJobs": {
+      "results": [
+        {
+          "company": {
+            "elligibleHandicap": false,
+            "mandataire": false,
+            "name": "workplace_name",
+            "opco": {
+              "label": "ATLAS",
+              "url": null,
+            },
+            "siret": "13002526500013",
+            "size": "0-50",
+            "url": "http://workplace_website.com",
+          },
+          "contact": {
+            "hasEmail": true,
+            "phone": "0123456789",
+            "url": "https://apply.com",
+          },
+          "ideaType": "offres_emploi_partenaires",
+          "job": {
+            "contract_rythm": null,
+            "creationDate": "2021-01-28T15:00:00.000Z",
+            "description": "Attention il te faut une super motivation pour ce job",
+            "dureeContrat": "6 mois",
+            "elligibleHandicap": false,
+            "employeurDescription": "workplace_description",
+            "jobExpirationDate": "2050-01-01T00:00:00.000Z",
+            "jobStartDate": "2021-01-28T15:00:00.000Z",
+            "offer_access_conditions": [
+              "offer_access_conditions",
+            ],
+            "offer_desired_skills": [
+              "offer_desired_skills",
+            ],
+            "offer_to_be_acquired_skills": [
+              "offer_to_be_acquired_skills",
+            ],
+            "origin": "origin",
+            "partner_label": "Hellowork",
+            "quantiteContrat": 1,
+            "status": "Active",
+            "type": [
+              "Apprentissage",
+              "Professionnalisation",
+            ],
+          },
+          "nafs": [
+            {
+              "code": "6201Z",
+              "label": "Programmation informatique",
+            },
+          ],
+          "place": {
+            "city": "PARIS",
+            "distance": 0,
+            "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "latitude": 48.9041,
+            "longitude": 2.3041,
+            "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "remoteOnly": false,
+            "zipCode": "75007",
+          },
+          "romes": [
+            {
+              "code": "D1214",
+              "label": null,
+            },
+            {
+              "code": "D1212",
+              "label": null,
+            },
+            {
+              "code": "D1211",
+              "label": null,
+            },
+          ],
+          "target_diploma_level": "Master",
+          "title": "Une super offre d'alternance",
+        },
+      ],
+    },
+    "peJobs": {
+      "results": [
+        {
+          "company": {
+            "elligibleHandicap": false,
+            "mandataire": false,
+            "name": "workplace_name",
+            "opco": {
+              "label": "ATLAS",
+              "url": null,
+            },
+            "siret": "13002526500013",
+            "size": "0-50",
+            "url": "http://workplace_website.com",
+          },
+          "contact": {
+            "hasEmail": true,
+            "phone": "0123456789",
+            "url": "https://apply.com",
+          },
+          "ideaType": "offres_emploi_partenaires",
+          "job": {
+            "contract_rythm": null,
+            "creationDate": "2021-01-28T15:00:00.000Z",
+            "description": "Attention il te faut une super motivation pour ce job",
+            "dureeContrat": "6 mois",
+            "elligibleHandicap": false,
+            "employeurDescription": "workplace_description",
+            "jobExpirationDate": "2050-01-01T00:00:00.000Z",
+            "jobStartDate": "2021-01-28T15:00:00.000Z",
+            "offer_access_conditions": [
+              "offer_access_conditions",
+            ],
+            "offer_desired_skills": [
+              "offer_desired_skills",
+            ],
+            "offer_to_be_acquired_skills": [
+              "offer_to_be_acquired_skills",
+            ],
+            "origin": "origin",
+            "partner_label": "France Travail",
+            "quantiteContrat": 1,
+            "status": "Active",
+            "type": [
+              "Apprentissage",
+              "Professionnalisation",
+            ],
+          },
+          "nafs": [
+            {
+              "code": "6201Z",
+              "label": "Programmation informatique",
+            },
+          ],
+          "place": {
+            "city": "PARIS",
+            "distance": 0,
+            "fullAddress": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "latitude": 48.9041,
+            "longitude": 2.3041,
+            "numberAndStreet": "126 RUE DE L'UNIVERSITE 75007 PARIS",
+            "remoteOnly": false,
+            "zipCode": "75007",
+          },
+          "romes": [
+            {
+              "code": "D1214",
+              "label": null,
+            },
+            {
+              "code": "D1212",
+              "label": null,
+            },
+            {
+              "code": "D1211",
+              "label": null,
+            },
+          ],
+          "title": "Une super offre d'alternance",
+          "url": "https://apply.com",
+        },
+      ],
+    },
+  },
+}
+`;
