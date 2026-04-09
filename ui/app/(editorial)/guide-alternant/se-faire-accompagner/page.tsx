@@ -167,8 +167,10 @@ const SeFaireAccompagnerPage = () => {
             <DsfrLink href="https://demarche.numerique.gouv.fr/commencer/cellule-regionale-interministerielle-pour-l-appren" aria-label="Contacter la cellule apprentissage Corse">
               Corse
             </DsfrLink>,
-            <DsfrLink href="https://grand-est.dreets.gouv.fr/Un-accompagnement-interministeriel-pour-acceder-a-l-apprentissage" 
-                      aria-label="Contacter la cellule apprentissage Grand Est">
+            <DsfrLink
+              href="https://grand-est.dreets.gouv.fr/Un-accompagnement-interministeriel-pour-acceder-a-l-apprentissage"
+              aria-label="Contacter la cellule apprentissage Grand Est"
+            >
               Grand Est
             </DsfrLink>,
             <DsfrLink
