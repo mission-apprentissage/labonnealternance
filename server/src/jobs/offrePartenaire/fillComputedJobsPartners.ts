@@ -29,9 +29,9 @@ export const defaultFillComputedJobsPartnersContext: FillComputedJobsPartnersCon
 export const fillComputedJobsPartners = async (partialContext: Partial<FillComputedJobsPartnersContext> = {}) => {
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
+  await blockJobsPartnersFromFluxCompanyList(context)
   await fillEntrepriseEngagementComputedJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
-  await blockJobsPartnersFromFluxCompanyList(context)
   await blockJobsPartnersFromCfaList(context)
   await detectClassificationJobsPartners(context)
 
