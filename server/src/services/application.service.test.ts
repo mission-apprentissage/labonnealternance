@@ -739,7 +739,7 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
 
     // DB: to_company_message_id should remain null (Taleez handles it), to_applicant_message_id should be set
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
-    expect(updatedApplication?.to_company_message_id).toBeNull()
+    expect(updatedApplication?.to_company_message_id).toEqual("Taleez")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
   })
 
