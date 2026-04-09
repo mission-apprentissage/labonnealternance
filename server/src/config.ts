@@ -149,6 +149,7 @@ const config = {
     toulouseMetropole: env.get("TOULOUSE_METROPOLE_FLUX_URL").required().asString(),
   },
   helloworkUrl: env.get("HELLOWORK_FLUX_URL").required().asString(),
+  helloworkBuddiUrl: env.get("HELLOWORK_BUDDI_FLUX_URL").required().asString(),
   helloworkApiKey: env.get("HELLOWORK_API_KEY").required().asString(),
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
