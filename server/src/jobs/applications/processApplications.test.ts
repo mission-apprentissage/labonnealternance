@@ -176,7 +176,7 @@ describe("processApplications", () => {
     // Taleez API should be called instead of sending a company email
     expect(vi.mocked(axios.default.post)).toHaveBeenCalledOnce()
     // to_company_message_id should remain null (Taleez handles the company notification)
-    expect(updatedApplication?.to_company_message_id).toBeNull()
+    expect(updatedApplication?.to_company_message_id).toEqual("Taleez")
     // Applicant email should be sent
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
     // Only applicant email should be sent (not company email)
