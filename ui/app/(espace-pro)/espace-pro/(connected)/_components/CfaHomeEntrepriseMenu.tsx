@@ -1,7 +1,7 @@
 import type { IRecruiterJson } from "shared"
-
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
+import { DsfrIcon } from "@/components/DsfrIcon"
 import { PAGES } from "@/utils/routes.utils"
 
 export const CfaHomeEntrepriseMenu = ({
@@ -19,6 +19,7 @@ export const CfaHomeEntrepriseMenu = ({
       ariaLabel: `Voir les offres de l'entreprise ${row.establishment_raison_sociale}`,
       link: PAGES.dynamic.backCfaPageEntreprise(row.establishment_id).getPath(),
       type: "link",
+      icon: <DsfrIcon name="fr-icon-briefcase-line" size={16} />,
     },
     {
       label: "Supprimer l'entreprise",
@@ -28,6 +29,7 @@ export const CfaHomeEntrepriseMenu = ({
         setCurrentEntreprise(row)
       },
       type: "button",
+      icon: <DsfrIcon name="fr-icon-delete-line" size={16} />,
     },
   ]
   return <PopoverMenu actions={actions} title={`Actions sur l'entreprise ${row.establishment_raison_sociale}`} />
