@@ -231,7 +231,6 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   }
 
   if (applicantProfileFormatted || applicantProfile) {
-    //descriptionParts.push(`Profil recherché :<br /><br />${applicantProfileFormatted ?? applicantProfile}`)
     descriptionParts.push(`Profil recherché :\n\n${/*applicantProfileFormatted ?? */ applicantProfile}`)
   }
 
@@ -240,17 +239,16 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     descriptionParts.push(`Rémunération : ${remuneration}`)
   }
 
-  // const longText1Formatted = getXmlTextValue(customFields?.LongText1Formatted) ?? null
-  // if (longText1Formatted) {
-  //   descriptionParts.push(longText1Formatted)
-  // }
   const longText1 = getXmlTextValue(customFields?.LongText1) ?? null
   if (longText1) {
     descriptionParts.push(longText1)
   }
 
-  //const offer_description = descriptionParts.join("<br /><br />").trim() || null
   const offer_description = descriptionParts.join("\n\n").trim() || null
+
+  if (!offer_description || offer_description.length < 30) {
+    business_error = business_error ?? JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
+  }
 
   // Extract specialisations for offer_desired_skills
   // XML structure: specialisations.specialisation[*].specialisation (inner specialisation holds text)
