@@ -113,12 +113,17 @@ const getTrainingsFromParameters = async (wish: IWish, formationsByCle?: Map<str
 }
 
 type IRomesFormation = { rome_codes?: string[] | null; rncp_code?: string | null; cfd?: string | null; bcn_mefs_10?: Array<{ mef10?: string }> | null }
+type IRomesFormationsIndex = { byRncp: Map<string, IRomesFormation[]>; byCfd: Map<string, IRomesFormation[]>; byMef: Map<string, IRomesFormation[]> }
 
-const getRomesGlobaux = async ({ rncp, cfd, mef }: { rncp?: string | null; cfd?: string | null; mef?: string | null }, cachedFormations?: IRomesFormation[]): Promise<string[]> => {
+const getRomesGlobaux = async ({ rncp, cfd, mef }: { rncp?: string | null; cfd?: string | null; mef?: string | null }, index?: IRomesFormationsIndex): Promise<string[]> => {
   let romes = [] as string[]
 
-  if (cachedFormations) {
-    const matching = cachedFormations.filter((f) => (rncp && f.rncp_code === rncp) || (cfd && f.cfd === cfd) || (mef && f.bcn_mefs_10?.some((m) => m.mef10 === mef))).slice(0, 5)
+  if (index) {
+    const seen = new Set<IRomesFormation>()
+    if (rncp) for (const f of index.byRncp.get(rncp) ?? []) seen.add(f)
+    if (cfd) for (const f of index.byCfd.get(cfd) ?? []) seen.add(f)
+    if (mef) for (const f of index.byMef.get(mef) ?? []) seen.add(f)
+    const matching = [...seen].slice(0, 5)
     if (matching.length) {
       romes = [...new Set(matching.flatMap(({ rome_codes }) => rome_codes ?? []))] as string[]
     }
@@ -193,7 +198,7 @@ async function getWishCommune(wish: IWish): Promise<IReferentielCommune | null> 
   return null
 }
 
-export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>, romesFormations?: IRomesFormation[]): Promise<string> => {
+export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>, romesIndex?: IRomesFormationsIndex): Promise<string> => {
   // Try getting formations first
   const formations = await getTrainingsFromParameters(wish, formationsByCle)
 
@@ -215,8 +220,8 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
 
   // Get romes based on rncp or training database
   let romes = wish.rncp
-    ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesFormations))
-    : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesFormations)
+    ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesIndex))
+    : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesIndex)
 
   romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
   romes = await expandRomesV3toV4(romes)
@@ -257,10 +262,10 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
 }
 
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
-  const cles = params.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[]
-  const allRncps = params.map((w) => w.rncp).filter(Boolean) as string[]
-  const allCfds = params.map((w) => w.cfd).filter(Boolean) as string[]
-  const allMefs = params.map((w) => w.mef).filter(Boolean) as string[]
+  const cles = [...new Set(params.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
+  const allRncps = [...new Set(params.map((w) => w.rncp).filter(Boolean) as string[])]
+  const allCfds = [...new Set(params.map((w) => w.cfd).filter(Boolean) as string[])]
+  const allMefs = [...new Set(params.map((w) => w.mef).filter(Boolean) as string[])]
   const hasRomesQuery = allRncps.length || allCfds.length || allMefs.length
 
   const [eligibleTrainings, allFormations, romesFormations] = await Promise.all([
@@ -286,6 +291,7 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
             },
             { projection: { rome_codes: 1, rncp_code: 1, cfd: 1, "bcn_mefs_10.mef10": 1, _id: 0 } }
           )
+          .limit(500)
           .toArray() as Promise<IRomesFormation[]>)
       : Promise.resolve([] as IRomesFormation[]),
   ])
@@ -299,9 +305,27 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
     formationsByCle.get(cle)!.push(formation)
   }
 
+  const romesIndex: IRomesFormationsIndex = { byRncp: new Map(), byCfd: new Map(), byMef: new Map() }
+  for (const f of romesFormations) {
+    if (f.rncp_code) {
+      if (!romesIndex.byRncp.has(f.rncp_code)) romesIndex.byRncp.set(f.rncp_code, [])
+      romesIndex.byRncp.get(f.rncp_code)!.push(f)
+    }
+    if (f.cfd) {
+      if (!romesIndex.byCfd.has(f.cfd)) romesIndex.byCfd.set(f.cfd, [])
+      romesIndex.byCfd.get(f.cfd)!.push(f)
+    }
+    for (const { mef10 } of f.bcn_mefs_10 ?? []) {
+      if (mef10) {
+        if (!romesIndex.byMef.has(mef10)) romesIndex.byMef.set(mef10, [])
+        romesIndex.byMef.get(mef10)!.push(f)
+      }
+    }
+  }
+
   const results: ILinks[] = []
   await asyncForEach(params, async (training) => {
-    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romesFormations)])
+    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romesIndex)])
     results.push({ id: training.id, lien_prdv, lien_lba })
   })
 
