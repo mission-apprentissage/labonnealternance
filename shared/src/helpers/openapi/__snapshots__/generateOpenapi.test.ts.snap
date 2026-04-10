@@ -1387,12 +1387,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
-          "isDelegated": {
-            "type": [
-              "boolean",
-              "null",
-            ],
-          },
           "jobExpirationDate": {
             "type": [
               "string",
