@@ -183,21 +183,49 @@ function TableWithPagination({
                 <Box component="thead">
                   {headerGroups.map((headerGroup, k) => (
                     <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})}>
-                      {headerGroup.headers.map((column, i) => (
-                        <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(column.getSortByToggleProps())} title={null}>
-                          <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                            <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
-                            <Box
-                              component="span"
-                              sx={{
-                                pl: fr.spacing("2v"),
-                              }}
-                            >
-                              {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
-                            </Box>
+                      {headerGroup.headers.map((column, i) => {
+                        const sortProps = column.getSortByToggleProps()
+                        // Séparer onClick des autres props pour le placer sur le bouton
+                        const { onClick: sortOnClick, ...headerSortProps } = sortProps
+
+                        return (
+                          <Box key={i} as="th" scope="col" id={column.id} {...column.getHeaderProps(headerSortProps)} title={null}>
+                            {column.canSort ? (
+                              <Box
+                                component="button"
+                                type="button"
+                                onClick={sortOnClick}
+                                aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  w: "full",
+                                  alignItems: "flex-start",
+                                  background: "none",
+                                  border: "none",
+                                  padding: 0,
+                                  cursor: "pointer",
+                                  font: "inherit",
+                                  color: "inherit",
+                                  "&:focus-visible": {
+                                    outline: "2px solid #0a76f6",
+                                    outlineOffset: "2px",
+                                  },
+                                }}
+                              >
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                                <Box component="span" sx={{ pl: fr.spacing("2v") }}>
+                                  {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
+                                </Box>
+                              </Box>
+                            ) : (
+                              <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                              </Box>
+                            )}
                           </Box>
-                        </Box>
-                      ))}
+                        )
+                      })}
                     </Box>
                   ))}
                 </Box>
@@ -213,7 +241,9 @@ function TableWithPagination({
                               headers={cell.column.id}
                               component="td"
                               {...cell.getCellProps()}
-                              sx={cell.column.id === "action" ? { display: "flex", padding: "4px !important" } : {}}
+                              {...(cell.column.id === "action" ? { padding: "4px !important" } : {})}
+                              display={"flex"}
+                              alignContent={"center"}
                             >
                               {cell.render("Cell")}
                             </Box>
