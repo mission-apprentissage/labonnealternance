@@ -1,4 +1,4 @@
-// la liste connues des GEIQ dont ont sait que les offres couplées sont légitimes
+// la liste connue des GEIQ dont on sait que les offres couplées sont légitimes
 export const GEIQ_WHITELIST: string[] = [
   "30784534700011",
   "35111116600028",
