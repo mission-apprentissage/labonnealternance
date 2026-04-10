@@ -6,8 +6,8 @@ import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
-import { GEIQ_WHITELIST } from "./geiqWhitelist"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
+import { GEIQ_WHITELIST } from "./geiqWhitelist"
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({ shouldNotifySlack: false })
 

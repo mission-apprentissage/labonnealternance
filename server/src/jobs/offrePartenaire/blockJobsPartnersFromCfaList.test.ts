@@ -5,8 +5,8 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { GEIQ_WHITELIST } from "./geiqWhitelist"
 import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
+import { GEIQ_WHITELIST } from "./geiqWhitelist"
 
 describe("blockJobsPartnersFromCfaListTask", () => {
   useMongo()
