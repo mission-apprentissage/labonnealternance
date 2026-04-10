@@ -1,7 +1,6 @@
 import { Box } from "@mui/material"
 import type { FormikErrors } from "formik"
 import { Formik } from "formik"
-import type { ITypeEmploi } from "shared/constants/recruteur"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
 import { z } from "zod"
@@ -66,7 +65,7 @@ export const rechercheFormToRechercheParams = (rechercheForm: Partial<IRecherche
     job_name: metier?.label,
     job_type: metier?.type,
     diploma,
-    typesEmploi: (typesEmploi as ITypeEmploi[]) ?? [],
+    typesEmploi: typesEmploi ?? [],
     elligibleHandicapFilter,
   }
 }

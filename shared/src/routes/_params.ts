@@ -130,7 +130,7 @@ export type IDiplomaParam = z.output<typeof zDiplomaParam>
 const typesEmploi = typedKeys(TYPE_EMPLOI_OPTIONS)
 
 export const zTypesEmploiParam = z
-  .enum([typesEmploi[0], ...typesEmploi.slice(1)])
+  .array(z.enum([typesEmploi[0], ...typesEmploi.slice(1)]))
   .optional()
   .openapi({
     param: {
