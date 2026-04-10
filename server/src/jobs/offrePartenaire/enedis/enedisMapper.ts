@@ -254,7 +254,7 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
   // XML structure: specialisations.specialisation[*].specialisation (inner specialisation holds text)
   const rawSpecialisations = applicantCriteria?.specialisations?.specialisation
   const outerList = rawSpecialisations ? (Array.isArray(rawSpecialisations) ? rawSpecialisations : [rawSpecialisations]) : []
-  const offer_desired_skills = outerList
+  const offer_to_be_acquired_skills = outerList
     .map((outer) => {
       const inner = outer?.specialisation
       return inner ? getXmlTextValue(inner) : null
@@ -275,6 +275,8 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
 
   const urlParsing = z.string().url().safeParse(directUrl)
 
+  const experienceLevel = getXmlTextValue(applicantCriteria?.experienceLevel) ?? null
+
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(publicationDate),
     _id: new ObjectId(),
@@ -294,7 +296,8 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
     contract_type,
     contract_duration,
     contract_start,
-    offer_desired_skills,
+    offer_access_conditions: experienceLevel ? [experienceLevel] : [],
+    offer_to_be_acquired_skills,
     offer_target_diploma,
     offer_multicast: true,
     business_error,

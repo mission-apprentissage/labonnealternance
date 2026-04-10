@@ -23,9 +23,7 @@ Profil recherché :
 Vous êtes dynamique, ouvert et à l'écoute. Vous préparez un BTS NDRC.
 
 Une prime d'intéressement avec abondement possible. 30 jours de congés payés par an.",
-    "offer_desired_skills": [
-      "Electricité",
-    ],
+    "offer_desired_skills": [],
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
@@ -38,7 +36,9 @@ Une prime d'intéressement avec abondement possible. 30 jours de congés payés 
     },
     "offer_title": "Alternance - Chargé de Relations Clients F/H",
     "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
+    "offer_to_be_acquired_skills": [
+      "Electricité",
+    ],
     "partner_job_id": "100001",
     "partner_label": "Enedis",
     "validated": false,
@@ -79,10 +79,7 @@ Vous avez un fort esprit de sécurité, capable de travailler en autonomie.
 Rémunération : De 27 800€ à 29 300€ brut annuel minimum
 
 De 27 800€ à 29 300€ brut annuel minimum.",
-    "offer_desired_skills": [
-      "Electricité",
-      "Electrotechnique",
-    ],
+    "offer_desired_skills": [],
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
@@ -95,7 +92,10 @@ De 27 800€ à 29 300€ brut annuel minimum.",
     },
     "offer_title": "CDI - Technicien Réseau Electrique F/H",
     "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
+    "offer_to_be_acquired_skills": [
+      "Electricité",
+      "Electrotechnique",
+    ],
     "partner_job_id": "100002",
     "partner_label": "Enedis",
     "validated": false,

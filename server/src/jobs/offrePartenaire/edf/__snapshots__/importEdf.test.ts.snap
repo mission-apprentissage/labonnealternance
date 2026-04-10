@@ -15,7 +15,9 @@ exports[`importEdf > should import EDF data into raw_edf then computed_jobs_part
     ],
     "errors": [],
     "jobs_in_success": [],
-    "offer_access_conditions": [],
+    "offer_access_conditions": [
+      "Débutant",
+    ],
     "offer_description": "Missions :
 Développer des applications web et mobiles.
 Participer aux revues de code.
@@ -30,9 +32,7 @@ Durée du contrat : 2 ans
 Rémunération : De 820€ à 1 823€ par mois
 
 Prime d'intéressement, 30 jours de congés, télétravail possible",
-    "offer_desired_skills": [
-      "Informatique",
-    ],
+    "offer_desired_skills": [],
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
@@ -45,7 +45,9 @@ Prime d'intéressement, 30 jours de congés, télétravail possible",
     },
     "offer_title": "Alternance - Développeur Web F/H",
     "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
+    "offer_to_be_acquired_skills": [
+      "Informatique",
+    ],
     "partner_job_id": "100001",
     "partner_label": "EDF",
     "validated": false,
@@ -79,7 +81,9 @@ Prime d'intéressement, 30 jours de congés, télétravail possible",
     ],
     "errors": [],
     "jobs_in_success": [],
-    "offer_access_conditions": [],
+    "offer_access_conditions": [
+      "Débutant",
+    ],
     "offer_description": "Missions :
 Assurer la maintenance des équipements électriques.
 Participer aux rondes de surveillance.
@@ -94,9 +98,7 @@ Durée du contrat : 2 ans
 Rémunération : Selon grille nationale
 
 Salaire selon la grille nationale, aide au logement possible",
-    "offer_desired_skills": [
-      "Électrotechnique",
-    ],
+    "offer_desired_skills": [],
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
@@ -109,7 +111,9 @@ Salaire selon la grille nationale, aide au logement possible",
     },
     "offer_title": "ALTERNANCE - BAC PRO Technicien Électrique F/H",
     "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
+    "offer_to_be_acquired_skills": [
+      "Électrotechnique",
+    ],
     "partner_job_id": "100002",
     "partner_label": "EDF",
     "validated": false,
@@ -140,7 +144,9 @@ Salaire selon la grille nationale, aide au logement possible",
     "contract_type": [],
     "errors": [],
     "jobs_in_success": [],
-    "offer_access_conditions": [],
+    "offer_access_conditions": [
+      "Débutant",
+    ],
     "offer_description": "Missions :
 Soutenir les équipes d'ingénierie.
 Analyser les questions techniques.
@@ -154,9 +160,7 @@ Spécialisation : Génie civil ou électricité
 Rémunération : Selon Business France
 
 Indemnité selon grille Business France, allocation logement",
-    "offer_desired_skills": [
-      "Génie civil",
-    ],
+    "offer_desired_skills": [],
     "offer_multicast": true,
     "offer_opening_count": 1,
     "offer_origin": null,
@@ -169,7 +173,9 @@ Indemnité selon grille Business France, allocation logement",
     },
     "offer_title": "VIE - Bac+3 - Ingénieur Génie Civil F/H",
     "offer_to_be_acquired_knowledge": [],
-    "offer_to_be_acquired_skills": [],
+    "offer_to_be_acquired_skills": [
+      "Génie civil",
+    ],
     "partner_job_id": "100003",
     "partner_label": "EDF",
     "validated": false,
