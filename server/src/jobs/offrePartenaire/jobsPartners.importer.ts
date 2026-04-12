@@ -1,12 +1,14 @@
 import type { CronDef } from "job-processor"
+import { processEtudiant } from "@/jobs/offrePartenaire/etudiant/processEtudiant"
 import { processApec } from "./apec/processApec"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./clever-connect/processCleverConnect"
 // import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processDecathlon } from "./decathlon/importDecathlon"
 import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
+// import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
-import { processHellowork } from "./hellowork/processHellowork"
+import { processHellowork } from "./hellowork-merge/processHellowork"
 import { processJobteaser } from "./jobteaser/processJobteaser"
 // import { processJooble } from "./jooble/processJooble"
 import { processKelio } from "./kelio/processKelio"
@@ -145,6 +147,12 @@ export const importers: Record<string, CronDef> = {
   "Import Emploi Inclusion": {
     cron_string: timings.import_source,
     handler: processEmploiInclusion,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 120,
+  },
+  "Import Etudiant": {
+    cron_string: timings.import_source,
+    handler: processEtudiant,
     checkinMargin: 350,
     maxRuntimeInMinutes: 120,
   },

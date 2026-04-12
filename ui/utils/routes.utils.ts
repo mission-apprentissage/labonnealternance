@@ -431,6 +431,13 @@ export const PAGES = {
         title: "Gestion des administrateurs - La bonne alternance",
       }),
     },
+    backAdminGestionDesRecruteurs: {
+      getPath: () => `/espace-pro/administration/recruteurs` as string,
+      title: "Gestion des recruteurs",
+      getMetadata: () => ({
+        title: "Gestion des recruteurs - La bonne alternance",
+      }),
+    },
     backOpcoHome: {
       getPath: () => `/espace-pro/opco` as string,
       title: "Accueil OPCO",
@@ -767,7 +774,7 @@ export const PAGES = {
         title: "Création d'une offre - La bonne alternance",
       }),
     }),
-    backAdminGestionDesRecruteurs: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
+    backAdminRecruteursATraiter: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
       const searchParams = new URLSearchParams()
       Object.entries(props).forEach(([key, value]) => {
         if (value !== undefined) {

@@ -17,7 +17,7 @@ export const DepotSimplifieStyling = ({ children }: { children: React.ReactNode 
     sx={{
       my: fr.spacing("10v"),
       "& p": {
-        fontSize: ["12px", "12px", "12px", "16px"],
+        fontSize: ["12px", "12px", "12px", "0.75rem"],
         lineHeight: ["20px", "20px", "20px", "24px"],
         marginBottom: 0,
       },

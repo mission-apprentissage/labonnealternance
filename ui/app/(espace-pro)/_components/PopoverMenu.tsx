@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, ClickAwayListener, Grow, Link, MenuItem, MenuList, Paper, Popper } from "@mui/material"
-import type { Dispatch } from "react"
+import { Box, ClickAwayListener, Grow, MenuItem, MenuList, Paper, Popper } from "@mui/material"
+import type { Dispatch, ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
 
 export type PopoverMenuAction = {
@@ -10,6 +10,7 @@ export type PopoverMenuAction = {
   link?: string
   ariaLabel?: string
   type: "button" | "link" | "externalLink"
+  icon?: ReactNode
 } | null
 
 export const PopoverMenu = ({
@@ -69,6 +70,9 @@ export const PopoverMenu = ({
         onClick={handleToggle}
         priority="tertiary no outline"
         iconId="fr-icon-settings-5-line"
+        style={{
+          outlineOffset: 0,
+        }}
         title={title}
       />
       <Popper
@@ -80,7 +84,6 @@ export const PopoverMenu = ({
         role={undefined}
         placement="bottom-start"
         transition
-        disablePortal
       >
         {({ TransitionProps, placement }) => (
           <Grow
@@ -91,64 +94,75 @@ export const PopoverMenu = ({
           >
             <Paper
               sx={{
-                border: "1px solid",
                 width: "100%",
                 minWidth: "200px",
                 maxWidth: "300px",
+                boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
               }}
             >
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList sx={{ py: 0, mt: "0 !important" }} autoFocusItem={open} id="composition-menu" aria-labelledby="composition-button" onKeyDown={handleListKeyDown}>
-                  {actions.map((action, idx) =>
-                    action !== null ? (
+                  {actions.map((action, idx) => {
+                    if (action === null) return null
+
+                    const isLink = action.type === "link" || action.type === "externalLink"
+
+                    const menuItemSx = {
+                      px: `${fr.spacing("2v")} !important`,
+                      py: `${fr.spacing("3v")} !important`,
+                      mx: `0 !important`,
+                      mb: `0 !important`,
+                      fontSize: "14px !important",
+                      minHeight: "24px",
+                      color: "#161616 !important",
+                      borderLeft: "4px solid transparent",
+                      display: "flex",
+                      textDecoration: "none",
+                      backgroundImage: "unset",
+                      ":hover": {
+                        backgroundColor: `${fr.colors.decisions.background.contrast.info.default} !important`,
+                        borderLeft: "4px solid #6A6AF4",
+                      },
+                      "&.Mui-focusVisible": {
+                        backgroundColor: `${fr.colors.decisions.background.contrast.info.default} !important`,
+                        borderLeft: "4px solid #6A6AF4",
+                      },
+                    }
+
+                    if (isLink) {
+                      return (
+                        <MenuItem
+                          key={idx}
+                          component="a"
+                          href={action.link}
+                          aria-label={action.ariaLabel || (action.label as string)}
+                          onClick={handleClose}
+                          disableGutters
+                          sx={menuItemSx}
+                          {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        >
+                          {action.icon && <Box sx={{ display: "flex", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{action.icon}</Box>}
+                          {action.label}
+                        </MenuItem>
+                      )
+                    }
+
+                    return (
                       <MenuItem
                         key={idx}
-                        onClick={handleClose}
-                        disableGutters
-                        sx={{
-                          py: fr.spacing("3v"),
-                          mx: `0 !important`,
-                          px: `${fr.spacing("2v")} !important`,
-                          mb: `0 !important`,
-                          fontSize: "14px !important",
-                          minHeight: "24px",
-
-                          color: "#161616 !important",
-                          borderLeft: "4px solid transparent",
-                          ":hover": {
-                            backgroundColor: fr.colors.decisions.background.contrast.info.default,
-                            borderLeft: "4px solid #6A6AF4",
-                          },
-                          "&.Mui-focusVisible, & .MuiButtonBase-root.Mui-focusVisible": {
-                            backgroundColor: fr.colors.decisions.background.contrast.info.default,
-                            borderLeft: "4px solid #6A6AF4",
-                          },
+                        aria-label={action.ariaLabel || (action.label as string)}
+                        onClick={(event) => {
+                          action.onClick?.(event)
+                          handleClose(event)
                         }}
+                        disableGutters
+                        sx={menuItemSx}
                       >
-                        {action.type === "link" || action.type === "externalLink" ? (
-                          <Link
-                            underline="none"
-                            sx={{ width: "100%", textAlign: "left", color: "#161616 !important" }}
-                            href={action.link}
-                            aria-label={action.ariaLabel || (action.label as string)}
-                            {...(action.type === "externalLink" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                          >
-                            {action.label}
-                          </Link>
-                        ) : (
-                          <Link
-                            underline="none"
-                            component="button"
-                            aria-label={action.ariaLabel || (action.label as string)}
-                            onClick={action.onClick}
-                            sx={{ width: "100%", textAlign: "left", color: "#161616 !important" }}
-                          >
-                            {action.label}
-                          </Link>
-                        )}
+                        {action.icon && <Box sx={{ display: "flex", color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{action.icon}</Box>}
+                        {action.label}
                       </MenuItem>
-                    ) : null
-                  )}
+                    )
+                  })}
                 </MenuList>
               </ClickAwayListener>
             </Paper>

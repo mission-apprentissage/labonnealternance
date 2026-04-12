@@ -35,19 +35,44 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                 {headerGroups.map((headerGroup, g) => (
                   <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})}>
                     {headerGroup.headers.map((column, i) => {
+                      const sortProps = column.getSortByToggleProps()
+                      const { onClick: sortOnClick, ...headerSortProps } = sortProps
+
                       return (
-                        <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} title={null} scope="col" id={column.id}>
-                          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
-                            <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                        <Box key={i} as="th" {...column.getHeaderProps(headerSortProps)} title={null} scope="col" id={column.id}>
+                          {column.canSort ? (
                             <Box
-                              component="span"
+                              component="button"
+                              type="button"
+                              onClick={sortOnClick}
+                              aria-label={`Trier par ${column.srOnly || column.Header}${column.isSorted ? (column.isSortedDesc ? ", trié par ordre décroissant" : ", trié par ordre croissant") : ""}`}
                               sx={{
-                                pl: fr.spacing("2v"),
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "flex-start",
+                                width: "100%",
+                                background: "none",
+                                border: "none",
+                                padding: 0,
+                                cursor: "pointer",
+                                font: "inherit",
+                                color: "inherit",
+                                "&:focus-visible": {
+                                  outline: "2px solid #0a76f6",
+                                  outlineOffset: "2px",
+                                },
                               }}
                             >
-                              {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : column.canSort && <ArrowUpDownLine />}
+                              <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                              <Box component="span" sx={{ pl: fr.spacing("2v") }}>
+                                {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
+                              </Box>
                             </Box>
-                          </Box>
+                          ) : (
+                            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", width: "100%" }}>
+                              <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                            </Box>
+                          )}
                         </Box>
                       )
                     })}
@@ -61,7 +86,14 @@ const Table = ({ caption, data, columns }: { caption: string; data: any[]; colum
                     <Box key={i} as="tr" {...row.getRowProps()}>
                       {row.cells.map((cell, j) => {
                         return (
-                          <Box key={j} headers={cell.column.id} as="td" {...cell.getCellProps()} sx={cell.column.id === "action" ? { padding: "4px !important" } : {}}>
+                          <Box
+                            key={j}
+                            headers={cell.column.id}
+                            as="td"
+                            {...cell.getCellProps()}
+                            {...(cell.column.id === "action" ? { sx: { padding: `${fr.spacing("1v")} !important` } } : {})}
+                            alignContent={"center"}
+                          >
                             {cell.render("Cell")}
                           </Box>
                         )
