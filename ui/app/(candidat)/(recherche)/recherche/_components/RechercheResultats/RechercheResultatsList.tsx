@@ -207,6 +207,7 @@ function ResultCard({
             utm_medium: "website",
             utm_campaign: "lba_recherche_promo-candidature-spontanee",
           }}
+          disabled={rechercheParams.typesEmploi && rechercheParams.typesEmploi.length !== 0 && !rechercheParams.typesEmploi.includes("candidatures_spontanees")}
         />
       )
     }

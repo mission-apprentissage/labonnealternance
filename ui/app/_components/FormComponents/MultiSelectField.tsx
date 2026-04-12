@@ -62,11 +62,15 @@ export function MultiSelectField({
     setPendingValue((prev) => (prev.includes(optionValue) ? prev.filter((v) => v !== optionValue) : [...prev, optionValue]))
   }, [])
 
-  const handleConfirm = useCallback(() => {
-    onChange(pendingValue)
-    onConfirm?.(pendingValue)
-    setOpen(false)
-  }, [pendingValue, onChange, onConfirm])
+  const handleConfirm = useCallback(
+    (event) => {
+      event.preventDefault()
+      onChange(pendingValue)
+      onConfirm?.(pendingValue)
+      setOpen(false)
+    },
+    [pendingValue, onChange, onConfirm]
+  )
 
   const handleToggleOpen = useCallback(() => {
     setOpen((prev) => {
