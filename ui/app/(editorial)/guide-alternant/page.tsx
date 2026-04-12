@@ -38,7 +38,7 @@ const GuideAlternantPage = () => {
       />
       <Breadcrumb pages={[PAGES.static.guideAlternant]} />
       <DefaultContainer>
-        <Box display={{ md: "flex", xs: "none" }}>
+        <Box display={{ md: "flex", xs: "none" }} id="editorial-content-container">
           <GuideHeaderIllustration />
         </Box>
         <Box my={{ md: fr.spacing("4v") }}>

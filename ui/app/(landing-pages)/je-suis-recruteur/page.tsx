@@ -30,7 +30,7 @@ const JeSuisRecruteurPage = () => {
       />
       <Breadcrumb pages={[PAGES.static.jeSuisRecruteur]} />
       <DefaultContainer>
-        <Grid container spacing={fr.spacing("4v")}>
+        <Grid container spacing={fr.spacing("4v")} id="landing-page-content">
           <Grid
             size={{ md: 6, xs: 12 }}
             spacing={{ md: fr.spacing("16v"), xs: fr.spacing("8v") }}
