@@ -12,7 +12,7 @@ export default function getJobPublishedTimeAndApplications({ item }: { item: ILb
   const res = (
     <Box sx={{ display: "flex", textAlign: "center" }}>
       {hasJob(item) && item.job.creationDate && <Box sx={{ color: "grey.600", fontSize: "12px", mr: 4 }}>Publiée depuis {getDaysSinceDate(item.job.creationDate)} jour(s)</Box>}
-      {(item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) && (
+      {(item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || (item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA && item.contact?.hasEmail)) && (
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Image width={16} height={17} src="/images/eclair.svg" alt="" />
           <Box sx={{ color: "#0063CB", fontSize: "12px", whiteSpace: "nowrap", ml: 1 }}>{item.applicationCount} candidature(s)</Box>
