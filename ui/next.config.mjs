@@ -40,10 +40,8 @@ const contentSecurityPolicy = `
   connect-src 'self'
               https://catalogue-apprentissage.intercariforef.org
               https://data.geopf.fr
-              https://api.mapbox.com
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr
-              https://events.mapbox.com
               https://plausible.io
               http://localhost:5000
               https://exposition-recette.inserjeunes.beta.gouv.fr
