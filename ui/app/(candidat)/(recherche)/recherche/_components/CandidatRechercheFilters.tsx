@@ -2,25 +2,17 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { useCallback } from "react"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { RechercheElligibleHandicapCheckbox } from "./RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheNiveauSelect } from "./RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelect } from "./RechercheInputs/RechercheRayonSelect"
-import { RechercheToggleMap } from "./RechercheInputs/RechercheToggleMap"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, diploma, radius, elligibleHandicapFilter } = rechercheParams
+  const { diploma, radius, elligibleHandicapFilter } = rechercheParams
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
-  const onDisplayMapChange = useCallback(
-    (value: boolean) => {
-      navigateToRecherchePage({ displayMap: value }, true)
-    },
-    [navigateToRecherchePage]
-  )
 
   return (
     <Box
@@ -66,20 +58,11 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
           }}
         />
       </Box>
-      <Box
-        sx={{
-          alignSelf: "flex-end",
-          marginBottom: fr.spacing("2v"),
-        }}
-      >
-        <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
-      </Box>
     </Box>
   )
 }
 
 export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap } = rechercheParams
   return (
     <Box
       key="filters"
@@ -90,17 +73,12 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
         },
         marginTop: fr.spacing("4v"),
         marginBottom: fr.spacing("8v"),
-        paddingLeft: displayMap
-          ? {
-              md: fr.spacing("2v"),
-              lg: fr.spacing("4v"),
-            }
-          : {
-              md: fr.spacing("20v"),
-              lg: fr.spacing("28v"),
-            },
+        paddingLeft: {
+          md: fr.spacing("20v"),
+          lg: fr.spacing("28v"),
+        },
         paddingRight: {
-          md: displayMap ? fr.spacing("2v") : fr.spacing("4v"),
+          md: fr.spacing("4v"),
           lg: fr.spacing("4v"),
         },
       }}

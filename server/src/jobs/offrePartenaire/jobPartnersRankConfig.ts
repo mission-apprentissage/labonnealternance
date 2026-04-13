@@ -4,10 +4,12 @@ export const jobPartnersRankDefaultFactor = 0.5
 
 /*Source du ranking sur Google drive (document "Agrégation et rediffusion d'offres partenaires")*/
 const jobPartnersRankConfigByFlux: Partial<Record<JOBPARTNERS_LABEL, number>> = {
+  APEC: 0.65,
+  ATS_Hellowork: 0.71,
   Hellowork: 0.69,
-  ATS_Hellowork: 0.7,
   Kelio: 0.7,
   "La Poste": 0.7,
+  "L'Etudiant": 0.65,
   Meteojob: 0.66,
   "France Travail": 0.66,
   Jobteaser: 0.67,
@@ -38,6 +40,7 @@ const jobPartnersRankConfigByAPI: Record<string, number> = {
   "L'Oreal": 0.7,
   "L'Oréal": 0.7,
   "Le bon coin emploi": 0.64,
+  "Les emplois de l'inclusion": 0.71,
   "Nos Talents Nos Emplois": 0.5,
   Veritone: 0.7,
   "Vite un emploi": 0.5,
