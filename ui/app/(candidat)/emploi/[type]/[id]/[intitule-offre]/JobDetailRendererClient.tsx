@@ -8,7 +8,6 @@ import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, IL
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
-import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -34,19 +33,7 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
 
-  const jobDetail = <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
-
-  if (rechercheParams?.displayMap) {
-    return (
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        {jobDetail}
-        {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={job} variant="detail" rechercheParams={rechercheParams} />
-      </Box>
-    )
-  }
-
-  return jobDetail
+  return <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
 }
 
 function JobDetail({

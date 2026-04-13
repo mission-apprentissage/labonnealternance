@@ -23,7 +23,6 @@ import type { ResultCardData } from "./ResultCardData"
 import { Whisper } from "./Whisper"
 
 export function RechercheResultatsList(props: { rechercheParams: IRecherchePageParams; scrollToItem: (item: ResultCardData) => void }) {
-  const { displayMap } = props.rechercheParams
   const result = useRechercheResults(props.rechercheParams)
   const whispers = useWhispers(props.rechercheParams)
 
@@ -133,7 +132,6 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
           key={index}
           rechercheParams={props.rechercheParams}
           data={data}
-          displayMap={displayMap}
           onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
         />
       ),
@@ -160,19 +158,17 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
 function ResultCardWithContainer({
   data,
   rechercheParams,
-  displayMap,
   onValorisationCandidatureSpontaneeClick,
 }: {
   data: ResultCardData
   rechercheParams: IRecherchePageParams
-  displayMap: boolean
   onValorisationCandidatureSpontaneeClick: () => void
 }) {
   return (
     <Box
       sx={{
         my: fr.spacing("2v"),
-        px: { md: displayMap ? fr.spacing("2v") : 0, lg: fr.spacing("4v") },
+        px: { md: 0, lg: fr.spacing("4v") },
       }}
     >
       <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />

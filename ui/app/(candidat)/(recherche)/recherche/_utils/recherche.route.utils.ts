@@ -83,7 +83,6 @@ const zRecherchePageParams = z.object({
   typesEmploi: zTypesEmploiParam.nullish(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
-  displayMap: z.boolean().optional(),
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
@@ -143,9 +142,6 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   }
   if (rechercheParams.job_name) {
     query.set("job_name", rechercheParams.job_name)
-  }
-  if (rechercheParams.displayMap === true) {
-    query.set("displayMap", "true")
   }
   if (rechercheParams?.activeItems?.length > 0) {
     query.set("activeItems", serializeItemReferences(rechercheParams.activeItems))
@@ -222,8 +218,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 
-  const displayMap = search.get("displayMap") === "true"
-
   const opco = search.get("opco") || null
   const rncp = search.get("rncp") || null
 
@@ -238,7 +232,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     job_name,
     job_type,
     typesEmploi,
-    displayMap,
     displayMobileForm,
     elligibleHandicapFilter,
     activeItems,
