@@ -17,7 +17,7 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     description: PAGES.static.guideApprentissageEtHandicap.getMetadata().description,
     imageUrl: `${IMAGE_BASE_PATH}apprentissage-et-handicap.svg`,
     path: PAGES.static.guideApprentissageEtHandicap.getPath(),
-    updatedAt: "26/03/2026",
+    updatedAt: "01/04/2026",
   },
   ["prevention-des-risques-professionnels-pour-les-apprentis"]: {
     id: "prevention-des-risques-professionnels-pour-les-apprentis",
