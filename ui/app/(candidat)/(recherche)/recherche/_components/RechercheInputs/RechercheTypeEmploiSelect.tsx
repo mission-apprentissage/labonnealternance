@@ -75,7 +75,7 @@ export function RechercheTypesEmploiSelect({
       onConfirm={handleConfirm}
       onOpen={handleOpen}
       getLabel={getLabel}
-      popperSx={{ width: "712px", maxWidth: { xs: "100%", md: "512px" } }}
+      popperSx={{ width: "425px", maxWidth: { xs: "100%", md: "512px" } }}
     />
   )
 }
