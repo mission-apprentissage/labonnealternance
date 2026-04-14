@@ -15,7 +15,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: fr.spacing("16v"),
+        gap: fr.spacing("8v"),
         marginTop: { xs: 0, lg: fr.spacing("8v") },
         marginBottom: fr.spacing("16v"),
         px: { xs: 0, lg: fr.spacing("4v") },
@@ -28,7 +28,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         sx={{
           position: "relative",
           borderRadius: { xs: 0, lg: fr.spacing("2v") },
-          marginBottom: { xs: 0, md: fr.spacing("8v"), lg: fr.spacing("16v") },
         }}
       >
         <Box sx={{ pb: fr.spacing("5v"), "& > #sky-background": { borderRadius: { xs: 0, md: fr.spacing("2v") } } }}>
@@ -255,7 +254,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           flexDirection: { xs: "column", lg: "row" },
           gap: { xs: fr.spacing("3v"), md: fr.spacing("11v") },
           px: { xs: fr.spacing("3v"), md: 0 },
-          py: fr.spacing("8v"),
         }}
       >
         <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#000091", maxHeight: { xs: "unset", sm: "280px" } }}>
