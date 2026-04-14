@@ -42,7 +42,7 @@ export const ValorisationCandidatureSpontanee = ({
       router.push(fakeUrl.pathname + fakeUrl.search)
       onClick?.()
     }
-  }, [router, overridenQueryParams, onClick])
+  }, [router, overridenQueryParams, onClick, disabled])
 
   return (
     <Box

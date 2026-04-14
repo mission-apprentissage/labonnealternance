@@ -43,12 +43,14 @@ export function MultiSelectField({
   const [pendingValue, setPendingValue] = useState<string[]>(value)
   const anchorRef = useRef<HTMLDivElement>(null)
   const selectRef = useRef<HTMLSelectElement | null>(null)
+  const shouldRefocusOnClose = useRef(false)
 
   const prevOpen = useRef(open)
   useEffect(() => {
-    if (prevOpen.current && !open) {
+    if (prevOpen.current && !open && shouldRefocusOnClose.current) {
       selectRef.current?.focus()
     }
+    shouldRefocusOnClose.current = false
     prevOpen.current = open
   }, [open])
 
@@ -124,6 +126,7 @@ export function MultiSelectField({
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
               if (e.key === "Escape" || e.key === "Tab") {
+                shouldRefocusOnClose.current = true
                 setOpen(false)
                 return
               }

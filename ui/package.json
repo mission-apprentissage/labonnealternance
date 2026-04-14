@@ -38,7 +38,6 @@
     "formik": "^2.4.6",
     "html-react-parser": "^5.2.8",
     "lodash-es": "^4.17.21",
-    "mapbox-gl": "^3.16.0",
     "match-sorter": "^8.1.0",
     "mersenne-twister": "^1.1.0",
     "motion": "^12.23.24",

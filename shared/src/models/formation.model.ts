@@ -213,6 +213,7 @@ export default {
     [{ niveau: 1 }, {}],
     [{ catalogue_published: 1 }, {}],
     [{ cfd: 1 }, {}],
+    [{ "bcn_mefs_10.mef10": 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

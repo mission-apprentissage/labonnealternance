@@ -1,5 +1,5 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
-import { typedKeys } from "shared"
+import { parseEnum, typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
@@ -45,7 +45,10 @@ export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
 
 function deserializeTypesEmploi(typesEmploiRaw: string | null): ITypeEmploi[] {
   if (!typesEmploiRaw) return []
-  return typesEmploiRaw.split(",").filter((typeEmploi): typeEmploi is ITypeEmploi => Object.hasOwn(TYPE_EMPLOI_OPTIONS, typeEmploi))
+  return (typesEmploiRaw?.split(",") ?? []).flatMap((typeEmploi) => {
+    const enumValue = parseEnum(TYPE_EMPLOI_OPTIONS, typeEmploi)
+    return enumValue ? [enumValue] : []
+  })
 }
 
 export function getItemReference(item: ItemReferenceLike): ItemReference {
@@ -83,7 +86,6 @@ const zRecherchePageParams = z.object({
   typesEmploi: zTypesEmploiParam.nullish(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
-  displayMap: z.boolean().optional(),
   displayEntreprises: z.boolean().optional(),
   displayFormations: z.boolean().optional(),
   displayFilters: z.boolean().optional(),
@@ -143,9 +145,6 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   }
   if (rechercheParams.job_name) {
     query.set("job_name", rechercheParams.job_name)
-  }
-  if (rechercheParams.displayMap === true) {
-    query.set("displayMap", "true")
   }
   if (rechercheParams?.activeItems?.length > 0) {
     query.set("activeItems", serializeItemReferences(rechercheParams.activeItems))
@@ -222,8 +221,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 
-  const displayMap = search.get("displayMap") === "true"
-
   const opco = search.get("opco") || null
   const rncp = search.get("rncp") || null
 
@@ -238,7 +235,6 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     job_name,
     job_type,
     typesEmploi,
-    displayMap,
     displayMobileForm,
     elligibleHandicapFilter,
     activeItems,

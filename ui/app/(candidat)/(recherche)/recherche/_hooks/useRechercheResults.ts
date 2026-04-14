@@ -11,7 +11,7 @@ import type {
   IQuery,
   IResponse,
 } from "shared"
-import type { ITypeEmploi } from "shared/constants/recruteur"
+import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
@@ -237,11 +237,11 @@ export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILb
 
 export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): boolean {
   switch (typeEmploi) {
-    case "alternance":
+    case TYPE_EMPLOI_OPTIONS.alternance:
       return (job.ideaType === "offres_emploi_lba" && job.company?.mandataire === false) || job.ideaType === "offres_emploi_partenaires"
-    case "formation_incluse":
+    case TYPE_EMPLOI_OPTIONS.formation_incluse:
       return job.ideaType === "offres_emploi_lba" && job.company?.mandataire === true
-    case "candidatures_spontanees":
+    case TYPE_EMPLOI_OPTIONS.candidatures_spontanees:
       return job.ideaType === "lba"
   }
 }

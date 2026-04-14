@@ -1,6 +1,5 @@
 import { useField } from "formik"
 import { useCallback } from "react"
-import { typedEntries } from "shared"
 import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { MultiSelectField, type MultiSelectOption } from "@/app/_components/FormComponents/MultiSelectField"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -8,30 +7,30 @@ import { type DisplayedJob, matchesTypeEmploi } from "@/app/(candidat)/(recherch
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 const TYPE_EMPLOI_DESCRIPTIONS: Partial<Record<ITypeEmploi, string>> = {
-  formation_incluse: "Vous devrez vous inscrire dans la formation associée à l'offre",
-  candidatures_spontanees: "Entreprises susceptibles de recruter en alternance",
+  [TYPE_EMPLOI_OPTIONS.formation_incluse]: "Vous devrez vous inscrire dans la formation associée à l'offre",
+  [TYPE_EMPLOI_OPTIONS.candidatures_spontanees]: "Entreprises susceptibles de recruter en alternance",
 }
 
-const typeEmploiEntries = typedEntries(TYPE_EMPLOI_OPTIONS)
+const typeEmploiValues = Object.values(TYPE_EMPLOI_OPTIONS)
 
 function countByTypeEmploi(jobs: DisplayedJob[], typeEmploi: ITypeEmploi): number {
   return jobs.filter((job) => matchesTypeEmploi(job, typeEmploi)).length
 }
 
 function buildOptions(allJobs: DisplayedJob[], hasResults: boolean): MultiSelectOption[] {
-  return typeEmploiEntries.map(([key, label]) => {
-    const count = hasResults ? countByTypeEmploi(allJobs, key) : undefined
+  return typeEmploiValues.map((value) => {
+    const count = hasResults ? countByTypeEmploi(allJobs, value) : undefined
     return {
-      value: key,
-      label: `${label}${count !== undefined ? ` (${count})` : ""}`,
-      hintText: TYPE_EMPLOI_DESCRIPTIONS[key],
+      value,
+      label: `${value}${count !== undefined ? ` (${count})` : ""}`,
+      hintText: TYPE_EMPLOI_DESCRIPTIONS[value],
     }
   })
 }
 
 function getLabel(selected: MultiSelectOption[], allOptions: MultiSelectOption[]): string {
   if (selected.length === 0 || selected.length === allOptions.length) return "Indifférent"
-  if (selected.length === 1) return TYPE_EMPLOI_OPTIONS[selected[0].value as ITypeEmploi]
+  if (selected.length === 1) return selected[0].value
   return `${selected.length} types sélectionnés`
 }
 
@@ -58,7 +57,7 @@ export function RechercheTypesEmploiSelect({
       pushMatomoEvent({
         event: MATOMO_EVENTS.FILTER_TYPE_OFFER_APPLIED,
         filter_result_count: selectedCount,
-        filter_state: Object.fromEntries(typeEmploiEntries.map(([k]) => [k, newValue.includes(k)])),
+        filter_state: Object.fromEntries(typeEmploiValues.map((v) => [v, newValue.includes(v)])),
         filter_changed_labels: newValue.join("|"),
       })
     },
@@ -75,7 +74,7 @@ export function RechercheTypesEmploiSelect({
       onConfirm={handleConfirm}
       onOpen={handleOpen}
       getLabel={getLabel}
-      popperSx={{ width: "712px", maxWidth: { xs: "100%", md: "512px" } }}
+      popperSx={{ width: "425px", maxWidth: { xs: "100%", md: "512px" } }}
     />
   )
 }

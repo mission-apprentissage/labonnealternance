@@ -60,6 +60,7 @@ export function VirtualContainer({
   return (
     <Box
       ref={parentRef}
+      className="VirtualContainer"
       sx={{
         overflow: "auto",
         height: "100%",

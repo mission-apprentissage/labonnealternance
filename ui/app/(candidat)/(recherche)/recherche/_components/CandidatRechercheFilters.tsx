@@ -2,7 +2,6 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { useCallback } from "react"
 import { RechercheTypesEmploiSelect } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheTypeEmploiSelect"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -11,19 +10,12 @@ import { SendPlausibleEvent } from "@/utils/plausible"
 import { RechercheElligibleHandicapCheckbox } from "./RechercheInputs/RechercheElligibleHandicapCheckbox"
 import { RechercheNiveauSelect } from "./RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelect } from "./RechercheInputs/RechercheRayonSelect"
-import { RechercheToggleMap } from "./RechercheInputs/RechercheToggleMap"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, diploma, radius, elligibleHandicapFilter, typesEmploi, displayFormations, displayEntreprises } = rechercheParams
+  const { diploma, radius, elligibleHandicapFilter, typesEmploi, displayFormations, displayEntreprises } = rechercheParams
   const rechercheResults = useRechercheResults(rechercheParams)
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
-  const onDisplayMapChange = useCallback(
-    (value: boolean) => {
-      navigateToRecherchePage({ displayMap: value }, true)
-    },
-    [navigateToRecherchePage]
-  )
 
   return (
     <Box
@@ -79,21 +71,11 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
           }}
         />
       </Box>
-      <Box
-        sx={{
-          alignSelf: "flex-end",
-          marginBottom: 0,
-          marginTop: fr.spacing("2v"),
-        }}
-      >
-        <RechercheToggleMap onChange={onDisplayMapChange} checked={displayMap} />
-      </Box>
     </Box>
   )
 }
 
 export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap } = rechercheParams
   return (
     <Box
       key="filters"
@@ -109,7 +91,7 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
           lg: fr.spacing("4v"),
         },
         paddingRight: {
-          md: displayMap ? fr.spacing("2v") : fr.spacing("4v"),
+          md: fr.spacing("4v"),
           lg: fr.spacing("4v"),
         },
       }}
