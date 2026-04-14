@@ -31,25 +31,24 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           marginBottom: { xs: 0, md: fr.spacing("8v"), lg: fr.spacing("16v") },
         }}
       >
-        <Box>
+        <Box sx={{ pb: fr.spacing("5v"), "& > #sky-background": { borderRadius: { xs: 0, md: fr.spacing("2v") } } }}>
           <NextImage
             fetchPriority="low"
             src="/images/1j1s/ciel.webp"
             alt=""
+            id="sky-background"
             aria-hidden="true"
             width={1120}
             height={334}
             unoptimized
             style={{
-              overflow: "visible",
-              height: "calc(100% - 10px)",
+              height: "100%",
               width: "100%",
               top: "20px",
               position: "absolute",
               objectFit: "cover",
             }}
           />
-
           <Box
             sx={{
               overflow: "visible",
