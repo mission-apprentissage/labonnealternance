@@ -34,6 +34,9 @@ export const searchEntreprise = async (search: string) => {
   queryParams.append("q", search)
   queryParams.append("minimal", "true")
   queryParams.append("include", "matching_etablissements")
+  // add mitigation for rate limit : https://api.gouv.fr/documentation/api-recherche-entreprises#limitation-du-nombre-de-requetes
+  // gestion retry-after header if 429 is returned
+  // 3 trys at most with a delay of 1s or the value of retry-after header
   const response = await fetch(`${baseUrl}?${queryParams.toString()}`)
   if (response.status >= 400) {
     const body = await response.text()
