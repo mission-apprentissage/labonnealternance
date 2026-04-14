@@ -1,4 +1,4 @@
-import { type AnyBulkWriteOperation, ObjectId } from "mongodb"
+import type { AnyBulkWriteOperation } from "mongodb"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 
@@ -14,11 +14,9 @@ export const resyncLbaJobsPartnersStats = async (): Promise<void> => {
       {
         projection: {
           _id: 1,
-          jobs: {
-            _id: 1,
-            stats_detail_view: 1,
-            stats_search_view: 1,
-          },
+          "jobs._id": 1,
+          "jobs.stats_detail_view": 1,
+          "jobs.stats_search_view": 1,
         },
       }
     )
