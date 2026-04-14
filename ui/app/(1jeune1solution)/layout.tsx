@@ -3,7 +3,7 @@ import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
-import { DsfrHeaderProps1J1S } from "@/app/(candidat)/(1jeune1solution)/components/Header1J1S"
+import { DsfrHeaderProps1J1S } from "@/app/(1jeune1solution)/components/Header1J1S"
 
 export default async function UnJeuneUneSolutionLayout({ children }: PropsWithChildren) {
   return (
