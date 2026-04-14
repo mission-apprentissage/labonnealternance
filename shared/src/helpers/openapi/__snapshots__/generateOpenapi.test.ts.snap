@@ -1381,6 +1381,12 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "isCfaEntreprise": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
           "jobExpirationDate": {
             "type": [
               "string",

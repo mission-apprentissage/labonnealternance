@@ -8,6 +8,7 @@ import type { ILbaItemPartnerJob } from "shared/models/index"
 import { JOB_STATUS_ENGLISH, JobCollectionName, traductionJobStatus } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { isCfaEntreprise } from "shared/services/isCfaEntreprise"
 import { manageApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -105,6 +106,7 @@ function transformPartnerJob(
       offer_access_conditions: partnerJob.offer_access_conditions,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
       contract_rythm: partnerJob.contract_rythm ?? null,
+      isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
 
     contact: {
@@ -156,6 +158,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     job: {
       creationDate: partnerJob.offer_creation ? new Date(partnerJob.offer_creation) : null,
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
+      isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
     contact: {
       hasEmail: partnerJob.apply_email ? true : false, //TODO: checker des conditions en fonction des partenaires
