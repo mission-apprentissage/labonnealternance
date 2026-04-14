@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { sleep } from "@/utils/tools"
+
 const ZSearchEntrepriseApiResponse = z.object({
   results: z.array(
     z.object({
@@ -24,6 +26,19 @@ const ZSearchEntrepriseApiResponse = z.object({
   ),
 })
 
+const MAX_RETRIES = 3
+const DEFAULT_RETRY_AFTER_SECONDS = 1
+
+const fetchWithRetry = async (url: string, attempt = 1): Promise<Response> => {
+  const response = await fetch(url)
+  if (response.status === 429 && attempt < MAX_RETRIES) {
+    const retryAfterMs = (parseInt(response.headers.get("retry-after") ?? String(DEFAULT_RETRY_AFTER_SECONDS), 10) || DEFAULT_RETRY_AFTER_SECONDS) * 1_000
+    await sleep(retryAfterMs)
+    return fetchWithRetry(url, attempt + 1)
+  }
+  return response
+}
+
 // cf documentation : https://api.gouv.fr/documentation/api-recherche-entreprises
 export const searchEntreprise = async (search: string) => {
   if (search.length < 3) {
@@ -34,10 +49,7 @@ export const searchEntreprise = async (search: string) => {
   queryParams.append("q", search)
   queryParams.append("minimal", "true")
   queryParams.append("include", "matching_etablissements")
-  // add mitigation for rate limit : https://api.gouv.fr/documentation/api-recherche-entreprises#limitation-du-nombre-de-requetes
-  // gestion retry-after header if 429 is returned
-  // 3 trys at most with a delay of 1s or the value of retry-after header
-  const response = await fetch(`${baseUrl}?${queryParams.toString()}`)
+  const response = await fetchWithRetry(`${baseUrl}?${queryParams.toString()}`)
   if (response.status >= 400) {
     const body = await response.text()
     throw new Error(`status=${response.status}. body=${body}`)

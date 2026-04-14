@@ -43,4 +43,6 @@ const logError = (title: string, error: string | Error = undefined) => {
   console.error(`Error ${title} sent to Sentry`)
 }
 
+export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
 export { getPathLink, logError, scrollToNestedElement }
