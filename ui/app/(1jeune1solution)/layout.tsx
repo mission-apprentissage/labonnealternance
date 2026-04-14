@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Header as DsfrHeader } from "@codegouvfr/react-dsfr/Header"
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
@@ -18,12 +19,17 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
         sx={{
           "& .fr-header, & .fr-header__body, & .fr-header__brand": {
             filter: "none",
+            width: "unset",
           },
           "& .fr-header__navbar": {
             display: "none",
           },
           "& .fr-header__tools-links": {
             display: "block",
+          },
+          "& .fr-header__tools": {
+            flex: 1,
+            marginLeft: fr.spacing("3v"),
           },
         }}
       >

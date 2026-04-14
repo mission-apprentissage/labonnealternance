@@ -1,5 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
 export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
@@ -18,9 +19,12 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
     "aria-label": "Accueil - La bonne alternance",
   },
   quickAccessItems: [
-    <Box display="flex" flexDirection="row" alignItems="center" gap={0.5} key="header-1j1s-title">
-      <Image width="207" height="25" src="/images/1j1s/logo-1j1s.svg" alt="Logo un jeune une solution" />
-      <Image width="83" height="83" src="/images/1j1s/plus-jaune.svg" aria-hidden="true" alt="" />
+    <Box
+      sx={{ display: "flex", flex: 1, flexDirection: { xs: "column-reverse", md: "row" }, alignItems: "center", gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") } }}
+      key="header-1j1s-title"
+    >
+      <Typography sx={{ fontSize: { xs: "14px", md: "18px" }, fontWeight: 800, lineHeight: "16px" }}>1Jeune1Solution</Typography>
+      <Typography sx={{ fontSize: { xs: "14px", md: "18px" }, fontWeight: 800, lineHeight: "16px" }}>avec</Typography>
       <Image width="155" height="40" src="/images/logo_LBA.svg" aria-label="La bonne alternance" alt="La bonne alternance" />
     </Box>,
   ],
