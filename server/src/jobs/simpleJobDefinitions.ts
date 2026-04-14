@@ -59,6 +59,7 @@ import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAl
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
+import { resyncLbaJobsPartnersStats } from "./oneTimeJob/resyncLbaJobsPartnersStats"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -380,6 +381,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
+  },
+  {
+    fct: resyncLbaJobsPartnersStats,
+    description: "Resynchronise les stats de consultation des offres LBA depuis recruiters vers jobs_partners",
   },
   {
     fct: syncLbaJobsIntoJobsPartners,
