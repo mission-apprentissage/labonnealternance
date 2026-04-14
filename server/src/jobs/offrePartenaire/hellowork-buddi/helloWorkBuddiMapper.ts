@@ -57,10 +57,10 @@ export const helloWorkBuddiJobToJobsPartners = (job: IHelloWorkBuddiJob): ICompu
 
   const descriptionParts: string[] = []
   if (description) {
-    descriptionParts.push(`## La mission\n${description}`)
+    descriptionParts.push(description)
   }
   if (benefits) {
-    descriptionParts.push(`## Les avantages\n${benefits}`)
+    descriptionParts.push(benefits)
   }
   const finalDescription = descriptionParts.join("\n\n")
 
