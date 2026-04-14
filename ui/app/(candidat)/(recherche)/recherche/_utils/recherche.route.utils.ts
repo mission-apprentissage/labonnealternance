@@ -1,5 +1,5 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
-import { typedKeys } from "shared"
+import { parseEnum, typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
@@ -45,7 +45,10 @@ export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
 
 function deserializeTypesEmploi(typesEmploiRaw: string | null): ITypeEmploi[] {
   if (!typesEmploiRaw) return []
-  return typesEmploiRaw.split(",").filter((typeEmploi): typeEmploi is ITypeEmploi => Object.hasOwn(TYPE_EMPLOI_OPTIONS, typeEmploi))
+  return (typesEmploiRaw?.split(",") ?? []).flatMap((typeEmploi) => {
+    const enumValue = parseEnum(TYPE_EMPLOI_OPTIONS, typeEmploi)
+    return enumValue ? [enumValue] : []
+  })
 }
 
 export function getItemReference(item: ItemReferenceLike): ItemReference {

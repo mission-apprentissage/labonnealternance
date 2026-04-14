@@ -141,4 +141,6 @@ export const TYPE_EMPLOI_OPTIONS = {
   candidatures_spontanees: "Candidatures spontanées",
 } as const
 
-export type ITypeEmploi = keyof typeof TYPE_EMPLOI_OPTIONS
+export type ITypeEmploiKey = keyof typeof TYPE_EMPLOI_OPTIONS
+
+export type ITypeEmploi = (typeof TYPE_EMPLOI_OPTIONS)[ITypeEmploiKey]
