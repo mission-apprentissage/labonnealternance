@@ -19,6 +19,12 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
           "& .fr-header, & .fr-header__body, & .fr-header__brand": {
             filter: "none",
           },
+          "& .fr-header__navbar": {
+            display: "none",
+          },
+          "& .fr-header__tools-links": {
+            display: "block",
+          },
         }}
       >
         <DsfrHeader {...DsfrHeaderProps1J1S} />
