@@ -60,6 +60,50 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         </Box>
       </Box>
 
+      <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
+          <Box sx={{ flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
+            <NextImage src="/images/1j1s/depot-offre.png" alt="" aria-hidden="true" width={513} height={464} unoptimized />
+          </Box>
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <Box>
+              <Typography sx={{ fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Postez votre offre d’alternance en quelques secondes</Typography>
+              <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>Sélectionnez le métier sur lequel vous recrutez, nous générons votre offre instantanément.</Typography>
+            </Box>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <Box>
+              <Typography sx={{ fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Nous la diffusons gratuitement au plus près des candidats</Typography>
+              <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
+                Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
+                <span style={{ textDecoration: "underline" }}>La bonne alternance</span>, <span style={{ textDecoration: "underline" }}>France Travail</span>,{" "}
+                <span style={{ textDecoration: "underline" }}>Parcoursup</span>, <span style={{ textDecoration: "underline" }}>HelloWork</span> et{" "}
+                <span style={{ textDecoration: "underline" }}>bien d’autres</span>.
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
+            <NextImage src="/images/1j1s/detail-offre.png" alt="" aria-hidden="true" width={626} height={428} unoptimized />
+          </Box>
+        </Box>
+
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
+          <Box sx={{ flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
+            <NextImage src="/images/1j1s/candidature.png" alt="" aria-hidden="true" width={383} height={482} unoptimized />
+          </Box>
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
+            <Box>
+              <Typography sx={{ fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Recevez les profils des candidats dans votre boite mail</Typography>
+              <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
+                Les candidats vous partagent leurs coordonnées et leur CV directement par email, à vous de répondre !
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
       <Social />
     </Container>
   )
