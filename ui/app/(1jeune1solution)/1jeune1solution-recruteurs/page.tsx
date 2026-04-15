@@ -2,31 +2,85 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
+import type { FormikHelpers } from "formik"
 import NextImage from "next/image"
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import Social from "@/app/(1jeune1solution)/components/Social"
-import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
-import { CreationCompteForm } from "@/components/espace_pro/Authentification/CreationCompte"
+import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import type { searchEntreprise } from "@/services/searchEntreprises"
-
-type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
+import { getEntrepriseInformation, validateCfaCreation } from "@/utils/api"
+import { ApiError } from "@/utils/api.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
+export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: string; onSelectOrganisation: (organisation: Organisation | null) => void }) => {
+  const router = useRouter()
+
+  const submitSiret = ({ establishment_siret }: { establishment_siret: string }, { setSubmitting, setFieldError }: FormikHelpers<{ establishment_siret: string }>) => {
+    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+
+    let nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: AUTHTYPE.ENTREPRISE, origin, isWidget: false }).getPath()
+    // validate establishment_siret
+
+    getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
+      if (entrepriseData.error === true) {
+        if (entrepriseData.statusCode >= 500) {
+          router.push(nextUri)
+        } else {
+          setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
+
+          if (entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA) {
+            nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: AUTHTYPE.CFA, origin, isWidget: false }).getPath()
+            validateCfaCreation(formattedSiret)
+              .then(() => {
+                setSubmitting(false)
+                router.push(nextUri)
+              })
+              .catch((error) => {
+                if (error instanceof ApiError) {
+                  const { statusCode, errorData } = error.context
+                  if (statusCode >= 400 && statusCode < 500) {
+                    const { reason } = errorData
+                    if (reason === BusinessErrorCodes.ALREADY_EXISTS) {
+                      setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
+                    } else if (reason === BusinessErrorCodes.NOT_QUALIOPI) {
+                      setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
+                    } else if (reason === BusinessErrorCodes.CLOSED) {
+                      setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
+                    } else if (reason === BusinessErrorCodes.UNKNOWN) {
+                      setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
+                    } else if (reason === BusinessErrorCodes.UNSUPPORTED) {
+                      setFieldError("establishment_siret", "Pour des raisons techniques, les organismes de formation à distance ne sont pas acceptés actuellement.")
+                    }
+                  }
+                }
+
+                setSubmitting(false)
+              })
+          } else {
+            setSubmitting(false)
+          }
+        }
+      } else if (entrepriseData.error === false) {
+        setSubmitting(true)
+        router.push(nextUri)
+      }
+    })
+  }
+
+  return <SiretAutocomplete onSubmit={submitSiret} onSelectOrganisation={onSelectOrganisation} />
+}
+
 export default function UnJeune1Solution() {
-  const [organisationType, setOrganisationType] = useState<EntrepriseOrCfaType>(AUTHTYPE.ENTREPRISE)
-  const [bandeau, setBandeau] = useState<BandeauProps>(null)
-
-  console.log("bandeau", bandeau)
-  console.log("organisationType", organisationType)
-
   const onSelectOrganisation = (organisation: Organisation | null) => {
-    if (organisation?.activite_principale?.startsWith("85")) {
-      setOrganisationType(AUTHTYPE.CFA)
-    } else {
-      setOrganisationType(AUTHTYPE.ENTREPRISE)
-    }
+    // if (organisation?.activite_principale?.startsWith("85")) {
+    //   setOrganisationType(AUTHTYPE.CFA)
+    // } else {
+    //   setOrganisationType(AUTHTYPE.ENTREPRISE)
+    // }
   }
 
   return (
@@ -54,13 +108,7 @@ export default function UnJeune1Solution() {
                 Publier une offre en alternance
               </Typography>
               <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
-              <CreationCompteForm
-                organisationType={AUTHTYPE.ENTREPRISE}
-                setBandeau={setBandeau}
-                origin="1Jeune1Solution"
-                isWidget={false}
-                onSelectOrganisation={onSelectOrganisation}
-              />
+              <CreationCompteForm origin="1Jeune1Solution" onSelectOrganisation={onSelectOrganisation} />
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
