@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import NextImage from "next/image"
+import { DsfrIcon } from "@/components/DsfrIcon"
 import illustrationLba from "@/public/images/1j1s/illustration-lba.svg"
 
 export default function Social({ utmParams }: { utmParams: string }) {
@@ -49,36 +50,50 @@ export default function Social({ utmParams }: { utmParams: string }) {
         <Box sx={{ flex: 1, display: "flex", flexDirection: { xs: "column", sm: "row" }, background: "#000091", maxHeight: { xs: "unset", sm: "280px" } }}>
           <Box sx={{ flex: 1, p: fr.spacing("6v"), display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
             <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#FFFFFF", lineHeight: "30px" }}>Retrouvez 1jeune1solution sur Instagram et Tiktok :</Typography>
-            <Box sx={{ "& > a:hover": { background: "#000091" } }}>
+            <Box
+              sx={{
+                "& > a:hover": { background: "#000091" },
+                "& .fr-btn::after": {
+                  display: "none",
+                },
+                "& .fr-btn": {
+                  whiteSpace: { xs: "wrap", sm: "nowrap" },
+                },
+              }}
+            >
               <Button
                 linkProps={{
                   href: `https://www.instagram.com/1jeune1solution/?${utmParams}`,
-                  target: "_self",
                   "aria-label": "Lien vers le compte Instagram de 1jeune1solution",
                 }}
                 size="large"
                 priority="tertiary"
-                iconId="fr-icon-instagram-fill"
-                iconPosition="right"
                 style={{ color: "#FFFFFF", fontSize: "16px" }}
               >
-                @1jeune1solution
+                @1jeune1solution <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-instagram-fill" size={24} />
               </Button>
             </Box>
-            <Box sx={{ "& > a:hover": { background: "#000091" } }}>
+            <Box
+              sx={{
+                "& > a:hover": { background: "#000091" },
+                "& .fr-btn::after": {
+                  display: "none",
+                },
+                "& .fr-btn": {
+                  whiteSpace: { xs: "wrap", sm: "nowrap" },
+                },
+              }}
+            >
               <Button
                 linkProps={{
                   href: `https://www.tiktok.com/@1jeune_1solution/?${utmParams}`,
-                  target: "_self",
                   "aria-label": "Lien vers le compte Tiktok de 1jeune1solution",
                 }}
                 size="large"
                 priority="tertiary"
-                iconId="fr-icon-tiktok-fill"
-                iconPosition="right"
                 style={{ color: "#FFFFFF", fontSize: "16px" }}
               >
-                @1jeune1solution
+                @1jeune1solution <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-tiktok-fill" size={24} />
               </Button>
             </Box>
           </Box>
@@ -101,20 +116,28 @@ export default function Social({ utmParams }: { utmParams: string }) {
               Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités :
             </Typography>
             <Box sx={{ "& > a:hover": { background: "#EEDBF5" }, "& > a": { whiteSpace: { xs: "wrap", sm: "nowrap" } } }}>
-              <Button
-                linkProps={{
-                  href: `https://www.linkedin.com/company/la-bonne-alternance/?${utmParams}`,
-                  target: "_self",
-                  "aria-label": "Lien vers le compte LinkedIn de La bonne alternance",
+              <Box
+                sx={{
+                  "& .fr-btn::after": {
+                    display: "none",
+                  },
+                  "& .fr-btn": {
+                    whiteSpace: { xs: "wrap", sm: "nowrap" },
+                  },
                 }}
-                size="large"
-                priority="secondary"
-                iconId="fr-icon-linkedin-box-fill"
-                iconPosition="right"
-                style={{ color: "#000091", fontSize: "16px" }}
               >
-                LinkedIn La bonne alternance
-              </Button>
+                <Button
+                  linkProps={{
+                    href: `https://www.linkedin.com/company/la-bonne-alternance/?${utmParams}`,
+                    "aria-label": "Lien vers le compte LinkedIn de La bonne alternance",
+                  }}
+                  size="large"
+                  priority="secondary"
+                  style={{ color: "#000091", fontSize: "16px" }}
+                >
+                  LinkedIn La bonne alternance <DsfrIcon style={{ marginLeft: "8px", marginRight: "-3px" }} name="fr-icon-linkedin-box-fill" size={24} />
+                </Button>
+              </Box>
             </Box>
           </Box>
           <Box sx={{ flex: 1, textAlign: "center", overflow: "hidden", mt: { xs: "-5px", lg: fr.spacing("10v") }, "& > img": { maxWidth: "100%", height: "auto" } }}>
