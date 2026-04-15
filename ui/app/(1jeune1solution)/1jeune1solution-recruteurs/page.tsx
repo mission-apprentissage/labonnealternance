@@ -30,8 +30,6 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
         if (entrepriseData.statusCode >= 500) {
           router.push(nextUri)
         } else {
-          setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
-
           if (entrepriseData?.data?.errorCode === BusinessErrorCodes.IS_CFA) {
             nextUri = PAGES.dynamic.espaceProCreationDetail({ siret: formattedSiret, type: AUTHTYPE.CFA, origin, isWidget: false }).getPath()
             validateCfaCreation(formattedSiret)
@@ -61,6 +59,7 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
                 setSubmitting(false)
               })
           } else {
+            setFieldError("establishment_siret", entrepriseData?.data?.errorCode === BusinessErrorCodes.NON_DIFFUSIBLE ? BusinessErrorCodes.NON_DIFFUSIBLE : entrepriseData.message)
             setSubmitting(false)
           }
         }
