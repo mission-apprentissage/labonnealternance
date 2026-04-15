@@ -1,9 +1,34 @@
+"use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
 import NextImage from "next/image"
+import { useState } from "react"
+import { AUTHTYPE } from "shared/constants/recruteur"
 import Social from "@/app/(1jeune1solution)/components/Social"
+import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
+import { CreationCompteForm } from "@/components/espace_pro/Authentification/CreationCompte"
+import type { searchEntreprise } from "@/services/searchEntreprises"
 
-export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
+
+type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
+
+export default function UnJeune1Solution() {
+  const [organisationType, setOrganisationType] = useState<EntrepriseOrCfaType>(AUTHTYPE.ENTREPRISE)
+  const [bandeau, setBandeau] = useState<BandeauProps>(null)
+
+  console.log("bandeau", bandeau)
+  console.log("organisationType", organisationType)
+
+  const onSelectOrganisation = (organisation: Organisation | null) => {
+    if (organisation?.activite_principale?.startsWith("85")) {
+      setOrganisationType(AUTHTYPE.CFA)
+    } else {
+      setOrganisationType(AUTHTYPE.ENTREPRISE)
+    }
+  }
+
   return (
     <Container
       sx={{
@@ -29,6 +54,13 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
                 Publier une offre en alternance
               </Typography>
               <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
+              <CreationCompteForm
+                organisationType={AUTHTYPE.ENTREPRISE}
+                setBandeau={setBandeau}
+                origin="1Jeune1Solution"
+                isWidget={false}
+                onSelectOrganisation={onSelectOrganisation}
+              />
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
