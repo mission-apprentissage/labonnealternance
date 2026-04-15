@@ -7,6 +7,7 @@ import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
+const utmParams = "utm_source=lba&utm_medium=website&utm_campagne=landinglba1j1s"
 export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
   return (
@@ -216,7 +217,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         </Box>
       </Box>
 
-      <Social />
+      <Social utmParams={utmParams} />
     </Container>
   )
 }

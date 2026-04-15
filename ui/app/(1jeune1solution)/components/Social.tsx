@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material"
 import NextImage from "next/image"
 import illustrationLba from "@/public/images/1j1s/illustration-lba.svg"
 
-export default function Social() {
+export default function Social({ utmParams }: { utmParams: string }) {
   return (
     <>
       <Box
@@ -25,7 +25,7 @@ export default function Social() {
             Vous avez entre 15 et 30 ans ? Découvrez toutes les solutions pour votre avenir !
           </Typography>
           <Button
-            linkProps={{ href: "https://www.1jeune1solution.gouv.fr/" }}
+            linkProps={{ href: `https://www.1jeune1solution.gouv.fr/?${utmParams}` }}
             size="large"
             priority="tertiary"
             style={{ fontSize: "16px", background: "#FFF", marginTop: fr.spacing("2v") }}
@@ -52,7 +52,7 @@ export default function Social() {
             <Box sx={{ "& > a:hover": { background: "#000091" } }}>
               <Button
                 linkProps={{
-                  href: "https://www.instagram.com/1jeune1solution/",
+                  href: `https://www.instagram.com/1jeune1solution/?${utmParams}`,
                   target: "_self",
                   "aria-label": "Lien vers le compte Instagram de 1jeune1solution",
                 }}
@@ -68,7 +68,7 @@ export default function Social() {
             <Box sx={{ "& > a:hover": { background: "#000091" } }}>
               <Button
                 linkProps={{
-                  href: "https://www.tiktok.com/@1jeune_1solution",
+                  href: `https://www.tiktok.com/@1jeune_1solution/?${utmParams}`,
                   target: "_self",
                   "aria-label": "Lien vers le compte Tiktok de 1jeune1solution",
                 }}
@@ -103,7 +103,7 @@ export default function Social() {
             <Box sx={{ "& > a:hover": { background: "#EEDBF5" }, "& > a": { whiteSpace: { xs: "wrap", sm: "nowrap" } } }}>
               <Button
                 linkProps={{
-                  href: "https://www.linkedin.com/company/la-bonne-alternance/",
+                  href: `https://www.linkedin.com/company/la-bonne-alternance/?${utmParams}`,
                   target: "_self",
                   "aria-label": "Lien vers le compte LinkedIn de La bonne alternance",
                 }}
