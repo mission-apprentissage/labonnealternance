@@ -17,7 +17,10 @@ import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteu
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideApprentissageEtHandicap.getMetadata()
+export const metadata: Metadata = {
+  ...PAGES.static.guideApprentissageEtHandicap.getMetadata(),
+  alternates: { canonical: PAGES.static.guideApprentissageEtHandicap.getPath() },
+}
 
 const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [
   ARTICLES_ALTERNANT["role-et-missions-du-maitre-d-apprentissage-ou-tuteur"],
