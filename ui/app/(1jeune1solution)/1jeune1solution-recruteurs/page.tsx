@@ -17,6 +17,26 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
       }}
       maxWidth="xl"
     >
+      <Box id="editorial-1j1s-content-container" tabIndex={-1} sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
+        <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column", md: "row" }, marginTop: fr.spacing("4v") }}>
+          <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "start" }}>
+            <Box>
+              <Typography component={"h1"} sx={{ fontSize: { xs: "32px", md: "40px" }, fontWeight: 700, lineHeight: { xs: "40px", md: "48px" } }}>
+                LES APPRENTIS SONT TOUS DIFFÉRENTS !
+              </Typography>
+              <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Trouvez votre future recrue avec 1jeune1solution et La bonne alternance.</Typography>
+              <Typography component={"h2"} sx={{ fontSize: { xs: "28px", md: "32px" }, fontWeight: 700, lineHeight: { xs: "36px", md: "40px" }, mt: fr.spacing("6v") }}>
+                Publier une offre en alternance
+              </Typography>
+              <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
+            <NextImage src="/images/1j1s/personna.png" alt="" aria-hidden="true" width={567} height={480} unoptimized />
+          </Box>
+        </Box>
+      </Box>
+
       <Box
         sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 }, py: fr.spacing("8v") }}
       >
