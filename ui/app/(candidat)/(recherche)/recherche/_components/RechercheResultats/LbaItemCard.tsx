@@ -74,7 +74,7 @@ function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
 }
 
 function DatePublication({ item }: Pick<ResultCardProps, "item">) {
-  if (item.ideaType !== LBA_ITEM_TYPE_OLD.MATCHA && item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) {
+  if (item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     return null
   }
 
