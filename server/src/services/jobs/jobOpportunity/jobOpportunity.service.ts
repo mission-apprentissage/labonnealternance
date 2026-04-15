@@ -26,7 +26,7 @@ import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJ
 import { logger } from "@/common/logger"
 import type { IApiError } from "@/common/utils/errorManager"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
@@ -367,7 +367,7 @@ export const getJobsPartnersFromDB = async ({
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  return await getSecondaryDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -424,7 +424,7 @@ export const getJobsPartnersFromDBForUI = async ({
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  return await getSecondaryDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivateWithDistance>([
       ...filterStages,
       {
@@ -1143,7 +1143,7 @@ export async function getPartnerJobsCount({
   partnerLabel: string
   includePartnerLabel: boolean
 }): Promise<number> {
-  const result = await getDbCollection("jobs_partners")
+  const result = await getSecondaryDbCollection("jobs_partners")
     .aggregate([
       {
         $geoNear: {
