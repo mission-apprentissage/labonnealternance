@@ -13,7 +13,7 @@ import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
 import { normalizeDepartementToRegex, roundDistance } from "@/common/utils/geolib"
 import { isAllowedSource } from "@/common/utils/isAllowedSource"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { generateApplicationToken } from "./appLinks.service"
 import type { IApplicationCount } from "./application.service"
@@ -284,7 +284,7 @@ export const getRecruteursLbaFromDB = async ({ geo, romes, opco, departements, p
           { $sort: { distance: 1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  return await getSecondaryDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -344,7 +344,7 @@ const getCompanies = async ({
     let companies: IJobsPartnersRecruteurAlgoPrivate[] = []
 
     if (latitude && longitude) {
-      companies = (await getDbCollection("jobs_partners")
+      companies = (await getSecondaryDbCollection("jobs_partners")
         .aggregate([
           {
             $geoNear: {
@@ -361,7 +361,7 @@ const getCompanies = async ({
         ])
         .toArray()) as IJobsPartnersRecruteurAlgoPrivate[]
     } else {
-      companies = (await getDbCollection("jobs_partners")
+      companies = (await getSecondaryDbCollection("jobs_partners")
         .aggregate([
           {
             $match: query,

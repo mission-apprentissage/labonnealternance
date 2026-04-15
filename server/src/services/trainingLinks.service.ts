@@ -1,8 +1,9 @@
 import { getDistance } from "geolib"
+import { MAX_SEARCH_ROMES } from "shared"
 import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 import { URL } from "url"
 import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config.js"
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
@@ -48,12 +49,14 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
 
 const getFormations = (
   query: object,
-  filter: object = {
+  projection: object = {
     lieu_formation_geo_coordonnees: 1,
     rome_codes: 1,
     _id: 0,
   }
-) => getDbCollection("formationcatalogues").find(query, filter).toArray()
+) => getSecondaryDbCollection("formationcatalogues").find(query, { projection }).toArray()
+
+const limitSearchRomes = (romes: string[]) => romes.slice(0, MAX_SEARCH_ROMES)
 
 const getTrainingsFromParameters = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>): Promise<IFormationCatalogue[]> => {
   let formations
@@ -130,7 +133,7 @@ const getRomesGlobaux = async ({ rncp, cfd, mef }: { rncp?: string | null; cfd?:
     return romes
   }
 
-  const tmpFormations = await getDbCollection("formationcatalogues")
+  const tmpFormations = await getSecondaryDbCollection("formationcatalogues")
     .find(
       {
         $or: [{ rncp_code: rncp }, { cfd: cfd ? cfd : undefined }, { "bcn_mefs_10.mef10": mef }],
@@ -208,7 +211,7 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
   if (formations?.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
-    const romes = await expandRomesV3toV4(rome_codes ?? [])
+    const romes = limitSearchRomes(await expandRomesV3toV4(rome_codes ?? []))
     return buildEmploiUrl({ params: { romes, lat: latitude, lon: longitude, radius: "60", ...utmParams } })
   }
 
@@ -224,7 +227,7 @@ export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFor
     : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesIndex)
 
   romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
-  romes = await expandRomesV3toV4(romes)
+  romes = limitSearchRomes(await expandRomesV3toV4(romes))
 
   // Build url based on formations and coordinates
   if (formations?.length) {
@@ -275,12 +278,12 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
           .toArray()
       : Promise.resolve([]),
     cles.length
-      ? getDbCollection("formationcatalogues")
+      ? getSecondaryDbCollection("formationcatalogues")
           .find({ cle_ministere_educatif: { $in: cles } }, { projection: { lieu_formation_geo_coordonnees: 1, rome_codes: 1, cle_ministere_educatif: 1, _id: 0 } })
           .toArray()
       : Promise.resolve([]),
     hasRomesQuery
-      ? (getDbCollection("formationcatalogues")
+      ? (getSecondaryDbCollection("formationcatalogues")
           .find(
             {
               $or: [

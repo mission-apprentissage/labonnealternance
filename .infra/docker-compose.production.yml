@@ -27,12 +27,13 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 1g
+          memory: 2g
       replicas: 2
     stop_grace_period: 2m
     command: ["yarn", "cli", "start"]
     environment:
-      NODE_OPTIONS: "--max_old_space_size=768"
+      LBA_RATE_LIMIT_ALLOW_LIST: "88.164.218.226/32"
+      NODE_OPTIONS: "--max_old_space_size=1280"
     volumes:
       - /opt/app/data/server:/data
       - /opt/app/.env_server:/app/server/.env
@@ -43,7 +44,7 @@ services:
         tag: docker.json.lba.{{env_type}}.server
         fluentd-async: "true"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5000/api/healthcheck"]
+      test: ["CMD", "curl", "--fail", "http://localhost:5000/api/livez"]
       interval: 10s
       timeout: 30s
       retries: 11
@@ -86,12 +87,12 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 1g
+          memory: 2g
       replicas: 1
     command: ["yarn", "cli", "stream_processor:start"]
     environment:
       INSTANCE_ID: "runner-{% raw %}{{.Task.Slot}}{% endraw %}"
-      NODE_OPTIONS: "--max_old_space_size=768"
+      NODE_OPTIONS: "--max_old_space_size=1280"
     stop_grace_period: 5m
     volumes:
       - /opt/app/data/server:/data

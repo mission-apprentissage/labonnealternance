@@ -23,6 +23,9 @@ const config = {
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
+  rateLimit: {
+    allowList: env.get("LBA_RATE_LIMIT_ALLOW_LIST").default("").asArray(),
+  },
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   lbaSecret: env.get("LBA_SECRET").required().asString(),
@@ -154,6 +157,8 @@ const config = {
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
+  edfUrl: env.get("EDF_FLUX_URL").required().asString(),
+  enedisUrl: env.get("ENEDIS_FLUX_URL").required().asString(),
   leboncoinUrl: env.get("LEBONCOIN_FLUX_URL").required().asString(),
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
   jobteaserUserName: env.get("JOBTEASER_FLUX_USERNAME").required().asString(),
