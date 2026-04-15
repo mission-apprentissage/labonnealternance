@@ -100,7 +100,7 @@ export default function Social() {
             <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#000091", lineHeight: "30px" }}>
               Suivez La bonne alternance sur Linkedin pour rester informé de nos actualités :
             </Typography>
-            <Box sx={{ "& > a:hover": { background: "#EEDBF5" } }}>
+            <Box sx={{ "& > a:hover": { background: "#EEDBF5" }, "& > a": { whiteSpace: { xs: "wrap", sm: "nowrap" } } }}>
               <Button
                 linkProps={{
                   href: "https://www.linkedin.com/company/la-bonne-alternance/",
@@ -111,13 +111,13 @@ export default function Social() {
                 priority="secondary"
                 iconId="fr-icon-linkedin-box-fill"
                 iconPosition="right"
-                style={{ color: "#000091", fontSize: "16px", whiteSpace: "nowrap" }}
+                style={{ color: "#000091", fontSize: "16px" }}
               >
                 LinkedIn La bonne alternance
               </Button>
             </Box>
           </Box>
-          <Box sx={{ flex: 1, textAlign: "center", overflow: "hidden", mt: { xs: "-5px", lg: fr.spacing("10v") } }}>
+          <Box sx={{ flex: 1, textAlign: "center", overflow: "hidden", mt: { xs: "-5px", lg: fr.spacing("10v") }, "& > img": { maxWidth: "100%", height: "auto" } }}>
             <NextImage src={illustrationLba.src} alt="" aria-hidden="true" width={illustrationLba.width} height={illustrationLba.height} unoptimized />
           </Box>
         </Box>
