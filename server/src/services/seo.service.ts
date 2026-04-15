@@ -5,7 +5,7 @@ import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION
 import seoVilleModel from "shared/models/seoVille.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection } from "@/common/utils/mongodbUtils.js"
+import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils.js"
 import { metierData } from "@/jobs/seo/dataMetierSEO"
 import { getApplicationByCompanyCount, getApplicationByJobCount } from "@/services/application.service"
 import { getJobsPartnersFromDBForUI, getPartnerJobsCount } from "./jobs/jobOpportunity/jobOpportunity.service"
@@ -62,7 +62,7 @@ export const updateSeoVilleActivities = async () => {
     .toArray()
 
   for (const ville of villes) {
-    const activities = await getDbCollection(jobsPartnersModel.collectionName)
+    const activities = await getSecondaryDbCollection(jobsPartnersModel.collectionName)
       .aggregate([
         {
           $geoNear: {
@@ -127,11 +127,11 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
 }
 
 const getJobCountForMetier = async (romes: string[]) => {
-  return await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+  return await getSecondaryDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
 }
 
 const getCompanyCountForMetier = async (romes: string[]) => {
-  const companyCountResult = await getDbCollection("jobs_partners")
+  const companyCountResult = await getSecondaryDbCollection("jobs_partners")
     .aggregate([
       {
         $match: {
@@ -206,7 +206,7 @@ const getApplicantCountForMetier = async (romes: string[]) => {
 const getTopCompaniesForMetier = async (romes: string[]) => {
   const topLimit = 6
 
-  const topCompanies = await getDbCollection("jobs_partners")
+  const topCompanies = await getSecondaryDbCollection("jobs_partners")
     .aggregate([
       // 1. Filtrer par statut Active et codes ROME
       {
@@ -284,7 +284,7 @@ const getTopCitiesForMetier = async (romes: string[]) => {
   const cityCounts: { nom: string; job_count: number; geopoint: { lat: number; long: number } }[] = []
 
   await asyncForEach(cities, async (city) => {
-    const count = await getDbCollection("jobs_partners")
+    const count = await getSecondaryDbCollection("jobs_partners")
       .aggregate([
         {
           $geoNear: {
@@ -321,7 +321,7 @@ const getTopCitiesForMetier = async (romes: string[]) => {
 }
 
 const getFormationsForMetier = async (romes: string[]) => {
-  const niveaux = await getDbCollection("formationcatalogues")
+  const niveaux = await getSecondaryDbCollection("formationcatalogues")
     .aggregate([
       {
         $match: { rome_codes: { $in: romes } },
