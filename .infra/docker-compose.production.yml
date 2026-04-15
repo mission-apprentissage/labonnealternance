@@ -32,6 +32,7 @@ services:
     stop_grace_period: 2m
     command: ["yarn", "cli", "start"]
     environment:
+      LBA_RATE_LIMIT_ALLOW_LIST: "88.164.218.226/32"
       NODE_OPTIONS: "--max_old_space_size=1280"
     volumes:
       - /opt/app/data/server:/data
