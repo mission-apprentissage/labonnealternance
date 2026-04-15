@@ -23,6 +23,9 @@ const config = {
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
+  rateLimit: {
+    allowList: env.get("LBA_RATE_LIMIT_ALLOW_LIST").default("").asArray(),
+  },
   catalogueUrl: env.get("LBA_CATALOGUE_URL").required().asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").required().asString(),
   lbaSecret: env.get("LBA_SECRET").required().asString(),
