@@ -48,12 +48,12 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
 
 const getFormations = (
   query: object,
-  filter: object = {
+  projection: object = {
     lieu_formation_geo_coordonnees: 1,
     rome_codes: 1,
     _id: 0,
   }
-) => getSecondaryDbCollection("formationcatalogues").find(query, filter).toArray()
+) => getSecondaryDbCollection("formationcatalogues").find(query, { projection }).toArray()
 
 const getTrainingsFromParameters = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>): Promise<IFormationCatalogue[]> => {
   let formations
