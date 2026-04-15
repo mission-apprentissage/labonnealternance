@@ -31,6 +31,7 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
             flex: 1,
             marginLeft: fr.spacing("3v"),
           },
+          "& .fr-btns-group": { width: "100%" },
         }}
       >
         <DsfrHeader {...DsfrHeaderProps1J1S} />

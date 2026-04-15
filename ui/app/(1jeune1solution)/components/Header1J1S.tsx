@@ -27,7 +27,6 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
         alignItems: "center",
         gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
         "& > img": { xs: { maxWidth: "89px", height: "auto" }, md: { maxWidth: "155px", height: "auto" } },
-        "& > ul": { maxWidth: "100%" },
       }}
       key="header-1j1s-title"
     >

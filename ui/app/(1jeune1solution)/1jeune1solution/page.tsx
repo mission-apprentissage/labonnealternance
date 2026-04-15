@@ -179,7 +179,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Box>
         </Box>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("6v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
-          <Box sx={{ display: { md: "block" }, margin: "auto" }}>
+          <Box sx={{ display: { md: "block" }, margin: "auto", "& > img": { maxWidth: "100%", height: "auto" } }}>
             <NextImage src="/images/1j1s/mobile-left.webp" alt="" aria-hidden="true" width={314} height={339} unoptimized />
           </Box>
 
