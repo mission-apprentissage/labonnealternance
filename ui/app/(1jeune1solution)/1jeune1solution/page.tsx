@@ -89,11 +89,32 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
       >
         <Box sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/bulb.svg" width={78} height={83} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
-          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v") }}>
+          <Typography
+            sx={{
+              background: "#FFE817",
+              width: "fit-content",
+              padding: "0",
+              fontWeight: 800,
+              lineHeight: "32px",
+              fontSize: "20px",
+              mt: fr.spacing("6v"),
+              textTransform: "uppercase",
+            }}
+          >
             350 000 opportunités
           </Typography>
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("2v"), mb: fr.spacing("3v") }}
+            sx={{
+              background: "#FFE817",
+              width: "fit-content",
+              padding: "0",
+              fontWeight: 800,
+              lineHeight: "32px",
+              fontSize: "20px",
+              mt: fr.spacing("2v"),
+              mb: fr.spacing("3v"),
+              textTransform: "uppercase",
+            }}
           >
             pour lancer votre carrière
           </Typography>
