@@ -5,6 +5,7 @@ import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
 import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps1J1S } from "@/app/(1jeune1solution)/components/Header1J1S"
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
 
 export default async function UnJeuneUneSolutionLayout({ children }: PropsWithChildren) {
   return (
@@ -15,6 +16,7 @@ export default async function UnJeuneUneSolutionLayout({ children }: PropsWithCh
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
+      <InfoBanner showInfo={false} showAlert={false} showOK={false} showEnvAlert={true} />
       <Box
         sx={{
           "& .fr-header, & .fr-header__body, & .fr-header__brand": {
