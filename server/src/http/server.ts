@@ -71,7 +71,7 @@ export async function bind(app: Server) {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  const allowedIps = ["127.0.0.0/16", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", ...config.rateLimit.allowList].map((ip) => new Netmask(ip))
+  const allowedIps = [new Netmask("127.0.0.0/16"), new Netmask("10.0.0.0/8"), new Netmask("172.16.0.0/12"), new Netmask("192.168.0.0/16")]
   await app.register(fastifyRateLimt, {
     global: false,
     allowList: (req) => {
