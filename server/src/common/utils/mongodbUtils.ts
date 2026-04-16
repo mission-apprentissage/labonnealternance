@@ -82,7 +82,9 @@ export const getDbCollection = <K extends CollectionName>(name: K): Collection<I
 }
 
 export const getSecondaryDbCollection = <K extends CollectionName>(name: K): Collection<IDocument<K>> => {
-  return ensureInitialization().db().collection(name, { readPreference: "secondary" })
+  return ensureInitialization()
+    .db()
+    .collection(name, { readPreference: config.env === "production" ? "secondary" : "secondaryPreferred" })
 }
 
 export const getCollectionList = async (): Promise<(CollectionInfo | Pick<CollectionInfo, "name" | "type">)[]> => {
