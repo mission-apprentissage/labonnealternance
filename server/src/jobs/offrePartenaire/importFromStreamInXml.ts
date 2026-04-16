@@ -30,6 +30,7 @@ const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim:
 export const xmlToJson = async (offerXml: string, index: number) => {
   try {
     if (index % 1_000 === 0) logger.info("parsing offer", index)
+    offerXml = offerXml.replaceAll("<br>", "<br/>")
     const json = await xmlParser.parseStringPromise(offerXml)
     return json
   } catch (err) {

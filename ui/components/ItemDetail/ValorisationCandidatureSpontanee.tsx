@@ -8,14 +8,22 @@ import { classNames } from "@/utils/classNames"
 import { PAGES } from "@/utils/routes.utils"
 import { TagCandidatureSpontanee } from "./TagCandidatureSpontanee"
 
-export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {}, onClick }: { overridenQueryParams?: Record<string, string>; onClick?: () => void }) => {
+export const ValorisationCandidatureSpontanee = ({
+  overridenQueryParams = {},
+  onClick,
+  disabled,
+}: {
+  overridenQueryParams?: Record<string, string>
+  onClick?: () => void
+  disabled?: boolean
+}) => {
   const router = useRouter()
 
   const localOnClick = useMemo(() => {
     if (typeof window === "undefined") return undefined
     const searchParams = new URL(window.location.href).searchParams
     const recherchePageParams = parseRecherchePageParams(searchParams, IRechercheMode.DEFAULT)
-    const isClickable = Boolean(recherchePageParams.romes.length)
+    const isClickable = Boolean(recherchePageParams.romes.length) && !disabled
     if (!isClickable) return undefined
     return () => {
       const path = PAGES.dynamic
@@ -34,7 +42,7 @@ export const ValorisationCandidatureSpontanee = ({ overridenQueryParams = {}, on
       router.push(fakeUrl.pathname + fakeUrl.search)
       onClick?.()
     }
-  }, [router, overridenQueryParams, onClick])
+  }, [router, overridenQueryParams, onClick, disabled])
 
   return (
     <Box

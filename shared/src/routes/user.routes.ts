@@ -54,7 +54,9 @@ export const zUserRecruteurRoutes = {
       path: "/admin/users-recruteurs",
       querystring: z.object({
         status: extensions.buildEnum(ETAT_UTILISATEUR).optional(),
-        limit: z.string().optional(),
+        limit: z.coerce.number().int().min(1).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        search: z.string().optional(),
       }),
       response: {
         "200": z.array(ZUserRecruteurForAdmin),

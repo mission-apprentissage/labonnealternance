@@ -556,8 +556,6 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
       [],
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
-    delegations: job?.delegations,
-    job_delegation_count: job?.delegations?.length ?? 0,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
@@ -1051,114 +1049,7 @@ export function getCompetencesRomeFromPartnerJob(jobPartner: IJobsPartnersOfferP
   }
 }
 
-// const upsertJobPartnersFromRecruiter = async (recruiter: IRecruiter, job: IJob) => {
-//   const now = new Date()
-
-//   const [romeDetails, lbaJobContactInfo, disabledEngagement] = await Promise.all([
-//     getRomeDetailsFromDB(job.rome_code[0]),
-//     recruiter.is_delegated ? getLbaJobContactInfo(recruiter) : null,
-//     getEntrepriseEngagementFranceTravail(recruiter.establishment_siret),
-//   ])
-
-//   const { definition, acces_metier } = romeDetails ?? {}
-
-//   const delegatedFields = recruiter.is_delegated
-//     ? {
-//         cfa_siret: lbaJobContactInfo?.establishment_siret || null,
-//         cfa_legal_name: lbaJobContactInfo?.establishment_raison_sociale || null,
-//         cfa_apply_phone: lbaJobContactInfo?.phone || null,
-//         cfa_apply_email: lbaJobContactInfo?.email || null,
-//         cfa_address_label: lbaJobContactInfo?.address || null,
-//       }
-//     : {
-//         cfa_siret: null,
-//         cfa_legal_name: null,
-//         cfa_apply_phone: null,
-//         cfa_apply_email: null,
-//         cfa_address_label: null,
-//       }
-
-//   const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
-//   const partnerJobToUpsert: Partial<IJobsPartnersOfferPrivate> = {
-//     _id: job._id,
-//     updated_at: job.job_update_date ?? now,
-//     created_at: job.job_creation_date ?? now,
-//     partner_label: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-//     partner_job_id: job._id.toString(),
-//     is_delegated: recruiter.is_delegated,
-//     job_status_comment: job?.job_status_comment || null,
-//     job_delegation_count: job?.job_delegation_count || null,
-//     delegations: job?.delegations,
-
-//     contract_start: job.job_start_date ?? null,
-//     contract_duration: job.job_duration ?? null,
-//     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
-
-//     contract_is_disabled_elligible: disabledEngagement,
-
-//     contract_rythm: job.job_rythm ?? null,
-
-//     workplace_legal_name: recruiter.establishment_raison_sociale || recruiter.establishment_enseigne || UNKNOWN_COMPANY,
-//     workplace_brand: recruiter.establishment_enseigne,
-//     workplace_siret: recruiter.establishment_siret,
-//     workplace_geopoint: recruiter.geopoint ?? undefined,
-//     workplace_address_label: recruiter.address!,
-//     workplace_address_zipcode: recruiter.address_detail?.code_postal ?? null,
-//     workplace_address_city: getCity(recruiter) ?? null,
-
-//     apply_phone: (lbaJobContactInfo ? lbaJobContactInfo?.phone : recruiter.phone) ?? null,
-//     apply_email: recruiter.is_delegated ? lbaJobContactInfo?.email : recruiter.email,
-
-//     workplace_opco: recruiter.opco ?? null,
-//     workplace_idcc: recruiter.idcc ?? null,
-//     workplace_naf_code: recruiter.naf_code ?? null,
-//     workplace_naf_label: recruiter.naf_label ?? null,
-//     workplace_size: recruiter.establishment_size ?? null,
-//     offer_origin: recruiter.origin ?? null,
-//     offer_target_diploma: getDiplomaLevel(job.job_level_label),
-//     offer_desired_skills:
-//       job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
-//       romeDetails?.competences?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
-//       [],
-//     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
-//     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
-//     offer_access_conditions: acces_metier ? [acces_metier] : [],
-//     offer_title,
-//     offer_rome_codes: job.rome_code ?? null,
-//     offer_description: job.job_description ?? definition ?? "",
-//     offer_creation: job.job_creation_date,
-//     offer_expiration: job.job_expiration_date,
-//     offer_status: getOfferStatus(job.job_status, recruiter.status),
-//     offer_opening_count: job.job_count ?? 1,
-//     offer_multicast: true,
-
-//     contract_remote: null,
-//     offer_status_history: [],
-//     workplace_address_street_label: null,
-//     workplace_description: null,
-//     workplace_name: null,
-//     workplace_website: null,
-
-//     lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, recruiter.establishment_siret, offer_title),
-
-//     ...delegatedFields,
-//   }
-
-//   await getDbCollection("jobs_partners").findOneAndUpdate(
-//     { _id: job._id },
-//     {
-//       $set: partnerJobToUpsert,
-//       $setOnInsert: {
-//         stats_detail_view: 0,
-//         stats_search_view: 0,
-//         stats_postuler: 0,
-//       },
-//     },
-//     { upsert: true }
-//   )
-// }
-
-export const updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
+export const _updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
   const recruiter = await getDbCollection("anonymized_recruiters").findOne({ _id: id })
   const jobIds = recruiter?.jobs?.map((job) => job._id) ?? []
   if (jobIds.length) {

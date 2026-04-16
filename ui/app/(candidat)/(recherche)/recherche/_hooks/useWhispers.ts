@@ -4,6 +4,7 @@ import MersenneTwister from "mersenne-twister"
 import { useMemo } from "react"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { PAGES } from "@/utils/routes.utils"
 
 export type IWhisper = {
   ideaType: "whisper"
@@ -12,11 +13,6 @@ export type IWhisper = {
 }
 
 const WHISPERS: IWhisper[] = [
-  {
-    ideaType: "whisper",
-    message: "Vous avez besoin de passer le permis ? Bénéficiez d'au moins 500€ d'aides dès maintenant.",
-    lien: "https://mes-aides.francetravail.fr/",
-  },
   {
     ideaType: "whisper",
     message: "Certaines communes mettent à disposition des logements pour l'hébergement des alternants.",
@@ -97,8 +93,8 @@ const WHISPERS: IWhisper[] = [
   },
   {
     ideaType: "whisper",
-    message: "Quel sera votre salaire en alternance ? Faites une simulation sur le portail de l’alternance.",
-    lien: "https://www.alternance.emploi.gouv.fr/simulateur-alternant/etape-1",
+    message: "Quel sera votre salaire en alternance ? Accéder au simulateur de rémunération alternance pour le découvrir !",
+    lien: PAGES.static.salaireAlternant.getPath(),
   },
   {
     ideaType: "whisper",
@@ -152,11 +148,6 @@ const WHISPERS: IWhisper[] = [
   },
   {
     ideaType: "whisper",
-    message: "Des doutes sur votre orientation ? Pensez à la Prépa-apprentissage : un dispositif qui vous permet de découvrir un ou plusieurs métiers !",
-    lien: "https://travail-emploi.gouv.fr/la-prepa-apprentissage",
-  },
-  {
-    ideaType: "whisper",
     message: "Découvrez le quotidien et les métiers des apprentis en vidéo.",
     lien: "https://www.filmetonjob.com/videos",
   },
@@ -164,6 +155,11 @@ const WHISPERS: IWhisper[] = [
     ideaType: "whisper",
     message: "Echangez avec des professionnels, découvrez leur quotidien et créer des liens qui pourraient vous aider à trouver un employeur avec My job glasses !",
     lien: "https://www.myjobglasses.com/",
+  },
+  {
+    ideaType: "whisper",
+    message: "Pour vos recherches de logement, rendez-vous sur Mon Logement Étudiant pour découvrir les logements disponibles et de nombreux conseils.",
+    lien: "https://monlogementetudiant.beta.gouv.fr/?utm_source=labonnealternance&utm_medium=referral&utm_campaign=partenariat_backlink&utm_content=popin_info",
   },
 ]
 

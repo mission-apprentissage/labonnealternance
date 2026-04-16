@@ -54,9 +54,8 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.get["/admin/users-recruteurs"])],
     },
     async (req, res) => {
-      const { status, limit } = req.query
-      const parsedLimit = limit ? parseInt(limit, 10) : undefined
-      const groupedUsers = await getUsersForAdmin({ status, limit: parsedLimit })
+      const { status, limit, offset, search } = req.query
+      const groupedUsers = await getUsersForAdmin({ status, limit, offset, search })
       return res.status(200).send(groupedUsers)
     }
   )

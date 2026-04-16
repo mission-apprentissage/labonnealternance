@@ -32,3 +32,5 @@ export default async function FAQ({ searchParams }: { searchParams: Promise<Reco
     />
   )
 }
+
+export const revalidate = 86400 // revalider toutes les 24h (API Notion rate-limitée)

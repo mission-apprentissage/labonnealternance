@@ -26,7 +26,7 @@ import { JOB_PUBLISHING_STATUS, jobsRouteApiv3Converters, zJobOfferApiReadV3, zJ
 import { logger } from "@/common/logger"
 import type { IApiError } from "@/common/utils/errorManager"
 import { normalizeDepartementToRegex } from "@/common/utils/geolib"
-import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
@@ -230,7 +230,7 @@ export const getJobsPartnersFromDB = async ({
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  return await getSecondaryDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivate>([
       ...filterStages,
       {
@@ -256,7 +256,7 @@ export const getJobsPartnersFromDBForUI = async ({
 }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-    offer_expiration: { $gt: new Date() },
+    offer_expiration: force_partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? null : { $gt: new Date() },
     partner_label: force_partner_label ? force_partner_label : { $not: { $in: [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] } }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
@@ -287,7 +287,7 @@ export const getJobsPartnersFromDBForUI = async ({
           { $sort: { distance: 1, offer_creation: -1 } },
         ]
 
-  return await getDbCollection("jobs_partners")
+  return await getSecondaryDbCollection("jobs_partners")
     .aggregate<IJobsPartnersOfferPrivateWithDistance>([
       ...filterStages,
       {
@@ -617,7 +617,7 @@ async function upsertJobOfferPrivate({
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,
     contract_duration: data.contract.duration,
-    contract_type: data.contract.type,
+    contract_type: data.contract.type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     contract_remote: data.contract.remote,
     contract_is_disabled_elligible,
 
@@ -1006,7 +1006,7 @@ export async function getPartnerJobsCount({
   partnerLabel: string
   includePartnerLabel: boolean
 }): Promise<number> {
-  const result = await getDbCollection("jobs_partners")
+  const result = await getSecondaryDbCollection("jobs_partners")
     .aggregate([
       {
         $geoNear: {

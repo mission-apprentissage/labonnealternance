@@ -1,3 +1,4 @@
+import { MAX_SEARCH_ROMES } from "../constants/search.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 
 export const ZLbacError = z
@@ -10,7 +11,10 @@ export const ZLbacError = z
       .array(z.string())
       .openapi({
         description: "Une liste d'erreurs détaillées. Ex : les erreurs de paramétrage de la requête.",
-        example: ["romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234", "romes : Too many rome codes. Maximum is 20."],
+        example: [
+          "romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234",
+          `romes : Too many rome codes. Maximum is ${MAX_SEARCH_ROMES}.`,
+        ],
       })
       .nullish(),
   })
@@ -28,7 +32,10 @@ export const ZApiError = z
       .array(z.string())
       .openapi({
         description: "Une liste d'erreurs détaillées. Ex : les erreurs de paramétrage de la requête.",
-        example: ["romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234", "romes : Too many rome codes. Maximum is 20."],
+        example: [
+          "romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234",
+          `romes : Too many rome codes. Maximum is ${MAX_SEARCH_ROMES}.`,
+        ],
       })
       .nullish(),
   })

@@ -240,7 +240,7 @@ export default function EspaceDeveloppeurs() {
                 sx={{
                   backgroundColor: "#f5f5f5",
                   color: "#333",
-                  padding: 2,
+                  padding: fr.spacing("4v"),
                   borderRadius: 2,
                   overflowX: "auto",
                   fontFamily: "monospace",

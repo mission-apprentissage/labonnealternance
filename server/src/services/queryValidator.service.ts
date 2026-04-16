@@ -1,3 +1,4 @@
+import { MAX_SEARCH_ROMES } from "shared"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 import { isOriginLocal } from "@/common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
@@ -27,7 +28,7 @@ const validateRncp = (rncp: string, error_messages: string[]) => {
  * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
  * @returns {undefined}
  */
-const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">, error_messages: string[], romeLimit = 20) => {
+const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">, error_messages: string[], romeLimit = MAX_SEARCH_ROMES) => {
   const { romes, rncp } = query
 
   // codes ROME : romes
@@ -62,7 +63,7 @@ const validateRomesOrRncp = async (query: Omit<TJobSearchQuery, "isMinimalData">
  * @returns {undefined}
  */
 const validateRomeOrDomain = (
-  { romes, romeDomain, romeLimit = 20, optional }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number; optional?: boolean },
+  { romes, romeDomain, romeLimit = MAX_SEARCH_ROMES, optional }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number; optional?: boolean },
   error_messages: string[]
 ) => {
   if (!optional && !romes && !romeDomain) {
@@ -88,7 +89,7 @@ const validateRomeOrDomain = (
  * @returns {undefined}
  */
 const validateOptionalRomeOrDomain = (
-  { romes, romeDomain, romeLimit = 20 }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number },
+  { romes, romeDomain, romeLimit = MAX_SEARCH_ROMES }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number },
   error_messages: string[]
 ) => {
   validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
@@ -297,7 +298,7 @@ export const formationsRegionQueryValidator = (
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
 
   // codes ROME : romes ou romeDomain optionnels dans ce contexte
-  validateOptionalRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: 20 }, error_messages)
+  validateOptionalRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: MAX_SEARCH_ROMES }, error_messages)
 
   // region. Soit département soit région soit aucune des deux = France entière
   validateOptionalRegion({ region: query.region, departement: query.departement }, error_messages)

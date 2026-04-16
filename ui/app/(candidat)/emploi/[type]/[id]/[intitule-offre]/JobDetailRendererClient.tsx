@@ -7,8 +7,7 @@ import { useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
-import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
-import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
+import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -34,19 +33,7 @@ import { PAGES } from "@/utils/routes.utils"
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
 
-  const jobDetail = <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
-
-  if (rechercheParams?.displayMap) {
-    return (
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        {jobDetail}
-        {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={job} variant="detail" rechercheParams={rechercheParams} />
-      </Box>
-    )
-  }
-
-  return jobDetail
+  return <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
 }
 
 function JobDetail({
@@ -133,16 +120,17 @@ function JobDetail({
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
             <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
               <Box sx={{ mr: fr.spacing("4v") }}>
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasValidEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
+                {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && hasEmail(selectedItem) && (
+                  <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />
+                )}
                 {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler job={selectedItem} />}
+                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !hasEmail(selectedItem) && <PartnerJobPostuler job={selectedItem} />}
               </Box>
-              <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center" }}>
-                {hasValidEmail(selectedItem) ? <div>{tagCandidatureSimplifiee()}</div> : null}
+              <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
                 <ShareLink item={selectedItem} />
               </Box>
             </Box>
-            {selectedItem.company?.mandataire && hasValidEmail(selectedItem) && (
+            {selectedItem.company?.mandataire && hasEmail(selectedItem) && (
               <Stack
                 direction="row"
                 sx={{

@@ -24,7 +24,7 @@ const SuccesDesinscription = () => (
         </Box>
       </Box>
     </Box>
-    <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+    <Stack direction={{ xs: "column", md: "row" }} spacing={fr.spacing("4v")}>
       <Box>
         <Typography sx={{ fontWeight: 700, pb: fr.spacing("6v") }}>En complément, permettez-nous de vous expliquer notre fonctionnement.</Typography>
         <Typography sx={{ pb: fr.spacing("6v") }}>
@@ -33,7 +33,7 @@ const SuccesDesinscription = () => (
         </Typography>
         <Typography>Pour cela, nous exposons différents types d'entreprises :</Typography>
 
-        <Stack spacing={2} sx={{ mt: fr.spacing("6v") }}>
+        <Stack spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("6v") }}>
           <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexDirection: "column" }}>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>
               Celles ayant diffusé une offre d'emploi sur notre{" "}
@@ -85,7 +85,7 @@ const SuccesDesinscription = () => (
 
         <Typography sx={{ fontWeight: 700, mb: fr.spacing("6v") }}>Recruter un alternant présente de multiples avantages :</Typography>
 
-        <Stack spacing={2} sx={{ mt: fr.spacing("6v") }}>
+        <Stack spacing={fr.spacing("4v")} sx={{ mt: fr.spacing("6v") }}>
           <Box sx={{ display: "flex", gap: fr.spacing("4v"), flexDirection: "column" }}>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Anticiper et former des salariés aux besoins de votre entreprise</Typography>
             <Typography sx={{ display: "list-item", ml: fr.spacing("4v") }}>Répondre aux problématiques de recrutement en formant un vivier de candidats employables</Typography>

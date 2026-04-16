@@ -4,7 +4,27 @@ import { zObjectId } from "zod-mongodb-schema"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 
 import type { IModelDescriptor } from "./common.js"
-import { ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
+import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
+
+// Ces partenaires sont exclus des processus de classification et de blacklistage.
+export const PARTNER_WHITELIST: string[] = [
+  JOBPARTNERS_LABEL.JOBTEASER,
+  JOBPARTNERS_LABEL.EMPLOI_INCLUSION,
+  JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
+  JOBPARTNERS_LABEL.DECATHLON,
+  JOBPARTNERS_LABEL.KELIO,
+  "Veritone",
+  "L'Oréal",
+  "BPCE",
+  "Amazon",
+  "Daher",
+  JOBPARTNERS_LABEL.ENEDIS,
+  "Framatome",
+  "GRDF",
+  "Bpifrance",
+  JOBPARTNERS_LABEL.EDF,
+  "La Poste",
+]
 
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",

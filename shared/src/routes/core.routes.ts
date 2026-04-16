@@ -35,6 +35,15 @@ export const zCoreRoutes = {
       },
       securityScheme: null,
     },
+    "/livez": {
+      method: "get",
+      path: "/livez",
+      response: {
+        "200": zResponse,
+        "500": z.union([ZResError, zResponse]),
+      },
+      securityScheme: null,
+    },
     "/version": {
       method: "get",
       path: "/version",
