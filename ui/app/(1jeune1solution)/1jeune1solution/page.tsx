@@ -7,7 +7,7 @@ import { HomeRechercheForm } from "@/app/(home)/_components/HomeRechercheForm"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
-const utmParams = "utm_source=lba&utm_medium=website&utm_campagne=landinglba1j1s"
+const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=landinglba1j1s"
 export default async function unJeune1Solution({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const rechercheParams = parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)
   return (
@@ -89,10 +89,13 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
       >
         <Box sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/bulb.svg" width={78} height={83} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
+          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v") }}>
+            350 000 opportunités
+          </Typography>
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("2v"), mb: fr.spacing("3v") }}
           >
-            LE JOB DE VOS RÊVES
+            pour lancer votre carrière
           </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
             Renseignez{" "}
@@ -137,10 +140,10 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
 
       <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
         <Typography id="home-content-container" variant="h1">
-          La bonne alternance vous révèle
+          La bonne alternance vous connecte
           <br />
           <Box component="span" sx={{ color: "#EA619E" }}>
-            les entreprises qui recrutent en alternance
+            aux entreprises qui recrutent en alternance
           </Box>
         </Typography>
         <Box sx={{ width: "13%", height: "4px", background: "#EA619E", mt: fr.spacing("9v") }} />
