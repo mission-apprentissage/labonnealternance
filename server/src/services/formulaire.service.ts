@@ -1052,7 +1052,7 @@ const startChangeStream = (
   const changeStream = collection.watch(
     [],
     //resumeToken ? (resumeBehavior === "resumeAfter" ? { resumeAfter: resumeToken.resumeTokenData } : { startAfter: resumeToken.resumeTokenData }) : {}
-    resumeToken ? { startAfter: resumeToken.resumeTokenData } : {}
+    resumeToken ? { startAfter: resumeToken.resumeTokenData, readPreference: "primary" } : { readPreference: "primary" }
   )
 
   signal.addEventListener("abort", () => {
