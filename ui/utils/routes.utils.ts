@@ -322,8 +322,9 @@ export const PAGES = {
       title: "Salaire alternant",
       index: true,
       getMetadata: () => ({
-        title: "Simulateur salaire alternant 2026 | Calculez votre rémunération",
-        description: "Simulez gratuitement votre salaire en alternance selon votre âge, contrat (apprentissage ou professionnalisation) et année de formation. Barèmes 2026.",
+        title: "Simulateur salaire alternance 2026 | Calcul gratuit brut et net",
+        description:
+          "Calculez votre salaire net en alternance en 2 clics. Indiquez votre âge, type de contrat et durée : le simulateur affiche votre rémunération mensuelle brut et net.",
       }),
     },
     EspaceDeveloppeurs: {
