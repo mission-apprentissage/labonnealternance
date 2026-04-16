@@ -23,7 +23,7 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
       sx={{
         display: "flex",
         flex: 1,
-        flexDirection: { xs: "column-reverse", md: "row" },
+        flexDirection: { xs: "column", md: "row" },
         alignItems: "center",
         gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
         "& > img": { xs: { maxWidth: "89px", height: "auto" }, md: { maxWidth: "155px", height: "auto" } },
