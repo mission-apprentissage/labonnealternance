@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import Social from "@/app/(1jeune1solution)/components/Social"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
 import type { searchEntreprise } from "@/services/searchEntreprises"
 import { getEntrepriseInformation, validateCfaCreation } from "@/utils/api"
@@ -181,9 +182,28 @@ export default function UnJeune1Solution() {
               <Typography sx={{ fontSize: "28px", fontWeight: 700, lineHeight: "36px" }}>Nous la diffusons gratuitement au plus près des candidats</Typography>
               <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
                 Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-                <span style={{ textDecoration: "underline" }}>La bonne alternance</span>, <span style={{ textDecoration: "underline" }}>France Travail</span>,{" "}
-                <span style={{ textDecoration: "underline" }}>Parcoursup</span>, <span style={{ textDecoration: "underline" }}>HelloWork</span> et{" "}
-                <span style={{ textDecoration: "underline" }}>bien d’autres</span>.
+                <DsfrLink href={PAGES.static.home.getPath()} aria-label="Consulter le site La bonne alternance">
+                  La bonne alternance
+                </DsfrLink>
+                ,{" "}
+                <DsfrLink href="https://www.francetravail.fr/accueil/" aria-label="Consulter le site de France Travail">
+                  France Travail
+                </DsfrLink>
+                ,{" "}
+                <DsfrLink href="https://parcoursup.fr" aria-label="Consulter le site Parcoursup">
+                  Parcoursup
+                </DsfrLink>
+                ,{" "}
+                <DsfrLink href="https://www.hellowork.com" aria-label="Consulter le site HelloWork">
+                  HelloWork
+                </DsfrLink>{" "}
+                et{" "}
+                <DsfrLink
+                  href="https://mission-apprentissage.notion.site/Liste-des-partenaires-de-La-bonne-alternance-3e9aadb0170e41339bac486399ec4ac1"
+                  aria-label="Consulter les autres partenaires de La bonne alternance"
+                >
+                  bien d'autres
+                </DsfrLink>
               </Typography>
             </Box>
           </Box>
