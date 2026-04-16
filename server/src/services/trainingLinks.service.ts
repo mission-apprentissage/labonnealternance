@@ -3,7 +3,7 @@ import { MAX_SEARCH_ROMES } from "shared"
 import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 import { URL } from "url"
 import { asyncForEach } from "@/common/utils/asyncUtils"
-import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config.js"
 import { getRomesFromRncp } from "./external/api-alternance/certification.service"
 import { filterWrongRomes } from "./formation.service"
@@ -54,7 +54,7 @@ const getFormations = (
     rome_codes: 1,
     _id: 0,
   }
-) => getSecondaryDbCollection("formationcatalogues").find(query, { projection }).toArray()
+) => getDbCollection("formationcatalogues").find(query, { projection }).toArray()
 
 const limitSearchRomes = (romes: string[]) => romes.slice(0, MAX_SEARCH_ROMES)
 
@@ -133,7 +133,7 @@ const getRomesGlobaux = async ({ rncp, cfd, mef }: { rncp?: string | null; cfd?:
     return romes
   }
 
-  const tmpFormations = await getSecondaryDbCollection("formationcatalogues")
+  const tmpFormations = await getDbCollection("formationcatalogues")
     .find(
       {
         $or: [{ rncp_code: rncp }, { cfd: cfd ? cfd : undefined }, { "bcn_mefs_10.mef10": mef }],
@@ -278,12 +278,12 @@ export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
           .toArray()
       : Promise.resolve([]),
     cles.length
-      ? getSecondaryDbCollection("formationcatalogues")
+      ? getDbCollection("formationcatalogues")
           .find({ cle_ministere_educatif: { $in: cles } }, { projection: { lieu_formation_geo_coordonnees: 1, rome_codes: 1, cle_ministere_educatif: 1, _id: 0 } })
           .toArray()
       : Promise.resolve([]),
     hasRomesQuery
-      ? (getSecondaryDbCollection("formationcatalogues")
+      ? (getDbCollection("formationcatalogues")
           .find(
             {
               $or: [
