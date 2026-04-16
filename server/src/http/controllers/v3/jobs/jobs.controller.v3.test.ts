@@ -69,15 +69,12 @@ const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersOfferPriv
 
 const jobOfferApiWriteInput: IJobOfferApiWriteV3Input = {
   contract: { start: new Date("2024-09-01T00:00:00.000Z").toJSON() },
-
   offer: {
     title: "Apprentis en développement web",
     rome_codes: ["M1602"],
     description: "Envie de devenir développeur web ? Rejoignez-nous !",
   },
-
   apply: { email: "mail@mail.com" },
-
   workplace: {
     siret: apiEntrepriseEtablissementFixture.dinum.data.siret,
   },
@@ -301,15 +298,7 @@ describe("GET /v3/jobs/search", () => {
 describe("POST /jobs", async () => {
   const now = new Date("2024-06-18T00:00:00.000Z")
 
-  beforeEach(async () => {
-    // Do not mock nextTick
-    vi.useFakeTimers({ toFake: ["Date"] })
-    vi.setSystemTime(now)
-
-    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
-
-    const mockGeo = mockGeolocalisation()
-
+  beforeAll(async () => {
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
       siren: "130025265",
@@ -318,6 +307,19 @@ describe("POST /jobs", async () => {
       idcc: 1459,
       url: null,
     })
+    return async () => {
+      await getDbCollection("opcos").deleteMany({})
+    }
+  })
+
+  beforeEach(async () => {
+    // Do not mock nextTick
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(now)
+
+    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
+
+    const mockGeo = mockGeolocalisation()
 
     return () => {
       mockGeo.persist(false)
@@ -356,7 +358,7 @@ describe("POST /jobs", async () => {
     expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
-  it.only("should create a new job offer", async () => {
+  it("should create a new job offer", async () => {
     const response = await jobsSdk.createOffer({
       data: jobOfferApiWriteInput,
       token,
@@ -488,23 +490,6 @@ describe("PUT /jobs/:id", async () => {
     },
   }
 
-  beforeAll(async () => {
-    await getDbCollection("opcos").insertOne({
-      _id: new ObjectId(),
-      siren: "130025265",
-      opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-      opco_short_name: "AKTO",
-      idcc: 1459,
-      url: null,
-    })
-
-    await getDbCollection("jobs_partners").insertOne(originalJob)
-    return async () => {
-      await getDbCollection("opcos").deleteMany({})
-      await getDbCollection("jobs_partners").deleteMany({})
-    }
-  })
-
   beforeEach(async () => {
     // Do not mock nextTick
     vi.useFakeTimers({ shouldAdvanceTime: true })
@@ -514,9 +499,21 @@ describe("PUT /jobs/:id", async () => {
 
     const mockGeo = mockGeolocalisation()
 
-    return () => {
+    await getDbCollection("opcos").insertOne({
+      _id: new ObjectId(),
+      siren: "130025265",
+      opco: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
+      opco_short_name: "AKTO",
+      idcc: 1459,
+      url: null,
+    })
+    await getDbCollection("jobs_partners").insertOne(originalJob)
+
+    return async () => {
       mockGeo.persist(false)
       vi.useRealTimers()
+      await getDbCollection("opcos").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
     }
   })
 
@@ -529,8 +526,8 @@ describe("PUT /jobs/:id", async () => {
     })
 
     expect.soft(response.statusCode).toBe(401)
-    expect(response.json()).toEqual({ error: "Unauthorized", message: "Unable to parse token invalid-signature", statusCode: 401 })
-    expect(await getDbCollection("jobs_partners").findOne({ _id: id })).toEqual(originalJob)
+    expect.soft(response.json()).toEqual({ error: "Unauthorized", message: "Unable to parse token invalid-signature", statusCode: 401 })
+    expect.soft(await getDbCollection("jobs_partners").findOne({ _id: originalJob._id })).toEqual(originalJob)
   })
 
   it("should update a job offer", async () => {
