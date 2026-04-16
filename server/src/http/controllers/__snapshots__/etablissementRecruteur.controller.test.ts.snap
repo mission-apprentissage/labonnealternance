@@ -10,16 +10,6 @@ exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le
 }
 `;
 
-exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le recruteur est créé avec une offre 2`] = `
-{
-  "email": "email@email.com",
-  "first_name": "John",
-  "last_name": "Doe",
-  "origin": "lba",
-  "phone": "0612345678",
-}
-`;
-
 exports[`POST /etablissement/creation > Création de CFA > Vérifie que le CFA est créé 1`] = `
 {
   "email": "email@email.com",

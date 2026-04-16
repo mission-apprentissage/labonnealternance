@@ -11,8 +11,18 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+// Mock mailer service to avoid sending actual emails during tests
+vi.mock("@/services/mailer.service", () => {
+  return {
+    default: {
+      sendEmail: vi.fn().mockResolvedValue({ messageId: "test-message-id", accepted: ["test@example.com"] }),
+      renderEmail: vi.fn().mockResolvedValue("<html>Test Email</html>"),
+    },
+  }
+})
 
 const buildCreateJobDataFromReferentiel = (referentielRome: IReferentielRome) => {
   return {
@@ -77,6 +87,10 @@ describe("formulaire.controller", () => {
 
     return async () => {
       await getDbCollection("referentielromes").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("userswithaccounts").deleteMany({})
+      await getDbCollection("rolemanagements").deleteMany({})
+      await getDbCollection("entreprises").deleteMany({})
     }
   })
 
