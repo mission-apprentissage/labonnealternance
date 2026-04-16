@@ -44,7 +44,7 @@
     "next": "^16.1.6",
     "next-plausible": "^3.12.5",
     "next-recompose-plugins": "^3.0.1",
-    "notion-client": "7.7.1",
+    "notion-client": "7.10.0",
     "notistack": "^3.0.2",
     "react": "19.2.3",
     "react-csv": "^2.2.2",
