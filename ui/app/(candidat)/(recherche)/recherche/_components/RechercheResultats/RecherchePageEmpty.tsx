@@ -1,6 +1,4 @@
-import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { CandidatRechercheFilters } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheFilters"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { RechercheHeader } from "./RechercheHeader"
@@ -28,7 +26,6 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
       </Box>
       <Box
         sx={{
-          backgroundColor: fr.colors.decisions.background.alt.grey.default,
           height: "100vh",
           flexDirection: "column",
           display: {
@@ -48,6 +45,7 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
               md: "row",
             },
           }}
+          id="search-content-container"
         >
           <Box
             sx={{
@@ -66,7 +64,6 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
                 margin: "auto",
               }}
             >
-              <CandidatRechercheFilters rechercheParams={props.rechercheParams} />
               <RechercheResultatsPlaceholder {...props} />
             </Box>
           </Box>

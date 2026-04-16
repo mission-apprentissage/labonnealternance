@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import type { Virtualizer } from "@tanstack/react-virtual"
 import { useRef } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
@@ -10,7 +10,6 @@ import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { CandidatRechercheFilters } from "./CandidatRechercheFilters"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
@@ -34,15 +33,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
     }
   }
 
-  elements.push(
-    {
-      height: 122,
-      render: () => <CandidatRechercheFilters rechercheParams={props.rechercheParams} />,
-      onRender: undefined,
-      item: undefined,
-    },
-    ...RechercheResultatsList({ ...props, scrollToItem })
-  )
+  elements.push(...RechercheResultatsList({ ...props, scrollToItem }))
 
   if (displayMobileForm) {
     return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
@@ -66,29 +57,28 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const scolledElementIndex = getScolledElementIndex()
 
   return (
-    <Box
-      sx={{
-        backgroundColor: fr.colors.decisions.background.alt.grey.default,
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <RechercheHeader {...props} />
+    <>
       <Box
         sx={{
-          overflow: "hidden",
-          flex: 1,
-          display: "flex",
-          flexDirection: {
-            xs: "column",
-            lg: "row",
-          },
+          display: { xs: "none", lg: "block" },
+          maxWidth: "xl",
+          margin: "auto",
+          mt: fr.spacing("4v"),
+          px: fr.spacing("4v"),
         }}
       >
-        <VirtualContainer ref={scrollElement} virtualizerRef={virtualizerRef} defaultHeight={270} elements={elements} scrollToElementIndex={scolledElementIndex} />
+        <Typography component="h1" variant="h1">
+          Trouver formation et emploi{" "}
+          <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
+            en alternance
+          </Typography>
+        </Typography>
       </Box>
-    </Box>
+      <Box sx={{ position: "sticky", top: 0, zIndex: 5, backgroundColor: "white" }}>
+        <RechercheHeader {...props} />
+      </Box>
+      <VirtualContainer ref={scrollElement} virtualizerRef={virtualizerRef} defaultHeight={270} elements={elements} scrollToElementIndex={scolledElementIndex} useWindowScroll />
+    </>
   )
 }
 
@@ -99,18 +89,16 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
     return (
       <>
         <EnqueteTally />
-        <Box role="main" tabIndex={-1} component="main" id="search-content-container">
-          <RecherchePageEmpty {...props} />
-        </Box>
+        <RecherchePageEmpty {...props} />
         <Footer />
       </>
     )
   }
 
   return (
-    <Box role="main" component="main">
+    <>
       <EnqueteTally />
       <RecherchePageComponentWithParams {...props} />
-    </Box>
+    </>
   )
 }

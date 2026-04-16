@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
@@ -97,7 +97,7 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
   }
 
   return [
-    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
+    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto", mt: fr.spacing("5v") }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
       {jobQuery.errorMessage && <ErrorMessage message={jobQuery.errorMessage} />}
 
@@ -168,6 +168,8 @@ function ResultCardWithContainer({
   return (
     <Box
       sx={{
+        maxWidth: "xl",
+        margin: "auto",
         my: fr.spacing("2v"),
         px: { md: 0, lg: fr.spacing("4v") },
       }}

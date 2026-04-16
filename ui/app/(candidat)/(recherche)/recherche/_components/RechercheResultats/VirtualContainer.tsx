@@ -17,6 +17,7 @@ export function VirtualContainer({
   scrollToElementIndex = 0,
   ref,
   virtualizerRef,
+  useWindowScroll = false,
 }: {
   defaultHeight: number
   elements: (VirtualElement | React.ReactNode)[]
@@ -25,27 +26,31 @@ export function VirtualContainer({
   scrollToElementIndex?: number
   ref?: RefObject<HTMLElement>
   virtualizerRef?: RefObject<Virtualizer<any, Element>>
+  useWindowScroll?: boolean
 }) {
-  const parentRef = useRef(null)
+  const parentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (ref) {
-      ref.current = parentRef.current
+      ref.current = useWindowScroll ? (document.documentElement as HTMLElement) : parentRef.current
     }
-  }, [ref])
+  }, [ref, useWindowScroll])
 
   const elements: VirtualElement[] = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
   }, [rawElements])
 
+  const scrollMargin = useWindowScroll ? (parentRef.current?.offsetTop ?? 0) : 0
+
   const columnVirtualizer = useVirtualizer({
     count: elements.length + 1,
-    getScrollElement: () => parentRef.current,
+    getScrollElement: () => (useWindowScroll ? document.documentElement : parentRef.current),
     estimateSize: (index) => {
       return elements[index]?.height ?? defaultHeight
     },
     overscan: 10,
+    scrollMargin,
   })
 
   useEffect(() => {
@@ -62,17 +67,20 @@ export function VirtualContainer({
       ref={parentRef}
       className="VirtualContainer"
       sx={{
-        overflow: "auto",
-        height: "100%",
-        width: "100%",
-        contain: "strict",
-        flex: 1,
+        ...(useWindowScroll
+          ? { width: "100%" }
+          : {
+              overflow: "auto",
+              height: "100%",
+              width: "100%",
+              contain: "strict",
+              flex: 1,
+            }),
         ...parentStyle,
       }}
     >
       <Box
         sx={{
-          maxWidth: "xl",
           height: columnVirtualizer.getTotalSize(),
           width: "100%",
           position: "relative",
@@ -87,7 +95,7 @@ export function VirtualContainer({
               top: 0,
               left: 0,
               width: "100%",
-              transform: `translateY(${virtualItems[0]?.start ?? 0}px)`,
+              transform: `translateY(${(virtualItems[0]?.start ?? 0) - scrollMargin}px)`,
             }}
           >
             {virtualItems.flatMap((virtualRow) => {
