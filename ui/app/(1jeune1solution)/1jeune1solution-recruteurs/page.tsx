@@ -28,6 +28,7 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
     // validate establishment_siret
 
     getEntrepriseInformation(formattedSiret).then((entrepriseData) => {
+      setSubmitting(true)
       if (entrepriseData.error === true) {
         if (entrepriseData.statusCode >= 500) {
           router.push(nextUri)
@@ -66,7 +67,7 @@ export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: s
           }
         }
       } else if (entrepriseData.error === false) {
-        setSubmitting(true)
+        setSubmitting(false)
         router.push(nextUri)
       }
     })
