@@ -111,7 +111,7 @@ export default function UnJeune1Solution() {
                 Publier une offre en alternance
               </Typography>
               <Typography sx={{ fontSize: "20px", mt: fr.spacing("6v") }}>Pour démarrer, recherchez le nom ou le SIRET de votre entreprise :</Typography>
-              <CreationCompteForm origin="1Jeune1Solution" onSelectOrganisation={onSelectOrganisation} />
+              <CreationCompteForm origin="1jeune1solution" onSelectOrganisation={onSelectOrganisation} />
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>

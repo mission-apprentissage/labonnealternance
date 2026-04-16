@@ -30,7 +30,7 @@ export const DsfrHeaderProps1J1S: Omit<HeaderProps, "navigation"> = {
       }}
       key="header-1j1s-title"
     >
-      <Typography sx={{ fontSize: { xs: "14px", md: "18px" }, fontWeight: 800, lineHeight: "16px" }}>1Jeune1Solution</Typography>
+      <Typography sx={{ fontSize: { xs: "14px", md: "18px" }, fontWeight: 800, lineHeight: "16px" }}>1jeune1solution</Typography>
       <Typography sx={{ fontSize: { xs: "14px", md: "18px" }, fontWeight: 800, lineHeight: "16px" }}>avec</Typography>
       <NextImage width="155" height="40" src="/images/logo_LBA.svg" aria-label="La bonne alternance" alt="La bonne alternance" />
     </Box>,
