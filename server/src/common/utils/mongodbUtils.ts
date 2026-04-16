@@ -33,6 +33,8 @@ export const connectToMongodb = async (uri: string) => {
     retryReads: true,
     minPoolSize: config.env === "local" ? 0 : 5,
     maxPoolSize: 50,
+    localThresholdMS: 50,
+    readPreference: config.env === "local" ? "primary" : "secondaryPreferred",
     serverSelectionTimeoutMS: config.env === "local" ? 1_000 : 10_000,
   })
 
@@ -79,12 +81,6 @@ export const getDatabase = (): Db => {
 
 export const getDbCollection = <K extends CollectionName>(name: K): Collection<IDocument<K>> => {
   return ensureInitialization().db().collection(name)
-}
-
-export const getSecondaryDbCollection = <K extends CollectionName>(name: K): Collection<IDocument<K>> => {
-  return ensureInitialization()
-    .db()
-    .collection(name, { readPreference: config.env === "production" ? "secondary" : "secondaryPreferred" })
 }
 
 export const getCollectionList = async (): Promise<(CollectionInfo | Pick<CollectionInfo, "name" | "type">)[]> => {
