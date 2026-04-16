@@ -17,7 +17,7 @@ import { PAGES } from "@/utils/routes.utils"
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
-const utmParams = "utm_source=lba&utm_medium=website&utm_campagne=recruteurs_landinglba1j1s"
+const utmParams = "utm_source=lba&utm_medium=website&utm_campaign=recruteurs_landinglba1j1s"
 
 export const CreationCompteForm = ({ origin, onSelectOrganisation }: { origin: string; onSelectOrganisation: (organisation: Organisation | null) => void }) => {
   const router = useRouter()
