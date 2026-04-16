@@ -15,7 +15,7 @@ export default function getJobPublishedTimeAndApplications({ item }: { item: ILb
       {(item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) && (
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Image width={16} height={17} src="/images/eclair.svg" alt="" />
-          <Box sx={{ color: "#0063CB", fontSize: "12px", whiteSpace: "nowrap", ml: 1 }}>{item.applicationCount} candidature(s)</Box>
+          <Box sx={{ color: "#0063CB", fontSize: "12px", whiteSpace: "nowrap", ml: 1, textTransform: "uppercase", fontWeight: "bold" }}>{item.applicationCount} candidature(s)</Box>
         </Box>
       )}
     </Box>
