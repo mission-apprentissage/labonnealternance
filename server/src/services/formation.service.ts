@@ -9,7 +9,7 @@ import type { INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import type { IApiError } from "@/common/utils/errorManager"
 import { roundDistance } from "@/common/utils/geolib"
 import { isValidEmail } from "@/common/utils/isValidEmail"
-import { getDbCollection, getSecondaryDbCollection } from "@/common/utils/mongodbUtils"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
@@ -129,7 +129,7 @@ const getFormations = async ({
         query,
       },
     })
-    formations = await getSecondaryDbCollection("formationcatalogues").aggregate(stages).toArray()
+    formations = await getDbCollection("formationcatalogues").aggregate(stages).toArray()
   } else {
     stages.unshift({
       $match: query,
@@ -140,7 +140,7 @@ const getFormations = async ({
       },
     })
 
-    formations = await getSecondaryDbCollection("formationcatalogues").aggregate(stages).toArray()
+    formations = await getDbCollection("formationcatalogues").aggregate(stages).toArray()
   }
 
   return formations
@@ -220,7 +220,7 @@ const getRegionFormations = async ({
     },
   })
 
-  const formations: any[] = await getSecondaryDbCollection("formationcatalogues").aggregate(stages).toArray()
+  const formations: any[] = await getDbCollection("formationcatalogues").aggregate(stages).toArray()
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
