@@ -75,6 +75,7 @@ exports[`jobEtFormationV1 > Verifie que > la route renvoie les bonnes données 1
             "dureeContrat": "6 mois",
             "elligibleHandicap": false,
             "employeurDescription": "workplace_description",
+            "isCfaEntreprise": false,
             "jobExpirationDate": "2050-01-01T00:00:00.000Z",
             "jobStartDate": "2021-01-28T15:00:00.000Z",
             "offer_access_conditions": [
@@ -158,6 +159,7 @@ exports[`jobEtFormationV1 > Verifie que > la route renvoie les bonnes données 1
             "dureeContrat": "6 mois",
             "elligibleHandicap": false,
             "employeurDescription": "workplace_description",
+            "isCfaEntreprise": false,
             "jobExpirationDate": "2050-01-01T00:00:00.000Z",
             "jobStartDate": "2021-01-28T15:00:00.000Z",
             "offer_access_conditions": [
@@ -241,6 +243,7 @@ exports[`jobEtFormationV1 > Verifie que > la route renvoie les bonnes données 1
             "dureeContrat": "6 mois",
             "elligibleHandicap": false,
             "employeurDescription": "workplace_description",
+            "isCfaEntreprise": false,
             "jobExpirationDate": "2050-01-01T00:00:00.000Z",
             "jobStartDate": "2021-01-28T15:00:00.000Z",
             "offer_access_conditions": [

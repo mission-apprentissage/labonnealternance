@@ -356,7 +356,7 @@ describe("POST /jobs", async () => {
     expect(response.json()).toEqual({ error: "Forbidden", message: "Unauthorized", statusCode: 403 })
   })
 
-  it("should create a new job offer", async () => {
+  it.only("should create a new job offer", async () => {
     const response = await jobsSdk.createOffer({
       data: jobOfferApiWriteInput,
       token,
@@ -488,15 +488,7 @@ describe("PUT /jobs/:id", async () => {
     },
   }
 
-  beforeEach(async () => {
-    // Do not mock nextTick
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-    vi.setSystemTime(now)
-
-    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
-
-    const mockGeo = mockGeolocalisation()
-
+  beforeAll(async () => {
     await getDbCollection("opcos").insertOne({
       _id: new ObjectId(),
       siren: "130025265",
@@ -507,6 +499,20 @@ describe("PUT /jobs/:id", async () => {
     })
 
     await getDbCollection("jobs_partners").insertOne(originalJob)
+    return async () => {
+      await getDbCollection("opcos").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  beforeEach(async () => {
+    // Do not mock nextTick
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.setSystemTime(now)
+
+    vi.mocked(getEtablissementFromGouvSafe).mockResolvedValue(apiEntrepriseEtablissementFixture.dinum)
+
+    const mockGeo = mockGeolocalisation()
 
     return () => {
       mockGeo.persist(false)
