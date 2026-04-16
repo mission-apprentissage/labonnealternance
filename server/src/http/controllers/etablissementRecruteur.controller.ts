@@ -77,7 +77,11 @@ export default (server: Server) => {
         entrepriseOpt = await getDbCollection("entreprises").findOne({ siret })
       }
       if (!entrepriseOpt) {
-        const siretResponse = await getEntrepriseDataFromSiret({ siret, type: cfa_delegated_siret ? CFA : ENTREPRISE })
+        const siretResponse = await getEntrepriseDataFromSiret({ siret, type: ENTREPRISE })
+        if ("errorCode" in siretResponse && siretResponse.errorCode === BusinessErrorCodes.IS_CFA) {
+          // pas d'enregistrement de la réponse dans entreprise pour ce code d'erreur
+          throw badRequest(siretResponse.message, siretResponse)
+        }
         entrepriseOpt = await upsertEntrepriseData(siret, "création de compte entreprise", siretResponse, false)
         if ("error" in siretResponse) {
           throw badRequest(siretResponse.message, siretResponse)
