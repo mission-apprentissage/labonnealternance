@@ -231,7 +231,7 @@ export default function APropos() {
                   <Image src={diagoriente} alt="Diagoriente" style={{ width: "100%", height: "auto" }} />
                   <Image src={tbd} alt="Tableau de bord de l'apprentissage" style={{ width: "100%", height: "auto" }} />
                   <Box sx={{ width: "100%", height: "auto", backgroundColor: "#fff", border: "2px solid #dcdcdc" }}>
-                    <Image src={rco} alt="Le catalogue des Carif Oref" style={{ width: "100%", height: "auto" }} />
+                    <Image src={rco} alt="Réseau des Carif-Oref" style={{ width: "100%", height: "auto" }} />
                   </Box>
                 </Box>
 
