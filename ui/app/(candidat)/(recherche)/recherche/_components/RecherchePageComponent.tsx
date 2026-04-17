@@ -61,24 +61,43 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
     <>
       <Box
         sx={{
-          display: { xs: "none", lg: "block" },
           maxWidth: "xl",
           margin: "auto",
-          mt: fr.spacing("4v"),
-          px: fr.spacing("4v"),
+          mt: { xs: 0, lg: fr.spacing("4v") },
+          px: { xs: 0, lg: fr.spacing("4v") },
         }}
       >
-        <Typography component="h1" variant="h1">
+        <Typography
+          component="h1"
+          variant="h1"
+          sx={{
+            display: { xs: "none", lg: "block" },
+          }}
+        >
           Trouver formation et emploi{" "}
           <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
             en alternance
           </Typography>
         </Typography>
+        <Typography
+          component="h1"
+          variant="srOnly"
+          sx={{ display: { xs: "block", lg: "none" }, position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
+        >
+          Trouver formation et emploi en alternance
+        </Typography>
       </Box>
       <Box sx={{ position: "sticky", top: 0, zIndex: 5, backgroundColor: "white" }}>
         <RechercheHeader {...props} />
       </Box>
-      <VirtualContainer ref={scrollElement} virtualizerRef={virtualizerRef} defaultHeight={270} elements={elements} scrollToElementIndex={scolledElementIndex} useWindowScroll />
+      <VirtualContainer
+        scrollElementRef={scrollElement}
+        virtualizerRef={virtualizerRef}
+        defaultHeight={270}
+        elements={elements}
+        scrollToElementIndex={scolledElementIndex}
+        useWindowScroll
+      />
     </>
   )
 }

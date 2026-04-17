@@ -1,7 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"

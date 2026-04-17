@@ -15,7 +15,7 @@ export function VirtualContainer({
   parentStyle,
   containerStyle,
   scrollToElementIndex = 0,
-  ref,
+  scrollElementRef,
   virtualizerRef,
   useWindowScroll = false,
 }: {
@@ -24,17 +24,17 @@ export function VirtualContainer({
   parentStyle?: SxProps<Theme>
   containerStyle?: SxProps<Theme>
   scrollToElementIndex?: number
-  ref?: RefObject<HTMLElement>
+  scrollElementRef?: RefObject<HTMLElement>
   virtualizerRef?: RefObject<Virtualizer<any, Element>>
   useWindowScroll?: boolean
 }) {
   const parentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (ref) {
-      ref.current = useWindowScroll ? (document.documentElement as HTMLElement) : parentRef.current
+    if (scrollElementRef) {
+      scrollElementRef.current = useWindowScroll ? (document.documentElement as HTMLElement) : parentRef.current
     }
-  }, [ref, useWindowScroll])
+  }, [scrollElementRef, useWindowScroll])
 
   const elements: VirtualElement[] = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/promise-function-async
