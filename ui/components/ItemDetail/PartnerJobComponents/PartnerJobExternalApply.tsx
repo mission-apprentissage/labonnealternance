@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
-import type { ILbaItemPartnerJobJson } from "shared/models/index"
+import type { ILbaItemPartnerJobJson } from "shared"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { notifyJobPostulerV3 } from "@/utils/api"
@@ -13,7 +13,7 @@ const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE", "F
 export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJobJson }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
 
-  const matamoPayload = {
+  const matomoPayload = {
     job_offer_id: job.id,
     job_offer_type: "offre-partenaire",
     job_offer_company: job.company.name,
@@ -23,7 +23,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
 
   const closeModalWithEvent = (event: string) => {
     pushMatomoEvent({
-      ...matamoPayload,
+      ...matomoPayload,
       event,
     })
     onClose()
@@ -41,7 +41,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
               onOpen()
             }, 2000)
             pushMatomoEvent({
-              ...matamoPayload,
+              ...matomoPayload,
               event: MATOMO_EVENTS.PARTNER_APPLY_POPIN_SHOW,
             })
           },
@@ -59,7 +59,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
       >
         <Box sx={{ p: fr.spacing("6v") }}>
           <Typography variant="h2" sx={{ mb: fr.spacing("4v") }}>
-            Avez-vous postulé à l’offre de {job.title}
+            Avez-vous postulé à l’offre de {job.title} ?
           </Typography>
           <Typography>Nous veillons à ce que les offres proposées par nos partenaires vous aident dans vos recherches d’une alternance. </Typography>
         </Box>
