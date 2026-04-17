@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import type { Virtualizer } from "@tanstack/react-virtual"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
@@ -59,12 +59,61 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
   return (
     <>
+      <RecherchePageHeader rechercheParams={props.rechercheParams} />
+      <VirtualContainer
+        scrollElementRef={scrollElement}
+        virtualizerRef={virtualizerRef}
+        defaultHeight={270}
+        elements={elements}
+        scrollToElementIndex={scolledElementIndex}
+        useWindowScroll
+      />
+    </>
+  )
+}
+
+function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
+  const headerRef = useRef<HTMLDivElement>(null)
+  const headerHeightRef = useRef(0)
+  const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
+
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        headerHeightRef.current = headerRef.current.offsetHeight
+      }
+    }
+
+    updateHeaderHeight()
+    window.addEventListener("resize", updateHeaderHeight)
+
+    return () => window.removeEventListener("resize", updateHeaderHeight)
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (headerHeightRef.current === 0) return
+
+      const currentScroll = window.scrollY || document.documentElement.scrollTop
+      const nextIsCollapsedHeader = currentScroll > headerHeightRef.current
+      setIsCollapsedHeader((previousIsCollapsedHeader) => (previousIsCollapsedHeader === nextIsCollapsedHeader ? previousIsCollapsedHeader : nextIsCollapsedHeader))
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll)
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  return (
+    <>
       <Box
         sx={{
           maxWidth: "xl",
           margin: "auto",
           mt: { xs: 0, lg: fr.spacing("4v") },
           px: { xs: 0, lg: fr.spacing("4v") },
+          position: "relative",
         }}
       >
         <Typography
@@ -81,23 +130,15 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
         </Typography>
         <Typography
           component="h1"
-          variant="srOnly"
+          className="fr-sr-only"
           sx={{ display: { xs: "block", lg: "none" }, position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
         >
           Trouver formation et emploi en alternance
         </Typography>
       </Box>
-      <Box sx={{ position: "sticky", top: 0, zIndex: 5, backgroundColor: "white" }}>
-        <RechercheHeader {...props} />
+      <Box ref={headerRef} sx={{ minHeight: isCollapsedHeader ? headerHeightRef.current : undefined }}>
+        <RechercheHeader rechercheParams={rechercheParams} fullWidth={isCollapsedHeader} />
       </Box>
-      <VirtualContainer
-        scrollElementRef={scrollElement}
-        virtualizerRef={virtualizerRef}
-        defaultHeight={270}
-        elements={elements}
-        scrollToElementIndex={scolledElementIndex}
-        useWindowScroll
-      />
     </>
   )
 }
