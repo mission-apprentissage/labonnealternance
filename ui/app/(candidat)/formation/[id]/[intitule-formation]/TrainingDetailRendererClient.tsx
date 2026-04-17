@@ -3,9 +3,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/dist/client/components/navigation"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 import type { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -84,9 +83,14 @@ function TrainingDetailPage({
   const isCollapsed = isMobile && isCollapsedHeader
 
   useEffect(() => {
-    if (headerRef.current && headerHeightRef.current === 0) {
-      headerHeightRef.current = headerRef.current.offsetHeight
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        headerHeightRef.current = headerRef.current.offsetHeight
+      }
     }
+    updateHeaderHeight()
+    window.addEventListener("resize", updateHeaderHeight)
+    return () => window.removeEventListener("resize", updateHeaderHeight)
   }, [])
 
   useEffect(() => {
@@ -162,7 +166,7 @@ function TrainingDetailPage({
         </Box>
       )}
 
-      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, my: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
         <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
           {/* Header carte — toujours dans le flux, scrolle normalement */}
           <Box
@@ -176,9 +180,14 @@ function TrainingDetailPage({
             }}
           >
             <Box sx={{ width: "100%", pl: 0, pb: fr.spacing("2v") }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box sx={{ display: { xs: "block", lg: "flex" }, justifyContent: "space-between", alignItems: "center" }}>
+                <Box sx={{ display: { xs: "flex", lg: "none" }, mb: fr.spacing("2v"), justifyContent: "end" }}>
+                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+                </Box>
                 <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
-                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+                <Box sx={{ display: { xs: "none", lg: "block" } }}>
+                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+                </Box>
               </Box>
 
               <Box id="detail-header" component="p" color="grey.600" mt={1} mb={1}>
@@ -254,7 +263,7 @@ function TrainingDetailPage({
           )}
         </Box>
       )}
-      <BackToTopButton />
+      {!isMobile && <BackToTopButton />}
       <Footer />
     </Box>
   )

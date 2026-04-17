@@ -79,9 +79,14 @@ function JobDetail({
   const isCollapsed = isMobile && isCollapsedHeader
 
   useEffect(() => {
-    if (headerRef.current && headerHeightRef.current === 0) {
-      headerHeightRef.current = headerRef.current.offsetHeight
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        headerHeightRef.current = headerRef.current.offsetHeight
+      }
     }
+    updateHeaderHeight()
+    window.addEventListener("resize", updateHeaderHeight)
+    return () => window.removeEventListener("resize", updateHeaderHeight)
   }, [])
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({
     items: resultList,
@@ -265,7 +270,7 @@ function JobDetail({
         </Box>
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
-      <BackToTopButton />
+      {!isMobile && <BackToTopButton />}
       <Footer />
     </Box>
   )

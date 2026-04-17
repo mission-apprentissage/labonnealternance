@@ -25,11 +25,6 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     notifyJobDetailViewV3(recruteurLba)
   }, [recruteurLba?.company?.siret])
 
-  useEffect(() => {
-    // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
-    document.getElementsByClassName("choiceCol")[0]?.scrollTo(0, 0)
-  }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
-
   const { formValues } = useContext(DisplayContext)
 
   return (

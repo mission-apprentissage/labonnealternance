@@ -10,6 +10,7 @@ import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
@@ -90,6 +91,7 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
       <>
         <EnqueteTally />
         <RecherchePageEmpty {...props} />
+        <BackToTopButton />
         <Footer />
       </>
     )
@@ -99,6 +101,7 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
     <>
       <EnqueteTally />
       <RecherchePageComponentWithParams {...props} />
+      <BackToTopButton />
     </>
   )
 }
