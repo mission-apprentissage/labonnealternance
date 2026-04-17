@@ -1,3 +1,6 @@
+import { processEdf } from "@/jobs/offrePartenaire/edf/processEdf"
+import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
+import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
@@ -32,13 +35,15 @@ import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/importEmploiInclusion"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
+import { processEtudiant } from "./offrePartenaire/etudiant/processEtudiant"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { fillLbaUrl, renewLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
-import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
+import { deduplicateHellowork } from "./offrePartenaire/hellowork-merge/deduplicateHellowork"
+import { processHellowork } from "./offrePartenaire/hellowork-merge/processHellowork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "./offrePartenaire/jooble/processJooble"
@@ -230,10 +235,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {
-    fct: processHellowork,
-    description: "Importe les offres hellowork dans la collection raw raw & computed",
-  },
-  {
     fct: processRhAlternance,
     description: "Importe les offres RH Alternance  dans la collection raw & computed",
   },
@@ -382,7 +383,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
-  { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
+  {
+    fct: syncLbaJobsIntoJobsPartners,
+    description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs",
+  },
   {
     fct: syncLbaJobsIntoJobsPartnersFull,
     description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
@@ -403,10 +407,21 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
   },
-  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
+  {
+    fct: updateSEO,
+    description: "Met à jour les données calculées pour le SEO",
+  },
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEdf,
+    description: "Import du flux EDF jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEnedis,
+    description: "Import du flux Enedis jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: analyzeRemovedRomes,
@@ -441,6 +456,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Import du flux Emploi Inclusion jusqu'à la collection computed_jobs_partners",
   },
   {
+    fct: processEtudiant,
+    description: "Import du flux Etudiant jusqu'à la collection computed_jobs_partners",
+  },
+  {
     fct: importFichesRncp,
     description: "Import des fichers RNCP dans la base de données",
   },
@@ -467,5 +486,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: deduplicateHellowork,
+    description: "Déduplique les 2 flux Hellowork",
+  },
+  {
+    fct: processHellowork,
+    description: "Importe les offres des 2 flux Hellowork dans computed_jobs_partners",
+  },
+  {
+    fct: analyzeCfaBlockList,
+    description: "",
   },
 ]

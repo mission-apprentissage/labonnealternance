@@ -22,6 +22,7 @@ export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
+  HELLOWORK_BUDDI = "ATS_Hellowork",
   FRANCE_TRAVAIL = "France Travail",
   FRANCE_TRAVAIL_CEGID = "FranceTravail CEGID",
   RH_ALTERNANCE = "RH Alternance",
@@ -40,7 +41,10 @@ export enum JOBPARTNERS_LABEL {
   ENGAGEMENT_JEUNES = "Engagement Jeunes",
   JOBTEASER = "Jobteaser",
   APEC = "APEC",
+  EDF = "EDF",
   EMPLOI_INCLUSION = "Les emplois de l'inclusion",
+  ENEDIS = "Enedis",
+  JOB_ETUDIANT = "L'Etudiant",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }

@@ -12,3 +12,5 @@ export default async function CGU() {
   const notionPage = await fetchNotionPage("3086c10e9c074efdaa895c089961fcd0")
   return <CGURendererClient recordMap={notionPage} />
 }
+
+export const revalidate = 86400 // revalider toutes les 24h (API Notion rate-limitée)

@@ -13,3 +13,5 @@ export default async function MentionsLegales() {
 
   return <MentionLegalesRendererClient mentionsLegales={mentionsLegales} />
 }
+
+export const revalidate = 86400 // revalider toutes les 24h (API Notion rate-limitée)

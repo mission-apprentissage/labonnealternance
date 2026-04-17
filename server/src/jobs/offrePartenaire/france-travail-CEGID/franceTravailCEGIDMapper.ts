@@ -155,7 +155,7 @@ export const franceTravailCEGIDMapper = async (job: IFranceTravailCEGIDJob, cont
     workplace_siret: "13000548123699", // France travail
     workplace_name: "France Travail",
     workplace_description: organisationDescription || null,
-    workplace_website: "https://www.francetravail.fr/",
+    workplace_website: "https://www.francetravail.org/accueil/",
 
     workplace_address_city: city,
     workplace_address_zipcode: zipcode,

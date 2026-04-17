@@ -1,8 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
+import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
-
 import { Footer } from "@/app/_components/Footer"
 import { DsfrHeaderProps } from "@/app/_components/Header"
 import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
@@ -11,6 +11,13 @@ import { PAGES } from "@/utils/routes.utils"
 export default async function Layout({ children }: PropsWithChildren) {
   return (
     <>
+      <SkipLinks
+        links={[
+          { label: "Menu", anchor: "#header-links" },
+          { label: "Contenu", anchor: "#main-content" },
+          { label: "Pied de page", anchor: "#footer-links" },
+        ]}
+      />
       <Header />
       <Box
         component="main"
@@ -22,6 +29,8 @@ export default async function Layout({ children }: PropsWithChildren) {
         }}
       >
         <Box
+          id="main-content"
+          tabIndex={-1}
           sx={{
             maxWidth: 1200,
             paddingTop: fr.spacing("8v"),
@@ -45,20 +54,23 @@ export function Header() {
   const { quickAccessItems, ...rest } = DsfrHeaderProps
 
   return (
-    <DsfrHeader
-      {...rest}
-      quickAccessItems={[
-        <HeaderQuickAccessItem
-          key="connexion"
-          quickAccessItem={{
-            iconId: "fr-icon-close-line",
-            text: "Fermer",
-            linkProps: {
-              href: PAGES.static.accesRecruteur.getPath(),
-            },
-          }}
-        />,
-      ]}
-    />
+    <nav role="navigation" aria-label="Navigation principale">
+      <DsfrHeader
+        {...rest}
+        quickAccessItems={[
+          <HeaderQuickAccessItem
+            key="connexion"
+            quickAccessItem={{
+              iconId: "fr-icon-close-line",
+              text: "Fermer",
+              linkProps: {
+                href: PAGES.static.accesRecruteur.getPath(),
+                "aria-label": "Fermer - retour à l'espace recruteur",
+              },
+            }}
+          />,
+        ]}
+      />
+    </nav>
   )
 }

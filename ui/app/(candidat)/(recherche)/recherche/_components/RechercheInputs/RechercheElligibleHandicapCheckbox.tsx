@@ -6,8 +6,17 @@ import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hoo
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 const infoIconButtonId = "recherche-elligible-handicap-tooltip-button"
+
+const trackOnChange = (newValue: boolean, rechercheResults: ReturnType<typeof useRechercheResults>) => {
+  pushMatomoEvent({
+    event: MATOMO_EVENTS.FILTER_HANDI_CHANGED,
+    filter_checked: newValue, // false = filtre désactivé ou true = filtre activé
+    filter_total_results: rechercheResults.elligibleHandicapCount, // Nombre total de résultats affichés après application du filtre
+  })
+}
 
 export function RechercheElligibleHandicapCheckboxFormik({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const [field, _meta, helper] = useField({ name: "elligibleHandicapFilter" })
@@ -33,7 +42,7 @@ export function RechercheElligibleHandicapCheckbox({
 
   const label = (
     <>
-      Employeur handi-engagé{displayedCount === null ? "" : ` (${displayedCount})`}
+      Employeur handi-accueillant{displayedCount === null ? "" : ` (${displayedCount})`}
       <InfoTooltipOrModal
         tooltipContent={
           <Box sx={{ maxWidth: "800px" }}>
@@ -51,37 +60,48 @@ export function RechercheElligibleHandicapCheckbox({
   )
 
   return (
-    <fieldset className="fr-fieldset" id={id} style={{ marginBottom: 0, minWidth: "298px" }}>
-      <Box
-        className="fr-fieldset__element"
-        sx={{
-          marginBottom: 0,
-          flex: {
-            xs: "0 0 auto",
-            md: "1 1 100%",
-          },
-          "& .fr-label:before": {
-            marginTop: "9px !important",
-          },
-        }}
-        onClick={(event) => {
-          const { target } = event
-          event.preventDefault()
-          event.stopPropagation()
-          if ("id" in target && target.id === infoIconButtonId) {
-            return false
-          }
-          onChange(!value)
-          return false
+    <Box sx={{ marginBottom: "auto" }}>
+      <fieldset
+        className="fr-fieldset"
+        id={id}
+        style={{
+          marginBottom: "auto !important",
+          minWidth: "298px",
         }}
       >
-        <div className="fr-checkbox-group fr-checkbox-group--sm">
-          <input name={id} id={checkboxId} type="checkbox" checked={value} data-fr-js-checkbox-input={value} readOnly />
-          <label className="fr-label" htmlFor={checkboxId}>
-            {label}
-          </label>
-        </div>
-      </Box>
-    </fieldset>
+        <Box
+          className="fr-fieldset__element"
+          sx={{
+            marginBottom: "auto",
+            marginTop: "auto",
+            flex: {
+              xs: "0 0 auto",
+              md: "1 1 100%",
+            },
+            "& .fr-label:before": {
+              marginTop: "9px !important",
+            },
+          }}
+          onClick={(event) => {
+            const { target } = event
+            event.preventDefault()
+            event.stopPropagation()
+            if ("id" in target && target.id === infoIconButtonId) {
+              return false
+            }
+            onChange(!value)
+            trackOnChange(!value, rechercheResults)
+            return false
+          }}
+        >
+          <div className="fr-checkbox-group fr-checkbox-group--sm">
+            <input name={id} id={checkboxId} type="checkbox" checked={value} data-fr-js-checkbox-input={value} readOnly />
+            <label className="fr-label" htmlFor={checkboxId}>
+              {label}
+            </label>
+          </div>
+        </Box>
+      </fieldset>
+    </Box>
   )
 }
