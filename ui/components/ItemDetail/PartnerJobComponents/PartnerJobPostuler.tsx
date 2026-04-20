@@ -1,16 +1,10 @@
 "use client"
 
-import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import { Box } from "@mui/material"
 import type { ILbaItemPartnerJobJson } from "shared"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
 import CandidatureParTelephone from "@/components/ItemDetail/CandidatureParTelephone"
-import { notifyJobPostulerV3 } from "@/utils/api"
-import { SendPlausibleEvent } from "@/utils/plausible"
-
-const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE", "FranceTravail CEGID"]
+import PartnerJobExternalApply from "@/components/ItemDetail/PartnerJobComponents/PartnerJobExternalApply"
 
 export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   // KBA fix enum shared/models/lbaItem.model.ts
@@ -20,22 +14,7 @@ export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => 
   }
 
   if (job.contact?.url) {
-    return (
-      <Box sx={{ my: fr.spacing("4v") }}>
-        <Button
-          linkProps={{
-            href: job.contact.url,
-            onClick: () => {
-              SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })
-              notifyJobPostulerV3(job)
-            },
-          }}
-          data-tracking-id="postuler-offre-job-partner"
-        >
-          Je postule{filteredPartnerLabels.includes(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
-        </Button>
-      </Box>
-    )
+    return <PartnerJobExternalApply job={job} />
   }
 
   if (job.contact?.phone) {
