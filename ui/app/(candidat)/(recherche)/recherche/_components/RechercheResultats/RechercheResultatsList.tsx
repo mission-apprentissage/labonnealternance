@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { assertUnreachable } from "shared/utils/assertUnreachable"
 import { Footer } from "@/app/_components/Footer"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
@@ -203,6 +204,7 @@ function ResultCard({
             utm_medium: "website",
             utm_campaign: "lba_recherche_promo-candidature-spontanee",
           }}
+          disabled={rechercheParams.typesEmploi && rechercheParams.typesEmploi.length !== 0 && !rechercheParams.typesEmploi.includes(TYPE_EMPLOI_OPTIONS.candidatures_spontanees)}
         />
       )
     }

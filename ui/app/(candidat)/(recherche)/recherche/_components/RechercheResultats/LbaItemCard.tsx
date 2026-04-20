@@ -49,12 +49,14 @@ function getAdresse(item: ILbaItem) {
 }
 
 function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  if (
-    item.ideaType === LBA_ITEM_TYPE_OLD.LBA ||
-    item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA ||
-    item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA ||
-    item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-  ) {
+  const isRecruteurLba = item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA
+  const isOffreEmploiLba = item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA || item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+
+  if (isRecruteurLba && !item.contact?.hasEmail) {
+    return null
+  }
+
+  if (isRecruteurLba || isOffreEmploiLba) {
     return (
       <Typography
         component="span"
@@ -74,7 +76,7 @@ function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
 }
 
 function DatePublication({ item }: Pick<ResultCardProps, "item">) {
-  if (item.ideaType !== LBA_ITEM_TYPE_OLD.MATCHA && item.ideaType !== LBA_ITEM_TYPE_OLD.PARTNER_JOB) {
+  if (item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     return null
   }
 
@@ -181,7 +183,7 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
                 component="span"
                 sx={{
                   alignItems: { xs: "left", sm: "left", md: "center" },
-                  gap: { xs: fr.spacing("2v"), md: fr.spacing("4v") },
+                  gap: { xs: fr.spacing("2v"), md: fr.spacing("1v") },
                   display: "flex",
                   flexDirection: { xs: "column", md: "row" },
                 }}

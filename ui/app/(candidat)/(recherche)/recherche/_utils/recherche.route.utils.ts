@@ -1,8 +1,9 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
-import { typedKeys } from "shared"
+import { MAX_SEARCH_ROMES, parseEnum, typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
-import { NIVEAUX_POUR_LBA } from "shared/constants/recruteur"
-import { zDiplomaParam } from "shared/routes/_params"
+import type { ITypeEmploi } from "shared/constants/recruteur"
+import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
+import { zDiplomaParam, zTypesEmploiParam } from "shared/routes/_params"
 import { z } from "zod"
 
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -38,6 +39,18 @@ function deserializeItemReference(item: string): ItemReference | null {
   }
 }
 
+export function serializeTypesEmploi(typesEmploi: ITypeEmploi[]) {
+  return typesEmploi.join(",")
+}
+
+function deserializeTypesEmploi(typesEmploiRaw: string | null): ITypeEmploi[] {
+  if (!typesEmploiRaw) return []
+  return (typesEmploiRaw?.split(",") ?? []).flatMap((typeEmploi) => {
+    const enumValue = parseEnum(TYPE_EMPLOI_OPTIONS, typeEmploi)
+    return enumValue ? [enumValue] : []
+  })
+}
+
 export function getItemReference(item: ItemReferenceLike): ItemReference {
   return {
     id: item.id,
@@ -70,6 +83,7 @@ const zRecherchePageParams = z.object({
     .nullable(),
   radius: z.number(),
   diploma: zDiplomaParam.nullish(),
+  typesEmploi: zTypesEmploiParam.nullish(),
   job_name: z.string().nullable(),
   job_type: z.string().nullable(),
   displayEntreprises: z.boolean().optional(),
@@ -93,6 +107,8 @@ export type IRecherchePageParams = Required<z.output<typeof zRecherchePageParams
 
 export type WithRecherchePageParams<T = object> = T & { rechercheParams: IRecherchePageParams }
 
+const normalizeRomes = (romes: string[]) => romes.slice(0, MAX_SEARCH_ROMES)
+
 export enum IRechercheMode {
   DEFAULT = "default",
   FORMATIONS_ONLY = "formations-only",
@@ -104,7 +120,7 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
   const query = new URLSearchParams()
 
   if (rechercheParams?.romes?.length > 0) {
-    query.set("romes", rechercheParams.romes.join(","))
+    query.set("romes", normalizeRomes(rechercheParams.romes).join(","))
   }
 
   if (rechercheParams.radius !== undefined) {
@@ -125,6 +141,9 @@ export function buildRecherchePageParams(rechercheParams: Partial<IRecherchePage
 
   if (rechercheParams.diploma) {
     query.set("diploma", rechercheParams.diploma)
+  }
+  if (rechercheParams.typesEmploi?.length > 0) {
+    query.set("typesEmploi", serializeTypesEmploi(rechercheParams.typesEmploi))
   }
   if (rechercheParams.job_name) {
     query.set("job_name", rechercheParams.job_name)
@@ -183,7 +202,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     return null
   }
 
-  const romes = search.get("romes")?.split(",") ?? []
+  const romes = normalizeRomes(search.get("romes")?.split(",") ?? [])
   const activeItems = deserializeItemReferences(search.get("activeItems") ?? "")
 
   const rawLat = search.get("lat")
@@ -200,6 +219,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
 
   const radius = parseInt(search.get("radius") ?? "30", 10)
   const diploma = typedKeys(NIVEAUX_POUR_LBA).find((x) => x === search.get("diploma")) || null
+  const typesEmploi = deserializeTypesEmploi(search.get("typesEmploi"))
   const job_name = search.get("job_name") || null
   const job_type = search.get("job_type") || null
 
@@ -216,6 +236,7 @@ export function parseRecherchePageParams(search: ReadonlyURLSearchParams | URLSe
     diploma,
     job_name,
     job_type,
+    typesEmploi,
     displayMobileForm,
     elligibleHandicapFilter,
     activeItems,

@@ -884,6 +884,14 @@ export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStream
   await updateJobsPartnersFromRecruiterById(change.documentKey._id)
 }
 
+const recruiterStatsFieldRegex = /^jobs\.\d+\.stats_(detail_view|search_view|postuler)$/
+
+const isStatsOnlyRecruiterUpdate = (change: ChangeStreamUpdateDocument<IRecruiter>) => {
+  const updatedFields = Object.keys(change.updateDescription.updatedFields ?? {})
+
+  return updatedFields.length > 0 && updatedFields.every((field) => recruiterStatsFieldRegex.test(field))
+}
+
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
   const recruiter = await getDbCollection("recruiters").findOne({ _id: recruiterId })
 
@@ -1071,7 +1079,7 @@ const startChangeStream = (
   const changeStream = collection.watch(
     [],
     //resumeToken ? (resumeBehavior === "resumeAfter" ? { resumeAfter: resumeToken.resumeTokenData } : { startAfter: resumeToken.resumeTokenData }) : {}
-    resumeToken ? { startAfter: resumeToken.resumeTokenData } : {}
+    resumeToken ? { startAfter: resumeToken.resumeTokenData, readPreference: "primary" } : { readPreference: "primary" }
   )
 
   signal.addEventListener("abort", () => {
@@ -1081,11 +1089,17 @@ const startChangeStream = (
 
   changeStream
     .on("change", async (change) => {
-      logger.info("change detected in change stream for", collectionName, ":", change)
       if (collectionName === "recruiters") {
         switch (change.operationType) {
           case "insert":
+            await updateJobsPartnersFromRecruiterUpdate(change)
+            await storeResumeToken("recruiters", change._id as IResumeTokenData)
+            break
           case "update":
+            if (isStatsOnlyRecruiterUpdate(change)) {
+              await storeResumeToken("recruiters", change._id as IResumeTokenData)
+              break
+            }
             await updateJobsPartnersFromRecruiterUpdate(change)
             await storeResumeToken("recruiters", change._id as IResumeTokenData)
             break

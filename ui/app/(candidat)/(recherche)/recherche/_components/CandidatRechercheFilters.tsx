@@ -2,7 +2,9 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
+import { RechercheTypesEmploiSelect } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheTypeEmploiSelect"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
+import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { RechercheElligibleHandicapCheckbox } from "./RechercheInputs/RechercheElligibleHandicapCheckbox"
@@ -10,7 +12,8 @@ import { RechercheNiveauSelect } from "./RechercheInputs/RechercheNiveauSelect"
 import { RechercheRayonSelect } from "./RechercheInputs/RechercheRayonSelect"
 
 function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const { diploma, radius, elligibleHandicapFilter } = rechercheParams
+  const { diploma, radius, elligibleHandicapFilter, typesEmploi, displayFormations, displayEntreprises } = rechercheParams
+  const rechercheResults = useRechercheResults(rechercheParams)
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
 
@@ -18,6 +21,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
     <Box
       sx={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "space-between",
       }}
     >
@@ -47,6 +51,15 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
             navigateToRecherchePage({ diploma: newDiploma })
           }}
         />
+        {!(displayFormations && !displayEntreprises) && (
+          <RechercheTypesEmploiSelect
+            rechercheResults={rechercheResults}
+            value={typesEmploi ?? []}
+            onChange={(newTypesEmploi) => {
+              navigateToRecherchePage({ typesEmploi: newTypesEmploi })
+            }}
+          />
+        )}
         <RechercheElligibleHandicapCheckbox
           rechercheParams={rechercheParams}
           value={elligibleHandicapFilter}
@@ -74,8 +87,8 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
         marginTop: fr.spacing("4v"),
         marginBottom: fr.spacing("8v"),
         paddingLeft: {
-          md: fr.spacing("20v"),
-          lg: fr.spacing("28v"),
+          md: fr.spacing("2v"),
+          lg: fr.spacing("4v"),
         },
         paddingRight: {
           md: fr.spacing("4v"),
