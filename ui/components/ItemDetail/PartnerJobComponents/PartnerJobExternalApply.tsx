@@ -16,7 +16,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
   const matomoPayload = {
     job_offer_id: job.id,
     job_offer_type: "offre-partenaire",
-    job_offer_company: job.company.name,
+    job_offer_company: job.company?.name ?? "",
     job_offer_name: job.title,
     partner_name: job.job.partner_label,
   }
