@@ -69,7 +69,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
           </Box>
           <Box sx={{ flex: 1, textAlign: "left" }}>
             <Button priority="secondary" onClick={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_LATER)}>
-              Peut être plus tard
+              Non, peut-être plus tard
             </Button>
           </Box>
         </Box>

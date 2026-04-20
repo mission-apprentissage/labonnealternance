@@ -9,7 +9,7 @@ import PartnerJobExternalApply from "@/components/ItemDetail/PartnerJobComponent
 export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => {
   // KBA fix enum shared/models/lbaItem.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
-  if (job.contact?.email) {
+  if (job.contact?.hasEmail) {
     return <CandidaterButton item={job} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} />
   }
 

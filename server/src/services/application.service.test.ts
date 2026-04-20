@@ -130,6 +130,9 @@ describe("Sending application", () => {
     return async () => {
       await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("applicants").deleteMany({})
+      await getDbCollection("applications").deleteMany({})
     }
   })
   it("Should refuse sending application to non existent job", async () => {
@@ -185,6 +188,48 @@ describe("Sending application", () => {
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
+  })
+
+  it("Should accept application for a Taleez partner job with null apply_email without throwing INTERNAL_EMAIL", async () => {
+    const taleezJobId = new ObjectId("6081289803569600282e0005")
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: taleezJobId,
+        partner_label: "Taleez",
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        apply_email: null,
+      })
+    )
+
+    const result = await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: taleezJobId.toString() },
+      },
+    })
+
+    expect(result).toHaveProperty("_id")
+  })
+
+  it("Should throw INTERNAL_EMAIL for a non-Taleez partner job with null apply_email", async () => {
+    const partnerJobId = new ObjectId("6081289803569600282e0006")
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: partnerJobId,
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        apply_email: null,
+      })
+    )
+
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: partnerJobId.toString() },
+        },
+      })
+    ).rejects.toThrow(BusinessErrorCodes.INTERNAL_EMAIL)
   })
 })
 
