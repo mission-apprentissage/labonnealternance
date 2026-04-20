@@ -11,8 +11,8 @@ import { Fragment, useEffect, useState } from "react"
 import type { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
+import { isCfaEntreprise } from "shared/services/isCfaEntreprise"
 import { Footer } from "@/app/_components/Footer"
-import { RechercheCarte } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheMap"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -30,7 +30,6 @@ import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/Na
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import StatsInserJeunes from "@/components/ItemDetail/StatsInserJeunes"
 import { DemandeDeContact } from "@/components/RDV/DemandeDeContact"
-import { isCfaEntreprise } from "@/services/cfaEntreprise"
 import fetchInserJeuneStats from "@/services/fetchInserJeuneStats"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { PAGES } from "@/utils/routes.utils"
@@ -46,29 +45,9 @@ const dontBreakOutCssParameters = {
 
 export default function TrainingDetailRendererClient({ training, rechercheParams }: { rechercheParams: IRecherchePageParams; training: ILbaItemFormation2Json }) {
   const result = useRechercheResults(rechercheParams)
-
-  const trainingReference = {
-    id: training.id,
-    ideaType: newItemTypeToOldItemType(training.type),
-  }
-
   const { appliedDate, setPrdvDone } = useFormationPrdvTracker(training.id)
 
-  const detailPage = (
-    <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.displayedItems} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
-  )
-
-  if (rechercheParams?.displayMap) {
-    return (
-      <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "100vh", overflow: "hidden" }}>
-        {detailPage}
-        {/* TODO : remove extended search button from map view */}
-        <RechercheCarte item={trainingReference} variant="detail" rechercheParams={rechercheParams} />
-      </Box>
-    )
-  }
-
-  return detailPage
+  return <TrainingDetailPage selectedItem={training} appliedDate={appliedDate} resultList={result.displayedItems} rechercheParams={rechercheParams} onRdvSuccess={setPrdvDone} />
 }
 
 function TrainingDetailPage({

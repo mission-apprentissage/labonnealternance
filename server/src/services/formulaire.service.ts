@@ -1,5 +1,4 @@
 import { randomUUID } from "node:crypto"
-
 import { badRequest, internal, notFound } from "@hapi/boom"
 import equal from "fast-deep-equal"
 import type { ChangeStreamInsertDocument, ChangeStreamUpdateDocument, Filter, UpdateFilter } from "mongodb"
@@ -240,50 +239,77 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       shouldSentMailToCfa = true
     }
   }
-  const delegations: IDelegation[] = []
-  const sentDelegations: ISentDelegation[] = []
 
   const formations = await getCatalogueFormations(
     {
       $or: [{ etablissement_gestionnaire_id: { $in: etablissementCatalogueIds } }, { etablissement_formateur_id: { $in: etablissementCatalogueIds } }],
-      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
       catalogue_published: true,
     },
-    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+    {
+      etablissement_gestionnaire_courriel: 1,
+      etablissement_formateur_siret: 1,
+      etablissement_gestionnaire_id: 1,
+      etablissement_formateur_id: 1,
+      etablissement_formateur_entreprise_raison_sociale: 1,
+      etablissement_formateur_adresse: 1,
+      etablissement_formateur_code_postal: 1,
+      etablissement_formateur_localite: 1,
+      etablissement_formateur_courriel: 1,
+    }
   )
 
-  await Promise.all(
-    etablissementCatalogueIds.map(async (etablissementId) => {
+  const delegations: IDelegation[] = etablissementCatalogueIds.flatMap((etablissementId) => {
+    try {
       //TODO: il y a des cas particuliers où des formations ont un siret différent tout en ayant le même etablissement_id
       // les délégations sont enregistrées sur le siret de la première formation trouvée
       // le problème est visible lorsque deux formations avec des sirets différents sont proposées sur la ui. Seule une d'entre elle sera
       // affichées comme délégation envoyée ce qui peut perturber l'utilisateur et le faire tenter de renvoyer la délégation
       const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
-      const {
-        etablissement_formateur_siret: siret_code,
-        etablissement_gestionnaire_courriel: email,
-        etablissement_formateur_entreprise_raison_sociale,
-        etablissement_formateur_code_postal,
-        etablissement_formateur_adresse,
-        etablissement_formateur_localite,
-      } = formation ?? {}
-      if (!email || !siret_code) {
-        // This shouldn't happen considering the query filter
-        throw internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
+      if (!formation) {
+        throw internal("Unexpected: no formation found", { jobId, etablissementId })
+      }
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel, etablissement_formateur_courriel } = formation ?? {}
+      const email = etablissement_formateur_courriel ?? etablissement_gestionnaire_courriel
+      if (!email) {
+        throw internal("Unexpected: email vide", { jobId, etablissementId })
+      }
+      if (!siret_code) {
+        throw internal("Unexpected: siret vide", { jobId, etablissementId })
       }
 
-      delegations.push({ siret_code, email })
+      const delegation: IDelegation = {
+        email,
+        siret_code,
+        etablissement_id: etablissementId,
+      }
+      return [delegation]
+    } catch (err) {
+      sentryCaptureException(err)
+      return []
+    }
+  })
 
-      if (shouldSentMailToCfa) {
-        await sendDelegationMailToCFA(email, offre, recruiter, siret_code)
+  const sentDelegations: ISentDelegation[] = []
+  if (shouldSentMailToCfa && delegations.length) {
+    await Promise.all(
+      delegations.map(async (delegation) => {
+        await sendDelegationMailToCFA(delegation, offre, recruiter)
+        const { etablissement_id: etablissementId, siret_code } = delegation
+        const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
+        if (!formation) {
+          throw internal("Unexpected: no formation found", { jobId, etablissementId })
+        }
+        const { etablissement_formateur_entreprise_raison_sociale, etablissement_formateur_adresse, etablissement_formateur_code_postal, etablissement_formateur_localite } =
+          formation
         sentDelegations.push({
           raison_sociale: etablissement_formateur_entreprise_raison_sociale || "",
           siret_code,
           adresse_etablissement: `${etablissement_formateur_adresse}, ${etablissement_formateur_code_postal} ${etablissement_formateur_localite}`,
         })
-      }
-    })
-  )
+      })
+    )
+  }
+
   const jobTitle = offre.offer_title_custom || offre.rome_appellation_label || offre.rome_label
   const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offre._id}/${encodeURIComponent(jobTitle!)}`)
   if (sentDelegations.length) {
@@ -636,7 +662,7 @@ export const checkForJobActivations = async (recruiter: IRecruiter) => {
   await asyncForEach(awaitingJobs, async (job) => {
     job = await activateAndExtendOffre(job._id)
     const delegations = job.delegations ?? []
-    await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation.email, job, recruiter, delegation.siret_code)))
+    await Promise.all(delegations.map(async (delegation) => sendDelegationMailToCFA(delegation, job, recruiter)))
   })
 }
 
@@ -674,7 +700,8 @@ const getJobOrigin = async (recruiter: IRecruiter) => {
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
+export async function sendDelegationMailToCFA(delegation: IDelegation, offre: IJob, recruiter: IRecruiter) {
+  const { email, siret_code } = delegation
   const unsubscribeOF = await getDbCollection("unsubscribedofs").findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
 
@@ -855,6 +882,14 @@ export const updateCfaManagedRecruiter = async (establishment_id: string, payloa
 
 export const updateJobsPartnersFromRecruiterUpdate = async (change: ChangeStreamUpdateDocument<IRecruiter> | ChangeStreamInsertDocument<IRecruiter>) => {
   await updateJobsPartnersFromRecruiterById(change.documentKey._id)
+}
+
+const recruiterStatsFieldRegex = /^jobs\.\d+\.stats_(detail_view|search_view|postuler)$/
+
+const isStatsOnlyRecruiterUpdate = (change: ChangeStreamUpdateDocument<IRecruiter>) => {
+  const updatedFields = Object.keys(change.updateDescription.updatedFields ?? {})
+
+  return updatedFields.length > 0 && updatedFields.every((field) => recruiterStatsFieldRegex.test(field))
 }
 
 export const updateJobsPartnersFromRecruiterById = async (recruiterId: ObjectId) => {
@@ -1044,7 +1079,7 @@ const startChangeStream = (
   const changeStream = collection.watch(
     [],
     //resumeToken ? (resumeBehavior === "resumeAfter" ? { resumeAfter: resumeToken.resumeTokenData } : { startAfter: resumeToken.resumeTokenData }) : {}
-    resumeToken ? { startAfter: resumeToken.resumeTokenData } : {}
+    resumeToken ? { startAfter: resumeToken.resumeTokenData, readPreference: "primary" } : { readPreference: "primary" }
   )
 
   signal.addEventListener("abort", () => {
@@ -1054,11 +1089,17 @@ const startChangeStream = (
 
   changeStream
     .on("change", async (change) => {
-      logger.info("change detected in change stream for", collectionName, ":", change)
       if (collectionName === "recruiters") {
         switch (change.operationType) {
           case "insert":
+            await updateJobsPartnersFromRecruiterUpdate(change)
+            await storeResumeToken("recruiters", change._id as IResumeTokenData)
+            break
           case "update":
+            if (isStatsOnlyRecruiterUpdate(change)) {
+              await storeResumeToken("recruiters", change._id as IResumeTokenData)
+              break
+            }
             await updateJobsPartnersFromRecruiterUpdate(change)
             await storeResumeToken("recruiters", change._id as IResumeTokenData)
             break

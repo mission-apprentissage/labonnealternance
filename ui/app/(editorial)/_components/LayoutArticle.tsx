@@ -52,7 +52,7 @@ export const LayoutArticle = ({
     />
     <Breadcrumb pages={pages} />
     <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
-      <Grid container spacing={fr.spacing("6v")}>
+      <Grid container spacing={fr.spacing("6v")} id="editorial-content-container">
         <Grid size={{ md: 12, xs: 12 }}>
           <Typography component="h1" variant="h1" color={fr.colors.decisions.text.default.info.default}>
             {title}
