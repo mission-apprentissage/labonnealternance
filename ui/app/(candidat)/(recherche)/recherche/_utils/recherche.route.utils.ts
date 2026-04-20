@@ -1,5 +1,5 @@
 import type { ReadonlyURLSearchParams } from "next/navigation"
-import { MAX_SEARCH_ROMES, MAX_SEARCH_ROMES_PRIVATE, parseEnum, typedKeys } from "shared"
+import { MAX_SEARCH_ROMES_PRIVATE, parseEnum, typedKeys } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType } from "shared/constants/lbaitem"
 import type { ITypeEmploi } from "shared/constants/recruteur"
 import { NIVEAUX_POUR_LBA, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
