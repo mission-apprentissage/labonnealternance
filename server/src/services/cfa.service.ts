@@ -1,3 +1,4 @@
+import { internal } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { ICFA } from "shared/models/cfa.model"
 
@@ -13,6 +14,6 @@ export const upsertCfa = async (siret: string, cfaFields: Omit<ICFA, "_id" | "cr
     },
     { upsert: true, returnDocument: "after" }
   )
-  if (!cfa) throw new Error("inattendu: pas de cfa")
+  if (!cfa) throw internal("inattendu: pas de cfa")
   return cfa
 }
