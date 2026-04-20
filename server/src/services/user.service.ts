@@ -11,7 +11,7 @@ import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
 export const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
   const newUserId = new ObjectId()
-  await getDbCollection("users").findOneAndUpdate(
+  const savedUser = await getDbCollection("users").findOneAndUpdate(
     { email },
     {
       $set: update,
@@ -19,9 +19,9 @@ export const createOrUpdateUserByEmail = async (email: string, update: Partial<I
     },
     {
       upsert: true,
+      returnDocument: "after",
     }
   )
-  const savedUser = await getDbCollection("users").findOne({ email })
   if (!savedUser) {
     throw internal("inattendu : user non sauvegardé")
   }
