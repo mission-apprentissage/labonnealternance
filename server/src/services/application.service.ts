@@ -59,7 +59,7 @@ const PARTNER_NAMES = {
   Hellowork: "Hellowork",
 }
 
-const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
+export const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
 
 const images: object = {
   images: {
@@ -366,10 +366,13 @@ export const sendApplicationV2 = async ({
   await checkMaxApplicationCount(lbaJob)
 
   const { type, job, recruiter } = lbaJob
-  const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.apply_email)?.toLowerCase()
-  if (!recruteurEmail) {
-    sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
-    throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
+
+  if (!(type === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && PARTNERS_WITH_APPLICATION_API.includes(job.partner_label))) {
+    const recruteurEmail = (type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? recruiter.email : job.apply_email)?.toLowerCase()
+    if (!recruteurEmail) {
+      sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${type === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? `recruiter: ${recruiter._id} ` : `LbaCompany: ${job._id}`}`)
+      throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
+    }
   }
 
   try {
