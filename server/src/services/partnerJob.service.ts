@@ -110,7 +110,7 @@ function transformPartnerJob(
     },
 
     contact: {
-      email: partnerJob.apply_email,
+      email: "",
       phone: partnerJob.apply_phone,
       url: partnerJob.apply_url,
       hasEmail: partnerJob.apply_email || PARTNERS_WITH_APPLICATION_API.includes(partnerJob.partner_label) ? true : false,
