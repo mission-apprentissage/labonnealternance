@@ -14111,15 +14111,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"notion-client@npm:7.7.1":
-  version: 7.7.1
-  resolution: "notion-client@npm:7.7.1"
+"notion-client@npm:7.10.0":
+  version: 7.10.0
+  resolution: "notion-client@npm:7.10.0"
   dependencies:
-    notion-types: 7.7.1
-    notion-utils: 7.7.1
+    notion-types: 7.10.0
+    notion-utils: 7.10.0
     ofetch: ^1.4.1
     p-map: ^7.0.3
-  checksum: ff481c1a5e6cfd1ff69e6293cd08ec333fe0136a96ae50e355c7eab74027bafad78b0fc3af87a467f3c436e33bc1019b6f8e2f2e182adf27acf5300cea10733f
+  checksum: 62ada87d9f5b32b331127807960c68e0043b87536f0b1fdb83460b960e96d09240f08671bbecf681f77acda38a733b079c67437e349e87da2d77f2006d5546ed
   languageName: node
   linkType: hard
 
@@ -14127,13 +14127,6 @@ __metadata:
   version: 7.10.0
   resolution: "notion-types@npm:7.10.0"
   checksum: 7ab8b81fddffa643a6400bf1a12b02b7774075163d990457bb1116b6cc2d7034cd854d206f71fe40f3add579d6bb9ef09795a5954bb087e9c664e6bfb2b2fd95
-  languageName: node
-  linkType: hard
-
-"notion-types@npm:7.7.1":
-  version: 7.7.1
-  resolution: "notion-types@npm:7.7.1"
-  checksum: de1e8085ba93e31896725b6fef5642563777ae2c7f8acd2d94c80d7f8e54f1a2ed142836b0312682372508248e323b2d22243557c9de1376e5544796cff04a1e
   languageName: node
   linkType: hard
 
@@ -14147,19 +14140,6 @@ __metadata:
     notion-types: 7.10.0
     p-queue: ^8.1.0
   checksum: 24bed992fe9c892b63b30dffde30bcd3b02a651fcc35d7b4bd9e3034a8f93a18ec99e13226b72fe452a0725f46bd892b7a7c2d9f039ed8e07199f82dba86e33c
-  languageName: node
-  linkType: hard
-
-"notion-utils@npm:7.7.1":
-  version: 7.7.1
-  resolution: "notion-utils@npm:7.7.1"
-  dependencies:
-    is-url-superb: ^6.1.0
-    memoize: ^10.1.0
-    normalize-url: ^8.0.1
-    notion-types: 7.7.1
-    p-queue: ^8.1.0
-  checksum: dd849fac2e6a04452d899b556b81526eb98078e5c2eed35e37cd2c69721ad3251235c831e00b6cf8f2cee315571520503372d49412dd1a639fca7cff3943ae4f
   languageName: node
   linkType: hard
 
@@ -18377,7 +18357,7 @@ __metadata:
     next: ^16.1.6
     next-plausible: ^3.12.5
     next-recompose-plugins: ^3.0.1
-    notion-client: 7.7.1
+    notion-client: 7.10.0
     notistack: ^3.0.2
     react: 19.2.3
     react-csv: ^2.2.2

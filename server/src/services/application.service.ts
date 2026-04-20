@@ -57,6 +57,8 @@ const PARTNER_NAMES = {
   Hellowork: "Hellowork",
 }
 
+export const PARTNERS_WITH_APPLICATION_API = ["Taleez"]
+
 const images: object = {
   images: {
     logoLba: `${imagePath}logo_LBA.png`,
@@ -291,13 +293,13 @@ export const sendApplicationV2 = async ({
   }
 
   try {
-    // add applicant_id to application
     const application = await newApplicationToApplicationDocumentV2(newApplication, applicant, lbaJob, caller)
     await s3WriteString("applications", getApplicationCvS3Filename(application), {
       Body: applicant_attachment_content,
     })
     await getDbCollection("applications").insertOne(application)
     await saveApplicationTrafficSourceIfAny({ application_id: application._id, applicant_email: applicant.email, source })
+
     return { _id: application._id }
   } catch (err) {
     sentryCaptureException(err)
@@ -964,9 +966,17 @@ export const processApplicationEmails = {
   async sendEmailsIfNeeded(application: IApplication, applicant: IApplicant) {
     const { to_company_message_id, to_applicant_message_id } = application
     const attachmentContent = await getApplicationAttachmentContent(application)
+
+    const job = application.job_id ? await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(application.job_id) }) : null
+
     if (!to_company_message_id) {
-      await this.sendRecruteurEmail(application, applicant, attachmentContent)
+      if (job && PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
+        await sendApplicationDataToPartner(job, application, applicant, attachmentContent)
+      } else {
+        await this.sendRecruteurEmail(application, applicant, attachmentContent)
+      }
     }
+
     if (!to_applicant_message_id) {
       await this.sendCandidatEmail(application, applicant)
     }
@@ -1466,5 +1476,44 @@ const sendApplicationStatusToHellowork = async ({ status, application }: { statu
         payload,
       },
     })
+  }
+}
+
+const sendApplicationDataToPartner = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
+  if (partnerJob.partner_label === "Taleez") {
+    await sendApplicationDataToTaleez(partnerJob, application, applicant, applicant_attachment_content)
+  }
+}
+
+const sendApplicationDataToTaleez = async (partnerJob: IJobsPartnersOfferPrivate, application: IApplication, applicant: IApplicant, applicant_attachment_content: string) => {
+  try {
+    const payload = {
+      jobToken: partnerJob.partner_job_id,
+      firstName: applicant.firstname,
+      lastName: applicant.lastname,
+      email: applicant.email,
+      cvData: removeDataUrlPrefix(applicant_attachment_content),
+      cvName: application.applicant_attachment_name,
+      phone: applicant.phone,
+      coverText: application.applicant_message_to_company,
+    }
+
+    await axios.post(config.taleez.url, payload, {
+      headers: {
+        "X-Partner-Key": config.taleez.partnerKey,
+      },
+    })
+
+    // no specific response other than http 200 by Taleez, using a placeholder value to mark the application as sent to Taleez
+    await getDbCollection("applications").findOneAndUpdate({ _id: application._id }, { $set: { to_company_message_id: "Taleez" } })
+  } catch (err) {
+    captureException(err, {
+      extra: {
+        message: "Erreur lors de l'envoi de la candidature au partenaire Taleez",
+        applicationId: application._id,
+        jobId: application.job_id,
+      },
+    })
+    throw err
   }
 }

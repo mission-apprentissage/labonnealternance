@@ -15,7 +15,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { generateApplicationToken } from "./appLinks.service"
 import type { IApplicationCount } from "./application.service"
-import { getApplicationByJobCount } from "./application.service"
+import { getApplicationByJobCount, PARTNERS_WITH_APPLICATION_API } from "./application.service"
 import { getJobsPartnersFromDBForUI, getRecipientID, resolveQuery } from "./jobs/jobOpportunity/jobOpportunity.service"
 import { sortLbaJobs } from "./lbajob.service"
 import { filterJobsByOpco } from "./opco.service"
@@ -113,7 +113,7 @@ export function jobPartnerToLbaItemPartnerJob(
       email: "",
       phone: partnerJob.apply_phone,
       url: partnerJob.apply_url,
-      hasEmail: partnerJob.apply_email ? true : false,
+      hasEmail: partnerJob.apply_email || PARTNERS_WITH_APPLICATION_API.includes(partnerJob.partner_label) ? true : false,
     },
 
     nafs: [{ label: partnerJob.workplace_naf_label, code: partnerJob.workplace_naf_code }],
@@ -161,7 +161,7 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
       isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
     },
     contact: {
-      hasEmail: partnerJob.apply_email ? true : false, //TODO: checker des conditions en fonction des partenaires
+      hasEmail: partnerJob.apply_email || PARTNERS_WITH_APPLICATION_API.includes(partnerJob.partner_label) ? true : false,
     },
     // KBA 20250131 Quick fix, to remove once return type LBA_ITEM is merge when all jobs comes only from JOBS_PARTNERS COLLECTION
     token: "",

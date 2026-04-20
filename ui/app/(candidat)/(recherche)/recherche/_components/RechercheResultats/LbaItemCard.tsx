@@ -49,12 +49,14 @@ function getAdresse(item: ILbaItem) {
 }
 
 function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  if (
-    item.ideaType === LBA_ITEM_TYPE_OLD.LBA ||
-    item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA ||
-    item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA ||
-    item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-  ) {
+  const isRecruteurLba = item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA
+  const isOffreEmploiLba = item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA || item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+
+  if (isRecruteurLba && !item.contact?.hasEmail) {
+    return null
+  }
+
+  if (isRecruteurLba || isOffreEmploiLba) {
     return (
       <Typography
         component="span"

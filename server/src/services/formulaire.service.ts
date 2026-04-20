@@ -35,6 +35,7 @@ import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "@/common/utils/mailUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { createViewDelegationLink } from "./appLinks.service"
@@ -173,53 +174,78 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       shouldSentMailToCfa = true
     }
   }
-  const delegations: IDelegation[] = []
-  const sentDelegations: ISentDelegation[] = []
 
   const formations = await getCatalogueFormations(
     {
       $or: [{ etablissement_gestionnaire_id: { $in: etablissementCatalogueIds } }, { etablissement_formateur_id: { $in: etablissementCatalogueIds } }],
-      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
       catalogue_published: true,
     },
-    { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1, etablissement_gestionnaire_id: 1, etablissement_formateur_id: 1 }
+    {
+      etablissement_gestionnaire_courriel: 1,
+      etablissement_formateur_siret: 1,
+      etablissement_gestionnaire_id: 1,
+      etablissement_formateur_id: 1,
+      etablissement_formateur_entreprise_raison_sociale: 1,
+      etablissement_formateur_adresse: 1,
+      etablissement_formateur_code_postal: 1,
+      etablissement_formateur_localite: 1,
+      etablissement_formateur_courriel: 1,
+    }
   )
 
-  await Promise.all(
-    etablissementCatalogueIds.map(async (etablissementId) => {
+  const delegations: IDelegation[] = etablissementCatalogueIds.flatMap((etablissementId) => {
+    try {
       //TODO: il y a des cas particuliers où des formations ont un siret différent tout en ayant le même etablissement_id
       // les délégations sont enregistrées sur le siret de la première formation trouvée
       // le problème est visible lorsque deux formations avec des sirets différents sont proposées sur la ui. Seule une d'entre elle sera
       // affichées comme délégation envoyée ce qui peut perturber l'utilisateur et le faire tenter de renvoyer la délégation
       const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
-      const {
-        etablissement_formateur_siret: siret_code,
-        etablissement_gestionnaire_courriel: email,
-        etablissement_formateur_entreprise_raison_sociale,
-        etablissement_formateur_code_postal,
-        etablissement_formateur_adresse,
-        etablissement_formateur_localite,
-      } = formation ?? {}
-      if (!email || !siret_code) {
-        // This shouldn't happen considering the query filter
-        throw internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
+      if (!formation) {
+        throw internal("Unexpected: no formation found", { jobId, etablissementId })
+      }
+      const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel, etablissement_formateur_courriel } = formation ?? {}
+      const email = etablissement_formateur_courriel ?? etablissement_gestionnaire_courriel
+      if (!email) {
+        throw internal("Unexpected: email vide", { jobId, etablissementId })
+      }
+      if (!siret_code) {
+        throw internal("Unexpected: siret vide", { jobId, etablissementId })
       }
 
-      delegations.push({ siret_code, email })
-
-      if (shouldSentMailToCfa) {
-        await sendDelegationMailToCFA(email, offer, siret_code)
+      const delegation: IDelegation = {
+        email,
+        siret_code,
+        etablissement_id: etablissementId,
+      }
+      return [delegation]
+    } catch (err) {
+      sentryCaptureException(err)
+      return []
+    }
+  })
+  const sentDelegations: ISentDelegation[] = []
+  if (shouldSentMailToCfa && delegations.length) {
+    await Promise.all(
+      delegations.map(async (delegation) => {
+        const { etablissement_id: etablissementId, siret_code } = delegation
+        await sendDelegationMailToCFA(delegation.email, offer, siret_code)
+        const formation = formations.find((formation) => formation.etablissement_gestionnaire_id === etablissementId || formation.etablissement_formateur_id === etablissementId)
+        if (!formation) {
+          throw internal("Unexpected: no formation found", { jobId, etablissementId })
+        }
+        const { etablissement_formateur_entreprise_raison_sociale, etablissement_formateur_adresse, etablissement_formateur_code_postal, etablissement_formateur_localite } =
+          formation
         sentDelegations.push({
           raison_sociale: etablissement_formateur_entreprise_raison_sociale || "",
           siret_code,
           adresse_etablissement: `${etablissement_formateur_adresse}, ${etablissement_formateur_code_postal} ${etablissement_formateur_localite}`,
         })
-      }
-    })
-  )
+      })
+    )
+  }
   if (sentDelegations.length) {
     const jobTitle = offer.offer_title
-    const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offer._id}/${encodeURIComponent(jobTitle!)}`)
+    const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${offer._id}/${encodeURIComponent(jobTitle)}`)
     await mailer.sendEmail({
       to: managingUser.email,
       subject: `Votre offre a été partagée à ${sentDelegations.length} école(s)`,
