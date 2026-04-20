@@ -48,31 +48,31 @@ function getAdresse(item: ILbaItem) {
   return item.place.fullAddress
 }
 
-function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  const isRecruteurLba = item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA
-  const isOffreEmploiLba = item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA || item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
+function hasSmartApply(item: ILbaItem): boolean {
+  if ("contact" in item && item.contact) {
+    return !!item.contact.hasEmail || !!item.contact.url || !!item.contact.phone
+  }
+  return false
+}
 
-  if (isRecruteurLba && !item.contact?.hasEmail) {
+function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
+  if (!hasSmartApply(item) || !("applicationCount" in item) || item.applicationCount == null) {
     return null
   }
 
-  if (isRecruteurLba || isOffreEmploiLba) {
-    return (
-      <Typography
-        component="span"
-        sx={{
-          whiteSpace: "nowrap",
-          color: fr.colors.decisions.text.default.info.default,
-          py: fr.spacing("1v"),
-        }}
-        className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
-      >
-        {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
-      </Typography>
-    )
-  }
-
-  return null
+  return (
+    <Typography
+      component="span"
+      sx={{
+        whiteSpace: "nowrap",
+        color: fr.colors.decisions.text.default.info.default,
+        py: fr.spacing("1v"),
+      }}
+      className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
+    >
+      {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
+    </Typography>
+  )
 }
 
 function DatePublication({ item }: Pick<ResultCardProps, "item">) {

@@ -240,12 +240,8 @@ export const getPartnerJobs = async ({
 
     const rawPartnerJobs = await getJobsPartnersFromDBForUI({ ...resolvedQuery, force_partner_label })
 
-    let applicationCountByJob: null | IApplicationCount[] = null
-
-    if (force_partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-      const ids = rawPartnerJobs.map(({ _id }) => _id)
-      applicationCountByJob = await getApplicationByJobCount(ids)
-    }
+    const ids = rawPartnerJobs.map(({ _id }) => _id)
+    const applicationCountByJob = await getApplicationByJobCount(ids)
     let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData, applicationCountByJob })
 
     // filtrage sur l'opco
@@ -271,10 +267,7 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
     throw notFound("Job not found")
   }
 
-  let applicationCountByJob: null | IApplicationCount[] = null
-  if (rawPartnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-    applicationCountByJob = await getApplicationByJobCount([jobId])
-  }
+  const applicationCountByJob = await getApplicationByJobCount([jobId])
 
   const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
   return partnerJob
