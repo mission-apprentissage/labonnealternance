@@ -286,10 +286,12 @@ export const sendApplicationV2 = async ({
   await checkUserApplicationCountV2(applicant._id, lbaJob, caller)
   await checkMaxApplicationCount(lbaJob)
 
-  const recruteurEmail = job.apply_email?.toLowerCase()
-  if (!recruteurEmail) {
-    sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${`job_partners avec id=${job._id}`}`)
-    throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
+  if (!PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
+    const recruteurEmail = job.apply_email?.toLowerCase()
+    if (!recruteurEmail) {
+      sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${`job_partners avec id=${job._id}`}`)
+      throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
+    }
   }
 
   try {
