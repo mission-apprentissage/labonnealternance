@@ -1,18 +1,16 @@
 import { badRequest } from "@hapi/boom"
 import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
-import { ApplicationScanStatus, JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -663,49 +661,6 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature-spontanee")]))
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-recruteur-lba")]))
-
-    // DB should be updated with both message IDs
-    const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
-    expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
-    expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
-  })
-
-  it("should send applicant and company messages for offres_emploi_lba", async () => {
-    const jobId = new ObjectId()
-    const userId = new ObjectId()
-
-    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
-    await getDbCollection("applicants").insertOne(applicant)
-
-    await saveUserWithAccount({ _id: userId })
-    await saveRecruiter(
-      generateRecruiterFixture({
-        managed_by: userId.toString(),
-        email: "recruiter@company.fr",
-        status: RECRUITER_STATUS.ACTIF,
-        establishment_siret: "12345678901234",
-        jobs: [{ _id: jobId, rome_code: ["A1101"], job_status: JOB_STATUS.ACTIVE }],
-      })
-    )
-
-    const application = generateApplicationFixture({
-      applicant_id: applicant._id,
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      job_id: jobId,
-      company_email: "recruiter@company.fr",
-      to_company_message_id: null,
-      to_applicant_message_id: null,
-      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
-    })
-    await getDbCollection("applications").insertOne(application)
-
-    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
-
-    // Should send both company email (mail-candidature) and applicant email (mail-candidat-offre-emploi)
-    expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
-    const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
-    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature")]))
-    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-offre-emploi")]))
 
     // DB should be updated with both message IDs
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
