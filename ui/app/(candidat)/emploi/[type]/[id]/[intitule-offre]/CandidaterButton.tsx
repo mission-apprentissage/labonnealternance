@@ -10,6 +10,7 @@ import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useSubmitCandidature } from "@/components/ItemDetail/CandidatureLba/services/submitCandidature"
 import ItemDetailApplicationsStatus, { tagCandidatureSimplifiee } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { notifyJobPostulerV3 } from "@/utils/api"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 export function CandidaterButton({
@@ -41,6 +42,14 @@ export function CandidaterButton({
     const emailAvailable = item.contact?.hasEmail
     SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: item.id, "avec contact": emailAvailable ? "oui" : "non" })
     notifyJobPostulerV3(item)
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.SMART_APPLY_OPENED,
+      job_offer_id: item.id,
+      job_offer_type: getMatomoJobOfferType(item.ideaType),
+      job_offer_company: item.company?.name || "non_renseigné",
+      job_offer_name: item.title || "non_renseigné",
+      apply_entry_point: "offer_details",
+    })
   }
 
   const hasAppliedValue = Boolean(applicationDate)

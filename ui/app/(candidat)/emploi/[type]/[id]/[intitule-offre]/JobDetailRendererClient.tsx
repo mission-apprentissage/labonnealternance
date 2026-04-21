@@ -26,6 +26,7 @@ import { RecruteurLbaCandidater } from "@/components/ItemDetail/RecruteurLbaComp
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
@@ -91,6 +92,21 @@ function JobDetail({
     window.addEventListener("resize", updateHeaderHeight)
     return () => window.removeEventListener("resize", updateHeaderHeight)
   }, [])
+
+  useEffect(() => {
+    const position = resultList.findIndex((item) => item.id === selectedItem.id) + 1
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.JOB_OFFER_VIEWED,
+      job_offer_id: selectedItem.id,
+      job_offer_type: getMatomoJobOfferType(selectedItem.ideaType),
+      job_offer_company: selectedItem.company?.name || "non_renseigné",
+      job_offer_name: selectedItem.title || "non_renseigné",
+      position_in_list: position > 0 ? position : undefined,
+      has_contact: Boolean((selectedItem as any).contact?.hasEmail || (selectedItem as any).contact?.url || (selectedItem as any).contact?.phone),
+      search_job_name: rechercheParams.job_name || "non_renseigné",
+      search_address: rechercheParams.geo?.address || "non_renseigné",
+    })
+  }, [selectedItem.id]) // eslint-disable-line react-hooks/exhaustive-deps
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({
     items: resultList,
     currentItemId: selectedItem.id,

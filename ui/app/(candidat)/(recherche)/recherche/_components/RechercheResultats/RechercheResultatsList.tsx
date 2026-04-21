@@ -133,19 +133,23 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
         </Box>
       )}
     </Box>,
-    ...items.map((data, index) => ({
-      height: heightEstimation(data.type),
-      render: () => (
-        <ResultCardWithContainer
-          key={index}
-          rechercheParams={props.rechercheParams}
-          data={data}
-          onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
-        />
-      ),
-      onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
-      item: data,
-    })),
+    ...items.map((data, index) => {
+      const jobPosition = data.type === "lba_item" ? items.slice(0, index).filter((d) => d.type === "lba_item").length + 1 : undefined
+      return {
+        height: heightEstimation(data.type),
+        render: () => (
+          <ResultCardWithContainer
+            key={index}
+            rechercheParams={props.rechercheParams}
+            data={data}
+            jobPosition={jobPosition}
+            onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
+          />
+        ),
+        onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
+        item: data,
+      }
+    }),
     <Box
       key="footer"
       sx={{
@@ -166,10 +170,12 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
 function ResultCardWithContainer({
   data,
   rechercheParams,
+  jobPosition,
   onValorisationCandidatureSpontaneeClick,
 }: {
   data: ResultCardData
   rechercheParams: IRecherchePageParams
+  jobPosition?: number
   onValorisationCandidatureSpontaneeClick: () => void
 }) {
   return (
@@ -181,7 +187,7 @@ function ResultCardWithContainer({
         px: { md: 0, lg: fr.spacing("4v") },
       }}
     >
-      <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />
+      <ResultCard data={data} rechercheParams={rechercheParams} jobPosition={jobPosition} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />
     </Box>
   )
 }
@@ -189,10 +195,12 @@ function ResultCardWithContainer({
 function ResultCard({
   data,
   rechercheParams,
+  jobPosition,
   onValorisationCandidatureSpontaneeClick,
 }: {
   data: ResultCardData
   rechercheParams: IRecherchePageParams
+  jobPosition?: number
   onValorisationCandidatureSpontaneeClick: () => void
 }) {
   const { type } = data
@@ -202,7 +210,7 @@ function ResultCard({
     }
     case "lba_item": {
       const item = data.value
-      return <LbaItemCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} />
+      return <LbaItemCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} position={jobPosition ?? 0} />
     }
     case "ValorisationCandidatureSpontanee": {
       return (

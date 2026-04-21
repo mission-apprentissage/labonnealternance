@@ -1,13 +1,14 @@
 "use client"
 
 import { captureException } from "@sentry/nextjs"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 import { RechercheForm, rechercheFormToRechercheParams, UserItemTypes } from "@/app/_components/RechercheForm/RechercheForm"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { apiGet } from "@/utils/api.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { RechercheInputsLayout } from "./RechercheInputs/RechercheInputsLayout"
 import { RechercheLieuAutocomplete } from "./RechercheInputs/RechercheLieuAutocomplete"
 import { RechercheMetierAutocomplete } from "./RechercheInputs/RechercheMetierAutocomplete"
@@ -27,13 +28,37 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
   }
 
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
+  const lastTrackedParamsRef = useRef<string>("")
 
   const onSubmit = useCallback(
     (rechercheForm: IRechercheForm) => {
+      pushMatomoEvent({
+        event: MATOMO_EVENTS.SEARCH_LAUNCHED,
+        search_job_name: rechercheForm.metier?.label || "non_renseigné",
+        search_address: rechercheForm.lieu?.label || "non_renseigné",
+        search_radius: rechercheForm.radius ? parseInt(rechercheForm.radius, 10) : 30,
+        search_diploma: rechercheForm.diploma ?? "indifferent",
+      })
       navigateToRecherchePage({ ...rechercheFormToRechercheParams(rechercheForm), scrollToRecruteursLba: false })
     },
     [navigateToRecherchePage]
   )
+
+  useEffect(() => {
+    if (rechercheResults.status !== "success") return
+    const paramsKey = JSON.stringify(rechercheParams)
+    if (lastTrackedParamsRef.current === paramsKey) return
+    lastTrackedParamsRef.current = paramsKey
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.SEARCH_RESULTS_DISPLAYED,
+      total_results: rechercheResults.displayedItems.length,
+      count_alternance: rechercheResults.displayedJobs.length,
+      count_formation: rechercheResults.displayedFormations.length,
+      search_job_name: rechercheParams.job_name || "non_renseigné",
+      search_address: rechercheParams.geo?.address || "non_renseigné",
+      search_diploma: rechercheParams.diploma ?? "indifferent",
+    })
+  }, [rechercheResults.status, rechercheResults.displayedItems.length, rechercheResults.displayedJobs.length, rechercheResults.displayedFormations.length, rechercheParams])
 
   useEffect(() => {
     const controller = new AbortController()
