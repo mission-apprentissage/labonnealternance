@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { detectClassificationJobsPartners as detectClassificationJobsPartnersRaw } from "./detectClassificationJobsPartners"
+import { GEIQ_WHITELIST } from "./geiqWhitelist"
 
 const detectClassificationJobsPartners = async () => detectClassificationJobsPartnersRaw({ shouldNotifySlack: false })
 
@@ -146,5 +147,24 @@ describe("detectClassificationJobsPartners", () => {
     const [job] = jobs
     expect.soft(job.business_error).toEqual(JOB_PARTNER_BUSINESS_ERROR.CFA)
     expect.soft(job.jobs_in_success.includes(COMPUTED_ERROR_SOURCE.CLASSIFICATION)).toEqual(true)
+  })
+
+  it("should NOT classify an offer from a company in the GEIQ whitelist", async () => {
+    // given
+    await givenSomeComputedJobPartners([
+      {
+        partner_job_id,
+        offer_title,
+        workplace_name,
+        workplace_siret: GEIQ_WHITELIST[0],
+      },
+    ])
+    // when
+    await detectClassificationJobsPartners()
+    // then
+    const jobs = await getDbCollection("computed_jobs_partners").find({}).toArray()
+    expect.soft(jobs.length).toEqual(1)
+    const [job] = jobs
+    expect.soft(job.jobs_in_success.includes(COMPUTED_ERROR_SOURCE.CLASSIFICATION)).toEqual(false)
   })
 })
