@@ -82,7 +82,7 @@ export default (server: Server) => {
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
-          throw badRequest(JSON.stringify({ errors: result.error_messages ?? [] }, null, 2))
+          throw badRequest("wrong_parameters", { error_messages: result.error_messages ?? [] })
         }
 
         throw internal("Failed to fetch formations min", { error: result.error })
