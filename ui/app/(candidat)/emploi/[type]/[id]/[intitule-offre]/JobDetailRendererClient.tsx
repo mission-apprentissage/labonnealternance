@@ -53,7 +53,7 @@ function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlob
       }}
     >
       {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-        <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} showScrollToTop />
+        <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} showScrollToTop />
       )}
       {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} showScrollToTop />}
       {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} showScrollToTop />}
@@ -161,7 +161,7 @@ function JobDetail({
                 <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
                   <Box sx={{ mr: fr.spacing("4v") }}>
                     {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-                      <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />
+                      <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
                     )}
                     {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                     {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
@@ -213,7 +213,7 @@ function JobDetail({
               <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
                 <Box sx={{ mr: fr.spacing("4v") }}>
                   {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-                    <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />
+                    <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
                   )}
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}

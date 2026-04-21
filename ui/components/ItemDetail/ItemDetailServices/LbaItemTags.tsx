@@ -57,10 +57,8 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
     <Box
       sx={{
         display: "flex",
-        "& > *": {
-          marginRight: "4px",
-          minWidth: "fit-content",
-        },
+        flexWrap: "wrap",
+        gap: "4px",
       }}
     >
       {tags}
