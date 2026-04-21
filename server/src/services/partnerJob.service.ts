@@ -121,7 +121,7 @@ function transformPartnerJob(
     target_diploma_level: partnerJob?.offer_target_diploma?.label || null,
   }
 
-  if (applicationCountByJob) {
+  if (applicationCountByJob && resultJob.contact?.hasEmail) {
     resultJob.applicationCount = applicationCountByJob.find(({ _id }) => _id === id)?.count ?? 0
   }
 
@@ -168,9 +168,8 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     recipient_id: "",
   }
 
-  if (applicationCountByJob) {
-    const applicationCount = applicationCountByJob.find(({ _id }) => _id === id)
-    resultJob.applicationCount = applicationCount?.count ?? 0
+  if (applicationCountByJob && resultJob.contact?.hasEmail) {
+    resultJob.applicationCount = applicationCountByJob.find(({ _id }) => _id === id)?.count ?? 0
   }
 
   return resultJob

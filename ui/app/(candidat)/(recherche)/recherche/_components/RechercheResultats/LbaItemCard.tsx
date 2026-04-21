@@ -48,31 +48,21 @@ function getAdresse(item: ILbaItem) {
   return item.place.fullAddress
 }
 
-function hasSmartApply(item: ILbaItem): boolean {
-  if ("contact" in item && item.contact) {
-    return !!item.contact.hasEmail || !!item.contact.url || !!item.contact.phone
-  }
-  return false
-}
-
 function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  if (!hasSmartApply(item) || !("applicationCount" in item) || item.applicationCount == null) {
-    return null
-  }
-
-  return (
-    <Typography
-      component="span"
-      sx={{
-        whiteSpace: "nowrap",
-        color: fr.colors.decisions.text.default.info.default,
-        py: fr.spacing("1v"),
-      }}
-      className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
-    >
-      {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
-    </Typography>
-  )
+  if (item.contact?.hasEmail && "applicationCount" in item && item.applicationCount !== null)
+    return (
+      <Typography
+        component="span"
+        sx={{
+          whiteSpace: "nowrap",
+          color: fr.colors.decisions.text.default.info.default,
+          py: fr.spacing("1v"),
+        }}
+        className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
+      >
+        {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
+      </Typography>
+    )
 }
 
 function DatePublication({ item }: Pick<ResultCardProps, "item">) {
