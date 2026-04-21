@@ -36,5 +36,6 @@ export const importLaposteToComputed = async () => {
     zodInput: ZLaposteJob,
     mapper: laposteJobToJobsPartners,
     documentJobRoot: offerXmlTag,
+    rawFilterQuery: { "offre.type-de-contrat": "Alternance" },
   })
 }

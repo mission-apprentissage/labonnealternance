@@ -10,6 +10,7 @@ export function RechercheInputsLayout({
   lieuInput,
   rayonSelect,
   niveauSelect,
+  typesOffresEmploiSelect,
   handicapCheckbox,
   submitButton,
   forceMobileStyle = false,
@@ -19,6 +20,7 @@ export function RechercheInputsLayout({
   lieuInput?: React.ReactNode
   rayonSelect?: React.ReactNode
   niveauSelect?: React.ReactNode
+  typesOffresEmploiSelect?: React.ReactNode
   handicapCheckbox?: React.ReactNode
   submitButton?: React.ReactNode
   forceMobileStyle?: boolean
@@ -51,6 +53,7 @@ export function RechercheInputsLayout({
       {lieuInput && <Box sx={{ flex: 250 }}>{lieuInput}</Box>}
       {rayonSelect}
       {niveauSelect}
+      {typesOffresEmploiSelect}
       {handicapCheckbox}
       {submitButton && <Box sx={{ marginTop: { xs: 0, md: forceMobileStyle ? 0 : "32px" } }}>{submitButton}</Box>}
     </Box>

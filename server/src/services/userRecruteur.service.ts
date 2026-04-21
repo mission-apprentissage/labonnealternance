@@ -495,6 +495,7 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
         opco,
         status,
         organizationId: organization._id.toString(),
+        hasJobs: false, // 2026-04-03 pas utilisé pour les OPCO (rustine spécifique admin lba)
       }
       return userRecruteurForAdmin
     })
@@ -531,12 +532,23 @@ export const getUserRecruteursForManagement = async ({ opco, activeRoleLimit }: 
   )
 }
 
-export const getUsersForAdmin = async ({ status, limit }: { status?: ETAT_UTILISATEUR; limit?: number }) => {
-  // return getUserRecruteursForManagement({ activeRoleLimit: 40 })
-  return getUserRecruteursForManagement2({ status, roleLimit: limit })
+export const getUsersForAdmin = async ({ status, limit, offset, search }: { status?: ETAT_UTILISATEUR; limit?: number; offset?: number; search?: string }) => {
+  return getUserRecruteursForManagement2({ status, roleLimit: limit, offset, search })
 }
 
-export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatus, roleLimit }: { opco?: OPCOS_LABEL; status?: ETAT_UTILISATEUR; roleLimit?: number }) => {
+export const getUserRecruteursForManagement2 = async ({
+  opco,
+  status: queryStatus,
+  roleLimit,
+  offset,
+  search,
+}: {
+  opco?: OPCOS_LABEL
+  status?: ETAT_UTILISATEUR
+  roleLimit?: number
+  offset?: number
+  search?: string
+}) => {
   let aggregationStages: any = [...roleManagement360AggregationStages]
 
   const roleFilter: Filter<IRoleManagement> = {}
@@ -571,32 +583,40 @@ export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatu
       ...aggregationStages,
     ]
   }
-  aggregationStages.push({
-    $sort: {
-      updatedAt: -1,
-    },
-  })
-  if (roleLimit) {
+  if (search) {
     aggregationStages.push({
-      $limit: roleLimit,
+      $match: {
+        $or: [
+          { "user.email": { $regex: search, $options: "i" } },
+          { "user.first_name": { $regex: search, $options: "i" } },
+          { "user.last_name": { $regex: search, $options: "i" } },
+          { "entreprise.raison_sociale": { $regex: search, $options: "i" } },
+          { "cfa.raison_sociale": { $regex: search, $options: "i" } },
+          { "entreprise.siret": search },
+          { "cfa.siret": search },
+        ],
+      },
     })
   }
-
-  console.info(JSON.stringify(aggregationStages, null, 2))
+  aggregationStages.push({ $sort: { updatedAt: -1 } })
+  if (offset) aggregationStages.push({ $skip: offset })
+  if (roleLimit) aggregationStages.push({ $limit: roleLimit })
 
   const documents = (await getDbCollection("rolemanagements").aggregate(aggregationStages).toArray()) as RoleManagement360Document[]
 
-  return documents.flatMap((document) => {
+  const result: IUserRecruteurForAdmin[] = []
+  for (const document of documents) {
     const { user, entreprise, cfa } = document
     const role = document
     const organization = entreprise ?? cfa ?? null
     if (!organization) {
-      return []
+      continue
     }
+    const recruiter = await getDbCollection("recruiters").findOne({ managed_by: user._id.toString(), establishment_siret: organization.siret }, { projection: { jobs: 1 } })
     const userRecruteur = userAndRoleAndOrganizationToUserRecruteur(user, role, organization, null)
     const lastStatus = getLastStatusEvent(userRecruteur.status)?.status
     if (queryStatus && queryStatus !== lastStatus) {
-      return []
+      continue
     }
     const { _id, establishment_raison_sociale, establishment_siret, type, first_name, last_name, email, phone, createdAt, origin, opco, status } = userRecruteur
     const userRecruteurForAdmin: IUserRecruteurForAdmin = {
@@ -613,7 +633,9 @@ export const getUserRecruteursForManagement2 = async ({ opco, status: queryStatu
       opco,
       status,
       organizationId: organization._id.toString(),
+      hasJobs: (recruiter?.jobs?.length ?? 0) > 0,
     }
-    return [userRecruteurForAdmin]
-  })
+    result.push(userRecruteurForAdmin)
+  }
+  return result
 }

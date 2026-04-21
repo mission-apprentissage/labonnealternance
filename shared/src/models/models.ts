@@ -36,12 +36,15 @@ import opcoModel from "./opco.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
 import rawDecathlonModel from "./rawDecathlon.model.js"
+import rawEdfModel from "./rawEdf.model.js"
 import rawEmploiInclusionModel from "./rawEmploiInclusion.model.js"
+import rawEnedisModel from "./rawEnedis.model.js"
 import rawEngagementJeunesModel from "./rawEngagementJeunes.model.js"
 import rawEtudiantModel from "./rawEtudiant.model.js"
 import rawFranceTravailModel from "./rawFranceTravail.model.js"
 import rawFranceTravailCEGIDModel from "./rawFranceTravailCEGID.model.js"
 import rawHelloWorkModel from "./rawHelloWork.model.js"
+import rawHelloWorkBuddiModel from "./rawHelloWorkBuddi.model.js"
 import rawJobteaserModel from "./rawJobteaser.model.js"
 import rawJoobleModel from "./rawJooble.model.js"
 import rawKelioModel from "./rawKelio.model.js"
@@ -108,6 +111,8 @@ const modelDescriptorMap = {
   [jobsPartnersComputedModel.collectionName]: jobsPartnersComputedModel,
   [opcoModel.collectionName]: opcoModel,
   [rawDecathlonModel.collectionName]: rawDecathlonModel,
+  [rawEdfModel.collectionName]: rawEdfModel,
+  [rawEnedisModel.collectionName]: rawEnedisModel,
   [rawEngagementJeunesModel.collectionName]: rawEngagementJeunesModel,
   [rawEmploiInclusionModel.collectionName]: rawEmploiInclusionModel,
   [rawEtudiantModel.collectionName]: rawEtudiantModel,
@@ -149,6 +154,7 @@ const modelDescriptorMap = {
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [seoMetierModel.collectionName]: seoMetierModel,
+  [rawHelloWorkBuddiModel.collectionName]: rawHelloWorkBuddiModel,
 } as const satisfies Record<string, IModelDescriptor>
 
 export const modelDescriptors = Object.values(modelDescriptorMap) as (typeof modelDescriptorMap)[keyof typeof modelDescriptorMap][] satisfies IModelDescriptor[]

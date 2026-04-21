@@ -1,3 +1,6 @@
+import { processEdf } from "@/jobs/offrePartenaire/edf/processEdf"
+import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
+import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
@@ -39,7 +42,8 @@ import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntr
 import { fillLbaUrl, renewLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
-import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
+import { deduplicateHellowork } from "./offrePartenaire/hellowork-merge/deduplicateHellowork"
+import { processHellowork } from "./offrePartenaire/hellowork-merge/processHellowork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "./offrePartenaire/jooble/processJooble"
@@ -57,6 +61,7 @@ import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAl
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
+import { resyncLbaJobsPartnersStats } from "./oneTimeJob/resyncLbaJobsPartnersStats"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -231,10 +236,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
   {
-    fct: processHellowork,
-    description: "Importe les offres hellowork dans la collection raw raw & computed",
-  },
-  {
     fct: processRhAlternance,
     description: "Importe les offres RH Alternance  dans la collection raw & computed",
   },
@@ -383,7 +384,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
-  { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
+  {
+    fct: resyncLbaJobsPartnersStats,
+    description: "Resynchronise les stats de consultation des offres LBA depuis recruiters vers jobs_partners",
+  },
+  {
+    fct: syncLbaJobsIntoJobsPartners,
+    description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs",
+  },
   {
     fct: syncLbaJobsIntoJobsPartnersFull,
     description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
@@ -404,10 +412,21 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
   },
-  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
+  {
+    fct: updateSEO,
+    description: "Met à jour les données calculées pour le SEO",
+  },
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEdf,
+    description: "Import du flux EDF jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEnedis,
+    description: "Import du flux Enedis jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: analyzeRemovedRomes,
@@ -472,5 +491,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: deduplicateHellowork,
+    description: "Déduplique les 2 flux Hellowork",
+  },
+  {
+    fct: processHellowork,
+    description: "Importe les offres des 2 flux Hellowork dans computed_jobs_partners",
+  },
+  {
+    fct: analyzeCfaBlockList,
+    description: "",
   },
 ]

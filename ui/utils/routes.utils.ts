@@ -322,8 +322,9 @@ export const PAGES = {
       title: "Salaire alternant",
       index: true,
       getMetadata: () => ({
-        title: "Simulateur salaire alternant 2026 | Calculez votre rémunération",
-        description: "Simulez gratuitement votre salaire en alternance selon votre âge, contrat (apprentissage ou professionnalisation) et année de formation. Barèmes 2026.",
+        title: "Simulateur salaire alternance 2026 | Calcul gratuit brut et net",
+        description:
+          "Calculez votre salaire net en alternance en 2 clics. Indiquez votre âge, type de contrat et durée : le simulateur affiche votre rémunération mensuelle brut et net.",
       }),
     },
     EspaceDeveloppeurs: {
@@ -429,6 +430,13 @@ export const PAGES = {
       title: "Gestion des administrateurs",
       getMetadata: () => ({
         title: "Gestion des administrateurs - La bonne alternance",
+      }),
+    },
+    backAdminGestionDesRecruteurs: {
+      getPath: () => `/espace-pro/administration/recruteurs` as string,
+      title: "Gestion des recruteurs",
+      getMetadata: () => ({
+        title: "Gestion des recruteurs - La bonne alternance",
       }),
     },
     backOpcoHome: {
@@ -767,7 +775,7 @@ export const PAGES = {
         title: "Création d'une offre - La bonne alternance",
       }),
     }),
-    backAdminGestionDesRecruteurs: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
+    backAdminRecruteursATraiter: (props: { status?: ETAT_UTILISATEUR; accountType?: typeof CFA | typeof ENTREPRISE; opco?: OPCOS_LABEL; page?: string }): IPage => {
       const searchParams = new URLSearchParams()
       Object.entries(props).forEach(([key, value]) => {
         if (value !== undefined) {

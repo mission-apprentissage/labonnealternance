@@ -6,24 +6,21 @@ import type { Virtualizer } from "@tanstack/react-virtual"
 import { useRef } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
+import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { CandidatRechercheFilters } from "./CandidatRechercheFilters"
-import { RechercheBackToTopButton } from "./RechercheResultats/RechercheBackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
-import { RechercheCarte } from "./RechercheResultats/RechercheMap"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
-import { RechercheMobileToggleMapButton } from "./RechercheResultats/RechercheMobileToggleMapButton"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsList"
 import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
-  const { displayMap, displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
+  const { displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
-  const rechercheResult = useRechercheResults(props.rechercheParams)
   const virtualizerRef = useRef<Virtualizer<any, Element>>(null)
 
   const elements: ReturnType<typeof RechercheResultatsList> = []
@@ -31,7 +28,9 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const scrollToItem = (item: ResultCardData) => {
     const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
     if (scolledElementIndex !== -1) {
-      virtualizerRef.current.scrollToIndex(scolledElementIndex, { align: "start" })
+      virtualizerRef.current.scrollToIndex(scolledElementIndex, {
+        align: "start",
+      })
     }
   }
 
@@ -87,37 +86,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
           },
         }}
       >
-        <VirtualContainer
-          ref={scrollElement}
-          virtualizerRef={virtualizerRef}
-          defaultHeight={270}
-          elements={elements}
-          scrollToElementIndex={scolledElementIndex}
-          parentStyle={{
-            ...(displayMap
-              ? {
-                  display: {
-                    xs: "none",
-                    lg: "block",
-                  },
-                }
-              : {}),
-          }}
-        />
-        {displayMap ? <RechercheCarte item={null} variant="recherche" {...props} /> : <></>}
-        <Box
-          sx={{
-            padding: fr.spacing("4v"),
-            margin: "auto",
-            display: {
-              xs: "block",
-              lg: "none",
-            },
-          }}
-        >
-          <RechercheMobileToggleMapButton displayMap={displayMap} rechercheParams={props.rechercheParams} />
-        </Box>
-        {!displayMap && rechercheResult.displayedItems.length > 1 && <RechercheBackToTopButton onClick={() => scrollElement.current?.scrollTo({ top: 0 })} />}
+        <VirtualContainer ref={scrollElement} virtualizerRef={virtualizerRef} defaultHeight={270} elements={elements} scrollToElementIndex={scolledElementIndex} />
       </Box>
     </Box>
   )
@@ -125,9 +94,11 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
 export function RecherchePageComponent(props: { rechercheParams: IRecherchePageParams }) {
   const rechercheResult = useRechercheResults(props.rechercheParams)
+
   if (rechercheResult.status === "disabled") {
     return (
       <>
+        <EnqueteTally />
         <Box role="main" tabIndex={-1} component="main" id="search-content-container">
           <RecherchePageEmpty {...props} />
         </Box>
@@ -135,8 +106,10 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
       </>
     )
   }
+
   return (
     <Box role="main" component="main">
+      <EnqueteTally />
       <RecherchePageComponentWithParams {...props} />
     </Box>
   )

@@ -9,7 +9,7 @@ const getRobotRules = () => {
       return {
         rules: {
           userAgent: "*",
-          disallow: ["/test-widget", "/recherche-formation", "/recherche-emploi"],
+          disallow: ["/test-widget", "/recherche-formation", "/recherche-emploi", "/espace-pro"],
         },
         sitemap: "https://labonnealternance.apprentissage.beta.gouv.fr/sitemap-index.xml",
       }
