@@ -22,9 +22,22 @@ export const up = async () => {
   const counters = {
     updated: 0,
     notFound: 0,
+    deduplicated: 0,
   }
   await asyncForEach(data, async (line) => {
     const { id_lba, token_taleez } = line
+
+    // A document with this partner_job_id may already exist (inserted by the new Taleez integration).
+    // In that case, delete the old document (without partner_job_id) to resolve the duplicate.
+    const duplicate = await getDbCollection("jobs_partners").findOne({ partner_label: "Taleez", partner_job_id: token_taleez })
+    if (duplicate) {
+      if (duplicate._id.toString() !== id_lba) {
+        await getDbCollection("jobs_partners").deleteOne({ _id: new ObjectId(id_lba), partner_label: "Taleez" })
+        counters.deduplicated++
+        logger.warn(`Deduplicated Taleez job: removed old doc ${id_lba}, kept ${duplicate._id} with partner_job_id ${token_taleez}`)
+      }
+      return
+    }
 
     const result = await getDbCollection("jobs_partners").updateOne({ _id: new ObjectId(id_lba), partner_label: "Taleez" }, { $set: { partner_job_id: token_taleez } })
 
@@ -36,7 +49,7 @@ export const up = async () => {
     }
   })
 
-  logger.info(`Migration partner-job-id-taleez completed: ${counters.updated} documents updated, ${counters.notFound} documents not found`)
+  logger.info(`Migration partner-job-id-taleez completed: ${counters.updated} updated, ${counters.notFound} not found, ${counters.deduplicated} deduplicated`)
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)

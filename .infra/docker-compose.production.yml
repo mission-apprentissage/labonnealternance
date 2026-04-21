@@ -142,8 +142,9 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 2g
+          memory: 3g
     environment:
+      JAVA_OPTS: "-Xmx2304m -Xms512m"
       JAVA_TIMEZONE: Europe/Paris
       MB_SITE_LOCALE: fr
       MB_SITE_URL: "{{ dns_name }}/metabase"
