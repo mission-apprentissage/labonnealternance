@@ -69,11 +69,20 @@ export default (server: Server) => {
     async (req, res) => {
       const { referer } = req.headers
       const { romes, latitude, longitude, radius, diploma } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma: INiveauDiplomeEuropeen.fromParam(diploma), referer, isMinimalData: true })
+      const result = await getFormationsQuery({
+        romes,
+        longitude,
+        latitude,
+        radius,
+        diploma: INiveauDiplomeEuropeen.fromParam(diploma),
+        referer,
+        isMinimalData: true,
+        isPrivate: true,
+      })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
-          throw badRequest()
+          throw badRequest(JSON.stringify({ errors: result.error_messages ?? [] }, null, 2))
         }
 
         throw internal("Failed to fetch formations min", { error: result.error })
