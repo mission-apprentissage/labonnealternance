@@ -1,5 +1,7 @@
 import * as Sentry from "@sentry/node"
 
+type SentryIntegration = Parameters<typeof Sentry.addIntegration>[0]
+
 import config from "@/config"
 
 // @sentry/profiling-node ships prebuilt native binaries indexed by Node.js ABI version.
@@ -8,7 +10,7 @@ import config from "@/config"
 // Dynamic import with fallback allows Sentry to start normally without CPU profiling.
 // To re-enable profiling on Node 25, either wait for node-cpu-profiler to ship ABI 141
 // or add build tools (python3, make, g++) to the builder stage and let node-gyp compile from source.
-function getProfilingIntegration(): Sentry.Integration | null {
+function getProfilingIntegration(): SentryIntegration | null {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     // biome-ignore lint/style/noCommonJs: dynamic require needed for graceful fallback when native binary is missing
@@ -20,7 +22,7 @@ function getProfilingIntegration(): Sentry.Integration | null {
 }
 
 function getOptions(): Sentry.NodeOptions {
-  const integrations: Sentry.Integration[] = [
+  const integrations: SentryIntegration[] = [
     Sentry.httpIntegration(),
     Sentry.mongoIntegration(),
     Sentry.captureConsoleIntegration({ levels: ["error"] }),
