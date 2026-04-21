@@ -49,7 +49,7 @@ function getAdresse(item: ILbaItem) {
 }
 
 function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  if (item.contact?.hasEmail && "applicationCount" in item && item.applicationCount !== null)
+  if (item.contact?.hasEmail && "applicationCount" in item && item.applicationCount != null)
     return (
       <Typography
         component="span"
