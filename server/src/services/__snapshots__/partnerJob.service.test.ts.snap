@@ -4,7 +4,6 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
 {
   "results": [
     {
-      "applicationCount": 0,
       "company": {
         "elligibleHandicap": false,
         "mandataire": false,
@@ -84,7 +83,6 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
 {
   "results": [
     {
-      "applicationCount": 0,
       "company": {
         "elligibleHandicap": false,
         "mandataire": false,
