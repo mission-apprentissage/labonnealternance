@@ -2,13 +2,23 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import type { ILbaItemPartnerJobJson } from "shared"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE", "FranceTravail CEGID"]
+const partnerLabelsShownInCta = [
+  JOBPARTNERS_LABEL.LEBONCOIN,
+  JOBPARTNERS_LABEL.APEC,
+  JOBPARTNERS_LABEL.RH_ALTERNANCE,
+  JOBPARTNERS_LABEL.JOBTEASER,
+  JOBPARTNERS_LABEL.METEOJOB,
+  JOBPARTNERS_LABEL.HELLOWORK,
+  "Jobs that make sense",
+]
+const shouldShowPartnerLabelInCta = (partnerLabel: string) => partnerLabelsShownInCta.includes(partnerLabel)
 
 export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJobJson }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
@@ -48,7 +58,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
         }}
         data-tracking-id="postuler-offre-job-partner"
       >
-        Je postule{filteredPartnerLabels.includes(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
+        Je postule{!shouldShowPartnerLabelInCta(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
       </Button>
       <ModalReadOnly
         isOpen={isOpen}
