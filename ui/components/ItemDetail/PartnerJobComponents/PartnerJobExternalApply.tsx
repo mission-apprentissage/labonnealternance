@@ -8,7 +8,7 @@ import { notifyJobPostulerV3 } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
-const filteredPartnerLabels = ["Kelio", "Veritone", "France Travail", "BPCE", "FranceTravail CEGID"]
+const passedPartnerLabels = ["Le bon coin emploi", "APEC", "RH Alternance", "Jobteaser", "Meteojob", "HelloWork", "Jobs that make sense"]
 
 export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJobJson }) {
   const { isOpen, onClose, onOpen } = useDisclosure()
@@ -48,7 +48,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
         }}
         data-tracking-id="postuler-offre-job-partner"
       >
-        Je postule{filteredPartnerLabels.includes(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
+        Je postule{!passedPartnerLabels.includes(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
       </Button>
       <ModalReadOnly
         isOpen={isOpen}
