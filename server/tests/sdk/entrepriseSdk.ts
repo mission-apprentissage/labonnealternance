@@ -1,6 +1,7 @@
 import { getConnectedInfos } from "@tests/fixture/connectedUser.fixture"
 import { mockApiBal } from "@tests/mocks/mockApiBal"
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
+import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import type { TestHttpClient } from "@tests/utils/server.test.utils"
 import type { IJobCreate, IUserWithAccount } from "shared"
 import { ENTREPRISE } from "shared/constants/index"
@@ -25,6 +26,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
   async create(body: CreationBody) {
     const mockEntreprise = mockApiEntreprise.infosEntreprise()
     const mockBal = mockApiBal.validationEmail(true)
+    const mockGeo = mockGeolocalisation()
 
     const response = await httpClient().inject({
       method: "POST",
@@ -34,6 +36,7 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
 
     mockEntreprise.persist(false)
     mockBal.persist(false)
+    mockGeo.persist(false)
     return response
   },
   async validateEmail(userWithAccount: IUserWithAccount) {
