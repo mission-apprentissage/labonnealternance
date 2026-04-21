@@ -49,14 +49,17 @@ function CandidatureStickyBar({ selectedItem }: { selectedItem: ILbaItemJobsGlob
         padding: fr.spacing("3v"),
         zIndex: 10,
         display: "flex",
+        alignItems: "center",
         gap: fr.spacing("2v"),
       }}
     >
-      {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-        <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} showScrollToTop />
-      )}
-      {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} showScrollToTop />}
-      {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} showScrollToTop />}
+      <Box sx={{ flex: 1 }}>
+        {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
+          <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} showScrollToTop />
+        )}
+        {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} showScrollToTop />}
+        {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} showScrollToTop />}
+      </Box>
     </Box>
   )
 }
@@ -190,14 +193,9 @@ function JobDetail({
             }}
           >
             <Box sx={{ width: "100%", pl: 0, pb: fr.spacing("2v") }}>
-              <Box sx={{ display: { xs: "block", lg: "flex" }, justifyContent: "space-between", alignItems: "center" }}>
-                <Box sx={{ display: { xs: "flex", lg: "none" }, mb: fr.spacing("2v"), justifyContent: "end" }}>
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-                </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <LbaItemTags item={selectedItem} />
-                <Box sx={{ display: { xs: "none", lg: "block" } }}>
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-                </Box>
+                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
               {getJobPublishedTimeAndApplications({ item: selectedItem })}
               <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />

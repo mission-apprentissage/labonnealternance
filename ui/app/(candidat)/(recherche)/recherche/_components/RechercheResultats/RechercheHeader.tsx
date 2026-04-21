@@ -21,9 +21,12 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; 
               left: 0,
               right: 0,
               zIndex: 10,
-              backgroundColor: "white",
-              filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-              boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
+              backgroundColor: {
+                xs: fr.colors.decisions.background.default.grey.hover,
+                lg: "white",
+              },
+              filter: { lg: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))" },
+              boxShadow: { lg: "0 4px 12px 0 rgba(0, 0, 18, 0.16)" },
             }
           : undefined
       }
@@ -47,77 +50,65 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; 
       >
         <Box
           sx={{
-            zIndex: 5,
+            margin: "auto",
             display: "flex",
-            flexDirection: "column",
-            gap: fr.spacing("3v"),
+            gap: {
+              md: fr.spacing("8v"),
+              lg: fr.spacing("16v"),
+            },
+            alignItems: "center",
+            ...(props.fullWidth
+              ? {
+                  padding: { xs: `${fr.spacing("2v")} ${fr.spacing("4v")}`, lg: fr.spacing("4v") },
+                }
+              : {
+                  padding: fr.spacing("4v"),
+                  borderRadius: fr.spacing("2v"),
+                  boxShadow: {
+                    xs: 0,
+                    lg: "0 6px 18px 0 rgba(0, 0, 18, 0.16);",
+                  },
+                  mx: {
+                    xs: 0,
+                    lg: "-2rem",
+                  },
+                  mt: {
+                    xs: 0,
+                    lg: fr.spacing("4v"),
+                  },
+                  backgroundColor: "white",
+                }),
           }}
         >
-          <Box
-            sx={{
-              padding: fr.spacing("4v"),
-              margin: "auto",
-              display: "flex",
-              gap: {
-                md: fr.spacing("8v"),
-                lg: fr.spacing("16v"),
-              },
-              alignItems: "center",
-              ...(props.fullWidth
-                ? {}
-                : {
-                    borderRadius: fr.spacing("2v"),
-                    boxShadow: {
-                      xs: 0,
-                      lg: "0 6px 18px 0 rgba(0, 0, 18, 0.16);",
-                    },
-                    mx: {
-                      xs: 0,
-                      lg: "-2rem",
-                    },
-                    mt: {
-                      xs: 0,
-                      lg: fr.spacing("4v"),
-                    },
-                  }),
-            }}
-          >
+          <Box sx={{ flex: 1 }}>
             <Box
               sx={{
-                display: "flex",
-                gap: {
-                  md: fr.spacing("8v"),
-                  lg: fr.spacing("16v"),
+                display: {
+                  xs: "none",
+                  lg: "block",
                 },
-                alignItems: "center",
               }}
             >
-              <Box sx={{ flex: 1 }}>
-                <Box
-                  sx={{
-                    display: {
-                      xs: "none",
-                      lg: "block",
-                    },
-                  }}
-                >
-                  <CandidatRechercheForm rechercheParams={rechercheParams} />
-                </Box>
-                <CandidatRechercheFilters rechercheParams={rechercheParams} embedded />
-                <Box
-                  sx={{
-                    display: {
-                      xs: "flex",
-                      lg: "none",
-                    },
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <Button iconId="fr-icon-search-line" priority="secondary" onClick={() => navigateToRecherchePage({ displayMobileForm: true }, true)}>
-                    Modifier la recherche
-                  </Button>
-                </Box>
-              </Box>
+              <CandidatRechercheForm rechercheParams={rechercheParams} />
+            </Box>
+            <CandidatRechercheFilters rechercheParams={rechercheParams} embedded />
+            <Box
+              sx={{
+                display: {
+                  xs: "flex",
+                  lg: "none",
+                },
+                justifyContent: "flex-end",
+              }}
+            >
+              <Button
+                iconId="fr-icon-search-line"
+                priority="secondary"
+                onClick={() => navigateToRecherchePage({ displayMobileForm: true }, true)}
+                style={{ backgroundColor: "transparent" }}
+              >
+                Modifier la recherche
+              </Button>
             </Box>
           </Box>
         </Box>

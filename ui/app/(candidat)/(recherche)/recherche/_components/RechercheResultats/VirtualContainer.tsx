@@ -1,11 +1,12 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import type { SxProps, Theme } from "@mui/material"
 import { Box } from "@mui/material"
 import type { Virtualizer } from "@tanstack/react-virtual"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import type { RefObject } from "react"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }
 
@@ -14,7 +15,7 @@ export function VirtualContainer({
   defaultHeight,
   parentStyle,
   containerStyle,
-  scrollToElementIndex = 0,
+  scrollToElementIndex = -1,
   scrollElementRef,
   virtualizerRef,
   useWindowScroll = false,
@@ -41,7 +42,13 @@ export function VirtualContainer({
     return rawElements.map((value) => (typeof value === "object" && "render" in value ? value : ({ render: () => value } as VirtualElement)))
   }, [rawElements])
 
-  const scrollMargin = useWindowScroll ? (parentRef.current?.offsetTop ?? 0) : 0
+  const [scrollMargin, setScrollMargin] = useState(0)
+
+  useLayoutEffect(() => {
+    if (useWindowScroll && parentRef.current) {
+      setScrollMargin(parentRef.current.offsetTop)
+    }
+  }, [useWindowScroll])
 
   const columnVirtualizer = useVirtualizer({
     count: elements.length + 1,
@@ -51,6 +58,11 @@ export function VirtualContainer({
     },
     overscan: 10,
     scrollMargin,
+    ...(useWindowScroll && {
+      scrollToFn: (offset, { behavior }) => {
+        window.scrollTo({ top: offset, behavior })
+      },
+    }),
   })
 
   useEffect(() => {
@@ -58,8 +70,10 @@ export function VirtualContainer({
   })
 
   useEffect(() => {
-    virtualizerRef.current.scrollToIndex(Math.max(scrollToElementIndex, 0), { align: "start" })
-  }, [scrollToElementIndex])
+    if (scrollToElementIndex >= 0) {
+      virtualizerRef.current.scrollToIndex(scrollToElementIndex, { align: "start" })
+    }
+  }, [scrollToElementIndex, scrollMargin])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
   return (
@@ -96,6 +110,7 @@ export function VirtualContainer({
               left: 0,
               width: "100%",
               transform: `translateY(${(virtualItems[0]?.start ?? 0) - scrollMargin}px)`,
+              mt: { xs: 0, md: fr.spacing("4v") },
             }}
           >
             {virtualItems.flatMap((virtualRow) => {

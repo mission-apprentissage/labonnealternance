@@ -1,7 +1,8 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
 import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
-import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { PublicHeader } from "@/app/_components/PublicHeader"
 
 export default async function RechercheLayout({ children }: PropsWithChildren) {
   return (
@@ -12,8 +13,8 @@ export default async function RechercheLayout({ children }: PropsWithChildren) {
           { label: "Contenu", anchor: "#search-content-container" },
         ]}
       />
-      <PublicHeaderStatic />
-      <Box component="main" role="main" tabIndex={-1}>
+      <PublicHeader />
+      <Box component="main" role="main" tabIndex={-1} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover }}>
         {children}
       </Box>
     </>

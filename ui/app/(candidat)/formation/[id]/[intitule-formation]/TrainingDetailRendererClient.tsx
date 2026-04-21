@@ -70,7 +70,7 @@ function TrainingDetailPage({
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
+  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false })
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
@@ -180,14 +180,9 @@ function TrainingDetailPage({
             }}
           >
             <Box sx={{ width: "100%", pl: 0, pb: fr.spacing("2v") }}>
-              <Box sx={{ display: { xs: "block", lg: "flex" }, justifyContent: "space-between", alignItems: "center" }}>
-                <Box sx={{ display: { xs: "flex", lg: "none" }, mb: fr.spacing("2v"), justifyContent: "end" }}>
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-                </Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
-                <Box sx={{ display: { xs: "none", lg: "block" } }}>
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-                </Box>
+                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
 
               <Box id="detail-header" component="p" color="grey.600" mt={1} mb={1}>
@@ -232,13 +227,10 @@ function TrainingDetailPage({
               </Box>
             </Box>
           </Box>
-
           <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
             <TrainingDetail training={selectedItem} />
-
             <AideApprentissage />
           </Box>
-
           {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
         </Box>
       </Container>
@@ -255,11 +247,14 @@ function TrainingDetailPage({
             padding: fr.spacing("3v"),
             zIndex: 10,
             display: "flex",
+            alignItems: "center",
             gap: fr.spacing("2v"),
           }}
         >
           {elligibleForAppointment && (
-            <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+            <Box sx={{ flex: 1 }}>
+              <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+            </Box>
           )}
         </Box>
       )}

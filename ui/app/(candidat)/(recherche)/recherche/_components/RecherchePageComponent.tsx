@@ -28,9 +28,15 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const scrollToItem = (item: ResultCardData) => {
     const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
     if (scolledElementIndex !== -1) {
-      virtualizerRef.current.scrollToIndex(scolledElementIndex, {
-        align: "start",
-      })
+      // Calcul direct de la position pour contourner les problèmes de scrollToIndex avec useWindowScroll
+      let offset = 0
+      for (let i = 0; i < scolledElementIndex; i++) {
+        const el = elements[i]
+        offset += (typeof el === "object" && "height" in el ? el.height : undefined) ?? 270
+      }
+      const containerOffset = document.querySelector(".VirtualContainer")?.getBoundingClientRect().top ?? 0
+      const scrollTop = window.scrollY + containerOffset + offset
+      window.scrollTo({ top: scrollTop, behavior: "instant" })
     }
   }
 
@@ -58,7 +64,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const scolledElementIndex = getScolledElementIndex()
 
   return (
-    <>
+    <Box>
       <RecherchePageHeader rechercheParams={props.rechercheParams} />
       <VirtualContainer
         scrollElementRef={scrollElement}
@@ -68,7 +74,7 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
         scrollToElementIndex={scolledElementIndex}
         useWindowScroll
       />
-    </>
+    </Box>
   )
 }
 
@@ -111,7 +117,7 @@ function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRechercheP
         sx={{
           maxWidth: "xl",
           margin: "auto",
-          mt: { xs: 0, lg: fr.spacing("4v") },
+          pt: { xs: 0, lg: fr.spacing("4v") },
           px: { xs: 0, lg: fr.spacing("4v") },
           position: "relative",
         }}

@@ -57,9 +57,10 @@ export function CandidaterButton({
               sx={{
                 width: "100%",
                 display: "flex",
-                alignItems: showScrollToTop ? "center" : undefined,
-                flexDirection: showScrollToTop ? "row" : "column",
+                alignItems: "center",
+                flexDirection: "row",
                 justifyContent: showScrollToTop ? "space-between" : undefined,
+                flexWrap: "wrap",
                 my: showScrollToTop ? fr.spacing("1v") : fr.spacing("3v"),
                 gap: fr.spacing("2v"),
               }}
