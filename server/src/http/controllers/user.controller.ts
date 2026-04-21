@@ -137,32 +137,6 @@ export default (server: Server) => {
       }
 
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
-
-      if (entreprise) {
-        const roleManagement = await getDbCollection("rolemanagements").findOne({
-          user_id: userId,
-          authorized_id: entreprise._id.toString(),
-          authorized_type: AccessEntityType.ENTREPRISE,
-        })
-        if (!roleManagement) {
-          throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
-        }
-      } else {
-        const cfa = await getDbCollection("cfas").findOne({ siret })
-        if (cfa) {
-          const roleManagement = await getDbCollection("rolemanagements").findOne({
-            user_id: userId,
-            authorized_id: cfa._id.toString(),
-            authorized_type: AccessEntityType.CFA,
-          })
-          if (!roleManagement) {
-            throw forbidden("Le CFA n'est pas géré par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
-          }
-        } else {
-          throw notFound("Etablissement non trouvé", { error: BusinessErrorCodes.NOTFOUND })
-        }
-      }
-
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest(result.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS ? "L'email est déjà utilisé" : "Erreur business", { error: result.error })
