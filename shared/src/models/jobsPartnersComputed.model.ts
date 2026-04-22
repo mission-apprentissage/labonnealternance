@@ -47,7 +47,6 @@ export const TRUSTED_COMPANY_JOB_PARTNERS = [
   "L'Oreal",
   "Serpe",
   "Thales",
-  "La Poste",
 ]
 
 export enum COMPUTED_ERROR_SOURCE {
