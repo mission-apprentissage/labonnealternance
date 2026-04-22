@@ -1,7 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box, Link, Typography } from "@mui/material"
 
 export default function CandidatureParTelephone({ contactPhone }: { contactPhone: string }) {
+  const contactPhoneHref = `tel:${contactPhone.replace(/\s+/g, "")}`
+
   return (
     <>
       <Box sx={{ my: fr.spacing("4v") }}>
@@ -16,7 +18,8 @@ export default function CandidatureParTelephone({ contactPhone }: { contactPhone
           }}
           className={fr.cx("fr-text--sm")}
         >
-          🕵️{` Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au ${contactPhone} et demander s’ils recrutent des alternants !`}
+          🕵️ Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au{" "}
+          <Link href={contactPhoneHref}>{contactPhone}</Link> et demander s’ils recrutent des alternants !
         </Typography>
       </Box>
     </>
