@@ -123,12 +123,16 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
           return result ? [result] : null
         } else if ("establishment_id" in jobDef) {
           const establishmentIdValue = getAccessResourcePathValue(jobDef.establishment_id, req)
-          const { userId, siret } = await establishmentIdToUserIdAndSiret(establishmentIdValue)
+          const { siret } = await establishmentIdToUserIdAndSiret(establishmentIdValue)
+          const userWithType = getUserFromRequest(req, schema)
+          if (userWithType.type !== "IUser2") {
+            return []
+          }
           const jobPartners = await getDbCollection("jobs_partners")
             .find({
               partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
               workplace_siret: siret,
-              managed_by: userId,
+              managed_by: userWithType.value._id,
             })
             .toArray()
           return (await Promise.all(jobPartners.map(jobToJobResource))).flatMap((x) => (x ? [x] : []))
