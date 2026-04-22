@@ -1,6 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Typography } from "@mui/material"
+import { Link, Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
@@ -20,9 +20,15 @@ export function RecruteurLbaCandidater({ item }: { item: ILbaItemJobsGlobal }) {
         className={fr.cx("fr-text--sm")}
       >
         <span aria-hidden="true">🕵️</span>{" "}
-        {item.contact.phone
-          ? `Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au ${item.contact.phone} et demander s’ils recrutent des alternants !`
-          : "Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !"}
+        {item.contact.phone ? (
+          <>
+            {" "}
+            Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au <Link href={`tel:${item.contact.phone.replace(/\s+/g, "")}`}>{item.contact.phone}</Link>{" "}
+            et demander s’ils recrutent des alternants !
+          </>
+        ) : (
+          "Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !"
+        )}
       </Typography>
     )
   }

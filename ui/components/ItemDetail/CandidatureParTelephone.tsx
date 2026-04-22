@@ -18,8 +18,10 @@ export default function CandidatureParTelephone({ contactPhone }: { contactPhone
           }}
           className={fr.cx("fr-text--sm")}
         >
-          🕵️ Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au{" "}
-          <Link href={contactPhoneHref}>{contactPhone}</Link> et demander s’ils recrutent des alternants !
+          <span aria-hidden={true}>🕵️</span>
+          {` Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au `}
+          <Link href={contactPhoneHref}>{contactPhone}</Link>
+          {` et demander s’ils recrutent des alternants !`}
         </Typography>
       </Box>
     </>
