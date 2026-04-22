@@ -36,17 +36,7 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
           },
         }}
       >
-        <Box
-          sx={{
-            maxWidth: "xl",
-            width: "100%",
-            mx: "auto",
-            pt: fr.spacing("4v"),
-            px: fr.spacing("4v"),
-          }}
-        >
-          <RechercheTitle viewType={props.rechercheParams.viewType} />
-        </Box>
+        <RechercheTitle viewType={props.rechercheParams.viewType} />
         <RechercheHeader {...props} />
         <Box
           sx={{

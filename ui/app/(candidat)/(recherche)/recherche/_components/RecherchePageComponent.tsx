@@ -138,18 +138,7 @@ function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRechercheP
       </Box>
 
       {/* Desktop: titre + header avec scroll collapse */}
-      <Box
-        sx={{
-          display: { xs: "none", lg: "block" },
-          maxWidth: "xl",
-          margin: "auto",
-          pt: fr.spacing("4v"),
-          px: fr.spacing("4v"),
-          position: "relative",
-        }}
-      >
-        <RechercheTitle viewType={rechercheParams.viewType} />
-      </Box>
+      <RechercheTitle viewType={rechercheParams.viewType} />
       <Box ref={headerRef} sx={{ display: { xs: "none", lg: "block" }, minHeight: isCollapsedHeader ? headerHeightRef.current : undefined }}>
         <RechercheHeader rechercheParams={rechercheParams} fullWidth={isCollapsedHeader} />
       </Box>
