@@ -88,7 +88,8 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
                     })
                     .getPath() +
                     "&" +
-                    utmParams
+                    utmParams,
+                  { scroll: false }
                 )
               }}
             >

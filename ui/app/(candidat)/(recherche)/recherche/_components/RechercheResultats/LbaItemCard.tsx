@@ -113,7 +113,7 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
         <Card
           background
           style={{ paddingBottom: fr.spacing("1v") }}
-          border
+          shadow
           enlargeLink
           horizontal
           linkProps={{
@@ -184,7 +184,6 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
               </Box>
             </Box>
           }
-          shadow
           size="medium"
         />
       </CardStyling>

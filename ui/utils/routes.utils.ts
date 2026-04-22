@@ -686,7 +686,7 @@ export const PAGES = {
       const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
-        getPath: () => `/recherche?${search}` as string,
+        getPath: () => `/recherche${search ? `?${search}` : ""}` as string,
         index: false,
         getMetadata: () => ({
           title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
@@ -702,7 +702,7 @@ export const PAGES = {
       const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
-        getPath: () => `/recherche-formation?${search}` as string,
+        getPath: () => `/recherche-formation${search ? `?${search}` : ""}` as string,
         index: false,
         getMetadata: () => ({
           title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
@@ -718,7 +718,7 @@ export const PAGES = {
       const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
-        getPath: () => `/recherche-emploi?${search}` as string,
+        getPath: () => `/recherche-emploi${search ? `?${search}` : ""}` as string,
         index: false,
         getMetadata: () => ({
           title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
