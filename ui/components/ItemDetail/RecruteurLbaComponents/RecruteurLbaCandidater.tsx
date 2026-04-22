@@ -19,7 +19,7 @@ export function RecruteurLbaCandidater({ item }: { item: ILbaItemJobsGlobal }) {
         }}
         className={fr.cx("fr-text--sm")}
       >
-        🕵️{" "}
+        <span aria-hidden="true">🕵️</span>{" "}
         {item.contact.phone
           ? `Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au ${item.contact.phone} et demander s’ils recrutent des alternants !`
           : "Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !"}
