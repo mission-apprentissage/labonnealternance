@@ -2,12 +2,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import type { ILbaItemLbaCompanyJson } from "shared"
-import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
 
 export function RecruteurLbaCandidater({ item }: { item: ILbaItemLbaCompanyJson }) {
-  const emailAvailable = hasEmail(item)
+  const emailAvailable = item.contact?.hasEmail
   if (!emailAvailable) {
     return (
       <Typography
