@@ -51,7 +51,7 @@ export function CandidaterButton({
           <ItemDetailApplicationsStatus item={item} />
         ) : isOfferActive(item) ? (
           <>
-            <Box sx={{ mb: { xs: 0, sm: fr.spacing("4v") }, mt: fr.spacing("4v") }}>
+            <Box sx={{ mb: fr.spacing("2v"), mt: fr.spacing("2v") }}>
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>

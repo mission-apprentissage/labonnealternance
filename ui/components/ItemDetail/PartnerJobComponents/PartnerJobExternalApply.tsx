@@ -41,25 +41,27 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
 
   return (
     <>
-      <Button
-        linkProps={{
-          href: job.contact.url,
-          onClick: () => {
-            SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })
-            notifyJobPostulerV3(job)
-            setTimeout(() => {
-              onOpen()
-            }, 2000)
-            pushMatomoEvent({
-              ...matomoPayload,
-              event: MATOMO_EVENTS.PARTNER_APPLY_POPIN_SHOW,
-            })
-          },
-        }}
-        data-tracking-id="postuler-offre-job-partner"
-      >
-        Je postule{!shouldShowPartnerLabelInCta(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
-      </Button>
+      <Box sx={{ mb: fr.spacing("2v"), mt: fr.spacing("2v") }}>
+        <Button
+          linkProps={{
+            href: job.contact.url,
+            onClick: () => {
+              SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })
+              notifyJobPostulerV3(job)
+              setTimeout(() => {
+                onOpen()
+              }, 2000)
+              pushMatomoEvent({
+                ...matomoPayload,
+                event: MATOMO_EVENTS.PARTNER_APPLY_POPIN_SHOW,
+              })
+            },
+          }}
+          data-tracking-id="postuler-offre-job-partner"
+        >
+          Je postule{!shouldShowPartnerLabelInCta(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
+        </Button>
+      </Box>
       <Dialog
         open={isOpen}
         onClose={() => {
