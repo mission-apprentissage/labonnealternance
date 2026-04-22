@@ -33,7 +33,7 @@ function ItemCompanyName({ item }: Pick<ResultCardProps, "item">) {
     return `Secteur d'activité : ${item?.nafs?.[0]?.label ?? ""}`
   }
 
-  return item.company?.name == null ? <i>Offre anonyme</i> : <Typography dangerouslySetInnerHTML={{ __html: item.company.name }} />
+  return item.company?.name == null ? <i>Offre anonyme</i> : <Typography component="span" dangerouslySetInnerHTML={{ __html: item.company.name }} />
 }
 
 function getAdresse(item: ILbaItem) {

@@ -43,7 +43,7 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
         ...customTagColors[color],
       }}
     >
-      <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
+      <Box component="span" sx={{ display: "inline-flex", gap: "5px", alignItems: "center" }}>
         {icon}
         {children}
       </Box>

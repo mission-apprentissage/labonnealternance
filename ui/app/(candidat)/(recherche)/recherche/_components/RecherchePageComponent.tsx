@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import type { Virtualizer } from "@tanstack/react-virtual"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
@@ -29,13 +29,19 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const { displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
   const virtualizerRef = useRef<Virtualizer<any, Element>>(null)
+  const scrollToItemCancelRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    return () => scrollToItemCancelRef.current?.()
+  }, [])
 
   const elements: ReturnType<typeof RechercheResultatsList> = []
 
   const scrollToItem = (item: ResultCardData) => {
     const scrolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
     if (scrolledElementIndex === -1 || !virtualizerRef.current) return
-    scrollToVirtualItem({
+    scrollToItemCancelRef.current?.()
+    scrollToItemCancelRef.current = scrollToVirtualItem({
       virtualizer: virtualizerRef.current,
       index: scrolledElementIndex,
       offsetTop: STICKY_HEADER_HEIGHT,
@@ -64,12 +70,12 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const scolledElementIndex = getScolledElementIndex()
 
   // Retire le flag de l'URL après le scroll initial pour éviter un re-scroll au refresh.
-  const onInitialScrollDone = () => {
+  const onInitialScrollDone = useCallback(() => {
     if (!scrollToRecruteursLba) return
     const url = new URL(window.location.href)
     url.searchParams.delete("scrollToRecruteursLba")
-    window.history.replaceState(null, "", url.pathname + url.search)
-  }
+    window.history.replaceState(null, "", url.pathname + url.search + url.hash)
+  }, [scrollToRecruteursLba])
 
   if (displayMobileForm) {
     return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />

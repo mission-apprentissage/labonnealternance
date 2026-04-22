@@ -39,6 +39,12 @@ export function scrollToVirtualItem({ virtualizer, index, offsetTop, behavior, m
 
   let cancelled = false
   let attempts = 0
+  let stableFrames = 0
+  const finish = () => {
+    if (cancelled) return
+    cancelled = true
+    onComplete?.()
+  }
   const refine = () => {
     if (cancelled) return
     const element = document.querySelector<HTMLElement>(`[data-index="${index}"]`)
@@ -47,14 +53,20 @@ export function scrollToVirtualItem({ virtualizer, index, offsetTop, behavior, m
       const target = Math.max(0, absoluteTop - offsetTop)
       if (Math.abs(window.scrollY - target) > 1) {
         scrollTo(target)
+        stableFrames = 0
+      } else {
+        // Convergence atteinte sur 2 frames consécutives : arrêt anticipé.
+        stableFrames++
+        if (stableFrames >= 2) return finish()
       }
     } else {
       scrollFromMeasurement()
+      stableFrames = 0
     }
     if (attempts++ < maxAttempts) {
       requestAnimationFrame(refine)
     } else {
-      onComplete?.()
+      finish()
     }
   }
   requestAnimationFrame(refine)

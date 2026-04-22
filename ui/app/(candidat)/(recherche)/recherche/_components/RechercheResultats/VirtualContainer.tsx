@@ -99,7 +99,7 @@ export function VirtualContainer({
       clearTimeout(timer)
       cancelRefine?.()
     }
-  }, [initialScrollIndex])
+  }, [initialScrollIndex, useWindowScroll, scrollPaddingStart, columnVirtualizer, onInitialScrollDone])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
   return (
