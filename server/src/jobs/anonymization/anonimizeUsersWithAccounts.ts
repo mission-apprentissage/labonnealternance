@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb"
-import type { IRecruiter } from "shared"
 import dayjs from "shared/helpers/dayjs"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
@@ -11,6 +12,12 @@ const anonymize = async () => {
   const userWithAccountQuery = { last_action_date: { $lte: fromDate } }
   const usersToAnonymize = await getDbCollection("userswithaccounts").find(userWithAccountQuery).toArray()
   const userIds = usersToAnonymize.map(({ _id }) => _id.toString())
+  const userObjectIds = usersToAnonymize.map(({ _id }) => _id)
+
+  await getDbCollection("jobs_partners").updateMany(
+    { managed_by: { $in: userObjectIds }, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
+    { $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, managed_by: null, updated_at: new Date() } }
+  )
 
   await getDbCollection("userswithaccounts")
     .aggregate([

@@ -448,8 +448,11 @@ export const entrepriseOnboardingWorkflow = {
       sentryCaptureException(err)
     }
     const entreprise = await upsertEntrepriseData(siret, origin, siretResponse, isSiretInternalError)
-    // TODO update jobs_partners
     const opcoResult = await updateEntrepriseOpco(siret, { opco, idcc: parseInt(idcc ?? "") || null })
+    await getDbCollection("jobs_partners").updateMany(
+      { partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret },
+      { $set: { workplace_opco: opcoResult.opco, workplace_idcc: opcoResult.idcc } }
+    )
 
     let validated = false
     const { user: managingUser } = await createOrganizationUser({
