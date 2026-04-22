@@ -1,10 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography } from "@mui/material"
+import { Box, Dialog, Typography } from "@mui/material"
 import type { ILbaItemPartnerJobJson } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -60,30 +60,64 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
       >
         Je postule{!shouldShowPartnerLabelInCta(job.job.partner_label) ? "" : ` sur ${job.job.partner_label}`}
       </Button>
-      <ModalReadOnly
-        isOpen={isOpen}
+      <Dialog
+        open={isOpen}
         onClose={() => {
           closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_DISMISSED)
         }}
-        size="md"
+        maxWidth="sm"
+        fullWidth
+        sx={{
+          "& .MuiDialog-container": {
+            alignItems: { xs: "flex-end", sm: "flex-start" },
+            pt: { sm: "10vh" },
+          },
+        }}
+        slotProps={{
+          backdrop: {
+            sx: {
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+            },
+          },
+          paper: {
+            onClick: (e) => e.stopPropagation(),
+            sx: {
+              m: { xs: 0, sm: undefined },
+              maxHeight: { xs: "90vh", sm: undefined },
+              width: { xs: "100%", sm: undefined },
+            },
+          },
+        }}
       >
-        <Box sx={{ p: fr.spacing("6v") }}>
+        <Box sx={{ display: "flex", alignSelf: "flex-end" }}>
+          <ModalCloseButton onClose={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_DISMISSED)} />
+        </Box>
+        <Box sx={{ p: fr.spacing("6v"), pt: 0 }}>
           <Typography variant="h2" sx={{ mb: fr.spacing("4v") }}>
             Avez-vous postulé à l’offre de {job.title} ?
           </Typography>
           <Typography>Nous veillons à ce que les offres proposées par nos partenaires vous aident dans vos recherches d’une alternance. </Typography>
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "row", gap: fr.spacing("4v"), m: fr.spacing("8v"), mt: fr.spacing("2v") }}>
-          <Box sx={{ flex: 1, textAlign: "right" }}>
-            <Button onClick={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_CONFIRMED)}>Oui, j'ai postulé</Button>
-          </Box>
-          <Box sx={{ flex: 1, textAlign: "left" }}>
-            <Button priority="secondary" onClick={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_LATER)}>
-              Non, peut-être plus tard
-            </Button>
-          </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: { sm: "center" },
+            gap: fr.spacing("2v"),
+            px: fr.spacing("6v"),
+            pb: fr.spacing("6v"),
+            "& > .fr-btn": {
+              justifyContent: "center",
+              width: { xs: "100%", sm: "auto" },
+            },
+          }}
+        >
+          <Button onClick={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_CONFIRMED)}>Oui, j’ai postulé</Button>
+          <Button priority="secondary" onClick={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_LATER)}>
+            Non, peut-être plus tard
+          </Button>
         </Box>
-      </ModalReadOnly>
+      </Dialog>
     </>
   )
 }
