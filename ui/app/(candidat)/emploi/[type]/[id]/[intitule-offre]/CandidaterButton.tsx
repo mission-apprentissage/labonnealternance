@@ -16,9 +16,11 @@ export function CandidaterButton({
   item,
   CandidaterModal,
   buttonLabel,
+  showScrollToTop = false,
 }: {
   item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   buttonLabel: string
+  showScrollToTop?: boolean
   CandidaterModal?: (props: {
     item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
     modalControls: ReturnType<typeof useDisclosure>
@@ -44,18 +46,39 @@ export function CandidaterButton({
   const hasAppliedValue = Boolean(applicationDate)
 
   return (
-    <Box data-testid={`candidater-${item.ideaType}`}>
+    <Box data-testid={`candidater-${item.ideaType}`} sx={{ width: showScrollToTop ? "100%" : "auto" }}>
       <CandidaterModal key={modalId} item={item} modalControls={modalControls} submitControls={submitControls} />
       <Box>
         {hasAppliedValue ? (
           <ItemDetailApplicationsStatus item={item} />
         ) : isOfferActive(item) ? (
           <>
-            <Box sx={{ mb: fr.spacing("2v"), mt: fr.spacing("2v") }}>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                alignItems: showScrollToTop ? "center" : undefined,
+                flexDirection: showScrollToTop ? "row" : "column",
+                justifyContent: showScrollToTop ? "space-between" : undefined,
+                my: showScrollToTop ? fr.spacing("1v") : fr.spacing("3v"),
+                gap: fr.spacing("2v"),
+              }}
+            >
               <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
                 {buttonLabel}
               </Button>
-              {tagCandidatureSimplifiee()}
+              {showScrollToTop ? (
+                <Button
+                  iconId="fr-icon-arrow-up-line"
+                  priority="primary"
+                  size="medium"
+                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  aria-label="Retour en haut de la page"
+                  title="Retour en haut"
+                />
+              ) : (
+                tagCandidatureSimplifiee()
+              )}
             </Box>
           </>
         ) : (

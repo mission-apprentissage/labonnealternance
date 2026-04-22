@@ -33,7 +33,7 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
   const { formValues } = useContext(DisplayContext)
 
   return (
-    <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
+    <Box sx={{ mx: { xs: 0, md: "auto" } }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment fonctionnent les candidatures spontanées La bonne alternance ?

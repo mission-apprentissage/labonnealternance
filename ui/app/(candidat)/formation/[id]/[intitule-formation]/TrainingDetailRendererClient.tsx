@@ -1,13 +1,12 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box, Container, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/dist/client/components/navigation"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import type { CSSProperties } from "react"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import type { ILbaItemFormation2Json, ILbaItemTraining2 } from "shared"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType } from "shared/constants/lbaitem"
@@ -20,6 +19,7 @@ import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
+import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import GoingToContactQuestion, { getGoingtoId } from "@/components/ItemDetail/GoingToContactQuestion"
 import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetailCard"
 import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
@@ -68,6 +68,8 @@ function TrainingDetailPage({
   const isMandataire = selectedItem?.company?.mandataire
 
   const router = useRouter()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
@@ -76,104 +78,183 @@ function TrainingDetailPage({
     etablissement_formateur_entreprise_raison_sociale: selectedItem.company.name,
   }
 
+  const headerRef = useRef<HTMLDivElement>(null)
+  const headerHeightRef = useRef(0)
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
-  const maxScroll = 100
-  const handleScroll = () => {
-    let currentScroll = document.querySelector("#itemDetailColumn").scrollTop
-    currentScroll += isCollapsedHeader ? 100 : -100
-    setIsCollapsedHeader(currentScroll > maxScroll)
-  }
+  const isCollapsed = isMobile && isCollapsedHeader
+
+  useEffect(() => {
+    if (headerRef.current && headerHeightRef.current === 0) {
+      headerHeightRef.current = headerRef.current.offsetHeight
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (headerHeightRef.current === 0) return
+      const currentScroll = window.scrollY || document.documentElement.scrollTop
+      if (!isCollapsedHeader && currentScroll > headerHeightRef.current) {
+        setIsCollapsedHeader(true)
+      } else if (isCollapsedHeader && currentScroll < headerHeightRef.current) {
+        setIsCollapsedHeader(false)
+      }
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [isCollapsedHeader])
 
   const { elligibleForAppointment } = selectedItem.training
 
-  const stickyHeaderProperties: CSSProperties = isCollapsedHeader
-    ? {
-        position: "sticky",
-        zIndex: "1",
-        top: "0",
-        left: "0",
-        display: "flex",
-        width: "100%",
-      }
-    : {}
-
   return (
     <Box
-      onScroll={handleScroll}
       id="itemDetailColumn"
       sx={{
         display: selectedItem ? "block" : "none",
-        overflowY: "auto",
         position: "relative",
-        height: "100vh",
         backgroundColor: "#f8f8f8",
       }}
       {...swipeHandlers}
     >
-      <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
+      {/* Header sticky pleine largeur — visible uniquement quand on a scrollé au-delà du header carte */}
+      {isCollapsedHeader && (
         <Box
           sx={{
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            backgroundColor: "white",
             filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-            padding: "10px 20px 0px 20px",
-            background: "white",
-            ...stickyHeaderProperties,
+            boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
           }}
         >
-          <Box sx={{ width: "100%", pl: 0, pb: isCollapsedHeader ? 0 : fr.spacing("2v") }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
+          {isMobile ? (
+            <Box
+              sx={{
+                padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
               <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
             </Box>
-
-            <Box id="detail-header" component="p" color="grey.600" mt={isCollapsedHeader ? 1 : 1} mb={isCollapsedHeader ? 1 : 1}>
-              <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
-              <Typography component="span" fontWeight={400}>
-                &nbsp;propose cette formation
-              </Typography>
-            </Box>
-
-            {!isCollapsedHeader && <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
-
-            <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
-              {actualTitle}
-            </Typography>
-
-            {!isCollapsedHeader && <ItemDetailCard selectedItem={selectedItem} />}
-            {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
-
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
-              <Box sx={{ flex: 1 }}>
-                {Boolean(appliedDate) && (
-                  <div>
-                    <Typography
-                      component="span"
-                      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
-                      sx={{
-                        px: fr.spacing("4v"),
-                        fontStyle: "italic",
-                        backgroundColor: fr.colors.decisions.background.contrast.info.default,
-                        color: fr.colors.decisions.background.actionHigh.info.default,
-                      }}
-                    >
-                      Super, vous avez déjà pris contact le {appliedDate}.
-                    </Typography>
-                  </div>
-                )}
-                {elligibleForAppointment && (
-                  <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
-                )}
+          ) : (
+            <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
+              <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
+                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+                </Box>
+                <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+                  {actualTitle}
+                </Typography>
+                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
+                  <Box sx={{ flex: 1 }}>
+                    {elligibleForAppointment && (
+                      <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+                    )}
+                  </Box>
+                  <ShareLink item={selectedItem} />
+                </Box>
               </Box>
-              <ShareLink item={selectedItem} />
+            </Container>
+          )}
+        </Box>
+      )}
+
+      <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, my: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
+        <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
+          {/* Header carte — toujours dans le flux, scrolle normalement */}
+          <Box
+            ref={headerRef}
+            sx={{
+              filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+              borderRadius: { xs: 0, lg: fr.spacing("2v") },
+              boxShadow: { xs: "unset", lg: "0 4px 12px 0 rgba(0, 0, 18, 0.16)" },
+              padding: "10px 20px 0px 20px",
+              backgroundColor: "white",
+            }}
+          >
+            <Box sx={{ width: "100%", pl: 0, pb: fr.spacing("2v") }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
+                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+              </Box>
+
+              <Box id="detail-header" component="p" color="grey.600" mt={1} mb={1}>
+                <Typography component="span" sx={{ fontWeight: 700 }}>{`${selectedItem?.company?.name || ""} (${selectedItem.company.place.city})`}</Typography>
+                <Typography component="span" fontWeight={400}>
+                  &nbsp;propose cette formation
+                </Typography>
+              </Box>
+
+              <JobItemCardHeader selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />
+
+              <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+                {actualTitle}
+              </Typography>
+
+              <ItemDetailCard selectedItem={selectedItem} />
+              <hr style={{ paddingBottom: "1px" }} />
+
+              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
+                <Box sx={{ flex: 1 }}>
+                  {Boolean(appliedDate) && (
+                    <div>
+                      <Typography
+                        component="span"
+                        className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--xs")}
+                        sx={{
+                          px: fr.spacing("4v"),
+                          fontStyle: "italic",
+                          backgroundColor: fr.colors.decisions.background.contrast.info.default,
+                          color: fr.colors.decisions.background.actionHigh.info.default,
+                        }}
+                      >
+                        Super, vous avez déjà pris contact le {appliedDate}.
+                      </Typography>
+                    </div>
+                  )}
+                  {elligibleForAppointment && (
+                    <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+                  )}
+                </Box>
+                <ShareLink item={selectedItem} />
+              </Box>
             </Box>
           </Box>
+
+          <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
+            <TrainingDetail training={selectedItem} />
+
+            <AideApprentissage />
+          </Box>
+
+          {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
         </Box>
-
-        <TrainingDetail training={selectedItem} />
-
-        <AideApprentissage />
-
-        {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
-      </Box>
+      </Container>
+      {isCollapsed && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            backgroundColor: "white",
+            borderTop: "1px solid",
+            borderColor: fr.colors.decisions.border.default.grey.default,
+            padding: fr.spacing("3v"),
+            zIndex: 10,
+            display: "flex",
+            gap: fr.spacing("2v"),
+          }}
+        >
+          {elligibleForAppointment && (
+            <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+          )}
+        </Box>
+      )}
+      <BackToTopButton />
       <Footer />
     </Box>
   )
@@ -199,10 +280,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
 
   return (
     <>
-      <Box
-        id="detail-content-container"
-        sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}
-      >
+      <Box id="detail-content-container" sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <TrainingDescriptionDetails training={training.training} />
         <Box sx={{ backgroundColor: "#f6f6f6", mt: fr.spacing("6v"), p: 2 }}>
           {training.training.onisepUrl && (
@@ -227,7 +305,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         </Box>
       </Box>
       {IJStats.isFetched && IJStats.data ? <StatsInserJeunes stats={IJStats.data} /> : null}
-      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur l'établissement
         </Typography>
@@ -272,7 +350,7 @@ function TrainingDetail({ training }: { training: ILbaItemFormation2Json }) {
         )}
       </Box>
       {isCfaDEntreprise && (
-        <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
           <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
             Cet établissement est un CFA d&apos;entreprise
           </Typography>
