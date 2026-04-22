@@ -1,4 +1,6 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
+import { RechercheTitle } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheTitle"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { RechercheHeader } from "./RechercheHeader"
@@ -34,6 +36,17 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
           },
         }}
       >
+        <Box
+          sx={{
+            maxWidth: "xl",
+            width: "100%",
+            mx: "auto",
+            pt: fr.spacing("4v"),
+            px: fr.spacing("4v"),
+          }}
+        >
+          <RechercheTitle viewType={props.rechercheParams.viewType} />
+        </Box>
         <RechercheHeader {...props} />
         <Box
           sx={{

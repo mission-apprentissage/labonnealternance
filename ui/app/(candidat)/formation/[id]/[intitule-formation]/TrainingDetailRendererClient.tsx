@@ -1,6 +1,7 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
@@ -234,7 +235,7 @@ function TrainingDetailPage({
           {!elligibleForAppointment && <GoingToContactQuestion kind={kind} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />}
         </Box>
       </Container>
-      {isCollapsed && (
+      {isCollapsed && elligibleForAppointment && (
         <Box
           sx={{
             position: "fixed",
@@ -251,11 +252,19 @@ function TrainingDetailPage({
             gap: fr.spacing("2v"),
           }}
         >
-          {elligibleForAppointment && (
-            <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: fr.spacing("2v") }}>
               <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+              <Button
+                iconId="fr-icon-arrow-up-line"
+                priority="primary"
+                size="medium"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                aria-label="Retour en haut de la page"
+                title="Retour en haut"
+              />
             </Box>
-          )}
+          </Box>
         </Box>
       )}
       {!isMobile && <BackToTopButton />}

@@ -1,12 +1,14 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import type { Virtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
+import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -15,6 +17,7 @@ import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
 import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsList"
+import { RechercheTitle } from "./RechercheResultats/RechercheTitle"
 import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 
@@ -26,17 +29,12 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   const elements: ReturnType<typeof RechercheResultatsList> = []
 
   const scrollToItem = (item: ResultCardData) => {
-    const scolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
-    if (scolledElementIndex !== -1) {
-      // Calcul direct de la position pour contourner les problèmes de scrollToIndex avec useWindowScroll
-      let offset = 0
-      for (let i = 0; i < scolledElementIndex; i++) {
-        const el = elements[i]
-        offset += (typeof el === "object" && "height" in el ? el.height : undefined) ?? 270
+    const scrolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
+    if (scrolledElementIndex !== -1 && virtualizerRef.current) {
+      const measurement = virtualizerRef.current.measurementsCache[scrolledElementIndex]
+      if (measurement) {
+        window.scrollTo({ top: measurement.start, behavior: "smooth" })
       }
-      const containerOffset = document.querySelector(".VirtualContainer")?.getBoundingClientRect().top ?? 0
-      const scrollTop = window.scrollY + containerOffset + offset
-      window.scrollTo({ top: scrollTop, behavior: "instant" })
     }
   }
 
@@ -82,6 +80,7 @@ function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRechercheP
   const headerRef = useRef<HTMLDivElement>(null)
   const headerHeightRef = useRef(0)
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
+  const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
 
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -113,36 +112,45 @@ function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRechercheP
 
   return (
     <>
+      {/* Mobile: sticky au niveau du fragment pour que le parent (Box principal) englobe tout le contenu */}
       <Box
         sx={{
+          display: { xs: "flex", lg: "none" },
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          backgroundColor: fr.colors.decisions.background.default.grey.hover,
+          padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
+          justifyContent: "flex-end",
+        }}
+      >
+        <h1 className="fr-sr-only" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+          Trouver formation et emploi en alternance
+        </h1>
+        <Button
+          iconId="fr-icon-search-line"
+          priority="secondary"
+          onClick={() => navigateToRecherchePage({ displayMobileForm: true }, true)}
+          style={{ backgroundColor: "transparent" }}
+        >
+          Modifier la recherche
+        </Button>
+      </Box>
+
+      {/* Desktop: titre + header avec scroll collapse */}
+      <Box
+        sx={{
+          display: { xs: "none", lg: "block" },
           maxWidth: "xl",
           margin: "auto",
-          pt: { xs: 0, lg: fr.spacing("4v") },
-          px: { xs: 0, lg: fr.spacing("4v") },
+          pt: fr.spacing("4v"),
+          px: fr.spacing("4v"),
           position: "relative",
         }}
       >
-        <Typography
-          component="h1"
-          variant="h1"
-          sx={{
-            display: { xs: "none", lg: "block" },
-          }}
-        >
-          Trouver formation et emploi{" "}
-          <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
-            en alternance
-          </Typography>
-        </Typography>
-        <Typography
-          component="h1"
-          className="fr-sr-only"
-          sx={{ display: { xs: "block", lg: "none" }, position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
-        >
-          Trouver formation et emploi en alternance
-        </Typography>
+        <RechercheTitle viewType={rechercheParams.viewType} />
       </Box>
-      <Box ref={headerRef} sx={{ minHeight: isCollapsedHeader ? headerHeightRef.current : undefined }}>
+      <Box ref={headerRef} sx={{ display: { xs: "none", lg: "block" }, minHeight: isCollapsedHeader ? headerHeightRef.current : undefined }}>
         <RechercheHeader rechercheParams={rechercheParams} fullWidth={isCollapsedHeader} />
       </Box>
     </>
