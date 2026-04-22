@@ -12,6 +12,7 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherc
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
@@ -20,6 +21,9 @@ import { RechercheResultatsList } from "./RechercheResultats/RechercheResultatsL
 import { RechercheTitle } from "./RechercheResultats/RechercheTitle"
 import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
+
+/** Hauteur réservée sous le header sticky lors des scrolls programmatiques vers un item. */
+const STICKY_HEADER_HEIGHT = 212
 
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
@@ -30,19 +34,17 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
   const scrollToItem = (item: ResultCardData) => {
     const scrolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
-    if (scrolledElementIndex !== -1 && virtualizerRef.current) {
-      const measurement = virtualizerRef.current.measurementsCache[scrolledElementIndex]
-      if (measurement) {
-        window.scrollTo({ top: measurement.start, behavior: "smooth" })
-      }
-    }
+    if (scrolledElementIndex === -1 || !virtualizerRef.current) return
+    scrollToVirtualItem({
+      virtualizer: virtualizerRef.current,
+      index: scrolledElementIndex,
+      offsetTop: STICKY_HEADER_HEIGHT,
+      behavior: "smooth",
+      maxAttempts: 30,
+    })
   }
 
   elements.push(...RechercheResultatsList({ ...props, scrollToItem }))
-
-  if (displayMobileForm) {
-    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
-  }
 
   const getScolledElementIndex = () => {
     return elements.findIndex((element) => {
@@ -61,6 +63,18 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
   const scolledElementIndex = getScolledElementIndex()
 
+  // Retire le flag de l'URL après le scroll initial pour éviter un re-scroll au refresh.
+  const onInitialScrollDone = () => {
+    if (!scrollToRecruteursLba) return
+    const url = new URL(window.location.href)
+    url.searchParams.delete("scrollToRecruteursLba")
+    window.history.replaceState(null, "", url.pathname + url.search)
+  }
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
+
   return (
     <Box>
       <RecherchePageHeader rechercheParams={props.rechercheParams} />
@@ -69,7 +83,9 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
         virtualizerRef={virtualizerRef}
         defaultHeight={270}
         elements={elements}
-        scrollToElementIndex={scolledElementIndex}
+        scrollPaddingStart={STICKY_HEADER_HEIGHT}
+        initialScrollIndex={scolledElementIndex}
+        onInitialScrollDone={onInitialScrollDone}
         useWindowScroll
       />
     </Box>
