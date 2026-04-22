@@ -81,6 +81,7 @@ function JobDetail({
   const headerRef = useRef<HTMLDivElement>(null)
   const headerHeightRef = useRef(0)
   const isCollapsed = isMobile && isCollapsedHeader
+  const lastTrackedItemIdRef = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -94,6 +95,8 @@ function JobDetail({
   }, [])
 
   useEffect(() => {
+    if (lastTrackedItemIdRef.current === selectedItem.id) return
+    lastTrackedItemIdRef.current = selectedItem.id
     const position = resultList.findIndex((item) => item.id === selectedItem.id) + 1
     pushMatomoEvent({
       event: MATOMO_EVENTS.JOB_OFFER_VIEWED,
@@ -106,7 +109,7 @@ function JobDetail({
       search_job_name: rechercheParams.job_name || "non_renseigné",
       search_address: rechercheParams.geo?.address || "non_renseigné",
     })
-  }, [selectedItem.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedItem.id, resultList, rechercheParams.job_name, rechercheParams.geo?.address])
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({
     items: resultList,
     currentItemId: selectedItem.id,

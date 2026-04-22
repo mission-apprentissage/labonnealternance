@@ -46,7 +46,19 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
 
   useEffect(() => {
     if (rechercheResults.status !== "success") return
-    const paramsKey = JSON.stringify(rechercheParams)
+    const paramsKey = JSON.stringify({
+      romes: rechercheParams.romes,
+      geo: rechercheParams.geo,
+      radius: rechercheParams.radius,
+      diploma: rechercheParams.diploma,
+      typesEmploi: rechercheParams.typesEmploi,
+      opco: rechercheParams.opco,
+      rncp: rechercheParams.rncp,
+      elligibleHandicapFilter: rechercheParams.elligibleHandicapFilter,
+      displayEntreprises: rechercheParams.displayEntreprises,
+      displayFormations: rechercheParams.displayFormations,
+      job_name: rechercheParams.job_name,
+    })
     if (lastTrackedParamsRef.current === paramsKey) return
     lastTrackedParamsRef.current = paramsKey
     pushMatomoEvent({

@@ -133,23 +133,26 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
         </Box>
       )}
     </Box>,
-    ...items.map((data, index) => {
-      const jobPosition = data.type === "lba_item" ? items.slice(0, index).filter((d) => d.type === "lba_item").length + 1 : undefined
-      return {
-        height: heightEstimation(data.type),
-        render: () => (
-          <ResultCardWithContainer
-            key={index}
-            rechercheParams={props.rechercheParams}
-            data={data}
-            jobPosition={jobPosition}
-            onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
-          />
-        ),
-        onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
-        item: data,
-      }
-    }),
+    ...(() => {
+      let jobPosition = 0
+      return items.map((data, index) => {
+        const currentJobPosition = data.type === "lba_item" ? ++jobPosition : undefined
+        return {
+          height: heightEstimation(data.type),
+          render: () => (
+            <ResultCardWithContainer
+              key={index}
+              rechercheParams={props.rechercheParams}
+              data={data}
+              jobPosition={currentJobPosition}
+              onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
+            />
+          ),
+          onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
+          item: data,
+        }
+      })
+    })(),
     <Box
       key="footer"
       sx={{

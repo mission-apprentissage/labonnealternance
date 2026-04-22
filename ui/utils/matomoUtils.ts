@@ -19,18 +19,22 @@ export const MATOMO_EVENTS = {
   SMART_APPLY_CONFIRMED: "smart_apply_confirmed",
 }
 
-export function getMatomoJobOfferType(ideaType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD): string {
+export function getMatomoJobOfferType(ideaType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE | "non_renseigné" {
   switch (ideaType) {
     case LBA_ITEM_TYPE.RECRUTEURS_LBA:
     case LBA_ITEM_TYPE_OLD.LBA:
-      return "lba"
+    case LBA_ITEM_TYPE_OLD.LBB:
+      return LBA_ITEM_TYPE.RECRUTEURS_LBA
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
     case LBA_ITEM_TYPE_OLD.MATCHA:
-      return "algo"
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
     case LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES:
-      return "partner"
+    case LBA_ITEM_TYPE_OLD.PARTNER_JOB:
+    case LBA_ITEM_TYPE_OLD.PE:
+    case LBA_ITEM_TYPE_OLD.PEJOB:
+      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
     default:
-      return ideaType
+      return "non_renseigné"
   }
 }
 
