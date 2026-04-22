@@ -18,7 +18,7 @@ export const PartnerJobPostuler = ({ job }: { job: ILbaItemPartnerJobJson }) => 
   }
 
   if (job.contact?.phone) {
-    return <CandidatureParTelephone companyName={job.company.name || null} contactName={job.contact.name || null} contactPhone={job.contact.phone || null} />
+    return <CandidatureParTelephone contactPhone={job.contact.phone} />
   }
 
   return null
