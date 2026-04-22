@@ -20,7 +20,7 @@ export function RecruteurLbaCandidater({ item }: { item: ILbaItemJobsGlobal }) {
         className={fr.cx("fr-text--sm")}
       >
         <span aria-hidden="true">🕵️</span>{" "}
-        {item.contact.phone ? (
+        {item?.contact?.phone ? (
           <>
             {" "}
             Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au <Link href={`tel:${item.contact.phone.replace(/\s+/g, "")}`}>{item.contact.phone}</Link>{" "}
