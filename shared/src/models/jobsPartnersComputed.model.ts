@@ -20,7 +20,7 @@ export const PARTNER_WHITELIST: string[] = [
   "Bpifrance",
   "Daher",
   "Engie",
-  "Formaposte",  
+  "Formaposte",
   "Framatome",
   "GRDF",
   "Institut Pasteur",
@@ -46,7 +46,7 @@ export const TRUSTED_COMPANY_JOB_PARTNERS = [
   "Institut Pasteur",
   "L'Oreal",
   "Serpe",
-  "Thales",  
+  "Thales",
   "La Poste",
 ]
 
