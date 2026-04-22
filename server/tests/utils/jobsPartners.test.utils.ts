@@ -1,9 +1,8 @@
 import { generateComputedJobsPartnersFixture, generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
-import { ZJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { saveDbEntity } from "./user.test.utils"
 
 export async function createComputedJobPartner(data: Partial<IComputedJobsPartners> = {}) {
   const computedJobPartner = {
@@ -15,13 +14,14 @@ export async function createComputedJobPartner(data: Partial<IComputedJobsPartne
 }
 
 export async function createJobPartner(data: Partial<IJobsPartnersOfferPrivate> = {}) {
-  const jobPartner = {
-    ...generateJobsPartnersOfferPrivate(data),
+  try {
+    const jobPartner = {
+      ...generateJobsPartnersOfferPrivate(data),
+    }
+    await getDbCollection("jobs_partners").insertOne(jobPartner)
+    return jobPartner
+  } catch (err) {
+    console.error(JSON.stringify(err, null, 2))
+    throw err
   }
-  await getDbCollection("jobs_partners").insertOne(jobPartner)
-  return jobPartner
-}
-
-export async function saveJobPartnerTest(data: Partial<IJobsPartnersOfferPrivate> = {}): Promise<IJobsPartnersOfferPrivate> {
-  return await saveDbEntity(ZJobsPartnersOfferPrivate, (item) => getDbCollection("jobs_partners").insertOne(item), data)
 }

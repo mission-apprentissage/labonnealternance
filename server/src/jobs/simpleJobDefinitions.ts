@@ -25,7 +25,6 @@ import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { processApec } from "./offrePartenaire/apec/processApec"
@@ -49,7 +48,6 @@ import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "./offrePartenaire/jooble/processJooble"
 import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
-import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "./offrePartenaire/lbaJobToJobsPartners"
 import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
@@ -61,7 +59,6 @@ import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAl
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
-import { resyncLbaJobsPartnersStats } from "./oneTimeJob/resyncLbaJobsPartnersStats"
 import { exportFileForAlgo } from "./partenaireExport/exportBlacklistAlgo"
 import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
@@ -81,11 +78,7 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { cancelOfferJob } from "./recruiters/cancelOfferJob"
-import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
-import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
-import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
@@ -111,20 +104,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Pseudonymisation des documents",
   },
   {
-    fct: updateMissingStartDate,
-    description: "Récupération des geo_coordinates manquants dans la collection Recruiters",
-  },
-  {
     fct: importReferentielRome,
     description: "import référentiel rome v4 from XML",
-  },
-  {
-    fct: cancelOfferJob,
-    description: "Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle",
-  },
-  {
-    fct: createJobsCollectionForMetabase,
-    description: "Permet de créer une collection dédiée aux offres pour metabase",
   },
   {
     fct: createRoleManagement360,
@@ -217,14 +198,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonymizeReportedReasons,
     description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
-  },
-  {
-    fct: fixJobExpirationDate,
-    description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
-  },
-  {
-    fct: fixRecruiterDataValidation,
-    description: "Répare les data de la collection recruiters",
   },
   {
     fct: anonimizeUsersWithAccounts,
@@ -383,18 +356,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
-  },
-  {
-    fct: resyncLbaJobsPartnersStats,
-    description: "Resynchronise les stats de consultation des offres LBA depuis recruiters vers jobs_partners",
-  },
-  {
-    fct: syncLbaJobsIntoJobsPartners,
-    description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs",
-  },
-  {
-    fct: syncLbaJobsIntoJobsPartnersFull,
-    description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
   },
   {
     fct: analyzeClosedCompanies,

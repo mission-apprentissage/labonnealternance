@@ -7,8 +7,8 @@ import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { zCallerParam } from "../routes/_params.js"
-import { validateSIRET } from "../validators/siretValidator.js"
 
+import { assertUnreachable } from "../utils/assertUnreachable.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
@@ -226,17 +226,17 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
     .string()
     .transform((recipientId) => {
       const [collectionName, jobId] = recipientId.split("_")
-      if (!ZJobCollectionName.safeParse(collectionName).success) {
+      const collectionNameParseResult = ZJobCollectionName.safeParse(collectionName)
+      if (!collectionNameParseResult.success) {
         throw new Error(`Invalid collection name: ${collectionName}`)
       }
-      if (collectionName === "partners" || collectionName === "recruiters") {
+      const parsedCollectionName = collectionNameParseResult.data
+      if (parsedCollectionName === "partners" || parsedCollectionName === "recruiters") {
         if (!ObjectId.isValid(jobId)) {
           throw new Error(`Invalid job identifier: ${jobId}`)
         }
       } else {
-        if (!validateSIRET(jobId)) {
-          throw new Error(`Invalid siret identifier: ${jobId}`)
-        }
+        assertUnreachable(parsedCollectionName)
       }
       return { collectionName: collectionName as IJobCollectionName, jobId }
     })

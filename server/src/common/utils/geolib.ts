@@ -11,7 +11,8 @@ type Coordinate = {
  * Returns number of kilometers between two geo points.
  */
 export const getDistanceInKm = (coordinate: Coordinate): number => {
-  const distanceInKm = distance(Object.values(coordinate.origin).reverse(), Object.values(coordinate.destination).reverse())
+  const { origin, destination } = coordinate
+  const distanceInKm = distance([origin.longitude, origin.latitude], [destination.longitude, destination.latitude])
 
   return Math.ceil(distanceInKm)
 }

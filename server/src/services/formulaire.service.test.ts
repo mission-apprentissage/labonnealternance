@@ -1,61 +1,49 @@
+import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
-import { removeAccents } from "shared"
-import { RECRUITER_STATUS } from "shared/constants/index"
+import { AccessEntityType, removeAccents } from "shared"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
-import { generateJobFixture, generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
+import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
+import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import type { IRecruiter, IReferentielRome, IUserWithAccount } from "shared/models/index"
+import type { IEntreprise, IReferentielRome, IUserWithAccount } from "shared/models/index"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { createJob } from "./formulaire.service"
+import { createJob, getCompetencesRomeFromPartnerJob } from "./formulaire.service"
 
 useMongo()
 
 describe("createJob", () => {
   let user: IUserWithAccount
-  let recruiter: IRecruiter
+  let entreprise: IEntreprise
   let referentielRome: IReferentielRome
 
   beforeEach(async () => {
+    const mockApiEntrepriseInstance = mockApiEntreprise.infosEntreprise()
+
     const email = "entreprise@mail.fr"
-    const entreprise = generateEntrepriseFixture()
-    const role = generateRoleManagementFixture()
+    entreprise = generateEntrepriseFixture()
     user = generateUserWithAccountFixture({
       _id: new ObjectId("670ce1ded6ce30c3c90a0e1d"),
       email,
     })
-    recruiter = generateRecruiterFixture({
-      is_delegated: false,
-      cfa_delegated_siret: null,
-      status: RECRUITER_STATUS.ACTIF,
-      establishment_siret: entreprise.siret,
-      opco: entreprise.opco,
-      jobs: [],
-      geopoint: {
-        type: "Point",
-        coordinates: [2.3522, 48.8566],
-      },
-      geo_coordinates: "48.8566,2.3522",
-      email,
-      _id: new ObjectId("670ce30b57a50d6875c141f9"),
-      establishment_creation_date: new Date("2024-10-14T09:23:21.588Z"),
-      address: "126 RUE DE L'UNIVERSITE 75007 PARIS",
-      managed_by: "686e82f6965b78f107bf44c1",
+    const role = generateRoleManagementFixture({
+      authorized_type: AccessEntityType.ENTREPRISE,
+      authorized_id: entreprise._id.toString(),
+      user_id: user._id,
     })
     referentielRome = generateReferentielRome()
     await getDbCollection("userswithaccounts").insertOne(user)
     await getDbCollection("referentielromes").insertOne(referentielRome)
     await getDbCollection("rolemanagements").insertOne(role)
     await getDbCollection("entreprises").insertOne(entreprise)
-    await getDbCollection("recruiters").insertOne(recruiter)
 
     return async () => {
+      mockApiEntrepriseInstance.persist(false)
       await getDbCollection("userswithaccounts").deleteMany({})
-      await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("entreprises").deleteMany({})
       await getDbCollection("rolemanagements").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
@@ -77,11 +65,11 @@ describe("createJob", () => {
 
   it("should insert a job", async () => {
     const job = generateValidJobWritable()
-    const result = await createJob({ user, establishment_id: recruiter.establishment_id, job })
+    const result = await createJob({ user, siret: entreprise.siret, job })
 
-    expect.soft(omit(result, "jobs")).toMatchSnapshot()
-    expect.soft(result.jobs.length).toEqual(1)
-    expect.soft(omit(result.jobs[0], "job_creation_date", "job_update_date", "_id", "job_expiration_date")).toMatchSnapshot()
+    expect
+      .soft(omit(result, ["_id", "apply_recipient_id", "apply_url", "created_at", "lba_url", "offer_creation", "partner_job_id", "updated_at", "offer_expiration"]))
+      .toMatchSnapshot()
   })
 
   it("should raise a bad request when savoir_etre_professionnel do not match referentiel rome", async () => {
@@ -93,7 +81,7 @@ describe("createJob", () => {
         coeur_metier: "test",
       },
     ]
-    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, siret: entreprise.siret, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoir_faire do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -109,7 +97,7 @@ describe("createJob", () => {
         ],
       },
     ]
-    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, siret: entreprise.siret, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when savoirs do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
@@ -125,13 +113,13 @@ describe("createJob", () => {
         ],
       },
     ]
-    await expect.soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job })).rejects.toThrow("compétences invalides")
+    await expect.soft(async () => createJob({ user, siret: entreprise.siret, job })).rejects.toThrow("compétences invalides")
   })
   it("should raise a bad request when rome_label do not match referentiel rome", async () => {
     const job = generateValidJobWritable()
     job.rome_label = "test"
     await expect
-      .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(
         `L'intitulé du code ROME ne correspond pas au référentiel : ${removeAccents(referentielRome.rome.intitule.toLowerCase())}, reçu ${removeAccents(job.rome_label.toLowerCase())}`
       )
@@ -140,7 +128,41 @@ describe("createJob", () => {
     const job = generateValidJobWritable()
     job.rome_appellation_label = "test"
     await expect
-      .soft(async () => createJob({ user, establishment_id: recruiter.establishment_id, job }))
+      .soft(async () => createJob({ user, siret: entreprise.siret, job }))
       .rejects.toThrow(`L'appellation du code ROME ne correspond pas au référentiel : reçu ${removeAccents(job.rome_appellation_label.toLowerCase())}`)
+  })
+})
+
+describe("getCompetencesRomeFromPartnerJob", () => {
+  it("should reconstruct competences_rome from partner fields and rome_detail", () => {
+    const referentielRome = generateReferentielRome()
+    const selectedSavoirEtre = referentielRome.competences.savoir_etre_professionnel?.at(0)
+    const selectedSavoirFaireCategory = referentielRome.competences.savoir_faire?.at(0)
+    const selectedSavoirFaireItem = selectedSavoirFaireCategory?.items.at(0)
+    const selectedSavoirsCategory = referentielRome.competences.savoirs?.at(0)
+    const selectedSavoirsItem = selectedSavoirsCategory?.items.at(0)
+
+    expect.soft(selectedSavoirEtre).toBeDefined()
+    expect.soft(selectedSavoirFaireCategory).toBeDefined()
+    expect.soft(selectedSavoirFaireItem).toBeDefined()
+    expect.soft(selectedSavoirsCategory).toBeDefined()
+    expect.soft(selectedSavoirsItem).toBeDefined()
+
+    const partnerJob = {
+      ...generateJobsPartnersOfferPrivate({
+        offer_desired_skills: selectedSavoirEtre ? [selectedSavoirEtre.libelle] : [],
+        offer_to_be_acquired_skills: selectedSavoirFaireCategory && selectedSavoirFaireItem ? [`${selectedSavoirFaireCategory.libelle}\t${selectedSavoirFaireItem.libelle}`] : [],
+        offer_to_be_acquired_knowledge: selectedSavoirsCategory && selectedSavoirsItem ? [`${selectedSavoirsCategory.libelle}\t${selectedSavoirsItem.libelle}`] : [],
+      }),
+      rome_detail: referentielRome,
+    }
+
+    const competencesRome = getCompetencesRomeFromPartnerJob(partnerJob)
+
+    expect(competencesRome).toEqual({
+      savoir_etre_professionnel: [selectedSavoirEtre],
+      savoir_faire: [{ libelle: selectedSavoirFaireCategory!.libelle, items: [selectedSavoirFaireItem] }],
+      savoirs: [{ libelle: selectedSavoirsCategory!.libelle, items: [selectedSavoirsItem] }],
+    })
   })
 })

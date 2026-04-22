@@ -1,11 +1,34 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import assert from "assert"
-import { describe, expect, it } from "vitest"
+import { ObjectId } from "mongodb"
+import type { IApplication, IRoutes } from "shared"
+import { generateApplicationFixture } from "shared/fixtures/application.fixture"
+import { generateJobsPartnersFull } from "shared/fixtures/jobPartners.fixture"
+import { clichyFixture } from "shared/fixtures/referentiel/commune.fixture"
+import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
+import type z from "zod"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 describe("jobEtFormationV1", () => {
   useMongo()
   const httpClient = useServer()
+
+  beforeAll(() => {
+    vi.useFakeTimers({ toFake: ["Date"] })
+    vi.setSystemTime(new Date("2024-08-21"))
+
+    return () => {
+      vi.useRealTimers()
+    }
+  })
+
+  afterEach(async () => {
+    await getDbCollection("jobs_partners").deleteMany({})
+    await getDbCollection("applications").deleteMany({})
+  })
+
   describe("Verifie que", async () => {
     it("la route répond", async () => {
       const response = await httpClient().inject({ method: "GET", path: "/api/V1/jobsEtFormations" })
@@ -224,6 +247,71 @@ describe("jobEtFormationV1", () => {
       expect(response.statusCode).toBe(400)
       assert.deepStrictEqual(JSON.parse(response.body).error, "Bad Request")
       assert.ok(JSON.parse(response.body).message.indexOf("querystring.diploma: Invalid enum value") >= 0)
+    })
+
+    it("la route renvoie les bonnes données", async () => {
+      const romes = ["D1214", "D1212", "D1211"]
+      const recruteurLba = generateJobsPartnersFull({
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        offer_rome_codes: romes,
+        workplace_geopoint: clichyFixture.centre,
+        workplace_siret: "58006820882692",
+        apply_email: "email@mail.com",
+      })
+      const jobPartnerOffer: IJobsPartnersOfferPrivate = generateJobsPartnersFull({
+        _id: new ObjectId("69de59614efad14044066af4"),
+        partner_job_id: "69de59614efad14044066af5",
+        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+        offer_rome_codes: romes,
+        workplace_geopoint: clichyFixture.centre,
+      })
+      const FTOffer: IJobsPartnersOfferPrivate = generateJobsPartnersFull({
+        _id: new ObjectId(),
+        partner_job_id: "69de59614efad14044066af6",
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        offer_rome_codes: romes,
+        workplace_geopoint: clichyFixture.centre,
+      })
+      const lbaOffer: IJobsPartnersOfferPrivate = generateJobsPartnersFull({
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+        offer_rome_codes: romes,
+        workplace_geopoint: clichyFixture.centre,
+      })
+      await getDbCollection("jobs_partners").insertMany([recruteurLba, jobPartnerOffer, lbaOffer, FTOffer])
+
+      const lbaApplication: IApplication = generateApplicationFixture({
+        job_id: lbaOffer._id,
+      })
+      await getDbCollection("applications").insertMany([lbaApplication])
+
+      const [longitude, latitude] = clichyFixture.centre.coordinates
+      const response = await httpClient().inject({
+        method: "GET",
+        path: `/api/V1/jobsEtFormations?romes=${romes.join(",")}&longitude=${longitude}&latitude=${latitude}&radius=30&insee=92024&caller=a`,
+      })
+
+      expect.soft(response.statusCode).toBe(200)
+
+      type ResponseBody = z.output<IRoutes["get"]["/v1/jobsEtFormations"]["response"]["200"]>
+
+      const { jobs, formations } = response.json() as ResponseBody
+      if (jobs && "matchas" in jobs) {
+        const { lbaCompanies: lbaCompaniesRaw = null, matchas: lbaJobsRaw = null, partnerJobs: partnerJobsRaw = null, peJobs: peJobsRaw = null } = jobs
+        ;[lbaCompaniesRaw, lbaJobsRaw, partnerJobsRaw, peJobsRaw].forEach((result) => {
+          if (result && "results" in result) {
+            const { results } = result
+            results.forEach((job) => {
+              delete job.id
+              delete job.job?.id
+              delete job.recipient_id
+              delete job.token
+              delete job.contact.email
+              delete job.contact.iv
+            })
+          }
+        })
+      }
+      expect.soft({ jobs, formations }).toMatchSnapshot()
     })
   })
 })

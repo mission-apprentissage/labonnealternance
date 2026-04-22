@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import type { IJob } from "shared"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { useToast } from "@/app/hooks/useToast"
 import { createOffre, getOffre } from "@/utils/api"
@@ -20,7 +21,10 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
   const handleSave = async (values) => {
     // Updates an offer
     if (job_id) {
-      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: { ...values, job_update_date: new Date() } }).then(() => {
+      delete values.job_creation_date
+      delete values.job_update_date
+      delete values.delegations
+      await apiPut("/formulaire/offre/:jobId", { params: { jobId: job_id }, body: values }).then(() => {
         toast({
           title: "Offre mise à jour avec succès.",
         })
@@ -37,5 +41,5 @@ export default function UpsertOffre({ establishment_id, job_id, onSuccess }: { e
 
   if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
-  return <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre} />
+  return <FormulaireEditionOffre establishment_id={establishment_id} handleSave={handleSave} offre={offre as unknown as IJob} />
 }

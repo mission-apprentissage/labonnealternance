@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import type { IJobJson } from "shared"
 
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
@@ -15,12 +14,11 @@ export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: b
   const { email, token } = useSearchParamsRecord() as { token: string; email: string }
 
   const submit = async (values) => {
-    const { recruiter: formulaire, token: jobToken } = await createOffreByToken(establishment_id, values, token)
-    const job = formulaire.jobs.at(-1) as IJobJson
+    const { job_id, token: jobToken } = await createOffreByToken(establishment_id, values, token)
     router.replace(
       PAGES.dynamic
         .espaceProCreationFin({
-          jobId: job._id.toString(),
+          jobId: job_id,
           email,
           withDelegation: false,
           fromDashboard: false,
