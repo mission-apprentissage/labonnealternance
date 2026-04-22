@@ -5,7 +5,7 @@ import type { ILbaItemJobsGlobal } from "shared"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
 
-export function RecruteurLbaCandidater({ item }: { item: ILbaItemJobsGlobal }) {
+export function RecruteurLbaCandidater({ item, showScrollToTop }: { item: ILbaItemJobsGlobal; showScrollToTop?: boolean }) {
   if (!item?.contact?.hasEmail) {
     return (
       <Typography
