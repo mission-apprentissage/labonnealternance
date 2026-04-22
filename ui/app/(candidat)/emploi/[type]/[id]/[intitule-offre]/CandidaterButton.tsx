@@ -5,7 +5,6 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useSubmitCandidature } from "@/components/ItemDetail/CandidatureLba/services/submitCandidature"
@@ -37,7 +36,7 @@ export function CandidaterButton({
     // re-instancie la modal
     setModalId(Math.random())
     onOpen()
-    const emailAvailable = hasEmail(item)
+    const emailAvailable = item.contact?.hasEmail
     SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: kind, info_fiche: item.id, "avec contact": emailAvailable ? "oui" : "non" })
     notifyJobPostulerV3(item)
   }
