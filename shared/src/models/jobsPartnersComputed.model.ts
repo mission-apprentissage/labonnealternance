@@ -8,7 +8,9 @@ import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobsPartners.mod
 // Ces partenaires sont exclus des processus de classification et de blacklistage.
 export const PARTNER_WHITELIST: string[] = [
   JOBPARTNERS_LABEL.DECATHLON,
+  JOBPARTNERS_LABEL.EDF,
   JOBPARTNERS_LABEL.EMPLOI_INCLUSION,
+  JOBPARTNERS_LABEL.ENEDIS,
   JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
   JOBPARTNERS_LABEL.JOBTEASER,
   JOBPARTNERS_LABEL.KELIO,
@@ -17,10 +19,8 @@ export const PARTNER_WHITELIST: string[] = [
   "BPCE",
   "Bpifrance",
   "Daher",
-  "EDF",
-  "Enedis",
   "Engie",
-  "Formaposte",
+  "Formaposte",  
   "Framatome",
   "GRDF",
   "Institut Pasteur",
@@ -32,13 +32,13 @@ export const PARTNER_WHITELIST: string[] = [
 
 export const TRUSTED_COMPANY_JOB_PARTNERS = [
   JOBPARTNERS_LABEL.DECATHLON,
+  JOBPARTNERS_LABEL.EDF,
+  JOBPARTNERS_LABEL.ENEDIS,
   JOBPARTNERS_LABEL.LAPOSTE,
   "Amazon",
   "BPCE",
   "Bpifrance",
   "Daher",
-  "EDF",
-  "Enedis",
   "Engie",
   "Formaposte",
   "Framatome",
@@ -46,7 +46,8 @@ export const TRUSTED_COMPANY_JOB_PARTNERS = [
   "Institut Pasteur",
   "L'Oreal",
   "Serpe",
-  "Thales",
+  "Thales",  
+  "La Poste",
 ]
 
 export enum COMPUTED_ERROR_SOURCE {

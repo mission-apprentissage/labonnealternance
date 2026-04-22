@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { assertUnreachable } from "shared/utils/assertUnreachable"
 import { Footer } from "@/app/_components/Footer"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
@@ -23,7 +24,6 @@ import type { ResultCardData } from "./ResultCardData"
 import { Whisper } from "./Whisper"
 
 export function RechercheResultatsList(props: { rechercheParams: IRecherchePageParams; scrollToItem: (item: ResultCardData) => void }) {
-  const { displayMap } = props.rechercheParams
   const result = useRechercheResults(props.rechercheParams)
   const whispers = useWhispers(props.rechercheParams)
 
@@ -133,7 +133,6 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
           key={index}
           rechercheParams={props.rechercheParams}
           data={data}
-          displayMap={displayMap}
           onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
         />
       ),
@@ -160,19 +159,17 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
 function ResultCardWithContainer({
   data,
   rechercheParams,
-  displayMap,
   onValorisationCandidatureSpontaneeClick,
 }: {
   data: ResultCardData
   rechercheParams: IRecherchePageParams
-  displayMap: boolean
   onValorisationCandidatureSpontaneeClick: () => void
 }) {
   return (
     <Box
       sx={{
         my: fr.spacing("2v"),
-        px: { md: displayMap ? fr.spacing("2v") : 0, lg: fr.spacing("4v") },
+        px: { md: 0, lg: fr.spacing("4v") },
       }}
     >
       <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />
@@ -207,6 +204,7 @@ function ResultCard({
             utm_medium: "website",
             utm_campaign: "lba_recherche_promo-candidature-spontanee",
           }}
+          disabled={rechercheParams.typesEmploi && rechercheParams.typesEmploi.length !== 0 && !rechercheParams.typesEmploi.includes(TYPE_EMPLOI_OPTIONS.candidatures_spontanees)}
         />
       )
     }

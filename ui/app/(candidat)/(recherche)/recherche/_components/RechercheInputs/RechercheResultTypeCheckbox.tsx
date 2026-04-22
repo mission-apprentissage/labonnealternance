@@ -127,16 +127,9 @@ function getQueryStatus(rechercheResult: IUseRechercheResults, itemType: UserIte
 }
 
 function getItemCounts(rechercheResults: IUseRechercheResults) {
-  const {
-    formationQuery,
-    formationQuery: { formations },
-    jobQuery,
-    jobQuery: { lbaCompanies, lbaJobs, partnerJobs },
-  } = rechercheResults
-  const jobTotal = lbaCompanies.length + lbaJobs.length + partnerJobs.length
-  const result = {
-    [UserItemTypes.EMPLOI]: jobQuery.status === "success" ? jobTotal : undefined,
-    [UserItemTypes.FORMATIONS]: formationQuery.status === "success" ? formations.length : undefined,
+  const { formationQuery, displayedJobs, displayedFormations } = rechercheResults
+  return {
+    [UserItemTypes.EMPLOI]: rechercheResults.jobQuery.status === "success" ? displayedJobs.length : undefined,
+    [UserItemTypes.FORMATIONS]: formationQuery.status === "success" ? displayedFormations.length : undefined,
   }
-  return result
 }

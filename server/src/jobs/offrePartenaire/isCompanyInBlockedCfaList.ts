@@ -1444,7 +1444,6 @@ export const cfaCompanyList = [
   "NANTES UNIVERSITE",
   "NAS",
   "NEO SPHERE",
-  "NEO",
   "NEOGEST EDUCATION GROUP",
   "NEPSOD EVOLUTION",
   "NESS EDUCATION - FMS -SMBS-FBS",

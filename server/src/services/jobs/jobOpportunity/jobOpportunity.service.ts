@@ -763,7 +763,7 @@ async function upsertJobOfferPrivate({
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,
     contract_duration: data.contract.duration,
-    contract_type: data.contract.type,
+    contract_type: data.contract.type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     contract_remote: data.contract.remote,
     contract_is_disabled_elligible,
 

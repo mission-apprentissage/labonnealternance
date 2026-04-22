@@ -32,7 +32,9 @@ export const connectToMongodb = async (uri: string) => {
     retryWrites: true,
     retryReads: true,
     minPoolSize: config.env === "local" ? 0 : 5,
-    maxPoolSize: 1_000,
+    maxPoolSize: 50,
+    localThresholdMS: 50,
+    readPreference: config.env === "local" ? "primary" : "secondaryPreferred",
     serverSelectionTimeoutMS: config.env === "local" ? 1_000 : 10_000,
   })
 
