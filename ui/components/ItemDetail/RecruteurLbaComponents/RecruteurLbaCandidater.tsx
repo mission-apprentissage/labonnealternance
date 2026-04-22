@@ -2,13 +2,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared"
-import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
 
 export function RecruteurLbaCandidater({ item }: { item: ILbaItemJobsGlobal }) {
-  const emailAvailable = hasEmail(item)
-  if (!emailAvailable) {
+  if (!item?.contact?.hasEmail) {
     return (
       <Typography
         component="span"
