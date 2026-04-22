@@ -31,19 +31,17 @@ export const transformPartnerJobs = ({
   partnerJobs: IJobsPartnersOfferPrivate[]
   isMinimalData: boolean
   applicationCountByJob: null | IApplicationCount[]
-}) =>
-  partnerJobs.flatMap((partnerJob) =>
-    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountByJob) : transformPartnerJob(partnerJob, "V2", applicationCountByJob)
+}) => {
+  const applicationCountMap = applicationCountByJob ? new Map(applicationCountByJob.map(({ _id, count }) => [_id, count])) : null
+  return partnerJobs.flatMap((partnerJob) =>
+    isMinimalData ? transformPartnerJobWithMinimalData(partnerJob, applicationCountMap) : transformPartnerJob(partnerJob, "V2", applicationCountMap)
   )
+}
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJob(
-  partnerJob: IJobsPartnersOfferPrivateWithDistance,
-  version: "V1" | "V2" = "V1",
-  applicationCountByJob?: null | IApplicationCount[]
-): ILbaItemPartnerJob {
+function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, version: "V1" | "V2" = "V1", applicationCountMap?: null | Map<string, number>): ILbaItemPartnerJob {
   const romes = partnerJob.offer_rome_codes.map((code) => ({ code, label: null }))
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
@@ -121,8 +119,8 @@ function transformPartnerJob(
     target_diploma_level: partnerJob?.offer_target_diploma?.label || null,
   }
 
-  if (applicationCountByJob) {
-    resultJob.applicationCount = applicationCountByJob.find(({ _id }) => _id === id)?.count ?? 0
+  if (applicationCountMap && resultJob.contact?.hasEmail) {
+    resultJob.applicationCount = applicationCountMap.get(id) ?? 0
   }
 
   return resultJob
@@ -131,7 +129,7 @@ function transformPartnerJob(
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
-function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivateWithDistance, applicationCountByJob: null | IApplicationCount[]): ILbaItemPartnerJob {
+function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivateWithDistance, applicationCountMap: null | Map<string, number>): ILbaItemPartnerJob {
   const longitude = partnerJob.workplace_geopoint.coordinates[0]
   const latitude = partnerJob.workplace_geopoint.coordinates[1]
   const id = partnerJob._id.toString()
@@ -168,9 +166,8 @@ function transformPartnerJobWithMinimalData(partnerJob: IJobsPartnersOfferPrivat
     recipient_id: "",
   }
 
-  if (applicationCountByJob) {
-    const applicationCount = applicationCountByJob.find(({ _id }) => _id === id)
-    resultJob.applicationCount = applicationCount?.count ?? 0
+  if (applicationCountMap && resultJob.contact?.hasEmail) {
+    resultJob.applicationCount = applicationCountMap.get(id) ?? 0
   }
 
   return resultJob
@@ -240,12 +237,8 @@ export const getPartnerJobs = async ({
 
     const rawPartnerJobs = await getJobsPartnersFromDBForUI({ ...resolvedQuery, force_partner_label })
 
-    let applicationCountByJob: null | IApplicationCount[] = null
-
-    if (force_partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-      const ids = rawPartnerJobs.map(({ _id }) => _id)
-      applicationCountByJob = await getApplicationByJobCount(ids)
-    }
+    const ids = rawPartnerJobs.map(({ _id }) => _id)
+    const applicationCountByJob = await getApplicationByJobCount(ids)
     let partnerJobs: ILbaItemPartnerJob[] = transformPartnerJobs({ partnerJobs: rawPartnerJobs, isMinimalData, applicationCountByJob })
 
     // filtrage sur l'opco
@@ -271,12 +264,10 @@ export const getPartnerJobByIdV2 = async (jobId: ObjectId): Promise<ILbaItemPart
     throw notFound("Job not found")
   }
 
-  let applicationCountByJob: null | IApplicationCount[] = null
-  if (rawPartnerJob.partner_label === JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA) {
-    applicationCountByJob = await getApplicationByJobCount([jobId])
-  }
+  const applicationCountByJob = await getApplicationByJobCount([jobId])
+  const applicationCountMap = new Map(applicationCountByJob.map(({ _id, count }) => [_id, count]))
 
-  const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountByJob)
+  const partnerJob = transformPartnerJob(rawPartnerJob, "V2", applicationCountMap)
   return partnerJob
 }
 

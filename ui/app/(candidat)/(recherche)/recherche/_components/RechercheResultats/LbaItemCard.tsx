@@ -49,14 +49,7 @@ function getAdresse(item: ILbaItem) {
 }
 
 function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  const isRecruteurLba = item.ideaType === LBA_ITEM_TYPE_OLD.LBA || item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA
-  const isOffreEmploiLba = item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA || item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-
-  if (isRecruteurLba && !item.contact?.hasEmail) {
-    return null
-  }
-
-  if (isRecruteurLba || isOffreEmploiLba) {
+  if (item.contact?.hasEmail && "applicationCount" in item && item.applicationCount != null)
     return (
       <Typography
         component="span"
@@ -70,9 +63,6 @@ function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
         {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
       </Typography>
     )
-  }
-
-  return null
 }
 
 function DatePublication({ item }: Pick<ResultCardProps, "item">) {

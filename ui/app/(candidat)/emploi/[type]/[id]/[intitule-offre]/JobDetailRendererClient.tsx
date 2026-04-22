@@ -7,7 +7,6 @@ import { useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
-import { hasEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasEmail"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -120,7 +119,7 @@ function JobDetail({
             {!isCollapsedHeader && <hr style={{ paddingBottom: "1px" }} />}
             <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
               <Box sx={{ mr: fr.spacing("4v") }}>
-                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && hasEmail(selectedItem) && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
+                {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && selectedItem.contact?.hasEmail && <CandidatureLba item={selectedItem as ILbaItemLbaJobJson} />}
                 {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                 {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobPostuler job={selectedItem} />}
               </Box>
@@ -128,7 +127,7 @@ function JobDetail({
                 <ShareLink item={selectedItem} />
               </Box>
             </Box>
-            {selectedItem.company?.mandataire && hasEmail(selectedItem) && (
+            {selectedItem.company?.mandataire && selectedItem.contact?.hasEmail && (
               <Stack
                 direction="row"
                 sx={{
