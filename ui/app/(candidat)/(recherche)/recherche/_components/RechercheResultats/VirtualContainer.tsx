@@ -7,6 +7,7 @@ import type { Virtualizer } from "@tanstack/react-virtual"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import type { RefObject } from "react"
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
+import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
 
 type VirtualElement = { height?: number; render: () => React.ReactNode; onRender?: () => void }
 
@@ -15,20 +16,25 @@ export function VirtualContainer({
   defaultHeight,
   parentStyle,
   containerStyle,
-  scrollToElementIndex = -1,
   scrollElementRef,
   virtualizerRef,
   useWindowScroll = false,
+  scrollPaddingStart = 0,
+  initialScrollIndex = -1,
+  onInitialScrollDone,
 }: {
   defaultHeight: number
   elements: (VirtualElement | React.ReactNode)[]
   parentStyle?: SxProps<Theme>
   containerStyle?: SxProps<Theme>
-  scrollToElementIndex?: number
   scrollElementRef?: RefObject<HTMLElement>
   virtualizerRef?: RefObject<Virtualizer<any, Element>>
   useWindowScroll?: boolean
+  scrollPaddingStart?: number
+  initialScrollIndex?: number
+  onInitialScrollDone?: () => void
 }) {
+  const lastScrolledIndexRef = useRef<number | null>(null)
   const parentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -58,6 +64,7 @@ export function VirtualContainer({
     },
     overscan: 10,
     scrollMargin,
+    scrollPaddingStart,
     ...(useWindowScroll && {
       scrollToFn: (offset, { behavior }) => {
         window.scrollTo({ top: offset, behavior })
@@ -70,10 +77,29 @@ export function VirtualContainer({
   })
 
   useEffect(() => {
-    if (scrollToElementIndex >= 0) {
-      virtualizerRef.current.scrollToIndex(scrollToElementIndex, { align: "start" })
+    if (initialScrollIndex < 0) return
+    if (!useWindowScroll) return
+    if (lastScrolledIndexRef.current === initialScrollIndex) return
+
+    // En strict mode (dev), useEffect tourne deux fois. On assigne la ref dans le
+    // callback du setTimeout pour que le premier run (nettoyé) ne bloque pas le second.
+    let cancelRefine: (() => void) | undefined
+    const timer = setTimeout(() => {
+      lastScrolledIndexRef.current = initialScrollIndex
+      cancelRefine = scrollToVirtualItem({
+        virtualizer: columnVirtualizer,
+        index: initialScrollIndex,
+        offsetTop: scrollPaddingStart,
+        behavior: "auto",
+        onComplete: onInitialScrollDone,
+      })
+    }, 0)
+
+    return () => {
+      clearTimeout(timer)
+      cancelRefine?.()
     }
-  }, [scrollToElementIndex, scrollMargin])
+  }, [initialScrollIndex, useWindowScroll, scrollPaddingStart, columnVirtualizer, onInitialScrollDone])
 
   const virtualItems = columnVirtualizer.getVirtualItems()
   return (

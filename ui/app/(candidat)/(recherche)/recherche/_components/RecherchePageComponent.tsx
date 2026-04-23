@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import type { Virtualizer } from "@tanstack/react-virtual"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
@@ -12,6 +12,7 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherc
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
@@ -21,28 +22,35 @@ import { RechercheTitle } from "./RechercheResultats/RechercheTitle"
 import type { ResultCardData } from "./RechercheResultats/ResultCardData"
 import { VirtualContainer } from "./RechercheResultats/VirtualContainer"
 
+/** Hauteur réservée sous le header sticky lors des scrolls programmatiques vers un item. */
+const STICKY_HEADER_HEIGHT = 212
+
 function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePageParams }) {
   const { displayMobileForm, activeItems = [], scrollToRecruteursLba } = props.rechercheParams
   const scrollElement = useRef<HTMLElement>(null)
   const virtualizerRef = useRef<Virtualizer<any, Element>>(null)
+  const scrollToItemCancelRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    return () => scrollToItemCancelRef.current?.()
+  }, [])
 
   const elements: ReturnType<typeof RechercheResultatsList> = []
 
   const scrollToItem = (item: ResultCardData) => {
     const scrolledElementIndex = elements.findIndex((element) => "item" in element && element.item === item)
-    if (scrolledElementIndex !== -1 && virtualizerRef.current) {
-      const measurement = virtualizerRef.current.measurementsCache[scrolledElementIndex]
-      if (measurement) {
-        window.scrollTo({ top: measurement.start, behavior: "smooth" })
-      }
-    }
+    if (scrolledElementIndex === -1 || !virtualizerRef.current) return
+    scrollToItemCancelRef.current?.()
+    scrollToItemCancelRef.current = scrollToVirtualItem({
+      virtualizer: virtualizerRef.current,
+      index: scrolledElementIndex,
+      offsetTop: STICKY_HEADER_HEIGHT,
+      behavior: "smooth",
+      maxAttempts: 30,
+    })
   }
 
   elements.push(...RechercheResultatsList({ ...props, scrollToItem }))
-
-  if (displayMobileForm) {
-    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
-  }
 
   const getScolledElementIndex = () => {
     return elements.findIndex((element) => {
@@ -61,6 +69,18 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 
   const scolledElementIndex = getScolledElementIndex()
 
+  // Retire le flag de l'URL après le scroll initial pour éviter un re-scroll au refresh.
+  const onInitialScrollDone = useCallback(() => {
+    if (!scrollToRecruteursLba) return
+    const url = new URL(window.location.href)
+    url.searchParams.delete("scrollToRecruteursLba")
+    window.history.replaceState(null, "", url.pathname + url.search + url.hash)
+  }, [scrollToRecruteursLba])
+
+  if (displayMobileForm) {
+    return <RechercheMobileFormUpdate rechercheParams={props.rechercheParams} />
+  }
+
   return (
     <Box>
       <RecherchePageHeader rechercheParams={props.rechercheParams} />
@@ -69,7 +89,9 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
         virtualizerRef={virtualizerRef}
         defaultHeight={270}
         elements={elements}
-        scrollToElementIndex={scolledElementIndex}
+        scrollPaddingStart={STICKY_HEADER_HEIGHT}
+        initialScrollIndex={scolledElementIndex}
+        onInitialScrollDone={onInitialScrollDone}
         useWindowScroll
       />
     </Box>

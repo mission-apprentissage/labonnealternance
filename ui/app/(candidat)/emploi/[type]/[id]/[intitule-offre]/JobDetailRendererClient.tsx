@@ -208,15 +208,21 @@ function JobDetail({
               </Typography>
               <ItemDetailCard selectedItem={selectedItem} />
               <hr style={{ paddingBottom: "1px" }} />
-              <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
-                <Box sx={{ mr: fr.spacing("4v") }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  columnGap: { xs: 0, md: fr.spacing("4v") },
+                  alignItems: "flex-start",
+                }}
+              >
+                <Box sx={{ flex: "1 1 0" }}>
                   {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
                     <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
                   )}
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                 </Box>
-                <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
+                <Box sx={{ flex: "0 0 auto", my: fr.spacing("3v") }}>
                   <ShareLink item={selectedItem} />
                 </Box>
               </Box>
