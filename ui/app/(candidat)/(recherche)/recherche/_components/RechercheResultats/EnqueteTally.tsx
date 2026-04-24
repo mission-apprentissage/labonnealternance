@@ -65,10 +65,7 @@ const openPopup = () => {
 }
 
 function getScrollPercent(): number | undefined {
-  const el = document.querySelector(".VirtualContainer")
-  if (!el) {
-    return
-  }
+  const el = document.documentElement
   const max = el.scrollHeight - el.clientHeight
   if (max <= 0) return 0
   return el.scrollTop / max

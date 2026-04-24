@@ -26,6 +26,11 @@ export const ValorisationCandidatureSpontanee = ({
     const isClickable = Boolean(recherchePageParams.romes.length) && !disabled
     if (!isClickable) return undefined
     return () => {
+      if (onClick) {
+        // Déjà sur la page de recherche : scroll direct sans navigation
+        onClick()
+        return
+      }
       const path = PAGES.dynamic
         .recherche({
           ...recherchePageParams,
@@ -39,8 +44,7 @@ export const ValorisationCandidatureSpontanee = ({
         searchParams.delete(key)
         searchParams.append(key, value)
       })
-      router.push(fakeUrl.pathname + fakeUrl.search)
-      onClick?.()
+      router.push(fakeUrl.pathname + fakeUrl.search, { scroll: false })
     }
   }, [router, overridenQueryParams, onClick, disabled])
 

@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb"
 import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, JOB_STATUS_ENGLISH, JobCollectionName, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { allLbaItemType, LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
@@ -31,11 +31,10 @@ import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
-import { getSomeFtJobs } from "@/services/ftjob.service"
 import type { FTJob } from "@/services/ftjob.service.types"
 import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
-import type { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/services/lbaitem.shared.service.types"
-import { getLbaJobs, incrementLbaJobsViewCount } from "@/services/lbajob.service"
+import type { ILbaItemLbaCompany } from "@/services/lbaitem.shared.service.types"
+import { incrementLbaJobsViewCount } from "@/services/lbajob.service"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 import { jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
@@ -119,142 +118,6 @@ export const getJobsFromApiPrivate = async ({
     ])
 
     return { lbaJobs, lbaCompanies, partnerJobs }
-  } catch (err) {
-    if (caller) {
-      // biome-ignore lint/nursery/noFloatingPromises: migration
-      trackApiCall({ caller, api_path: api, response: "Error" })
-    }
-    throw err
-  }
-}
-
-/**
- * @description Retourn la compilation d'opportunités d'emploi au format unifié
- * chaque type d'opportunités d'emploi peut être émis en succès même si d'autres groupes sont en erreur
- */
-export const getJobsFromApi = async ({
-  romes,
-  referer,
-  caller,
-  latitude,
-  longitude,
-  radius,
-  insee,
-  sources,
-  diploma,
-  opco,
-  opcoUrl,
-  api = "jobV1/jobs",
-  isMinimalData,
-}: {
-  romes?: string
-  referer?: string
-  caller?: string | null
-  latitude?: number
-  longitude?: number
-  radius?: number
-  insee?: string
-  sources?: string
-  // sources?: LBA_ITEM_TYPE
-  diploma?: INiveauDiplomeEuropeen
-  opco?: string
-  opcoUrl?: string
-  api?: string
-  isMinimalData: boolean
-}): Promise<
-  | IApiError
-  | {
-      peJobs: TLbaItemResult<ILbaItemFtJob> | null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
-      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      lbbCompanies: null
-      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-    }
-> => {
-  try {
-    const convertedSource = sources
-      ?.split(",")
-      .map((source) => {
-        switch (source) {
-          case "partnerJob": // once API consumer shifted to v3, remove case "offres" as it fetches from FT API
-          case "matcha":
-            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-          case "lba":
-            return LBA_ITEM_TYPE.RECRUTEURS_LBA
-          case "peJob":
-          case "offres": // compatibility V1 to retreive FT jobs
-            return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
-
-          default:
-            return
-        }
-      })
-      .join(",")
-
-    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
-    const finalRadius = radius ?? 0
-
-    const [peJobs, lbaCompanies, matchas, partnerJobs] = await Promise.all([
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
-        ? getSomeFtJobs({
-            romes: romes?.split(","),
-            insee: insee,
-            radius: finalRadius,
-            latitude,
-            longitude,
-            caller,
-            diploma,
-            api,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
-        ? getSomeCompanies({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            referer,
-            caller,
-            api,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getLbaJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getPartnerJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-    ])
-
-    return { peJobs, matchas, lbaCompanies, lbbCompanies: null, partnerJobs }
   } catch (err) {
     if (caller) {
       // biome-ignore lint/nursery/noFloatingPromises: migration

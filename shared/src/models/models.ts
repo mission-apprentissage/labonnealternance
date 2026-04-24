@@ -25,6 +25,7 @@ import elligibleTrainingModel from "./elligibleTraining.model.js"
 import elligibleTrainingHistoryModel from "./elligibleTrainingHistory.model.js"
 import emailBlacklistModel from "./emailBlacklist.model.js"
 import entrepriseModel from "./entreprise.model.js"
+import entreprisesManagedByCfaModel from "./entreprisesManagedByCfa.model.js"
 import etablissementModel from "./etablissement.model.js"
 import formationModel from "./formation.model.js"
 import franceTravailAccessModel from "./franceTravailAccess.model.js"
@@ -64,7 +65,6 @@ import { referentielCommuneModel } from "./referentiel/communes.model.js"
 import referentielEngagementEntrepriseModel from "./referentielEngagementEntreprise.model.js"
 import referentielOnisepModel from "./referentielOnisep.model.js"
 import reportedCompanyModel from "./reportedCompany.model.js"
-import resumeTokensModel from "./resumeTokens.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
@@ -123,11 +123,9 @@ const modelDescriptorMap = {
   [rawViteUnEmploiModel.collectionName]: rawViteUnEmploiModel,
   [rawNosTalentsNosEmploisModel.collectionName]: rawNosTalentsNosEmploisModel,
   [rawToulouseMetropoleModel.collectionName]: rawToulouseMetropoleModel,
-  [recruiterModel.collectionName]: recruiterModel,
   [recruteurLbaUpdateEventModel.collectionName]: recruteurLbaUpdateEventModel,
   [referentielOnisepModel.collectionName]: referentielOnisepModel,
   [referentielEngagementEntrepriseModel.collectionName]: referentielEngagementEntrepriseModel,
-  [resumeTokensModel.collectionName]: resumeTokensModel,
   [romeModel.collectionName]: romeModel,
   [roleManagementModel.collectionName]: roleManagementModel,
   [roleManagement360Model.collectionName]: roleManagement360Model,
@@ -153,6 +151,8 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [seoVilleModel.collectionName]: seoVilleModel,
+  [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
+  [recruiterModel.collectionName]: recruiterModel,
   [seoMetierModel.collectionName]: seoMetierModel,
   [rawHelloWorkBuddiModel.collectionName]: rawHelloWorkBuddiModel,
 } as const satisfies Record<string, IModelDescriptor>

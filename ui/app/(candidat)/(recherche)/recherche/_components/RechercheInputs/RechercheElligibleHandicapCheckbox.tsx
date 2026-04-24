@@ -95,7 +95,7 @@ export function RechercheElligibleHandicapCheckbox({
           }}
         >
           <div className="fr-checkbox-group fr-checkbox-group--sm">
-            <input name={id} id={checkboxId} type="checkbox" checked={value} data-fr-js-checkbox-input={value} readOnly />
+            <input name={id} id={checkboxId} type="checkbox" checked={value} readOnly suppressHydrationWarning />
             <label className="fr-label" htmlFor={checkboxId}>
               {label}
             </label>

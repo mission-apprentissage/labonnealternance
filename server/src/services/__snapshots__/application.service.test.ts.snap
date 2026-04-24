@@ -1,5 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Sending application > Should send an application to a job 1`] = `{}`;
+
 exports[`buildApplicationFromHelloworkAndSaveToDb > Should successfully create application from Hellowork with valid data 1`] = `
 {
   "applicant_attachment_name": "CV_John_Doe.pdf",

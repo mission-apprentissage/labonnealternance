@@ -18,6 +18,7 @@ import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.rout
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 import config from "@/config"
+import jobsEtFormationsController from "@/http/controllers/jobsEtFormations.controller"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
@@ -37,7 +38,6 @@ import formationsV1Route from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
-import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import partnersRoute from "./controllers/partners.controller"
@@ -142,7 +142,7 @@ export async function bind(app: Server) {
       jobsV1Route(typedSubApp)
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
-      jobsEtFormationsV1Route(typedSubApp)
+      jobsEtFormationsController(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       seoRouteController(typedSubApp)

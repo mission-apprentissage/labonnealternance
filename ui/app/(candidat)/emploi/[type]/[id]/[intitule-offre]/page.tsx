@@ -3,7 +3,9 @@ import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import type { ILbaItemLbaCompanyJson, /*ILbaItemLbaJobJson, */ ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import JobDetailRendererClient from "./JobDetailRendererClient"
 
@@ -49,6 +51,8 @@ export default async function JobOfferPage({ params, searchParams }: { params: P
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
+      <InfoBanner />
+      <PublicHeaderStatic />
       <JobDetailRendererClient
         job={job as ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson}
         rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)}

@@ -46,7 +46,6 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           position: "relative",
           backgroundColor: "white",
           padding: "16px 24px",
-          maxWidth: "970px",
           mx: { xs: 0, md: "auto" },
         }}
       >
@@ -122,7 +121,6 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
         sx={{
           alignItems: "center",
           my: fr.spacing("6v"),
-          maxWidth: "970px",
           mx: { xs: 0, md: "auto" },
         }}
       >
@@ -140,7 +138,7 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
         </Box>
       </Stack>
       {Boolean(job?.job?.offer_to_be_acquired_skills?.length || job?.job?.offer_access_conditions?.length) && (
-        <Box sx={{ pb: 0, position: "relative", backgroundColor: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+        <Box sx={{ pb: 0, position: "relative", backgroundColor: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
           <Typography
             variant="h4"
             sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}
@@ -164,7 +162,6 @@ export const PartnerJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; 
           position: "relative",
           backgroundColor: "white",
           padding: "16px 24px",
-          maxWidth: "970px",
           mx: { xs: 0, md: "auto" },
         }}
       >
