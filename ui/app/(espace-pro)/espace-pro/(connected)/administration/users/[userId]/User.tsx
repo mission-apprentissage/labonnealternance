@@ -2,7 +2,7 @@
 
 import { Box } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
@@ -12,14 +12,16 @@ import { PAGES } from "@/utils/routes.utils"
 
 export default function User() {
   const { userId } = useParams() as { userId: string }
+  const searchParams = useSearchParams()
+  const organizationId = searchParams.get("organizationId") ?? "unused"
 
   const {
     data: userRecruteur,
     isLoading,
     refetch: refetchUserRecruteur,
   } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getUser(userId),
+    queryKey: ["user", userId, organizationId],
+    queryFn: () => getUser(userId, organizationId),
     enabled: !!userId,
   })
   const {
