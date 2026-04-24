@@ -46,7 +46,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
   return (
     <>
       <JobPostingSchema title={title} description={validCustomDescription || romeDescription || null} id={job?.job?.id} job={job} />
-      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Description de l&apos;offre
         </Typography>
@@ -149,7 +149,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         sx={{
           alignItems: "center",
           my: fr.spacing("6v"),
-          maxWidth: "970px",
           mx: { xs: 2, sm: 2, md: "auto" },
         }}
       >
@@ -166,7 +165,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Stack>
-      <Box sx={{ position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography
           variant="h4"
           sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}
@@ -179,7 +178,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
           </Box>
         </Box>
       </Box>
-      <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Quelques informations sur {job?.company?.mandataire ? "l'entreprise" : "l'établissement"}
         </Typography>
@@ -235,7 +234,7 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         {!job?.company?.mandataire && <ItemGoogleSearchLink item={job} />}
       </Box>
       {job?.company?.mandataire && (
-        <Box sx={{ pb: "0px", mt: 6, position: "relative", background: "white", padding: "16px 24px", maxWidth: "970px", mx: ["0", "30px", "30px", "auto"] }}>
+        <Box sx={{ pb: "0px", mt: 6, position: "relative", background: "white", padding: "16px 24px", mx: ["0", "30px", "30px", "auto"] }}>
           <Typography variant="h2" sx={{ mt: fr.spacing("4v") }}>
             Contactez le CFA pour avoir plus d'informations
           </Typography>

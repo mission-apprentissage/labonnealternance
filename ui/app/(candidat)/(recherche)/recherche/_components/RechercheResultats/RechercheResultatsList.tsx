@@ -29,6 +29,14 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
 
   const shouldDisplayCandidatureSpontaneBoost = result.jobQuery.lbaJobs.length + result.jobQuery.partnerJobs.length >= 10
 
+  const hasFormationError = result.formationQuery.status === "success" && result.formationQuery.formations.length === 0
+  const hasExpandedRadius =
+    result.formationQuery.status === "success" &&
+    result.formationQuery.formations[0] &&
+    props.rechercheParams.geo !== null &&
+    props.rechercheParams.radius < result.formationQuery.formations[0].place?.distance
+  const hasHeaderContent = !!result.formationQuery.errorMessage || !!result.jobQuery.errorMessage || hasFormationError || hasExpandedRadius
+
   const items = useMemo(() => {
     const itemsCount = result.displayedItems.length
     if (!itemsCount) {
@@ -78,7 +86,6 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
     return [<ResultListsLoading isJobSearchLoading={jobQuery.status === "loading"} isTrainingSearchLoading />]
   }
 
-  const [firstFormation] = formationQuery.formations
   const jobsCount = result.displayedJobs.length
 
   const onRenderLbaItem = (item: ILbaItem) => {
@@ -97,11 +104,11 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
   }
 
   return [
-    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
+    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto", ...(hasHeaderContent && { mt: fr.spacing("5v") }) }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
       {jobQuery.errorMessage && <ErrorMessage message={jobQuery.errorMessage} />}
 
-      {formationQuery.status === "success" && formationQuery.formations.length === 0 && (
+      {hasFormationError && (
         <Box
           sx={{
             mx: fr.spacing("12v"),
@@ -113,7 +120,7 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
           Aucune formation en alternance disponible pour ce métier
         </Box>
       )}
-      {formationQuery.status === "success" && firstFormation && props.rechercheParams.geo !== null && props.rechercheParams.radius < firstFormation.place?.distance && (
+      {hasExpandedRadius && (
         <Box
           sx={{
             fontWeight: 700,
@@ -168,6 +175,8 @@ function ResultCardWithContainer({
   return (
     <Box
       sx={{
+        maxWidth: "xl",
+        margin: "auto",
         my: fr.spacing("2v"),
         px: { md: 0, lg: fr.spacing("4v") },
       }}

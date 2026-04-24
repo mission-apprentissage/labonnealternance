@@ -75,7 +75,7 @@ function CandidatRechercheFiltersRaw({ rechercheParams }: { rechercheParams: IRe
   )
 }
 
-export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
+export function CandidatRechercheFilters({ rechercheParams, embedded = false }: { rechercheParams: IRecherchePageParams; embedded?: boolean }) {
   return (
     <Box
       key="filters"
@@ -85,15 +85,19 @@ export function CandidatRechercheFilters({ rechercheParams }: { rechercheParams:
           lg: "block",
         },
         marginTop: fr.spacing("4v"),
-        marginBottom: fr.spacing("8v"),
-        paddingLeft: {
-          md: fr.spacing("2v"),
-          lg: fr.spacing("4v"),
-        },
-        paddingRight: {
-          md: fr.spacing("4v"),
-          lg: fr.spacing("4v"),
-        },
+        marginBottom: embedded ? 0 : fr.spacing("8v"),
+        paddingLeft: embedded
+          ? 0
+          : {
+              md: fr.spacing("2v"),
+              lg: fr.spacing("4v"),
+            },
+        paddingRight: embedded
+          ? 0
+          : {
+              md: fr.spacing("4v"),
+              lg: fr.spacing("4v"),
+            },
       }}
     >
       <CandidatRechercheFiltersRaw rechercheParams={rechercheParams} />

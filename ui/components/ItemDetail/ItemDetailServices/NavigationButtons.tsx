@@ -13,7 +13,8 @@ export const NavigationButtons = ({ goPrev, goNext, handleClose }: { goPrev?: ()
             goPrev()
           }}
           data-testid="previous-button"
-          title="previous"
+          aria-label="Résultat précédent"
+          title="Résultat précédent"
           size="small"
         />
       )}
@@ -25,7 +26,8 @@ export const NavigationButtons = ({ goPrev, goNext, handleClose }: { goPrev?: ()
             goNext()
           }}
           data-testid="next-button"
-          title="next"
+          aria-label="Résultat suivant"
+          title="Résultat suivant"
           size="small"
         />
       )}
@@ -36,7 +38,8 @@ export const NavigationButtons = ({ goPrev, goNext, handleClose }: { goPrev?: ()
           handleClose()
         }}
         data-testid="close-detail-button"
-        title="close"
+        aria-label="Fermer le détail"
+        title="Fermer le détail"
         size="small"
       />
     </Box>

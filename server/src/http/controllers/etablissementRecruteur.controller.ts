@@ -1,9 +1,10 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
+import { ObjectId } from "mongodb"
 import type { IEntreprise } from "shared"
-import { assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
+import { AccessEntityType, assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
-import { OPCOS_LABEL, RECRUITER_STATUS } from "shared/constants/recruteur"
+import { OPCOS_LABEL } from "shared/constants/recruteur"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
@@ -17,7 +18,9 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
+  buildEstablishmentId,
   entrepriseOnboardingWorkflow,
+  establishmentIdToUserIdAndSiret,
   etablissementUnsubscribeDemandeDelegation,
   getCfaSiretInfos,
   getEntrepriseDataFromSiret,
@@ -27,6 +30,7 @@ import {
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
 } from "@/services/etablissement.service"
+import { getFormulairesForCfaManagedEnterprises, jobPartnersToRecruiter } from "@/services/formulaire.service"
 import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
 import type { Organization, UserAndOrganization } from "@/services/organization.service"
 import { upsertEntrepriseData } from "@/services/organization.service"
@@ -54,7 +58,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { latitude, longitude, rome, limit } = req.query
-      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude }, limit })
+      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude, longitude }, limit })
       res.send(etablissements)
     }
   )
@@ -176,18 +180,60 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId } = req.params
-      const cfa = await getDbCollection("cfas").findOne({ _id: cfaId })
+      const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
+      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
+      recruiters.forEach((recruiter) => {
+        recruiter.jobs.forEach((job) => {
+          // @ts-expect-error
+          delete job.rome_detail?._id
+          // @ts-expect-error
+          delete job.rome_detail?.couple_appellation_rome
+        })
+      })
+      return res.status(200).send(recruiters)
+    }
+  )
+
+  server.get(
+    "/etablissement/cfa/:cfaId/entreprise/:establishment_id",
+    {
+      schema: zRoutes.get["/etablissement/cfa/:cfaId/entreprise/:establishment_id"],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:cfaId/entreprise/:establishment_id"])],
+    },
+    async (req, res) => {
+      const { cfaId: cfaIdString, establishment_id } = req.params
+      const { siret, userId } = await establishmentIdToUserIdAndSiret(establishment_id)
+
+      const cfaId = new ObjectId(cfaIdString)
+
+      const entreprise = await getDbCollection("entreprises").findOne({ siret })
+      if (!entreprise) {
+        throw internal(`entreprise non trouvée siret=${siret}`)
+      }
+
+      const [mainRole, entrepriseManagedByCfa, cfa, user] = await Promise.all([
+        getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
+        getDbCollection("entreprise_managed_by_cfa").findOne({ cfa_id: cfaId, entreprise_id: entreprise._id }),
+        getDbCollection("cfas").findOne({ _id: cfaId }),
+        getDbCollection("userswithaccounts").findOne({ _id: userId }),
+      ])
+      if (!mainRole) {
+        throw internal(`inattendu: mainRole vide pour userId=${userId}`)
+      }
       if (!cfa) {
         throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
       }
-      const cfa_delegated_siret = cfa.siret
-      if (!cfa_delegated_siret) {
-        throw internal(`inattendu : le cfa n'a pas de champ cfa_delegated_siret`)
+      if (!user) {
+        throw internal(`inattendu: user vide pour userId=${userId}`)
       }
-      const entreprises = await getDbCollection("recruiters")
-        .find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret })
-        .toArray()
-      return res.status(200).send(entreprises)
+      if (!entrepriseManagedByCfa) {
+        throw notFound(`Aucun entrepriseManagedByCfa cfaId=${cfaId.toString()} siret=${siret}`)
+      }
+
+      const recruiter = jobPartnersToRecruiter([], mainRole, user, entreprise, cfa)
+      const { email, first_name, last_name, phone } = entrepriseManagedByCfa
+
+      return res.status(200).send({ ...recruiter, email, first_name, last_name, phone })
     }
   )
 

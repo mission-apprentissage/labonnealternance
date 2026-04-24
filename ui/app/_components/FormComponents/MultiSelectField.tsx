@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
-import { Box, ClickAwayListener, Divider, Popper } from "@mui/material"
+import { Box, ClickAwayListener, Popper } from "@mui/material"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
@@ -111,7 +111,7 @@ export function MultiSelectField({
         options={[{ value: "__current__", label: displayLabel }]}
         nativeSelectProps={{
           ref: selectRef,
-          value: "__current__",
+          defaultValue: "__current__",
           onMouseDown: handleSelectInteraction,
           onKeyDown: handleSelectInteraction,
           "aria-expanded": open,

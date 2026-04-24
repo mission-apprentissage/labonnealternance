@@ -1,8 +1,8 @@
-import { ObjectId } from "mongodb"
-import { JOB_STATUS } from "shared"
+import type { IUserWithAccount } from "shared"
+import { JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
-
+import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -11,51 +11,46 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 import { createMERInvitationLink } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
+import { buildEstablishmentId } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
-import { getUserWithAccountByEmail } from "@/services/userWithAccount.service"
 
-type JobForMER = {
-  jobId: string
-  establishment_id: string
-  application_count: number
-  first_name: string
-  last_name: string
-  email: string
-  job_creation_date: Date
-  geo_coordinates: string
-  offer_title_custom: string
-  rome_appellation_label: string
-  job_type: string[]
-  job_level_label: string
-  job_start_date: Date
-  rome_label: string
-  rome_code: string[]
-}
+type JobForMER = Pick<
+  IJobsPartnersOfferPrivate,
+  | "_id"
+  | "workplace_geopoint"
+  | "workplace_siret"
+  | "created_at"
+  | "offer_title"
+  | "contract_type"
+  | "offer_target_diploma"
+  | "contract_start"
+  | "offer_rome_appellation"
+  | "offer_rome_codes"
+  | "managed_by"
+> & { user: IUserWithAccount }
 
 export const sendMiseEnRelation = async () => {
-  const fromDate = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000)
-  const toDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+  const dayDuration = 24 * 60 * 60 * 1000
+  const fromDate = new Date(Date.now() - 45 * dayDuration)
+  const toDate = new Date(Date.now() - 5 * dayDuration)
 
   const counters: { errors: number; successSent: number; successNoCFA: number } = { errors: 0, successSent: 0, successNoCFA: 0 }
 
-  const jobsWihoutEnoughApplications = (await getDbCollection("jobs")
+  const jobsWihoutEnoughApplications = (await getDbCollection("jobs_partners")
     .aggregate([
       {
         $match: {
-          job_creation_date: {
+          created_at: {
             $gte: fromDate,
             $lte: toDate,
           },
           is_delegated: false,
-          job_status: JOB_STATUS.ACTIVE,
+          partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+          offer_status: JOB_STATUS_ENGLISH.ACTIVE,
           $or: [
+            { mer_sent: null },
             {
-              mer_sent: null,
-            },
-            {
-              mer_sent: {
-                $exists: false,
-              },
+              mer_sent: { $exists: false },
             },
           ],
         },
@@ -63,7 +58,7 @@ export const sendMiseEnRelation = async () => {
       {
         $lookup: {
           from: "applications",
-          localField: "jobId",
+          localField: "_id",
           foreignField: "job_id",
           as: "applications",
         },
@@ -77,32 +72,35 @@ export const sendMiseEnRelation = async () => {
       },
       {
         $match: {
-          $and: [
-            {
-              application_count: {
-                $lt: 15,
-              },
-            },
-          ],
+          application_count: { $lt: 15 },
         },
       },
       {
+        $lookup: {
+          from: "userswithaccounts",
+          localField: "managed_by",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
         $project: {
-          jobId: 1,
-          establishment_id: 1,
+          _id: 1,
           application_count: 1,
-          first_name: 1,
-          last_name: 1,
-          email: 1,
-          geo_coordinates: 1,
-          job_creation_date: 1,
-          offer_title_custom: 1,
-          job_type: 1,
-          job_level_label: 1,
-          job_start_date: 1,
-          rome_appellation_label: 1,
-          rome_label: 1,
-          rome_code: 1,
+          workplace_geopoint: 1,
+          workplace_siret: 1,
+          created_at: 1,
+          offer_title: 1,
+          contract_type: 1,
+          offer_target_diploma: 1,
+          contract_start: 1,
+          offer_rome_appellation: 1,
+          offer_rome_codes: 1,
+          managed_by: 1,
+          user: 1,
         },
       },
     ])
@@ -110,37 +108,38 @@ export const sendMiseEnRelation = async () => {
 
   await asyncForEach(jobsWihoutEnoughApplications, async (job: JobForMER) => {
     try {
+      const [longitude, latitude] = job.workplace_geopoint.coordinates
       const etablissements = await getNearEtablissementsFromRomes({
-        rome: job.rome_code,
+        rome: job.offer_rome_codes,
         origin: {
-          latitude: parseFloat(job.geo_coordinates.split(",")[0]),
-          longitude: parseFloat(job.geo_coordinates.split(",")[1]),
+          latitude,
+          longitude,
         },
         limit: 1,
       })
 
       if (etablissements.some((etablissement) => etablissement.distance_en_km < 100)) {
-        const jobTitle = job.offer_title_custom || job.rome_appellation_label || job.rome_label
-        const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job.jobId}/${encodeURIComponent(jobTitle)}`)
-        const user = await getUserWithAccountByEmail(job.email)
-
-        if (!user || !jobTitle || !job.jobId) {
-          throw new Error(`Data not found for send MER invitation. jobId=${job.jobId}`)
+        const jobTitle = job.offer_title
+        const jobUrl = new URL(`${config.publicUrl}/emploi/${LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA}/${job._id}/${encodeURIComponent(jobTitle)}`)
+        const { user, workplace_siret } = job
+        if (!user || !jobTitle || !workplace_siret) {
+          throw new Error(`Data not found for send MER invitation. jobId=${job._id}`)
         }
+        const establishmentId = buildEstablishmentId(user._id, workplace_siret)
         await mailer.sendEmail({
-          to: job.email,
+          to: user.email,
           subject: "Partagez votre offre aux CFA proches de votre établissement",
           template: getStaticFilePath("./templates/mail-mer-invitation.mjml.ejs"),
           data: {
-            first_name: job.first_name,
-            last_name: job.last_name,
-            job_creation_date: dayjs(job.job_creation_date).format("DD/MM/YYYY"),
+            first_name: user.first_name,
+            last_name: user.last_name,
+            job_creation_date: dayjs(job.created_at).format("DD/MM/YYYY"),
             job_title: jobTitle,
-            job_type: job.job_type.join(", "),
-            job_level_label: job.job_level_label,
-            job_start_date: dayjs(job.job_start_date).format("DD/MM/YYYY"),
+            job_type: job.contract_type.join(", "),
+            job_level_label: job.offer_target_diploma?.label ?? "Indifférent",
+            job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             job_url: jobUrl.toString(),
-            link: createMERInvitationLink(user, job.jobId, job.establishment_id),
+            link: createMERInvitationLink(user, job._id.toString(), establishmentId),
             images: {
               logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
               logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true`,
@@ -153,18 +152,17 @@ export const sendMiseEnRelation = async () => {
         counters.successNoCFA++
       }
 
-      const jobId = new ObjectId(job.jobId)
-      await getDbCollection("recruiters").updateOne(
-        { "jobs._id": jobId },
+      const jobId = job._id
+      await getDbCollection("jobs_partners").updateOne(
+        { _id: jobId },
         {
           $set: {
-            "jobs.$[elem].mer_sent": new Date(),
+            mer_sent: new Date(),
           },
-        },
-        { arrayFilters: [{ "elem._id": jobId }] }
+        }
       )
     } catch (error) {
-      logger.error(new Error(`Error while sending MER invitation. jobId=${job.jobId} error=${error}`))
+      logger.error(new Error(`Error while sending MER invitation. jobId=${job._id} error=${error}`))
       counters.errors++
     }
   })

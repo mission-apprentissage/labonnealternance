@@ -94,7 +94,7 @@ export const RechercheResultTypeCheckbox = ({
               }}
             >
               <div className="fr-checkbox-group fr-checkbox-group--sm">
-                <input name={itemType} id={checkboxId} type="checkbox" checked={checked} data-fr-js-checkbox-input={checked} readOnly />
+                <input name={itemType} id={checkboxId} type="checkbox" checked={checked} readOnly suppressHydrationWarning />
                 <label className="fr-label" htmlFor={checkboxId}>
                   {itemType}
                   {count !== undefined ? ` (${count})` : displayLoading ? <CircularProgress size={14} style={{ marginLeft: fr.spacing("2v") }} /> : null}
