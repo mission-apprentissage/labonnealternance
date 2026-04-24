@@ -13,7 +13,7 @@ import { PAGES } from "@/utils/routes.utils"
 export default function User() {
   const { userId } = useParams() as { userId: string }
   const searchParams = useSearchParams()
-  const organizationId = searchParams.get("organizationId") ?? "unused"
+  const organizationId = searchParams.get("organizationId") || "unused"
 
   const {
     data: userRecruteur,

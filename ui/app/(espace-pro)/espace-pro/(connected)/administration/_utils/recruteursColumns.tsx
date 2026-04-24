@@ -47,7 +47,7 @@ export function getRecruteursColumns({
       sortingFn: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       cell: (info) => {
         const { establishment_raison_sociale, establishment_siret, _id, opco, type } = info.row.original
-        const organizationId = (info.row.original as IUserRecruteurForAdminJSON).organizationId ?? ""
+        const organizationId = (info.row.original as IUserRecruteurForAdminJSON).organizationId || "unused"
         const siretText = (
           <Typography sx={{ color: "#666666", fontSize: ".75rem" }}>
             SIRET {establishment_siret} <CustomTag color={type === "CFA" ? "yellow" : "green"}>{type}</CustomTag>
