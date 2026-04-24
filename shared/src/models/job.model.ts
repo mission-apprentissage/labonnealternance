@@ -21,6 +21,7 @@ export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
+  EN_ATTENTE = "Pending",
 }
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
@@ -46,6 +47,8 @@ export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
       return JOB_STATUS.POURVUE
     case JOB_STATUS_ENGLISH.ANNULEE:
       return JOB_STATUS.ANNULEE
+    case JOB_STATUS_ENGLISH.EN_ATTENTE:
+      return JOB_STATUS.EN_ATTENTE
     default: {
       assertUnreachable(status)
     }
@@ -59,6 +62,7 @@ export const ZDelegation = z
     siret_code: z.string().describe("SIRET de l'établissement"),
     email: z.string().describe("Email gestionnaire de l'établissement"),
     cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
+    etablissement_id: z.string().nullish().describe("Identifiant d'établissement du catalogue correspondant à etablissement_gestionnaire_id ou etablissement_formateur_id"),
   })
   .strict()
   .openapi("Delegation")

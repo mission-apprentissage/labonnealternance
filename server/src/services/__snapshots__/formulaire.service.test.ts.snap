@@ -2,101 +2,81 @@
 
 exports[`createJob > should insert a job 1`] = `
 {
-  "_id": "670ce30b57a50d6875c141f9",
-  "address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
-  "address_detail": {
-    "acheminement_postal": {
-      "l1": null,
-      "l2": null,
-      "l3": null,
-      "l4": "15 RUE DES LOUPS",
-      "l5": null,
-      "l6": "75002 PARIS",
-      "l7": "FRANCE",
-    },
-    "cedex": null,
-    "code_insee_localite": "75002",
-    "code_postal": "75002",
-    "complement_adresse": null,
-    "localite": "PARIS",
-    "nom_voie": "DES LOUPS",
-    "numero_voie": "15",
-    "type_voie": "RUE",
-  },
-  "cfa_delegated_siret": null,
-  "createdAt": 2021-01-28T15:00:00.000Z,
-  "email": "entreprise@mail.fr",
-  "establishment_creation_date": 2024-10-14T09:23:21.588Z,
-  "establishment_id": "xxxx-xxxx-xxxx-xxxx",
-  "establishment_siret": "42476141900045",
-  "geo_coordinates": "48.8566,2.3522",
-  "geopoint": {
+  "applicationCount": 0,
+  "apply_email": "entreprise@mail.fr",
+  "apply_phone": "0600000000",
+  "cfa_address_label": null,
+  "cfa_apply_email": null,
+  "cfa_apply_phone": null,
+  "cfa_legal_name": null,
+  "cfa_siret": null,
+  "contract_duration": null,
+  "contract_is_disabled_elligible": false,
+  "contract_remote": null,
+  "contract_rythm": null,
+  "contract_start": 2021-01-28T15:00:00.000Z,
+  "contract_type": [
+    "Apprentissage",
+  ],
+  "delegations": undefined,
+  "duplicates": [],
+  "establishment_id": "670ce1ded6ce30c3c90a0e1d_42476141900045",
+  "is_delegated": false,
+  "job_delegation_count": 0,
+  "job_last_prolongation_date": null,
+  "job_prolongation_count": 0,
+  "job_status_comment": null,
+  "managed_by": "670ce1ded6ce30c3c90a0e1d",
+  "offer_access_conditions": [
+    "Ce métier est accessible avec un diplôme de fin d'études secondaires (brevet des collèges) à Bac (professionnel, Brevet Professionnel, ...) dans le secteur tertiaire. Il est également accessible avec une expérience professionnelle sans diplôme particulier. La maîtrise de l'outil bureautique (traitement de texte, tableur, ...) peut être requise.",
+  ],
+  "offer_description": "Exécute des travaux administratifs courants (vérification de documents, frappe et mise en forme de courriers pré-établis, suivi de dossier administratifs, ...) selon l'organisation de la structure ou du service. Peut être en charge d'activités de reprographie et d'archivage. Peut réaliser l'accueil de la structure.",
+  "offer_desired_skills": [
+    "Faire preuve de rigueur et de précision",
+  ],
+  "offer_multicast": true,
+  "offer_opening_count": 1,
+  "offer_origin": "lba",
+  "offer_rome_appellation": "Agent administratif / Agente administrative",
+  "offer_rome_codes": [
+    "M1602",
+  ],
+  "offer_status": "Active",
+  "offer_status_history": [],
+  "offer_target_diploma": null,
+  "offer_title": "Agent administratif / Agente administrative",
+  "offer_to_be_acquired_knowledge": [
+    "Domaines d'expertise	Gestion administrative du courrier",
+  ],
+  "offer_to_be_acquired_skills": [
+    "Production, Fabrication	Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
+    "Production, Fabrication	Réaliser des travaux de reprographie",
+  ],
+  "partner_label": "offres_emploi_lba",
+  "stats_detail_view": 0,
+  "stats_postuler": 0,
+  "stats_search_view": 0,
+  "workplace_address_city": null,
+  "workplace_address_label": "3 rue du poulet 75001 Paris",
+  "workplace_address_street_label": null,
+  "workplace_address_zipcode": null,
+  "workplace_brand": "enseigne OVH",
+  "workplace_description": null,
+  "workplace_geopoint": {
     "coordinates": [
-      2.3522,
-      48.8566,
+      0,
+      0,
     ],
     "type": "Point",
   },
-  "idcc": null,
-  "is_delegated": false,
-  "managed_by": "686e82f6965b78f107bf44c1",
-  "opco": null,
-  "status": "Actif",
-  "updatedAt": 2021-02-03T17:00:00.000Z,
-}
-`;
-
-exports[`createJob > should insert a job 2`] = `
-{
-  "competences_rome": {
-    "savoir_etre_professionnel": [
-      {
-        "code_ogr": "300490",
-        "coeur_metier": null,
-        "libelle": "Faire preuve de rigueur et de précision",
-      },
-    ],
-    "savoir_faire": [
-      {
-        "items": [
-          {
-            "code_ogr": "101622",
-            "coeur_metier": "Principale",
-            "libelle": "Procéder à l'enregistrement, au tri, à l'affranchissement du courrier",
-          },
-          {
-            "code_ogr": "113818",
-            "coeur_metier": null,
-            "libelle": "Réaliser des travaux de reprographie",
-          },
-        ],
-        "libelle": "Production, Fabrication",
-      },
-    ],
-    "savoirs": [
-      {
-        "items": [
-          {
-            "code_ogr": "120992",
-            "coeur_metier": null,
-            "libelle": "Gestion administrative du courrier",
-          },
-        ],
-        "libelle": "Domaines d'expertise",
-      },
-    ],
-  },
-  "is_disabled_elligible": false,
-  "job_count": 1,
-  "job_start_date": 2021-01-28T15:00:00.000Z,
-  "job_status": "En attente",
-  "job_type": [
-    "Apprentissage",
-  ],
-  "rome_appellation_label": "Agent administratif / Agente administrative",
-  "rome_code": [
-    "M1602",
-  ],
-  "rome_label": "Opérations administratives",
+  "workplace_idcc": null,
+  "workplace_legal_name": "OVH",
+  "workplace_naf_code": null,
+  "workplace_naf_label": null,
+  "workplace_name": null,
+  "workplace_opco": null,
+  "workplace_siret": "42476141900045",
+  "workplace_size": "100 à 199 salariés",
+  "workplace_website": null,
 }
 `;

@@ -19,7 +19,6 @@ export function RechercheMobileEmpty(props: { rechercheParams: IRecherchePagePar
       sx={{
         py: fr.spacing("4v"),
         px: fr.spacing("2v"),
-        backgroundColor: fr.colors.decisions.background.default.grey.default,
         display: "flex",
         flexDirection: "column",
       }}

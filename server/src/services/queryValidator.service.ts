@@ -1,4 +1,4 @@
-import { MAX_SEARCH_ROMES } from "shared"
+import { MAX_SEARCH_ROMES, MAX_SEARCH_ROMES_PRIVATE } from "shared"
 import { allLbaItemTypeOLD } from "shared/constants/lbaitem"
 import { isOriginLocal } from "@/common/utils/isOriginLocal"
 import { regionCodeToDepartmentList } from "@/common/utils/regionInseeCodes"
@@ -200,7 +200,7 @@ export const jobsQueryValidatorPrivate = async (query: TJobSearchQuery): Promise
   validateCaller({ caller, referer }, error_messages)
 
   // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
-  await validateRomesOrRncp(query, error_messages, 110)
+  await validateRomesOrRncp(query, error_messages, MAX_SEARCH_ROMES_PRIVATE)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (latitude || longitude) {
@@ -261,14 +261,15 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
  * @param {TFormationSearchQuery} query paramètres de la requête
  */
 export const formationsQueryValidator = async (
-  query: Omit<TFormationSearchQuery, "isMinimalData">
+  query: Omit<TFormationSearchQuery, "isMinimalData">,
+  isPrivate?: boolean
 ): Promise<{ result: "passed"; romes: string | undefined } | { error: "wrong_parameters"; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
 
-  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: 110 }, error_messages)
+  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: isPrivate ? MAX_SEARCH_ROMES_PRIVATE : MAX_SEARCH_ROMES }, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (query.latitude || query.longitude) {

@@ -1,17 +1,17 @@
 import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
-
+import { OPCOS_LABEL } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { ZEtablissementCatalogueProcheWithDistance } from "../interface/etablissement.types.js"
 import { ZPointGeometry } from "../models/address.model.js"
 import { zCFA } from "../models/cfa.model.js"
 import { ZEntreprise } from "../models/entreprise.model.js"
+import { ZEntrepriseManagedByCfa } from "../models/entreprisesManagedByCfa.model.js"
 import { ZRecruiter } from "../models/recruiter.model.js"
 import { EntrepriseEngagementSources } from "../models/referentielEngagementEntreprise.model.js"
 import { ZUserRecruteurPublic, ZUserRecruteurWritable } from "../models/usersRecruteur.model.js"
 import { ZUserWithAccount } from "../models/userWithAccount.model.js"
-
 import type { IRoutesDef } from "./common.routes.js"
 
 export const ZEntrepriseInformations = z
@@ -130,6 +130,21 @@ export const zRecruiterRoutes = {
         },
       },
     },
+    "/etablissement/cfa/:cfaId/entreprise/:establishment_id": {
+      method: "get",
+      path: "/etablissement/cfa/:cfaId/entreprise/:establishment_id",
+      params: z.object({ cfaId: z.string(), establishment_id: z.string() }).strict(),
+      response: {
+        "200": ZRecruiter,
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        access: "user:manage",
+        resources: {
+          user: [{ _id: { type: "params", key: "cfaId" } }],
+        },
+      },
+    },
   },
   post: {
     "/etablissement/creation": {
@@ -173,7 +188,12 @@ export const zRecruiterRoutes = {
       response: {
         "200": z
           .object({
-            formulaire: ZRecruiter.optional(),
+            formulaire: z
+              .object({
+                opco: extensions.buildEnum(OPCOS_LABEL),
+                establishment_id: z.string(),
+              })
+              .optional(),
             user: ZUserWithAccount,
             token: z.string(),
             validated: z.boolean(),
