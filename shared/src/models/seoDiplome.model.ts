@@ -12,12 +12,6 @@ const ZSeoDiplomeKpis = z.object({
   insertion: z.string(),
 })
 
-const ZSeoDiplomeObjectif = z.object({
-  iconSrc: z.string(),
-  title: z.string(),
-  items: z.array(z.string()),
-})
-
 const ZSeoDiplomeProgramme = z.object({
   icon: z.string(),
   title: z.string(),
@@ -94,7 +88,7 @@ export const ZSeoDiplome = z
     kpis: ZSeoDiplomeKpis,
     description: z.object({
       text: z.string(),
-      objectifs: z.array(ZSeoDiplomeObjectif),
+      objectifs: z.array(z.string()),
     }),
     programme: z.object({
       text: z.string(),

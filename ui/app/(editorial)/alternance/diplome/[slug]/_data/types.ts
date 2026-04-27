@@ -5,12 +5,6 @@ export type IDiplomeKpis = {
   insertion: string
 }
 
-export type IDiplomeObjectif = {
-  iconSrc: string
-  title: string
-  items: string[]
-}
-
 export type IDiplomeProgramme = {
   icon: string
   title: string
@@ -85,7 +79,7 @@ export type IDiplomeSeoData = {
   kpis: IDiplomeKpis
   description: {
     text: string
-    objectifs: IDiplomeObjectif[]
+    objectifs: string[]
   }
   programme: {
     text: string
