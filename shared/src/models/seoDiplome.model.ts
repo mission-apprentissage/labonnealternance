@@ -120,8 +120,6 @@ export const ZSeoDiplome = z
       sections: z.array(ZSeoDiplomeProgramme),
     }),
     preparation: z.object({
-      title: z.string(),
-      titleHighlight: z.string().optional(),
       text: z.string(),
       ressources: z.array(ZSeoDiplomeRessource),
     }),

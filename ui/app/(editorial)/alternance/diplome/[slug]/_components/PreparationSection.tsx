@@ -49,7 +49,7 @@ function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
   )
 }
 
-export function PreparationSection({ title, titleHighlight, text, ressources }: { title: string; titleHighlight?: string; text: string; ressources: IDiplomeRessource[] }) {
+export function PreparationSection({ titre, text, ressources }: { titre: string; text: string; ressources: IDiplomeRessource[] }) {
   return (
     <Box
       sx={{
@@ -58,7 +58,7 @@ export function PreparationSection({ title, titleHighlight, text, ressources }: 
       }}
     >
       <DefaultContainer>
-        <SectionTitle title={title} highlightedText={titleHighlight} />
+        <SectionTitle title="Comment se préparer à une alternance" highlightedText={`${titre} ?`} />
         <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
 
         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v") }}>

@@ -24,16 +24,16 @@ export function generateStaticParams() {
   return diplomesData.map((d) => ({ slug: d.slug }))
 }
 
-// export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-//   const { slug } = await params
-//   const data = getDiplomeData(slug)
-//   if (!data) return {}
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const data = getDiplomeData(slug)
+  if (!data) return {}
 
-//   return {
-//     title: `${data.titre} | La bonne alternance`,
-//     description: `Découvrez le ${data.titre} : programme, prérequis, salaire, entreprises qui recrutent et perspectives d'emploi. Trouvez votre alternance sur La bonne alternance.`,
-//   }
-// }
+  return {
+    title: `${data.titre} | La bonne alternance`,
+    description: `Découvrez le ${data.titre} : programme, prérequis, salaire, entreprises qui recrutent et perspectives d'emploi. Trouvez votre alternance sur La bonne alternance.`,
+  }
+}
 
 export default async function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -61,7 +61,7 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
       </DefaultContainer>
 
       {/* Section pleine largeur avec fond bleu */}
-      <PreparationSection title={data.preparation.title} titleHighlight={data.preparation.titleHighlight} text={data.preparation.text} ressources={data.preparation.ressources} />
+      <PreparationSection titre={data.titre} text={data.preparation.text} ressources={data.preparation.ressources} />
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>

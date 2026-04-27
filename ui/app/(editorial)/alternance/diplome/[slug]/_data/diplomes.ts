@@ -62,8 +62,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS CG ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -293,8 +291,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS Communication ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -522,8 +518,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS GPME ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -747,8 +741,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS MCO ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -976,8 +968,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS NDRC ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -1202,8 +1192,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS SAM ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -1432,8 +1420,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "BTS SIO ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -1683,8 +1669,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "CAP AEPE ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -1938,8 +1922,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "Licence Pro RH ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {
@@ -2177,8 +2159,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     preparation: {
-      title: "Comment se préparer à une alternance",
-      titleHighlight: "Titre Pro Secrétaire Médicale ?",
       text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
       ressources: [
         {

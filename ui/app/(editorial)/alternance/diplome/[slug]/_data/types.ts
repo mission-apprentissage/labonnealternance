@@ -113,8 +113,6 @@ export type IDiplomeSeoData = {
     sections: IDiplomeProgramme[]
   }
   preparation: {
-    title: string
-    titleHighlight?: string
     text: string
     ressources: IDiplomeRessource[]
   }
