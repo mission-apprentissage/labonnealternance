@@ -109,8 +109,6 @@ export type IDiplomeSeoData = {
     objectifs: IDiplomeObjectif[]
   }
   programme: {
-    title: string
-    titleHighlight?: string
     text: string
     sections: IDiplomeProgramme[]
   }

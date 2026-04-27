@@ -29,8 +29,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS CG",
       text: "Le programme du BTS CG en alternance est structuré autour de 7 processus professionnels couvrant l'ensemble des activités comptables et financières, complétés par des enseignements généraux.",
       sections: [
         {
@@ -264,8 +262,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS Communication",
       text: "Le programme du BTS Communication en alternance couvre un large éventail de compétences en communication, alliant enseignements théoriques et pratique professionnelle en entreprise.",
       sections: [
         {
@@ -495,8 +491,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS GPME",
       text: "Le programme du BTS GPME en alternance couvre un large éventail de compétences administratives et de gestion, alliant enseignements théoriques et pratique professionnelle en entreprise.",
       sections: [
         {
@@ -722,8 +716,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS MCO",
       text: "Le programme du BTS MCO en alternance couvre un large éventail de compétences commerciales et managériales, réparties en enseignements généraux et professionnels sur deux années de formation.",
       sections: [
         {
@@ -953,8 +945,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS NDRC",
       text: "Le programme du BTS NDRC en alternance couvre l'ensemble des compétences nécessaires à la gestion de la relation client, de la négociation terrain à la digitalisation des processus commerciaux.",
       sections: [
         {
@@ -1181,8 +1171,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS SAM",
       text: "Le programme du BTS SAM en alternance couvre un large éventail de compétences administratives et managériales, alliant enseignements théoriques et pratique professionnelle en entreprise.",
       sections: [
         {
@@ -1408,8 +1396,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "BTS SIO",
       text: "Le programme du BTS SIO en alternance associe un tronc commun d'enseignements généraux et informatiques à une spécialisation SISR ou SLAM choisie dès le premier semestre. La formation délivre 120 crédits ECTS.",
       sections: [
         {
@@ -1660,8 +1646,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "CAP AEPE",
       text: "Le programme du CAP AEPE en alternance couvre l'ensemble des compétences nécessaires à l'accompagnement éducatif des jeunes enfants, alliant enseignements théoriques et pratique professionnelle en structure d'accueil.",
       sections: [
         {
@@ -1916,8 +1900,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "Licence Pro RH",
       text: "Le programme de la Licence Pro RH en alternance couvre l'ensemble des fonctions ressources humaines, alliant enseignements théoriques en droit social et management à une forte dimension pratique grâce à l'alternance en entreprise.",
       sections: [
         {
@@ -2159,8 +2141,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     programme: {
-      title: "Programme du diplôme",
-      titleHighlight: "Titre Pro Secrétaire Médicale",
       text: "Le programme du Titre Pro Secrétaire Médicale en alternance est organisé autour de trois blocs de compétences professionnelles (CCP), couvrant l'ensemble des activités du secrétariat médico-social.",
       sections: [
         {

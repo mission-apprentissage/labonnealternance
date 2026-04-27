@@ -36,10 +36,10 @@ function ProgrammeCard({ section }: { section: IDiplomeProgramme }) {
   )
 }
 
-export function ProgrammeDiplome({ title, titleHighlight, text, sections }: { title: string; titleHighlight?: string; text: string; sections: IDiplomeProgramme[] }) {
+export function ProgrammeDiplome({ titre, text, sections }: { titre: string; text: string; sections: IDiplomeProgramme[] }) {
   return (
     <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
-      <SectionTitle title={title} highlightedText={titleHighlight} />
+      <SectionTitle title="Programme du diplôme" highlightedText={titre} />
       <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>

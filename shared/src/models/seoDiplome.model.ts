@@ -116,8 +116,6 @@ export const ZSeoDiplome = z
       objectifs: z.array(ZSeoDiplomeObjectif),
     }),
     programme: z.object({
-      title: z.string(),
-      titleHighlight: z.string().optional(),
       text: z.string(),
       sections: z.array(ZSeoDiplomeProgramme),
     }),
