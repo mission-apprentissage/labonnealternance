@@ -15,7 +15,6 @@ const blueApplicationTag = (icon, text) => (
       color: fr.colors.decisions.background.actionHigh.info.default,
       whiteSpace: "nowrap",
       px: fr.spacing("2v"),
-      mx: fr.spacing("3v"),
       fontStyle: "italic",
       width: "fit-content",
     }}

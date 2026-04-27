@@ -1,6 +1,7 @@
 import SkipLinks from "@codegouvfr/react-dsfr/SkipLinks"
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
+import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { ApiError, apiGet } from "@/utils/api.utils"
 import TrainingDetailRendererClient from "./TrainingDetailRendererClient"
@@ -44,6 +45,7 @@ export default async function FormationPage({ params, searchParams }: { params: 
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />
+      <PublicHeaderStatic />
       <TrainingDetailRendererClient training={formation} rechercheParams={parseRecherchePageParams(new URLSearchParams(await searchParams), IRechercheMode.DEFAULT)} />
     </>
   )

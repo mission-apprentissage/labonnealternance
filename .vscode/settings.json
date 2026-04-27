@@ -89,5 +89,14 @@
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.preferences.importModuleSpecifier": "non-relative",
   "vitest.commandLine": "yarn test --single-thread",
-  "vitest.workspaceConfig": "vitest.workspace.ts"
+  "vitest.workspaceConfig": "vitest.workspace.ts",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }

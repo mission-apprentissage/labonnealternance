@@ -1,5 +1,9 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { SkipLinks } from "@codegouvfr/react-dsfr/SkipLinks"
+import { Box } from "@mui/material"
 import type { PropsWithChildren } from "react"
+import { PublicHeader } from "@/app/_components/PublicHeader"
+import { RechercheLayoutClient } from "./RechercheLayoutClient"
 
 export default async function RechercheLayout({ children }: PropsWithChildren) {
   return (
@@ -10,7 +14,11 @@ export default async function RechercheLayout({ children }: PropsWithChildren) {
           { label: "Contenu", anchor: "#search-content-container" },
         ]}
       />
-      {children}
+      <RechercheLayoutClient header={<PublicHeader />}>
+        <Box component="main" role="main" tabIndex={-1} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, py: fr.spacing("4v") }}>
+          {children}
+        </Box>
+      </RechercheLayoutClient>
     </>
   )
 }

@@ -7,7 +7,7 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { publicConfig } from "@/config.public"
 import image from "@/public/assets/checkbox-list.webp"
 import { getRomeDetail } from "@/utils/api"
-import { RomeDetail } from "./RomeDetail"
+import { type RomeCompetenceKey, RomeDetail } from "./RomeDetail"
 
 const fakeLoadingDuration = 1000
 
@@ -18,8 +18,8 @@ export const RomeDetailWithQuery = ({
   title,
 }: {
   rome: string
-  onChange: (selectedCompetences: Record<string, string[]>) => void
-  selectedCompetences: Record<string, string[]>
+  onChange: (selectedCompetences: Record<RomeCompetenceKey, Set<string>>) => void
+  selectedCompetences: Record<RomeCompetenceKey, Set<string>>
   title: string
 }) => {
   const [fakeLoading, setFakeLoading] = useState<{ id: string; isLoading: boolean }>({ id: new Date().toISOString(), isLoading: true })
@@ -42,23 +42,14 @@ export const RomeDetailWithQuery = ({
     return () => clearTimeout(timeoutId)
   }, [rome, setFakeLoading])
 
-  const setCompetenceSelection = (groupKey: string, competence: string, selected: boolean) => {
-    let group = selectedCompetences[groupKey]
-    if (!group) {
-      group = []
+  const setCompetenceSelection = (groupKey: RomeCompetenceKey, competence: string, selected: boolean) => {
+    const group = selectedCompetences[groupKey]
+    if (selected) {
+      group.add(competence)
+    } else {
+      group.delete(competence)
     }
-    group = [...group]
-    const groupIndex = group.indexOf(competence)
-    const isInGroup = groupIndex !== -1
-    if (!selected && isInGroup) {
-      group.splice(groupIndex, 1)
-    } else if (selected && !isInGroup) {
-      group.push(competence)
-    }
-    onChange({
-      ...selectedCompetences,
-      [groupKey]: group,
-    })
+    onChange(selectedCompetences)
   }
 
   return isLoading || fakeLoading.isLoading ? (

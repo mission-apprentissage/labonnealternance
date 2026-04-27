@@ -1,81 +1,71 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Link } from "@mui/material"
-import Image from "next/image"
-import NextLink from "next/link"
-
+import { Box, Container } from "@mui/material"
+import { CandidatRechercheFilters } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheFilters"
 import { CandidatRechercheForm } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheForm"
-import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { PAGES } from "@/utils/routes.utils"
 
-export function RechercheHeader(props: { rechercheParams: IRecherchePageParams }) {
-  const navigateToRecherchePage = useNavigateToRecherchePage(props.rechercheParams)
-
+export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; fullWidth?: boolean }) {
+  const { rechercheParams, fullWidth } = props
   return (
     <Box
       sx={{
-        boxShadow: {
-          xs: 0,
-          lg: 2,
-        },
-        backgroundColor: {
-          xs: fr.colors.decisions.background.alt.grey.default,
-          lg: fr.colors.decisions.background.default.grey.default,
-        },
-        zIndex: 5,
+        ...(fullWidth
+          ? {
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 10,
+              backgroundColor: "white",
+              filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+              boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
+            }
+          : {}),
       }}
     >
-      <Box
-        sx={{
-          padding: fr.spacing("4v"),
-          maxWidth: "xl",
-          margin: "auto",
-          display: "flex",
-          gap: {
-            md: fr.spacing("8v"),
-            lg: fr.spacing("16v"),
-          },
-          alignItems: "center",
-        }}
+      <Container
+        maxWidth="xl"
+        sx={
+          fullWidth
+            ? { px: fr.spacing("4v") }
+            : {
+                maxWidth: "xl",
+                mt: fr.spacing("4v"),
+                px: fr.spacing("4v"),
+              }
+        }
       >
-        <Link
-          component={NextLink}
+        <Box
           sx={{
-            textDecoration: "none",
+            margin: "auto",
+            display: "flex",
+            gap: fr.spacing("16v"),
+            alignItems: "center",
+            backgroundColor: "white",
+            ...(fullWidth
+              ? {
+                  padding: fr.spacing("4v"),
+                }
+              : {
+                  padding: fr.spacing("4v"),
+                  borderRadius: fr.spacing("2v"),
+                  boxShadow: "0 6px 18px 0 rgba(0, 0, 18, 0.16)",
+                  mx: {
+                    xl: "-2rem",
+                    lg: 0,
+                  },
+                  mt: fr.spacing("4v"),
+                }),
           }}
-          href={PAGES.static.home.getPath()}
         >
-          <Image src="/images/logo-violet-seul.svg" width={40} height={44} alt="Retour page d'accueil de La bonne alternance" unoptimized />
-        </Link>
-        <Box sx={{ flex: 1 }}>
-          <Box
-            sx={{
-              display: {
-                xs: "none",
-                lg: "block",
-              },
-            }}
-          >
-            <CandidatRechercheForm {...props} />
-          </Box>
-          <Box
-            sx={{
-              display: {
-                xs: "flex",
-                lg: "none",
-              },
-              justifyContent: "flex-end",
-            }}
-          >
-            <Button iconId="fr-icon-search-line" priority="secondary" onClick={() => navigateToRecherchePage({ displayMobileForm: true }, true)}>
-              Modifier la recherche
-            </Button>
+          <Box sx={{ flex: 1 }}>
+            <CandidatRechercheForm rechercheParams={rechercheParams} />
+            <CandidatRechercheFilters rechercheParams={rechercheParams} embedded />
           </Box>
         </Box>
-      </Box>
+      </Container>
     </Box>
   )
 }

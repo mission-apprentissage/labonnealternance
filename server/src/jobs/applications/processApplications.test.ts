@@ -1,12 +1,9 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter, saveUserWithAccount } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
-import { RECRUITER_STATUS } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { applicationTestFile, generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
-import { ApplicationScanStatus, JOB_STATUS } from "shared/models/index"
+import { ApplicationScanStatus } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -81,47 +78,6 @@ describe("processApplications", () => {
       job_id: jobId,
       company_email: "company@test.fr",
       company_siret: "12345678901234",
-      to_company_message_id: null,
-      to_applicant_message_id: null,
-      scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,
-    })
-    await getDbCollection("applications").insertOne(application)
-
-    await processApplications()
-
-    const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
-    // Scan should complete without detecting a virus
-    expect(updatedApplication?.scan_status).toBe(ApplicationScanStatus.NO_VIRUS_DETECTED)
-    // Both applicant and company emails should be sent
-    expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
-    expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
-    // Both emails should have been sent (company + applicant)
-    expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
-  })
-
-  it("should process offres_emploi_lba application and save correct data to DB", async () => {
-    const jobId = new ObjectId()
-    const userId = new ObjectId()
-
-    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
-    await getDbCollection("applicants").insertOne(applicant)
-
-    await saveUserWithAccount({ _id: userId })
-    await saveRecruiter(
-      generateRecruiterFixture({
-        managed_by: userId.toString(),
-        email: "recruiter@company.fr",
-        status: RECRUITER_STATUS.ACTIF,
-        establishment_siret: "12345678901234",
-        jobs: [{ _id: jobId, rome_code: ["A1101"], job_status: JOB_STATUS.ACTIVE }],
-      })
-    )
-
-    const application = generateApplicationFixture({
-      applicant_id: applicant._id,
-      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
-      job_id: jobId,
-      company_email: "recruiter@company.fr",
       to_company_message_id: null,
       to_applicant_message_id: null,
       scan_status: ApplicationScanStatus.WAITING_FOR_SCAN,

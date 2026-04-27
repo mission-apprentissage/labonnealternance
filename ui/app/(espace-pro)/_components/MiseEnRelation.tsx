@@ -126,8 +126,6 @@ function DelegationsEnregistrees({
 export default function MiseEnRelation({ establishment_id, job_id, token }: { establishment_id: string; job_id: string; token?: string }) {
   const router = useRouter()
 
-  const [checkedDisabledEtablissements, setCheckedDisabledEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
-
   const { data: formulaire, isLoading: isFormulaireLoading } = useQuery({
     queryKey: ["formulaire"],
     enabled: !!establishment_id,
@@ -139,24 +137,21 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
 
   const { data: etablissements, isLoading: isEtablissementLoading } = useQuery({
     queryKey: ["etablissements"],
-    queryFn: async () => {
-      const etablissements = await getRelatedEtablissementsFromRome({
+    queryFn: () => {
+      const [latitude, longitude] = formulaire.geo_coordinates.split(",").map(parseFloat)
+      return getRelatedEtablissementsFromRome({
         rome: offre.rome_code[0],
-        latitude: formulaire.geopoint.coordinates[1],
-        longitude: formulaire.geopoint.coordinates[0],
+        latitude,
+        longitude,
         limit: 10,
-      })
-
-      setCheckedDisabledEtablissements(
-        //@ts-ignore
-        etablissements.filter((etablissement: IEtablissementCatalogueProcheWithDistance) => offre.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
-      )
-      return etablissements
+      }) as Promise<IEtablissementCatalogueProcheWithDistance[]>
     },
 
     enabled: !!formulaire?._id && !!offre?._id,
     gcTime: 0,
   })
+
+  const checkedDisabledEtablissements = (etablissements ?? []).filter((etablissement) => offre.delegations?.some((delegation) => etablissement.siret === delegation.siret_code))
 
   const [checkedEtablissements, setCheckedEtablissements] = useState<IEtablissementCatalogueProcheWithDistance[]>([])
 

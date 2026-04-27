@@ -4,9 +4,11 @@ import { ObjectId } from "mongodb"
 import type { IUser } from "shared"
 import type { OPCOS_LABEL } from "shared/constants/recruteur"
 import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
+import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IUserForOpco } from "shared/routes/user.routes"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { buildEstablishmentId } from "./etablissement.service"
 import { getUserRecruteursForManagement } from "./userRecruteur.service"
 
 export const createOrUpdateUserByEmail = async (email: string, update: Partial<IUser>, create: Partial<IUser>): Promise<{ user: IUser; isNew: boolean }> => {
@@ -53,23 +55,46 @@ export const getUserAndRecruitersDataForOpcoUser = async (
   const userRecruteurs = await getUserRecruteursForManagement({ opco })
 
   const filteredUserRecruteurs = [...userRecruteurs.active, ...userRecruteurs.awaiting, ...userRecruteurs.disabled]
-  const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id.toString()))]
-  const recruiters = await getDbCollection("recruiters")
-    .find({ managed_by: { $in: userIds }, opco }, { projection: { establishment_id: 1, origin: 1, jobs: 1, managed_by: 1, _id: 0 } })
-    .toArray()
+  const userIds = [...new Set(filteredUserRecruteurs.map(({ _id }) => _id))]
 
-  const recruiterMap = new Map<string, (typeof recruiters)[0]>()
-  recruiters.forEach((recruiter) => {
-    recruiterMap.set(recruiter.managed_by.toString(), recruiter)
+  type ProjectedJobPartner = Pick<IJobsPartnersOfferPrivate, "offer_origin" | "managed_by">
+  const jobPartners = (await getDbCollection("jobs_partners")
+    .find(
+      {
+        managed_by: { $in: userIds },
+        workplace_opco: opco,
+      },
+      {
+        projection: {
+          offer_origin: 1,
+          managed_by: 1,
+        },
+      }
+    )
+    .toArray()) as ProjectedJobPartner[]
+
+  const jobsByUser = new Map<string, ProjectedJobPartner[]>()
+  jobPartners.forEach((job) => {
+    const { managed_by } = job
+    if (managed_by) {
+      const managedByStr = managed_by.toString()
+      let group = jobsByUser.get(managedByStr)
+      if (!group) {
+        group = []
+        jobsByUser.set(managedByStr, group)
+      }
+      group.push(job)
+    }
   })
 
   const results = filteredUserRecruteurs.reduce(
     (acc, userRecruteur) => {
       const status = getLastStatusEvent(userRecruteur.status)?.status
       if (!status) return acc
-      const recruiter = recruiterMap.get(userRecruteur._id.toString())
-      const { establishment_id } = recruiter ?? {}
       const { _id, first_name, last_name, establishment_raison_sociale, establishment_siret, createdAt, email, phone, type, organizationId } = userRecruteur
+      const establishment_id = establishment_siret ? buildEstablishmentId(_id, establishment_siret) : undefined
+      const jobs = jobsByUser.get(userRecruteur._id.toString()) ?? []
+      const firstJob = jobs.at(0)
       const userForOpco: IUserForOpco = {
         _id,
         first_name,
@@ -81,8 +106,8 @@ export const getUserAndRecruitersDataForOpcoUser = async (
         email,
         phone,
         type,
-        jobs_count: recruiter?.jobs?.length ?? 0,
-        origin: recruiter?.origin ?? "",
+        jobs_count: jobs?.length ?? 0,
+        origin: firstJob?.offer_origin ?? "",
         organizationId,
       }
       if (status === ETAT_UTILISATEUR.ATTENTE) {

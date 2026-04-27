@@ -1,6 +1,6 @@
 import { logger } from "./logger"
 
-interface IDepartmentsRegionAndAcademieCode {
+export interface IDepartmentsRegionAndAcademieCode {
   nom: string
   code: string
   uaiCode: string
@@ -1435,19 +1435,33 @@ const departmentsRegionAndAcademieCode: IDepartmentsRegionAndAcademieCode[] = [
   },
 ]
 
+function codePostalToDepartement(codePostal: string) {
+  // Cas particuliers Corse
+  if (codePostal.startsWith("20")) {
+    if (parseInt(codePostal, 10) <= 20190) {
+      return "2A" // Corse-du-Sud
+    } else {
+      return "2B" // Haute-Corse
+    }
+  }
+
+  // Cas des DOM (97 et 98)
+  if (codePostal.startsWith("97") || codePostal.startsWith("98")) {
+    return codePostal.slice(0, 3)
+  }
+
+  // Cas général
+  return codePostal.slice(0, 2)
+}
+
 /**
  * @description Returns related "departmentsRegionAndAcademieCode" from its zip code (based on "three firsts digits").
  * @param {string} zipCode - Zip code (ex: "972" or "750").
  * @return {IDepartmentsRegionAndAcademieCode | undefined}
  */
-const getDepartmentByZipCode = (zipCode: string): IDepartmentsRegionAndAcademieCode | undefined => {
-  let result = departmentsRegionAndAcademieCode.find((departement) => departement.code === zipCode.slice(0, 2))
-
-  // If not department found, with two firsts digits, try with three firsts digits
-  if (!result) {
-    result = departmentsRegionAndAcademieCode.find((departement) => departement.code === zipCode.slice(0, 3))
-  }
-
+export const getDepartmentInfos = (zipCode: string): IDepartmentsRegionAndAcademieCode | undefined => {
+  const codeDepartement = codePostalToDepartement(zipCode)
+  const result = departmentsRegionAndAcademieCode.find((departement) => departement.code === codeDepartement)
   if (!result) {
     logger.error("Unable to return department from zip code", { zipCode })
     return undefined
@@ -1455,6 +1469,3 @@ const getDepartmentByZipCode = (zipCode: string): IDepartmentsRegionAndAcademieC
 
   return result
 }
-
-export { getDepartmentByZipCode }
-export type { IDepartmentsRegionAndAcademieCode }

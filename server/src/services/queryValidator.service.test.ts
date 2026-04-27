@@ -40,4 +40,15 @@ describe("formationsQueryValidator — limite romes", () => {
     expect(result).toMatchObject({ error: "wrong_parameters" })
     expect((result as { error_messages: string[] }).error_messages).toEqual(expect.arrayContaining([expect.stringContaining(`Maximum is ${MAX_SEARCH_ROMES}`)]))
   })
+
+  it(`accepte ${MAX_SEARCH_ROMES_PRIVATE} romes en mode privé`, async () => {
+    const result = await formationsQueryValidator({ ...baseQuery, romes: generateRomes(MAX_SEARCH_ROMES_PRIVATE) }, true)
+    expect(result).toMatchObject({ result: "passed" })
+  })
+
+  it(`rejette ${MAX_SEARCH_ROMES_PRIVATE + 1} romes en mode privé`, async () => {
+    const result = await formationsQueryValidator({ ...baseQuery, romes: generateRomes(MAX_SEARCH_ROMES_PRIVATE + 1) }, true)
+    expect(result).toMatchObject({ error: "wrong_parameters" })
+    expect((result as { error_messages: string[] }).error_messages).toEqual(expect.arrayContaining([expect.stringContaining(`Maximum is ${MAX_SEARCH_ROMES_PRIVATE}`)]))
+  })
 })
