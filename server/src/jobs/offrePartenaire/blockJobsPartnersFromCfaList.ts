@@ -4,7 +4,7 @@ import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST } 
 import { GEIQ_WHITELIST } from "@/jobs/offrePartenaire/geiqWhitelist"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
-import { getCompanyInBlockedCfaList, isCompanyInBlockedCfaList } from "./isCompanyInBlockedCfaList"
+import { getCompanyInBlockedCfaList } from "./isCompanyInBlockedCfaList"
 
 const sourceFields = ["workplace_name", "offer_description", "workplace_description"] as const satisfies (keyof IComputedJobsPartners)[]
 
