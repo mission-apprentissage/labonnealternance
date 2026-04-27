@@ -19,13 +19,6 @@ export type IDiplomeProgramme = {
   items: string[]
 }
 
-export type IDiplomeRessource = {
-  title: string
-  description: string
-  href: string
-  imageSrc?: string
-}
-
 export type IDiplomePrerequis = {
   label: string
 }
@@ -111,10 +104,6 @@ export type IDiplomeSeoData = {
   programme: {
     text: string
     sections: IDiplomeProgramme[]
-  }
-  preparation: {
-    text: string
-    ressources: IDiplomeRessource[]
   }
   integration: {
     title: string

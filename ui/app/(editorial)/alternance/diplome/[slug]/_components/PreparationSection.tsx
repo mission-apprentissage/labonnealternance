@@ -6,11 +6,25 @@ import Link from "next/link"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeRessource } from "../_data/types"
 
 import { SectionTitle } from "./SectionTitle"
 
-function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
+const RESSOURCES = [
+  {
+    title: "Introduction sur l'alternance",
+    description: "Découvrez comment fonctionne l'alternance",
+    href: "/guide-alternant/decouvrir-l-alternance",
+    imageSrc: "/images/diplome/card-left.svg",
+  },
+  {
+    title: "Préparer son projet en alternance",
+    description: "Découvrez les étapes clés d'un projet en alternance",
+    href: "/guide-alternant/preparer-son-projet-en-alternance",
+    imageSrc: "/images/diplome/card-right.svg",
+  },
+]
+
+function RessourceCard({ ressource }: { ressource: (typeof RESSOURCES)[number] }) {
   return (
     <Link href={`${ressource.href}?${UTM_PARAMS}`} style={{ textDecoration: "none", flex: 1, backgroundImage: "none" }}>
       <Box
@@ -35,7 +49,7 @@ function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          {ressource.imageSrc && <Image src={ressource.imageSrc} alt="" fill style={{ objectFit: "cover", objectPosition: "center" }} sizes="(max-width: 768px) 100vw, 196px" />}
+          <Image src={ressource.imageSrc} alt="" fill style={{ objectFit: "cover", objectPosition: "center" }} sizes="(max-width: 768px) 100vw, 196px" />
         </Box>
         {/* Content */}
         <Box sx={{ p: fr.spacing("8v"), display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -49,7 +63,7 @@ function RessourceCard({ ressource }: { ressource: IDiplomeRessource }) {
   )
 }
 
-export function PreparationSection({ titre, text, ressources }: { titre: string; text: string; ressources: IDiplomeRessource[] }) {
+export function PreparationSection({ titre }: { titre: string }) {
   return (
     <Box
       sx={{
@@ -59,10 +73,10 @@ export function PreparationSection({ titre, text, ressources }: { titre: string;
     >
       <DefaultContainer>
         <SectionTitle title="Comment se préparer à une alternance" highlightedText={`${titre} ?`} />
-        <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
+        <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{"Découvrez nos ressources pour vous préparer au mieux à l'alternance :"}</Typography>
 
         <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v") }}>
-          {ressources.map((ressource) => (
+          {RESSOURCES.map((ressource) => (
             <RessourceCard key={ressource.title} ressource={ressource} />
           ))}
         </Box>

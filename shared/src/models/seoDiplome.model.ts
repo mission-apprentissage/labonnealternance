@@ -24,13 +24,6 @@ const ZSeoDiplomeProgramme = z.object({
   items: z.array(z.string()),
 })
 
-const ZSeoDiplomeRessource = z.object({
-  title: z.string(),
-  description: z.string(),
-  href: z.string(),
-  imageSrc: z.string().optional(),
-})
-
 const ZSeoDiplomePrerequis = z.object({
   label: z.string(),
 })
@@ -118,10 +111,6 @@ export const ZSeoDiplome = z
     programme: z.object({
       text: z.string(),
       sections: z.array(ZSeoDiplomeProgramme),
-    }),
-    preparation: z.object({
-      text: z.string(),
-      ressources: z.array(ZSeoDiplomeRessource),
     }),
     integration: z.object({
       title: z.string(),

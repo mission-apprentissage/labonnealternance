@@ -61,23 +61,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
-        },
-      ],
-    },
     integration: {
       title: "Comment intégrer un BTS CG en alternance",
       prerequis: [
@@ -287,23 +270,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Relations presse et relations publiques.",
             "Pilotage de campagnes sur les réseaux sociaux.",
           ],
-        },
-      ],
-    },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
         },
       ],
     },
@@ -517,23 +483,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
-        },
-      ],
-    },
     integration: {
       title: "Comment intégrer un BTS GPME en alternance",
       prerequis: [
@@ -737,23 +686,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Analyse de données commerciales et pilotage de la performance.",
             "Communication professionnelle écrite et orale.",
           ],
-        },
-      ],
-    },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
         },
       ],
     },
@@ -967,23 +899,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
-        },
-      ],
-    },
     integration: {
       title: "Comment intégrer un BTS NDRC en alternance",
       prerequis: [
@@ -1188,23 +1103,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Gestion des dossiers du personnel et processus RH.",
             "Maîtrise des outils collaboratifs et numériques.",
           ],
-        },
-      ],
-    },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
         },
       ],
     },
@@ -1416,23 +1314,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Veille technologique et adaptation aux évolutions du numérique.",
             "Communication professionnelle en français et en anglais.",
           ],
-        },
-      ],
-    },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
         },
       ],
     },
@@ -1665,23 +1546,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Communication professionnelle avec les familles et l'équipe éducative.",
             "Application des protocoles de sécurité et de premiers secours.",
           ],
-        },
-      ],
-    },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
         },
       ],
     },
@@ -1921,23 +1785,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
-        },
-      ],
-    },
     integration: {
       title: "Comment intégrer une Licence Pro RH en alternance",
       prerequis: [
@@ -2155,23 +2002,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Coordonner les opérations liées au parcours du patient ou de l'usager.",
             "Élaborer et actualiser des tableaux de suivi dans un service sanitaire ou médico-social.",
           ],
-        },
-      ],
-    },
-    preparation: {
-      text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-      ressources: [
-        {
-          title: "Introduction sur l'alternance",
-          description: "Découvrez comment fonctionne l'alternance",
-          href: "/guide-alternant/decouvrir-l-alternance",
-          imageSrc: "/images/diplome/card-left.svg",
-        },
-        {
-          title: "Préparer son projet en alternance",
-          description: "Découvrez les étapes clés d'un projet en alternance",
-          href: "/guide-alternant/preparer-son-projet-en-alternance",
-          imageSrc: "/images/diplome/card-right.svg",
         },
       ],
     },
