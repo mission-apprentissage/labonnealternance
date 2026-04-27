@@ -119,9 +119,7 @@ export const ZSeoDiplome = z
       kpis: z.array(ZSeoDiplomePerspectiveKpi),
       carrieres: z.array(ZSeoDiplomeCarriere),
     }),
-    ecoles: z.object({
-      formations: z.array(ZSeoDiplomeEcoleCard),
-    }),
+    ecoles: z.array(ZSeoDiplomeEcoleCard),
     salaire: z.object({
       title: z.string(),
       titleHighlight: z.string().optional(),

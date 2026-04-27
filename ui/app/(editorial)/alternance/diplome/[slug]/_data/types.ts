@@ -112,9 +112,7 @@ export type IDiplomeSeoData = {
     kpis: IDiplomePerspectiveKpi[]
     carrieres: IDiplomeCarriere[]
   }
-  ecoles: {
-    formations: IDiplomeEcoleCard[]
-  }
+  ecoles: IDiplomeEcoleCard[]
   salaire: {
     title: string
     titleHighlight?: string
