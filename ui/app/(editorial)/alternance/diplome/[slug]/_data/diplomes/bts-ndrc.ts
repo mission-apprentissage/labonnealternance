@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsNdrc: IDiplomeSeoData = {
   slug: "bts-ndrc",
-  titre: "BTS NDRC en alternance",
-  titreAccent: "BTS NDRC",
+  titre: "BTS NDRC",
   sousTitre: "Négociation et Digitalisation de la Relation Client",
+  intituleLongFormation: "NEGOCIATION ET DIGITALISATION DE LA RELATION CLIENT",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

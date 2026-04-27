@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const licenceProRh: IDiplomeSeoData = {
   slug: "licence-pro-rh",
-  titre: "Licence Pro RH en alternance",
-  titreAccent: "Licence Pro RH",
+  titre: "Licence Pro RH",
   sousTitre: "Ressources Humaines",
+  intituleLongFormation: "RESSOURCES HUMAINES",
   kpis: [
     { label: "Durée de la formation", value: "1 an", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

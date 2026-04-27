@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const titreProSecretaireMedicale: IDiplomeSeoData = {
   slug: "titre-pro-secretaire-medicale",
-  titre: "Titre Pro Secrétaire Médicale en alternance",
-  titreAccent: "Titre Pro Secrétaire Médicale",
+  titre: "Titre Pro Secrétaire Médicale",
   sousTitre: "Secrétaire Assistant Médico-Social",
+  intituleLongFormation: "SECRETAIRE ASSISTANT MEDICO-SOCIAL",
   kpis: [
     { label: "Durée de la formation", value: "12 mois", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsMco: IDiplomeSeoData = {
   slug: "bts-mco",
-  titre: "BTS MCO en alternance",
-  titreAccent: "BTS MCO",
+  titre: "BTS MCO",
   sousTitre: "Management Commercial Opérationnel",
+  intituleLongFormation: "MANAGEMENT COMMERCIAL OPERATIONNEL",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

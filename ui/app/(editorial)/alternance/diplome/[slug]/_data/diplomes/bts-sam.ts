@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsSam: IDiplomeSeoData = {
   slug: "bts-sam",
-  titre: "BTS SAM en alternance",
-  titreAccent: "BTS SAM",
+  titre: "BTS SAM",
   sousTitre: "Support à l'Action Managériale",
+  intituleLongFormation: "SUPPORT A L'ACTION MANAGERIALE",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

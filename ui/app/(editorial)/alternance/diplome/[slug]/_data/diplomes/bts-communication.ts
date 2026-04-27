@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsCommunication: IDiplomeSeoData = {
   slug: "bts-communication",
-  titre: "BTS Communication en alternance",
-  titreAccent: "BTS Communication",
+  titre: "BTS Communication",
   sousTitre: "Communication",
+  intituleLongFormation: "COMMUNICATION",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

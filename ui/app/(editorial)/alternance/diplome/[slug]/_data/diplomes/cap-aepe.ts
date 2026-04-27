@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const capAepe: IDiplomeSeoData = {
   slug: "cap-aepe",
-  titre: "CAP AEPE en alternance",
-  titreAccent: "CAP AEPE",
+  titre: "CAP AEPE",
   sousTitre: "Accompagnant Éducatif Petite Enfance",
+  intituleLongFormation: "ACCOMPAGNANT EDUCATIF PETITE ENFANCE",
   kpis: [
     { label: "Durée de la formation", value: "1 à 2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

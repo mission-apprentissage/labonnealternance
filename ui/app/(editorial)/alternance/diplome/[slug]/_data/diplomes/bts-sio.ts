@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsSio: IDiplomeSeoData = {
   slug: "bts-sio",
-  titre: "BTS SIO en alternance",
-  titreAccent: "BTS SIO",
+  titre: "BTS SIO",
   sousTitre: "Services Informatiques aux Organisations",
+  intituleLongFormation: "SERVICES INFORMATIQUES AUX ORGANISATIONS",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

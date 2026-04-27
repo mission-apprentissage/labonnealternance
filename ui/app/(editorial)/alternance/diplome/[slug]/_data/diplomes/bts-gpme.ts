@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsGpme: IDiplomeSeoData = {
   slug: "bts-gpme",
-  titre: "BTS GPME en alternance",
-  titreAccent: "BTS GPME",
+  titre: "BTS GPME",
   sousTitre: "Gestion de la PME",
+  intituleLongFormation: "GESTION DE LA PME",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

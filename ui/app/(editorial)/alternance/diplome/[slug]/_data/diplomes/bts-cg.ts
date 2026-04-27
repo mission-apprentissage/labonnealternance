@@ -2,9 +2,9 @@ import type { IDiplomeSeoData } from "../types"
 
 export const btsCg: IDiplomeSeoData = {
   slug: "bts-cg",
-  titre: "BTS CG en alternance",
-  titreAccent: "BTS CG",
+  titre: "BTS CG",
   sousTitre: "Comptabilité et Gestion",
+  intituleLongFormation: "COMPTABILITE ET GESTION",
   kpis: [
     { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
     { label: "entreprises recrutent", value: "XX", iconSrc: "/images/diplome/companie.svg" },

@@ -7,9 +7,7 @@ import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeKpi } from "../_data/types"
 import diplomeDecoration from "./diplome_decoration.svg"
 
-export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: string; titreAccent: string; sousTitre: string; kpis: IDiplomeKpi[] }) {
-  const titreSuffix = titre.replace(titreAccent, "").trim()
-
+export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTitre: string; kpis: IDiplomeKpi[] }) {
   return (
     <Box sx={{ marginBottom: fr.spacing("5w") }}>
       {/* Banner background */}
@@ -61,9 +59,9 @@ export function HeroDiplome({ titre, titreAccent, sousTitre, kpis }: { titre: st
                 color: fr.colors.decisions.text.default.info.default,
               }}
             >
-              {titreAccent}
-            </Typography>
-            {titreSuffix && ` ${titreSuffix}`}
+              {titre}
+            </Typography>{" "}
+            en alternance
           </Typography>
           <Typography
             sx={{
