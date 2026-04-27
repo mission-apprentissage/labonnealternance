@@ -5,12 +5,16 @@ import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
-const sourceFields = ["workplace_name", "workplace_legal_name"] as const satisfies (keyof IComputedJobsPartners)[]
+const sourceFields = ["workplace_name", "workplace_legal_name", "workplace_brand"] as const satisfies (keyof IComputedJobsPartners)[]
 
 const isCompanyInFluxList = isNormalizedStringInSetOrArray(TRUSTED_COMPANY_JOB_PARTNERS)
 
-const hasBlockedFluxCompanyMention = ({ workplace_name, workplace_legal_name }: Pick<IComputedJobsPartners, "workplace_name" | "workplace_legal_name">) => {
-  return [workplace_name, workplace_legal_name].some(isCompanyInFluxList)
+const hasBlockedFluxCompanyMention = ({
+  workplace_name,
+  workplace_legal_name,
+  workplace_brand,
+}: Pick<IComputedJobsPartners, "workplace_name" | "workplace_legal_name" | "workplace_brand">) => {
+  return [workplace_name, workplace_legal_name, workplace_brand].some(isCompanyInFluxList)
 }
 
 export const blockJobsPartnersFromFluxCompanyList = async ({ addedMatchFilter }: FillComputedJobsPartnersContext) => {
@@ -31,10 +35,12 @@ export const blockJobsPartnersFromFluxCompanyList = async ({ addedMatchFilter }:
     },
     getData: async (documents) => {
       return documents.map((document) => {
-        const { _id, workplace_name, workplace_legal_name, business_error } = document
+        const { _id, workplace_name, workplace_legal_name, workplace_brand, business_error } = document
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
-          business_error: hasBlockedFluxCompanyMention({ workplace_name, workplace_legal_name }) ? JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE : business_error,
+          business_error: hasBlockedFluxCompanyMention({ workplace_name, workplace_legal_name, workplace_brand })
+            ? JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE
+            : business_error,
         }
         return result
       })
