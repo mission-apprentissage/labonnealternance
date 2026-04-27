@@ -16,7 +16,9 @@ const hasBlockedCfaMention = (props: Pick<IComputedJobsPartners, "workplace_name
   return Boolean(getBlockedCfaMention(props))
 }
 
-export const getBlockedCfaMention = (props: Pick<IComputedJobsPartners, "workplace_name" | "offer_description" | "workplace_description">): string | null => {
+export const getBlockedCfaMention = (
+  props: Pick<IComputedJobsPartners, "workplace_name" | "offer_description" | "workplace_description">
+): { field: string; matchingString: string } | null => {
   let found: { field: string; matchingString: string } | null = null
   const fields = ["workplace_name", "offer_description", "workplace_description"] as const
   fields.find((field) => {

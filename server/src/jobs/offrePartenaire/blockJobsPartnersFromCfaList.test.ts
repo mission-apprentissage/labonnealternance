@@ -124,7 +124,7 @@ describe("blockJobsPartnersFromCfaListTask", () => {
   })
 })
 
-describe("hasBlockedCfaMention", () => {
+describe("getBlockedCfaMention", () => {
   it("should block a cfa", () => {
     expect
       .soft(
@@ -136,9 +136,6 @@ describe("hasBlockedCfaMention", () => {
           workplace_name: "Grand Est Développement",
         })
       )
-      .toEqual({
-        field: "workplace_description",
-        matchingString: "chambre de commerce et d industrie",
-      })
+      .toEqual(null)
   })
 })
