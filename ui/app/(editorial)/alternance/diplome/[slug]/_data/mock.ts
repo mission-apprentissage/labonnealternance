@@ -74,38 +74,6 @@ export const mockDiplomeData: IDiplomeSeoData = {
       },
     ],
   },
-  integration: {
-    title: "Comment intégrer un BTS MCO en alternance",
-    prerequis: [
-      { label: "Baccalauréat général" },
-      { label: "Bac STMG" },
-      { label: "Bac professionnel Commerce" },
-      { label: "Bac professionnel Vente" },
-      { label: "Dossier scolaire" },
-    ],
-    etapes: [
-      {
-        numero: 1,
-        title: "Trouve une entreprise",
-        description: "Recherchez une entreprise qui recrute des alternants en BTS MCO. Consultez les offres sur La bonne alternance et candidatez directement.",
-        ctaLabel: "Voir les offres",
-        ctaHref: "/recherche-emploi",
-      },
-      {
-        numero: 2,
-        title: "Choisis ta formation",
-        description: "Sélectionnez un centre de formation qui propose le BTS MCO en alternance. Comparez les programmes et les taux de réussite.",
-        ctaLabel: "Voir les formations",
-        ctaHref: "/recherche-formation",
-      },
-      {
-        numero: 3,
-        title: "Signe ton contrat",
-        description:
-          "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
-      },
-    ],
-  },
   entreprises: {
     title: "Entreprises qui recrutent en alternance",
     text: "Découvrez les 890 entreprises qui recrutent activement des alternants en BTS MCO :",

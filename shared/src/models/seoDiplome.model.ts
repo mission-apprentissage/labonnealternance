@@ -24,18 +24,6 @@ const ZSeoDiplomeProgramme = z.object({
   items: z.array(z.string()),
 })
 
-const ZSeoDiplomePrerequis = z.object({
-  label: z.string(),
-})
-
-const ZSeoDiplomeEtape = z.object({
-  numero: z.number(),
-  title: z.string(),
-  description: z.string(),
-  ctaLabel: z.string().optional(),
-  ctaHref: z.string().optional(),
-})
-
 const ZSeoDiplomeEntreprise = z.object({
   name: z.string(),
   postes: z.number(),
@@ -111,11 +99,6 @@ export const ZSeoDiplome = z
     programme: z.object({
       text: z.string(),
       sections: z.array(ZSeoDiplomeProgramme),
-    }),
-    integration: z.object({
-      title: z.string(),
-      prerequis: z.array(ZSeoDiplomePrerequis),
-      etapes: z.array(ZSeoDiplomeEtape),
     }),
     entreprises: z.object({
       title: z.string(),

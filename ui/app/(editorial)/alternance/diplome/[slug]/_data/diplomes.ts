@@ -61,39 +61,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    integration: {
-      title: "Comment intégrer un BTS CG en alternance",
-      prerequis: [
-        { label: "Baccalauréat général" },
-        { label: "Bac STMG (spécialité Gestion et Finance recommandée)" },
-        { label: "Bac professionnel Métiers de la Gestion-Administration" },
-        { label: "Bac professionnel Assistance à la Gestion des Organisations" },
-        { label: "Dossier scolaire et entretien de motivation" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description:
-            "Recherchez une entreprise ou un cabinet comptable qui recrute des alternants en BTS CG. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS CG en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
-        },
-      ],
-    },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS CG :",
@@ -270,38 +237,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Relations presse et relations publiques.",
             "Pilotage de campagnes sur les réseaux sociaux.",
           ],
-        },
-      ],
-    },
-    integration: {
-      title: "Comment intégrer un BTS Communication en alternance",
-      prerequis: [
-        { label: "Baccalauréat général" },
-        { label: "Bac STMG" },
-        { label: "Bac professionnel Métiers du commerce et de la vente" },
-        { label: "Bac professionnel Accueil" },
-        { label: "Dossier scolaire et entretien de motivation" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description: "Recherchez une entreprise qui recrute des alternants en BTS Communication. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS Communication en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
         },
       ],
     },
@@ -483,38 +418,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    integration: {
-      title: "Comment intégrer un BTS GPME en alternance",
-      prerequis: [
-        { label: "Baccalauréat général" },
-        { label: "Bac STMG" },
-        { label: "Bac professionnel Gestion-Administration" },
-        { label: "Bac professionnel Commerce" },
-        { label: "Dossier scolaire et entretien de motivation" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description: "Recherchez une PME qui recrute des alternants en BTS GPME. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS GPME en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
-        },
-      ],
-    },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS GPME :",
@@ -686,37 +589,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Analyse de données commerciales et pilotage de la performance.",
             "Communication professionnelle écrite et orale.",
           ],
-        },
-      ],
-    },
-    integration: {
-      title: "Comment intégrer un BTS MCO en alternance",
-      prerequis: [
-        { label: "Baccalauréat général" },
-        { label: "Bac technologique STMG" },
-        { label: "Bac professionnel Métiers du commerce et de la vente" },
-        { label: "Dossier scolaire et entretien de motivation" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description: "Recherchez une entreprise qui recrute des alternants en BTS MCO. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS MCO en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
         },
       ],
     },
@@ -899,38 +771,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    integration: {
-      title: "Comment intégrer un BTS NDRC en alternance",
-      prerequis: [
-        { label: "Baccalauréat général" },
-        { label: "Bac STMG" },
-        { label: "Bac professionnel Métiers du commerce et de la vente" },
-        { label: "Bac professionnel Vente" },
-        { label: "Dossier scolaire et entretien de motivation" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description: "Recherchez une entreprise qui recrute des alternants en BTS NDRC. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS NDRC en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
-        },
-      ],
-    },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS NDRC :",
@@ -1103,38 +943,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Gestion des dossiers du personnel et processus RH.",
             "Maîtrise des outils collaboratifs et numériques.",
           ],
-        },
-      ],
-    },
-    integration: {
-      title: "Comment intégrer un BTS SAM en alternance",
-      prerequis: [
-        { label: "Baccalauréat général" },
-        { label: "Bac STMG" },
-        { label: "Bac professionnel Assistance à la gestion des organisations et de leurs activités" },
-        { label: "Bac professionnel Métiers de l'accueil" },
-        { label: "Dossier scolaire et lettre de motivation via Parcoursup" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description: "Recherchez une entreprise qui recrute des alternants en BTS SAM. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS SAM en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
         },
       ],
     },
@@ -1314,38 +1122,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Veille technologique et adaptation aux évolutions du numérique.",
             "Communication professionnelle en français et en anglais.",
           ],
-        },
-      ],
-    },
-    integration: {
-      title: "Comment intégrer un BTS SIO en alternance",
-      prerequis: [
-        { label: "Baccalauréat général (spécialités NSI, mathématiques recommandées)" },
-        { label: "Bac technologique STMG (spécialité SIG)" },
-        { label: "Bac technologique STI2D (spécialité SIN)" },
-        { label: "Bac professionnel CIEL (Cybersécurité, Informatique et réseaux, Électronique)" },
-        { label: "Dossier scolaire et lettre de motivation via Parcoursup" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description: "Recherchez une entreprise qui recrute des alternants en BTS SIO. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le BTS SIO en alternance. Comparez les programmes SISR et SLAM selon votre projet professionnel.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
         },
       ],
     },
@@ -1546,39 +1322,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Communication professionnelle avec les familles et l'équipe éducative.",
             "Application des protocoles de sécurité et de premiers secours.",
           ],
-        },
-      ],
-    },
-    integration: {
-      title: "Comment intégrer un CAP AEPE en alternance",
-      prerequis: [
-        { label: "Niveau 3ème (aucun diplôme requis)" },
-        { label: "Avoir 16 ans minimum (ou 15 ans à la sortie de 3ème)" },
-        { label: "Maîtrise du français écrit et oral" },
-        { label: "Motivation pour le travail auprès des enfants" },
-        { label: "CAP AEPE en 1 an : être titulaire d'un diplôme de niveau 3 ou plus" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description:
-            "Recherchez une structure d'accueil petite enfance qui recrute des alternants en CAP AEPE. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description: "Sélectionnez un centre de formation qui propose le CAP AEPE en alternance. Comparez les programmes et les taux de réussite.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
         },
       ],
     },
@@ -1785,42 +1528,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
-    integration: {
-      title: "Comment intégrer une Licence Pro RH en alternance",
-      prerequis: [
-        { label: "BTS SAM (Support à l'Action Managériale)" },
-        { label: "BTS CG (Comptabilité et Gestion)" },
-        { label: "BTS Gestion de la PME (GPME)" },
-        { label: "DUT / BUT GEA (Gestion des Entreprises et des Administrations)" },
-        { label: "L2 validée en Droit, Économie ou Gestion (120 ECTS)" },
-        { label: "DEUST métiers de la gestion ou équivalent Bac+2" },
-        { label: "Dossier de candidature (CV, lettre de motivation, relevés de notes)" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description:
-            "Recherchez une entreprise qui recrute des alternants en Licence Pro RH. Consultez les offres sur La bonne alternance et candidatez directement auprès des services RH, cabinets de recrutement ou agences d'intérim.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description:
-            "Sélectionnez un IUT, une université ou un centre de formation qui propose la Licence Pro RH en alternance. Comparez les programmes, les taux de réussite et les partenariats entreprises.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches administratives.",
-        },
-      ],
-    },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les entreprises qui recrutent activement des alternants en Licence Pro RH :",
@@ -2002,40 +1709,6 @@ export const diplomesData: IDiplomeSeoData[] = [
             "Coordonner les opérations liées au parcours du patient ou de l'usager.",
             "Élaborer et actualiser des tableaux de suivi dans un service sanitaire ou médico-social.",
           ],
-        },
-      ],
-    },
-    integration: {
-      title: "Comment intégrer un Titre Pro Secrétaire Médicale en alternance",
-      prerequis: [
-        { label: "Niveau 3ème ou équivalent" },
-        { label: "Maîtrise de la langue française (écrit et oral)" },
-        { label: "Connaissances bureautiques de base" },
-        { label: "Entretien de motivation" },
-        { label: "Tests de positionnement" },
-      ],
-      etapes: [
-        {
-          numero: 1,
-          title: "Trouve une entreprise",
-          description:
-            "Recherchez une structure du secteur sanitaire ou médico-social qui recrute des alternants : hôpital, clinique, cabinet médical, laboratoire, EHPAD, centre médico-social. Consultez les offres sur La bonne alternance et candidatez directement.",
-          ctaLabel: "Voir les offres",
-          ctaHref: "/recherche-emploi",
-        },
-        {
-          numero: 2,
-          title: "Choisis ta formation",
-          description:
-            "Sélectionnez un centre de formation qui propose le Titre Pro Secrétaire Assistant Médico-Social en alternance. Comparez les programmes et les modalités d'accompagnement.",
-          ctaLabel: "Voir les formations",
-          ctaHref: "/recherche-formation",
-        },
-        {
-          numero: 3,
-          title: "Signe ton contrat",
-          description:
-            "Une fois l'entreprise et la formation trouvées, signez votre contrat d'apprentissage ou de professionnalisation. L'école et l'entreprise vous accompagnent dans les démarches.",
         },
       ],
     },

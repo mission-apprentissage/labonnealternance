@@ -19,18 +19,6 @@ export type IDiplomeProgramme = {
   items: string[]
 }
 
-export type IDiplomePrerequis = {
-  label: string
-}
-
-export type IDiplomeEtape = {
-  numero: number
-  title: string
-  description: string
-  ctaLabel?: string
-  ctaHref?: string
-}
-
 export type IDiplomeEntreprise = {
   name: string
   postes: number
@@ -104,11 +92,6 @@ export type IDiplomeSeoData = {
   programme: {
     text: string
     sections: IDiplomeProgramme[]
-  }
-  integration: {
-    title: string
-    prerequis: IDiplomePrerequis[]
-    etapes: IDiplomeEtape[]
   }
   entreprises: {
     title: string
