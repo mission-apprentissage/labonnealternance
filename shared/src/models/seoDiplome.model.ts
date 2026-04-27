@@ -112,8 +112,6 @@ export const ZSeoDiplome = z
     sousTitre: z.string(),
     kpis: z.array(ZSeoDiplomeKpi),
     description: z.object({
-      title: z.string(),
-      titleHighlight: z.string().optional(),
       text: z.string(),
       objectifs: z.array(ZSeoDiplomeObjectif),
     }),
