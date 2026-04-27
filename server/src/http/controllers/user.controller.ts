@@ -137,8 +137,20 @@ export default (server: Server) => {
       if (!(userAccess?.admin || userAccess?.opcos.length)) {
         throw forbidden()
       }
-
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
+      const roleManagements = await getDbCollection("rolemanagements")
+        .find({
+          user_id: userId,
+          authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
+        })
+        .toArray()
+      const validRoleManagement = roleManagements.find(
+        (role) => role.authorized_type === AccessEntityType.CFA || (role.authorized_type === AccessEntityType.ENTREPRISE && role.authorized_id === entreprise?._id.toString())
+      )
+      if (!validRoleManagement) {
+        throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
+      }
+
       const result = await updateUserWithAccountFields(userId, userFields)
       if ("error" in result) {
         throw badRequest(result.error === BusinessErrorCodes.EMAIL_ALREADY_EXISTS ? "L'email est déjà utilisé" : "Erreur business", { error: result.error })
