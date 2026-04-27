@@ -12,8 +12,6 @@ export const capAepe: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "CAP AEPE ?",
     text: "Le CAP Accompagnant Éducatif Petite Enfance (AEPE) est le diplôme de référence pour travailler auprès des enfants de 0 à 6 ans. Cette formation en alternance prépare à l'accueil, la garde et l'accompagnement du développement des jeunes enfants dans différents contextes : crèches, écoles maternelles ou à domicile. Le CAP AEPE remplace l'ancien CAP Petite Enfance et offre un programme enrichi, adapté aux exigences actuelles du secteur de la petite enfance.",
     objectifs: [
       {

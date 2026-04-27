@@ -101,13 +101,10 @@ export type IDiplomeEcoleCard = {
 export type IDiplomeSeoData = {
   slug: string
   titre: string
-  /** Partie du titre mise en valeur en bleu (ex: "BTS MCO") */
-  titreAccent: string
+  intituleLongFormation: string
   sousTitre: string
   kpis: IDiplomeKpi[]
   description: {
-    title: string
-    titleHighlight?: string
     text: string
     objectifs: IDiplomeObjectif[]
   }

@@ -12,8 +12,6 @@ export const btsSio: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS SIO ?",
     text: "Le BTS Services Informatiques aux Organisations (SIO) est un diplôme d'État de niveau Bac+2 qui forme des professionnels capables de répondre aux besoins informatiques des entreprises. Cette formation en alternance propose deux spécialisations : l'option SISR (Solutions d'Infrastructure, Systèmes et Réseaux) orientée vers l'administration réseau et la cybersécurité, et l'option SLAM (Solutions Logicielles et Applications Métiers) orientée vers le développement d'applications. Le BTS SIO en alternance permet d'acquérir une expérience professionnelle concrète dans le secteur du numérique tout en préparant un diplôme reconnu par l'État.",
     objectifs: [
       {

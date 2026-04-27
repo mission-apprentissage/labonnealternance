@@ -12,8 +12,6 @@ export const titreProSecretaireMedicale: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "Titre Pro Secrétaire Médicale ?",
     text: "Le Titre Professionnel Secrétaire Assistant Médico-Social (TP SAMS) est une certification de niveau 4 (Bac) délivrée par le Ministère du Travail et enregistrée au RNCP (RNCP36805). Cette formation en alternance prépare des professionnels capables d'assurer l'accueil et la prise en charge administrative des patients et usagers dans les structures sanitaires, médico-sociales et sociales. Le secrétaire assistant médico-social gère la planification des activités du service, le traitement et le suivi administratif des dossiers, ainsi que la coordination des opérations liées au parcours du patient ou de l'usager.",
     objectifs: [
       {

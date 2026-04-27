@@ -12,8 +12,6 @@ export const btsGpme: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS GPME ?",
     text: "Le BTS Gestion de la PME forme des collaborateurs polyvalents capables d'assister le dirigeant d'une petite ou moyenne entreprise dans l'ensemble de ses activités. Cette formation en alternance permet d'acquérir des compétences en gestion administrative, relation clients et fournisseurs, gestion du personnel et communication. Le BTS GPME en alternance est particulièrement adapté aux profils organisés et rigoureux souhaitant évoluer dans un environnement professionnel varié au sein de PME.",
     objectifs: [
       {

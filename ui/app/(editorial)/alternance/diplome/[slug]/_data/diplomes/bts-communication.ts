@@ -12,8 +12,6 @@ export const btsCommunication: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS Communication ?",
     text: "Le BTS Communication forme des professionnels capables de concevoir et mettre en œuvre des opérations de communication. Cette formation en alternance de niveau Bac+2 prépare aux métiers de la communication d'entreprise, de la publicité, des relations presse et du digital. En alternance, les étudiants développent une expertise concrète en création de supports, gestion de projets et relations clients, ce qui constitue un véritable atout sur le marché de l'emploi.",
     objectifs: [
       {

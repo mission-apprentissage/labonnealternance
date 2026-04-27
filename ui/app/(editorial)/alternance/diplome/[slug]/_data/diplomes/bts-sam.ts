@@ -12,8 +12,6 @@ export const btsSam: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS SAM ?",
     text: "Le BTS Support à l'Action Managériale forme des professionnels polyvalents capables d'assister un dirigeant, un cadre ou une équipe dans leurs missions quotidiennes. Cette formation en alternance permet d'acquérir des compétences en gestion administrative, organisation de projets, collaboration aux ressources humaines et communication en plusieurs langues. Le BTS SAM en alternance est un diplôme de niveau 5 (Bac+2) reconnu par l'État, idéal pour intégrer rapidement le monde de l'entreprise tout en se formant.",
     objectifs: [
       {

@@ -12,8 +12,6 @@ export const btsCg: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS CG ?",
     text: "Le BTS Comptabilité et Gestion (BTS CG) est un diplôme d'État de niveau Bac+2 qui forme des techniciens supérieurs capables de prendre en charge les activités comptables et de gestion d'une entreprise ou d'un cabinet d'expertise comptable. Cette formation en alternance permet d'acquérir des compétences opérationnelles en comptabilité, fiscalité, gestion sociale et analyse financière, tout en développant une expérience professionnelle concrète. Le BTS CG en alternance est particulièrement apprécié des recruteurs pour la polyvalence et l'autonomie immédiate des diplômés.",
     objectifs: [
       {

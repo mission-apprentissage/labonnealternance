@@ -12,8 +12,6 @@ export const btsMco: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS MCO ?",
     text: "Le BTS Management Commercial Opérationnel (MCO) est un diplôme national de niveau 5 (Bac+2) qui forme des professionnels capables de prendre la responsabilité opérationnelle de tout ou partie d'une unité commerciale. En alternance, cette formation permet d'acquérir une solide expérience terrain en gestion, animation et dynamisation de l'offre commerciale, tout en développant la relation client et le management d'équipe. Le BTS MCO en alternance est particulièrement prisé dans les secteurs de la grande distribution, de la banque-assurance, de l'immobilier et du e-commerce.",
     objectifs: [
       {

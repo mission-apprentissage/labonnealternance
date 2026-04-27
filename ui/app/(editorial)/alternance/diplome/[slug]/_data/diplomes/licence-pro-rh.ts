@@ -12,8 +12,6 @@ export const licenceProRh: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "Licence Pro RH ?",
     text: "La Licence Professionnelle Métiers de la Gestion des Ressources Humaines forme des professionnels opérationnels capables d'assister les responsables RH dans l'ensemble de leurs missions : recrutement, gestion administrative du personnel, paie, formation et développement des compétences. Cette formation en alternance de niveau Bac+3 (niveau 6) permet d'acquérir en un an après un Bac+2 une expertise polyvalente en ressources humaines, très recherchée par les entreprises. La Licence Pro RH en alternance allie enseignements universitaires et immersion professionnelle pour une insertion rapide sur le marché du travail.",
     objectifs: [
       {

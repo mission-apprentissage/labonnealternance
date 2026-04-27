@@ -12,8 +12,6 @@ export const btsNdrc: IDiplomeSeoData = {
     { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
   ],
   description: {
-    title: "Qu'est ce que le diplôme",
-    titleHighlight: "BTS NDRC ?",
     text: "Le BTS Négociation et Digitalisation de la Relation Client (NDRC) forme des professionnels de la vente et de la relation client, capables d'intervenir sur l'ensemble du cycle commercial : prospection, négociation, fidélisation et digitalisation de la relation client. Cette formation en alternance de niveau Bac+2 prépare à gérer la relation client sous toutes ses formes (en présentiel, à distance et en e-commerce) tout en maîtrisant les outils numériques. Le BTS NDRC en alternance est particulièrement recherché par les entreprises car il allie compétences commerciales terrain et maîtrise des canaux digitaux.",
     objectifs: [
       {

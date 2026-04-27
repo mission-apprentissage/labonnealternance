@@ -50,7 +50,7 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
-          <DescriptionDiplome title={data.description.title} titleHighlight={data.description.titleHighlight} text={data.description.text} objectifs={data.description.objectifs} />
+          <DescriptionDiplome titre={data.titre} text={data.description.text} objectifs={data.description.objectifs} />
         </Box>
       </DefaultContainer>
 
