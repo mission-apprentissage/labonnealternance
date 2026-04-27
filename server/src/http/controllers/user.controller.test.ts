@@ -191,12 +191,12 @@ describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () 
       body: {
         first_name: "testfirstname",
         last_name: "testlastname",
-        email: entrepriseUserB.user.email,
-        phone: entrepriseUserB.user.phone,
+        email: entrepriseUserA.user.email,
+        phone: entrepriseUserA.user.phone,
         opco: entrepriseUserA.entreprise.opco,
       },
     })
-    expect.soft(response.statusCode).toBe(200)
+    expect.soft(response.statusCode).toBe(403)
 
     loggedUser = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
     response = await httpClient().inject({
