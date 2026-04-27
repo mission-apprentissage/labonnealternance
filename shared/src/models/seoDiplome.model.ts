@@ -108,7 +108,7 @@ export const ZSeoDiplome = z
     _id: zObjectId,
     slug: z.string(),
     titre: z.string(),
-    titreAccent: z.string(),
+    intituleLongFormation: z.string(),
     sousTitre: z.string(),
     kpis: z.array(ZSeoDiplomeKpi),
     description: z.object({
