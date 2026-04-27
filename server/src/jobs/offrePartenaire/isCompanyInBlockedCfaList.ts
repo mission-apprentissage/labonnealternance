@@ -479,7 +479,6 @@ export const cfaCompanyList = [
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE DU VAR",
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE ILLE-ET-VILAINE",
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE PORTES DE NORMANDIE",
-  "CHAMBRE DE COMMERCE ET D'INDUSTRIE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION BRETAGNE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION CENTRE-VAL DE LOIRE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION GRAND EST",
@@ -1843,10 +1842,14 @@ const normalizedCfaList = cfaCompanyList.map(stringNormaliser)
 const normalizedCfaSet = new Set(normalizedCfaList)
 
 export const isCompanyInBlockedCfaList = (nom: string | null | undefined): boolean => {
-  if (!nom) return false
+  return Boolean(getCompanyInBlockedCfaList(nom))
+}
+
+export const getCompanyInBlockedCfaList = (nom: string | null | undefined): string | null => {
+  if (!nom) return null
   const nomNormalise = stringNormaliser(nom)
-  if (normalizedCfaSet.has(nomNormalise)) return true
+  if (normalizedCfaSet.has(nomNormalise)) return nomNormalise
 
   const normalizedSentence = ` ${nomNormalise} `
-  return normalizedCfaList.some((cfaName) => normalizedSentence.includes(` ${cfaName} `))
+  return normalizedCfaList.find((cfaName) => normalizedSentence.includes(` ${cfaName} `)) ?? null
 }
