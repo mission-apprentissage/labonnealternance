@@ -52,10 +52,10 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
   )
 }
 
-export function EcolesSection({ title, titleHighlight, formations }: { title: string; titleHighlight?: string; formations: IDiplomeEcoleCard[] }) {
+export function EcolesSection({ titre, formations }: { titre: string; formations: IDiplomeEcoleCard[] }) {
   return (
     <Box>
-      <SectionTitle title={title} highlightedText={titleHighlight} />
+      <SectionTitle title="Quelques écoles qui proposent le diplôme" highlightedText={`${titre} :`} />
 
       <Box
         sx={{

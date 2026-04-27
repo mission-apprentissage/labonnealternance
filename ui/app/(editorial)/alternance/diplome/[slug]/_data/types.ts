@@ -113,8 +113,6 @@ export type IDiplomeSeoData = {
     carrieres: IDiplomeCarriere[]
   }
   ecoles: {
-    title: string
-    titleHighlight?: string
     formations: IDiplomeEcoleCard[]
   }
   salaire: {

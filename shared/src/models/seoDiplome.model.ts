@@ -120,8 +120,6 @@ export const ZSeoDiplome = z
       carrieres: z.array(ZSeoDiplomeCarriere),
     }),
     ecoles: z.object({
-      title: z.string(),
-      titleHighlight: z.string().optional(),
       formations: z.array(ZSeoDiplomeEcoleCard),
     }),
     salaire: z.object({

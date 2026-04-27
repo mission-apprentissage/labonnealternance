@@ -133,8 +133,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS CG :",
       formations: [
         { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "ENOES (PARIS)", lieu: "75009 Paris", href: "/recherche-formation" },
         { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "PIGIER PERFORMANCE (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
@@ -307,8 +305,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS Communication :",
       formations: [
         { formationTitle: "BTS COMMUNICATION", etablissement: "NARRATIIV (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
         { formationTitle: "BTS COMMUNICATION", etablissement: "LYCEE POLYVALENT JEAN LURCAT (PARIS)", lieu: "75013 Paris", href: "/recherche-formation" },
@@ -485,8 +481,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS GPME :",
       formations: [
         { formationTitle: "BTS GESTION DE LA PME", etablissement: "GROUPE ALTERNANCE PARIS", lieu: "75010 Paris", href: "/recherche-formation" },
         { formationTitle: "BTS GESTION DE LA PME", etablissement: "CFA CODIS (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
@@ -659,8 +653,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS MCO :",
       formations: [
         { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
         { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes", href: "/recherche-formation" },
@@ -838,8 +830,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS NDRC :",
       formations: [
         { formationTitle: "BTS NDRC", etablissement: "EURIDIS BUSINESS SCHOOL (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
         { formationTitle: "BTS NDRC", etablissement: "ESARC EVOLUTION (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
@@ -1013,8 +1003,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS SAM :",
       formations: [
         { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "PIGIER PERFORMANCE (PARIS)", lieu: "75015 Paris", href: "/recherche-formation" },
         { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "IGENSIA ALTERNANCE (LYON)", lieu: "69003 Lyon", href: "/recherche-formation" },
@@ -1207,8 +1195,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "BTS SIO :",
       formations: [
         { formationTitle: "BTS SIO option SLAM", etablissement: "IPSSI (PARIS)", lieu: "75011 Paris", href: "/recherche-formation" },
         { formationTitle: "BTS SIO option SISR", etablissement: "H3 HITEMA (PARIS)", lieu: "75020 Paris", href: "/recherche-formation" },
@@ -1402,8 +1388,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "CAP AEPE :",
       formations: [
         { formationTitle: "CAP AEPE", etablissement: "CFA ACADÉMIQUE DE CRÉTEIL", lieu: "94000 Créteil", href: "/recherche-formation" },
         { formationTitle: "CAP AEPE", etablissement: "LYCÉE PROFESSIONNEL CAMILLE DE LELLIS", lieu: "59100 Roubaix", href: "/recherche-formation" },
@@ -1595,8 +1579,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "Licence Pro RH :",
       formations: [
         { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT DE PARIS - RIVES DE SEINE", lieu: "75016 Paris", href: "/recherche-formation" },
         { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT JEAN MOULIN LYON 3", lieu: "69008 Lyon", href: "/recherche-formation" },
@@ -1789,8 +1771,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       ],
     },
     ecoles: {
-      title: "Quelques écoles qui proposent le diplôme",
-      titleHighlight: "Titre Pro Secrétaire Médicale :",
       formations: [
         { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "AFPA (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
         { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "GRETA MÉDITERRANÉE (MARSEILLE)", lieu: "13003 Marseille", href: "/recherche-formation" },
