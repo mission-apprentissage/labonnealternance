@@ -5,7 +5,7 @@ exports[`importEdf > should import EDF data into raw_edf then computed_jobs_part
   {
     "apply_phone": null,
     "apply_url": "https://www.edf.fr/edf-recrute/offre/detail/2026-100001?idOrigine=502",
-    "business_error": "DUPLICATE",
+    "business_error": "TRUSTED_COMPANY_JOB_DUPLICATE",
     "contract_duration": null,
     "contract_is_disabled_elligible": false,
     "contract_remote": null,
