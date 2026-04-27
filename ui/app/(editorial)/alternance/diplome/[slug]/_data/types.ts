@@ -1,10 +1,8 @@
-export type IDiplomeKpi = {
-  label: string
-  value: string
-  /** Chemin vers l'image du pictogramme (ex: "/images/diplome/icon-offre-emploi.svg") */
-  iconSrc: string
-  /** Si true, le label s'affiche au-dessus de la valeur (sinon valeur en premier) */
-  labelFirst?: boolean
+export type IDiplomeKpis = {
+  duration: string
+  entreprise: string
+  salaire: string
+  insertion: string
 }
 
 export type IDiplomeObjectif = {
@@ -84,7 +82,7 @@ export type IDiplomeSeoData = {
   titre: string
   intituleLongFormation: string
   sousTitre: string
-  kpis: IDiplomeKpi[]
+  kpis: IDiplomeKpis
   description: {
     text: string
     objectifs: IDiplomeObjectif[]

@@ -5,12 +5,7 @@ export const mockDiplomeData: IDiplomeSeoData = {
   titre: "BTS MCO en alternance",
   intituleLongFormation: "BTS MCO",
   sousTitre: "Management Commercial Opérationnel",
-  kpis: [
-    { label: "Durée de la formation", value: "2 ans", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
-    { label: "entreprises recrutent", value: "890", iconSrc: "/images/diplome/companie.svg" },
-    { label: "Salaire mensuel moyen", value: "1120€-1300€", iconSrc: "/images/diplome/money.svg" },
-    { label: "Taux d'insertion post formation", value: "XX%", iconSrc: "/images/diplome/ecosystem.svg" },
-  ],
+  kpis: { duration: "2 ans", entreprise: "890", salaire: "1120€-1300€", insertion: "XX%" },
   description: {
     text: "Le BTS Management Commercial Opérationnel forme des professionnels capables de prendre la responsabilité opérationnelle de tout ou partie d'une unité commerciale. Cette formation en alternance permet d'acquérir des compétences en gestion, animation et dynamisation de l'offre commerciale, tout en développant la relation client et le management d'équipe.",
     objectifs: [

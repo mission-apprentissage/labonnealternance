@@ -4,10 +4,17 @@ import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeKpi } from "../_data/types"
+import type { IDiplomeKpis } from "../_data/types"
 import diplomeDecoration from "./diplome_decoration.svg"
 
-export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTitre: string; kpis: IDiplomeKpi[] }) {
+const KPI_CONFIG = [
+  { key: "duration" as const, label: "Durée de la formation", iconSrc: "/images/diplome/offre-emploi.svg", labelFirst: true },
+  { key: "entreprise" as const, label: "entreprises recrutent", iconSrc: "/images/diplome/companie.svg", labelFirst: false },
+  { key: "salaire" as const, label: "Salaire mensuel moyen", iconSrc: "/images/diplome/money.svg", labelFirst: false },
+  { key: "insertion" as const, label: "Taux d'insertion post formation", iconSrc: "/images/diplome/ecosystem.svg", labelFirst: false },
+]
+
+export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTitre: string; kpis: IDiplomeKpis }) {
   return (
     <Box sx={{ marginBottom: fr.spacing("5w") }}>
       {/* Banner background */}
@@ -88,15 +95,16 @@ export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTit
           px: { xs: fr.spacing("2v"), md: fr.spacing("5w") },
         }}
       >
-        {kpis.map((kpi) => {
-          const valueFontSizeMd = kpi.value.length > 8 ? "32px" : "40px"
-          const valueLineHeightMd = kpi.value.length > 8 ? "40px" : "48px"
-          const valueFontSizeXs = kpi.value.length > 8 ? "22px" : "28px"
-          const valueLineHeightXs = kpi.value.length > 8 ? "28px" : "36px"
+        {KPI_CONFIG.map((config) => {
+          const value = kpis[config.key]
+          const valueFontSizeMd = value.length > 8 ? "32px" : "40px"
+          const valueLineHeightMd = value.length > 8 ? "40px" : "48px"
+          const valueFontSizeXs = value.length > 8 ? "22px" : "28px"
+          const valueLineHeightXs = value.length > 8 ? "28px" : "36px"
 
           return (
             <Box
-              key={kpi.label}
+              key={config.key}
               sx={{
                 textAlign: "center",
                 p: { xs: fr.spacing("3v"), md: fr.spacing("6v") },
@@ -112,15 +120,15 @@ export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTit
               }}
             >
               <Box sx={{ width: { xs: 56, md: 80 }, height: { xs: 56, md: 80 }, flexShrink: 0 }}>
-                <Image src={kpi.iconSrc} alt="" width={80} height={80} aria-hidden="true" style={{ width: "100%", height: "100%" }} />
+                <Image src={config.iconSrc} alt="" width={80} height={80} aria-hidden="true" style={{ width: "100%", height: "100%" }} />
               </Box>
 
-              {kpi.labelFirst ? (
+              {config.labelFirst ? (
                 <>
                   <Typography
                     sx={{ fontWeight: 700, fontSize: { xs: "16px", md: "20px" }, lineHeight: { xs: "22px", md: "28px" }, color: fr.colors.decisions.text.title.grey.default }}
                   >
-                    {kpi.label}
+                    {config.label}
                   </Typography>
                   <Typography
                     sx={{
@@ -130,7 +138,7 @@ export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTit
                       color: fr.colors.decisions.text.default.info.default,
                     }}
                   >
-                    {kpi.value}
+                    {value}
                   </Typography>
                 </>
               ) : (
@@ -143,12 +151,12 @@ export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTit
                       color: fr.colors.decisions.text.default.info.default,
                     }}
                   >
-                    {kpi.value}
+                    {value}
                   </Typography>
                   <Typography
                     sx={{ fontWeight: 700, fontSize: { xs: "16px", md: "20px" }, lineHeight: { xs: "22px", md: "28px" }, color: fr.colors.decisions.text.title.grey.default }}
                   >
-                    {kpi.label}
+                    {config.label}
                   </Typography>
                 </>
               )}

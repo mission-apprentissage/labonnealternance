@@ -5,11 +5,11 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "seo_diplomes" as const
 
-const ZSeoDiplomeKpi = z.object({
-  label: z.string(),
-  value: z.string(),
-  iconSrc: z.string(),
-  labelFirst: z.boolean().optional(),
+const ZSeoDiplomeKpis = z.object({
+  duration: z.string(),
+  entreprise: z.string(),
+  salaire: z.string(),
+  insertion: z.string(),
 })
 
 const ZSeoDiplomeObjectif = z.object({
@@ -91,7 +91,7 @@ export const ZSeoDiplome = z
     titre: z.string(),
     intituleLongFormation: z.string(),
     sousTitre: z.string(),
-    kpis: z.array(ZSeoDiplomeKpi),
+    kpis: ZSeoDiplomeKpis,
     description: z.object({
       text: z.string(),
       objectifs: z.array(ZSeoDiplomeObjectif),
