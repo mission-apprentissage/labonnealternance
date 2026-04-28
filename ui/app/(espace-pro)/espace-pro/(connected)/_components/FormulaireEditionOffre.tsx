@@ -105,7 +105,12 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
 
   const onSubmit = (values) => {
-    values = { ...values, competences_rome: finalSelectedCompetences, offer_title_custom: values.offer_title_custom || null }
+    values = {
+      ...values,
+      competences_rome: finalSelectedCompetences,
+      offer_title_custom: values.offer_title_custom || null,
+      job_employer_description: values.job_employer_description || null,
+    }
     handleSave?.(values)
   }
 
