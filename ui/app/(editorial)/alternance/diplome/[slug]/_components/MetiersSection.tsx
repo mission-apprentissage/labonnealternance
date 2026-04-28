@@ -6,7 +6,8 @@ import { UTM_PARAMS } from "../_data/constants"
 
 import { SectionTitle } from "./SectionTitle"
 
-export function MetiersSection({ title, text, liste }: { title: string; text: string; liste: IDiplomeMetier[] }) {
+export function MetiersSection({ titre, text, liste }: { titre: string; text: string; liste: IDiplomeMetier[] }) {
+  const title = `Quels métiers exercer avec un diplôme ${titre} ?`
   return (
     <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
       <SectionTitle title={title} description={text} />

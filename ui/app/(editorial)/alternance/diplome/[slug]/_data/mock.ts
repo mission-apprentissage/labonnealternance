@@ -126,7 +126,6 @@ export const mockDiplomeData: IDiplomeSeoData = {
     { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
   ],
   metiers: {
-    title: "Quels métiers exercer avec un diplôme BTS MCO ?",
     text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce et la distribution.",
     liste: [
       { icon: "fr-icon-briefcase-line", title: "Assistant administratif et commercial", offres: "145 offres en alternance sur toute la France", href: "/recherche-emploi" },

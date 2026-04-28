@@ -135,7 +135,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS CG ?",
       text: "Le BTS Comptabilité et Gestion ouvre les portes de nombreux métiers dans la comptabilité, la finance et la gestion d'entreprise.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Assistant comptable", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -290,7 +289,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS Communication ?",
       text: "Le BTS Communication ouvre les portes de nombreux métiers dans la communication d'entreprise, la publicité et le digital.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Chargé(e) de communication", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -444,7 +442,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS GPME ?",
       text: "Le BTS GPME ouvre les portes de nombreux métiers dans la gestion, l'administration et les ressources humaines au sein des PME.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Assistant de gestion PME-PMI", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -594,7 +591,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS MCO ?",
       text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce, la distribution, la banque-assurance et les services.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Conseiller de vente", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -749,7 +745,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS NDRC ?",
       text: "Le BTS NDRC ouvre les portes de nombreux métiers dans la vente, la négociation commerciale et la relation client digitale.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Commercial terrain / sédentaire", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -905,7 +900,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS SAM ?",
       text: "Le BTS SAM ouvre les portes de nombreux métiers dans le support administratif, l'assistanat de direction et la gestion des ressources humaines.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Assistant de direction", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -1075,7 +1069,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme BTS SIO ?",
       text: "Le BTS SIO ouvre les portes de nombreux métiers dans le secteur du numérique et de l'informatique, que ce soit en infrastructure ou en développement.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Technicien systèmes et réseaux", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -1246,7 +1239,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme CAP AEPE ?",
       text: "Le CAP AEPE ouvre les portes de nombreux métiers dans le secteur de la petite enfance, en accueil collectif comme individuel.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Agent de crèche / Auxiliaire petite enfance", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -1420,7 +1412,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec une Licence Pro RH ?",
       text: "La Licence Professionnelle Ressources Humaines ouvre les portes de nombreux métiers dans la gestion du personnel, le recrutement et l'administration RH.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Assistant ressources humaines", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
@@ -1585,7 +1576,6 @@ export const diplomesData: IDiplomeSeoData[] = [
       { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
     ],
     metiers: {
-      title: "Quels métiers exercer avec un diplôme Titre Pro Secrétaire Médicale ?",
       text: "Le Titre Pro Secrétaire Assistant Médico-Social ouvre les portes de nombreux métiers dans le secteur sanitaire et médico-social.",
       liste: [
         { icon: "fr-icon-briefcase-line", title: "Secrétaire médical(e)", offres: "XX offres en alternance sur toute la France", href: "/recherche-emploi" },
