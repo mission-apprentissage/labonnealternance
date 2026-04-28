@@ -1,10 +1,11 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
+import Input from "@codegouvfr/react-dsfr/Input"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import dayjs from "dayjs"
-import { Formik } from "formik"
+import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
 import { JOB_STATUS } from "shared/models/job.model"
@@ -19,6 +20,33 @@ import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 const FR_DATE_FORMAT = "DD/MM/YYYY"
+const EMPLOYER_DESCRIPTION_MAX = 800
+
+const EmployerDescriptionField = () => {
+  const { values, setFieldValue, errors, touched } = useFormikContext<any>()
+  const _length = values.job_employer_description?.length ?? 0
+  return (
+    <Box>
+      <Input
+        label="Présentation de l'entreprise"
+        hintText="Décrivez les activités et les spécificités de l'entreprise. (Facultatif)"
+        state={errors.job_employer_description && touched.job_employer_description ? "error" : "info"}
+        stateRelatedMessage={
+          (errors.job_employer_description as string) ??
+          "Notre équipe se réserve le droit de ne diffuser que les contenus répondant à une présentation de l'entreprise. La taille du champ est limitée à 800 caractères."
+        }
+        textArea
+        nativeTextAreaProps={{
+          name: "job_employer_description",
+          value: values.job_employer_description,
+          maxLength: EMPLOYER_DESCRIPTION_MAX,
+          rows: 5,
+          onChange: (e) => setFieldValue("job_employer_description", e.target.value),
+        }}
+      />
+    </Box>
+  )
+}
 
 export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: { offre?: IJob; establishment_id?: string; handleSave?: (values: any) => void }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
@@ -109,6 +137,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
           job_duration: offre?.job_duration ?? 12,
           job_rythm: offre?.job_rythm ?? null,
           offer_title_custom: offre?.offer_title_custom ?? "",
+          job_employer_description: offre?.job_employer_description ?? "",
         }}
         validationSchema={Yup.object().shape({
           rome_label: Yup.string().required("Champ obligatoire"),
@@ -118,70 +147,94 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
             .trim()
-            .min(3, "L’intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
-            .max(150, "L’intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
+            .min(3, "L'intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
+            .max(150, "L'intitulé est trop long. Sa taille doit être comprise entre 3 et 150 caractères.")
             .test("no-urls-emails", "Les urls et les emails sont interdits", (value) => !value || detectUrlAndEmails(value).length === 0),
+          job_employer_description: Yup.string()
+            .trim()
+            .min(30, "La présentation est trop courte (minimum 30 caractères).")
+            .max(EMPLOYER_DESCRIPTION_MAX, `La présentation est trop longue (maximum ${EMPLOYER_DESCRIPTION_MAX} caractères).`),
         })}
         onSubmit={(values: any) => onSubmit(values)}
       >
         {({ values }) => (
-          <Box
-            sx={{
-              rowGap: fr.spacing("8v"),
-              columnGap: fr.spacing("8v"),
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, 1fr)", md: "repeat(2, 1fr)" },
-              gridTemplateRows: { xs: "repeat(3, auto)", md: "auto 1fr" },
-            }}
-          >
-            <Box>
-              <Typography
-                className="big"
-                component="h2"
-                sx={{
-                  fontWeight: 700,
-                }}
-              >
-                Votre offre
-              </Typography>
-              <Box
-                sx={{
-                  mt: fr.spacing("4v"),
-                }}
-              >
-                <FormulaireEditionOffreFields onRomeChange={onRomeChange} />
-              </Box>
-            </Box>
-            <Box sx={{ gridColumnStart: { xs: 1, md: 2 }, gridRow: { xs: "2 / 3", md: "1 / 3" } }}>
-              {romeAndAppellation ? (
-                <RomeDetailWithQuery
-                  selectedCompetences={{
-                    savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                    savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
-                    savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                  }}
-                  title={values.offer_title_custom || romeAndAppellation.appellation}
-                  rome={romeAndAppellation.rome}
-                  onChange={onSelectedCompetencesChange}
-                />
-              ) : (
-                <Box
-                  sx={{
-                    display: ["none", "block"],
-                  }}
-                >
-                  <InfosDiffusionOffre />
-                </Box>
-              )}
-            </Box>
+          <div>
+            <Typography component="h2">Votre offre</Typography>
+            <Typography component="pre" sx={{ fontSize: "0.875rem", my: fr.spacing("4v") }}>
+              Tous les champs sont obligatoires, sauf mention contraire “Facultatif”.
+            </Typography>
             <Box
               sx={{
-                mt: fr.spacing("16v"),
+                rowGap: fr.spacing("8v"),
+                columnGap: fr.spacing("8v"),
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "1fr 2fr" },
+                gridTemplateRows: { xs: "auto", md: "1fr auto" },
               }}
             >
+              {/* Colonne gauche : Le contrat */}
+              <Box
+                sx={{
+                  gridRow: { md: "1 / 3" },
+                  borderRadius: fr.spacing("1v"),
+                }}
+              >
+                <Box
+                  sx={{
+                    padding: fr.spacing("6v"),
+                    backgroundColor: fr.colors.decisions.background.alt.grey.default,
+                    border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+                  }}
+                >
+                  <Typography component="h2" sx={{ fontWeight: 700 }}>
+                    Le contrat
+                  </Typography>
+                  <Box sx={{ mt: fr.spacing("4v") }}>
+                    <FormulaireEditionOffreFields section="contract" />
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
+              <Box>
+                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                  La présentation de l'entreprise
+                </Typography>
+                <Box sx={{ mt: fr.spacing("4v") }}>
+                  <EmployerDescriptionField />
+                </Box>
+
+                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                  La description de l'offre
+                </Typography>
+                <Box sx={{ mt: fr.spacing("4v") }}>
+                  <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
+                </Box>
+
+                <Box sx={{ mt: fr.spacing("4v") }}>
+                  {romeAndAppellation ? (
+                    <RomeDetailWithQuery
+                      selectedCompetences={{
+                        savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                        savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+                        savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                      }}
+                      title={values.offer_title_custom || romeAndAppellation.appellation}
+                      rome={romeAndAppellation.rome}
+                      onChange={onSelectedCompetencesChange}
+                    />
+                  ) : (
+                    <Box sx={{ display: ["none", "block"] }}>
+                      <InfosDiffusionOffre />
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+            </Box>
+            <Box sx={{ mt: fr.spacing("8v"), borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
               <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
             </Box>
-          </Box>
+          </div>
         )}
       </Formik>
     </>
