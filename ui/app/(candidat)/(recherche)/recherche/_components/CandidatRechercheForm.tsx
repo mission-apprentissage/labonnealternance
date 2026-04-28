@@ -38,6 +38,7 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
         search_address: rechercheForm.lieu?.label || "non_renseigné",
         search_radius: rechercheForm.radius ? parseInt(rechercheForm.radius, 10) : 30,
         search_diploma: rechercheForm.diploma ?? "indifferent",
+        search_origin: "page_resultat",
       })
       navigateToRecherchePage({ ...rechercheFormToRechercheParams(rechercheForm), scrollToRecruteursLba: false })
     },

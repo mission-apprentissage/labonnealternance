@@ -28,6 +28,7 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
           search_address: formValues.lieu?.label || "non_renseigné",
           search_radius: formValues.radius ? parseInt(formValues.radius, 10) : 30,
           search_diploma: formValues.diploma ?? "indifferent",
+          search_origin: "page_resultat",
         })
         navigateToRecherchePage({ ...rechercheFormToRechercheParams(formValues), displayMobileForm: false, scrollToRecruteursLba: false })
       }}
