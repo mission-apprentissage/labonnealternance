@@ -18,41 +18,6 @@ const ZSeoDiplomeProgrammeSections = z.object({
   competences_developpees: z.array(z.string()),
 })
 
-/*
-const ZSeoDiplomeEntreprise = z.object({
-  name: z.string(),
-  postes: z.number(),
-})
-
-const ZSeoDiplomeFormation = z.object({
-  title: z.string(),
-  formations: z.number(),
-  duree: z.string(),
-  niveau: z.string(),
-  specialisation: z.string(),
-  competences: z.string(),
-})
-
-const ZSeoDiplomeVille = z.object({
-  name: z.string(),
-  offres: z.number(),
-  href: z.string(),
-})
-
-const ZSeoDiplomePerspectiveKpi = z.object({
-  icon: z.string(),
-  value: z.string(),
-  label: z.string(),
-})
-
-const ZSeoDiplomeCarriere = z.object({
-  periode: z.string(),
-  titre: z.string(),
-  salaire: z.string(),
-  missions: z.string(),
-})
-*/
-
 const ZSeoDiplomeSalaireLigne = z.object({
   age: z.string(),
   premiereAnnee: z.string(),
@@ -96,27 +61,6 @@ export const ZSeoDiplome = z
       text: z.string(),
       sections: ZSeoDiplomeProgrammeSections,
     }),
-    /*
-    entreprises: z.object({
-      title: z.string(),
-      text: z.string(),
-      liste: z.array(ZSeoDiplomeEntreprise),
-    }),
-    formations: z.object({
-      title: z.string(),
-      niveaux: z.array(ZSeoDiplomeFormation),
-    }),
-    localisation: z.object({
-      title: z.string(),
-      text: z.string(),
-      villes: z.array(ZSeoDiplomeVille),
-    }),
-    perspectives: z.object({
-      title: z.string(),
-      kpis: z.array(ZSeoDiplomePerspectiveKpi),
-      carrieres: z.array(ZSeoDiplomeCarriere),
-    }),
-    */
     ecoles: z.array(ZSeoDiplomeEcoleCard),
     salaire: z.array(ZSeoDiplomeSalaireLigne),
     metiers: z.object({
@@ -137,14 +81,6 @@ export type IDiplomeSalaireLigne = z.output<typeof ZSeoDiplomeSalaireLigne>
 export type IDiplomeMetier = z.output<typeof ZSeoDiplomeMetier>
 export type IDiplomeAutre = z.output<typeof ZSeoDiplomeAutre>
 export type IDiplomeEcoleCard = z.output<typeof ZSeoDiplomeEcoleCard>
-
-/*
-export type IDiplomeEntreprise = z.output<typeof ZSeoDiplomeEntreprise>
-export type IDiplomeFormation = z.output<typeof ZSeoDiplomeFormation>
-export type IDiplomeVille = z.output<typeof ZSeoDiplomeVille>
-export type IDiplomePerspectiveKpi = z.output<typeof ZSeoDiplomePerspectiveKpi>
-export type IDiplomeCarriere = z.output<typeof ZSeoDiplomeCarriere>
-*/
 
 export type IDiplomeSeoData = {
   slug: string

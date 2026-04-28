@@ -1,5 +1,15 @@
 import type { IDiplomeSeoData } from "shared/models/seoDiplome.model"
 
+/*
+TODO: 
+- Quelques écoles qui proposent le diplôme : aller chercher 9 formations chaque semaine sur la base des romes du titre en randomisé
+- Quels métiers exercer avec un diplôme BTS MCO : aller chercher en group by les titres des offres avec le plus de résultats
+- Découvrez les XXX offres disponibles pour ce diplôme : aller chercher les offres en alternance sur la base des romes du titre et les compter
+- Explorez d'autres métiers : lister les autres métiers du tableau sauf le métier courant, titre et sousTitre
+- Taux d'insertion post formation : à supprimer info pas fiable
+- Supprimer les blocs inutilisés
+*/
+
 export const diplomesData: IDiplomeSeoData[] = [
   {
     slug: "bts-cg",
@@ -38,85 +48,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS CG :",
-      liste: [
-        { name: "KPMG", postes: 12 },
-        { name: "Deloitte", postes: 10 },
-        { name: "Ernst & Young", postes: 8 },
-        { name: "Mazars", postes: 7 },
-        { name: "Fiducial", postes: 5 },
-        { name: "Cerfrance", postes: 4 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS CG",
-          formations: 220,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Comptabilité et Gestion",
-          competences: "Comptabilité, fiscalité, gestion sociale, analyse financière",
-        },
-        {
-          title: "DCG",
-          formations: 95,
-          duree: "3 ans",
-          niveau: "Bac+3",
-          specialisation: "Diplôme de Comptabilité et de Gestion",
-          competences: "Comptabilité approfondie, finance, audit, contrôle de gestion",
-        },
-        {
-          title: "DSCG",
-          formations: 40,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Diplôme Supérieur de Comptabilité et de Gestion",
-          competences: "Expertise comptable, audit, conseil, management stratégique",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS CG ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 380, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 165, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 112, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 85, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 74, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 63, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "85%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "72%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+30%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Assistant comptable", salaire: "1 800-2 200€", missions: "Saisie comptable, lettrage, rapprochements bancaires" },
-        {
-          periode: "Années 3-5",
-          titre: "Comptable / Collaborateur comptable",
-          salaire: "2 400-3 200€",
-          missions: "Tenue de comptabilité, déclarations fiscales, révision des comptes",
-        },
-        { periode: "5+ années", titre: "Responsable comptable", salaire: "3 500-4 500€", missions: "Supervision d'équipe, clôture des comptes, reporting financier" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "ENOES (PARIS)", lieu: "75009 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "PIGIER PERFORMANCE (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
@@ -197,80 +129,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS Communication :",
-      liste: [
-        { name: "Publicis Groupe", postes: 12 },
-        { name: "Havas", postes: 9 },
-        { name: "BETC", postes: 6 },
-        { name: "Orange", postes: 5 },
-        { name: "SNCF", postes: 4 },
-        { name: "L'Oréal", postes: 3 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS Communication",
-          formations: 245,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Communication",
-          competences: "Stratégie de communication, PAO, gestion de projet, relations presse",
-        },
-        {
-          title: "Licence Pro Communication",
-          formations: 58,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Communication digitale ou événementielle",
-          competences: "Stratégie digitale, marketing de contenu, gestion de communauté",
-        },
-        {
-          title: "Master Communication",
-          formations: 34,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Communication d'entreprise ou institutionnelle",
-          competences: "Direction de la communication, stratégie de marque, communication de crise",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS Communication ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 437, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 134, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 89, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 67, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 58, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 45, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "XX%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "XX%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+XX%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Assistant communication", salaire: "1 800-2 200€", missions: "Création de supports, gestion des réseaux sociaux, relations presse" },
-        { periode: "Années 3-5", titre: "Chargé de communication", salaire: "2 500-3 200€", missions: "Pilotage de campagnes, stratégie digitale, événementiel" },
-        { periode: "5+ années", titre: "Responsable communication", salaire: "3 500-4 500€", missions: "Direction de la communication, stratégie de marque, management d'équipe" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "BTS COMMUNICATION", etablissement: "NARRATIIV (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS COMMUNICATION", etablissement: "LYCEE POLYVALENT JEAN LURCAT (PARIS)", lieu: "75013 Paris", href: "/recherche-formation" },
@@ -350,80 +209,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS GPME :",
-      liste: [
-        { name: "Crédit Agricole", postes: 10 },
-        { name: "Groupama", postes: 8 },
-        { name: "Bouygues", postes: 6 },
-        { name: "Vinci", postes: 5 },
-        { name: "Colas", postes: 4 },
-        { name: "Eiffage", postes: 3 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS GPME",
-          formations: 210,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Gestion de la PME",
-          competences: "Administration, gestion RH, relation clients-fournisseurs, communication",
-        },
-        {
-          title: "Licence Pro Gestion des PME",
-          formations: 45,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Management des organisations",
-          competences: "Pilotage d'activité, gestion de projet, management opérationnel",
-        },
-        {
-          title: "Master Management des PME",
-          formations: 18,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Direction et gestion d'entreprise",
-          competences: "Stratégie d'entreprise, direction financière, management",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS GPME ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 320, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 145, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 98, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 76, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 65, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 58, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "XX%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "XX%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+XX%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Assistant de gestion PME", salaire: "1 700-2 200€", missions: "Administration, gestion courante, relation clients-fournisseurs" },
-        { periode: "Années 3-5", titre: "Assistant de direction", salaire: "2 300-2 800€", missions: "Organisation, coordination, gestion RH, suivi budgétaire" },
-        { periode: "5+ années", titre: "Responsable administratif", salaire: "2 800-3 500€", missions: "Pilotage administratif, gestion d'équipe, reporting direction" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "BTS GESTION DE LA PME", etablissement: "GROUPE ALTERNANCE PARIS", lieu: "75010 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS GESTION DE LA PME", etablissement: "CFA CODIS (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
@@ -499,80 +285,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS MCO :",
-      liste: [
-        { name: "Carrefour", postes: 15 },
-        { name: "Décathlon", postes: 12 },
-        { name: "Fnac Darty", postes: 8 },
-        { name: "Leroy Merlin", postes: 6 },
-        { name: "Crédit Agricole", postes: 4 },
-        { name: "BNP Paribas", postes: 3 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS MCO",
-          formations: 245,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Management Commercial Opérationnel",
-          competences: "Vente, gestion, management d'équipe, merchandising",
-        },
-        {
-          title: "Licence Pro Commerce",
-          formations: 67,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Distribution et management",
-          competences: "Stratégie commerciale, marketing digital, gestion de projet",
-        },
-        {
-          title: "Master Commerce",
-          formations: 23,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Management et stratégie",
-          competences: "Direction commerciale, stratégie d'entreprise, management",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS MCO ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 437, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 189, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 134, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 98, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 87, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 76, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "89%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "76%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+25%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Conseiller commercial", salaire: "1 800-2 200€", missions: "Vente, conseil client, fidélisation" },
-        { periode: "Années 3-5", titre: "Responsable de rayon", salaire: "2 400-3 000€", missions: "Management d'équipe, gestion de rayon, merchandising" },
-        { periode: "5+ années", titre: "Directeur de magasin", salaire: "3 200-4 500€", missions: "Direction, stratégie commerciale, gestion P&L" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
       { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes", href: "/recherche-formation" },
@@ -653,80 +366,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS NDRC :",
-      liste: [
-        { name: "Orange", postes: 15 },
-        { name: "SFR", postes: 12 },
-        { name: "Bouygues Telecom", postes: 8 },
-        { name: "Crédit Agricole", postes: 6 },
-        { name: "AXA", postes: 4 },
-        { name: "BNP Paribas", postes: 3 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS NDRC",
-          formations: 245,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Négociation et Digitalisation de la Relation Client",
-          competences: "Négociation, prospection, relation client digitale, animation de réseaux",
-        },
-        {
-          title: "Licence Pro Commerce",
-          formations: 67,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Commerce et distribution",
-          competences: "Stratégie commerciale, marketing digital, gestion de projet",
-        },
-        {
-          title: "Master Commerce",
-          formations: 23,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Management et stratégie commerciale",
-          competences: "Direction commerciale, stratégie d'entreprise, management",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS NDRC ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 437, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 189, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 134, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 98, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 87, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 76, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "89%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "76%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+25%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Commercial sédentaire", salaire: "1 700-2 100€", missions: "Prospection, vente, gestion de portefeuille client" },
-        { periode: "Années 3-5", titre: "Chargé d'affaires", salaire: "2 500-3 200€", missions: "Négociation grands comptes, développement commercial, fidélisation" },
-        { periode: "5+ années", titre: "Responsable commercial", salaire: "3 500-4 800€", missions: "Stratégie commerciale, management d'équipe, pilotage des objectifs" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "BTS NDRC", etablissement: "EURIDIS BUSINESS SCHOOL (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS NDRC", etablissement: "ESARC EVOLUTION (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
@@ -808,80 +448,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les entreprises qui recrutent activement des alternants en BTS SAM :",
-      liste: [
-        { name: "BNP Paribas", postes: 10 },
-        { name: "Société Générale", postes: 8 },
-        { name: "AXA", postes: 7 },
-        { name: "EDF", postes: 5 },
-        { name: "Capgemini", postes: 4 },
-        { name: "Groupe BPCE", postes: 3 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS SAM",
-          formations: 180,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Support à l'Action Managériale",
-          competences: "Gestion administrative, gestion de projet, RH, communication multilingue",
-        },
-        {
-          title: "Licence Pro Management des organisations",
-          formations: 54,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Management et gestion des organisations",
-          competences: "Pilotage d'activité, management d'équipe, gestion budgétaire",
-        },
-        {
-          title: "Master Management",
-          formations: 18,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Management et stratégie",
-          competences: "Direction administrative, stratégie d'entreprise, conduite du changement",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS SAM ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 320, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 145, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 98, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 76, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 65, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 54, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "85%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "72%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+20%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Assistant de direction", salaire: "1 800-2 200€", missions: "Gestion d'agenda, organisation de réunions, suivi administratif" },
-        { periode: "Années 3-5", titre: "Office manager", salaire: "2 400-3 000€", missions: "Coordination des services, gestion des prestataires, optimisation des process" },
-        { periode: "5+ années", titre: "Responsable administratif", salaire: "3 000-4 000€", missions: "Pilotage administratif, management d'équipe, gestion budgétaire" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "PIGIER PERFORMANCE (PARIS)", lieu: "75015 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "IGENSIA ALTERNANCE (LYON)", lieu: "69003 Lyon", href: "/recherche-formation" },
@@ -962,95 +529,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les entreprises qui recrutent activement des alternants en BTS SIO :",
-      liste: [
-        { name: "Capgemini", postes: 12 },
-        { name: "Sopra Steria", postes: 10 },
-        { name: "Atos", postes: 8 },
-        { name: "Orange", postes: 7 },
-        { name: "SFR", postes: 5 },
-        { name: "BNP Paribas", postes: 4 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "BTS SIO",
-          formations: 320,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Services Informatiques aux Organisations (SISR / SLAM)",
-          competences: "Administration réseau, développement, cybersécurité, support informatique",
-        },
-        {
-          title: "Licence Pro Informatique",
-          formations: 85,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Métiers de l'informatique",
-          competences: "Développement avancé, administration système, gestion de projets IT",
-        },
-        {
-          title: "Master Informatique",
-          formations: 40,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Ingénierie logicielle ou réseaux",
-          competences: "Architecture logicielle, cloud computing, management SI, cybersécurité avancée",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance BTS SIO ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 520, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 175, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 120, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 95, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 82, href: "/recherche-emploi" },
-        { name: "Lille", offres: 78, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "87%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "72%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+30%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        {
-          periode: "Années 1-2",
-          titre: "Technicien informatique / Développeur junior",
-          salaire: "2 000-2 500€",
-          missions: "Support utilisateur, maintenance réseau, développement d'applications",
-        },
-        {
-          periode: "Années 3-5",
-          titre: "Administrateur systèmes et réseaux / Développeur confirmé",
-          salaire: "2 800-3 500€",
-          missions: "Administration infrastructure, développement full-stack, cybersécurité",
-        },
-        {
-          periode: "5+ années",
-          titre: "Responsable informatique / Chef de projet IT",
-          salaire: "3 500-4 800€",
-          missions: "Direction technique, architecture SI, management d'équipe IT",
-        },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "BTS SIO option SLAM", etablissement: "IPSSI (PARIS)", lieu: "75011 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS SIO option SISR", etablissement: "H3 HITEMA (PARIS)", lieu: "75020 Paris", href: "/recherche-formation" },
@@ -1137,90 +616,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les XX entreprises qui recrutent activement des alternants en CAP AEPE :",
-      liste: [
-        { name: "Babilou", postes: 15 },
-        { name: "People&Baby", postes: 12 },
-        { name: "La Maison Bleue", postes: 10 },
-        { name: "Les Petits Chaperons Rouges", postes: 8 },
-        { name: "Crèche Attitude", postes: 6 },
-        { name: "Grandir", postes: 4 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "CAP AEPE",
-          formations: 180,
-          duree: "1 à 2 ans",
-          niveau: "Niveau 3 (CAP)",
-          specialisation: "Accompagnant Éducatif Petite Enfance",
-          competences: "Accueil, soins, éveil, accompagnement du jeune enfant",
-        },
-        {
-          title: "Bac Pro ASSP",
-          formations: 95,
-          duree: "3 ans",
-          niveau: "Niveau 4 (Bac)",
-          specialisation: "Accompagnement, Soins et Services à la Personne",
-          competences: "Soins, animation, gestion de structure, accompagnement social",
-        },
-        {
-          title: "DE Auxiliaire de Puériculture",
-          formations: 42,
-          duree: "1 an",
-          niveau: "Niveau 4",
-          specialisation: "Puériculture et soins aux nourrissons",
-          competences: "Soins médicaux, suivi du développement, travail en équipe pluridisciplinaire",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance CAP AEPE ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 437, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 189, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 134, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 98, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 87, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 76, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "XX%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "XX%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+XX%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        {
-          periode: "Années 1-2",
-          titre: "Agent de crèche / Auxiliaire petite enfance",
-          salaire: "1 750-1 900€",
-          missions: "Accueil des enfants, soins quotidiens, activités d'éveil",
-        },
-        { periode: "Années 3-5", titre: "ATSEM / Animateur petite enfance", salaire: "1 900-2 200€", missions: "Accompagnement en école maternelle, animation, soutien éducatif" },
-        {
-          periode: "5+ années",
-          titre: "Auxiliaire de puériculture / Assistant maternel",
-          salaire: "2 000-2 500€",
-          missions: "Soins spécialisés, suivi du développement, encadrement",
-        },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "CAP AEPE", etablissement: "CFA ACADÉMIQUE DE CRÉTEIL", lieu: "94000 Créteil", href: "/recherche-formation" },
       { formationTitle: "CAP AEPE", etablissement: "LYCÉE PROFESSIONNEL CAMILLE DE LELLIS", lieu: "59100 Roubaix", href: "/recherche-formation" },
@@ -1315,80 +711,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les entreprises qui recrutent activement des alternants en Licence Pro RH :",
-      liste: [
-        { name: "Adecco", postes: 12 },
-        { name: "Manpower", postes: 10 },
-        { name: "Randstad", postes: 8 },
-        { name: "Crédit Agricole", postes: 6 },
-        { name: "SNCF", postes: 5 },
-        { name: "Orange", postes: 4 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "Licence Pro RH",
-          formations: 120,
-          duree: "1 an",
-          niveau: "Bac+3",
-          specialisation: "Métiers de la GRH : Assistant",
-          competences: "Paie, recrutement, droit social, GPEC, SIRH",
-        },
-        {
-          title: "Master RH",
-          formations: 45,
-          duree: "2 ans",
-          niveau: "Bac+5",
-          specialisation: "Management des Ressources Humaines",
-          competences: "Stratégie RH, relations sociales, conduite du changement, management",
-        },
-        {
-          title: "MBA RH",
-          formations: 15,
-          duree: "1-2 ans",
-          niveau: "Bac+5/6",
-          specialisation: "Direction des Ressources Humaines",
-          competences: "Direction RH, stratégie d'entreprise, transformation digitale RH",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance Licence Pro RH ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 320, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 145, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 98, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 76, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 65, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 54, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "XX%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "XX%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+XX%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Assistant RH", salaire: "1 900-2 300€", missions: "Administration du personnel, paie, recrutement, gestion des absences" },
-        { periode: "Années 3-5", titre: "Chargé de recrutement / Chargé de formation", salaire: "2 500-3 200€", missions: "Recrutement, plan de formation, GPEC, reporting RH" },
-        { periode: "5+ années", titre: "Responsable RH", salaire: "3 500-4 500€", missions: "Pilotage RH, relations sociales, stratégie de développement des talents" },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT DE PARIS - RIVES DE SEINE", lieu: "75016 Paris", href: "/recherche-formation" },
       { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT JEAN MOULIN LYON 3", lieu: "69008 Lyon", href: "/recherche-formation" },
@@ -1474,90 +797,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-    /*
-    entreprises: {
-      title: "Entreprises qui recrutent en alternance",
-      text: "Découvrez les structures sanitaires et médico-sociales qui recrutent activement des alternants en secrétariat médical :",
-      liste: [
-        { name: "AP-HP", postes: 12 },
-        { name: "Groupe Ramsay Santé", postes: 8 },
-        { name: "Groupe Elsan", postes: 6 },
-        { name: "Korian", postes: 5 },
-        { name: "Mutualité Française", postes: 4 },
-        { name: "Croix-Rouge Française", postes: 3 },
-      ],
-    },
-    */
-    /*
-    formations: {
-      title: "Les formations",
-      niveaux: [
-        {
-          title: "TP Secrétaire Assistant Médico-Social",
-          formations: 120,
-          duree: "12 mois",
-          niveau: "Niveau 4 (Bac)",
-          specialisation: "Secrétariat médico-social",
-          competences: "Accueil patient, gestion administrative, terminologie médicale, coordination parcours de soins",
-        },
-        {
-          title: "TP Secrétaire Assistant",
-          formations: 85,
-          duree: "8 mois",
-          niveau: "Niveau 4 (Bac)",
-          specialisation: "Secrétariat général",
-          competences: "Accueil, gestion administrative, communication, organisation",
-        },
-        {
-          title: "BTS SAM",
-          formations: 45,
-          duree: "2 ans",
-          niveau: "Bac+2",
-          specialisation: "Support à l'Action Managériale",
-          competences: "Gestion administrative, organisation, communication, management",
-        },
-      ],
-    },
-    */
-    /*
-    localisation: {
-      title: "Où trouver une alternance Titre Pro Secrétaire Médicale ?",
-      text: "Les offres par ville :",
-      villes: [
-        { name: "Paris", offres: 187, href: "/recherche-emploi" },
-        { name: "Lyon", offres: 89, href: "/recherche-emploi" },
-        { name: "Marseille", offres: 67, href: "/recherche-emploi" },
-        { name: "Toulouse", offres: 45, href: "/recherche-emploi" },
-        { name: "Bordeaux", offres: 38, href: "/recherche-emploi" },
-        { name: "Nantes", offres: 32, href: "/recherche-emploi" },
-      ],
-    },
-    */
-    /*
-    perspectives: {
-      title: "Perspectives d'emploi après une alternance",
-      kpis: [
-        { icon: "fr-icon-map-pin-2-line", value: "85%", label: "Taux de placement à 6 mois" },
-        { icon: "fr-icon-file-text-line", value: "70%", label: "Embauchés en CDI" },
-        { icon: "fr-icon-line-chart-line", value: "+20%", label: "Évolution salariale moyenne" },
-      ],
-      carrieres: [
-        { periode: "Années 1-2", titre: "Secrétaire médical(e)", salaire: "1 600-1 900€", missions: "Accueil patients, gestion des rendez-vous, traitement du courrier médical" },
-        {
-          periode: "Années 3-5",
-          titre: "Assistant(e) médico-administratif(ve)",
-          salaire: "1 900-2 300€",
-          missions: "Coordination parcours patient, gestion dossiers médicaux, facturation",
-        },
-        {
-          periode: "5+ années",
-          titre: "Responsable de secrétariat médical",
-          salaire: "2 300-2 800€",
-          missions: "Management d'équipe, organisation du service, relation avec les praticiens",
-        },
-      ],
-    },
-    */
+
     ecoles: [
       { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "AFPA (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
       { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "GRETA MÉDITERRANÉE (MARSEILLE)", lieu: "13003 Marseille", href: "/recherche-formation" },
