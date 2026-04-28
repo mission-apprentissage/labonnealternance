@@ -5,10 +5,10 @@ export type IDiplomeKpis = {
   insertion: string
 }
 
-export type IDiplomeProgramme = {
-  icon: string
-  title: string
-  items: string[]
+export type IDiplomeProgrammeSections = {
+  enseignements_generaux: string[]
+  enseignements_professionnels: string[]
+  competences_developpees: string[]
 }
 
 export type IDiplomeEntreprise = {
@@ -83,7 +83,7 @@ export type IDiplomeSeoData = {
   }
   programme: {
     text: string
-    sections: IDiplomeProgramme[]
+    sections: IDiplomeProgrammeSections
   }
   entreprises: {
     title: string

@@ -19,36 +19,24 @@ export const diplomesData: IDiplomeSeoData[] = [
     },
     programme: {
       text: "Le programme du BTS CG en alternance est structuré autour de 7 processus professionnels couvrant l'ensemble des activités comptables et financières, complétés par des enseignements généraux.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: ["Culture générale et expression.", "Anglais obligatoire.", "Mathématiques appliquées.", "Économie, droit et management des entreprises."],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Contrôle et traitement comptable des opérations commerciales (P1).",
-            "Contrôle et production de l'information financière (P2).",
-            "Gestion des obligations fiscales (P3).",
-            "Gestion des relations sociales (P4).",
-            "Analyse et prévision de l'activité (P5).",
-            "Analyse de la situation financière (P6).",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Maîtrise des logiciels comptables et des tableurs.",
-            "Établissement des déclarations fiscales et sociales.",
-            "Analyse des documents de synthèse (bilan, compte de résultat).",
-            "Contrôle de gestion et élaboration de tableaux de bord.",
-            "Communication professionnelle et travail collaboratif.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: ["Culture générale et expression.", "Anglais obligatoire.", "Mathématiques appliquées.", "Économie, droit et management des entreprises."],
+        enseignements_professionnels: [
+          "Contrôle et traitement comptable des opérations commerciales (P1).",
+          "Contrôle et production de l'information financière (P2).",
+          "Gestion des obligations fiscales (P3).",
+          "Gestion des relations sociales (P4).",
+          "Analyse et prévision de l'activité (P5).",
+          "Analyse de la situation financière (P6).",
+        ],
+        competences_developpees: [
+          "Maîtrise des logiciels comptables et des tableurs.",
+          "Établissement des déclarations fiscales et sociales.",
+          "Analyse des documents de synthèse (bilan, compte de résultat).",
+          "Contrôle de gestion et élaboration de tableaux de bord.",
+          "Communication professionnelle et travail collaboratif.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -186,34 +174,27 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du BTS Communication en alternance couvre un large éventail de compétences en communication, alliant enseignements théoriques et pratique professionnelle en entreprise.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: ["Cultures de la communication.", "Langue vivante étrangère (anglais).", "Culture économique, juridique et managériale.", "Expression et culture générale."],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Contribution à l'élaboration et au pilotage de la stratégie de communication.",
-            "Conception et mise en œuvre de solutions de communication.",
-            "Accompagnement du développement de solutions media et digitales.",
-            "Veille opérationnelle et études de marché.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Maîtrise des outils de PAO et de création graphique.",
-            "Gestion de projet événementiel et communication digitale.",
-            "Rédaction de contenus et storytelling.",
-            "Relations presse et relations publiques.",
-            "Pilotage de campagnes sur les réseaux sociaux.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: [
+          "Cultures de la communication.",
+          "Langue vivante étrangère (anglais).",
+          "Culture économique, juridique et managériale.",
+          "Expression et culture générale.",
+        ],
+        enseignements_professionnels: [
+          "Contribution à l'élaboration et au pilotage de la stratégie de communication.",
+          "Conception et mise en œuvre de solutions de communication.",
+          "Accompagnement du développement de solutions media et digitales.",
+          "Veille opérationnelle et études de marché.",
+        ],
+        competences_developpees: [
+          "Maîtrise des outils de PAO et de création graphique.",
+          "Gestion de projet événementiel et communication digitale.",
+          "Rédaction de contenus et storytelling.",
+          "Relations presse et relations publiques.",
+          "Pilotage de campagnes sur les réseaux sociaux.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -350,34 +331,22 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du BTS GPME en alternance couvre un large éventail de compétences administratives et de gestion, alliant enseignements théoriques et pratique professionnelle en entreprise.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: ["Culture générale et expression.", "Langue vivante étrangère.", "Culture économique, juridique et managériale."],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Gérer la relation avec les clients et les fournisseurs de la PME.",
-            "Participer à la gestion des risques de la PME.",
-            "Gérer le personnel et contribuer à la gestion des ressources humaines.",
-            "Soutenir le fonctionnement et le développement de la PME.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Gestion administrative et organisationnelle.",
-            "Communication interne et externe.",
-            "Comptabilité courante et suivi de trésorerie.",
-            "Gestion du personnel et paie.",
-            "Analyse de l'activité de l'entreprise.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: ["Culture générale et expression.", "Langue vivante étrangère.", "Culture économique, juridique et managériale."],
+        enseignements_professionnels: [
+          "Gérer la relation avec les clients et les fournisseurs de la PME.",
+          "Participer à la gestion des risques de la PME.",
+          "Gérer le personnel et contribuer à la gestion des ressources humaines.",
+          "Soutenir le fonctionnement et le développement de la PME.",
+        ],
+        competences_developpees: [
+          "Gestion administrative et organisationnelle.",
+          "Communication interne et externe.",
+          "Comptabilité courante et suivi de trésorerie.",
+          "Gestion du personnel et paie.",
+          "Analyse de l'activité de l'entreprise.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -510,34 +479,22 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du BTS MCO en alternance couvre un large éventail de compétences commerciales et managériales, réparties en enseignements généraux et professionnels sur deux années de formation.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: ["Culture générale et expression.", "Langue vivante étrangère (anglais).", "Culture économique, juridique et managériale (CEJM)."],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Développement de la relation client et vente conseil.",
-            "Animation et dynamisation de l'offre commerciale.",
-            "Gestion opérationnelle (analyse des stocks, marges, budgets).",
-            "Management de l'équipe commerciale.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Techniques de vente, négociation et merchandising.",
-            "Gestion des stocks et des approvisionnements.",
-            "Management d'équipe et leadership.",
-            "Analyse de données commerciales et pilotage de la performance.",
-            "Communication professionnelle écrite et orale.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: ["Culture générale et expression.", "Langue vivante étrangère (anglais).", "Culture économique, juridique et managériale (CEJM)."],
+        enseignements_professionnels: [
+          "Développement de la relation client et vente conseil.",
+          "Animation et dynamisation de l'offre commerciale.",
+          "Gestion opérationnelle (analyse des stocks, marges, budgets).",
+          "Management de l'équipe commerciale.",
+        ],
+        competences_developpees: [
+          "Techniques de vente, négociation et merchandising.",
+          "Gestion des stocks et des approvisionnements.",
+          "Management d'équipe et leadership.",
+          "Analyse de données commerciales et pilotage de la performance.",
+          "Communication professionnelle écrite et orale.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -675,34 +632,22 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du BTS NDRC en alternance couvre l'ensemble des compétences nécessaires à la gestion de la relation client, de la négociation terrain à la digitalisation des processus commerciaux.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: ["Culture générale et expression.", "Langue vivante étrangère.", "Culture économique, juridique et managériale (CEJM)."],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Relation client et négociation-vente.",
-            "Relation client à distance et digitalisation.",
-            "Relation client et animation de réseaux.",
-            "Ateliers de professionnalisation et culture numérique.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Techniques de prospection et de négociation commerciale.",
-            "Utilisation des outils CRM et marketing digital.",
-            "Communication commerciale écrite et orale.",
-            "Gestion et animation d'un réseau de partenaires.",
-            "Analyse de la performance commerciale.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: ["Culture générale et expression.", "Langue vivante étrangère.", "Culture économique, juridique et managériale (CEJM)."],
+        enseignements_professionnels: [
+          "Relation client et négociation-vente.",
+          "Relation client à distance et digitalisation.",
+          "Relation client et animation de réseaux.",
+          "Ateliers de professionnalisation et culture numérique.",
+        ],
+        competences_developpees: [
+          "Techniques de prospection et de négociation commerciale.",
+          "Utilisation des outils CRM et marketing digital.",
+          "Communication commerciale écrite et orale.",
+          "Gestion et animation d'un réseau de partenaires.",
+          "Analyse de la performance commerciale.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -836,34 +781,27 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du BTS SAM en alternance couvre un large éventail de compétences administratives et managériales, alliant enseignements théoriques et pratique professionnelle en entreprise.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: ["Culture générale et expression.", "Langue vivante étrangère A (anglais).", "Langue vivante étrangère B.", "Culture économique, juridique et managériale."],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Optimisation des processus administratifs.",
-            "Gestion de projet.",
-            "Collaboration à la gestion des ressources humaines.",
-            "Ateliers de professionnalisation et de culture économique, juridique et managériale appliquée.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Organisation et gestion administrative.",
-            "Communication professionnelle en français et en langues étrangères.",
-            "Conduite et suivi de projet.",
-            "Gestion des dossiers du personnel et processus RH.",
-            "Maîtrise des outils collaboratifs et numériques.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: [
+          "Culture générale et expression.",
+          "Langue vivante étrangère A (anglais).",
+          "Langue vivante étrangère B.",
+          "Culture économique, juridique et managériale.",
+        ],
+        enseignements_professionnels: [
+          "Optimisation des processus administratifs.",
+          "Gestion de projet.",
+          "Collaboration à la gestion des ressources humaines.",
+          "Ateliers de professionnalisation et de culture économique, juridique et managériale appliquée.",
+        ],
+        competences_developpees: [
+          "Organisation et gestion administrative.",
+          "Communication professionnelle en français et en langues étrangères.",
+          "Conduite et suivi de projet.",
+          "Gestion des dossiers du personnel et processus RH.",
+          "Maîtrise des outils collaboratifs et numériques.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -996,39 +934,27 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du BTS SIO en alternance associe un tronc commun d'enseignements généraux et informatiques à une spécialisation SISR ou SLAM choisie dès le premier semestre. La formation délivre 120 crédits ECTS.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: [
-            "Culture générale et expression.",
-            "Expression et communication en anglais.",
-            "Mathématiques pour l'informatique.",
-            "Culture économique, juridique et managériale appliquée à l'informatique.",
-          ],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Support et mise à disposition de services informatiques (tronc commun).",
-            "Option SISR : administration des systèmes et des réseaux, supervision, sécurisation de l'infrastructure.",
-            "Option SLAM : conception et développement d'applications, gestion de bases de données, tests et déploiement.",
-            "Cybersécurité : protection des données, gestion des risques, conformité RGPD.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Administration système et réseau (Linux, Windows Server).",
-            "Développement web et logiciel (PHP, Java, Python, SQL).",
-            "Gestion de projets informatiques et travail en équipe.",
-            "Veille technologique et adaptation aux évolutions du numérique.",
-            "Communication professionnelle en français et en anglais.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: [
+          "Culture générale et expression.",
+          "Expression et communication en anglais.",
+          "Mathématiques pour l'informatique.",
+          "Culture économique, juridique et managériale appliquée à l'informatique.",
+        ],
+        enseignements_professionnels: [
+          "Support et mise à disposition de services informatiques (tronc commun).",
+          "Option SISR : administration des systèmes et des réseaux, supervision, sécurisation de l'infrastructure.",
+          "Option SLAM : conception et développement d'applications, gestion de bases de données, tests et déploiement.",
+          "Cybersécurité : protection des données, gestion des risques, conformité RGPD.",
+        ],
+        competences_developpees: [
+          "Administration système et réseau (Linux, Windows Server).",
+          "Développement web et logiciel (PHP, Java, Python, SQL).",
+          "Gestion de projets informatiques et travail en équipe.",
+          "Veille technologique et adaptation aux évolutions du numérique.",
+          "Communication professionnelle en français et en anglais.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -1181,40 +1107,28 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du CAP AEPE en alternance couvre l'ensemble des compétences nécessaires à l'accompagnement éducatif des jeunes enfants, alliant enseignements théoriques et pratique professionnelle en structure d'accueil.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: [
-            "Français, histoire-géographie et enseignement moral et civique.",
-            "Mathématiques et physique-chimie.",
-            "Éducation physique et sportive.",
-            "Prévention santé environnement (PSE).",
-          ],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Accompagner le développement du jeune enfant.",
-            "Exercer son activité en accueil collectif.",
-            "Exercer son activité en accueil individuel.",
-            "Sciences médico-sociales et biologie appliquée.",
-            "Techniques d'animation et d'éveil de l'enfant.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Soins d'hygiène et de confort du jeune enfant.",
-            "Préparation et service des repas en respectant les règles nutritionnelles.",
-            "Animation d'activités d'éveil et de loisirs.",
-            "Communication professionnelle avec les familles et l'équipe éducative.",
-            "Application des protocoles de sécurité et de premiers secours.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: [
+          "Français, histoire-géographie et enseignement moral et civique.",
+          "Mathématiques et physique-chimie.",
+          "Éducation physique et sportive.",
+          "Prévention santé environnement (PSE).",
+        ],
+        enseignements_professionnels: [
+          "Accompagner le développement du jeune enfant.",
+          "Exercer son activité en accueil collectif.",
+          "Exercer son activité en accueil individuel.",
+          "Sciences médico-sociales et biologie appliquée.",
+          "Techniques d'animation et d'éveil de l'enfant.",
+        ],
+        competences_developpees: [
+          "Soins d'hygiène et de confort du jeune enfant.",
+          "Préparation et service des repas en respectant les règles nutritionnelles.",
+          "Animation d'activités d'éveil et de loisirs.",
+          "Communication professionnelle avec les familles et l'équipe éducative.",
+          "Application des protocoles de sécurité et de premiers secours.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -1369,41 +1283,29 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme de la Licence Pro RH en alternance couvre l'ensemble des fonctions ressources humaines, alliant enseignements théoriques en droit social et management à une forte dimension pratique grâce à l'alternance en entreprise.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "Enseignements généraux",
-          items: [
-            "Anglais professionnel et communication interculturelle.",
-            "Management et leadership.",
-            "Outils numériques et bureautique avancée.",
-            "Méthodologie de projet et mémoire professionnel.",
-          ],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "Enseignements professionnels",
-          items: [
-            "Droit du travail individuel et collectif.",
-            "Gestion administrative du personnel et paie.",
-            "Recrutement, intégration et marque employeur.",
-            "Gestion prévisionnelle des emplois et des compétences (GPEC).",
-            "Formation professionnelle et développement des compétences.",
-            "Relations sociales, santé au travail et qualité de vie au travail (QVT).",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "Compétences développées",
-          items: [
-            "Maîtrise des logiciels de paie et SIRH.",
-            "Conduite d'entretiens de recrutement.",
-            "Élaboration de tableaux de bord RH et reporting social.",
-            "Rédaction de contrats de travail et documents RH.",
-            "Gestion du dialogue social et des instances représentatives du personnel.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: [
+          "Anglais professionnel et communication interculturelle.",
+          "Management et leadership.",
+          "Outils numériques et bureautique avancée.",
+          "Méthodologie de projet et mémoire professionnel.",
+        ],
+        enseignements_professionnels: [
+          "Droit du travail individuel et collectif.",
+          "Gestion administrative du personnel et paie.",
+          "Recrutement, intégration et marque employeur.",
+          "Gestion prévisionnelle des emplois et des compétences (GPEC).",
+          "Formation professionnelle et développement des compétences.",
+          "Relations sociales, santé au travail et qualité de vie au travail (QVT).",
+        ],
+        competences_developpees: [
+          "Maîtrise des logiciels de paie et SIRH.",
+          "Conduite d'entretiens de recrutement.",
+          "Élaboration de tableaux de bord RH et reporting social.",
+          "Rédaction de contrats de travail et documents RH.",
+          "Gestion du dialogue social et des instances représentatives du personnel.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
@@ -1541,39 +1443,27 @@ export const diplomesData: IDiplomeSeoData[] = [
 
     programme: {
       text: "Le programme du Titre Pro Secrétaire Médicale en alternance est organisé autour de trois blocs de compétences professionnelles (CCP), couvrant l'ensemble des activités du secrétariat médico-social.",
-      sections: [
-        {
-          icon: "fr-icon-book-2-line",
-          title: "CCP 1 - Assister une équipe",
-          items: [
-            "Produire des documents professionnels courants (courriers, comptes rendus, tableaux).",
-            "Communiquer des informations par écrit et à l'oral.",
-            "Assurer la traçabilité et la conservation des informations.",
-            "Accueillir un visiteur et transmettre des informations oralement.",
-            "Planifier et organiser les activités de l'équipe.",
-          ],
-        },
-        {
-          icon: "fr-icon-briefcase-line",
-          title: "CCP 2 - Accueil et gestion administrative",
-          items: [
-            "Renseigner et orienter le public dans un service sanitaire, médico-social ou social.",
-            "Planifier et gérer les rendez-vous de patients ou d'usagers.",
-            "Assurer la prise en charge médico-administrative et sociale du patient ou de l'usager.",
-            "Contrôler les données administratives du patient ou de l'usager.",
-          ],
-        },
-        {
-          icon: "fr-icon-award-line",
-          title: "CCP 3 - Traitement des dossiers et coordination",
-          items: [
-            "Retranscrire des informations à caractère médical ou social.",
-            "Assurer le suivi et la mise à jour des dossiers de patients ou d'usagers.",
-            "Coordonner les opérations liées au parcours du patient ou de l'usager.",
-            "Élaborer et actualiser des tableaux de suivi dans un service sanitaire ou médico-social.",
-          ],
-        },
-      ],
+      sections: {
+        enseignements_generaux: [
+          "Produire des documents professionnels courants (courriers, comptes rendus, tableaux).",
+          "Communiquer des informations par écrit et à l'oral.",
+          "Assurer la traçabilité et la conservation des informations.",
+          "Accueillir un visiteur et transmettre des informations oralement.",
+          "Planifier et organiser les activités de l'équipe.",
+        ],
+        enseignements_professionnels: [
+          "Renseigner et orienter le public dans un service sanitaire, médico-social ou social.",
+          "Planifier et gérer les rendez-vous de patients ou d'usagers.",
+          "Assurer la prise en charge médico-administrative et sociale du patient ou de l'usager.",
+          "Contrôler les données administratives du patient ou de l'usager.",
+        ],
+        competences_developpees: [
+          "Retranscrire des informations à caractère médical ou social.",
+          "Assurer le suivi et la mise à jour des dossiers de patients ou d'usagers.",
+          "Coordonner les opérations liées au parcours du patient ou de l'usager.",
+          "Élaborer et actualiser des tableaux de suivi dans un service sanitaire ou médico-social.",
+        ],
+      },
     },
     entreprises: {
       title: "Entreprises qui recrutent en alternance",

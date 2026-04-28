@@ -12,10 +12,10 @@ const ZSeoDiplomeKpis = z.object({
   insertion: z.string(),
 })
 
-const ZSeoDiplomeProgramme = z.object({
-  icon: z.string(),
-  title: z.string(),
-  items: z.array(z.string()),
+const ZSeoDiplomeProgrammeSections = z.object({
+  enseignements_generaux: z.array(z.string()),
+  enseignements_professionnels: z.array(z.string()),
+  competences_developpees: z.array(z.string()),
 })
 
 const ZSeoDiplomeEntreprise = z.object({
@@ -92,7 +92,7 @@ export const ZSeoDiplome = z
     }),
     programme: z.object({
       text: z.string(),
-      sections: z.array(ZSeoDiplomeProgramme),
+      sections: ZSeoDiplomeProgrammeSections,
     }),
     entreprises: z.object({
       title: z.string(),
