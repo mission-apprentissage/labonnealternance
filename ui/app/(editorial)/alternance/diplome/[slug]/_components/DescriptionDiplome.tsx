@@ -18,7 +18,7 @@ export function DescriptionDiplome({ titre, text, objectifs }: { titre: string; 
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3v"), mb: fr.spacing("4v") }}>
-          <Image src="/images/diplome/icon-success.svg" alt="" width={60} height={60} aria-hidden="true" />
+          <Image src="/images/seo/diplome/icon-success.svg" alt="" width={60} height={60} aria-hidden="true" />
           <Typography component="h3" sx={{ fontWeight: 700, fontSize: "20px", lineHeight: "28px" }}>
             {"Objectifs du diplôme :"}
           </Typography>

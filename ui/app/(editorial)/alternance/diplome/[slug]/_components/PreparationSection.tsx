@@ -14,13 +14,13 @@ const RESSOURCES = [
     title: "Introduction sur l'alternance",
     description: "Découvrez comment fonctionne l'alternance",
     href: "/guide-alternant/decouvrir-l-alternance",
-    imageSrc: "/images/diplome/card-left.svg",
+    imageSrc: "/images/seo/diplome/card-left.svg",
   },
   {
     title: "Préparer son projet en alternance",
     description: "Découvrez les étapes clés d'un projet en alternance",
     href: "/guide-alternant/preparer-son-projet-en-alternance",
-    imageSrc: "/images/diplome/card-right.svg",
+    imageSrc: "/images/seo/diplome/card-right.svg",
   },
 ]
 

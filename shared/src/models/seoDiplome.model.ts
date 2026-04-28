@@ -9,7 +9,6 @@ const ZSeoDiplomeKpis = z.object({
   duration: z.string(),
   entreprise: z.string(),
   salaire: z.string(),
-  insertion: z.string(),
 })
 
 const ZSeoDiplomeProgrammeSections = z.object({
