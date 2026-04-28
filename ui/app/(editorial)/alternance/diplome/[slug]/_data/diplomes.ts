@@ -120,18 +120,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "INSEEC (PARIS)", lieu: "75016 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "CFA DESCARTES (MARNE-LA-VALLÉE)", lieu: "77420 Champs-sur-Marne", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS CG",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS CG ?",
       text: "Le BTS Comptabilité et Gestion ouvre les portes de nombreux métiers dans la comptabilité, la finance et la gestion d'entreprise.",
@@ -273,18 +267,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "BTS COMMUNICATION", etablissement: "EPB PARIS", lieu: "75009 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS COMMUNICATION", etablissement: "IESCA (MONTPELLIER)", lieu: "34000 Montpellier", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS Communication",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS Communication ?",
       text: "Le BTS Communication ouvre les portes de nombreux métiers dans la communication d'entreprise, la publicité et le digital.",
@@ -425,18 +413,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "BTS GESTION DE LA PME", etablissement: "GROUPE ALTERNANCE TOULOUSE", lieu: "31000 Toulouse", href: "/recherche-formation" },
       { formationTitle: "BTS GESTION DE LA PME", etablissement: "CBS SCHOOL (STRASBOURG)", lieu: "67000 Strasbourg", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS GPME",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS GPME ?",
       text: "Le BTS GPME ouvre les portes de nombreux métiers dans la gestion, l'administration et les ressources humaines au sein des PME.",
@@ -573,18 +555,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "ESUP RENNES", lieu: "35000 Rennes", href: "/recherche-formation" },
       { formationTitle: "RESPONSABLE DE RAYON (TP)", etablissement: "GROUPE IGS", lieu: "75010 Paris", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS MCO",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS MCO ?",
       text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce, la distribution, la banque-assurance et les services.",
@@ -726,18 +702,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "BTS NDRC", etablissement: "ISME (NANTES)", lieu: "44000 Nantes", href: "/recherche-formation" },
       { formationTitle: "BTS NDRC", etablissement: "EEC PARIS", lieu: "75010 Paris", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS NDRC",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS NDRC ?",
       text: "Le BTS NDRC ouvre les portes de nombreux métiers dans la vente, la négociation commerciale et la relation client digitale.",
@@ -880,18 +850,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "INSTITUT F2I (VINCENNES)", lieu: "94300 Vincennes", href: "/recherche-formation" },
       { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "TALIS BUSINESS SCHOOL (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS SAM",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS SAM ?",
       text: "Le BTS SAM ouvre les portes de nombreux métiers dans le support administratif, l'assistanat de direction et la gestion des ressources humaines.",
@@ -1048,18 +1012,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "BTS SIO option SISR", etablissement: "PIGIER PERFORMANCE (LILLE)", lieu: "59000 Lille", href: "/recherche-formation" },
       { formationTitle: "BTS SIO option SLAM", etablissement: "ESUP (RENNES)", lieu: "35000 Rennes", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "BTS SIO",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme BTS SIO ?",
       text: "Le BTS SIO ouvre les portes de nombreux métiers dans le secteur du numérique et de l'informatique, que ce soit en infrastructure ou en développement.",
@@ -1217,18 +1175,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "CAP AEPE", etablissement: "CFA ACADÉMIQUE DE LYON", lieu: "69000 Lyon", href: "/recherche-formation" },
       { formationTitle: "CAP AEPE", etablissement: "CAMPUS MEWO (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "CAP AEPE",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme CAP AEPE ?",
       text: "Le CAP AEPE ouvre les portes de nombreux métiers dans le secteur de la petite enfance, en accueil collectif comme individuel.",
@@ -1389,18 +1341,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "LP GESTIONNAIRE DE PAIE ET ADMINISTRATION DU PERSONNEL", etablissement: "IGENSIA ALTERNANCE", lieu: "75013 Paris", href: "/recherche-formation" },
       { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "UNIVERSITÉ PARIS 1 PANTHÉON-SORBONNE", lieu: "75005 Paris", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "Licence Pro RH",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec une Licence Pro RH ?",
       text: "La Licence Professionnelle Ressources Humaines ouvre les portes de nombreux métiers dans la gestion du personnel, le recrutement et l'administration RH.",
@@ -1552,18 +1498,12 @@ export const diplomesData: IDiplomeSeoData[] = [
       { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "PIGIER PERFORMANCE (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
       { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "EFAM (NANTES)", lieu: "44000 Nantes", href: "/recherche-formation" },
     ],
-    salaire: {
-      title: "Le salaire en",
-      titleHighlight: "Titre Pro Secrétaire Médicale",
-      titleSuffix: "en alternance",
-      texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-      lignes: [
-        { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-        { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-        { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-        { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-      ],
-    },
+    salaire: [
+      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+    ],
     metiers: {
       title: "Quels métiers exercer avec un diplôme Titre Pro Secrétaire Médicale ?",
       text: "Le Titre Pro Secrétaire Assistant Médico-Social ouvre les portes de nombreux métiers dans le secteur sanitaire et médico-social.",

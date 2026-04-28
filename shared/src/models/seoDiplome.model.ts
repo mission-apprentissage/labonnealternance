@@ -114,13 +114,7 @@ export const ZSeoDiplome = z
       carrieres: z.array(ZSeoDiplomeCarriere),
     }),
     ecoles: z.array(ZSeoDiplomeEcoleCard),
-    salaire: z.object({
-      title: z.string(),
-      titleHighlight: z.string().optional(),
-      titleSuffix: z.string().optional(),
-      texteIntro: z.string(),
-      lignes: z.array(ZSeoDiplomeSalaireLigne),
-    }),
+    salaire: z.array(ZSeoDiplomeSalaireLigne),
     metiers: z.object({
       title: z.string(),
       text: z.string(),

@@ -6,19 +6,11 @@ import { UTM_PARAMS } from "../_data/constants"
 import type { IDiplomeSalaireLigne } from "../_data/types"
 import { SectionTitle } from "./SectionTitle"
 
-export function SalaireSection({
-  title,
-  titleHighlight,
-  titleSuffix,
-  texteIntro,
-  lignes,
-}: {
-  title: string
-  titleHighlight?: string
-  titleSuffix?: string
-  texteIntro: string
-  lignes: IDiplomeSalaireLigne[]
-}) {
+export function SalaireSection({ titre, lignes }: { titre: string; lignes: IDiplomeSalaireLigne[] }) {
+  const title = "Le salaire en"
+  const titleHighlight = titre
+  const titleSuffix = "en alternance"
+  const texteIntro = "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :"
   const headerSx = {
     fontWeight: 700,
     px: fr.spacing("4v"),

@@ -70,13 +70,7 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
       </DefaultContainer>
 
       {/* Section pleine largeur avec fond bleu clair */}
-      <SalaireSection
-        title={data.salaire.title}
-        titleHighlight={data.salaire.titleHighlight}
-        titleSuffix={data.salaire.titleSuffix}
-        texteIntro={data.salaire.texteIntro}
-        lignes={data.salaire.lignes}
-      />
+      <SalaireSection titre={data.titre} lignes={data.salaire} />
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>

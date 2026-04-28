@@ -142,18 +142,12 @@ export const mockDiplomeData: IDiplomeSeoData = {
     { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "ESUP RENNES", lieu: "35000 Rennes", href: "/recherche-formation" },
     { formationTitle: "RESPONSABLE DE RAYON (TP)", etablissement: "GROUPE IGS", lieu: "75010 Paris", href: "/recherche-formation" },
   ],
-  salaire: {
-    title: "Le salaire en",
-    titleHighlight: "BTS MCO",
-    titleSuffix: "en alternance",
-    texteIntro: "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :",
-    lignes: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
-  },
+  salaire: [
+    { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
+    { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
+    { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
+    { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
+  ],
   metiers: {
     title: "Quels métiers exercer avec un diplôme BTS MCO ?",
     text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce et la distribution.",
