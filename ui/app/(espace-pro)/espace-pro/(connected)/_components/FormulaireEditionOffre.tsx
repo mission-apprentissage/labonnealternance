@@ -28,8 +28,8 @@ const EmployerDescriptionField = () => {
   return (
     <Box>
       <Input
-        label="Présentation de l'entreprise"
-        hintText="Décrivez les activités et les spécificités de l'entreprise. (Facultatif)"
+        label="Présentation de l'entreprise (Facultatif)"
+        hintText="Décrivez les activités et les spécificités de l'entreprise."
         state={errors.job_employer_description && touched.job_employer_description ? "error" : "info"}
         stateRelatedMessage={
           (errors.job_employer_description as string) ??

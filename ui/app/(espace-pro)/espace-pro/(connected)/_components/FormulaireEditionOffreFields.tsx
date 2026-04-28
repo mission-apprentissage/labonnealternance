@@ -48,7 +48,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
       <>
         <FormControl required={true} sx={{ width: "100%" }}>
           <DropdownCombobox
-            label="Métier *"
+            label="Métier"
             handleSearch={debounce(handleJobSearch, 300)}
             saveSelectedItem={(item: IAppellationsRomes["coupleAppellationRomeMetier"][number]) => {
               setTimeout(() => {
@@ -73,8 +73,8 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         {values.rome_label && (
           <Box sx={{ mt: fr.spacing("4v") }}>
             <Input
-              label="Intitulé de l'offre"
-              hintText="Personnalisez le titre du poste (Facultatif)"
+              label="Intitulé de l'offre si différent (Facultatif)"
+              hintText="Personnalisez le titre du poste."
               nativeInputProps={{
                 value: values.offer_title_custom,
                 type: "text",

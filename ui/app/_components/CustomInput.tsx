@@ -22,7 +22,7 @@ const CustomInput = (props) => {
       <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
         {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
         {props.info && (
-          <Box className={fr.cx("fr-hint-text")} sx={{ pb: fr.spacing("2v") }}>
+          <Box className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
             {props.info}
           </Box>
         )}
