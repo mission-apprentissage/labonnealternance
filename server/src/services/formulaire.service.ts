@@ -76,11 +76,13 @@ export const createJob = async ({
   siret,
   user,
   source,
+  origin,
 }: {
   job: IJobCreate
   siret: string
   user: IUserWithAccount
   source?: ITrackingCookies
+  origin?: string
 }): Promise<IJobsPartnersOfferPrivate> => {
   await validateFieldsFromReferentielRome(job)
 
@@ -136,7 +138,7 @@ export const createJob = async ({
     entreprise,
     user,
     status: newJobStatus,
-    origin: "lba",
+    origin: origin ?? "lba",
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
