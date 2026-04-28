@@ -65,6 +65,7 @@ export const mockDiplomeData: IDiplomeSeoData = {
       },
     ],
   },
+  /*
   entreprises: {
     title: "Entreprises qui recrutent en alternance",
     text: "Découvrez les 890 entreprises qui recrutent activement des alternants en BTS MCO :",
@@ -77,6 +78,8 @@ export const mockDiplomeData: IDiplomeSeoData = {
       { name: "BNP Paribas", postes: 3 },
     ],
   },
+  */
+  /*
   formations: {
     title: "Les formations",
     niveaux: [
@@ -106,6 +109,8 @@ export const mockDiplomeData: IDiplomeSeoData = {
       },
     ],
   },
+  */
+  /*
   localisation: {
     title: "Où trouver une alternance BTS MCO ?",
     text: "Les offres par ville :",
@@ -118,6 +123,8 @@ export const mockDiplomeData: IDiplomeSeoData = {
       { name: "Nantes", offres: 76, href: "/recherche-emploi" },
     ],
   },
+  */
+  /*
   perspectives: {
     title: "Perspectives d'emploi après une alternance",
     kpis: [
@@ -131,6 +138,7 @@ export const mockDiplomeData: IDiplomeSeoData = {
       { periode: "5+ années", titre: "Directeur de magasin", salaire: "3 200-4 500€", missions: "Direction, stratégie commerciale, gestion P&L" },
     ],
   },
+  */
   ecoles: [
     { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
     { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes", href: "/recherche-formation" },

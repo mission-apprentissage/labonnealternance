@@ -38,6 +38,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS CG :",
@@ -50,6 +51,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Cerfrance", postes: 4 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -79,6 +82,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS CG ?",
       text: "Les offres par ville :",
@@ -91,6 +96,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 63, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -109,6 +116,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Responsable comptable", salaire: "3 500-4 500€", missions: "Supervision d'équipe, clôture des comptes, reporting financier" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "ENOES (PARIS)", lieu: "75009 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "PIGIER PERFORMANCE (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
@@ -190,6 +198,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS Communication :",
@@ -202,6 +211,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "L'Oréal", postes: 3 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -231,6 +242,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS Communication ?",
       text: "Les offres par ville :",
@@ -243,6 +256,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 45, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -256,6 +271,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Responsable communication", salaire: "3 500-4 500€", missions: "Direction de la communication, stratégie de marque, management d'équipe" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "BTS COMMUNICATION", etablissement: "NARRATIIV (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS COMMUNICATION", etablissement: "LYCEE POLYVALENT JEAN LURCAT (PARIS)", lieu: "75013 Paris", href: "/recherche-formation" },
@@ -336,6 +352,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS GPME :",
@@ -348,6 +365,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Eiffage", postes: 3 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -377,6 +396,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS GPME ?",
       text: "Les offres par ville :",
@@ -389,6 +410,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 58, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -402,6 +425,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Responsable administratif", salaire: "2 800-3 500€", missions: "Pilotage administratif, gestion d'équipe, reporting direction" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "BTS GESTION DE LA PME", etablissement: "GROUPE ALTERNANCE PARIS", lieu: "75010 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS GESTION DE LA PME", etablissement: "CFA CODIS (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
@@ -478,6 +502,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS MCO :",
@@ -490,6 +515,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "BNP Paribas", postes: 3 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -519,6 +546,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS MCO ?",
       text: "Les offres par ville :",
@@ -531,6 +560,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 76, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -544,6 +575,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Directeur de magasin", salaire: "3 200-4 500€", missions: "Direction, stratégie commerciale, gestion P&L" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
       { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes", href: "/recherche-formation" },
@@ -625,6 +657,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en BTS NDRC :",
@@ -637,6 +670,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "BNP Paribas", postes: 3 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -666,6 +701,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS NDRC ?",
       text: "Les offres par ville :",
@@ -678,6 +715,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 76, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -691,6 +730,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Responsable commercial", salaire: "3 500-4 800€", missions: "Stratégie commerciale, management d'équipe, pilotage des objectifs" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "BTS NDRC", etablissement: "EURIDIS BUSINESS SCHOOL (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS NDRC", etablissement: "ESARC EVOLUTION (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
@@ -773,6 +813,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les entreprises qui recrutent activement des alternants en BTS SAM :",
@@ -785,6 +826,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Groupe BPCE", postes: 3 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -814,6 +857,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS SAM ?",
       text: "Les offres par ville :",
@@ -826,6 +871,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 54, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -839,6 +886,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Responsable administratif", salaire: "3 000-4 000€", missions: "Pilotage administratif, management d'équipe, gestion budgétaire" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "PIGIER PERFORMANCE (PARIS)", lieu: "75015 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "IGENSIA ALTERNANCE (LYON)", lieu: "69003 Lyon", href: "/recherche-formation" },
@@ -920,6 +968,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les entreprises qui recrutent activement des alternants en BTS SIO :",
@@ -932,6 +981,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "BNP Paribas", postes: 4 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -961,6 +1012,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance BTS SIO ?",
       text: "Les offres par ville :",
@@ -973,6 +1026,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Lille", offres: 78, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -1001,6 +1056,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "BTS SIO option SLAM", etablissement: "IPSSI (PARIS)", lieu: "75011 Paris", href: "/recherche-formation" },
       { formationTitle: "BTS SIO option SISR", etablissement: "H3 HITEMA (PARIS)", lieu: "75020 Paris", href: "/recherche-formation" },
@@ -1088,6 +1144,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les XX entreprises qui recrutent activement des alternants en CAP AEPE :",
@@ -1100,6 +1157,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Grandir", postes: 4 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -1129,6 +1188,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance CAP AEPE ?",
       text: "Les offres par ville :",
@@ -1141,6 +1202,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 76, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -1164,6 +1227,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "CAP AEPE", etablissement: "CFA ACADÉMIQUE DE CRÉTEIL", lieu: "94000 Créteil", href: "/recherche-formation" },
       { formationTitle: "CAP AEPE", etablissement: "LYCÉE PROFESSIONNEL CAMILLE DE LELLIS", lieu: "59100 Roubaix", href: "/recherche-formation" },
@@ -1259,6 +1323,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les entreprises qui recrutent activement des alternants en Licence Pro RH :",
@@ -1271,6 +1336,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Orange", postes: 4 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -1300,6 +1367,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance Licence Pro RH ?",
       text: "Les offres par ville :",
@@ -1312,6 +1381,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 54, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -1325,6 +1396,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         { periode: "5+ années", titre: "Responsable RH", salaire: "3 500-4 500€", missions: "Pilotage RH, relations sociales, stratégie de développement des talents" },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT DE PARIS - RIVES DE SEINE", lieu: "75016 Paris", href: "/recherche-formation" },
       { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT JEAN MOULIN LYON 3", lieu: "69008 Lyon", href: "/recherche-formation" },
@@ -1411,6 +1483,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
+    /*
     entreprises: {
       title: "Entreprises qui recrutent en alternance",
       text: "Découvrez les structures sanitaires et médico-sociales qui recrutent activement des alternants en secrétariat médical :",
@@ -1423,6 +1496,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Croix-Rouge Française", postes: 3 },
       ],
     },
+    */
+    /*
     formations: {
       title: "Les formations",
       niveaux: [
@@ -1452,6 +1527,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
+    /*
     localisation: {
       title: "Où trouver une alternance Titre Pro Secrétaire Médicale ?",
       text: "Les offres par ville :",
@@ -1464,6 +1541,8 @@ export const diplomesData: IDiplomeSeoData[] = [
         { name: "Nantes", offres: 32, href: "/recherche-emploi" },
       ],
     },
+    */
+    /*
     perspectives: {
       title: "Perspectives d'emploi après une alternance",
       kpis: [
@@ -1487,6 +1566,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         },
       ],
     },
+    */
     ecoles: [
       { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "AFPA (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
       { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "GRETA MÉDITERRANÉE (MARSEILLE)", lieu: "13003 Marseille", href: "/recherche-formation" },

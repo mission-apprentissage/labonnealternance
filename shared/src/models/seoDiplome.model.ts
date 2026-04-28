@@ -18,6 +18,7 @@ const ZSeoDiplomeProgrammeSections = z.object({
   competences_developpees: z.array(z.string()),
 })
 
+/*
 const ZSeoDiplomeEntreprise = z.object({
   name: z.string(),
   postes: z.number(),
@@ -50,6 +51,7 @@ const ZSeoDiplomeCarriere = z.object({
   salaire: z.string(),
   missions: z.string(),
 })
+*/
 
 const ZSeoDiplomeSalaireLigne = z.object({
   age: z.string(),
@@ -94,6 +96,7 @@ export const ZSeoDiplome = z
       text: z.string(),
       sections: ZSeoDiplomeProgrammeSections,
     }),
+    /*
     entreprises: z.object({
       title: z.string(),
       text: z.string(),
@@ -113,6 +116,7 @@ export const ZSeoDiplome = z
       kpis: z.array(ZSeoDiplomePerspectiveKpi),
       carrieres: z.array(ZSeoDiplomeCarriere),
     }),
+    */
     ecoles: z.array(ZSeoDiplomeEcoleCard),
     salaire: z.array(ZSeoDiplomeSalaireLigne),
     metiers: z.object({
