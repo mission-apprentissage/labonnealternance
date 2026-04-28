@@ -94,6 +94,7 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         <Checkbox
           orientation="vertical"
           state={values.job_type.length === 0 ? "error" : "default"}
+          stateRelatedMessage={values.job_type.length === 0 ? "Champ obligatoire" : undefined}
           options={Object.values(TRAINING_CONTRACT_TYPE).map((label) => {
             return {
               label: label,
@@ -139,38 +140,35 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         <option value="Master, titre ingénieur, autres formations (Bac+5)">Master, titre ingénieur, autres formations (Bac+5)</option>
       </Select>
       <Box sx={{ mt: fr.spacing("4v") }}>
-        <CustomInput
-          required={false}
-          name="job_start_date"
+        <Input
           label="Date de début"
-          type="date"
-          value={values.job_start_date}
-          min={minStartDate.format(ISO_DATE_FORMAT)}
-          max={maxStartDate.format(ISO_DATE_FORMAT)}
+          state={errors.job_start_date && touched.job_start_date ? "error" : "default"}
+          stateRelatedMessage={errors.job_start_date as string}
+          nativeInputProps={{
+            type: "date",
+            min: minStartDate.format(ISO_DATE_FORMAT),
+            max: maxStartDate.format(ISO_DATE_FORMAT),
+            name: "job_start_date",
+            value: values.job_start_date,
+            onChange: handleChange,
+          }}
         />
       </Box>
-      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} required={true}>
+      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }}>
         <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
       </FormControl>
       <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("4v") }}>
-          <FormLabel sx={{ flexGrow: 2 }}>Durée du contrat (mois)</FormLabel>
-          <Input
-            label=""
-            className={fr.cx("fr-fieldset__element--inline", "fr-fieldset__element--number")}
-            nativeInputProps={{
-              name: "job_duration",
-              value: values.job_duration,
-              onChange: async (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
-            }}
-          />
-        </Box>
-        {errors.job_duration && (
-          <Box sx={{ color: fr.colors.decisions.text.default.error.default, display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <Warning sx={{ m: 0 }} />
-            <Box sx={{ ml: fr.spacing("2v"), display: "flex" }}>{errors.job_duration as string}</Box>
-          </Box>
-        )}
+        <FormLabel sx={{ mb: fr.spacing("2v") }}>Durée du contrat (mois)</FormLabel>
+        <Input
+          label=""
+          state={errors.job_duration ? "error" : "default"}
+          stateRelatedMessage={errors.job_duration as string}
+          nativeInputProps={{
+            name: "job_duration",
+            value: values.job_duration,
+            onChange: async (e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null)),
+          }}
+        />
       </FormControl>
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
         <FormControl sx={{ mt: 2, width: "100%" }}>

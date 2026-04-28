@@ -144,7 +144,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
           job_level_label: Yup.string().required("Champ obligatoire"),
           job_start_date: jobStartDateYup,
           job_type: Yup.array().required("Champ obligatoire"),
-          job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimale du contrat : 6 mois"),
+          job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").required("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
             .trim()
             .min(3, "L'intitulé est trop court. Sa taille doit être comprise entre 3 et 150 caractères.")
@@ -168,7 +168,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
                 rowGap: fr.spacing("8v"),
                 columnGap: fr.spacing("8v"),
                 display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1fr 2fr" },
+                gridTemplateColumns: { xs: "1fr", md: "1.4fr 2fr" },
                 gridTemplateRows: { xs: "auto", md: "1fr auto" },
               }}
             >
@@ -231,7 +231,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
                 </Box>
               </Box>
             </Box>
-            <Box sx={{ mt: fr.spacing("8v"), borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
+            <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
               <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
             </Box>
           </div>
