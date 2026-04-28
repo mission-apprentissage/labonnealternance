@@ -121,19 +121,22 @@ export function LbaItemCard({ item, active, rechercheParams, position }: ResultC
           linkProps={{
             href: itemUrl,
             prefetch: false,
-            onClick: () => {
-              pushMatomoEvent({
-                event: MATOMO_EVENTS.JOB_OFFER_CLICKED,
-                job_offer_id: item.id,
-                job_offer_type: getMatomoJobOfferType(item.ideaType),
-                job_offer_company: item.company?.name || "non_renseigné",
-                job_offer_name: getTitle(item),
-                position_in_list: position,
-                has_contact: Boolean((item as any).contact?.hasEmail || (item as any).contact?.url || (item as any).contact?.phone),
-                search_job_name: rechercheParams.job_name || "non_renseigné",
-                search_address: rechercheParams.geo?.address || "non_renseigné",
-              })
-            },
+            onClick:
+              item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
+                ? undefined
+                : () => {
+                    pushMatomoEvent({
+                      event: MATOMO_EVENTS.JOB_OFFER_CLICKED,
+                      job_offer_id: item.id,
+                      job_offer_type: getMatomoJobOfferType(item.ideaType),
+                      job_offer_company: item.company?.name || "non_renseigné",
+                      job_offer_name: getTitle(item),
+                      position_in_list: position,
+                      has_contact: Boolean((item as any).contact?.hasEmail || (item as any).contact?.url || (item as any).contact?.phone),
+                      search_job_name: rechercheParams.job_name || "non_renseigné",
+                      search_address: rechercheParams.geo?.address || "non_renseigné",
+                    })
+                  },
           }}
           start={<LbaItemTags item={item} displayTooltips={true} />}
           title={

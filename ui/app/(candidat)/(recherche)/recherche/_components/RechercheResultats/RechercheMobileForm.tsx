@@ -13,6 +13,7 @@ import { RechercheTypesEmploiSelectFormik } from "@/app/(candidat)/(recherche)/r
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
@@ -21,6 +22,13 @@ export function RechercheMobileForm({ rechercheParams }: { rechercheParams: IRec
   return (
     <RechercheForm
       onSubmit={(formValues) => {
+        pushMatomoEvent({
+          event: MATOMO_EVENTS.SEARCH_LAUNCHED,
+          search_job_name: formValues.metier?.label || "non_renseigné",
+          search_address: formValues.lieu?.label || "non_renseigné",
+          search_radius: formValues.radius ? parseInt(formValues.radius, 10) : 30,
+          search_diploma: formValues.diploma ?? "indifferent",
+        })
         navigateToRecherchePage({ ...rechercheFormToRechercheParams(formValues), displayMobileForm: false, scrollToRecruteursLba: false })
       }}
       rechercheParams={rechercheParams}

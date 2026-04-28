@@ -13,6 +13,7 @@ import { RechercheResultTypeCheckboxFormik } from "@/app/(candidat)/(recherche)/
 import { RechercheSubmitButton } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheInputs/RechercheSubmitButton"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void }) {
   return (
@@ -56,6 +57,13 @@ function HomeRechercheFormComponent(props: WithRecherchePageParams) {
   return (
     <HomeRechercheFormUI
       onSubmit={(rechercheForm) => {
+        pushMatomoEvent({
+          event: MATOMO_EVENTS.SEARCH_LAUNCHED,
+          search_job_name: rechercheForm.metier?.label || "non_renseigné",
+          search_address: rechercheForm.lieu?.label || "non_renseigné",
+          search_radius: rechercheForm.radius ? parseInt(rechercheForm.radius, 10) : 30,
+          search_diploma: rechercheForm.diploma ?? "indifferent",
+        })
         onSubmit(rechercheFormToRechercheParams(rechercheForm))
       }}
     />
