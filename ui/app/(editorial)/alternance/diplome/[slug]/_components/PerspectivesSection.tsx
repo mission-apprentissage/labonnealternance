@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 
-import type { IDiplomeCarriere, IDiplomePerspectiveKpi } from "../_data/types"
+import type { IDiplomeCarriere, IDiplomePerspectiveKpi } from "shared/models/seoDiplome.model"
 
 import { SectionTitle } from "./SectionTitle"
 

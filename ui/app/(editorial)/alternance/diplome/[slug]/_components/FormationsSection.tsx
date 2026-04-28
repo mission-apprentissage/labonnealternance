@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import Tag from "@codegouvfr/react-dsfr/Tag"
 import { Box, Typography } from "@mui/material"
 
-import type { IDiplomeFormation } from "../_data/types"
+import type { IDiplomeFormation } from "shared/models/seoDiplome.model"
 
 import { SectionTitle } from "./SectionTitle"
 

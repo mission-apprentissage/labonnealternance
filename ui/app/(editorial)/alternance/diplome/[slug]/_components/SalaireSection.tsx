@@ -1,9 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
+import type { IDiplomeSalaireLigne } from "shared/models/seoDiplome.model"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeSalaireLigne } from "../_data/types"
 import { SectionTitle } from "./SectionTitle"
 
 export function SalaireSection({ titre, lignes }: { titre: string; lignes: IDiplomeSalaireLigne[] }) {

@@ -1,9 +1,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
+import type { IDiplomeVille } from "shared/models/seoDiplome.model"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeVille } from "../_data/types"
 import { SectionTitle } from "./SectionTitle"
 
 export function LocalisationSection({ title, text, villes }: { title: string; text: string; villes: IDiplomeVille[] }) {

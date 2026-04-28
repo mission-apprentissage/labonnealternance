@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 
-import type { IDiplomeEntreprise } from "../_data/types"
+import type { IDiplomeEntreprise } from "shared/models/seoDiplome.model"
 
 import { SectionTitle } from "./SectionTitle"
 

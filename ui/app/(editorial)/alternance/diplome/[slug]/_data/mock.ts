@@ -1,4 +1,4 @@
-import type { IDiplomeSeoData } from "./types"
+import type { IDiplomeSeoData } from "shared/models/seoDiplome.model"
 
 export const mockDiplomeData: IDiplomeSeoData = {
   slug: "bts-mco",
@@ -9,61 +9,30 @@ export const mockDiplomeData: IDiplomeSeoData = {
   description: {
     text: "Le BTS Management Commercial Opérationnel forme des professionnels capables de prendre la responsabilité opérationnelle de tout ou partie d'une unité commerciale. Cette formation en alternance permet d'acquérir des compétences en gestion, animation et dynamisation de l'offre commerciale, tout en développant la relation client et le management d'équipe.",
     objectifs: [
-      {
-        iconSrc: "/images/diplome/icon-success.svg",
-        title: "Objectifs du diplôme :",
-        items: [
-          "Maîtriser la gestion opérationnelle d'une unité commerciale.",
-          "Développer la relation client et la vente conseil.",
-          "Animer et dynamiser l'offre commerciale.",
-          "Assurer la gestion d'une équipe commerciale.",
-        ],
-      },
+      "Maîtriser la gestion opérationnelle d'une unité commerciale.",
+      "Développer la relation client et la vente conseil.",
+      "Animer et dynamiser l'offre commerciale.",
+      "Assurer la gestion d'une équipe commerciale.",
     ],
   },
   programme: {
     text: "Le programme du BTS MCO en alternance couvre un large éventail de compétences commerciales et managériales, alliant enseignements théoriques et pratique professionnelle.",
-    sections: [
-      {
-        icon: "fr-icon-book-2-line",
-        title: "Enseignements généraux",
-        items: ["Culture générale et expression.", "Langue vivante étrangère.", "Culture économique, juridique et managériale."],
-      },
-      {
-        icon: "fr-icon-briefcase-line",
-        title: "Enseignements professionnels",
-        items: [
-          "Développement de la relation client et vente conseil.",
-          "Animation et dynamisation de l'offre commerciale.",
-          "Gestion opérationnelle.",
-          "Management de l'équipe commerciale.",
-        ],
-      },
-      {
-        icon: "fr-icon-award-line",
-        title: "Compétences développées",
-        items: ["Techniques de vente et merchandising.", "Gestion des stocks.", "Management d'équipe.", "Analyse de données commerciales.", "Communication professionnelle."],
-      },
-    ],
-  },
-  preparation: {
-    title: "Comment se préparer à une alternance",
-    titleHighlight: "BTS MCO ?",
-    text: "Découvrez nos ressources pour vous préparer au mieux à l'alternance :",
-    ressources: [
-      {
-        title: "Introduction sur l'alternance",
-        description: "Découvrez comment fonctionne l'alternance",
-        href: "/",
-        imageSrc: "/images/diplome/card-left.svg",
-      },
-      {
-        title: "Préparer son projet en alternance",
-        description: "Découvrez les étapes clés d'un projet en alternance",
-        href: "/",
-        imageSrc: "/images/diplome/card-right.svg",
-      },
-    ],
+    sections: {
+      enseignements_generaux: ["Culture générale et expression.", "Langue vivante étrangère.", "Culture économique, juridique et managériale."],
+      enseignements_professionnels: [
+        "Développement de la relation client et vente conseil.",
+        "Animation et dynamisation de l'offre commerciale.",
+        "Gestion opérationnelle.",
+        "Management de l'équipe commerciale.",
+      ],
+      competences_developpees: [
+        "Techniques de vente et merchandising.",
+        "Gestion des stocks.",
+        "Management d'équipe.",
+        "Analyse de données commerciales.",
+        "Communication professionnelle.",
+      ],
+    },
   },
   /*
   entreprises: {

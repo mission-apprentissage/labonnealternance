@@ -132,6 +132,45 @@ export const ZSeoDiplome = z
 
 export type ISeoDiplome = z.output<typeof ZSeoDiplome>
 
+export type IDiplomeKpis = z.output<typeof ZSeoDiplomeKpis>
+export type IDiplomeProgrammeSections = z.output<typeof ZSeoDiplomeProgrammeSections>
+export type IDiplomeSalaireLigne = z.output<typeof ZSeoDiplomeSalaireLigne>
+export type IDiplomeMetier = z.output<typeof ZSeoDiplomeMetier>
+export type IDiplomeAutre = z.output<typeof ZSeoDiplomeAutre>
+export type IDiplomeEcoleCard = z.output<typeof ZSeoDiplomeEcoleCard>
+
+/*
+export type IDiplomeEntreprise = z.output<typeof ZSeoDiplomeEntreprise>
+export type IDiplomeFormation = z.output<typeof ZSeoDiplomeFormation>
+export type IDiplomeVille = z.output<typeof ZSeoDiplomeVille>
+export type IDiplomePerspectiveKpi = z.output<typeof ZSeoDiplomePerspectiveKpi>
+export type IDiplomeCarriere = z.output<typeof ZSeoDiplomeCarriere>
+*/
+
+export type IDiplomeSeoData = {
+  slug: string
+  titre: string
+  intituleLongFormation: string
+  sousTitre: string
+  kpis: IDiplomeKpis
+  description: {
+    text: string
+    objectifs: string[]
+  }
+  programme: {
+    text: string
+    sections: IDiplomeProgrammeSections
+  }
+  ecoles: IDiplomeEcoleCard[]
+  salaire: IDiplomeSalaireLigne[]
+  metiers: {
+    title: string
+    text: string
+    liste: IDiplomeMetier[]
+  }
+  autresDiplomes: IDiplomeAutre[]
+}
+
 export default {
   zod: ZSeoDiplome,
   indexes: [[{ slug: 1 }, {}]],

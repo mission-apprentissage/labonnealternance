@@ -1,9 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
-
+import type { IDiplomeMetier } from "shared/models/seoDiplome.model"
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeMetier } from "../_data/types"
 
 import { SectionTitle } from "./SectionTitle"
 

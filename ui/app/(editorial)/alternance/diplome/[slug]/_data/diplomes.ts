@@ -1,4 +1,4 @@
-import type { IDiplomeSeoData } from "./types"
+import type { IDiplomeSeoData } from "shared/models/seoDiplome.model"
 
 export const diplomesData: IDiplomeSeoData[] = [
   {

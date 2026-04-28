@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 
-import type { IDiplomeProgrammeSections } from "../_data/types"
+import type { IDiplomeProgrammeSections } from "shared/models/seoDiplome.model"
 
 import { SectionTitle } from "./SectionTitle"
 

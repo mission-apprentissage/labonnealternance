@@ -3,8 +3,8 @@ import Badge from "@codegouvfr/react-dsfr/Badge"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
+import type { IDiplomeEcoleCard } from "shared/models/seoDiplome.model"
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeEcoleCard } from "../_data/types"
 import { SectionTitle } from "./SectionTitle"
 
 function FormationCard({ card }: { card: IDiplomeEcoleCard }) {

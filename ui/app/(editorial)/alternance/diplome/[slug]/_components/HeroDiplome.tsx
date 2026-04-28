@@ -2,9 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-
+import type { IDiplomeKpis } from "shared/models/seoDiplome.model"
 import { UTM_PARAMS } from "../_data/constants"
-import type { IDiplomeKpis } from "../_data/types"
 import diplomeDecoration from "./diplome_decoration.svg"
 
 const KPI_CONFIG = [
