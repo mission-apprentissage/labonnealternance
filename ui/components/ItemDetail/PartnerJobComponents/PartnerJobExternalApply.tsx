@@ -46,6 +46,17 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
           linkProps={{
             href: job.contact.url,
             onClick: () => {
+              let partnerDomain = "non_renseigné"
+              try {
+                partnerDomain = new URL(job.contact.url).hostname
+              } catch (_e) {
+                // URL malformée, on garde la valeur par défaut
+              }
+              pushMatomoEvent({
+                ...matomoPayload,
+                event: MATOMO_EVENTS.APPLY_REDIRECT_CLICKED,
+                partner_domain: partnerDomain,
+              })
               SendPlausibleEvent("Clic Postuler - Fiche emploi", { partner_label: job.job.partner_label, info_fiche: job.id })
               notifyJobPostulerV3(job)
               setTimeout(() => {
