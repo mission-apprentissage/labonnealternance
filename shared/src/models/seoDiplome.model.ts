@@ -120,7 +120,6 @@ export const ZSeoDiplome = z
     ecoles: z.array(ZSeoDiplomeEcoleCard),
     salaire: z.array(ZSeoDiplomeSalaireLigne),
     metiers: z.object({
-      title: z.string(),
       text: z.string(),
       liste: z.array(ZSeoDiplomeMetier),
     }),
@@ -164,7 +163,6 @@ export type IDiplomeSeoData = {
   ecoles: IDiplomeEcoleCard[]
   salaire: IDiplomeSalaireLigne[]
   metiers: {
-    title: string
     text: string
     liste: IDiplomeMetier[]
   }
