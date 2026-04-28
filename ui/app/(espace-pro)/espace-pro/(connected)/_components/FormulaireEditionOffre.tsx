@@ -157,6 +157,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
             .test("no-urls-emails", "Les urls et les emails sont interdits", (value) => !value || detectUrlAndEmails(value).length === 0),
           job_employer_description: Yup.string()
             .trim()
+            .transform((v) => v || undefined)
             .min(30, "La présentation est trop courte (minimum 30 caractères).")
             .max(EMPLOYER_DESCRIPTION_MAX, `La présentation est trop longue (maximum ${EMPLOYER_DESCRIPTION_MAX} caractères).`),
         })}
