@@ -165,7 +165,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
             </Typography>
             <Box
               sx={{
-                rowGap: fr.spacing("8v"),
+                rowGap: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
                 columnGap: fr.spacing("8v"),
                 display: "grid",
                 gridTemplateColumns: { xs: "1fr", md: "1.4fr 2fr" },
@@ -181,7 +181,7 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
               >
                 <Box
                   sx={{
-                    padding: fr.spacing("6v"),
+                    padding: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
                     backgroundColor: fr.colors.decisions.background.alt.grey.default,
                     border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
                   }}
