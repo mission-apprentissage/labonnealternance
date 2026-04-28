@@ -137,32 +137,18 @@ export default (server: Server) => {
       if (!(userAccess?.admin || userAccess?.opcos.length)) {
         throw forbidden()
       }
-
       const entreprise = await getDbCollection("entreprises").findOne({ siret })
-
-      if (entreprise) {
-        const roleManagement = await getDbCollection("rolemanagements").findOne({
+      const roleManagements = await getDbCollection("rolemanagements")
+        .find({
           user_id: userId,
-          authorized_id: entreprise._id.toString(),
-          authorized_type: AccessEntityType.ENTREPRISE,
+          authorized_type: { $in: [AccessEntityType.ENTREPRISE, AccessEntityType.CFA] },
         })
-        if (!roleManagement) {
-          throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
-        }
-      } else {
-        const cfa = await getDbCollection("cfas").findOne({ siret })
-        if (cfa) {
-          const roleManagement = await getDbCollection("rolemanagements").findOne({
-            user_id: userId,
-            authorized_id: cfa._id.toString(),
-            authorized_type: AccessEntityType.CFA,
-          })
-          if (!roleManagement) {
-            throw forbidden("Le CFA n'est pas géré par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
-          }
-        } else {
-          throw notFound("Etablissement non trouvé", { error: BusinessErrorCodes.NOTFOUND })
-        }
+        .toArray()
+      const validRoleManagement = roleManagements.find(
+        (role) => role.authorized_type === AccessEntityType.CFA || (role.authorized_type === AccessEntityType.ENTREPRISE && role.authorized_id === entreprise?._id.toString())
+      )
+      if (!validRoleManagement) {
+        throw forbidden("L'entreprise n'est pas gérée par l'utilisateur cible", { error: BusinessErrorCodes.UNSUPPORTED })
       }
 
       const result = await updateUserWithAccountFields(userId, userFields)
