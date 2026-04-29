@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import seoDiplomeModel from "shared/models/seoDiplome.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
 import seoVilleModel from "shared/models/seoVille.model"
 import { logger } from "@/common/logger"
@@ -474,4 +475,25 @@ export const updateSeoMetierJobCounts = async () => {
   })
 
   logger.info("ended job updateSeoMetierJobCounts")
+}
+
+export const updateSeoDiplome = async () => {
+  logger.info("starting job updateSeoDiplome")
+  const diplomes = await getDbCollection(seoDiplomeModel.collectionName).find({}).toArray()
+
+  if (diplomes.length === 0) {
+    logger.warn("No diplomes found in the database for updateSeoDiplome.")
+    return
+  }
+
+  await asyncForEach(diplomes, async (diplome) => {
+    logger.info(`updating SEO data for diplome: ${diplome.slug}`)
+    try {
+      // TODO: implement update logic
+    } catch (error) {
+      logger.error("Error in updateSeoDiplome for diplome " + diplome.slug, error)
+    }
+  })
+
+  logger.info("ended job updateSeoDiplome")
 }
