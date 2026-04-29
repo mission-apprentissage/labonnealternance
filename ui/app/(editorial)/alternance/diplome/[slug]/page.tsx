@@ -85,7 +85,7 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
       </DefaultContainer>
 
       {/* Section pleine largeur avec fond bleu */}
-      <ExplorerDiplomesSection autresDiplomes={data.autresDiplomes} />
+      <ExplorerDiplomesSection currentSlug={slug} />
     </Box>
   )
 }

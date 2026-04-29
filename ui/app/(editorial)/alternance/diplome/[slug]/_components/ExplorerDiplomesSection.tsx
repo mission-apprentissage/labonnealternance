@@ -1,13 +1,15 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
-import type { IDiplomeAutre } from "shared/models/seoDiplome.model"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { diplomesData } from "@/app/(editorial)/alternance/diplome/[slug]/_data/diplomes"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { UTM_PARAMS } from "../_data/constants"
 import { SectionTitle } from "./SectionTitle"
 
-export function ExplorerDiplomesSection({ autresDiplomes }: { autresDiplomes: IDiplomeAutre[] }) {
+export function ExplorerDiplomesSection({ currentSlug }: { currentSlug: string }) {
+  const autresDiplomes = diplomesData.filter((d) => d.slug !== currentSlug)
+
   return (
     <Box
       sx={{
@@ -20,7 +22,7 @@ export function ExplorerDiplomesSection({ autresDiplomes }: { autresDiplomes: ID
 
         <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, columnGap: fr.spacing("6v"), rowGap: fr.spacing("2v") }}>
           {autresDiplomes.map((diplome) => (
-            <Link key={diplome.title} href={`${diplome.href}?${UTM_PARAMS}`} style={{ textDecoration: "none", backgroundImage: "none" }}>
+            <Link key={diplome.slug} href={`/alternance/diplome/${diplome.slug}?${UTM_PARAMS}`} style={{ textDecoration: "none", backgroundImage: "none" }}>
               <Box
                 sx={{
                   display: "flex",
@@ -35,7 +37,7 @@ export function ExplorerDiplomesSection({ autresDiplomes }: { autresDiplomes: ID
               >
                 <Box>
                   <Typography sx={{ fontWeight: 700, fontSize: "20px", lineHeight: "28px", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>
-                    {diplome.title}
+                    {diplome.titre}
                   </Typography>
                   {diplome.sousTitre && (
                     <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.default.grey.default }}>{diplome.sousTitre}</Typography>

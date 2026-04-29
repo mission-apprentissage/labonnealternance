@@ -2,6 +2,7 @@ import { z } from "../helpers/zodWithOpenApi.js"
 
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
+import { ZSeoJobCard } from "./seoMetier.model.js"
 
 const collectionName = "seo_diplomes" as const
 
@@ -27,13 +28,6 @@ const ZSeoDiplomeMetier = z.object({
   icon: z.string(),
   title: z.string(),
   offres: z.string(),
-  href: z.string(),
-})
-
-const ZSeoDiplomeAutre = z.object({
-  icon: z.string(),
-  title: z.string(),
-  sousTitre: z.string().optional(),
   href: z.string(),
 })
 
@@ -66,7 +60,7 @@ export const ZSeoDiplome = z
       text: z.string(),
       liste: z.array(ZSeoDiplomeMetier),
     }),
-    autresDiplomes: z.array(ZSeoDiplomeAutre),
+    cards: z.array(ZSeoJobCard),
     created_at: z.date(),
     updated_at: z.date(),
   })
@@ -78,31 +72,9 @@ export type IDiplomeKpis = z.output<typeof ZSeoDiplomeKpis>
 export type IDiplomeProgrammeSections = z.output<typeof ZSeoDiplomeProgrammeSections>
 export type IDiplomeSalaireLigne = z.output<typeof ZSeoDiplomeSalaireLigne>
 export type IDiplomeMetier = z.output<typeof ZSeoDiplomeMetier>
-export type IDiplomeAutre = z.output<typeof ZSeoDiplomeAutre>
 export type IDiplomeEcoleCard = z.output<typeof ZSeoDiplomeEcoleCard>
 
-export type IDiplomeSeoData = {
-  slug: string
-  titre: string
-  intituleLongFormation: string
-  sousTitre: string
-  kpis: IDiplomeKpis
-  description: {
-    text: string
-    objectifs: string[]
-  }
-  programme: {
-    text: string
-    sections: IDiplomeProgrammeSections
-  }
-  ecoles: IDiplomeEcoleCard[]
-  salaire: IDiplomeSalaireLigne[]
-  metiers: {
-    text: string
-    liste: IDiplomeMetier[]
-  }
-  autresDiplomes: IDiplomeAutre[]
-}
+export type IDiplomeSeoData = z.output<typeof ZSeoDiplome>
 
 export default {
   zod: ZSeoDiplome,
