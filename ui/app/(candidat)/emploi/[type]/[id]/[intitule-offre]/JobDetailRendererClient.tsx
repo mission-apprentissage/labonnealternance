@@ -242,9 +242,20 @@ function JobDetail({
             }}
           >
             <Box sx={{ width: "100%", pl: 0, pb: fr.spacing("2v") }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <LbaItemTags item={selectedItem} />
-                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  justifyContent: { md: "space-between" },
+                  alignItems: { xs: "flex-end", md: "flex-start" },
+                }}
+              >
+                <Box sx={{ width: { xs: "100%", md: "auto" }, flex: { md: 1 }, minWidth: 0, order: { xs: 1, md: 0 } }}>
+                  <LbaItemTags item={selectedItem} />
+                </Box>
+                <Box sx={{ flexShrink: 0, order: { xs: 0, md: 1 } }}>
+                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+                </Box>
               </Box>
               {getJobPublishedTimeAndApplications({ item: selectedItem })}
               <JobItemCardHeader selectedItem={selectedItem} kind={kind as LBA_ITEM_TYPE} isMandataire={isMandataire} />
@@ -260,18 +271,18 @@ function JobDetail({
               <Box
                 sx={{
                   display: "flex",
-                  columnGap: { xs: 0, md: fr.spacing("4v") },
-                  alignItems: "flex-start",
+                  flexDirection: { xs: "column", md: "row" },
+                  justifyContent: { md: "space-between" },
                 }}
               >
-                <Box sx={{ flex: "1 1 0" }}>
+                <Box>
                   {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
                     <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
                   )}
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                 </Box>
-                <Box sx={{ flex: "0 0 auto", my: fr.spacing("3v"), display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                   {reportItemId && (
                     <ReportJobLink
                       itemId={reportItemId}

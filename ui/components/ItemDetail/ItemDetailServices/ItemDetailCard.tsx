@@ -50,19 +50,13 @@ export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaIte
           />
         </svg>
       </Box>
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: "center",
-          pl: fr.spacing("4v"),
-          flexWrap: "wrap",
-        }}
-      >
-        <Typography>{selectedItem?.place?.zipCode}</Typography>
-        <Typography sx={{ whiteSpace: "nowrap", ml: fr.spacing("2v"), mr: fr.spacing("4v") }}>
-          {selectedItem?.place?.city || selectedItem?.place?.address || selectedItem?.place?.fullAddress}
-        </Typography>
-        <br />
+      <Stack direction="column" sx={{ pl: fr.spacing("4v") }}>
+        <Stack direction="row" sx={{ flexWrap: "wrap" }}>
+          <Typography>{selectedItem?.place?.zipCode}</Typography>
+          <Typography sx={{ whiteSpace: "nowrap", ml: fr.spacing("2v") }}>
+            {selectedItem?.place?.city || selectedItem?.place?.address || selectedItem?.place?.fullAddress}
+          </Typography>
+        </Stack>
         <ItemDistanceToCenter item={selectedItem} />
       </Stack>
     </Stack>
