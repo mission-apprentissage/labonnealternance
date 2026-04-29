@@ -173,9 +173,8 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
           <Select
             state={errors.job_rythm && touched.job_rythm ? "error" : "default"}
             stateRelatedMessage={errors.job_rythm as string}
-            label="Rythme de l'alternance (formation / entreprise)"
+            label="Rythme de l’alternance école/entreprise (Facultatif)"
             nativeSelectProps={{ name: "job_rythm", defaultValue: values.job_rythm, onChange: handleChange }}
-            hint="Facultatif"
           >
             <option value="" hidden>
               Choisissez un rythme
