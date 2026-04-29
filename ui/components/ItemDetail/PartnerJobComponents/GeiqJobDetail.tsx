@@ -7,35 +7,32 @@ import type { ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
-import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
+import { JobAccordion } from "@/components/ItemDetail/ItemDetailServices/JobAccordion"
+import { JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { DisplayContext } from "@/context/DisplayContextProvider"
-import { notifyJobDetailViewV3 } from "@/utils/api"
+import { notifyJobDetailViewV3, notifyLbaJobDetailView } from "@/utils/api"
 import { SendPlausibleEvent } from "@/utils/plausible"
-import LbaJobAcces from "./LbaJobAcces"
-import LbaJobCompetences from "./LbaJobCompetences"
-import LbaJobQualites from "./LbaJobQualites"
-import LbaJobTechniques from "./LbaJobTechniques"
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
+export const GeiqJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   const { formValues } = React.useContext(DisplayContext)
 
   useEffect(() => {
-    SendPlausibleEvent("Affichage - Fiche emploi", { partner_label: job.ideaType, info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}` })
+    SendPlausibleEvent("Affichage - Fiche emploi", {
+      partner_label: job.job.partner_label || job.ideaType,
+      info_fiche: `${job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
+    })
+    if (job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+      notifyLbaJobDetailView(job?.job?.id)
+    }
     notifyJobDetailViewV3(job)
-  }, [job?.job?.id])
-
-  const description = job?.job?.description
-  const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
-  const romeDescription = job?.job?.romeDetails?.definition
-
-  console.log("job", job)
+  }, [job?.id])
 
   return (
     <>
-      <JobPostingSchema title={title} description={validCustomDescription || romeDescription || null} id={job?.job?.id} job={job} />
+      <JobPostingSchema title={title} description={job?.job?.description || null} id={job?.id} job={job} />
 
-      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: 0, mt: fr.spacing("6v"), position: "relative", backgroundColor: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Contrat
         </Typography>
@@ -43,27 +40,26 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
       </Box>
 
       <EmployeurPresentationBlock
-        title={`Présentation de l'entreprise ${job?.company?.name ?? ""}`}
+        title="Présentation de l'organisme en charge du recrutement"
         item={job}
         description={job?.job?.employeurDescription}
         showPhone
+        showWebsite
         showGoogleSearch
       />
 
-      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+      <Box sx={{ pb: 0, mt: fr.spacing("6v"), position: "relative", backgroundColor: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
-          Description du métier
+          Description de l&apos;offre
         </Typography>
         <JobDescription job={job} />
-        <LbaJobQualites job={job} />
-        <Box sx={{ mb: fr.spacing("8v") }}>
-          <LbaJobCompetences job={job} />
-          <LbaJobTechniques job={job} />
-          <LbaJobAcces job={job} />
-        </Box>
+        {job?.job?.offer_desired_skills?.length ? <JobAccordion title="Qualités souhaitées pour ce métier" items={job?.job?.offer_desired_skills} defaultExpanded={false} /> : null}
+        {job?.job?.offer_to_be_acquired_skills?.length ? (
+          <JobAccordion title="Compétences qui seront acquises durant l'alternance" items={job?.job?.offer_to_be_acquired_skills} defaultExpanded={false} />
+        ) : null}
       </Box>
 
-      <Stack spacing={2} direction="row" sx={{ alignItems: "center", my: fr.spacing("6v"), mx: { xs: 2, sm: 2, md: "auto" } }}>
+      <Stack spacing={2} direction="row" sx={{ alignItems: "center", my: fr.spacing("6v"), mx: { xs: 0, md: "auto" } }}>
         <Image src="/images/whisper.svg" alt="" aria-hidden={true} width={34} height={39} style={{ marginTop: "2px" }} />
         <Box>
           <Typography component="div" sx={{ fontWeight: 700, fontSize: "20px", color: "#3a3a3a" }}>

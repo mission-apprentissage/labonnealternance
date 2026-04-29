@@ -3,7 +3,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Stack, Typography, useMediaQuery, useTheme } from "@mui/material"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import type { ILbaItemJobsGlobal, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemNaf, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
@@ -19,18 +19,32 @@ import ItemDetailCard from "@/components/ItemDetail/ItemDetailServices/ItemDetai
 import JobItemCardHeader from "@/components/ItemDetail/ItemDetailServices/JobItemCardHeader"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/NavigationButtons"
+import { LbaJobCfaDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobCfaDetail"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
+import LbaJobReportTooltip from "@/components/ItemDetail/LbaJobComponents/LbaJobReportTooltip"
+import { GeiqJobDetail } from "@/components/ItemDetail/PartnerJobComponents/GeiqJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
 import { RecruteurLbaCandidater } from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaCandidater"
 import RecruteurLbaDetail from "@/components/ItemDetail/RecruteurLbaComponents/RecruteurLbaDetail"
+import { ReportJobLink } from "@/components/ItemDetail/ReportJobLink"
 import ShareLink from "@/components/ItemDetail/ShareLink"
 import { ValorisationCandidatureSpontanee } from "@/components/ItemDetail/ValorisationCandidatureSpontanee"
+import { DisplayContext } from "@/context/DisplayContextProvider"
 import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { PAGES } from "@/utils/routes.utils"
 
 export default function JobDetailRendererClient({ job, rechercheParams }: { job: ILbaItemJobsGlobal; rechercheParams: IRecherchePageParams }) {
   const result = useRechercheResults(rechercheParams)
+  const { setFormValues } = React.useContext(DisplayContext)
+
+  React.useEffect(() => {
+    setFormValues({
+      job: rechercheParams.job_name ? { label: rechercheParams.job_name } : null,
+      location: rechercheParams.geo ? { value: { coordinates: [rechercheParams.geo.longitude, rechercheParams.geo.latitude] }, label: rechercheParams.geo.address } : null,
+      radius: rechercheParams.radius,
+    })
+  }, [rechercheParams.job_name, rechercheParams.geo?.latitude, rechercheParams.geo?.longitude, rechercheParams.radius])
 
   return <JobDetail selectedItem={job} resultList={result.displayedItems} rechercheParams={rechercheParams} />
 }
@@ -117,7 +131,13 @@ function JobDetail({
   })
 
   const kind = selectedItem.ideaType
-  const isMandataire = selectedItem?.company?.mandataire
+  const isMandataire = Boolean(selectedItem?.company?.mandataire)
+  const isCfaEntreprise = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).job?.isCfaEntreprise)
+  const reportItemId = (() => {
+    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) return (selectedItem as ILbaItemLbaJobJson).job?.id ?? null
+    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) return (selectedItem as ILbaItemPartnerJobJson).id
+    return null
+  })()
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   const [firstNaf] = selectedItem?.nafs as ILbaItemNaf[]
@@ -189,6 +209,16 @@ function JobDetail({
                     {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                   </Box>
                   <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
+                    {reportItemId && (
+                      <ReportJobLink
+                        itemId={reportItemId}
+                        type={kind as LBA_ITEM_TYPE}
+                        linkLabelNotReported="Signaler l'offre"
+                        linkLabelReported="Offre signalée"
+                        tooltip={<LbaJobReportTooltip />}
+                        sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
+                      />
+                    )}
                     <ShareLink item={selectedItem} />
                   </Box>
                 </Box>
@@ -241,7 +271,17 @@ function JobDetail({
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                 </Box>
-                <Box sx={{ flex: "0 0 auto", my: fr.spacing("3v") }}>
+                <Box sx={{ flex: "0 0 auto", my: fr.spacing("3v"), display: "flex", gap: fr.spacing("2v"), alignItems: "center" }}>
+                  {reportItemId && (
+                    <ReportJobLink
+                      itemId={reportItemId}
+                      type={kind as LBA_ITEM_TYPE}
+                      linkLabelNotReported="Signaler l'offre"
+                      linkLabelReported="Offre signalée"
+                      tooltip={<LbaJobReportTooltip />}
+                      sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
+                    />
+                  )}
                   <ShareLink item={selectedItem} />
                 </Box>
               </Box>
@@ -267,9 +307,12 @@ function JobDetail({
 
           <Box id="detail-content-container" />
           <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isCfaEntreprise && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && isCfaEntreprise && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !isCfaEntreprise && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
 
             <AideApprentissage />
 
