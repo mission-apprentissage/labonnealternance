@@ -69,12 +69,14 @@ export const ReportJobLink = ({
   tooltip,
   itemId,
   type,
+  sx,
 }: {
   itemId: string
   linkLabelNotReported: string
   linkLabelReported: string
   tooltip: React.ReactNode
   type: LBA_ITEM_TYPE
+  sx?: React.ComponentProps<typeof Stack>["sx"]
 }) => {
   const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
@@ -94,6 +96,7 @@ export const ReportJobLink = ({
       direction="row"
       sx={{
         alignItems: "center",
+        ...((sx as object) ?? {}),
       }}
     >
       {storedValue ? (
