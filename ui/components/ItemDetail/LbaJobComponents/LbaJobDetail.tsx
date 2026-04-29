@@ -4,7 +4,6 @@ import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
 import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
@@ -28,8 +27,6 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
   const description = job?.job?.description
   const validCustomDescription = description && description.length > BAD_DESCRIPTION_LENGTH ? description : null
   const romeDescription = job?.job?.romeDetails?.definition
-
-  console.log("job", job)
 
   return (
     <>

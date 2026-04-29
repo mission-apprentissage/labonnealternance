@@ -24,7 +24,6 @@ const EMPLOYER_DESCRIPTION_MAX = 800
 
 const EmployerDescriptionField = () => {
   const { values, setFieldValue, errors } = useFormikContext<any>()
-  const _length = values.job_employer_description?.length ?? 0
   return (
     <Box>
       <Input

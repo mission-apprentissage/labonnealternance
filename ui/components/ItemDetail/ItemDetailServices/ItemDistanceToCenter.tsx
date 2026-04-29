@@ -19,7 +19,6 @@ export default function ItemDistanceToCenter({
   item: ILbaItemFormation2Json | ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemFtJobJson | ILbaItemPartnerJobJson
 }) {
   const { formValues } = useContext(DisplayContext)
-  console.log("formValues", formValues)
 
   if (!formValues?.location?.value) return null
 
