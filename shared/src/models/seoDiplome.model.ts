@@ -44,6 +44,7 @@ export const ZSeoDiplome = z
     slug: z.string(),
     titre: z.string(),
     intituleLongFormation: z.string(),
+    romes: z.array(z.string()),
     sousTitre: z.string(),
     kpis: ZSeoDiplomeKpis,
     description: z.object({

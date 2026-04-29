@@ -15,6 +15,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS CG",
     sousTitre: "Comptabilité et Gestion",
     intituleLongFormation: "COMPTABILITE ET GESTION",
+    romes: ["M1203"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "1120€-1300€" },
     description: {
       text: "Le BTS Comptabilité et Gestion (BTS CG) est un diplôme d'État de niveau Bac+2 qui forme des techniciens supérieurs capables de prendre en charge les activités comptables et de gestion d'une entreprise ou d'un cabinet d'expertise comptable. Cette formation en alternance permet d'acquérir des compétences opérationnelles en comptabilité, fiscalité, gestion sociale et analyse financière, tout en développant une expérience professionnelle concrète. Le BTS CG en alternance est particulièrement apprécié des recruteurs pour la polyvalence et l'autonomie immédiate des diplômés.",
@@ -81,6 +82,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS Communication",
     sousTitre: "Communication",
     intituleLongFormation: "COMMUNICATION",
+    romes: ["E1103"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "849€-980€" },
     description: {
       text: "Le BTS Communication forme des professionnels capables de concevoir et mettre en œuvre des opérations de communication. Cette formation en alternance de niveau Bac+2 prépare aux métiers de la communication d'entreprise, de la publicité, des relations presse et du digital. En alternance, les étudiants développent une expertise concrète en création de supports, gestion de projets et relations clients, ce qui constitue un véritable atout sur le marché de l'emploi.",
@@ -151,6 +153,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS GPME",
     sousTitre: "Gestion de la PME",
     intituleLongFormation: "GESTION DE LA PME",
+    romes: ["M1203", "M1501", "M1604"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "1120€-1300€" },
     description: {
       text: "Le BTS Gestion de la PME forme des collaborateurs polyvalents capables d'assister le dirigeant d'une petite ou moyenne entreprise dans l'ensemble de ses activités. Cette formation en alternance permet d'acquérir des compétences en gestion administrative, relation clients et fournisseurs, gestion du personnel et communication. Le BTS GPME en alternance est particulièrement adapté aux profils organisés et rigoureux souhaitant évoluer dans un environnement professionnel varié au sein de PME.",
@@ -215,6 +218,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS MCO",
     sousTitre: "Management Commercial Opérationnel",
     intituleLongFormation: "MANAGEMENT COMMERCIAL OPERATIONNEL",
+    romes: ["D1401", "D1501", "D1506", "M1704", "M1705"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "471€ - 1 767€" },
     description: {
       text: "Le BTS Management Commercial Opérationnel (MCO) est un diplôme national de niveau 5 (Bac+2) qui forme des professionnels capables de prendre la responsabilité opérationnelle de tout ou partie d'une unité commerciale. En alternance, cette formation permet d'acquérir une solide expérience terrain en gestion, animation et dynamisation de l'offre commerciale, tout en développant la relation client et le management d'équipe. Le BTS MCO en alternance est particulièrement prisé dans les secteurs de la grande distribution, de la banque-assurance, de l'immobilier et du e-commerce.",
@@ -280,6 +284,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS NDRC",
     sousTitre: "Négociation et Digitalisation de la Relation Client",
     intituleLongFormation: "NEGOCIATION ET DIGITALISATION DE LA RELATION CLIENT",
+    romes: ["D1401", "D1406", "D1501", "M1703", "M1704"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "1120€-1300€" },
     description: {
       text: "Le BTS Négociation et Digitalisation de la Relation Client (NDRC) forme des professionnels de la vente et de la relation client, capables d'intervenir sur l'ensemble du cycle commercial : prospection, négociation, fidélisation et digitalisation de la relation client. Cette formation en alternance de niveau Bac+2 prépare à gérer la relation client sous toutes ses formes (en présentiel, à distance et en e-commerce) tout en maîtrisant les outils numériques. Le BTS NDRC en alternance est particulièrement recherché par les entreprises car il allie compétences commerciales terrain et maîtrise des canaux digitaux.",
@@ -346,6 +351,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS SAM",
     sousTitre: "Support à l'Action Managériale",
     intituleLongFormation: "SUPPORT A L'ACTION MANAGERIALE",
+    romes: ["M1604"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "849€-980€" },
     description: {
       text: "Le BTS Support à l'Action Managériale forme des professionnels polyvalents capables d'assister un dirigeant, un cadre ou une équipe dans leurs missions quotidiennes. Cette formation en alternance permet d'acquérir des compétences en gestion administrative, organisation de projets, collaboration aux ressources humaines et communication en plusieurs langues. Le BTS SAM en alternance est un diplôme de niveau 5 (Bac+2) reconnu par l'État, idéal pour intégrer rapidement le monde de l'entreprise tout en se formant.",
@@ -416,6 +422,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "BTS SIO",
     sousTitre: "Services Informatiques aux Organisations",
     intituleLongFormation: "SERVICES INFORMATIQUES AUX ORGANISATIONS",
+    romes: ["M1801", "M1805", "M1810"],
     kpis: { duration: "2 ans", entreprise: "XX", salaire: "1120€-1300€" },
     description: {
       text: "Le BTS Services Informatiques aux Organisations (SIO) est un diplôme d'État de niveau Bac+2 qui forme des professionnels capables de répondre aux besoins informatiques des entreprises. Cette formation en alternance propose deux spécialisations : l'option SISR (Solutions d'Infrastructure, Systèmes et Réseaux) orientée vers l'administration réseau et la cybersécurité, et l'option SLAM (Solutions Logicielles et Applications Métiers) orientée vers le développement d'applications. Le BTS SIO en alternance permet d'acquérir une expérience professionnelle concrète dans le secteur du numérique tout en préparant un diplôme reconnu par l'État.",
@@ -486,6 +493,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "CAP AEPE",
     sousTitre: "Accompagnant Éducatif Petite Enfance",
     intituleLongFormation: "ACCOMPAGNANT EDUCATIF PETITE ENFANCE",
+    romes: ["K1303"],
     kpis: { duration: "1 à 2 ans", entreprise: "XX", salaire: "471€-980€" },
     description: {
       text: "Le CAP Accompagnant Éducatif Petite Enfance (AEPE) est le diplôme de référence pour travailler auprès des enfants de 0 à 6 ans. Cette formation en alternance prépare à l'accueil, la garde et l'accompagnement du développement des jeunes enfants dans différents contextes : crèches, écoles maternelles ou à domicile. Le CAP AEPE remplace l'ancien CAP Petite Enfance et offre un programme enrichi, adapté aux exigences actuelles du secteur de la petite enfance.",
@@ -563,6 +571,7 @@ export const diplomesData: IDiplomeSeoData[] = [
     titre: "Licence Pro RH",
     sousTitre: "Ressources Humaines",
     intituleLongFormation: "RESSOURCES HUMAINES",
+    romes: ["K1801", "K2101", "K2111", "M1203", "M1402", "M1403", "M1501", "M1502", "M1503", "M1604", "M1806"],
     kpis: { duration: "1 an", entreprise: "XX", salaire: "1120€-1300€" },
     description: {
       text: "La Licence Professionnelle Métiers de la Gestion des Ressources Humaines forme des professionnels opérationnels capables d'assister les responsables RH dans l'ensemble de leurs missions : recrutement, gestion administrative du personnel, paie, formation et développement des compétences. Cette formation en alternance de niveau Bac+3 (niveau 6) permet d'acquérir en un an après un Bac+2 une expertise polyvalente en ressources humaines, très recherchée par les entreprises. La Licence Pro RH en alternance allie enseignements universitaires et immersion professionnelle pour une insertion rapide sur le marché du travail.",
@@ -640,7 +649,8 @@ export const diplomesData: IDiplomeSeoData[] = [
     slug: "titre-pro-secretaire-medicale",
     titre: "Titre Pro Secrétaire Médicale",
     sousTitre: "Secrétaire Assistant Médico-Social",
-    intituleLongFormation: "SECRETAIRE ASSISTANT MEDICO-SOCIAL",
+    intituleLongFormation: "SECRETAIRE MEDICAL ET MEDICO-SOCIAL",
+    romes: ["D1401", "M1609"],
     kpis: { duration: "12 mois", entreprise: "XX", salaire: "751€-980€" },
     description: {
       text: "Le Titre Professionnel Secrétaire Assistant Médico-Social (TP SAMS) est une certification de niveau 4 (Bac) délivrée par le Ministère du Travail et enregistrée au RNCP (RNCP36805). Cette formation en alternance prépare des professionnels capables d'assurer l'accueil et la prise en charge administrative des patients et usagers dans les structures sanitaires, médico-sociales et sociales. Le secrétaire assistant médico-social gère la planification des activités du service, le traitement et le suivi administratif des dossiers, ainsi que la coordination des opérations liées au parcours du patient ou de l'usager.",
