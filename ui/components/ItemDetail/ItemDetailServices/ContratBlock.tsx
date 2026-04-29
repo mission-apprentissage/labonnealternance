@@ -66,17 +66,6 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
           <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
         </div>
       )}
-      {showMandataireInfo && job?.company?.name && (
-        <Box sx={{ display: "flex", p: 2, background: "white", fontSize: "12px", alignItems: "center" }}>
-          <Typography>
-            Offre publiée par{" "}
-            <Typography component="span" sx={{ fontWeight: 700 }}>
-              {job.company.name}
-            </Typography>{" "}
-            pour une entreprise partenaire du centre de formation.
-          </Typography>
-        </Box>
-      )}
     </Stack>
   )
 }
