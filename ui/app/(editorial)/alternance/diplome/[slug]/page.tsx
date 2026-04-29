@@ -45,7 +45,7 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
       <Breadcrumb pages={[PAGES.static.home]} />
 
       <DefaultContainer>
-        <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} />
+        <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} romes={data.romes} />
       </DefaultContainer>
 
       <DefaultContainer>
@@ -80,7 +80,7 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
-          <OffresSection />
+          <OffresSection offreCount={data.kpis.offres} offres={data.cards} />
         </Box>
       </DefaultContainer>
 

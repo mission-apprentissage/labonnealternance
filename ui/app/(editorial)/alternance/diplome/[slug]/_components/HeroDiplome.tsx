@@ -8,11 +8,12 @@ import diplomeDecoration from "./diplome_decoration.svg"
 
 const KPI_CONFIG = [
   { key: "duration" as const, label: "Durée de la formation", iconSrc: "/images/seo/diplome/offre-emploi.svg", labelFirst: true },
-  { key: "entreprise" as const, label: "entreprises recrutent", iconSrc: "/images/seo/diplome/companie.svg", labelFirst: false },
-  { key: "salaire" as const, label: "Salaire mensuel moyen", iconSrc: "/images/seo/diplome/money.svg", labelFirst: false },
+  { key: "entreprises" as const, label: "entreprises recrutent", iconSrc: "/images/seo/diplome/companie.svg", labelFirst: false },
+  { key: "salaire" as const, label: "Salaire mensuel moyen", iconSrc: "/images/seo/diplome/money.svg", labelFirst: true },
+  { key: "offres" as const, label: "offres d'alternance", iconSrc: "/images/seo/diplome/offre-emploi.svg", labelFirst: false },
 ]
 
-export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTitre: string; kpis: IDiplomeKpis }) {
+export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; sousTitre: string; kpis: IDiplomeKpis; romes: string[] }) {
   return (
     <Box sx={{ marginBottom: fr.spacing("5w") }}>
       {/* Banner background */}
@@ -85,7 +86,7 @@ export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTit
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
+          gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
           gap: fr.spacing("2v"),
           mt: { xs: `-${fr.spacing("12v")}`, md: "-144px" },
           position: "relative",
@@ -95,10 +96,10 @@ export function HeroDiplome({ titre, sousTitre, kpis }: { titre: string; sousTit
       >
         {KPI_CONFIG.map((config) => {
           const value = kpis[config.key]
-          const valueFontSizeMd = value.length > 8 ? "32px" : "40px"
-          const valueLineHeightMd = value.length > 8 ? "40px" : "48px"
-          const valueFontSizeXs = value.length > 8 ? "22px" : "28px"
-          const valueLineHeightXs = value.length > 8 ? "28px" : "36px"
+          const valueFontSizeMd = ("" + value).length > 8 ? "32px" : "40px"
+          const valueLineHeightMd = ("" + value).length > 8 ? "40px" : "48px"
+          const valueFontSizeXs = ("" + value).length > 8 ? "22px" : "28px"
+          const valueLineHeightXs = ("" + value).length > 8 ? "28px" : "36px"
 
           return (
             <Box

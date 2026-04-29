@@ -477,6 +477,12 @@ export const updateSeoMetierJobCounts = async () => {
   logger.info("ended job updateSeoMetierJobCounts")
 }
 
+/*
+TODO: 
+- Quels métiers exercer avec un diplôme BTS MCO : aller chercher en group by les titres des offres avec le plus de résultats
+- Découvrez les XXX offres disponibles pour ce diplôme : aller chercher les offres en alternance sur la base des romes du titre et les compter
+*/
+
 export const updateSeoDiplome = async () => {
   logger.info("starting job updateSeoDiplome")
   const diplomes = await getDbCollection(seoDiplomeModel.collectionName).find({}).toArray()
@@ -489,6 +495,8 @@ export const updateSeoDiplome = async () => {
   await asyncForEach(diplomes, async (diplome) => {
     logger.info(`updating SEO data for diplome: ${diplome.slug}`)
     try {
+      const entreprisesCount = await getCompanyCountForMetier(diplome.romes)
+      const jobCount = await getJobCountForMetier(diplome.romes)
       const ecoles = (await getDbCollection("formationcatalogues")
         .aggregate([
           {
@@ -512,7 +520,10 @@ export const updateSeoDiplome = async () => {
         ])
         .toArray()) as IDiplomeEcoleCard[]
 
-      await getDbCollection(seoDiplomeModel.collectionName).updateOne({ _id: diplome._id }, { $set: { ecoles, updated_at: new Date() } })
+      await getDbCollection(seoDiplomeModel.collectionName).updateOne(
+        { _id: diplome._id },
+        { $set: { ecoles, "kpis.entreprises": entreprisesCount, "kpis.offres": jobCount, updated_at: new Date() } }
+      )
     } catch (error) {
       logger.error("Error in updateSeoDiplome for diplome " + diplome.slug, error)
     }
