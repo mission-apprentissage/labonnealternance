@@ -1,4 +1,4 @@
-import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
+import { getNormalizedStringInSetOrArray, isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 
 export const cfaCompanyList = [
   "13 EN FORM",
@@ -1831,4 +1831,6 @@ export const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-export const isCompanyInBlockedCfaList = isNormalizedStringInSetOrArray(cfaCompanyList)
+export const getCompanyInBlockedCfaList = getNormalizedStringInSetOrArray(cfaCompanyList)
+
+export const isCompanyInBlockedCfaList = (str: string | null | undefined) => Boolean(getCompanyInBlockedCfaList(str))
