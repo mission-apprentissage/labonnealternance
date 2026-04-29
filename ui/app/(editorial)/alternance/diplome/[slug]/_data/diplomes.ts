@@ -1,14 +1,5 @@
 import type { IDiplomeSeoData } from "shared/models/seoDiplome.model"
 
-/*
-TODO: 
-- Quelques écoles qui proposent le diplôme : aller chercher 9 formations chaque semaine sur la base des romes du titre en randomisé
-- Quels métiers exercer avec un diplôme BTS MCO : aller chercher en group by les titres des offres avec le plus de résultats
-- Découvrez les XXX offres disponibles pour ce diplôme : aller chercher les offres en alternance sur la base des romes du titre et les compter
-- Explorez d'autres métiers : lister les autres métiers du tableau sauf le métier courant, titre et sousTitre
-- Taux d'insertion post formation : à supprimer info pas fiable
-*/
-
 export const diplomesData: IDiplomeSeoData[] = [
   {
     slug: "bts-cg",

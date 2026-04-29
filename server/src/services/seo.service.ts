@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import seoDiplomeModel from "shared/models/seoDiplome.model"
+import seoDiplomeModel, { type IDiplomeEcoleCard } from "shared/models/seoDiplome.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
 import seoVilleModel from "shared/models/seoVille.model"
 import { logger } from "@/common/logger"
@@ -489,7 +489,30 @@ export const updateSeoDiplome = async () => {
   await asyncForEach(diplomes, async (diplome) => {
     logger.info(`updating SEO data for diplome: ${diplome.slug}`)
     try {
-      // TODO: implement update logic
+      const ecoles = (await getDbCollection("formationcatalogues")
+        .aggregate([
+          {
+            $match: {
+              intitule_long: { $regex: diplome.intituleLongFormation, $options: "i" },
+              catalogue_published: true,
+            },
+          },
+          { $sample: { size: 9 } },
+          {
+            $project: {
+              _id: 0,
+              formationTitle: "$intitule_long",
+              etablissement: "$etablissement_formateur_entreprise_raison_sociale",
+              lieu: {
+                $concat: [{ $ifNull: ["$etablissement_formateur_code_postal", ""] }, " ", { $ifNull: ["$etablissement_formateur_localite", ""] }],
+              },
+              href: { $literal: "/recherche-formation" },
+            },
+          },
+        ])
+        .toArray()) as IDiplomeEcoleCard[]
+
+      await getDbCollection(seoDiplomeModel.collectionName).updateOne({ _id: diplome._id }, { $set: { ecoles, updated_at: new Date() } })
     } catch (error) {
       logger.error("Error in updateSeoDiplome for diplome " + diplome.slug, error)
     }
