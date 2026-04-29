@@ -29,15 +29,15 @@ export function MetiersSection({ titre, text, liste }: { titre: string; text: st
             }}
           >
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <span className={fr.cx(metier.icon as any)} aria-hidden="true" style={{ color: "#417DC4", fontSize: "24px" }} />
+              <span className={fr.cx("fr-icon-briefcase-line" as any)} aria-hidden="true" style={{ color: "#417DC4", fontSize: "24px" }} />
               <Typography sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", color: "#417DC4", textAlign: "center" }}>{metier.title}</Typography>
             </Box>
             <Typography sx={{ fontWeight: 700, fontSize: "22px", lineHeight: "28px", color: fr.colors.decisions.text.title.grey.default, textAlign: "center" }}>
-              {metier.offres}
+              {metier.offres} offres en alternance sur toute la France
             </Typography>
             <Box sx={{ mt: "auto" }}>
               <Link
-                href={`${metier.href}?${UTM_PARAMS}`}
+                href={`/recherche-emploi?${UTM_PARAMS}`}
                 className={fr.cx("fr-link" as any, "fr-icon-arrow-right-line" as any, "fr-link--icon-right" as any)}
                 style={{ fontSize: "16px" }}
               >

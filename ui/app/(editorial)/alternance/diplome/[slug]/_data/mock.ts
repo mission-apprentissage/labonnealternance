@@ -55,9 +55,9 @@ export const mockDiplomeData: IDiplomeSeoData = {
   metiers: {
     text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce et la distribution.",
     liste: [
-      { icon: "fr-icon-briefcase-line", title: "Assistant administratif et commercial", offres: "145 offres en alternance sur toute la France", href: "/recherche-emploi" },
-      { icon: "fr-icon-briefcase-line", title: "Service Clients", offres: "89 offres en alternance sur toute la France", href: "/recherche-emploi" },
-      { icon: "fr-icon-briefcase-line", title: "Chargé(e) de Fidélisation Client", offres: "67 offres en alternance sur toute la France", href: "/recherche-emploi" },
+      { title: "Assistant administratif et commercial", offres: 0 },
+      { title: "Service Clients", offres: 0 },
+      { title: "Chargé(e) de Fidélisation Client", offres: 0 },
     ],
   },
 }

@@ -25,10 +25,8 @@ const ZSeoDiplomeSalaireLigne = z.object({
 })
 
 const ZSeoDiplomeMetier = z.object({
-  icon: z.string(),
   title: z.string(),
-  offres: z.string(),
-  href: z.string(),
+  offres: z.number(),
 })
 
 const ZSeoDiplomeEcoleCard = z.object({
