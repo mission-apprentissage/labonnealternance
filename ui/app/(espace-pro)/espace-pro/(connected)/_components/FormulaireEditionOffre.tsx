@@ -23,14 +23,14 @@ const FR_DATE_FORMAT = "DD/MM/YYYY"
 const EMPLOYER_DESCRIPTION_MAX = 800
 
 const EmployerDescriptionField = () => {
-  const { values, setFieldValue, errors, touched } = useFormikContext<any>()
+  const { values, setFieldValue, errors } = useFormikContext<any>()
   const _length = values.job_employer_description?.length ?? 0
   return (
     <Box>
       <Input
         label="Présentation de l'entreprise (Facultatif)"
         hintText="Décrivez les activités et les spécificités de l'entreprise."
-        state={errors.job_employer_description && touched.job_employer_description ? "error" : "info"}
+        state={errors.job_employer_description ? "error" : "info"}
         stateRelatedMessage={
           (errors.job_employer_description as string) ??
           "Notre équipe se réserve le droit de ne diffuser que les contenus répondant à une présentation de l'entreprise. La taille du champ est limitée à 800 caractères."

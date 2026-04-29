@@ -1,7 +1,7 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Typography } from "@mui/material"
 import { useContext } from "react"
 import type { ILbaItemFormation2Json, ILbaItemFtJobJson, ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
-
 import { DisplayContext } from "@/context/DisplayContextProvider"
 
 function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -33,7 +33,7 @@ export default function ItemDistanceToCenter({
   })()
 
   return distance != null ? (
-    <Typography component="span" sx={{ color: "grey.425", whiteSpace: "nowrap", fontSize: 14 }}>
+    <Typography component="span" sx={{ color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.875rem" }}>
       {distance} km(s) du lieu de recherche
     </Typography>
   ) : null
