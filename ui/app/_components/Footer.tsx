@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
+import { diplomesData } from "@/app/(editorial)/alternance/diplome/[slug]/_data/diplomes"
 import { publicConfig } from "@/config.public"
 import { PAGES } from "@/utils/routes.utils"
 import { DsfrHeaderProps } from "./Header"
@@ -126,6 +127,16 @@ const linkListContent: LinkCategory[] = [
         href: PAGES.dynamic.seoMetier(metier.slug).getPath(),
       },
       text: `${metier.metier}`,
+    })),
+  },
+  {
+    categoryName: "Alternance par diplôme",
+    // @ts-ignore min 1 link but here we have 10
+    links: Object.values(diplomesData).map((diplome) => ({
+      linkProps: {
+        href: PAGES.dynamic.seoDiplome(diplome.slug).getPath(),
+      },
+      text: diplome.titre,
     })),
   },
 ]
