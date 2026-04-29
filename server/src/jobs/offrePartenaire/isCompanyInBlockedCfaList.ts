@@ -1,4 +1,4 @@
-import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
+import { getNormalizedStringInSetOrArray, isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 
 export const cfaCompanyList = [
   "13 EN FORM",
@@ -479,7 +479,6 @@ export const cfaCompanyList = [
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE DU VAR",
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE ILLE-ET-VILAINE",
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE PORTES DE NORMANDIE",
-  "CHAMBRE DE COMMERCE ET D'INDUSTRIE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION BRETAGNE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION CENTRE-VAL DE LOIRE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION GRAND EST",
@@ -1832,4 +1831,6 @@ export const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-export const isCompanyInBlockedCfaList = isNormalizedStringInSetOrArray(cfaCompanyList)
+export const getCompanyInBlockedCfaList = getNormalizedStringInSetOrArray(cfaCompanyList)
+
+export const isCompanyInBlockedCfaList = (str: string | null | undefined) => Boolean(getCompanyInBlockedCfaList(str))
