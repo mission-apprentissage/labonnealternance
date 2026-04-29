@@ -6,6 +6,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
+import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -54,13 +55,13 @@ async function fetchMetierData(metier: string) {
   return apiGet("/_private/seo/metier/:metier", { params: { metier } })
 }
 
-function JobsCta({ href }: { href: string }) {
+function JobsCta({ href, metier }: { href: string; metier: string }) {
   return (
     <Box sx={{ textAlign: "center", mx: fr.spacing("4v") }}>
-      <Button linkProps={{ href }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+      <JobsCtaTracked href={href} searchOrigin="page_metier" searchJobName={metier} style={{ marginTop: fr.spacing("2v") }}>
         Voir toutes les offres en alternance
         <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-      </Button>
+      </JobsCtaTracked>
     </Box>
   )
 }
@@ -157,7 +158,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
         </Box>
 
-        <JobsCta href={jobsSearchUrl} />
+        <JobsCta href={jobsSearchUrl} metier={data.metier} />
 
         {/**
          * BLOC DESCRIPTION METIER
@@ -381,7 +382,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
         </Box>
 
-        <JobsCta href={jobsSearchUrl} />
+        <JobsCta href={jobsSearchUrl} metier={data.metier} />
 
         <Box
           sx={{
@@ -508,7 +509,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               ))}
             </Box>
 
-            <JobsCta href={jobsSearchUrl} />
+            <JobsCta href={jobsSearchUrl} metier={data.metier} />
           </Box>
         )}
       </DefaultContainer>

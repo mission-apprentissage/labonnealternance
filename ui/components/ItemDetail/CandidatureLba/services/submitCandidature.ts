@@ -7,6 +7,7 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { apiPost } from "@/utils/api.utils"
 import { sessionStorageSet } from "@/utils/localStorage"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import type { IApplicationSchemaInitValues } from "./getSchema"
 
 export const useStoredApplicationDate = (item: ILbaItem) => {
@@ -57,8 +58,17 @@ export const useSubmitCandidature = (
   const { isPending, error, isSuccess, isError, mutate } = useMutation({
     mutationKey: ["submitCandidature", LbaJob.id],
     mutationFn: submitCandidature,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       setApplicationDate(Date.now())
+      pushMatomoEvent({
+        event: MATOMO_EVENTS.SMART_APPLY_CONFIRMED,
+        job_offer_id: variables.LbaJob.id,
+        job_offer_type: getMatomoJobOfferType(variables.LbaJob.ideaType),
+        job_offer_company: variables.LbaJob.company?.name || "non_renseigné",
+        job_offer_name: variables.LbaJob.title || "non_renseigné",
+        has_cv: Boolean(variables.formValues.applicant_attachment_name),
+        has_motivation: Boolean(variables.formValues.applicant_message?.trim()),
+      })
     },
   })
 

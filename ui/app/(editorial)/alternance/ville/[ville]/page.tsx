@@ -1,24 +1,16 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Link, Typography } from "@mui/material"
 import Image from "next/image"
 import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
+import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
 import { appartements, loisirs, transports } from "@/app/(editorial)/alternance/_components/ville_data"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
-
-function JobsCta({ href }: { href: string }) {
-  return (
-    <Button linkProps={{ href }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
-      Démarrer mes recherches
-    </Button>
-  )
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ ville: string }> }) {
   const { ville } = await params
@@ -92,8 +84,10 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography>
                 <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.job_count + data.recruteur_count}</span> offres en alternance sont disponibles:
                 <br />
-                <JobsCta
+                <JobsCtaTracked
                   href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${encodeURIComponent(`${data.ville} (${data.cp})`)}&${utmParams}`}
+                  searchOrigin="page_ville"
+                  searchAddress={`${data.ville} (${data.cp})`}
                 />
               </Typography>
             </Box>
@@ -289,7 +283,11 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             </Box>
 
             <Box sx={{ textAlign: "center" }}>
-              <JobsCta href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`} />
+              <JobsCtaTracked
+                href={`/recherche-emploi?radius=30&lat=${data.geopoint.lat}&lon=${data.geopoint.long}&address=${data.ville} (${data.cp})&${utmParams}`}
+                searchOrigin="page_ville"
+                searchAddress={`${data.ville} (${data.cp})`}
+              />
             </Box>
           </Box>
         )}

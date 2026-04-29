@@ -1,4 +1,4 @@
-import { removeAccents } from "shared"
+import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 
 export const cfaCompanyList = [
   "13 EN FORM",
@@ -1831,25 +1831,4 @@ export const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-const stringNormaliser = (str: string): string => {
-  return removeAccents(str.toLowerCase())
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ")
-}
-
-const normalizedCfaList = cfaCompanyList.map(stringNormaliser)
-const normalizedCfaSet = new Set(normalizedCfaList)
-
-export const isCompanyInBlockedCfaList = (nom: string | null | undefined): boolean => {
-  return Boolean(getCompanyInBlockedCfaList(nom))
-}
-
-export const getCompanyInBlockedCfaList = (nom: string | null | undefined): string | null => {
-  if (!nom) return null
-  const nomNormalise = stringNormaliser(nom)
-  if (normalizedCfaSet.has(nomNormalise)) return nomNormalise
-
-  const normalizedSentence = ` ${nomNormalise} `
-  return normalizedCfaList.find((cfaName) => normalizedSentence.includes(` ${cfaName} `)) ?? null
-}
+export const isCompanyInBlockedCfaList = isNormalizedStringInSetOrArray(cfaCompanyList)
