@@ -1,15 +1,7 @@
-import type { IDiplomeSeoData } from "shared/models/seoDiplome.model"
+import { ObjectId } from "mongodb"
+import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-/*
-TODO: 
-- Quelques écoles qui proposent le diplôme : aller chercher 9 formations chaque semaine sur la base des romes du titre en randomisé
-- Quels métiers exercer avec un diplôme BTS MCO : aller chercher en group by les titres des offres avec le plus de résultats
-- Découvrez les XXX offres disponibles pour ce diplôme : aller chercher les offres en alternance sur la base des romes du titre et les compter
-- Explorez d'autres métiers : lister les autres métiers du tableau sauf le métier courant, titre et sousTitre
-- Taux d'insertion post formation : à supprimer info pas fiable
-*/
-
-export const diplomesData: IDiplomeSeoData[] = [
+const diplomesData = [
   {
     slug: "bts-cg",
     titre: "BTS CG",
@@ -48,18 +40,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "ENOES (PARIS)", lieu: "75009 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "PIGIER PERFORMANCE (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "ESG FINANCE (PARIS)", lieu: "75011 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "ESCG (LILLE)", lieu: "59000 Lille", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "IFCE (STRASBOURG)", lieu: "67000 Strasbourg", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "SUP EXPERTISE (PARIS)", lieu: "75013 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "GROUPE ALTERNANCE (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "INSEEC (PARIS)", lieu: "75016 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMPTABILITÉ ET GESTION", etablissement: "CFA DESCARTES (MARNE-LA-VALLÉE)", lieu: "77420 Champs-sur-Marne", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -68,14 +49,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS Comptabilité et Gestion ouvre les portes de nombreux métiers dans la comptabilité, la finance et la gestion d'entreprise.",
-      liste: [
-        { title: "Assistant comptable", offres: 0 },
-        { title: "Gestionnaire de paie", offres: 0 },
-        { title: "Collaborateur comptable en cabinet", offres: 0 },
-        { title: "Assistant contrôleur de gestion", offres: 0 },
-        { title: "Comptable unique en PME", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "bts-communication",
@@ -94,7 +70,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Veiller à la cohérence de l'image de l'organisation.",
       ],
     },
-
     programme: {
       text: "Le programme du BTS Communication en alternance couvre un large éventail de compétences en communication, alliant enseignements théoriques et pratique professionnelle en entreprise.",
       sections: {
@@ -119,18 +94,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "BTS COMMUNICATION", etablissement: "NARRATIIV (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "LYCEE POLYVALENT JEAN LURCAT (PARIS)", lieu: "75013 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "INSTITUT DE COMMUNICATION (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "ESPL (ANGERS)", lieu: "49000 Angers", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "PIGIER PERFORMANCE (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "GROUPE ALTERNANCE (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "H3 CAMPUS (POISSY)", lieu: "78300 Poissy", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "EPB PARIS", lieu: "75009 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS COMMUNICATION", etablissement: "IESCA (MONTPELLIER)", lieu: "34000 Montpellier", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -139,14 +103,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS Communication ouvre les portes de nombreux métiers dans la communication d'entreprise, la publicité et le digital.",
-      liste: [
-        { title: "Chargé(e) de communication", offres: 0 },
-        { title: "Community manager", offres: 0 },
-        { title: "Assistant(e) chef de publicité", offres: 0 },
-        { title: "Chargé(e) de relations presse", offres: 0 },
-        { title: "Chargé(e) de communication digitale", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "bts-gpme",
@@ -164,7 +123,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Soutenir le fonctionnement et le développement de la PME.",
       ],
     },
-
     programme: {
       text: "Le programme du BTS GPME en alternance couvre un large éventail de compétences administratives et de gestion, alliant enseignements théoriques et pratique professionnelle en entreprise.",
       sections: {
@@ -184,18 +142,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "GROUPE ALTERNANCE PARIS", lieu: "75010 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "CFA CODIS (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "IDRAC BUSINESS SCHOOL (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "ESARC EVOLUTION (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "ISME NANTES", lieu: "44000 Nantes", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "H3 CAMPUS (POISSY)", lieu: "78300 Poissy", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "PIGIER PERFORMANCE (MARSEILLE)", lieu: "13006 Marseille", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "GROUPE ALTERNANCE TOULOUSE", lieu: "31000 Toulouse", href: "/recherche-formation" },
-      { formationTitle: "BTS GESTION DE LA PME", etablissement: "CBS SCHOOL (STRASBOURG)", lieu: "67000 Strasbourg", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -204,14 +151,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS GPME ouvre les portes de nombreux métiers dans la gestion, l'administration et les ressources humaines au sein des PME.",
-      liste: [
-        { title: "Assistant de gestion PME-PMI", offres: 0 },
-        { title: "Assistant de direction", offres: 0 },
-        { title: "Assistant administratif et comptable", offres: 0 },
-        { title: "Assistant ressources humaines", offres: 0 },
-        { title: "Chargé de clientèle", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "bts-mco",
@@ -230,7 +172,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Analyser les performances commerciales et proposer des actions correctives.",
       ],
     },
-
     programme: {
       text: "Le programme du BTS MCO en alternance couvre un large éventail de compétences commerciales et managériales, réparties en enseignements généraux et professionnels sur deux années de formation.",
       sections: {
@@ -250,18 +191,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
-      { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes", href: "/recherche-formation" },
-      { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "INSTITUT DE MANAGEMENT COMMERCIAL (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
-      { formationTitle: "BOULANGER (CAP)", etablissement: "CFA COMMERCE PARIS", lieu: "75003 Paris", href: "/recherche-formation" },
-      { formationTitle: "VENDEUR CONSEIL (TP)", etablissement: "AFIPE ILE-DE-FRANCE", lieu: "92100 Boulogne-Billancourt", href: "/recherche-formation" },
-      { formationTitle: "MANAGER D'UNITE MARCHANDE (TP)", etablissement: "PIGIER PERFORMANCE", lieu: "69002 Lyon", href: "/recherche-formation" },
-      { formationTitle: "CONSEILLER DE VENTE (TP)", etablissement: "TALIS BUSINESS SCHOOL", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "ESUP RENNES", lieu: "35000 Rennes", href: "/recherche-formation" },
-      { formationTitle: "RESPONSABLE DE RAYON (TP)", etablissement: "GROUPE IGS", lieu: "75010 Paris", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -270,14 +200,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce, la distribution, la banque-assurance et les services.",
-      liste: [
-        { title: "Conseiller de vente", offres: 0 },
-        { title: "Chargé de clientèle", offres: 0 },
-        { title: "Chef de rayon", offres: 0 },
-        { title: "Assistant commercial", offres: 0 },
-        { title: "Responsable de point de vente", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "bts-ndrc",
@@ -296,7 +221,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Piloter et optimiser la stratégie commerciale digitale.",
       ],
     },
-
     programme: {
       text: "Le programme du BTS NDRC en alternance couvre l'ensemble des compétences nécessaires à la gestion de la relation client, de la négociation terrain à la digitalisation des processus commerciaux.",
       sections: {
@@ -316,18 +240,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "BTS NDRC", etablissement: "EURIDIS BUSINESS SCHOOL (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "ESARC EVOLUTION (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "PIGIER PERFORMANCE (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "GROUPE ALTERNANCE (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "TALIS BUSINESS SCHOOL (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "H3 CAMPUS (POISSY)", lieu: "78300 Poissy", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "INSEEC (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "ISME (NANTES)", lieu: "44000 Nantes", href: "/recherche-formation" },
-      { formationTitle: "BTS NDRC", etablissement: "EEC PARIS", lieu: "75010 Paris", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -336,15 +249,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS NDRC ouvre les portes de nombreux métiers dans la vente, la négociation commerciale et la relation client digitale.",
-      liste: [
-        { title: "Commercial terrain / sédentaire", offres: 0 },
-        { title: "Chargé de clientèle", offres: 0 },
-        { title: "Technico-commercial", offres: 0 },
-        { title: "Conseiller commercial en banque / assurance", offres: 0 },
-        { title: "Chargé d'affaires B2B", offres: 0 },
-        { title: "Responsable e-commerce", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "bts-sam",
@@ -363,7 +270,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Maîtriser les outils numériques et bureautiques professionnels.",
       ],
     },
-
     programme: {
       text: "Le programme du BTS SAM en alternance couvre un large éventail de compétences administratives et managériales, alliant enseignements théoriques et pratique professionnelle en entreprise.",
       sections: {
@@ -388,18 +294,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "PIGIER PERFORMANCE (PARIS)", lieu: "75015 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "IGENSIA ALTERNANCE (LYON)", lieu: "69003 Lyon", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "ESAGE (PARIS)", lieu: "75010 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "H3 CAMPUS (POISSY)", lieu: "78300 Poissy", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "INTERFOR (AMIENS)", lieu: "80000 Amiens", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "ESARC BORDEAUX", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "LYCÉE POLYVALENT GUSTAVE EIFFEL (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "INSTITUT F2I (VINCENNES)", lieu: "94300 Vincennes", href: "/recherche-formation" },
-      { formationTitle: "BTS SUPPORT À L'ACTION MANAGÉRIALE", etablissement: "TALIS BUSINESS SCHOOL (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -408,14 +303,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS SAM ouvre les portes de nombreux métiers dans le support administratif, l'assistanat de direction et la gestion des ressources humaines.",
-      liste: [
-        { title: "Assistant de direction", offres: 0 },
-        { title: "Assistant manager", offres: 0 },
-        { title: "Assistant ressources humaines", offres: 0 },
-        { title: "Office manager", offres: 0 },
-        { title: "Chargé(e) de recrutement", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "bts-sio",
@@ -434,7 +324,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Accompagner les utilisateurs dans l'appropriation des outils numériques.",
       ],
     },
-
     programme: {
       text: "Le programme du BTS SIO en alternance associe un tronc commun d'enseignements généraux et informatiques à une spécialisation SISR ou SLAM choisie dès le premier semestre. La formation délivre 120 crédits ECTS.",
       sections: {
@@ -459,18 +348,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "BTS SIO option SLAM", etablissement: "IPSSI (PARIS)", lieu: "75011 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SISR", etablissement: "H3 HITEMA (PARIS)", lieu: "75020 Paris", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SLAM", etablissement: "INSTITUT F2I (VINCENNES)", lieu: "94300 Vincennes", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SISR", etablissement: "LYCÉE GUSTAVE EIFFEL (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SLAM", etablissement: "MYDIGITALSCHOOL (LYON)", lieu: "69002 Lyon", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SISR", etablissement: "CESI ALTERNANCE (TOULOUSE)", lieu: "31670 Labège", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SLAM", etablissement: "EPSI (NANTES)", lieu: "44200 Nantes", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SISR", etablissement: "PIGIER PERFORMANCE (LILLE)", lieu: "59000 Lille", href: "/recherche-formation" },
-      { formationTitle: "BTS SIO option SLAM", etablissement: "ESUP (RENNES)", lieu: "35000 Rennes", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -479,14 +357,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le BTS SIO ouvre les portes de nombreux métiers dans le secteur du numérique et de l'informatique, que ce soit en infrastructure ou en développement.",
-      liste: [
-        { title: "Technicien systèmes et réseaux", offres: 0 },
-        { title: "Développeur web / Développeur d'applications", offres: 0 },
-        { title: "Technicien support informatique", offres: 0 },
-        { title: "Administrateur réseau", offres: 0 },
-        { title: "Technicien en cybersécurité", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "cap-aepe",
@@ -505,7 +378,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Mettre en place des activités d'éveil et d'éducation adaptées.",
       ],
     },
-
     programme: {
       text: "Le programme du CAP AEPE en alternance couvre l'ensemble des compétences nécessaires à l'accompagnement éducatif des jeunes enfants, alliant enseignements théoriques et pratique professionnelle en structure d'accueil.",
       sections: {
@@ -531,18 +403,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "CAP AEPE", etablissement: "CFA ACADÉMIQUE DE CRÉTEIL", lieu: "94000 Créteil", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "LYCÉE PROFESSIONNEL CAMILLE DE LELLIS", lieu: "59100 Roubaix", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "MFR DU PONT DU GARD", lieu: "30210 Remoulins", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "CAMPUS SUD DES MÉTIERS (MARSEILLE)", lieu: "13006 Marseille", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "CFA COMMERCE ET SERVICES (BLAGNAC)", lieu: "31700 Blagnac", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "IRSS NANTES", lieu: "44000 Nantes", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "LYCÉE JEAN MONNET (MONTPELLIER)", lieu: "34000 Montpellier", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "CFA ACADÉMIQUE DE LYON", lieu: "69000 Lyon", href: "/recherche-formation" },
-      { formationTitle: "CAP AEPE", etablissement: "CAMPUS MEWO (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -551,18 +412,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le CAP AEPE ouvre les portes de nombreux métiers dans le secteur de la petite enfance, en accueil collectif comme individuel.",
-      liste: [
-        { title: "Agent de crèche / Auxiliaire petite enfance", offres: 0 },
-        {
-          title: "Agent Territorial Spécialisé des Écoles Maternelles (ATSEM)",
-          offres: 0,
-        },
-        { title: "Garde d'enfants à domicile", offres: 0 },
-        { title: "Assistant maternel (après agrément)", offres: 0 },
-        { title: "Animateur petite enfance", offres: 0 },
-        { title: "Agent d'animation en structure d'accueil", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "licence-pro-rh",
@@ -582,7 +434,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Appliquer le droit du travail individuel et collectif dans les situations courantes.",
       ],
     },
-
     programme: {
       text: "Le programme de la Licence Pro RH en alternance couvre l'ensemble des fonctions ressources humaines, alliant enseignements théoriques en droit social et management à une forte dimension pratique grâce à l'alternance en entreprise.",
       sections: {
@@ -609,23 +460,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT DE PARIS - RIVES DE SEINE", lieu: "75016 Paris", href: "/recherche-formation" },
-      { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "IUT JEAN MOULIN LYON 3", lieu: "69008 Lyon", href: "/recherche-formation" },
-      { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "UNIVERSITÉ BRETAGNE SUD (VANNES)", lieu: "56000 Vannes", href: "/recherche-formation" },
-      { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "UNIVERSITÉ VERSAILLES SAINT-QUENTIN (UVSQ)", lieu: "78000 Versailles", href: "/recherche-formation" },
-      {
-        formationTitle: "LP MÉTIERS DE LA GRH : FORMATION, COMPÉTENCES ET EMPLOI",
-        etablissement: "UNIVERSITÉ GRENOBLE ALPES",
-        lieu: "38000 Grenoble",
-        href: "/recherche-formation",
-      },
-      { formationTitle: "LICENCE GESTION DES RESSOURCES HUMAINES", etablissement: "CNAM ILE-DE-FRANCE", lieu: "75003 Paris", href: "/recherche-formation" },
-      { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "UNIVERSITÉ PARIS-EST CRÉTEIL (UPEC)", lieu: "94000 Créteil", href: "/recherche-formation" },
-      { formationTitle: "LP GESTIONNAIRE DE PAIE ET ADMINISTRATION DU PERSONNEL", etablissement: "IGENSIA ALTERNANCE", lieu: "75013 Paris", href: "/recherche-formation" },
-      { formationTitle: "LP MÉTIERS DE LA GRH : ASSISTANT", etablissement: "UNIVERSITÉ PARIS 1 PANTHÉON-SORBONNE", lieu: "75005 Paris", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -634,14 +469,9 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "La Licence Professionnelle Ressources Humaines ouvre les portes de nombreux métiers dans la gestion du personnel, le recrutement et l'administration RH.",
-      liste: [
-        { title: "Assistant ressources humaines", offres: 0 },
-        { title: "Gestionnaire de paie", offres: 0 },
-        { title: "Chargé de recrutement", offres: 0 },
-        { title: "Chargé de formation", offres: 0 },
-        { title: "Assistant de gestion du personnel", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
   {
     slug: "titre-pro-secretaire-medicale",
@@ -660,7 +490,6 @@ export const diplomesData: IDiplomeSeoData[] = [
         "Utiliser les outils numériques et les logiciels métiers du secteur médico-social.",
       ],
     },
-
     programme: {
       text: "Le programme du Titre Pro Secrétaire Médicale en alternance est organisé autour de trois blocs de compétences professionnelles (CCP), couvrant l'ensemble des activités du secrétariat médico-social.",
       sections: {
@@ -685,18 +514,7 @@ export const diplomesData: IDiplomeSeoData[] = [
         ],
       },
     },
-
-    ecoles: [
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "AFPA (PARIS)", lieu: "75012 Paris", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "GRETA MÉDITERRANÉE (MARSEILLE)", lieu: "13003 Marseille", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "IFOCOP (RUNGIS)", lieu: "94150 Rungis", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "CNED (LYON)", lieu: "69003 Lyon", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "GRETA CFA AQUITAINE (BORDEAUX)", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "NEXTFORMATION (PARIS)", lieu: "75020 Paris", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "AFTEC FORMATION (RENNES)", lieu: "35000 Rennes", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "PIGIER PERFORMANCE (TOULOUSE)", lieu: "31000 Toulouse", href: "/recherche-formation" },
-      { formationTitle: "SECRÉTAIRE ASSISTANT MÉDICO-SOCIAL (TP)", etablissement: "EFAM (NANTES)", lieu: "44000 Nantes", href: "/recherche-formation" },
-    ],
+    ecoles: [],
     salaire: [
       { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
       { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
@@ -705,13 +523,18 @@ export const diplomesData: IDiplomeSeoData[] = [
     ],
     metiers: {
       text: "Le Titre Pro Secrétaire Assistant Médico-Social ouvre les portes de nombreux métiers dans le secteur sanitaire et médico-social.",
-      liste: [
-        { title: "Secrétaire médical(e)", offres: 0 },
-        { title: "Secrétaire médico-social(e)", offres: 0 },
-        { title: "Assistant(e) médico-administratif(ve)", offres: 0 },
-        { title: "Secrétaire hospitalier(ère)", offres: 0 },
-        { title: "Technicien(ne) d'information médicale", offres: 0 },
-      ],
+      liste: [],
     },
+    cards: [],
   },
 ]
+
+export const up = async () => {
+  const now = new Date()
+  const collection = getDbCollection("seo_diplomes")
+  await collection.deleteMany({})
+  await collection.insertMany(diplomesData.map((d) => ({ ...d, _id: new ObjectId(), created_at: now, updated_at: now })))
+}
+
+// set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
+export const requireShutdown: boolean = true

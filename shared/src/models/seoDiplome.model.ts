@@ -8,7 +8,7 @@ const collectionName = "seo_diplomes" as const
 
 const ZSeoDiplomeKpis = z.object({
   duration: z.string(),
-  entreprise: z.string(),
+  entreprise: z.number(),
   salaire: z.string(),
 })
 
