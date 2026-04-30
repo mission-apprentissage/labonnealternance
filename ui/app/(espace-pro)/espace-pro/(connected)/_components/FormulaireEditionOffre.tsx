@@ -164,8 +164,10 @@ export const FormulaireEditionOffre = ({ offre, establishment_id, handleSave }: 
       >
         {({ values }) => (
           <div>
-            <Typography component="h2">Votre offre</Typography>
-            <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v") }}>
+            <Typography component="h2" sx={{ fontWeight: 700 }}>
+              Votre offre
+            </Typography>
+            <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
               Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
             </Typography>
             <Box

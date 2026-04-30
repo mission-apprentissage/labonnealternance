@@ -32,6 +32,11 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
           <strong>Rythme de l'alternance : </strong> {job?.job?.contract_rythm}
         </div>
       )}
+      {job?.job?.quantiteContrat > 1 && (
+        <div>
+          <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
+        </div>
+      )}
       <Stack direction="row" sx={{ flexWrap: "wrap" }}>
         <strong>Niveau visé en fin d&apos;études : </strong>{" "}
         {job?.target_diploma_level ? (
@@ -61,11 +66,6 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
           </Typography>
         )}
       </Stack>
-      {job?.job?.quantiteContrat > 1 && (
-        <div>
-          <strong>Nombre de postes disponibles : </strong> {job?.job?.quantiteContrat}
-        </div>
-      )}
     </Stack>
   )
 }

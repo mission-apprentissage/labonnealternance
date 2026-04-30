@@ -41,7 +41,7 @@ export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaIte
       </Stack>
     </Box>
   ) : (
-    <Stack direction="row" sx={{ color: "grey.700", mt: fr.spacing("4v"), mb: fr.spacing("2v") }}>
+    <Stack direction="row" alignItems="center" sx={{ color: "grey.700", mt: fr.spacing("4v"), mb: fr.spacing("2v") }}>
       <Box sx={{ pt: fr.spacing("2v") }}>
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -50,10 +50,10 @@ export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaIte
           />
         </svg>
       </Box>
-      <Stack direction="column" sx={{ pl: fr.spacing("4v") }}>
+      <Stack direction="column" sx={{ pl: fr.spacing("2v") }}>
         <Stack direction="row" sx={{ flexWrap: "wrap" }}>
           <Typography>{selectedItem?.place?.zipCode}</Typography>
-          <Typography sx={{ whiteSpace: "nowrap", ml: fr.spacing("2v") }}>
+          <Typography sx={{ whiteSpace: "nowrap", ml: fr.spacing("1v") }}>
             {selectedItem?.place?.city || selectedItem?.place?.address || selectedItem?.place?.fullAddress}
           </Typography>
         </Stack>

@@ -47,7 +47,7 @@ export const EmployeurPresentationBlock = ({
           </Box>
         )}
 
-        <Typography sx={{ my: fr.spacing("4v") }}>{description || emptyStateText}</Typography>
+        <div dangerouslySetInnerHTML={{ __html: description || emptyStateText }} />
 
         {cityOnly ? (
           <div>

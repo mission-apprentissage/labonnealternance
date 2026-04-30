@@ -586,7 +586,7 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
-    workplace_description: job.job_employer_description !== undefined ? job.job_employer_description : existingJob.workplace_description,
+    workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
   }
 
   await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
@@ -1176,7 +1176,7 @@ async function jobCreateToJobsPartner({
     contract_remote: null,
     offer_status_history: [],
     workplace_address_street_label: null,
-    workplace_description: job.job_employer_description ?? null,
+    workplace_description: sanitizeTextField(job.job_employer_description, true) || null,
     workplace_name: null,
     workplace_website: null,
 
