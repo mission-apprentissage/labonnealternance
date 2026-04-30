@@ -15,7 +15,7 @@ export function OffresSection({ offreCount, offres }: { offreCount: number; offr
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("3v"), mb: fr.spacing("8v"), alignItems: "start" }}>
         {offres.map((offre) => (
-          <CarteOffre key={offre._id ?? offre.partner_job_id} card={offre} utmParams={UTM_PARAMS} />
+          <CarteOffre key={offre._id?.toString() ?? offre.partner_job_id} card={offre} utmParams={UTM_PARAMS} />
         ))}
       </Box>
 

@@ -39,9 +39,6 @@ export function ExplorerDiplomesSection({ currentSlug }: { currentSlug: string }
                   <Typography sx={{ fontWeight: 700, fontSize: "20px", lineHeight: "28px", color: fr.colors.decisions.background.actionHigh.blueFrance.default }}>
                     {diplome.titre}
                   </Typography>
-                  {diplome.sousTitre && (
-                    <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.default.grey.default }}>{diplome.sousTitre}</Typography>
-                  )}
                 </Box>
                 <ArrowRightLine sx={{ flexShrink: 0, color: fr.colors.decisions.background.actionHigh.blueFrance.default, ml: fr.spacing("4v") }} />
               </Box>

@@ -132,7 +132,7 @@ const linkListContent: LinkCategory[] = [
   {
     categoryName: "Alternance par diplôme",
     // @ts-ignore min 1 link but here we have 10
-    links: Object.values(diplomeData).map((diplome) => ({
+    links: diplomeData.slice(0, 10).map((diplome) => ({
       linkProps: {
         href: PAGES.dynamic.seoDiplome(diplome.slug).getPath(),
       },

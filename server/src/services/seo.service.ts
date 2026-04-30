@@ -500,7 +500,7 @@ export const updateSeoDiplome = async () => {
         .aggregate([
           {
             $match: {
-              intitule_long: { $regex: diplome.intituleLongFormation, $options: "i" },
+              intitule_long: { $regex: diplome.intituleLongFormation.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" },
               catalogue_published: true,
             },
           },

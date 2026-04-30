@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import type { ISeoDiplome } from "shared/models/seoDiplome.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
@@ -38,9 +39,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const data = await getDiplomeData(slug)
+  const rawData = await getDiplomeData(slug)
 
-  if (!data) notFound()
+  if (!rawData) notFound()
+
+  const data = rawData as unknown as ISeoDiplome
 
   return (
     <Box>
