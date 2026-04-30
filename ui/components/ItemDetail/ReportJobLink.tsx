@@ -100,17 +100,14 @@ export const ReportJobLink = ({
       }}
     >
       {storedValue ? (
-        <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
+        <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left">
           {linkLabelReported}
         </Button>
       ) : (
-        <Button priority="tertiary no outline" iconId="ri-flag-line" iconPosition="left" size="small" onClick={openModal}>
+        <Button priority="tertiary no outline" iconId="ri-flag-line" iconPosition="left" onClick={openModal}>
           {linkLabelNotReported}
         </Button>
       )}
-      <InfoTooltipOrModal tooltipContent={tooltip}>
-        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="Voir les raisons pour lesquelles vous pouvez signaler cette offre" />
-      </InfoTooltipOrModal>
       <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
         {storedValue ? (
           <ReportedAcknowledgement />
