@@ -163,7 +163,7 @@ export default function PlanDuSite() {
                         Alternance par ville
                       </Typography>
                       <Box component="ul">
-                        {villeData.map((ville) => (
+                        {villeData.slice(0, 10).map((ville) => (
                           <Box component="li" key={ville.slug}>
                             <DsfrLink href={PAGES.dynamic.seoVille(ville.slug).getPath()}>Alternance à {ville.ville}</DsfrLink>
                           </Box>

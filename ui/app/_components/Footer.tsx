@@ -112,7 +112,7 @@ const linkListContent: LinkCategory[] = [
   {
     categoryName: "Alternance par ville",
     // @ts-ignore min 1 link but here we have 10
-    links: villeData.map((ville) => ({
+    links: villeData.slice(0, 10).map((ville) => ({
       linkProps: {
         href: PAGES.dynamic.seoVille(ville.slug).getPath(),
       },

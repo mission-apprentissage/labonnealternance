@@ -8,11 +8,13 @@ import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/reche
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import { getDaysSinceDate } from "@/utils/dateUtils"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { CardStyling } from "./CardStyling"
 
 type ResultCardProps = WithRecherchePageParams<{
   active: boolean
   item: ILbaItem
+  position: number
 }>
 
 function getTitle(item: ILbaItem) {
@@ -99,7 +101,7 @@ const activeStyle = {
   },
 }
 
-export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) {
+export function LbaItemCard({ item, active, rechercheParams, position }: ResultCardProps) {
   const itemUrl = useResultItemUrl(item, rechercheParams)
 
   return (
@@ -119,6 +121,22 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
           linkProps={{
             href: itemUrl,
             prefetch: false,
+            onClick:
+              item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
+                ? undefined
+                : () => {
+                    pushMatomoEvent({
+                      event: MATOMO_EVENTS.JOB_OFFER_CLICKED,
+                      job_offer_id: item.id,
+                      job_offer_type: getMatomoJobOfferType(item.ideaType),
+                      job_offer_company: item.company?.name || "non_renseigné",
+                      job_offer_name: getTitle(item),
+                      position_in_list: position,
+                      has_contact: Boolean((item as any).contact?.hasEmail || (item as any).contact?.url || (item as any).contact?.phone),
+                      search_job_name: rechercheParams.job_name || "non_renseigné",
+                      search_address: rechercheParams.geo?.address || "non_renseigné",
+                    })
+                  },
           }}
           start={<LbaItemTags item={item} displayTooltips={true} />}
           title={

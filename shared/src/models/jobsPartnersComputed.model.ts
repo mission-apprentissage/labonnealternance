@@ -2,33 +2,57 @@ import { z } from "zod"
 import { zObjectId } from "zod-mongodb-schema"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
-
 import type { IModelDescriptor } from "./common.js"
 import { JOBPARTNERS_LABEL, ZJobsPartnersOfferPrivate } from "./jobsPartners.model.js"
 
 // Ces partenaires sont exclus des processus de classification et de blacklistage.
 export const PARTNER_WHITELIST: string[] = [
-  JOBPARTNERS_LABEL.JOBTEASER,
-  JOBPARTNERS_LABEL.EMPLOI_INCLUSION,
-  JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
   JOBPARTNERS_LABEL.DECATHLON,
-  JOBPARTNERS_LABEL.KELIO,
-  "Veritone",
-  "L'Oréal",
-  "BPCE",
-  "Amazon",
-  "Daher",
+  JOBPARTNERS_LABEL.EDF,
+  JOBPARTNERS_LABEL.EMPLOI_INCLUSION,
   JOBPARTNERS_LABEL.ENEDIS,
+  JOBPARTNERS_LABEL.FRANCE_TRAVAIL_CEGID,
+  JOBPARTNERS_LABEL.JOBTEASER,
+  JOBPARTNERS_LABEL.KELIO,
+  JOBPARTNERS_LABEL.LAPOSTE,
+  "Amazon",
+  "BPCE",
+  "Bpifrance",
+  "Daher",
+  "Engie",
+  "Formaposte",
   "Framatome",
   "GRDF",
-  "Bpifrance",
+  "Institut Pasteur",
+  "L'Oreal",
+  "Serpe",
+  "Thales",
+  "Veritone",
+]
+
+export const TRUSTED_COMPANY_JOB_PARTNERS = [
+  JOBPARTNERS_LABEL.DECATHLON,
   JOBPARTNERS_LABEL.EDF,
-  "La Poste",
+  JOBPARTNERS_LABEL.ENEDIS,
+  JOBPARTNERS_LABEL.LAPOSTE,
+  "Amazon",
+  "BPCE",
+  "Bpifrance",
+  "Daher",
+  "Engie",
+  "Formaposte",
+  "Framatome",
+  "GRDF",
+  "Institut Pasteur",
+  "L'Oreal",
+  "Serpe",
+  "Thales",
 ]
 
 export enum COMPUTED_ERROR_SOURCE {
   BLOCK_BAD_ROME = "BLOCK_BAD_ROME",
   BLOCK_CFA_NAME = "BLOCK_CFA_NAME",
+  TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
   API_SIRET = "api_siret",
   API_OPCO = "api_opco",
   API_ADRESSE = "api_adresse",
@@ -56,6 +80,7 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   ROME_BLACKLISTED = "ROME_BLACKLISTED",
   WRONG_DATA = "WRONG_DATA",
   GEOLOCATION_NOT_FOUND = "GEOLOCATION_NOT_FOUND",
+  TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
 }
 
 export const ZComputedJobsPartnersBase = extensions

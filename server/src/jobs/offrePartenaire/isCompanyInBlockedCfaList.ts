@@ -1,4 +1,4 @@
-import { removeAccents } from "shared"
+import { getNormalizedStringInSetOrArray, isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 
 export const cfaCompanyList = [
   "13 EN FORM",
@@ -479,7 +479,6 @@ export const cfaCompanyList = [
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE DU VAR",
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE ILLE-ET-VILAINE",
   "CHAMBRE DE COMMERCE ET D'INDUSTRIE TERRITORIALE PORTES DE NORMANDIE",
-  "CHAMBRE DE COMMERCE ET D'INDUSTRIE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION BRETAGNE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION CENTRE-VAL DE LOIRE",
   "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION GRAND EST",
@@ -1832,21 +1831,6 @@ export const cfaCompanyList = [
   "ZONE 01 ROUEN",
 ]
 
-const stringNormaliser = (str: string): string => {
-  return removeAccents(str.toLowerCase())
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ")
-}
+export const getCompanyInBlockedCfaList = getNormalizedStringInSetOrArray(cfaCompanyList)
 
-const normalizedCfaList = cfaCompanyList.map(stringNormaliser)
-const normalizedCfaSet = new Set(normalizedCfaList)
-
-export const isCompanyInBlockedCfaList = (nom: string | null | undefined): boolean => {
-  if (!nom) return false
-  const nomNormalise = stringNormaliser(nom)
-  if (normalizedCfaSet.has(nomNormalise)) return true
-
-  const normalizedSentence = ` ${nomNormalise} `
-  return normalizedCfaList.some((cfaName) => normalizedSentence.includes(` ${cfaName} `))
-}
+export const isCompanyInBlockedCfaList = (str: string | null | undefined) => Boolean(getCompanyInBlockedCfaList(str))

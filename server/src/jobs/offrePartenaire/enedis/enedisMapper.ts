@@ -210,7 +210,7 @@ export const enedisJobToJobsPartnersProcessor = (job: IEnedisJob, partnerLabel: 
 
   // exclusion du flux edf des offres enedis
   if (mainSupervisor?.Email?.includes("enedis.fr") && partnerLabel !== JOBPARTNERS_LABEL.ENEDIS) {
-    business_error = JOB_PARTNER_BUSINESS_ERROR.DUPLICATE // TODO: remplacer par TRUSTED_COMPANY_JOB_DUPLICATE après merge de la PR qui l'ajoute
+    business_error = JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE
   }
 
   const contract_duration = contractLength ? parseInt(contractLength, 10) || null : null

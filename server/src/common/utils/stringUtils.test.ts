@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { sanitizeTextField } from "./stringUtils"
+import { isNormalizedStringInSetOrArray, sanitizeTextField } from "./stringUtils"
 
 describe("sanitizeTextField", () => {
   describe("Edge cases and null handling", () => {
@@ -243,6 +243,62 @@ describe("sanitizeTextField", () => {
     it("should handle numbers and special notation", () => {
       expect(sanitizeTextField("1 + 1 = 2", false)).toBe("1 + 1 = 2")
       expect(sanitizeTextField("x² + y² = z²", false)).toBe("x² + y² = z²")
+    })
+  })
+})
+
+describe("isNormalizedStringInSetOrArray", () => {
+  const matcher = isNormalizedStringInSetOrArray(["Institut Pasteur", "L'Oreal", "Décathlon", "EDF"])
+
+  describe("null/undefined/empty handling", () => {
+    it("should return false for null", () => {
+      expect(matcher(null)).toBe(false)
+    })
+    it("should return false for undefined", () => {
+      expect(matcher(undefined)).toBe(false)
+    })
+    it("should return false for empty string", () => {
+      expect(matcher("")).toBe(false)
+    })
+  })
+
+  describe("exact match", () => {
+    it("should match exact company name", () => {
+      expect(matcher("Institut Pasteur")).toBe(true)
+    })
+    it("should match case-insensitively", () => {
+      expect(matcher("INSTITUT PASTEUR")).toBe(true)
+      expect(matcher("institut pasteur")).toBe(true)
+    })
+    it("should match with accent variations", () => {
+      expect(matcher("Decathlon")).toBe(true)
+      expect(matcher("Décathlon")).toBe(true)
+    })
+    it("should match ignoring apostrophe differences", () => {
+      expect(matcher("L'Oreal")).toBe(true)
+    })
+  })
+
+  describe("substring match (company name appears in longer string)", () => {
+    it("should match when company name is in the middle of the string", () => {
+      expect(matcher("Groupe EDF Services")).toBe(true)
+    })
+    it("should match when company name is at the start of the string", () => {
+      expect(matcher("EDF Luminus")).toBe(true)
+    })
+    it("should match when company name is at the end of the string", () => {
+      expect(matcher("Groupe EDF")).toBe(true)
+    })
+  })
+
+  describe("no false positives", () => {
+    it("should not match partial word (substring of another word)", () => {
+      expect(matcher("SEDF")).toBe(false)
+      expect(matcher("EDFS")).toBe(false)
+    })
+    it("should not match unrelated company", () => {
+      expect(matcher("Google")).toBe(false)
+      expect(matcher("Amazon")).toBe(false)
     })
   })
 })

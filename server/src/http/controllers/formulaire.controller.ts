@@ -260,6 +260,7 @@ export default (server: Server) => {
         siret,
         user,
         source: getSourceFromCookies(req),
+        origin: user.origin ?? undefined,
       })
       const token = generateOffreToken(user, createdOffer)
       return res.status(200).send({ job_id: createdOffer._id.toString(), token })
