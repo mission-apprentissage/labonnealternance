@@ -5,7 +5,7 @@ export const mockDiplomeData: IDiplomeSeoData = {
   titre: "BTS MCO en alternance",
   intituleLongFormation: "BTS MCO",
   sousTitre: "Management Commercial Opérationnel",
-  kpis: { duration: "2 ans", entreprise: 0, salaire: "1120€-1300€" },
+  kpis: { duration: "2 ans", entreprises: 0, offres: 0, salaire: "1120€-1300€" },
   description: {
     text: "Le BTS Management Commercial Opérationnel forme des professionnels capables de prendre la responsabilité opérationnelle de tout ou partie d'une unité commerciale. Cette formation en alternance permet d'acquérir des compétences en gestion, animation et dynamisation de l'offre commerciale, tout en développant la relation client et le management d'équipe.",
     objectifs: [
@@ -36,15 +36,15 @@ export const mockDiplomeData: IDiplomeSeoData = {
   },
 
   ecoles: [
-    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
-    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes", href: "/recherche-formation" },
-    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "INSTITUT DE MANAGEMENT COMMERCIAL (METZ)", lieu: "57000 Metz", href: "/recherche-formation" },
-    { formationTitle: "BOULANGER (CAP)", etablissement: "CFA COMMERCE PARIS", lieu: "75003 Paris", href: "/recherche-formation" },
-    { formationTitle: "VENDEUR CONSEIL (TP)", etablissement: "AFIPE ILE-DE-FRANCE", lieu: "92100 Boulogne-Billancourt", href: "/recherche-formation" },
-    { formationTitle: "MANAGER D'UNITE MARCHANDE (TP)", etablissement: "PIGIER PERFORMANCE", lieu: "69002 Lyon", href: "/recherche-formation" },
-    { formationTitle: "CONSEILLER DE VENTE (TP)", etablissement: "TALIS BUSINESS SCHOOL", lieu: "33000 Bordeaux", href: "/recherche-formation" },
-    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "ESUP RENNES", lieu: "35000 Rennes", href: "/recherche-formation" },
-    { formationTitle: "RESPONSABLE DE RAYON (TP)", etablissement: "GROUPE IGS", lieu: "75010 Paris", href: "/recherche-formation" },
+    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "FORM HIGH TECH (METZ)", lieu: "57000 Metz" },
+    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "LYCEE POLYVALENT REGIONAL AUDIBERTI (ANTIBES)", lieu: "06600 Antibes" },
+    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "INSTITUT DE MANAGEMENT COMMERCIAL (METZ)", lieu: "57000 Metz" },
+    { formationTitle: "BOULANGER (CAP)", etablissement: "CFA COMMERCE PARIS", lieu: "75003 Paris" },
+    { formationTitle: "VENDEUR CONSEIL (TP)", etablissement: "AFIPE ILE-DE-FRANCE", lieu: "92100 Boulogne-Billancourt" },
+    { formationTitle: "MANAGER D'UNITE MARCHANDE (TP)", etablissement: "PIGIER PERFORMANCE", lieu: "69002 Lyon" },
+    { formationTitle: "CONSEILLER DE VENTE (TP)", etablissement: "TALIS BUSINESS SCHOOL", lieu: "33000 Bordeaux" },
+    { formationTitle: "ASSISTANT COMMERCIAL (TP)", etablissement: "ESUP RENNES", lieu: "35000 Rennes" },
+    { formationTitle: "RESPONSABLE DE RAYON (TP)", etablissement: "GROUPE IGS", lieu: "75010 Paris" },
   ],
   salaire: [
     { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
