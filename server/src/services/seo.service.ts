@@ -127,6 +127,11 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
   return seoMetier
 }
 
+export const getSeoDiplome = async ({ diplome }: { diplome: string }) => {
+  const seoDiplome = await getDbCollection(seoDiplomeModel.collectionName).findOne({ slug: diplome })
+  return seoDiplome
+}
+
 const getJobCountForMetier = async (romes: string[]) => {
   return await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
 }
@@ -477,12 +482,6 @@ export const updateSeoMetierJobCounts = async () => {
   logger.info("ended job updateSeoMetierJobCounts")
 }
 
-/*
-TODO: 
-- Quels métiers exercer avec un diplôme BTS MCO : aller chercher en group by les titres des offres avec le plus de résultats
-- Découvrez les XXX offres disponibles pour ce diplôme : aller chercher les offres en alternance sur la base des romes du titre et les compter
-*/
-
 export const updateSeoDiplome = async () => {
   logger.info("starting job updateSeoDiplome")
   const diplomes = await getDbCollection(seoDiplomeModel.collectionName).find({}).toArray()
@@ -520,9 +519,27 @@ export const updateSeoDiplome = async () => {
         ])
         .toArray()) as IDiplomeEcoleCard[]
 
+      const metiersListe = await getDbCollection(jobsPartnersModel.collectionName)
+        .aggregate([
+          {
+            $match: {
+              offer_rome_codes: { $in: diplome.romes },
+              offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+              partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+            },
+          },
+          { $group: { _id: "$offer_title", offres: { $sum: 1 } } },
+          { $sort: { offres: -1 } },
+          { $limit: 10 },
+          { $project: { _id: 0, title: "$_id", offres: 1 } },
+        ])
+        .toArray()
+
+      const cards = await getJobsForMetier(diplome.romes)
+
       await getDbCollection(seoDiplomeModel.collectionName).updateOne(
         { _id: diplome._id },
-        { $set: { ecoles, "kpis.entreprises": entreprisesCount, "kpis.offres": jobCount, updated_at: new Date() } }
+        { $set: { ecoles, "kpis.entreprises": entreprisesCount, "kpis.offres": jobCount, "metiers.liste": metiersListe, cards, updated_at: new Date() } }
       )
     } catch (error) {
       logger.error("Error in updateSeoDiplome for diplome " + diplome.slug, error)

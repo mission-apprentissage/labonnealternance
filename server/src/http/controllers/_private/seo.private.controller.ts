@@ -1,7 +1,7 @@
 import { zRoutes } from "shared/index"
 
 import type { Server } from "@/http/server"
-import { getSeoMetier, getSeoVille } from "@/services/seo.service"
+import { getSeoDiplome, getSeoMetier, getSeoVille } from "@/services/seo.service"
 
 export function seoRouteController(server: Server) {
   server.get(
@@ -26,6 +26,19 @@ export function seoRouteController(server: Server) {
       const { metier } = req.params
 
       const data = await getSeoMetier({ metier })
+      return res.status(200).send(data)
+    }
+  )
+
+  server.get(
+    "/_private/seo/diplome/:diplome",
+    {
+      schema: zRoutes.get["/_private/seo/diplome/:diplome"],
+    },
+    async (req, res) => {
+      const { diplome } = req.params
+
+      const data = await getSeoDiplome({ diplome })
       return res.status(200).send(data)
     }
   )

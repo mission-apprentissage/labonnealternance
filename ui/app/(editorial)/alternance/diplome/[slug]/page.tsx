@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { DescriptionDiplome } from "./_components/DescriptionDiplome"
 import { EcolesSection } from "./_components/EcolesSection"
@@ -17,7 +18,7 @@ import { SalaireSection } from "./_components/SalaireSection"
 import { diplomesData } from "./_data/diplomes"
 
 function getDiplomeData(slug: string) {
-  return diplomesData.find((d) => d.slug === slug) ?? null
+  return apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
 }
 
 export function generateStaticParams() {
@@ -26,7 +27,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const data = getDiplomeData(slug)
+  const data = await getDiplomeData(slug)
   if (!data) return {}
 
   return {
@@ -37,7 +38,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function DiplomePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const data = getDiplomeData(slug)
+  const data = await getDiplomeData(slug)
+
   if (!data) notFound()
 
   return (
@@ -65,22 +67,22 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
-          <EcolesSection titre={data.titre} formations={data.ecoles} />
+          <EcolesSection titre={data.titre} formations={data?.ecoles ?? []} />
         </Box>
       </DefaultContainer>
 
       {/* Section pleine largeur avec fond bleu clair */}
-      <SalaireSection titre={data.titre} lignes={data.salaire} />
+      <SalaireSection titre={data.titre} lignes={data?.salaire ?? []} />
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
-          <MetiersSection titre={data.titre} text={data.metiers.text} liste={data.metiers.liste} />
+          <MetiersSection titre={data.titre} text={data.metiers.text} liste={data?.metiers?.liste ?? []} />
         </Box>
       </DefaultContainer>
 
       <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
-          <OffresSection offreCount={data.kpis.offres} offres={data.cards} />
+          <OffresSection offreCount={data.kpis.offres} offres={data?.cards ?? []} />
         </Box>
       </DefaultContainer>
 

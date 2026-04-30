@@ -1,5 +1,5 @@
 import { z } from "../../helpers/zodWithOpenApi.js"
-import { ZSeoVille } from "../../models/index.js"
+import { ZSeoDiplome, ZSeoVille } from "../../models/index.js"
 import { ZSeoMetier } from "../../models/seoMetier.model.js"
 import type { IRoutesDef } from "../common.routes.js"
 
@@ -28,6 +28,19 @@ export const zPrivateSeoRoutes = {
         .strict(),
       response: {
         "200": ZSeoMetier.nullable(),
+      },
+      securityScheme: null,
+    },
+    "/_private/seo/diplome/:diplome": {
+      method: "get",
+      path: "/_private/seo/diplome/:diplome",
+      params: z
+        .object({
+          diplome: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": ZSeoDiplome.nullable(),
       },
       securityScheme: null,
     },
