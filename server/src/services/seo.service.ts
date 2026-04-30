@@ -510,10 +510,10 @@ export const updateSeoDiplome = async () => {
               _id: 0,
               formationTitle: "$intitule_long",
               etablissement: "$etablissement_formateur_entreprise_raison_sociale",
+              formationClefMinistereEducatif: "$cle_ministere_educatif",
               lieu: {
                 $concat: [{ $ifNull: ["$etablissement_formateur_code_postal", ""] }, " ", { $ifNull: ["$etablissement_formateur_localite", ""] }],
               },
-              href: { $literal: "/recherche-formation" },
             },
           },
         ])

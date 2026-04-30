@@ -32,9 +32,9 @@ const ZSeoDiplomeMetier = z.object({
 
 const ZSeoDiplomeEcoleCard = z.object({
   formationTitle: z.string(),
+  formationClefMinistereEducatif: z.string(),
   etablissement: z.string(),
   lieu: z.string(),
-  href: z.string(),
 })
 
 export const ZSeoDiplome = z
