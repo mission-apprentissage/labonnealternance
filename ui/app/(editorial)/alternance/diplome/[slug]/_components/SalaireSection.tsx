@@ -78,7 +78,14 @@ export function SalaireSection({ titre, lignes }: { titre: string; lignes: IDipl
         </Box>
 
         <Box sx={{ textAlign: "center" }}>
-          <Button priority="secondary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/simulateur-alternance?${UTM_PARAMS}` }}>
+          <Button
+            title="Accéder au simulateur de salaire pour calculer ma rémunération en alternance"
+            priority="secondary"
+            size="large"
+            iconId="fr-icon-arrow-right-line"
+            iconPosition="right"
+            linkProps={{ href: `/salaire-alternant?${UTM_PARAMS}` }}
+          >
             Calculer ma rémunération en alternance
           </Button>
         </Box>

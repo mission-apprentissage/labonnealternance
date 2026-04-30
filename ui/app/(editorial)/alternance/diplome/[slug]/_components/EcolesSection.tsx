@@ -9,7 +9,11 @@ import { SectionTitle } from "./SectionTitle"
 
 function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
   return (
-    <Link href={`${card.href}?${UTM_PARAMS}`} style={{ textDecoration: "none", backgroundImage: "none", minWidth: 0 }}>
+    <Link
+      title={`En savoir plus sur la formation ${card.formationTitle}`}
+      href={`/formation/${encodeURIComponent(card.formationClefMinistereEducatif)}/${encodeURIComponent(card.formationTitle)}?${UTM_PARAMS}`}
+      style={{ textDecoration: "none", backgroundImage: "none", minWidth: 0 }}
+    >
       <Box
         sx={{
           p: fr.spacing("4v"),
@@ -52,7 +56,7 @@ function FormationCard({ card }: { card: IDiplomeEcoleCard }) {
   )
 }
 
-export function EcolesSection({ titre, formations }: { titre: string; formations: IDiplomeEcoleCard[] }) {
+export function EcolesSection({ titre, formations, romes }: { titre: string; formations: IDiplomeEcoleCard[]; romes: string[] }) {
   return (
     <Box>
       <SectionTitle title="Quelques écoles qui proposent le diplôme" highlightedText={`${titre} :`} />
@@ -71,7 +75,14 @@ export function EcolesSection({ titre, formations }: { titre: string; formations
       </Box>
 
       <Box sx={{ textAlign: "center" }}>
-        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/recherche-formation?${UTM_PARAMS}` }}>
+        <Button
+          title={`Voir toutes les formations en ${titre}`}
+          priority="primary"
+          size="large"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          linkProps={{ href: `/recherche-formation?romes=${romes.join(",")}&${UTM_PARAMS}` }}
+        >
           Voir toutes les formations
         </Button>
       </Box>

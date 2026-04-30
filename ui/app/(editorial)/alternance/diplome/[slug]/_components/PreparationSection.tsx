@@ -13,7 +13,7 @@ const RESSOURCES = [
   {
     title: "Introduction sur l'alternance",
     description: "Découvrez comment fonctionne l'alternance",
-    href: "/guide-alternant/decouvrir-l-alternance",
+    href: "/guide/decouvrir-l-alternance",
     imageSrc: "/images/seo/diplome/card-left.svg",
   },
   {

@@ -166,7 +166,14 @@ export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; 
 
       {/* CTA centered below KPIs */}
       <Box sx={{ textAlign: "center", mt: fr.spacing("6v"), pb: fr.spacing("2v") }}>
-        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/recherche-emploi?${UTM_PARAMS}` }}>
+        <Button
+          title={`Voir toutes les opportunités d'emploi en ${titre} en alternance`}
+          priority="primary"
+          size="large"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          linkProps={{ href: `/recherche-emploi?romes=${romes.join(",")}&${UTM_PARAMS}` }}
+        >
           Voir toutes les opportunités
         </Button>
       </Box>
