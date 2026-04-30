@@ -89,14 +89,12 @@
               <br />
             </mj-text>         
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px" padding="0px 0px 10px 0px">
-              Si vous n'êtes pas à l’origine de cette candidature, veuillez le signaler à notre équipe support : <a style="text-decoration: underline; color: inherit" href="mailto:<%= data.publicEmail %>?subject=Virus%20reçu%20par%un%20candidat"><%= data.publicEmail %></a>
-              <br /><br />
               La pièce jointe à votre candidature pour l’offre suivante ne répondait pas aux normes de sécurité requises :
               <br /><br />
-              Poste : <span style="font-weight: 700;"><%= data.job_title %></span>
+              Poste : <a href="<%= data.urlOfDetailNoUtm %>" style="text-decoration: underline; color: inherit; font-weight: 700;"><%= data.job_title %></a>
               <br />
             	<br />
-              Entreprise : <%= data.company_name %>, <%= data.company_address %>
+              Entreprise : <b><%= data.company_name %>, <%= data.company_address %></b>
               <br />
               <br />
             	<span style="font-weight: 700;">
@@ -109,59 +107,104 @@
           </mj-column>
         </mj-group>
       </mj-section>
-      <mj-spacer height="24px">
 
-      </mj-spacer>
+      <mj-spacer height="24px"></mj-spacer>
+
       <mj-section background-color="#ffffff" border-radius="4px" border="1px solid #e3e3fd" css-class="section">
         <mj-group>
-          <mj-column border-radius="0px" css-class="column"  padding="23px" vertical-align="middle" width="100%">
-            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+          <mj-column border-radius="0px" css-class="column" padding="23px" vertical-align="middle" width="100%">
+            <mj-text align="left" color="#3A3A3A" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="14px" font-weight="700" line-height="16px" padding="0px 0px 24px 0px">
               Rappel de votre candidature
+            </mj-text>
+
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+              Votre message personnalisé
               <br /><br />
             </mj-text>
             
             <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
-              Métier :
-              <br />
-            	<span style="font-weight: 700;">
-              <%= data.job_title %>
-              </span>
-              <br /><br />
-
-              Message au responsable du recrutement :
-              <br />
-            	<span style="font-weight: 700;">
               <%- data.applicant_message_to_company %>
-              </span>
-              <br /><br />
-
-              Pièce jointe envoyée :
+              <% if (!data.applicant_message_to_company) { %>
+                <span style="font-size: 16px; color: #929292;">Aucun message renseigné</span>
+              <% } %>
               <br />
-            	<span style="font-weight: 700;">
-              <%= data.applicant_attachment_name %>
-              </span>
-              <br /><br />
-
-              Lien vers l’offre :
               <br />
-            	<a style="font-weight:normal; color: #000091; font-size: 16px; text-decoration-line: underline;" href="<%= data.urlOfDetail %>" color="#000091">
-                <%= data.urlOfDetailNoUtm %>
-              </a>
-              <br /><br />
-
-							<span style="font-weight: 700;">
-							Besoin d’aide dans le suivi de vos candidatures ?
-              </span>
-							<br />
-							Téléchargez notre <a href="https://mission-apprentissage.notion.site/Tableau-de-suivi-des-candidatures-c82bcabc36b24445a78c9f1eef2f7179?pvs=4" style="text-decoration: underline; color: inherit;">tableau de suivi</a> à compléter.
+              
+              <span style="font-weight: 700;">Pièce jointe envoyée :</span>
               <br />
+              <span>
+                <%= data.attachmentName %>
+              </span>
+              <br />
+              <br />
+            </mj-text>
+
+              <% if (data.applicant_contract_duration || data.applicant_contract_start || data.applicant_formation_description || data.applicant_rythm_description) { %>
+                <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+                  Votre recherche d’alternance
+                  <br /><br />
+                </mj-text>
+                <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              <% } %>
+
+                <% if (data.applicant_contract_duration) { %>
+                  <span style="font-weight: 700;">Durée du contrat souhaitée :</span>
+                  <br />
+                  <span>
+                    <%= data.applicant_contract_duration %>
+                  </span>
+                  <br />
+                  <br />
+                <% } %>
+                
+                <% if (data.applicant_contract_start) { %>
+                  <span style="font-weight: 700;">Début de contrat souhaité :</span>
+                  <br />
+                  <span>
+                    <%= data.applicant_contract_start %>
+                  </span>
+                  <br />
+                  <br />
+                <% } %>
+
+                <% if (data.applicant_formation_description) { %>
+                  <span style="font-weight: 700;">Informations sur l’école et la formation :</span>
+                  <br />
+                  <span>
+                    <%= data.applicant_formation_description %>
+                  </span>
+                  <br />
+                  <br />
+                <% } %>
+
+                <% if (data.applicant_rythm_description) { %>
+                  <span style="font-weight: 700;">Rythme de l’alternance (école/entreprise) :</span>
+                  <br />
+                  <span>
+                    <%= data.applicant_rythm_description %>
+                  </span>
+                  <br />
+                  <br />
+                <% } %>
+              
+              <% if (data.applicant_contract_duration || data.applicant_contract_start || data.applicant_formation_description || data.applicant_rythm_description) { %>
+                </mj-text>
+              <% } %>
+
+
+            <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="700" line-height="24px">
+              💡 Besoin d’aide ?
+            </mj-text>
+            <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+              <a href="https://labonnealternance.apprentissage.beta.gouv.fr/guide-alternant?utm_source=lba-brevo-transactionnel&utm_medium=email&utm_campaign=confirmation-candidature-lien-guide-alternant" style="text-decoration: underline; color: inherit;">Consultez nos ressources</a> pour calculer votre rémunération, suivre vos candidatures ou simplement vous informer sur l’alternance.
             </mj-text>
           </mj-column>
         </mj-group>
       </mj-section>
-      <mj-spacer height="24px">
 
+      <mj-spacer height="24px">
       </mj-spacer>
+
       <mj-section border-radius="4px" css-class="section">
         <mj-group>
           <mj-column border-radius="0px" css-class="column" vertical-align="middle" width="100%">

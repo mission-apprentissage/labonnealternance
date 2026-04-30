@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
-import { allLbaItemType, allLbaItemTypeOLD, LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
+import { allLbaItemTypeOLD, LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
 import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
@@ -55,6 +55,11 @@ const ZApplicationOld = z
       .regex(/((.*?))(\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$/i)
       .describe("Nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés."),
     applicant_message_to_company: z.string().nullable().describe("Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat."),
+    applicant_inscription_formation: z.boolean().nullish().describe("Information donnée par le candidat. Indique si le candidat est inscrit en formation."),
+    applicant_contract_duration: z.string().nullish().describe("Information donnée par le candidat. Durée souhaitée du contrat."),
+    applicant_contract_start: z.array(z.string()).nullish().describe("Information donnée par le candidat. Début du contrat souhaité."),
+    applicant_formation_description: z.string().max(200, "200 caractères maximum.").nullish().describe("Information donnée par le candidat. Description de sa formation."),
+    applicant_rythm_description: z.string().max(200, "200 caractères maximum.").nullish().describe("Information donnée par le candidat. Description du rythme de sa formation."),
     job_searched_by_user: z.string().nullish().describe("Métier recherché par le candidat"),
     company_recruitment_intention: z.string().nullish().describe("L'intention de la société vis à vis du candidat"),
     company_recruitment_intention_date: z.date().nullable().describe("Date d'enregistrement d'intention/avis programmé"),
@@ -153,57 +158,6 @@ export const ZNewApplication = ZApplicationOld.extend({
   })
   .openapi("ApplicationUi")
 
-// KBA 20241011 to remove once V2 is LIVE and V1 support has ended
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ZNewApplicationTransitionToV2 = ZApplicationOld.extend({
-  message: ZApplicationOld.shape.applicant_message_to_company.optional(),
-  applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,
-  applicant_file_content: z.string().max(4_215_276).openapi({
-    description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-    example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
-  }),
-  company_type: z.enum([allLbaItemType[0], ...allLbaItemType.slice(1)]).openapi({
-    description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-    example: LBA_ITEM_TYPE.RECRUTEURS_LBA,
-  }),
-  iv: z.string().optional().openapi({
-    description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
-    example: "...59c24c059b...",
-  }),
-  secret: z.string().nullish(),
-  company_email: z.string().nullish().openapi({
-    description: "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
-    example: "fake@dummy.com",
-  }),
-  crypted_company_email: z.string().nullish(),
-  caller: zCallerParam.nullish(),
-  job_id: ZApplicationOld.shape.job_id.optional(),
-  searched_for_job_label: z.string().nullish().openapi({
-    description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
-    example: "Vente de fleurs, végétaux",
-  }),
-})
-  .omit({
-    _id: true,
-    applicant_id: true,
-    applicant_message_to_company: true,
-    applicant_attachment_name: true,
-    job_origin: true,
-    to_applicant_message_id: true,
-    to_company_message_id: true,
-    company_recruitment_intention: true,
-    company_feedback: true,
-    company_feedback_date: true,
-    company_recruitment_intention_date: true,
-    company_feedback_send_status: true,
-    created_at: true,
-    scan_status: true,
-    last_update_at: true,
-  })
-  .openapi("ApplicationUi")
-// KBA 20241011 to remove once V2 is LIVE and V1 support has ended
-export type INewApplicationV1 = z.output<typeof ZNewApplicationTransitionToV2>
-
 export const ZJobCollectionName = z.enum(["partners", "recruiters"])
 export const JobCollectionName = ZJobCollectionName.enum
 export type IJobCollectionName = z.output<typeof ZJobCollectionName>
@@ -214,6 +168,12 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
   applicant_email: true,
   applicant_phone: true,
   applicant_attachment_name: true,
+  applicant_contract_duration: true,
+  applicant_contract_start: true,
+  applicant_formation_description: true,
+  applicant_inscription_formation: true,
+  applicant_rythm_description: true,
+
   job_searched_by_user: true,
   caller: true,
   application_url: true,
@@ -293,6 +253,9 @@ export default {
     [{ scan_status: 1, to_applicant_message_id: 1 }, {}],
     [{ created_at: 1 }, {}],
     [{ company_email: 1 }, {}],
+    [{ applicant_contract_start: 1 }, {}],
+    [{ applicant_contract_duration: 1 }, {}],
+    [{ applicant_inscription_formation: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor
