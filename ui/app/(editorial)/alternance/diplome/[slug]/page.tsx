@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { DescriptionDiplome } from "./_components/DescriptionDiplome"
@@ -15,14 +16,13 @@ import { OffresSection } from "./_components/OffresSection"
 import { PreparationSection } from "./_components/PreparationSection"
 import { ProgrammeDiplome } from "./_components/ProgrammeDiplome"
 import { SalaireSection } from "./_components/SalaireSection"
-import { diplomesData } from "./_data/diplomes"
 
 function getDiplomeData(slug: string) {
   return apiGet("/_private/seo/diplome/:diplome", { params: { diplome: slug } })
 }
 
 export function generateStaticParams() {
-  return diplomesData.map((d) => ({ slug: d.slug }))
+  return diplomeData.map((d) => ({ slug: d.slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

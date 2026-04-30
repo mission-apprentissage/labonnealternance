@@ -2,13 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { diplomesData } from "@/app/(editorial)/alternance/diplome/[slug]/_data/diplomes"
+import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { UTM_PARAMS } from "../_data/constants"
 import { SectionTitle } from "./SectionTitle"
 
 export function ExplorerDiplomesSection({ currentSlug }: { currentSlug: string }) {
-  const autresDiplomes = diplomesData.filter((d) => d.slug !== currentSlug)
+  const autresDiplomes = diplomeData.filter((d) => d.slug !== currentSlug)
 
   return (
     <Box
