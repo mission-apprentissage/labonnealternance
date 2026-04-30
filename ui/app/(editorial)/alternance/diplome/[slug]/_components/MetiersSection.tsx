@@ -6,7 +6,7 @@ import { UTM_PARAMS } from "../_data/constants"
 
 import { SectionTitle } from "./SectionTitle"
 
-export function MetiersSection({ titre, text, liste }: { titre: string; text: string; liste: IDiplomeMetier[] }) {
+export function MetiersSection({ titre, text, liste, romes }: { titre: string; text: string; liste: IDiplomeMetier[]; romes: string[] }) {
   const title = `Quels métiers exercer avec un diplôme ${titre} ?`
   return (
     <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
@@ -37,7 +37,8 @@ export function MetiersSection({ titre, text, liste }: { titre: string; text: st
             </Typography>
             <Box sx={{ mt: "auto" }}>
               <Link
-                href={`/recherche-emploi?${UTM_PARAMS}`}
+                href={`/recherche-emploi?romes=${romes.join(",")}&${UTM_PARAMS}`}
+                title={`Voir les offres d'emploi en alternance pour le diplôme de ${titre}`}
                 className={fr.cx("fr-link" as any, "fr-icon-arrow-right-line" as any, "fr-link--icon-right" as any)}
                 style={{ fontSize: "16px" }}
               >
