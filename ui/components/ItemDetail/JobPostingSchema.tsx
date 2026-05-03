@@ -37,16 +37,16 @@ const buildJobPostingSchema = ({ title, description, id, job }: JobPostingSchema
     employmentType: "FULL_TIME",
     hiringOrganization: {
       "@type": "Organization",
-      name: job?.company?.name,
+      name: job?.company?.name || "confidential",
     },
     jobLocation: {
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        streetAddress: job?.place?.numberAndStreet ?? null,
-        addressLocality: job?.place?.city ?? null,
+        streetAddress: job?.place?.numberAndStreet || null,
+        addressLocality: job?.place?.city || null,
         addressRegion: null,
-        postalCode: job?.place?.zipCode ?? null,
+        postalCode: job?.place?.zipCode || null,
         addressCountry: "France",
       },
     },
