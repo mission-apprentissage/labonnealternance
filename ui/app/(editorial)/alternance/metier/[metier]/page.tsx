@@ -144,7 +144,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             >
               {statItems.map(({ icon, value, label }) => (
                 <Box key={label} sx={boxCss}>
-                  <Image alt="" aria-hidden="true" src={icon} width={80} height={80} />
+                  <Image alt="" aria-hidden="true" src={icon} width={80} height={80} priority />
                   <Typography sx={{ mt: fr.spacing("1v"), fontSize: { xs: "2rem", md: "2.5rem" }, fontWeight: "bold", color: fr.colors.decisions.text.default.info.default }}>
                     {value}
                   </Typography>
