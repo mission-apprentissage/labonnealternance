@@ -235,14 +235,14 @@ function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
 
 export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson
 
-function splitLbaJobs(lbaJobs: ILbaItemLbaJobJson[]): { direct: ILbaItemLbaJobJson[]; delegated: ILbaItemLbaJobJson[] } {
-  const direct: ILbaItemLbaJobJson[] = []
-  const delegated: ILbaItemLbaJobJson[] = []
+function splitLbaJobs<T extends { company?: { mandataire?: boolean | null } | null }>(lbaJobs: T[]): { direct: T[]; delegated: T[] } {
+  const direct: T[] = []
+  const delegated: T[] = []
   for (const job of lbaJobs) {
-    if (job.company?.mandataire === false) {
-      direct.push(job)
-    } else {
+    if (job.company?.mandataire === true) {
       delegated.push(job)
+    } else {
+      direct.push(job)
     }
   }
   return { direct, delegated }
