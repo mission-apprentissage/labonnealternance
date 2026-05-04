@@ -32,5 +32,13 @@ export function RecruteurLbaCandidater({ item, showScrollToTop }: { item: ILbaIt
       </Typography>
     )
   }
-  return <CandidaterButton item={item} buttonLabel={"J'envoie ma candidature spontanée"} CandidaterModal={CandidatureLbaModal} showScrollToTop={showScrollToTop} />
+  return (
+    <CandidaterButton
+      CandidatureSimplifie={item.contact.hasEmail}
+      item={item}
+      buttonLabel={"J'envoie ma candidature spontanée"}
+      CandidaterModal={CandidatureLbaModal}
+      showScrollToTop={showScrollToTop}
+    />
+  )
 }

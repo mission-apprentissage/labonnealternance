@@ -282,7 +282,8 @@ function JobDetail({
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                 </Box>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <ShareLink item={selectedItem} />
                   {reportItemId && (
                     <ReportJobLink
                       itemId={reportItemId}
@@ -293,7 +294,6 @@ function JobDetail({
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}
-                  <ShareLink item={selectedItem} />
                 </Box>
               </Box>
               {selectedItem.company?.mandataire && selectedItem.contact?.hasEmail && (
