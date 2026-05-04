@@ -105,10 +105,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
   const formationsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
 
   const statItems = [
-    { icon: "/images/seo/metier/malette.svg", value: data.job_count, label: "Offres d'emploi en alternance disponibles" },
+    { icon: "/images/seo/malette.svg", value: data.job_count, label: "Offres d'emploi en alternance disponibles" },
     { icon: "/images/seo/metier/ecosystem.svg", value: data.applicant_count, label: "candidats sur les 3 derniers mois" },
-    { icon: "/images/seo/metier/usine.svg", value: data.company_count, label: "entreprises recrutent activement" },
-    { icon: "/images/seo/metier/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
+    { icon: "/images/seo/usine.svg", value: data.company_count, label: "entreprises recrutent activement" },
+    { icon: "/images/seo/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
   ]
 
   return (

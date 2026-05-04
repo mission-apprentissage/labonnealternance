@@ -7,10 +7,10 @@ import { UTM_PARAMS } from "../_data/constants"
 import diplomeDecoration from "./diplome_decoration.svg"
 
 const KPI_CONFIG = [
-  { key: "duration" as const, label: "Durée de la formation", iconSrc: "/images/seo/diplome/offre-emploi.svg", labelFirst: true },
-  { key: "entreprises" as const, label: "entreprises recrutent", iconSrc: "/images/seo/diplome/companie.svg", labelFirst: false },
-  { key: "salaire" as const, label: "Salaire mensuel moyen", iconSrc: "/images/seo/diplome/money.svg", labelFirst: true },
-  { key: "offres" as const, label: "offres d'alternance", iconSrc: "/images/seo/diplome/offre-emploi.svg", labelFirst: false },
+  { key: "duration" as const, label: "Durée de la formation", iconSrc: "/images/seo/malette.svg", labelFirst: true },
+  { key: "entreprises" as const, label: "entreprises recrutent", iconSrc: "/images/seo/usine.svg", labelFirst: false },
+  { key: "salaire" as const, label: "Salaire mensuel moyen", iconSrc: "/images/seo/monnaie.svg", labelFirst: true },
+  { key: "offres" as const, label: "offres d'alternance", iconSrc: "/images/seo/malette.svg", labelFirst: false },
 ]
 
 export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; sousTitre: string; kpis: IDiplomeKpis; romes: string[] }) {
