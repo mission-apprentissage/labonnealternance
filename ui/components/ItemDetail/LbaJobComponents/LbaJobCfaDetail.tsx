@@ -4,8 +4,11 @@ import { Box, Link, Stack, Typography } from "@mui/material"
 import Image from "next/image"
 import React, { useEffect } from "react"
 import type { ILbaItemPartnerJobJson } from "shared"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { ContratBlock } from "@/components/ItemDetail/ItemDetailServices/ContratBlock"
 import { EmployeurPresentationBlock } from "@/components/ItemDetail/ItemDetailServices/EmployeurPresentationBlock"
+import ItemGoogleSearchLink from "@/components/ItemDetail/ItemDetailServices/ItemGoogleSearchLink"
+import ItemLocalisation from "@/components/ItemDetail/ItemDetailServices/ItemLocalisation"
 import { BAD_DESCRIPTION_LENGTH, JobDescription } from "@/components/ItemDetail/ItemDetailServices/JobDescription"
 import { JobPostingSchema } from "@/components/ItemDetail/JobPostingSchema"
 import { DisplayContext } from "@/context/DisplayContextProvider"
@@ -16,7 +19,7 @@ import LbaJobCompetences from "./LbaJobCompetences"
 import LbaJobQualites from "./LbaJobQualites"
 import LbaJobTechniques from "./LbaJobTechniques"
 
-export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
+export const LbaJobCfaDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; title: string }) => {
   const { formValues } = React.useContext(DisplayContext)
 
   useEffect(() => {
@@ -36,16 +39,40 @@ export const LbaJobDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; titl
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Contrat
         </Typography>
-        <ContratBlock job={job} />
+        <ContratBlock job={job} showMandataireInfo />
       </Box>
 
       <EmployeurPresentationBlock
-        title={`Présentation de l'entreprise ${job?.company?.name ?? ""}`}
+        title="Présentation de l'entreprise"
         item={job}
         description={job?.job?.employeurDescription}
-        showPhone
-        showGoogleSearch
+        emptyStateText="Le centre de formation peut vous renseigner sur l'entreprise."
+        cityOnly
+        showPhone={false}
+        showGoogleSearch={false}
       />
+
+      <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
+        <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
+          L&apos;école en charge du recrutement
+        </Typography>
+        <Typography sx={{ my: fr.spacing("4v") }}>
+          <Typography component="span" sx={{ fontWeight: 700 }}>
+            {job?.company?.name}
+          </Typography>{" "}
+          peut vous renseigner sur l&apos;offre.
+        </Typography>
+        <ItemLocalisation item={job as any} />
+        {job?.contact?.phone && (
+          <Stack direction="row" sx={{ mt: fr.spacing("4v"), mb: fr.spacing("4v") }}>
+            <Box sx={{ fontWeight: 700, mr: 2 }}>Téléphone :</Box>
+            <DsfrLink href={`tel:${job.contact.phone}`} aria-label="Contacter par téléphone - nouvelle fenêtre">
+              {job.contact.phone}
+            </DsfrLink>
+          </Stack>
+        )}
+        <ItemGoogleSearchLink item={job as any} />
+      </Box>
 
       <Box sx={{ pb: "0px", mt: fr.spacing("6v"), position: "relative", background: "white", padding: "16px 24px", mx: { xs: 0, md: "auto" } }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>

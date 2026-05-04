@@ -101,7 +101,6 @@ export const RomeDetail = ({
           competences={[{ items: competences.savoir_etre_professionnel }]}
           onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
           isSelected={isSelected("savoir_etre_professionnel")}
-          defaultExpanded={true}
         />
       )}
       {competences?.savoir_faire && (

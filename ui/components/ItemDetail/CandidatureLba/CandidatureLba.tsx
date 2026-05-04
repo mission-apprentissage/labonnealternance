@@ -4,5 +4,7 @@ import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-
 import { CandidatureLbaModal } from "./CandidatureLbaModal"
 
 export function CandidatureLba({ item, showScrollToTop }: { item: ILbaItemLbaJobJson | ILbaItemPartnerJobJson; showScrollToTop?: boolean }) {
-  return <CandidaterButton item={item} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} showScrollToTop={showScrollToTop} />
+  return (
+    <CandidaterButton CandidatureSimplifie={true} item={item} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} showScrollToTop={showScrollToTop} />
+  )
 }

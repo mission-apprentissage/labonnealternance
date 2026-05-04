@@ -8,7 +8,7 @@ import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson
 import { isOfferActive } from "@/app/(candidat)/(recherche)/recherche/_components/isOfferActive"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useSubmitCandidature } from "@/components/ItemDetail/CandidatureLba/services/submitCandidature"
-import ItemDetailApplicationsStatus, { tagCandidatureSimplifiee } from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
+import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { SendPlausibleEvent } from "@/utils/plausible"
@@ -18,10 +18,12 @@ export function CandidaterButton({
   CandidaterModal,
   buttonLabel,
   showScrollToTop = false,
+  CandidatureSimplifie = false,
 }: {
   item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   buttonLabel: string
   showScrollToTop?: boolean
+  CandidatureSimplifie?: boolean
   CandidaterModal?: (props: {
     item: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
     modalControls: ReturnType<typeof useDisclosure>
@@ -64,19 +66,20 @@ export function CandidaterButton({
           <>
             <Box
               sx={{
-                width: "100%",
                 display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
                 justifyContent: showScrollToTop ? "space-between" : undefined,
-                flexWrap: "wrap",
                 my: showScrollToTop ? fr.spacing("1v") : fr.spacing("3v"),
-                gap: fr.spacing("2v"),
               }}
             >
-              <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
-                {buttonLabel}
-              </Button>
+              {CandidatureSimplifie ? (
+                <Button iconId="fr-icon-mail-send-fill" onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
+                  Candidature simplifiée
+                </Button>
+              ) : (
+                <Button onClick={openApplicationForm} aria-label="Ouvrir le formulaire d'envoi de candidature" data-testid="postuler-button">
+                  {buttonLabel}
+                </Button>
+              )}
               {showScrollToTop ? (
                 <Button
                   iconId="fr-icon-arrow-up-line"
@@ -86,9 +89,7 @@ export function CandidaterButton({
                   aria-label="Retour en haut de la page"
                   title="Retour en haut"
                 />
-              ) : (
-                tagCandidatureSimplifiee()
-              )}
+              ) : null}
             </Box>
           </>
         ) : (

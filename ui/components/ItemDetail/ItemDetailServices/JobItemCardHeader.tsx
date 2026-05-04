@@ -43,7 +43,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           {companyName ? (
             <>
-              <Typography component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
+              <Typography component="span" sx={{ fontWeight: 700 }} dangerouslySetInnerHTML={{ __html: companyName }} />
               <Typography component="span" sx={{ fontWeight: 400 }}>
                 &nbsp;recherche un.e alternant.e pour le poste suivant :
               </Typography>

@@ -69,12 +69,14 @@ export const ReportJobLink = ({
   tooltip,
   itemId,
   type,
+  sx,
 }: {
   itemId: string
   linkLabelNotReported: string
   linkLabelReported: string
   tooltip: React.ReactNode
   type: LBA_ITEM_TYPE
+  sx?: React.ComponentProps<typeof Stack>["sx"]
 }) => {
   const { storedValue, setLocalStorage } = useLocalStorage(`report-job-${itemId}`, false)
   const { isOpen: isModalOpen, onClose: closeModal, onOpen: openModal } = useDisclosure()
@@ -94,20 +96,18 @@ export const ReportJobLink = ({
       direction="row"
       sx={{
         alignItems: "center",
+        ...((sx as object) ?? {}),
       }}
     >
       {storedValue ? (
-        <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left" size="small">
+        <Button priority="tertiary no outline" disabled iconId="ri-check-line" iconPosition="left">
           {linkLabelReported}
         </Button>
       ) : (
-        <Button priority="tertiary no outline" iconId="ri-flag-line" iconPosition="left" size="small" onClick={openModal}>
+        <Button priority="tertiary no outline" iconId="ri-flag-line" iconPosition="left" onClick={openModal}>
           {linkLabelNotReported}
         </Button>
       )}
-      <InfoTooltipOrModal tooltipContent={tooltip}>
-        <Button priority="tertiary no outline" iconId="ri-question-line" size="small" title="Voir les raisons pour lesquelles vous pouvez signaler cette offre" />
-      </InfoTooltipOrModal>
       <ModalReadOnly isOpen={isModalOpen} onClose={closeModal}>
         {storedValue ? (
           <ReportedAcknowledgement />
