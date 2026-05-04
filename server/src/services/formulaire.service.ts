@@ -441,7 +441,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
     }
     const entrepriseManagedByCfa = cfaEntreprisesByEntrepriseId.get(entreprise._id.toString())
     if (!entrepriseManagedByCfa) {
-      throw internal(`inattendu: aucun entrepriseManagedByCfa cfaId=${cfaId.toString()} siret=${siret}`)
+      throw internal(`inattendu: aucune entrepriseManagedByCfa cfaId=${cfaId.toString()} siret=${siret}`)
     }
     const jobs = jobsBySiret.get(siret) ?? []
     const recruiter = jobPartnersToRecruiter(jobs, mainRole, user, entreprise, cfa)
