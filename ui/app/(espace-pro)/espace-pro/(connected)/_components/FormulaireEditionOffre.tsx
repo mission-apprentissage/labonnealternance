@@ -39,7 +39,8 @@ const EmployerDescriptionField = () => {
           name: "job_employer_description",
           value: values.job_employer_description,
           maxLength: EMPLOYER_DESCRIPTION_MAX,
-          rows: 5,
+          rows: 6,
+          style: { resize: "none" },
           onChange: (e) => setFieldValue("job_employer_description", e.target.value),
         }}
       />

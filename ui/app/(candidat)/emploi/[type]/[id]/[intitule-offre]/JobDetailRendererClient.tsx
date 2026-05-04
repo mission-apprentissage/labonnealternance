@@ -209,6 +209,7 @@ function JobDetail({
                     {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                   </Box>
                   <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
+                    <ShareLink item={selectedItem} />
                     {reportItemId && (
                       <ReportJobLink
                         itemId={reportItemId}
@@ -219,7 +220,6 @@ function JobDetail({
                         sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                       />
                     )}
-                    <ShareLink item={selectedItem} />
                   </Box>
                 </Box>
               </Box>
