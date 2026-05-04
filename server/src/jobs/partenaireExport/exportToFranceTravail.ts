@@ -1,8 +1,8 @@
-import AdmZip from "adm-zip"
+import admzip from "adm-zip"
 import { stringify } from "csv-stringify"
-import { createWriteStream, unlinkSync } from "fs"
+import { createWriteStream } from "fs"
+import { rm } from "fs/promises"
 import type { Filter } from "mongodb"
-import path from "path"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { ZAdresseCFA } from "shared/models/address.model"
@@ -10,6 +10,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import { type IEntreprise, type IReferentielRome, JOB_STATUS_ENGLISH, ZAdresseV3 } from "shared/models/index"
 import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { pipeline, Readable, Transform } from "stream"
+import { fileURLToPath } from "url"
 import { promisify } from "util"
 import { sendCsvToFranceTravail } from "@/common/apis/franceTravail/franceTravail.client"
 import { logger } from "@/common/logger"
@@ -290,16 +291,19 @@ const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
 }
 
 const zipAndSendToFranceTravail = async (csvPath1: URL, csvPath2: URL) => {
-  const zipPath = path.resolve(new URL("./exportFT.zip", import.meta.url).pathname)
-  const zip = new AdmZip()
-  zip.addLocalFile(path.resolve(csvPath1.pathname))
-  zip.addLocalFile(path.resolve(csvPath2.pathname))
+  const zipPath = fileURLToPath(new URL("./exportFT.zip", import.meta.url))
+  const zip = new admzip()
+  zip.addLocalFile(fileURLToPath(csvPath1))
+  zip.addLocalFile(fileURLToPath(csvPath2))
   zip.writeZip(zipPath)
-  logger.info("Send ZIP file to France Travail")
-  if (config.env === "production") {
-    await sendCsvToFranceTravail(zipPath)
+  try {
+    logger.info("Send ZIP file to France Travail")
+    if (config.env === "production") {
+      await sendCsvToFranceTravail(zipPath)
+    }
+  } finally {
+    await rm(zipPath, { force: true })
   }
-  unlinkSync(zipPath)
 }
 
 export const exportJobsToFranceTravail = async () => {
