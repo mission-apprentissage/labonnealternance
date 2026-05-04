@@ -19,6 +19,7 @@ export const getSeoVille = async ({ ville }: { ville: string }) => {
 }
 
 export const updateSeoVilleJobCounts = async () => {
+  logger.info("starting job updateSeoVilleJobCounts")
   const villes = await getDbCollection(seoVilleModel.collectionName).find({}).toArray()
 
   for (const ville of villes) {
@@ -59,6 +60,7 @@ export const updateSeoVilleJobCounts = async () => {
 }
 
 export const updateSeoVilleActivities = async () => {
+  logger.info("starting job updateSeoVilleActivities")
   const villes = await getDbCollection(seoVilleModel.collectionName)
     .find({}, { projection: { _id: 1, slug: 1, geopoint: 1 } })
     .toArray()
@@ -165,47 +167,6 @@ const getApplicantCountForMetier = async (romes: string[]) => {
   const monthAgo = 3
   const dateThreshold = new Date()
   dateThreshold.setMonth(dateThreshold.getMonth() - monthAgo)
-  // const applicantCountResult = await getDbCollection("applications")
-  //   .aggregate([
-  //     {
-  //       $match: {
-  //         created_at: { $gte: dateThreshold },
-  //       },
-  //     },
-  //     {
-  //       $lookup: {
-  //         from: "jobs_partners",
-  //         let: { jobId: "$job_id" },
-  //         pipeline: [
-  //           {
-  //             $match: {
-  //               $expr: { $eq: ["$_id", "$$jobId"] },
-  //               offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-  //               offer_rome_codes: { $in: romes },
-  //             },
-  //           },
-  //           {
-  //             $project: { _id: 1 },
-  //           },
-  //         ],
-  //         as: "job",
-  //       },
-  //     },
-  //     {
-  //       $match: {
-  //         "job.0": { $exists: true },
-  //       },
-  //     },
-  //     {
-  //       $group: {
-  //         _id: "$applicant_id",
-  //       },
-  //     },
-  //     {
-  //       $count: "distinctApplicants",
-  //     },
-  //   ])
-  //   .toArray()
 
   const applicantCountResult = await getDbCollection("jobs_partners")
     .aggregate([
