@@ -146,7 +146,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: null,
+    Description_entreprise: offre.workplace_description?.slice(0, 450) || null,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -279,9 +279,6 @@ const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
       try {
         const job = chunk as DBJob
         const ftOffer = offerToFTOffer(job, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
-        if (ftOffer && ftOffer.Description) {
-          ftOffer.Description = ftOffer.Description.slice(0, 450)
-        }
         callback(null, ftOffer)
       } catch (error: any) {
         callback(error)
