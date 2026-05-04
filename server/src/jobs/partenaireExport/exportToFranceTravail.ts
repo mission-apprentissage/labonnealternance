@@ -1,5 +1,6 @@
+import AdmZip from "adm-zip"
 import { stringify } from "csv-stringify"
-import { createWriteStream } from "fs"
+import { createWriteStream, unlinkSync } from "fs"
 import type { Filter } from "mongodb"
 import path from "path"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
@@ -25,7 +26,7 @@ const formatDate = (date: Date | null) => (date ? dayjs(date).format("DD/MM/YYYY
 
 type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
 
-export const offerToFTOffer = (offre: DBJob) => {
+export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
   const { referentielRome, workplace_address_zipcode, cfa } = offre
   const addressPart = jobToFTOfferAddress(offre)
   //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
@@ -168,6 +169,7 @@ export const offerToFTOffer = (offre: DBJob) => {
     Mode_presentation: null,
     Emploi_metier_isco: null,
     ...addressPart,
+    ...override,
   }
   return ftOffre
 }
@@ -264,18 +266,56 @@ const generateCsvFile = async (csvPath: URL, jobs: DBJob[]) => {
   await pipelineAsync(source, transform, stringifier, destination)
 }
 
+// phase de test : les 10 premières offres du flux principal sont utilisées.
+// À terme, filtrer sur un champ dédié dans jobs_partners (à créer).
+const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
+  const confieeJobs = jobs.slice(0, 10)
+  const source = Readable.from(confieeJobs)
+  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
+  const destination = createWriteStream(csvPath)
+  const transform = new Transform({
+    objectMode: true,
+    transform(chunk, _, callback) {
+      try {
+        const job = chunk as DBJob
+        const ftOffer = offerToFTOffer(job, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
+        if (ftOffer && ftOffer.Description) {
+          ftOffer.Description = ftOffer.Description.slice(0, 450)
+        }
+        callback(null, ftOffer)
+      } catch (error: any) {
+        callback(error)
+      }
+    },
+  })
+  logger.info("Start stream to CSV (confiee)")
+  await pipelineAsync(source, transform, stringifier, destination)
+}
+
+const zipAndSendToFranceTravail = async (csvPath1: URL, csvPath2: URL) => {
+  const zipPath = path.resolve(new URL("./exportFT.zip", import.meta.url).pathname)
+  const zip = new AdmZip()
+  zip.addLocalFile(path.resolve(csvPath1.pathname))
+  zip.addLocalFile(path.resolve(csvPath2.pathname))
+  zip.writeZip(zipPath)
+  logger.info("Send ZIP file to France Travail")
+  if (config.env === "production") {
+    await sendCsvToFranceTravail(zipPath)
+  }
+  unlinkSync(zipPath)
+}
+
 export const exportJobsToFranceTravail = async () => {
   const csvPath = new URL("./exportFT.csv", import.meta.url)
+  const csvPathConfiee = new URL("./exportFTConfiee.csv", import.meta.url)
   try {
     const jobs = await getJobsToExport()
     await generateCsvFile(csvPath, jobs)
-    logger.info("Send CSV file to France Travail")
-    if (config.env === "production") {
-      await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
-    }
+    await generateCsvFileConfiee(csvPathConfiee, jobs)
+    await zipAndSendToFranceTravail(csvPath, csvPathConfiee)
     await notifyToSlack({
       subject: "EXPORT FRANCE TRAVAIL",
-      message: `${jobs.length} offres transmises à France Travail`,
+      message: `${jobs.length} offres transmises à France Travail (dont 10 en flux confiée)`,
     })
   } catch (err) {
     await notifyToSlack({

@@ -6320,6 +6320,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/adm-zip@npm:^0.5.8":
+  version: 0.5.8
+  resolution: "@types/adm-zip@npm:0.5.8"
+  dependencies:
+    "@types/node": "*"
+  checksum: 3a3ca24d0e982d324de4f94523363f14b98d534bd8d041d4f2daf42b89cb4906f4e8bf1207829a8d6f8883d5207fe0050d4fc96a10ed4e1f2062d6d45cc78646
+  languageName: node
+  linkType: hard
+
 "@types/aria-query@npm:^5.0.1":
   version: 5.0.4
   resolution: "@types/aria-query@npm:5.0.4"
@@ -16669,6 +16678,7 @@ __metadata:
     "@smithy/types": ^4.8.1
     "@tsconfig/node24": ^24.0.3
     "@turf/distance": ^7.2.0
+    "@types/adm-zip": ^0.5.8
     "@types/bunyan": ^1.8.11
     "@types/ejs": ^3.1.5
     "@types/jsonwebtoken": ^9.0.10
