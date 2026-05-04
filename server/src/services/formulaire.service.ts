@@ -422,6 +422,8 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
     .toArray()) as (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]
 
   const entreprisesBySiret = new Map(entreprises.map((e) => [e.siret, e]))
+  const cfaEntreprisesByEntrepriseId = new Map(entreprisesManagedByCfa.map((e) => [e.entreprise_id.toString(), e]))
+
   const jobsBySiret = new Map<string, (IJobsPartnersOfferPrivate & { rome_detail?: IReferentielRome })[]>()
   for (const job of allJobsWithRomeDetail) {
     if (job.workplace_siret) {
@@ -437,13 +439,18 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
     if (!entreprise) {
       throw internal(`inattendu: entreprise non trouvée pour siret=${siret}`)
     }
+    const entrepriseManagedByCfa = cfaEntreprisesByEntrepriseId.get(entreprise._id.toString())
+    if (!entrepriseManagedByCfa) {
+      throw internal(`inattendu: aucun entrepriseManagedByCfa cfaId=${cfaId.toString()} siret=${siret}`)
+    }
     const jobs = jobsBySiret.get(siret) ?? []
     const recruiter = jobPartnersToRecruiter(jobs, mainRole, user, entreprise, cfa)
     recruiter.jobs.forEach((job) => {
       // @ts-expect-error
       delete job.candidatures
     })
-    recruiters.push(recruiter)
+    const { email, first_name, last_name, phone } = entrepriseManagedByCfa
+    recruiters.push({ ...recruiter, email, first_name, last_name, phone })
   }
   return recruiters
 }
