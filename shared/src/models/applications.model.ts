@@ -287,6 +287,7 @@ export default {
   indexes: [
     [{ company_siret: 1 }, {}],
     [{ job_id: 1 }, {}],
+    [{ job_id: 1, created_at: 1 }, {}],
     [{ applicant_id: 1 }, {}],
     [{ applicant_id: 1, to_applicant_message_id: 1 }, {}],
     [{ scan_status: 1 }, {}],

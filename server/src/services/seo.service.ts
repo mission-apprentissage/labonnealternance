@@ -164,45 +164,63 @@ const getApplicantCountForMetier = async (romes: string[]) => {
   const monthAgo = 3
   const dateThreshold = new Date()
   dateThreshold.setMonth(dateThreshold.getMonth() - monthAgo)
-  const applicantCountResult = await getDbCollection("applications")
+  // const applicantCountResult = await getDbCollection("applications")
+  //   .aggregate([
+  //     {
+  //       $match: {
+  //         created_at: { $gte: dateThreshold },
+  //       },
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: "jobs_partners",
+  //         let: { jobId: "$job_id" },
+  //         pipeline: [
+  //           {
+  //             $match: {
+  //               $expr: { $eq: ["$_id", "$$jobId"] },
+  //               offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+  //               offer_rome_codes: { $in: romes },
+  //             },
+  //           },
+  //           {
+  //             $project: { _id: 1 },
+  //           },
+  //         ],
+  //         as: "job",
+  //       },
+  //     },
+  //     {
+  //       $match: {
+  //         "job.0": { $exists: true },
+  //       },
+  //     },
+  //     {
+  //       $group: {
+  //         _id: "$applicant_id",
+  //       },
+  //     },
+  //     {
+  //       $count: "distinctApplicants",
+  //     },
+  //   ])
+  //   .toArray()
+
+  const applicantCountResult = await getDbCollection("jobs_partners")
     .aggregate([
-      {
-        $match: {
-          created_at: { $gte: dateThreshold },
-        },
-      },
+      { $match: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_rome_codes: { $in: romes } } },
       {
         $lookup: {
-          from: "jobs_partners",
-          let: { jobId: "$job_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ["$_id", "$$jobId"] },
-                offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-                offer_rome_codes: { $in: romes },
-              },
-            },
-            {
-              $project: { _id: 1 },
-            },
-          ],
-          as: "job",
+          from: "applications",
+          localField: "_id",
+          foreignField: "job_id",
+          pipeline: [{ $match: { created_at: { $gte: dateThreshold } } }, { $project: { applicant_id: 1 } }],
+          as: "apps",
         },
       },
-      {
-        $match: {
-          "job.0": { $exists: true },
-        },
-      },
-      {
-        $group: {
-          _id: "$applicant_id",
-        },
-      },
-      {
-        $count: "distinctApplicants",
-      },
+      { $unwind: "$apps" },
+      { $group: { _id: "$apps.applicant_id" } },
+      { $count: "distinctApplicants" },
     ])
     .toArray()
 
