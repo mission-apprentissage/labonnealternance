@@ -306,6 +306,28 @@ const zipAndSendToFranceTravail = async (csvPath1: URL, csvPath2: URL) => {
   }
 }
 
+export const exportJobsToFranceTravailCsvOnly = async () => {
+  const csvPath = new URL("./exportFT.csv", import.meta.url)
+  try {
+    const jobs = await getJobsToExport()
+    await generateCsvFile(csvPath, jobs)
+    logger.info("Send CSV file to France Travail")
+    if (config.env === "production") {
+      await sendCsvToFranceTravail(fileURLToPath(csvPath))
+    }
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `${jobs.length} offres transmises à France Travail`,
+    })
+  } catch (err) {
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `Echec de l'export des offres France Travail. ${err}`,
+      error: true,
+    })
+  }
+}
+
 export const exportJobsToFranceTravail = async () => {
   const csvPath = new URL("./exportFT.csv", import.meta.url)
   const csvPathConfiee = new URL("./exportFTConfiee.csv", import.meta.url)
