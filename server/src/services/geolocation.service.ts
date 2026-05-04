@@ -93,7 +93,7 @@ export const getGeolocation = async (rawAddress: string): Promise<IPointFeature 
     const address = rawAddress.toUpperCase()
 
     const cachedGeolocation = await getGeolocationFromCache(address)
-    if (cachedGeolocation) {
+    if (cachedGeolocation?.features?.length) {
       return cachedGeolocation.features.at(0) ?? null
     }
 
