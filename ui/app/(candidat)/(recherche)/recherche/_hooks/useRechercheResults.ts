@@ -235,6 +235,19 @@ function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
 
 export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson
 
+function splitLbaJobs(lbaJobs: ILbaItemLbaJobJson[]): { direct: ILbaItemLbaJobJson[]; delegated: ILbaItemLbaJobJson[] } {
+  const direct: ILbaItemLbaJobJson[] = []
+  const delegated: ILbaItemLbaJobJson[] = []
+  for (const job of lbaJobs) {
+    if (job.company?.mandataire === false) {
+      direct.push(job)
+    } else {
+      delegated.push(job)
+    }
+  }
+  return { direct, delegated }
+}
+
 export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): boolean {
   switch (typeEmploi) {
     case TYPE_EMPLOI_OPTIONS.alternance:
@@ -259,8 +272,11 @@ export function useRechercheResults(rechercheParams: IRecherchePageParams | null
   const result = useMemo(() => {
     const selectedJobQuery = rechercheParams.elligibleHandicapFilter ? handicapJobQueryResult : allJobQueryResult
 
-    const allJobs = [...allJobQueryResult.lbaJobs, ...allJobQueryResult.partnerJobs, ...allJobQueryResult.lbaCompanies]
-    const handicapJobs = [...handicapJobQueryResult.lbaJobs, ...handicapJobQueryResult.partnerJobs, ...handicapJobQueryResult.lbaCompanies]
+    const { direct: allDirect, delegated: allDelegated } = splitLbaJobs(allJobQueryResult.lbaJobs)
+    const allJobs = [...allDirect, ...allJobQueryResult.partnerJobs, ...allDelegated, ...allJobQueryResult.lbaCompanies]
+
+    const { direct: handicapDirect, delegated: handicapDelegated } = splitLbaJobs(handicapJobQueryResult.lbaJobs)
+    const handicapJobs = [...handicapDirect, ...handicapJobQueryResult.partnerJobs, ...handicapDelegated, ...handicapJobQueryResult.lbaCompanies]
 
     const unfilteredJobs: DisplayedJob[] = rechercheParams.elligibleHandicapFilter ? handicapJobs : allJobs
     const displayedJobs = filterJobsByTypesEmploi(unfilteredJobs, rechercheParams.typesEmploi)
