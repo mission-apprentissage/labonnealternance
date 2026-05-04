@@ -22,21 +22,22 @@ export const updateSeoVilleJobCounts = async () => {
   const villes = await getDbCollection(seoVilleModel.collectionName).find({}).toArray()
 
   for (const ville of villes) {
-    const jobCount = await getPartnerJobsCount({
-      latitude: ville.geopoint.lat,
-      longitude: ville.geopoint.long,
-      radius: DEFAULT_RADIUS_KM,
-      partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      includePartnerLabel: false,
-    })
-
-    const recruteurCount = await getPartnerJobsCount({
-      latitude: ville.geopoint.lat,
-      longitude: ville.geopoint.long,
-      radius: DEFAULT_RADIUS_KM,
-      partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      includePartnerLabel: true,
-    })
+    const [jobCount, recruteurCount] = await Promise.all([
+      getPartnerJobsCount({
+        latitude: ville.geopoint.lat,
+        longitude: ville.geopoint.long,
+        radius: DEFAULT_RADIUS_KM,
+        partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        includePartnerLabel: false,
+      }),
+      getPartnerJobsCount({
+        latitude: ville.geopoint.lat,
+        longitude: ville.geopoint.long,
+        radius: DEFAULT_RADIUS_KM,
+        partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        includePartnerLabel: true,
+      }),
+    ])
 
     const cards = await getJobsForVille({
       latitude: ville.geopoint.lat,
@@ -479,14 +480,15 @@ export const updateSeoMetierJobCounts = async () => {
     logger.info(`updating SEO job counts for metier: ${metier.slug}`)
 
     try {
-      const jobCount = await getJobCountForMetier(metier.romes)
-      const companyCount = await getCompanyCountForMetier(metier.romes)
-      const applicantCount = await getApplicantCountForMetier(metier.romes)
-
-      const entreprises = await getTopCompaniesForMetier(metier.romes)
-      const villes = await getTopCitiesForMetier(metier.romes)
-      const formations = await getFormationsForMetier(metier.romes)
-      const cards = await getJobsForMetier(metier.romes)
+      const [jobCount, companyCount, applicantCount, entreprises, villes, formations, cards] = await Promise.all([
+        getJobCountForMetier(metier.romes),
+        getCompanyCountForMetier(metier.romes),
+        getApplicantCountForMetier(metier.romes),
+        getTopCompaniesForMetier(metier.romes),
+        getTopCitiesForMetier(metier.romes),
+        getFormationsForMetier(metier.romes),
+        getJobsForMetier(metier.romes),
+      ])
 
       await getDbCollection(seoMetierModel.collectionName).updateOne(
         { slug: metier.slug },
