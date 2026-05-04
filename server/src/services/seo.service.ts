@@ -305,41 +305,41 @@ const getTopCitiesForMetier = async (romes: string[]) => {
   const topLimit = 6
   const radius = 30_000
 
-  const cityCounts: { nom: string; job_count: number; geopoint: { lat: number; long: number } }[] = []
-
-  await asyncForEach(cities, async (city) => {
-    const count = await getDbCollection("jobs_partners")
-      .aggregate([
-        {
-          $geoNear: {
-            near: { type: "Point", coordinates: [city.long, city.lat] },
-            distanceField: "distance",
-            key: "workplace_geopoint",
-            maxDistance: radius,
-            query: {
-              offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-              offer_rome_codes: { $in: romes },
-              $or: [{ offer_expiration: null }, { offer_expiration: { $gt: new Date() } }],
+  const cityCounts: { nom: string; job_count: number; geopoint: { lat: number; long: number } }[] = await Promise.all(
+    cities.map(async (city) => {
+      const count = await getDbCollection("jobs_partners")
+        .aggregate([
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [city.long, city.lat] },
+              distanceField: "distance",
+              key: "workplace_geopoint",
+              maxDistance: radius,
+              query: {
+                offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+                offer_rome_codes: { $in: romes },
+                $or: [{ offer_expiration: null }, { offer_expiration: { $gt: new Date() } }],
+              },
             },
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
+          {
+            $group: {
+              _id: "$_id",
+            },
           },
-        },
-        {
-          $count: "distinctJobs",
-        },
-      ])
-      .toArray()
+          {
+            $count: "distinctJobs",
+          },
+        ])
+        .toArray()
 
-    cityCounts.push({
-      nom: city.name,
-      job_count: count[0]?.distinctJobs || 0,
-      geopoint: { lat: city.lat, long: city.long },
+      return {
+        nom: city.name,
+        job_count: count[0]?.distinctJobs || 0,
+        geopoint: { lat: city.lat, long: city.long },
+      }
     })
-  })
+  )
 
   return cityCounts.sort((a, b) => b.job_count - a.job_count).slice(0, topLimit)
 }
