@@ -45,7 +45,8 @@ export const LbaJobCfaDetail = ({ job, title }: { job: ILbaItemPartnerJobJson; t
       <EmployeurPresentationBlock
         title="Présentation de l'entreprise"
         item={job}
-        description="Le centre de formation peut vous renseigner sur l'entreprise."
+        description={job?.job?.employeurDescription}
+        emptyStateText="Le centre de formation peut vous renseigner sur l'entreprise."
         cityOnly
         showPhone={false}
         showGoogleSearch={false}

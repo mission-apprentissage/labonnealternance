@@ -32,7 +32,7 @@ const EmployerDescriptionField = () => {
         state={errors.job_employer_description ? "error" : "info"}
         stateRelatedMessage={
           (errors.job_employer_description as string) ??
-          "Notre équipe se réserve le droit de ne diffuser que les contenus répondant à une présentation de l'entreprise. La taille du champ est limitée à 800 caractères."
+          "Notre équipe modère les contenus. Toute description non conforme à la réglementation pourra entrainer la suppression de l'offre, la désactivation du compte et faire l'objet d'un signalement aux autorités compétentes. La taille du champ est limitée à 800 caractères."
         }
         textArea
         nativeTextAreaProps={{
