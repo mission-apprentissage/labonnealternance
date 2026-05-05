@@ -5,7 +5,8 @@ import motifSmall from "./seo_decoration.svg"
 
 export const HomeCircleImageDecoration = ({ size }: { size: "small" | "high" }) => (
   <NextImage
-    fetchPriority="low"
+    fetchPriority="high"
+    priority
     src={size === "high" ? motifHigh.src : motifSmall.src}
     alt=""
     unoptimized
