@@ -1,0 +1,200 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importEdf > should import EDF data into raw_edf then computed_jobs_partners, filtering non-alternance offers 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.edf.fr/edf-recrute/offre/detail/2026-100001?idOrigine=502",
+    "business_error": "TRUSTED_COMPANY_JOB_DUPLICATE",
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [
+      "Débutant",
+    ],
+    "offer_description": "Missions :
+Développer des applications web et mobiles.
+Participer aux revues de code.
+Rédiger la documentation technique.
+
+Profil recherché :
+
+Niveau de diplôme préparé : Bac+3
+Spécialisation : Informatique
+Durée du contrat : 2 ans
+
+Rémunération : De 820€ à 1 823€ par mois
+
+Prime d'intéressement, 30 jours de congés, télétravail possible",
+    "offer_desired_skills": [],
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "6",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    },
+    "offer_title": "Alternance - Développeur Web F/H",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [
+      "Informatique",
+    ],
+    "partner_job_id": "100001",
+    "partner_label": "EDF",
+    "validated": false,
+    "workplace_address_city": "Lyon",
+    "workplace_address_label": "Lyon",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": "Acteur majeur du secteur de l'énergie, Enedis distribue l'électricité via le plus grand réseau électrique d'Europe. Présents sur 700 sites, nos 40 000 salariés développent un réseau électrique plus intelligent et plus performant.",
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": "35.11Z",
+    "workplace_naf_label": "Production d'électricité",
+    "workplace_name": "EDF",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.edf.fr/edf-recrute/offre/detail/2026-100002?idOrigine=502",
+    "business_error": null,
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [
+      "Débutant",
+    ],
+    "offer_description": "Missions :
+Assurer la maintenance des équipements électriques.
+Participer aux rondes de surveillance.
+Rédiger les comptes rendus d'intervention.
+
+Profil recherché :
+
+Niveau de diplôme préparé : BAC PRO
+Spécialisation : Électrotechnique
+Durée du contrat : 2 ans
+
+Rémunération : Selon grille nationale
+
+Salaire selon la grille nationale, aide au logement possible",
+    "offer_desired_skills": [],
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "4",
+      "label": "BP, Bac, autres formations (Bac)",
+    },
+    "offer_title": "ALTERNANCE - BAC PRO Technicien Électrique F/H",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [
+      "Électrotechnique",
+    ],
+    "partner_job_id": "100002",
+    "partner_label": "EDF",
+    "validated": false,
+    "workplace_address_city": "Paluel",
+    "workplace_address_label": "Paluel",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": null,
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": "35.11Z",
+    "workplace_naf_label": "Production d'électricité",
+    "workplace_name": "EDF",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.edf.fr/edf-recrute/offre/detail/2026-100003?idOrigine=502",
+    "business_error": "WRONG_DATA",
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_type": [],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [
+      "Débutant",
+    ],
+    "offer_description": "Missions :
+Soutenir les équipes d'ingénierie.
+Analyser les questions techniques.
+Participer aux réunions de suivi.
+
+Profil recherché :
+
+Niveau de diplôme : Bac+3
+Spécialisation : Génie civil ou électricité
+
+Rémunération : Selon Business France
+
+Indemnité selon grille Business France, allocation logement",
+    "offer_desired_skills": [],
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "6",
+      "label": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    },
+    "offer_title": "VIE - Bac+3 - Ingénieur Génie Civil F/H",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [
+      "Génie civil",
+    ],
+    "partner_job_id": "100003",
+    "partner_label": "EDF",
+    "validated": false,
+    "workplace_address_city": "Bridgwater",
+    "workplace_address_label": "Bridgwater",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": null,
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": "35.11Z",
+    "workplace_naf_label": "Production d'électricité",
+    "workplace_name": "EDF",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;

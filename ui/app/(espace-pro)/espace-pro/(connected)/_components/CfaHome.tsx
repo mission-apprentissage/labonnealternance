@@ -15,6 +15,7 @@ import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/context
 import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate, sortReactTableString } from "@/common/utils/dateUtils"
+import { DsfrIcon } from "@/components/DsfrIcon"
 import { AnimationContainer, LoadingEmptySpace } from "@/components/espace_pro"
 import { getEntreprisesManagedByCfa } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -80,7 +81,7 @@ function ListeEntreprise() {
 
   const cfaId = access?.cfas.at(0)
 
-  const { data, isLoading } = useQuery({
+  const { data: entreprises, isLoading } = useQuery({
     queryKey: ["listeEntreprise"],
     queryFn: () => getEntreprisesManagedByCfa(cfaId),
     enabled: Boolean(cfaId),
@@ -94,7 +95,7 @@ function ListeEntreprise() {
     {
       Header: "",
       id: "action",
-      maxWidth: "40",
+      maxWidth: "48",
       disableSortBy: true,
       accessor: (row: IRecruiterJson) => {
         return <CfaHomeEntrepriseMenu row={row} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
@@ -222,12 +223,13 @@ function ListeEntreprise() {
             }}
           >
             <Button size="small" onClick={() => router.push(PAGES.static.backCfaCreationEntreprise.getPath())}>
-              Nouvelle entreprise
+              <DsfrIcon name="fr-icon-add-line" size={16} />
+              Ajouter une entreprise
             </Button>
           </Box>
         </Box>
-        {data?.length ? (
-          <TableWithPagination caption="Liste des entreprises" columns={columns} data={data} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} />
+        {entreprises?.length ? (
+          <TableWithPagination caption="Liste des entreprises" columns={columns} data={entreprises} exportable={false} defaultSortBy={[{ id: "createdAt", desc: true }]} />
         ) : (
           <EmptySpace />
         )}

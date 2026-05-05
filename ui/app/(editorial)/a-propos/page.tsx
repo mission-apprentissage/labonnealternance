@@ -8,7 +8,6 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
-import catalogue from "@/public/images/logosPartenaires/partenaire-catalogue.webp"
 import diagoriente from "@/public/images/logosPartenaires/partenaire-diagoriente.webp"
 import franceTravail from "@/public/images/logosPartenaires/partenaire-france-travail.webp"
 import onisep from "@/public/images/logosPartenaires/partenaire-onisep.webp"
@@ -23,7 +22,7 @@ import ocapiat from "@/public/images/logosPartenaires/partenaire-opco-ocapiat.we
 import sante from "@/public/images/logosPartenaires/partenaire-opco-sante.webp"
 import uniformation from "@/public/images/logosPartenaires/partenaire-opco-uniformation.webp"
 import parcoursup from "@/public/images/logosPartenaires/partenaire-parcoursup.webp"
-import portailAlternance from "@/public/images/logosPartenaires/partenaire-portail-alternance.webp"
+import rco from "@/public/images/logosPartenaires/partenaire-rco.svg"
 import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -42,7 +41,7 @@ export default function APropos() {
             <Grid container spacing={fr.spacing("2v")}>
               <Grid size={{ xs: 12, md: 3 }}>
                 <Typography id="editorial-content-container" component={"h1"} variant="h1" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
-                  A propos
+                  À propos
                 </Typography>
                 <Box
                   component="hr"
@@ -217,7 +216,6 @@ export default function APropos() {
                   <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
                   <Image src={parcoursup} alt="Parcoursup - Entrez dans l'enseignement supérieur" style={{ width: "100%", height: "auto" }} />
                   <Image src={onisep} alt="Onisep" style={{ width: "100%", height: "auto" }} />
-                  <Image src={portailAlternance} alt="Portail de l'Alternance - Apprentissage et contrat de professionnalisation" style={{ width: "100%", height: "auto" }} />
                   <Image src={j1s} alt="#1jeune1solution" style={{ width: "100%", height: "auto" }} />
                   <Image src={affelnet} alt="Choisir son affectation - Demander une formation et un établissement après la 3ème" style={{ width: "100%", height: "auto" }} />
                   <Image src={ocapiat} alt="OPCO Ocapiat" style={{ width: "100%", height: "auto" }} />
@@ -232,7 +230,9 @@ export default function APropos() {
                   <Image src={akto} alt="OPCO Akto - L'humain au coeur des services" style={{ width: "100%", height: "auto" }} />
                   <Image src={diagoriente} alt="Diagoriente" style={{ width: "100%", height: "auto" }} />
                   <Image src={tbd} alt="Tableau de bord de l'apprentissage" style={{ width: "100%", height: "auto" }} />
-                  <Image src={catalogue} alt="Le catalogue des Carif Oref" style={{ width: "100%", height: "auto" }} />
+                  <Box sx={{ width: "100%", height: "auto", backgroundColor: "#fff", border: "2px solid #dcdcdc" }}>
+                    <Image src={rco} alt="Réseau des Carif-Oref" style={{ width: "100%", height: "auto" }} />
+                  </Box>
                 </Box>
 
                 <Typography

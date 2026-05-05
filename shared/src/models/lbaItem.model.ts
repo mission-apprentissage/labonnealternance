@@ -140,6 +140,7 @@ const ZLbaItemContact = z
       })
       .nullish(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
     iv: z.string().nullish(),
+    hasEmail: z.boolean(),
     name: z
       .string()
       .openapi({
@@ -258,6 +259,7 @@ const ZLbaItemJob = z
     offer_to_be_acquired_knowledge: z.array(z.string()).nullish(),
     offer_access_conditions: z.array(z.string()).nullish(), // partner -> offer_access_conditions
     contract_rythm: z.string().nullish(),
+    isCfaEntreprise: z.boolean().nullish(), // issu de la liste des cfa d'entreprise cf shared/src/services/isCfaEntreprise.ts
   })
   .strict()
   .openapi("LbacJob") // uniquement pour pe et matcha

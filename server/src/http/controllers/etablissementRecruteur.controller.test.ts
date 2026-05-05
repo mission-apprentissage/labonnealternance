@@ -1,3 +1,5 @@
+import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
+import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveUserWithAccount } from "@tests/utils/user.test.utils"
@@ -6,9 +8,7 @@ import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
 import { generateFeaturePropertyFixture } from "shared/fixtures/geolocation.fixture"
 import { parisFixture } from "shared/fixtures/referentiel/commune.fixture"
-import type { z } from "shared/helpers/zodWithOpenApi"
 import { UserEventType } from "shared/models/index"
-import type { zRoutes } from "shared/routes/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { apiReferentielCatalogueFixture } from "@/common/apis/apiReferentielCatalogue.fixture"
@@ -45,6 +45,7 @@ describe("POST /etablissement/creation", () => {
       .reply(200, {
         features: [
           {
+            type: "Feature",
             geometry: parisFixture.centre,
             properties: generateFeaturePropertyFixture({ city: parisFixture.nom, postcode: parisFixture.codesPostaux[0], name: "20 AVENUE DE SEGUR" }),
           },
@@ -52,19 +53,17 @@ describe("POST /etablissement/creation", () => {
       })
 
     return async () => {
-      mockEntreprise.persist(false)
       mockCfa.persist(false)
       mockGeocoding.persist(false)
-      await getDbCollection("recruiters").deleteMany()
+      mockEntreprise.persist(false)
+
+      await getDbCollection("jobs_partners").deleteMany()
       await getDbCollection("rolemanagements").deleteMany()
       await getDbCollection("entreprises").deleteMany()
       await getDbCollection("cfas").deleteMany()
       await getDbCollection("userswithaccounts").deleteMany()
     }
   })
-
-  type CreationBody = z.output<(typeof zRoutes.post)["/etablissement/creation"]["body"]>
-  type CreationResponse = z.output<(typeof zRoutes.post)["/etablissement/creation"]["response"]["200"]>
 
   const defaultCreationEntreprisePayload = {
     email: "email@email.com",
@@ -89,19 +88,13 @@ describe("POST /etablissement/creation", () => {
     establishment_siret: "52151363000017",
   } as const
 
-  const callCreation = (body: CreationBody) =>
-    httpClient().inject({
-      method: "POST",
-      path: "/api/etablissement/creation",
-      body,
-    })
+  const callCreation = (body: CreationBody) => entrepriseSdk(httpClient).create(body)
 
   describe("Création d'entreprise", () => {
     it("Vérifie que le recruteur est créé avec une offre", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
       expect.soft(response.statusCode).toBe(200)
-      const { formulaire, user } = response.json() as CreationResponse
-      expect.soft(omit(formulaire, ["_id", "createdAt", "establishment_id", "managed_by", "updatedAt", "geo_coordinates", "geopoint"])).toMatchSnapshot()
+      const { user } = response.json() as CreationResponse
       expect.soft(omit(user, ["_id", "createdAt", "updatedAt", "last_action_date", "status"])).toMatchSnapshot()
       expect.soft(user.status[0].status).toBe(UserEventType.ACTIF)
     }, 10_000)

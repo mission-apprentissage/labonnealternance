@@ -2,6 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
 import type { Metadata } from "next"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 import path from "path"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
@@ -29,6 +30,9 @@ const getMetierBySlug = (jobs: IStaticMetiers[], slug: IStaticMetiers["slug"]) =
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const _params = await params
   const metier = getMetierBySlug(getMetiers(), _params.slug)
+  if (!metier) {
+    return { title: "Métier introuvable - La bonne alternance" }
+  }
   return PAGES.dynamic.metierJobById(metier.name).getMetadata()
 }
 
@@ -37,6 +41,10 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
   const towns = getTowns()
   const metiers = getMetiers()
   const relatedMetier = getMetierBySlug(metiers, slug)
+
+  if (!relatedMetier) {
+    redirect("/404")
+  }
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.metiers, PAGES.dynamic.metierJobById(relatedMetier.name)]} />
@@ -64,7 +72,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
             Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :
           </Typography>
           <Stack
-            spacing={1}
+            spacing={fr.spacing("2v")}
             sx={{
               alignItems: "flex-start",
             }}
@@ -79,7 +87,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
               Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{relatedMetier.name}</i>
             </Typography>
 
-            <Typography sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+            <Typography sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
               <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
 
               <Link
@@ -93,7 +101,7 @@ export default async function MetiersByJobId({ params }: { params: Promise<{ slu
 
             {towns.map((currentTown, index) => {
               return (
-                <Typography key={index} sx={{ mt: 0, mb: { xs: 2, md: 0 } }}>
+                <Typography key={index} sx={{ mt: 0, mb: { xs: fr.spacing("4v"), md: 0 } }}>
                   <Typography component="span">Emploi en alternance et formation en alternance en </Typography>
                   <Link
                     className={fr.cx("fr-link", "fr-text--bold")}
@@ -127,7 +135,6 @@ const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStaticMetier
 
   return PAGES.dynamic
     .recherche({
-      displayMap: false,
       romes: job.romes,
       job_name: job.name,
       ...addedParams,

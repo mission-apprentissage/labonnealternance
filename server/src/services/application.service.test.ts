@@ -1,26 +1,28 @@
 import { badRequest } from "@hapi/boom"
+import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
-import { saveRecruiter } from "@tests/utils/user.test.utils"
 import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { RECRUITER_STATUS } from "shared/constants/index"
-import { applicationTestFile, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { applicationTestFile, generateApplicantFixture, generateApplicationFixture, generateHelloworkApplicationFixture } from "shared/fixtures/application.fixture"
 import { generateJobsPartnersOfferPrivate } from "shared/fixtures/jobPartners.fixture"
-import { generateRecruiterFixture } from "shared/fixtures/recruiter.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
-import { JOB_STATUS, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { ApplicationScanStatus, JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { buildApplicationFromHelloworkAndSaveToDb, sendApplicationV2 } from "./application.service"
+import mailer from "@/services/mailer.service"
+import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, sendApplicationV2 } from "./application.service"
 
 // Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/awsUtils", () => {
   return {
     s3WriteString: vi.fn().mockResolvedValue(undefined),
+    s3ReadAsString: vi.fn().mockResolvedValue(applicationTestFile),
+    s3Delete: vi.fn().mockResolvedValue(undefined),
   }
 })
 
@@ -41,6 +43,19 @@ vi.mock("@/services/mailer.service", () => {
   }
 })
 
+// Mock axios to avoid actual HTTP calls during tests (used by Taleez API integration)
+// Using importOriginal to preserve axios.create() which is used by other services at module init time
+vi.mock("axios", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("axios")>()
+  return {
+    ...mod,
+    default: {
+      ...mod.default,
+      post: vi.fn().mockResolvedValue({ status: 200, data: {} }),
+    },
+  }
+})
+
 useMongo()
 
 const fakeApplication = {
@@ -55,8 +70,6 @@ const fakeApplication = {
 
 describe("Sending application", () => {
   beforeEach(async () => {
-    const dateMoins1 = dayjs().add(-1, "day")
-
     const romes: IReferentielRome[] = [
       generateReferentielRome({
         rome: {
@@ -68,52 +81,28 @@ describe("Sending application", () => {
     ]
     await getDbCollection("referentielromes").insertMany(romes)
 
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            _id: new ObjectId("6081289803569600282e0001"),
-            rome_code: ["A1101"],
-            job_expiration_date: dateMoins1.toDate(),
-          },
-        ],
-      })
-    )
-
-    const datePlus1 = dayjs().add(1, "day")
-
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ARCHIVE,
-        jobs: [
-          {
-            _id: new ObjectId("6081289803569600282e0002"),
-            rome_code: ["A1101"],
-            job_expiration_date: datePlus1.toDate(),
-          },
-        ],
-      })
-    )
-
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            _id: new ObjectId("6081289803569600282e0003"),
-            rome_code: ["A1101"],
-            job_status: JOB_STATUS.POURVUE,
-            job_expiration_date: datePlus1.toDate(),
-          },
-        ],
-      })
-    )
-
     return async () => {
-      await getDbCollection("recruiters").deleteMany({})
       await getDbCollection("referentielromes").deleteMany({})
+      await getDbCollection("jobs_partners").deleteMany({})
+      await getDbCollection("applicants").deleteMany({})
+      await getDbCollection("applications").deleteMany({})
     }
+  })
+  it("Should send an application to a job", async () => {
+    const job = await createJobPartner({
+      apply_email: "email@gmail.com",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+    const result = await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: job._id.toString() },
+      },
+    })
+    expect.soft(omit(result, ["_id"])).toMatchSnapshot()
   })
   it("Should refuse sending application to non existent job", async () => {
     await expect(
@@ -124,42 +113,6 @@ describe("Sending application", () => {
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
-  })
-
-  it("Should refuse sending application to expired job because of expiry date", async () => {
-    await expect(
-      sendApplicationV2({
-        newApplication: {
-          ...fakeApplication,
-          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0001" },
-        },
-      })
-    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
-  })
-
-  it("Should refuse sending application to expired job because of recruiter status", async () => {
-    await expect(
-      sendApplicationV2({
-        newApplication: {
-          ...fakeApplication,
-          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0002" },
-        },
-      })
-    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
-  })
-
-  it("Should refuse sending application to expired job because of job status", async () => {
-    await expect(
-      sendApplicationV2({
-        newApplication: {
-          ...fakeApplication,
-          recipient_id: { collectionName: "recruiters", jobId: "6081289803569600282e0003" },
-        },
-      })
-    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
-  })
-
-  it("Should refuse sending application to non existent company", async () => {
     await expect(
       sendApplicationV2({
         newApplication: {
@@ -168,6 +121,97 @@ describe("Sending application", () => {
         },
       })
     ).rejects.toThrow(badRequest(BusinessErrorCodes.NOTFOUND))
+  })
+  it("Should accept application for a Taleez partner job with null apply_email without throwing INTERNAL_EMAIL", async () => {
+    const taleezJobId = new ObjectId("6081289803569600282e0005")
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: taleezJobId,
+        partner_label: "Taleez",
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        apply_email: null,
+      })
+    )
+
+    const result = await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: taleezJobId.toString() },
+      },
+    })
+
+    expect(result).toHaveProperty("_id")
+  })
+  it("Should throw INTERNAL_EMAIL for a non-Taleez partner job with null apply_email", async () => {
+    const partnerJobId = new ObjectId("6081289803569600282e0006")
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: partnerJobId,
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        apply_email: null,
+      })
+    )
+
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: partnerJobId.toString() },
+        },
+      })
+    ).rejects.toThrow(BusinessErrorCodes.INTERNAL_EMAIL)
+  })
+  it("Should refuse sending application to expired job because of expiry date", async () => {
+    const expiredJob = await createJobPartner({
+      apply_email: "email@gmail.com",
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(-1, "day").toDate(),
+    })
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: expiredJob._id.toString() },
+        },
+      })
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
+  })
+
+  it("Should refuse sending application to cancelled job", async () => {
+    const canceledJob = await createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.ANNULEE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: canceledJob._id.toString() },
+        },
+      })
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
+  })
+
+  it("Should refuse sending application to provided job", async () => {
+    const providedJob = await createJobPartner({
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      offer_status: JOB_STATUS_ENGLISH.POURVUE,
+      offer_rome_codes: ["A1101"],
+      offer_expiration: dayjs().add(1, "day").toDate(),
+    })
+    await expect(
+      sendApplicationV2({
+        newApplication: {
+          ...fakeApplication,
+          recipient_id: { collectionName: "partners", jobId: providedJob._id.toString() },
+        },
+      })
+    ).rejects.toThrow(badRequest(BusinessErrorCodes.EXPIRED))
   })
 })
 
@@ -493,7 +537,6 @@ describe("checkMaxApplicationCount", () => {
     await getDbCollection("jobs_partners").deleteMany({})
     await getDbCollection("applications").deleteMany({})
     await getDbCollection("applicants").deleteMany({})
-    await getDbCollection("recruiters").deleteMany({})
     await getDbCollection("referentielromes").deleteMany({})
   })
 
@@ -522,7 +565,7 @@ describe("checkMaxApplicationCount", () => {
     expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
   })
 
-  it("Should update offer status to ANNULEE when application count exceeds limit (RECRUTEURS_LBA)", async () => {
+  it("Should NOT update offer status to ANNULEE when application count exceeds limit (RECRUTEURS_LBA)", async () => {
     const partnerJob = generateJobsPartnersOfferPrivate({
       _id: new ObjectId("6081289803569600282e0031"),
       partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
@@ -546,57 +589,19 @@ describe("checkMaxApplicationCount", () => {
     })
 
     const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0031") })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
-  })
-
-  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_PARTENAIRES)", async () => {
-    const partnerJob = generateJobsPartnersOfferPrivate({
-      _id: new ObjectId("6081289803569600282e0032"),
-      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-      offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-      apply_email: "employer@test.fr",
-      workplace_siret: "11111111111111",
-    })
-    await getDbCollection("jobs_partners").insertOne(partnerJob)
-
-    // count is by job_id for OFFRES_EMPLOI_PARTENAIRES (not company_siret)
-    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: new ObjectId("6081289803569600282e0032"), created_at: new Date() }))
-    await getDbCollection("applications").insertMany(applications)
-
-    await sendApplicationV2({
-      newApplication: {
-        ...fakeApplication,
-        recipient_id: { collectionName: "partners", jobId: "6081289803569600282e0032" },
-      },
-    })
-
-    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId("6081289803569600282e0032") })
-    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ACTIVE)
   })
 
   it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_LBA)", async () => {
     const jobId = new ObjectId("6081289803569600282e0033")
 
     await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
-    await saveRecruiter(
-      generateRecruiterFixture({
-        status: RECRUITER_STATUS.ACTIF,
-        jobs: [
-          {
-            _id: jobId,
-            rome_code: ["A1101"],
-            job_status: JOB_STATUS.ACTIVE,
-            job_expiration_date: new Date("2050-01-01"),
-          },
-        ],
-      })
-    )
-    // Mirror entry in jobs_partners so the status update can be verified
     await getDbCollection("jobs_partners").insertOne(
       generateJobsPartnersOfferPrivate({
         _id: jobId,
         offer_status: JOB_STATUS_ENGLISH.ACTIVE,
         apply_email: "employer@test.fr",
+        partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
       })
     )
 
@@ -613,5 +618,135 @@ describe("checkMaxApplicationCount", () => {
 
     const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
     expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+  })
+})
+
+describe("processApplicationEmails.sendEmailsIfNeeded", () => {
+  const mailerSendEmailSpy = vi.mocked(mailer.sendEmail)
+
+  beforeEach(async () => {
+    mailerSendEmailSpy.mockClear()
+  })
+
+  it("should send applicant and company messages for recruteur_lba", async () => {
+    const jobId = new ObjectId()
+    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+    await getDbCollection("applicants").insertOne(applicant)
+
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        apply_email: "company@test.fr",
+        workplace_siret: "12345678901234",
+      })
+    )
+
+    const application = generateApplicationFixture({
+      applicant_id: applicant._id,
+      job_origin: LBA_ITEM_TYPE.RECRUTEURS_LBA,
+      job_id: jobId,
+      company_email: "company@test.fr",
+      company_siret: "12345678901234",
+      to_company_message_id: null,
+      to_applicant_message_id: null,
+      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+    })
+    await getDbCollection("applications").insertOne(application)
+
+    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
+
+    // Should send both company email (mail-candidature-spontanee) and applicant email (mail-candidat-recruteur-lba)
+    expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
+    const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
+    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature-spontanee")]))
+    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-recruteur-lba")]))
+
+    // DB should be updated with both message IDs
+    const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
+    expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
+    expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
+  })
+
+  it("should send applicant message and call Taleez API for Taleez partner_label", async () => {
+    const jobId = new ObjectId()
+    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+    await getDbCollection("applicants").insertOne(applicant)
+
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        partner_label: "Taleez",
+        partner_job_id: "taleez_job_123",
+        apply_email: "taleez@company.fr",
+      })
+    )
+
+    const application = generateApplicationFixture({
+      applicant_id: applicant._id,
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+      job_id: jobId,
+      company_email: "taleez@company.fr",
+      to_company_message_id: null,
+      to_applicant_message_id: null,
+      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+    })
+    await getDbCollection("applications").insertOne(application)
+
+    // Import axios to check the mock call
+    const axios = await import("axios")
+    vi.mocked(axios.default.post).mockClear()
+
+    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
+
+    // Should call Taleez API (not send company email)
+    expect(vi.mocked(axios.default.post)).toHaveBeenCalledOnce()
+
+    // Should send only applicant email (not company email)
+    expect(mailerSendEmailSpy).toHaveBeenCalledTimes(1)
+    expect(mailerSendEmailSpy.mock.calls[0][0]).toMatchObject({ to: applicant.email })
+
+    // DB: to_company_message_id should remain null (Taleez handles it), to_applicant_message_id should be set
+    const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
+    expect(updatedApplication?.to_company_message_id).toEqual("Taleez")
+    expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
+  })
+
+  it("should send applicant and company messages for other partner_label", async () => {
+    const jobId = new ObjectId()
+    const applicant = generateApplicantFixture({ email: "candidat@test.fr" })
+    await getDbCollection("applicants").insertOne(applicant)
+
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        apply_email: "company@francetravail.fr",
+      })
+    )
+
+    const application = generateApplicationFixture({
+      applicant_id: applicant._id,
+      job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES,
+      job_id: jobId,
+      company_email: "company@francetravail.fr",
+      to_company_message_id: null,
+      to_applicant_message_id: null,
+      scan_status: ApplicationScanStatus.NO_VIRUS_DETECTED,
+    })
+    await getDbCollection("applications").insertOne(application)
+
+    await processApplicationEmails.sendEmailsIfNeeded(application, applicant)
+
+    // Should send both company email (mail-candidature-partenaire) and applicant email (mail-candidat-offre-emploi)
+    expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
+    const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
+    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature-partenaire")]))
+    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-offre-emploi")]))
+
+    // DB should be updated with both message IDs
+    const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
+    expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
+    expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
   })
 })

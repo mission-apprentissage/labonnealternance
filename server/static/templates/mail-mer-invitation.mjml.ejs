@@ -114,11 +114,13 @@
               <br />
               <br />
 
-              Niveau de formation :
-              <br />
-              <span style="font-weight: 700;"><%= data.job_level_label %></span>
-              <br />
-              <br />
+              <% if (data.job_level_label) { %>
+                Niveau de formation :
+                <br />
+                <span style="font-weight: 700;"><%= data.job_level_label %></span>
+                <br />
+                <br />
+              <% } %>
 
               Date de début de contrat :
               <br />

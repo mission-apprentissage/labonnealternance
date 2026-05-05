@@ -1,11 +1,46 @@
 "use client"
-import type { ILbaItemLbaCompanyJson } from "shared"
-import { hasValidEmail } from "@/app/(candidat)/(recherche)/recherche/_components/hasValidEmail"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Link, Typography } from "@mui/material"
+import type { ILbaItemJobsGlobal } from "shared"
 import { CandidaterButton } from "@/app/(candidat)/emploi/[type]/[id]/[intitule-offre]/CandidaterButton"
 import { CandidatureLbaModal } from "@/components/ItemDetail/CandidatureLba/CandidatureLbaModal"
-import { RecruteurLbaNoContactModal } from "./RecruteurLbaNoContactModal"
 
-export function RecruteurLbaCandidater({ item }: { item: ILbaItemLbaCompanyJson }) {
-  const CandidaterModal = hasValidEmail(item) ? CandidatureLbaModal : RecruteurLbaNoContactModal
-  return <CandidaterButton item={item} buttonLabel={"J'envoie ma candidature spontanée"} CandidaterModal={CandidaterModal} />
+export function RecruteurLbaCandidater({ item, showScrollToTop }: { item: ILbaItemJobsGlobal; showScrollToTop?: boolean }) {
+  if (!item?.contact?.hasEmail) {
+    return (
+      <Box sx={{ my: fr.spacing("2v") }}>
+        <Typography
+          component="span"
+          sx={{
+            backgroundColor: "#FEECC2", // fr introuvable.
+            color: fr.colors.decisions.background.actionHigh.greenTilleulVerveine.default,
+            fontStyle: "italic",
+            px: fr.spacing("2v"),
+            py: fr.spacing("1v"),
+          }}
+          className={fr.cx("fr-text--sm")}
+        >
+          <span aria-hidden="true">🕵️</span>{" "}
+          {item?.contact?.phone ? (
+            <>
+              {" "}
+              Nous n’avons pas d’email pour cette entreprise, mais vous pouvez l’appeler au <Link href={`tel:${item.contact.phone.replace(/\s+/g, "")}`}>{item.contact.phone}</Link>{" "}
+              et demander s’ils recrutent des alternants !
+            </>
+          ) : (
+            "Nous n’avons pas de contact pour cette entreprise, peut-être que vous en trouverez un sur internet !"
+          )}
+        </Typography>
+      </Box>
+    )
+  }
+  return (
+    <CandidaterButton
+      CandidatureSimplifie={item.contact.hasEmail}
+      item={item}
+      buttonLabel={"J'envoie ma candidature spontanée"}
+      CandidaterModal={CandidatureLbaModal}
+      showScrollToTop={showScrollToTop}
+    />
+  )
 }

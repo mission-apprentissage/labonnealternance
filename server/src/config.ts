@@ -149,10 +149,13 @@ const config = {
     toulouseMetropole: env.get("TOULOUSE_METROPOLE_FLUX_URL").required().asString(),
   },
   helloworkUrl: env.get("HELLOWORK_FLUX_URL").required().asString(),
+  helloworkBuddiUrl: env.get("HELLOWORK_BUDDI_FLUX_URL").required().asString(),
   helloworkApiKey: env.get("HELLOWORK_API_KEY").required().asString(),
   monsterUrl: env.get("MONSTER_FLUX_URL").required().asString(),
   kelioUrl: env.get("KELIO_FLUX_URL").required().asString(),
   laposteUrl: env.get("LAPOSTE_FLUX_URL").required().asString(),
+  edfUrl: env.get("EDF_FLUX_URL").required().asString(),
+  enedisUrl: env.get("ENEDIS_FLUX_URL").required().asString(),
   leboncoinUrl: env.get("LEBONCOIN_FLUX_URL").required().asString(),
   joobleUrl: env.get("JOOBLE_FLUX_URL").required().asString(),
   jobteaserUserName: env.get("JOBTEASER_FLUX_USERNAME").required().asString(),
@@ -184,6 +187,14 @@ const config = {
   emploi_inclusion: {
     url: env.get("EMPLOI_INCLUSION_FLUX_URL").required().asString(),
     apiKey: env.get("EMPLOI_INCLUSION_API_KEY").required().asString(),
+  },
+  job_etudiant: {
+    url: env.get("JOB_ETUDIANT_FLUX_URL").required().asString(),
+    apiKey: env.get("JOB_ETUDIANT_API_KEY").required().asString(),
+  },
+  taleez: {
+    url: env.get("TALEEZ_API_URL").required().asString(),
+    partnerKey: env.get("TALEEZ_API_PARTNER_KEY").required().asString(),
   },
 }
 

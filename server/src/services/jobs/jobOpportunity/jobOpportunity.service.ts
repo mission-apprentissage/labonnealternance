@@ -5,14 +5,14 @@ import { ObjectId } from "mongodb"
 import type { IGeoPoint, IJob, IJobCollectionName, ILbaItemPartnerJob } from "shared"
 import { assertUnreachable, JOB_STATUS_ENGLISH, JobCollectionName, parseEnum } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
-import { allLbaItemType, LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { NIVEAU_DIPLOME_LABEL, NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
 import type {
   IJobOfferApiReadV3,
   IJobOfferApiWriteV3,
@@ -29,13 +29,12 @@ import { normalizeDepartementToRegex } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { trackApiCall } from "@/common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { isNormalizedStringInSetOrArray } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { getRomesFromRncp } from "@/services/external/api-alternance/certification.service"
-import { getSomeFtJobs } from "@/services/ftjob.service"
 import type { FTJob } from "@/services/ftjob.service.types"
 import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
-import type { ILbaItemFtJob, ILbaItemLbaCompany, ILbaItemLbaJob } from "@/services/lbaitem.shared.service.types"
-import { getLbaJobs, incrementLbaJobsViewCount } from "@/services/lbajob.service"
+import type { ILbaItemLbaCompany } from "@/services/lbaitem.shared.service.types"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 import { jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
@@ -129,142 +128,6 @@ export const getJobsFromApiPrivate = async ({
 }
 
 /**
- * @description Retourn la compilation d'opportunités d'emploi au format unifié
- * chaque type d'opportunités d'emploi peut être émis en succès même si d'autres groupes sont en erreur
- */
-export const getJobsFromApi = async ({
-  romes,
-  referer,
-  caller,
-  latitude,
-  longitude,
-  radius,
-  insee,
-  sources,
-  diploma,
-  opco,
-  opcoUrl,
-  api = "jobV1/jobs",
-  isMinimalData,
-}: {
-  romes?: string
-  referer?: string
-  caller?: string | null
-  latitude?: number
-  longitude?: number
-  radius?: number
-  insee?: string
-  sources?: string
-  // sources?: LBA_ITEM_TYPE
-  diploma?: INiveauDiplomeEuropeen
-  opco?: string
-  opcoUrl?: string
-  api?: string
-  isMinimalData: boolean
-}): Promise<
-  | IApiError
-  | {
-      peJobs: TLbaItemResult<ILbaItemFtJob> | null
-      matchas: TLbaItemResult<ILbaItemLbaJob> | null
-      lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null
-      lbbCompanies: null
-      partnerJobs: TLbaItemResult<ILbaItemPartnerJob> | null
-    }
-> => {
-  try {
-    const convertedSource = sources
-      ?.split(",")
-      .map((source) => {
-        switch (source) {
-          case "partnerJob": // once API consumer shifted to v3, remove case "offres" as it fetches from FT API
-          case "matcha":
-            return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-          case "lba":
-            return LBA_ITEM_TYPE.RECRUTEURS_LBA
-          case "peJob":
-          case "offres": // compatibility V1 to retreive FT jobs
-            return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
-
-          default:
-            return
-        }
-      })
-      .join(",")
-
-    const jobSources = !convertedSource ? allLbaItemType : convertedSource.split(",")
-    const finalRadius = radius ?? 0
-
-    const [peJobs, lbaCompanies, matchas, partnerJobs] = await Promise.all([
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES)
-        ? getSomeFtJobs({
-            romes: romes?.split(","),
-            insee: insee,
-            radius: finalRadius,
-            latitude,
-            longitude,
-            caller,
-            diploma,
-            api,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.RECRUTEURS_LBA)
-        ? getSomeCompanies({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            referer,
-            caller,
-            api,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getLbaJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-      jobSources.includes(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA)
-        ? getPartnerJobs({
-            romes,
-            latitude,
-            longitude,
-            radius: finalRadius,
-            api,
-            caller,
-            diploma,
-            opco,
-            opcoUrl,
-            isMinimalData,
-          })
-        : null,
-    ])
-
-    return { peJobs, matchas, lbaCompanies, lbbCompanies: null, partnerJobs }
-  } catch (err) {
-    if (caller) {
-      // biome-ignore lint/nursery/noFloatingPromises: migration
-      trackApiCall({ caller, api_path: api, response: "Error" })
-    }
-    throw err
-  }
-}
-
-/**
  * TODO : REFACTO AVEC VALIDATION ZOD & SCHEMA DE RETOUR JOBS PARTNERS
  */
 export const getJobsQueryPrivate = async (
@@ -297,7 +160,6 @@ export const getJobsQueryPrivate = async (
 
   if ("lbaJobs" in result && result.lbaJobs && "results" in result.lbaJobs) {
     job_count += result.lbaJobs.results.length
-    await incrementLbaJobsViewCount(result.lbaJobs.results.flatMap((job) => (job?.id ? [job.id] : [])))
   }
 
   if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {
@@ -393,7 +255,7 @@ export const getJobsPartnersFromDBForUI = async ({
 }: IJobSearchApiV3QueryResolved): Promise<IJobsPartnersOfferPrivateWithDistance[]> => {
   const query: Filter<IJobsPartnersOfferPrivate> = {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-    offer_expiration: { $gt: new Date() },
+    offer_expiration: force_partner_label === JOBPARTNERS_LABEL.RECRUTEURS_LBA ? null : { $gt: new Date() },
     partner_label: force_partner_label ? force_partner_label : { $not: { $in: [JOBPARTNERS_LABEL.RECRUTEURS_LBA, JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA] } }, // until offers are not merged together from the endpoint, lba companies are fetched into another service.
   }
 
@@ -717,6 +579,14 @@ export async function findJobsOpportunities(payload: IJobSearchApiV3Query, conte
   }
 }
 
+const isTrustedCompany = isNormalizedStringInSetOrArray(TRUSTED_COMPANY_JOB_PARTNERS)
+const partnerWhitelistSet = new Set(PARTNER_WHITELIST)
+
+const getTrustedCompanyBusinessError = (partner_label: string, ...workplaceNames: Array<string | null | undefined>): JOB_PARTNER_BUSINESS_ERROR | null => {
+  if (partnerWhitelistSet.has(partner_label)) return null
+  return workplaceNames.some(isTrustedCompany) ? JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE : null
+}
+
 type InvariantFields = "_id" | "created_at" | "partner_label" | "partner_job_id"
 
 async function upsertJobOfferPrivate({
@@ -754,7 +624,7 @@ async function upsertJobOfferPrivate({
   const writableData: Omit<IComputedJobsPartners, InvariantFields> = {
     contract_start: data.contract.start,
     contract_duration: data.contract.duration,
-    contract_type: data.contract.type,
+    contract_type: data.contract.type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     contract_remote: data.contract.remote,
     contract_is_disabled_elligible,
 
@@ -788,7 +658,7 @@ async function upsertJobOfferPrivate({
     apply_phone: data.apply.phone,
 
     updated_at: now,
-    business_error: null,
+    business_error: getTrustedCompanyBusinessError(partner_label, data.workplace.name),
     errors: [],
     validated: false,
     jobs_in_success: [],
@@ -822,12 +692,13 @@ export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJ
   return upsertJobOfferPrivate({
     data,
     partner_label: identity.organisation!,
+    partnerJobIdIfNew: data?.identifier?.partner_job_id,
     requestedByEmail: identity.email,
     current: null,
   })
 }
 
-export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<void> {
+export async function updateJobOffer(id: ObjectId, identity: IApiAlternanceTokenData, data: Omit<IJobOfferApiWriteV3, "identifier">): Promise<void> {
   const current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ _id: id })
 
   // TODO: Move to authorisation service
@@ -964,6 +835,7 @@ const jobPartnerBusinessErrorLabels: Record<JOB_PARTNER_BUSINESS_ERROR, string> 
   [JOB_PARTNER_BUSINESS_ERROR.CFA_BLACKLISTED]: "The offer is blacklisted as a training entity",
   [JOB_PARTNER_BUSINESS_ERROR.CLOSED_COMPANY]: "The company is closed",
   [JOB_PARTNER_BUSINESS_ERROR.DUPLICATE]: "The offer is considered as a duplicate of another published offer",
+  [JOB_PARTNER_BUSINESS_ERROR.TRUSTED_COMPANY_JOB_DUPLICATE]: "The offer is a duplicate from a secondary source of a primary company job partner",
   [JOB_PARTNER_BUSINESS_ERROR.EXPIRED]: "The offer has expired",
   [JOB_PARTNER_BUSINESS_ERROR.ROME_BLACKLISTED]: "The offer's profession is not published",
   [JOB_PARTNER_BUSINESS_ERROR.STAGE]: "The offer is considered an internship",
@@ -1092,7 +964,7 @@ export async function upsertJobsPartnersMulti({
 
   const technicalFields = {
     updated_at: now,
-    business_error: null,
+    business_error: getTrustedCompanyBusinessError(partner_label, data.workplace_name, data.workplace_legal_name),
     errors: [],
     validated: false,
     jobs_in_success: [],

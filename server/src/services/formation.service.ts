@@ -340,6 +340,7 @@ const transformFormation = (rawFormation: IFormationCatalogue): ILbaItemFormatio
 
     contact: {
       phone: rawFormation.num_tel ?? null,
+      hasEmail: false,
     },
 
     place: {
@@ -421,6 +422,7 @@ const transformFormationV2 = (rawFormation: IFormationCatalogue, priseDeRendezVo
     id: rawFormation.cle_ministere_educatif!,
     contact: {
       phone: rawFormation.num_tel ?? null,
+      hasEmail: false,
     },
     place: {
       distance: rawFormation.distance ? roundDistance(rawFormation.distance / 1000) : rawFormation.distance === 0 ? 0 : null,
@@ -637,6 +639,7 @@ export const getFormationsQuery = async ({
   referer,
   api = "formationV1",
   isMinimalData,
+  isPrivate = false,
 }: {
   romes?: string
   longitude?: number
@@ -649,8 +652,9 @@ export const getFormationsQuery = async ({
   referer?: string
   api?: string
   isMinimalData: boolean
+  isPrivate?: boolean
 }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
-  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer })
+  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer }, isPrivate)
 
   if ("error" in parameterControl) {
     return parameterControl

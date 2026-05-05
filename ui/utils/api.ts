@@ -14,7 +14,7 @@ import type {
 } from "shared"
 import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
-import { BusinessErrorCodes } from "shared/constants/errorCodes"
+import type { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
@@ -32,6 +32,8 @@ const errorHandler = (error: any): undefined => {
 export const getDelegationDetails = async (establishment_id: string, token: string) =>
   apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const getFormulaire = async (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
+export const getEntrepriseManagedByCfa = async (cfaId: string, establishment_id: string) =>
+  apiGet("/etablissement/cfa/:cfaId/entreprise/:establishment_id", { params: { establishment_id, cfaId } }).catch(errorHandler)
 export const getFormulaireByToken = async (establishment_id: string, token: string) =>
   apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 
@@ -60,7 +62,11 @@ export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v
 export const notifyJobDetailViewV3 = async (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
   const jobId = getObjectId(job)
   if (!jobId) return
-  return apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
+  try {
+    return await apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "detail_view" } })
+  } catch {
+    // tracking non-critique, erreur ignorée intentionnellement
+  }
 }
 export const notifyJobSearchViewV3 = async (ids: string[]) => {
   ids = ids.filter(lookLikeObjectId)
@@ -70,7 +76,11 @@ export const notifyJobSearchViewV3 = async (ids: string[]) => {
 export const notifyJobPostulerV3 = async (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
   const jobId = getObjectId(job)
   if (!jobId) return
-  return apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "postuler_click" } })
+  try {
+    return await apiPost("/v3/jobs/:id/stats/:eventType", { params: { id: jobId, eventType: "postuler_click" } })
+  } catch {
+    // tracking non-critique, erreur ignorée intentionnellement
+  }
 }
 export const getRelatedEtablissementsFromRome = async ({ rome, latitude, longitude, limit }: { rome: string; latitude: number; longitude: number; limit: number }) =>
   apiGet(`/etablissement/cfas-proches`, { querystring: { rome, latitude, longitude, limit } })
@@ -183,13 +193,13 @@ export const getEntrepriseOpco = async (siret: string) => {
   }
 }
 
-export const getPrdvContext = async (cleMinistereEducatif: string, referrer: string = "lba") => {
+export const getPrdvContext = async (cleMinistereEducatif: string, referrer: string | null = "lba") => {
   try {
-    const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer } }, { timeout: 7000 })
+    const data = await apiGet("/_private/appointment", { querystring: { cleMinistereEducatif, referrer: referrer || "lba" } }, { timeout: 7000 })
     return data
   } catch (error) {
-    const isBusinessError = error instanceof ApiError && error.message === BusinessErrorCodes.TRAINING_NOT_FOUND
-    if (!isBusinessError) {
+    const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
+    if (!isExpectedError) {
       captureException(error)
     }
   }

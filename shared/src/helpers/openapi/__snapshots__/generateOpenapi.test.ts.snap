@@ -5,6 +5,42 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
   "components": {
     "parameters": {},
     "schemas": {
+      "ApiError": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "string",
+          },
+          "error_messages": {
+            "description": "Une liste d'erreurs détaillées. Ex : les erreurs de paramétrage de la requête.",
+            "example": [
+              "romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234",
+              "romes : Too many rome codes. Maximum is 20.",
+            ],
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "message": {},
+          "result": {
+            "type": "string",
+          },
+          "status": {
+            "type": "number",
+          },
+          "statusText": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "error",
+        ],
+        "type": "object",
+      },
       "ApplicationUi": {
         "additionalProperties": false,
         "properties": {
@@ -217,6 +253,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
               "null",
             ],
           },
+          "hasEmail": {
+            "type": "boolean",
+          },
           "info": {
             "description": "Des informations complémentaires concernant le contact de référence",
             "type": "string",
@@ -248,6 +287,9 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "type": "string",
           },
         },
+        "required": [
+          "hasEmail",
+        ],
         "type": [
           "object",
           "null",
@@ -654,6 +696,601 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         ],
         "type": "object",
       },
+      "LbaCompany": {
+        "additionalProperties": false,
+        "properties": {
+          "applicationCount": {
+            "type": "number",
+          },
+          "company": {
+            "additionalProperties": false,
+            "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
+            "properties": {
+              "creationDate": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "description": {
+                "description": "La description de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "elligibleHandicap": {
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "headquarter": {
+                "additionalProperties": false,
+                "properties": {
+                  "hasConvention": {
+                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "id": {
+                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "name": {
+                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                    "example": "ECOLE DE TRAVAIL ORT",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "place": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Place",
+                      },
+                      {
+                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                      },
+                    ],
+                  },
+                  "siret": {
+                    "description": "Le numéro de SIRET de l'établissement",
+                    "example": "78424186100011",
+                    "pattern": "^\\d{14}$",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "type": {
+                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "uai": {
+                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "siret",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "id": {
+                "description": "Lieu de formation seulement : l'identifiant du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "logo": {
+                "description": "L'url du logo de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "mandataire": {
+                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "name": {
+                "description": "La raison sociale de l'entreprise",
+                "example": "ECOLE DE TRAVAIL ORT",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "opco": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "label",
+                  "url",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "place": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Place",
+                  },
+                  {
+                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                  },
+                ],
+              },
+              "siret": {
+                "description": "Le numéro de SIRET de l'établissement",
+                "example": "78424186100011",
+                "pattern": "^\\d{14}$",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "size": {
+                "description": "La tranche d'effectifs de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "socialNetwork": {
+                "description": "Un lien vers un réseau social présentant l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "uai": {
+                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "url": {
+                "description": "Un lien vers le site de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+            },
+            "type": [
+              "object",
+              "null",
+            ],
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact",
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "ideaType": {
+            "enum": [
+              "lba",
+              "recruteurs_lba",
+            ],
+            "type": "string",
+          },
+          "nafs": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Place",
+              },
+              {
+                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+              },
+            ],
+          },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
+          "status": {
+            "description": "Status de l'offre (surtout utilisé pour les offres ajouté par API)",
+            "enum": [
+              "Active",
+              "Filled",
+              "Cancelled",
+              "Pending",
+            ],
+            "type": "string",
+          },
+          "title": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "token": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "url": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "ideaType",
+          "status",
+          "id",
+          "place",
+          "company",
+          "applicationCount",
+          "recipient_id",
+        ],
+        "type": "object",
+      },
+      "LbaJob": {
+        "additionalProperties": false,
+        "properties": {
+          "applicationCount": {
+            "type": "number",
+          },
+          "company": {
+            "additionalProperties": false,
+            "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
+            "properties": {
+              "creationDate": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "description": {
+                "description": "La description de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "elligibleHandicap": {
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "headquarter": {
+                "additionalProperties": false,
+                "properties": {
+                  "hasConvention": {
+                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "id": {
+                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "name": {
+                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                    "example": "ECOLE DE TRAVAIL ORT",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "place": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Place",
+                      },
+                      {
+                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                      },
+                    ],
+                  },
+                  "siret": {
+                    "description": "Le numéro de SIRET de l'établissement",
+                    "example": "78424186100011",
+                    "pattern": "^\\d{14}$",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "type": {
+                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "uai": {
+                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "siret",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "id": {
+                "description": "Lieu de formation seulement : l'identifiant du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "logo": {
+                "description": "L'url du logo de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "mandataire": {
+                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "name": {
+                "description": "La raison sociale de l'entreprise",
+                "example": "ECOLE DE TRAVAIL ORT",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "opco": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "label",
+                  "url",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "place": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Place",
+                  },
+                  {
+                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                  },
+                ],
+              },
+              "siret": {
+                "description": "Le numéro de SIRET de l'établissement",
+                "example": "78424186100011",
+                "pattern": "^\\d{14}$",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "size": {
+                "description": "La tranche d'effectifs de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "socialNetwork": {
+                "description": "Un lien vers un réseau social présentant l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "uai": {
+                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "url": {
+                "description": "Un lien vers le site de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+            },
+            "type": [
+              "object",
+              "null",
+            ],
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact",
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "ideaType": {
+            "enum": [
+              "matcha",
+              "offres_emploi_lba",
+            ],
+            "type": "string",
+          },
+          "job": {
+            "$ref": "#/components/schemas/LbacJob",
+          },
+          "nafs": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Place",
+              },
+              {
+                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+              },
+            ],
+          },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
+          "romes": {
+            "items": {
+              "$ref": "#/components/schemas/Rome",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "title": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "token": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "ideaType",
+          "place",
+          "company",
+          "id",
+          "applicationCount",
+          "token",
+          "recipient_id",
+        ],
+        "type": "object",
+      },
       "LbacError": {
         "additionalProperties": false,
         "properties": {
@@ -681,6 +1318,481 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "error",
         ],
         "type": "object",
+      },
+      "LbacJob": {
+        "additionalProperties": false,
+        "properties": {
+          "contractDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "contractType": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "contract_rythm": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "creationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "description": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "duration": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "dureeContrat": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "elligibleHandicap": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "employeurDescription": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "isCfaEntreprise": {
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
+          "jobExpirationDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "jobStartDate": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "offer_access_conditions": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_desired_skills": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_to_be_acquired_knowledge": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "offer_to_be_acquired_skills": {
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "origin": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "partner_label": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "quantiteContrat": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
+          "romeDetails": {
+            "additionalProperties": false,
+            "properties": {
+              "acces_metier": {
+                "type": "string",
+              },
+              "appellations": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_ogr": {
+                      "type": "string",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                    "libelle_court": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "libelle_court",
+                    "code_ogr",
+                  ],
+                  "type": "object",
+                },
+                "type": "array",
+              },
+              "competences": {
+                "additionalProperties": false,
+                "properties": {
+                  "savoir_etre_professionnel": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "code_ogr": {
+                          "type": "string",
+                        },
+                        "coeur_metier": {
+                          "type": [
+                            "string",
+                            "null",
+                          ],
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "code_ogr",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                  "savoir_faire": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "items": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "code_ogr": {
+                                "type": "string",
+                              },
+                              "coeur_metier": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "libelle": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "libelle",
+                              "code_ogr",
+                            ],
+                            "type": "object",
+                          },
+                          "type": "array",
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "items",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                  "savoirs": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "items": {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "code_ogr": {
+                                "type": "string",
+                              },
+                              "coeur_metier": {
+                                "type": [
+                                  "string",
+                                  "null",
+                                ],
+                              },
+                              "libelle": {
+                                "type": "string",
+                              },
+                            },
+                            "required": [
+                              "libelle",
+                              "code_ogr",
+                            ],
+                            "type": "object",
+                          },
+                          "type": "array",
+                        },
+                        "libelle": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "libelle",
+                        "items",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
+                },
+                "type": "object",
+              },
+              "competencesDeBase": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "coeur_metier": {
+                            "type": [
+                              "string",
+                              "null",
+                            ],
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "contextes_travail": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code_ogr": {
+                            "type": "string",
+                          },
+                          "libelle": {
+                            "type": "string",
+                          },
+                        },
+                        "required": [
+                          "libelle",
+                          "code_ogr",
+                        ],
+                        "type": "object",
+                      },
+                      "type": "array",
+                    },
+                    "libelle": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "libelle",
+                    "items",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "definition": {
+                "type": "string",
+              },
+              "mobilites": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "code_org_rome_cible": {
+                      "type": "string",
+                    },
+                    "ordre_mobilite": {
+                      "type": "string",
+                    },
+                    "rome_cible": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "rome_cible",
+                    "code_org_rome_cible",
+                    "ordre_mobilite",
+                  ],
+                  "type": "object",
+                },
+                "type": [
+                  "array",
+                  "null",
+                ],
+              },
+              "numero": {
+                "type": "string",
+              },
+              "rome": {
+                "additionalProperties": false,
+                "properties": {
+                  "code_ogr": {
+                    "type": "string",
+                  },
+                  "code_rome": {
+                    "type": "string",
+                  },
+                  "intitule": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "code_rome",
+                  "intitule",
+                  "code_ogr",
+                ],
+                "type": "object",
+              },
+            },
+            "required": [
+              "numero",
+              "rome",
+              "appellations",
+              "definition",
+              "acces_metier",
+              "competences",
+            ],
+            "type": [
+              "object",
+              "null",
+            ],
+          },
+          "rythmeAlternance": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "status": {
+            "enum": [
+              "Active",
+              "Pourvue",
+              "Annulée",
+              "En attente",
+            ],
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "type": {
+            "description": "Type de contrat",
+            "items": {
+              "enum": [
+                "Apprentissage",
+                "Professionnalisation",
+              ],
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "creationDate",
+        ],
+        "type": [
+          "object",
+          "null",
+        ],
       },
       "MetierEnrichi": {
         "additionalProperties": false,
@@ -738,6 +1850,593 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         "required": [
           "label",
           "romes",
+        ],
+        "type": "object",
+      },
+      "PartnerJob": {
+        "additionalProperties": false,
+        "properties": {
+          "applicationCount": {
+            "type": [
+              "number",
+              "null",
+            ],
+          },
+          "company": {
+            "additionalProperties": false,
+            "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
+            "properties": {
+              "creationDate": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "description": {
+                "description": "La description de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "elligibleHandicap": {
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "headquarter": {
+                "additionalProperties": false,
+                "properties": {
+                  "hasConvention": {
+                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "id": {
+                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "name": {
+                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                    "example": "ECOLE DE TRAVAIL ORT",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "place": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Place",
+                      },
+                      {
+                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                      },
+                    ],
+                  },
+                  "siret": {
+                    "description": "Le numéro de SIRET de l'établissement",
+                    "example": "78424186100011",
+                    "pattern": "^\\d{14}$",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "type": {
+                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "uai": {
+                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "siret",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "id": {
+                "description": "Lieu de formation seulement : l'identifiant du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "logo": {
+                "description": "L'url du logo de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "mandataire": {
+                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "name": {
+                "description": "La raison sociale de l'entreprise",
+                "example": "ECOLE DE TRAVAIL ORT",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "opco": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "label",
+                  "url",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "place": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Place",
+                  },
+                  {
+                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                  },
+                ],
+              },
+              "siret": {
+                "description": "Le numéro de SIRET de l'établissement",
+                "example": "78424186100011",
+                "pattern": "^\\d{14}$",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "size": {
+                "description": "La tranche d'effectifs de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "socialNetwork": {
+                "description": "Un lien vers un réseau social présentant l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "uai": {
+                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "url": {
+                "description": "Un lien vers le site de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+            },
+            "type": [
+              "object",
+              "null",
+            ],
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact",
+          },
+          "id": {
+            "type": "string",
+          },
+          "ideaType": {
+            "enum": [
+              "partnerJob",
+              "offres_emploi_lba",
+              "offres_emploi_partenaires",
+            ],
+            "type": "string",
+          },
+          "job": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LbacJob",
+              },
+              {
+                "type": "object",
+              },
+            ],
+          },
+          "nafs": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Place",
+              },
+              {
+                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+              },
+            ],
+          },
+          "recipient_id": {
+            "description": "Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature",
+            "type": "string",
+          },
+          "romes": {
+            "items": {
+              "$ref": "#/components/schemas/Rome",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "target_diploma_level": {
+            "description": "Le niveau de la formation.",
+            "example": "3 (CAP...)",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "title": {
+            "type": "string",
+          },
+          "token": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "ideaType",
+          "title",
+          "place",
+          "company",
+          "id",
+          "job",
+          "token",
+          "recipient_id",
+        ],
+        "type": "object",
+      },
+      "PeJob": {
+        "additionalProperties": false,
+        "properties": {
+          "company": {
+            "additionalProperties": false,
+            "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
+            "properties": {
+              "creationDate": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "description": {
+                "description": "La description de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "elligibleHandicap": {
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "headquarter": {
+                "additionalProperties": false,
+                "properties": {
+                  "hasConvention": {
+                    "description": "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "id": {
+                    "description": "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "name": {
+                    "description": "La raison sociale du centre de formation auquel est affilié la formation",
+                    "example": "ECOLE DE TRAVAIL ORT",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "place": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Place",
+                      },
+                      {
+                        "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                      },
+                    ],
+                  },
+                  "siret": {
+                    "description": "Le numéro de SIRET de l'établissement",
+                    "example": "78424186100011",
+                    "pattern": "^\\d{14}$",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "type": {
+                    "description": "Lieu de formation seulement : le type de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "uai": {
+                    "description": "Lieu de formation seulement : l'uai de l'établissement gestionnaire",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "siret",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "id": {
+                "description": "Lieu de formation seulement : l'identifiant du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "logo": {
+                "description": "L'url du logo de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "mandataire": {
+                "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)",
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "name": {
+                "description": "La raison sociale de l'entreprise",
+                "example": "ECOLE DE TRAVAIL ORT",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "opco": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                },
+                "required": [
+                  "label",
+                  "url",
+                ],
+                "type": [
+                  "object",
+                  "null",
+                ],
+              },
+              "place": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Place",
+                  },
+                  {
+                    "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+                  },
+                ],
+              },
+              "siret": {
+                "description": "Le numéro de SIRET de l'établissement",
+                "example": "78424186100011",
+                "pattern": "^\\d{14}$",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "size": {
+                "description": "La tranche d'effectifs de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "socialNetwork": {
+                "description": "Un lien vers un réseau social présentant l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "uai": {
+                "description": "Lieu de formation seulement : l'uai du lieu de formation",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "url": {
+                "description": "Un lien vers le site de l'entreprise",
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+            },
+            "type": [
+              "object",
+              "null",
+            ],
+          },
+          "contact": {
+            "$ref": "#/components/schemas/Contact",
+          },
+          "id": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "ideaType": {
+            "enum": [
+              "peJob",
+              "offres_emploi_partenaires",
+            ],
+            "type": "string",
+          },
+          "job": {
+            "$ref": "#/components/schemas/LbacJob",
+          },
+          "nafs": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "label": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "type": "object",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Place",
+              },
+              {
+                "description": "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
+              },
+            ],
+          },
+          "romes": {
+            "items": {
+              "$ref": "#/components/schemas/Rome",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
+          "title": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "url": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "ideaType",
+          "id",
+          "place",
+          "company",
         ],
         "type": "object",
       },
@@ -2287,6 +3986,18 @@ Limite : 20 appel(s) / 1 seconde(s)
                     },
                     "type": "object",
                   },
+                  "identifier": {
+                    "properties": {
+                      "partner_job_id": {
+                        "description": "Identifiant d'origine de l'offre provenant du partenaire",
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "partner_job_id",
+                    ],
+                    "type": "object",
+                  },
                   "offer": {
                     "properties": {
                       "access_conditions": {
@@ -2369,6 +4080,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "Active",
                           "Filled",
                           "Cancelled",
+                          "Pending",
                         ],
                         "type": "string",
                       },
@@ -2901,6 +4613,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                                   "Active",
                                   "Filled",
                                   "Cancelled",
+                                  "Pending",
                                 ],
                                 "type": "string",
                               },
@@ -3608,6 +5321,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                             "Active",
                             "Filled",
                             "Cancelled",
+                            "Pending",
                           ],
                           "type": "string",
                         },
@@ -4044,6 +5758,7 @@ Limite : 20 appel(s) / 1 seconde(s)
                           "Active",
                           "Filled",
                           "Cancelled",
+                          "Pending",
                         ],
                         "type": "string",
                       },

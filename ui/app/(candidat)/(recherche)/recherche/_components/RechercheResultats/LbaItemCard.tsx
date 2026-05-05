@@ -8,11 +8,13 @@ import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/reche
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemTags"
 import { getDaysSinceDate } from "@/utils/dateUtils"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { CardStyling } from "./CardStyling"
 
 type ResultCardProps = WithRecherchePageParams<{
   active: boolean
   item: ILbaItem
+  position: number
 }>
 
 function getTitle(item: ILbaItem) {
@@ -33,7 +35,7 @@ function ItemCompanyName({ item }: Pick<ResultCardProps, "item">) {
     return `Secteur d'activité : ${item?.nafs?.[0]?.label ?? ""}`
   }
 
-  return item.company?.name == null ? <i>Offre anonyme</i> : <Typography dangerouslySetInnerHTML={{ __html: item.company.name }} />
+  return item.company?.name == null ? <i>Offre anonyme</i> : <Typography component="span" dangerouslySetInnerHTML={{ __html: item.company.name }} />
 }
 
 function getAdresse(item: ILbaItem) {
@@ -49,12 +51,7 @@ function getAdresse(item: ILbaItem) {
 }
 
 function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
-  if (
-    item.ideaType === LBA_ITEM_TYPE_OLD.LBA ||
-    item.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA ||
-    item.ideaType === LBA_ITEM_TYPE_OLD.MATCHA ||
-    item.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-  ) {
+  if (item.contact?.hasEmail && "applicationCount" in item && item.applicationCount != null)
     return (
       <Typography
         component="span"
@@ -68,13 +65,10 @@ function CandidatureCount({ item }: Pick<ResultCardProps, "item">) {
         {`${item.applicationCount} CANDIDATURE${item.applicationCount > 1 ? "S" : ""}`}
       </Typography>
     )
-  }
-
-  return null
 }
 
 function DatePublication({ item }: Pick<ResultCardProps, "item">) {
-  if (item.ideaType !== LBA_ITEM_TYPE_OLD.MATCHA && item.ideaType !== LBA_ITEM_TYPE_OLD.PARTNER_JOB) {
+  if (item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && item.ideaType !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
     return null
   }
 
@@ -107,7 +101,7 @@ const activeStyle = {
   },
 }
 
-export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) {
+export function LbaItemCard({ item, active, rechercheParams, position }: ResultCardProps) {
   const itemUrl = useResultItemUrl(item, rechercheParams)
 
   return (
@@ -121,12 +115,28 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
         <Card
           background
           style={{ paddingBottom: fr.spacing("1v") }}
-          border
+          shadow
           enlargeLink
           horizontal
           linkProps={{
             href: itemUrl,
             prefetch: false,
+            onClick:
+              item.ideaType === LBA_ITEM_TYPE_OLD.FORMATION
+                ? undefined
+                : () => {
+                    pushMatomoEvent({
+                      event: MATOMO_EVENTS.JOB_OFFER_CLICKED,
+                      job_offer_id: item.id,
+                      job_offer_type: getMatomoJobOfferType(item.ideaType),
+                      job_offer_company: item.company?.name || "non_renseigné",
+                      job_offer_name: getTitle(item),
+                      position_in_list: position,
+                      has_contact: Boolean((item as any).contact?.hasEmail || (item as any).contact?.url || (item as any).contact?.phone),
+                      search_job_name: rechercheParams.job_name || "non_renseigné",
+                      search_address: rechercheParams.geo?.address || "non_renseigné",
+                    })
+                  },
           }}
           start={<LbaItemTags item={item} displayTooltips={true} />}
           title={
@@ -179,7 +189,12 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
 
               <Box
                 component="span"
-                sx={{ alignItems: { xs: "left", sm: "left", md: "center" }, display: "flex", gap: fr.spacing("4v"), flexDirection: { xs: "column", sm: "column", md: "row" } }}
+                sx={{
+                  alignItems: { xs: "left", sm: "left", md: "center" },
+                  gap: { xs: fr.spacing("2v"), md: fr.spacing("1v") },
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                }}
               >
                 <DatePublication item={item} />
                 <CandidatureCount item={item} />
@@ -187,7 +202,6 @@ export function LbaItemCard({ item, active, rechercheParams }: ResultCardProps) 
               </Box>
             </Box>
           }
-          shadow
           size="medium"
         />
       </CardStyling>

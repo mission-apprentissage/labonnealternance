@@ -8,6 +8,8 @@ import Badge from "@/app/(espace-pro)/_components/Badge"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { classNames } from "@/utils/classNames"
 
+export type RomeCompetenceKey = "savoir_etre_professionnel" | "savoir_faire" | "savoirs"
+
 const CompetenceSelectionDiv = styled.div`
   .competences-group-title {
     font-weight: 700;
@@ -42,11 +44,14 @@ export const RomeDetail = ({
   selectedCompetences,
 }: {
   romeReferentiel: IReferentielRomeForJobJson
-  selectedCompetences: Record<string, string[]>
+  selectedCompetences: Record<RomeCompetenceKey, Set<string>>
   title: string
-  onChange: (groupKey: string, competence: string, newlyChecked: boolean) => void
+  onChange: (groupKey: RomeCompetenceKey, competence: string, newlyChecked: boolean) => void
 }) => {
-  const isSelected = (accordionKey: string, competence: string) => (selectedCompetences[accordionKey] ?? []).includes(competence)
+  const isSelected = (accordionKey: RomeCompetenceKey) => {
+    const competences = selectedCompetences[accordionKey]
+    return (competence: string) => competences.has(competence)
+  }
 
   return (
     <BorderedBox>
@@ -93,28 +98,27 @@ export const RomeDetail = ({
         <RequiredCompetenceAccordion
           id="qualites"
           title="Qualités souhaitées pour ce métier"
-          competences={[{ labels: competences.savoir_etre_professionnel.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }]}
+          competences={[{ items: competences.savoir_etre_professionnel }]}
           onChange={(competence, newValue) => onChange("savoir_etre_professionnel", competence, newValue)}
-          isSelected={(competence) => isSelected("savoir_etre_professionnel", competence)}
-          defaultExpanded={true}
+          isSelected={isSelected("savoir_etre_professionnel")}
         />
       )}
       {competences?.savoir_faire && (
         <RequiredCompetenceAccordion
           id="competences"
           title="Compétences qui seront acquises durant l’alternance"
-          competences={competences.savoir_faire.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
+          competences={competences.savoir_faire}
           onChange={(competence, newValue) => onChange("savoir_faire", competence, newValue)}
-          isSelected={(competence) => isSelected("savoir_faire", competence)}
+          isSelected={isSelected("savoir_faire")}
         />
       )}
       {competences?.savoirs && (
         <RequiredCompetenceAccordion
           id="techniques"
           title="Domaines et techniques de travail"
-          competences={competences.savoirs.map(({ items = [], libelle }) => ({ category: libelle, labels: items.flatMap(({ libelle }) => (libelle ? [libelle] : [])) }))}
+          competences={competences.savoirs}
           onChange={(competence, newValue) => onChange("savoirs", competence, newValue)}
-          isSelected={(competence) => isSelected("savoirs", competence)}
+          isSelected={isSelected("savoirs")}
         />
       )}
       <Accordion style={{ marginBottom: fr.spacing("4v") }} id="accessibilite" label="À qui ce métier est-il accessible ?">
@@ -161,7 +165,7 @@ const RequiredCompetenceAccordion = ({
   title,
   defaultExpanded = false,
 }: {
-  competences: { category?: string; labels: string[] }[]
+  competences: { libelle?: string; items?: { libelle?: string }[] }[]
   onChange: (competence: string, newValue: boolean) => void
   isSelected: (competence: string) => boolean
   id: string
@@ -169,7 +173,7 @@ const RequiredCompetenceAccordion = ({
   defaultExpanded?: boolean
 }) => {
   const [error, setError] = useState<{ competence: string; error: string } | null>(null)
-  const competenceLabels = competences.flatMap(({ labels }) => labels)
+  const competenceLabels = competences.flatMap(({ items = [] }) => items.flatMap(({ libelle }) => (libelle ? [libelle] : [])))
   const totalCompetences = competenceLabels.length
   const totalSelected = competenceLabels.filter(isSelected).length
   const minRequired = Math.min(3, totalCompetences)
@@ -186,11 +190,11 @@ const RequiredCompetenceAccordion = ({
       }
       defaultExpanded={defaultExpanded}
     >
-      {competences.map(({ category, labels }) => (
+      {competences.map(({ libelle: category, items = [] }) => (
         <CompetenceSelection
           key={category ?? ""}
           groupTitle={category}
-          competences={labels.map((label) => ({ label, selected: isSelected(label), error: error?.competence === label ? error.error : "" }))}
+          competences={items.map(({ libelle: label }) => ({ label, selected: isSelected(label), error: error?.competence === label ? error.error : "" }))}
           onChange={
             totalSelected > minRequired
               ? onChange

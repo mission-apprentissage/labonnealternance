@@ -36,9 +36,21 @@ const linkListContent: LinkCategory[] = [
       },
       {
         linkProps: {
-          href: PAGES.static.ressources.getPath(),
+          href: PAGES.static.guideAlternant.getPath(),
         },
-        text: "Ressources",
+        text: "Guide alternant",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.guideRecruteur.getPath(),
+        },
+        text: "Guide recruteur",
+      },
+      {
+        linkProps: {
+          href: PAGES.static.guideCfa.getPath(),
+        },
+        text: "Guide CFA",
       },
       {
         linkProps: {
@@ -55,7 +67,7 @@ const linkListContent: LinkCategory[] = [
         linkProps: {
           href: PAGES.static.aPropos.getPath(),
         },
-        text: "A propos",
+        text: "À propos",
       },
       {
         linkProps: {
@@ -99,7 +111,7 @@ const linkListContent: LinkCategory[] = [
   {
     categoryName: "Alternance par ville",
     // @ts-ignore min 1 link but here we have 10
-    links: villeData.map((ville) => ({
+    links: villeData.slice(0, 10).map((ville) => ({
       linkProps: {
         href: PAGES.dynamic.seoVille(ville.slug).getPath(),
       },
@@ -134,7 +146,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">
       {showLinkList && (
-        <nav className="fr-footer__top" role="navigation">
+        <nav className="fr-footer__top" role="navigation" aria-label="Plan du site">
           <h2 className="fr-sr-only">Informations et liens du site</h2>
           <div className="fr-container">
             <div className="fr-grid-row fr-grid-row--gutters">

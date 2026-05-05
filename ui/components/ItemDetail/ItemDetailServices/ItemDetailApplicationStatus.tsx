@@ -7,11 +7,34 @@ import { LBA_ITEM_TYPE_OLD, newItemTypeToOldItemType, oldItemTypeToNewItemType }
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { localStorageGet } from "@/utils/localStorage"
 
+const blueApplicationTag = (icon, text) => (
+  <Typography
+    component="span"
+    sx={{
+      backgroundColor: fr.colors.decisions.background.contrast.info.default,
+      color: fr.colors.decisions.background.actionHigh.info.default,
+      whiteSpace: "nowrap",
+      px: fr.spacing("2v"),
+      fontStyle: "italic",
+      width: "fit-content",
+    }}
+    className={fr.cx(icon, "fr-icon--sm", "fr-text--sm")}
+  >
+    {text}
+  </Typography>
+)
+
+export const tagCandidatureSimplifiee = () => blueApplicationTag("fr-icon-mail-send-fill", "Candidature simplifiée")
+
 export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem }) {
   const key = `application-${newItemTypeToOldItemType(item.ideaType)}-${item.id}`
   const oldKey = `application-${oldItemTypeToNewItemType(item.ideaType)}-${item.id}`
+  const { ideaType } = item
   const applicationDateString = localStorageGet(key) ?? localStorageGet(oldKey)
   if (!applicationDateString) {
+    if (item?.contact?.hasEmail) {
+      return tagCandidatureSimplifiee()
+    }
     return null
   }
   const date = new Date(parseInt(applicationDateString, 10))
@@ -20,21 +43,9 @@ export default function ItemDetailApplicationsStatus({ item }: { item: ILbaItem 
     month: "long",
     day: "numeric",
   })
-  const { ideaType } = item
 
-  return (
-    <Typography
-      component="span"
-      sx={{
-        backgroundColor: fr.colors.decisions.background.contrast.info.default,
-        color: fr.colors.decisions.background.actionHigh.info.default,
-        px: fr.spacing("2v"),
-        fontStyle: "italic",
-      }}
-      className={fr.cx("ri-history-line", "fr-icon--sm", "fr-text--sm")}
-    >
-      {" "}
-      {ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? <>Super, vous avez déjà pris contact le {dateString}.</> : <>Bravo, vous avez déjà postulé le {dateString}.</>}
-    </Typography>
+  return blueApplicationTag(
+    "ri-history-line",
+    ideaType === LBA_ITEM_TYPE_OLD.FORMATION ? <>Super, vous avez déjà pris contact le {dateString}.</> : <>Bravo, vous avez déjà postulé le {dateString}.</>
   )
 }

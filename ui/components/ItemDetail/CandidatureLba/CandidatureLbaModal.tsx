@@ -2,6 +2,7 @@ import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import type { useDisclosure } from "@/common/hooks/useDisclosure"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import CandidatureLbaFailed from "./CandidatureLbaFailed"
 import { CandidatureLbaModalBody } from "./CandidatureLbaModalBody"
 import CandidatureLbaWorked from "./CandidatureLbaWorked"
@@ -26,6 +27,15 @@ export const CandidatureLbaModal = ({
 
   const onSubmit = (formValues: IApplicationSchemaInitValues) => {
     setApplicantEmail(formValues.applicant_email)
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.SMART_APPLY_SUBMITTED,
+      job_offer_id: item.id,
+      job_offer_type: getMatomoJobOfferType(item.ideaType),
+      job_offer_company: item.company?.name || "non_renseigné",
+      job_offer_name: item.title || "non_renseigné",
+      has_cv: Boolean(formValues.applicant_attachment_name),
+      has_motivation: Boolean(formValues.applicant_message?.trim()),
+    })
     handleSubmitCandidature({ formValues })
   }
 

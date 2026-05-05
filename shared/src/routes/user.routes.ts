@@ -54,7 +54,9 @@ export const zUserRecruteurRoutes = {
       path: "/admin/users-recruteurs",
       querystring: z.object({
         status: extensions.buildEnum(ETAT_UTILISATEUR).optional(),
-        limit: z.string().optional(),
+        limit: z.coerce.number().int().min(1).optional(),
+        offset: z.coerce.number().int().min(0).optional(),
+        search: z.string().optional(),
       }),
       response: {
         "200": z.array(ZUserRecruteurForAdmin),
@@ -299,46 +301,12 @@ export const zUserRecruteurRoutes = {
     },
   },
   delete: {
-    "/user": {
-      method: "delete",
-      path: "/user",
-      querystring: z
-        .object({
-          userId: zObjectId,
-          recruiterId: zObjectId.optional(),
-        })
-        .strict(),
-      response: {
-        "200": z.object({}).strict(),
-      },
-      securityScheme: {
-        auth: "cookie-session",
-        access: "recruiter:manage",
-        resources: {
-          user: [
-            {
-              _id: { type: "query", key: "userId" },
-            },
-          ],
-          recruiter: [
-            {
-              _id: { type: "query", key: "recruiterId" },
-            },
-          ],
-        },
-      },
-    },
     "/admin/users/:userId": {
       method: "delete",
       path: "/admin/users/:userId",
       params: z
         .object({
           userId: z.string(),
-        })
-        .strict(),
-      querystring: z
-        .object({
-          recruiterId: zObjectId.optional(),
         })
         .strict(),
       response: {

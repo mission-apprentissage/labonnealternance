@@ -16,8 +16,12 @@ export const customTagColors = {
     background: fr.colors.decisions.background.contrast.greenEmeraude.default,
   },
   yellow: {
-    color: "#716043",
+    color: fr.colors.decisions.background.actionHigh.greenTilleulVerveine.default,
     background: "#FEECC2",
+  },
+  red: {
+    color: fr.colors.decisions.background.actionHigh.redMarianne.default,
+    background: fr.colors.decisions.background.contrast.redMarianne.default,
   },
 } satisfies Record<string, CSSProperties>
 
@@ -27,7 +31,6 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
   return (
     <span
       style={{
-        verticalAlign: "middle",
         display: "inline-block",
         fontSize: "12px",
         lineHeight: "20px",
@@ -35,11 +38,12 @@ export function CustomTag({ children, icon, color }: { children: React.ReactNode
         paddingLeft: icon ? "4px" : "6px",
         borderRadius: "4px",
         maxHeight: "20px",
+        whiteSpace: "nowrap",
         fontWeight: 700,
         ...customTagColors[color],
       }}
     >
-      <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
+      <Box component="span" sx={{ display: "inline-flex", gap: "5px", alignItems: "center" }}>
         {icon}
         {children}
       </Box>

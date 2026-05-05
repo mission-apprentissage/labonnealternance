@@ -22,6 +22,7 @@ export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
+  HELLOWORK_BUDDI = "ATS_Hellowork",
   FRANCE_TRAVAIL = "France Travail",
   FRANCE_TRAVAIL_CEGID = "FranceTravail CEGID",
   RH_ALTERNANCE = "RH Alternance",
@@ -40,7 +41,10 @@ export enum JOBPARTNERS_LABEL {
   ENGAGEMENT_JEUNES = "Engagement Jeunes",
   JOBTEASER = "Jobteaser",
   APEC = "APEC",
+  EDF = "EDF",
   EMPLOI_INCLUSION = "Les emplois de l'inclusion",
+  ENEDIS = "Enedis",
+  JOB_ETUDIANT = "L'Etudiant",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
 }
@@ -181,6 +185,15 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
 
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),
+
+  managed_by: zObjectId.nullish().describe("Id du userwithaccount si l'offre est une offre géré par LBA"),
+  establishment_id: z.string().nullish().describe("ancien recruiter.etablishment_id si l'offre est une offre géré par LBA"),
+  relance_mail_expiration_J7: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-7"),
+  relance_mail_expiration_J1: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-1"),
+  job_last_prolongation_date: z.date().nullish().describe("Date de dernière prolongation de l'offre"),
+  job_prolongation_count: z.number().int().nullish().describe("Nombre de fois où l'offre a été prolongée"),
+  offer_rome_appellation: z.string().nullish().describe("Pour les offres LBA uniquement, libellé de l'appellation ROME"),
+  mer_sent: z.date().nullish().describe("Pour les offres LBA uniquement, date de l'envoi du mail de promotion de la mise en relation, si il a été envoyé."),
 })
 
 export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.merge(ZJobsPartnersRecruiterPrivateFields)
@@ -310,6 +323,13 @@ export default {
     [{ contract_is_disabled_elligible: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
     [{ "duplicates.partner_job_label": 1 }, {}],
+
+    [{ managed_by: 1 }, {}],
+    [{ establishment_id: 1 }, {}],
+    [{ relance_mail_expiration_J7: 1 }, {}],
+    [{ relance_mail_expiration_J1: 1 }, {}],
+    [{ offer_rome_appellation: 1 }, {}],
+    [{ mer_sent: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

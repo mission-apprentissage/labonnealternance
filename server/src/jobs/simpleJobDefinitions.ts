@@ -1,3 +1,6 @@
+import { processEdf } from "@/jobs/offrePartenaire/edf/processEdf"
+import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
+import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
@@ -22,7 +25,6 @@ import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
-import { createJobsCollectionForMetabase } from "./metabase/metabaseJobsCollection"
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { processApec } from "./offrePartenaire/apec/processApec"
@@ -32,19 +34,20 @@ import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
 import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/importEmploiInclusion"
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
+import { processEtudiant } from "./offrePartenaire/etudiant/processEtudiant"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
 import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
-import { fillLbaUrl } from "./offrePartenaire/fillLbaUrl"
+import { fillLbaUrl, renewLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./offrePartenaire/france-travail-CEGID/importFranceTravailCEGID"
-import { processHellowork } from "./offrePartenaire/hellowork/processHellowork"
+import { deduplicateHellowork } from "./offrePartenaire/hellowork-merge/deduplicateHellowork"
+import { processHellowork } from "./offrePartenaire/hellowork-merge/processHellowork"
 import { importFromComputedToJobsPartners } from "./offrePartenaire/importFromComputedToJobsPartners"
 import { processJobteaser } from "./offrePartenaire/jobteaser/processJobteaser"
 import { processJooble } from "./offrePartenaire/jooble/processJooble"
 import { processKelio } from "./offrePartenaire/kelio/processKelio"
 import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
-import { syncLbaJobsIntoJobsPartners, syncLbaJobsIntoJobsPartnersFull } from "./offrePartenaire/lbaJobToJobsPartners"
 import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
@@ -75,11 +78,7 @@ import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
-import { cancelOfferJob } from "./recruiters/cancelOfferJob"
-import { fixJobExpirationDate } from "./recruiters/fixJobExpirationDateJob"
-import { fixRecruiterDataValidation } from "./recruiters/fixRecruiterDataValidationJob"
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
-import { updateMissingStartDate } from "./recruiters/updateMissingStartDateJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { updateSEO } from "./seo/updateSEO"
@@ -105,20 +104,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Pseudonymisation des documents",
   },
   {
-    fct: updateMissingStartDate,
-    description: "Récupération des geo_coordinates manquants dans la collection Recruiters",
-  },
-  {
     fct: importReferentielRome,
     description: "import référentiel rome v4 from XML",
-  },
-  {
-    fct: cancelOfferJob,
-    description: "Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle",
-  },
-  {
-    fct: createJobsCollectionForMetabase,
-    description: "Permet de créer une collection dédiée aux offres pour metabase",
   },
   {
     fct: createRoleManagement360,
@@ -213,14 +200,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Anonymise les raisons pour les signalements d'offre de plus d'un (1) an",
   },
   {
-    fct: fixJobExpirationDate,
-    description: "Répare les date d'expiration d'offre qui seraient trop dans le futur",
-  },
-  {
-    fct: fixRecruiterDataValidation,
-    description: "Répare les data de la collection recruiters",
-  },
-  {
     fct: anonimizeUsersWithAccounts,
     description: "Anonymize les userrecruteurs qui ne se sont pas connectés depuis plus de 2 ans",
   },
@@ -229,10 +208,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Mise à jour des diplômes et romes associés",
   },
   // IMPORT RAW AND COMPUTED JOBS PARTNERS
-  {
-    fct: processHellowork,
-    description: "Importe les offres hellowork dans la collection raw raw & computed",
-  },
   {
     fct: processRhAlternance,
     description: "Importe les offres RH Alternance  dans la collection raw & computed",
@@ -382,11 +357,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: renvoiMailCreationCompte,
     description: "Envoi les mails de validation de compte",
   },
-  { fct: syncLbaJobsIntoJobsPartners, description: "Synchronise les offres LBA dans la collection jobs_partners à partir de la collection recruiters sur les comptes actifs" },
-  {
-    fct: syncLbaJobsIntoJobsPartnersFull,
-    description: "Synchronise l'ensemble des offres LBA dans la collection jobs_partners à partir de la collection recruiters",
-  },
   {
     fct: analyzeClosedCompanies,
     description: "analyze les recruiters dont l'entreprise a fermé. Le script suppose que la collection cache_siret est remplie au mieux",
@@ -403,10 +373,21 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     fct: exportRecruteursToBrevo,
     description: "Export des données recruteurs sur Brevo",
   },
-  { fct: updateSEO, description: "Met à jour les données calculées pour le SEO" },
+  {
+    fct: updateSEO,
+    description: "Met à jour les données calculées pour le SEO",
+  },
   {
     fct: processDecathlon,
     description: "Import du flux decathlon jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEdf,
+    description: "Import du flux EDF jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEnedis,
+    description: "Import du flux Enedis jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: analyzeRemovedRomes,
@@ -415,6 +396,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillLbaUrl,
     description: "Remplit le champ lba_url dans la collection jobs_partners",
+  },
+  {
+    fct: renewLbaUrl,
+    description: "Renouvelle le champ lba_url dans la collection jobs_partners",
   },
   {
     fct: cancelRemovedJobsPartners,
@@ -435,6 +420,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: processEmploiInclusion,
     description: "Import du flux Emploi Inclusion jusqu'à la collection computed_jobs_partners",
+  },
+  {
+    fct: processEtudiant,
+    description: "Import du flux Etudiant jusqu'à la collection computed_jobs_partners",
   },
   {
     fct: importFichesRncp,
@@ -463,5 +452,17 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: detectClassificationJobsPartners,
     description: "Analyse la classification des offres partenaires",
+  },
+  {
+    fct: deduplicateHellowork,
+    description: "Déduplique les 2 flux Hellowork",
+  },
+  {
+    fct: processHellowork,
+    description: "Importe les offres des 2 flux Hellowork dans computed_jobs_partners",
+  },
+  {
+    fct: analyzeCfaBlockList,
+    description: "",
   },
 ]
