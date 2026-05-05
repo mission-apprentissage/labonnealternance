@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import jobsPartnersModel, { type IJobsPartnersOfferPrivateWithDistance, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import seoDiplomeModel, { type IDiplomeEcoleCard } from "shared/models/seoDiplome.model"
 import seoMetierModel, { SEO_METIER_FORMATION_DESCRIPTIONS, SEO_METIER_FORMATION_TITRES } from "shared/models/seoMetier.model"
 import seoVilleModel from "shared/models/seoVille.model"
 import { logger } from "@/common/logger"
@@ -18,24 +19,26 @@ export const getSeoVille = async ({ ville }: { ville: string }) => {
 }
 
 export const updateSeoVilleJobCounts = async () => {
+  logger.info("starting job updateSeoVilleJobCounts")
   const villes = await getDbCollection(seoVilleModel.collectionName).find({}).toArray()
 
   for (const ville of villes) {
-    const jobCount = await getPartnerJobsCount({
-      latitude: ville.geopoint.lat,
-      longitude: ville.geopoint.long,
-      radius: DEFAULT_RADIUS_KM,
-      partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      includePartnerLabel: false,
-    })
-
-    const recruteurCount = await getPartnerJobsCount({
-      latitude: ville.geopoint.lat,
-      longitude: ville.geopoint.long,
-      radius: DEFAULT_RADIUS_KM,
-      partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-      includePartnerLabel: true,
-    })
+    const [jobCount, recruteurCount] = await Promise.all([
+      getPartnerJobsCount({
+        latitude: ville.geopoint.lat,
+        longitude: ville.geopoint.long,
+        radius: DEFAULT_RADIUS_KM,
+        partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        includePartnerLabel: false,
+      }),
+      getPartnerJobsCount({
+        latitude: ville.geopoint.lat,
+        longitude: ville.geopoint.long,
+        radius: DEFAULT_RADIUS_KM,
+        partnerLabel: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        includePartnerLabel: true,
+      }),
+    ])
 
     const cards = await getJobsForVille({
       latitude: ville.geopoint.lat,
@@ -57,6 +60,7 @@ export const updateSeoVilleJobCounts = async () => {
 }
 
 export const updateSeoVilleActivities = async () => {
+  logger.info("starting job updateSeoVilleActivities")
   const villes = await getDbCollection(seoVilleModel.collectionName)
     .find({}, { projection: { _id: 1, slug: 1, geopoint: 1 } })
     .toArray()
@@ -126,6 +130,11 @@ export const getSeoMetier = async ({ metier }: { metier: string }) => {
   return seoMetier
 }
 
+export const getSeoDiplome = async ({ diplome }: { diplome: string }) => {
+  const seoDiplome = await getDbCollection(seoDiplomeModel.collectionName).findOne({ slug: diplome })
+  return seoDiplome
+}
+
 const getJobCountForMetier = async (romes: string[]) => {
   return await getDbCollection("jobs_partners").countDocuments({ offer_rome_codes: { $in: romes }, offer_status: JOB_STATUS_ENGLISH.ACTIVE })
 }
@@ -158,45 +167,22 @@ const getApplicantCountForMetier = async (romes: string[]) => {
   const monthAgo = 3
   const dateThreshold = new Date()
   dateThreshold.setMonth(dateThreshold.getMonth() - monthAgo)
-  const applicantCountResult = await getDbCollection("applications")
+
+  const applicantCountResult = await getDbCollection("jobs_partners")
     .aggregate([
-      {
-        $match: {
-          created_at: { $gte: dateThreshold },
-        },
-      },
+      { $match: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_rome_codes: { $in: romes } } },
       {
         $lookup: {
-          from: "jobs_partners",
-          let: { jobId: "$job_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ["$_id", "$$jobId"] },
-                offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-                offer_rome_codes: { $in: romes },
-              },
-            },
-            {
-              $project: { _id: 1 },
-            },
-          ],
-          as: "job",
+          from: "applications",
+          localField: "_id",
+          foreignField: "job_id",
+          pipeline: [{ $match: { created_at: { $gte: dateThreshold } } }, { $project: { applicant_id: 1 } }],
+          as: "apps",
         },
       },
-      {
-        $match: {
-          "job.0": { $exists: true },
-        },
-      },
-      {
-        $group: {
-          _id: "$applicant_id",
-        },
-      },
-      {
-        $count: "distinctApplicants",
-      },
+      { $unwind: "$apps" },
+      { $group: { _id: "$apps.applicant_id" } },
+      { $count: "distinctApplicants" },
     ])
     .toArray()
 
@@ -281,41 +267,41 @@ const getTopCitiesForMetier = async (romes: string[]) => {
   const topLimit = 6
   const radius = 30_000
 
-  const cityCounts: { nom: string; job_count: number; geopoint: { lat: number; long: number } }[] = []
-
-  await asyncForEach(cities, async (city) => {
-    const count = await getDbCollection("jobs_partners")
-      .aggregate([
-        {
-          $geoNear: {
-            near: { type: "Point", coordinates: [city.long, city.lat] },
-            distanceField: "distance",
-            key: "workplace_geopoint",
-            maxDistance: radius,
-            query: {
-              offer_status: JOB_STATUS_ENGLISH.ACTIVE,
-              offer_rome_codes: { $in: romes },
-              $or: [{ offer_expiration: null }, { offer_expiration: { $gt: new Date() } }],
+  const cityCounts: { nom: string; job_count: number; geopoint: { lat: number; long: number } }[] = await Promise.all(
+    cities.map(async (city) => {
+      const count = await getDbCollection("jobs_partners")
+        .aggregate([
+          {
+            $geoNear: {
+              near: { type: "Point", coordinates: [city.long, city.lat] },
+              distanceField: "distance",
+              key: "workplace_geopoint",
+              maxDistance: radius,
+              query: {
+                offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+                offer_rome_codes: { $in: romes },
+                $or: [{ offer_expiration: null }, { offer_expiration: { $gt: new Date() } }],
+              },
             },
           },
-        },
-        {
-          $group: {
-            _id: "$_id",
+          {
+            $group: {
+              _id: "$_id",
+            },
           },
-        },
-        {
-          $count: "distinctJobs",
-        },
-      ])
-      .toArray()
+          {
+            $count: "distinctJobs",
+          },
+        ])
+        .toArray()
 
-    cityCounts.push({
-      nom: city.name,
-      job_count: count[0]?.distinctJobs || 0,
-      geopoint: { lat: city.lat, long: city.long },
+      return {
+        nom: city.name,
+        job_count: count[0]?.distinctJobs || 0,
+        geopoint: { lat: city.lat, long: city.long },
+      }
     })
-  })
+  )
 
   return cityCounts.sort((a, b) => b.job_count - a.job_count).slice(0, topLimit)
 }
@@ -455,14 +441,15 @@ export const updateSeoMetierJobCounts = async () => {
     logger.info(`updating SEO job counts for metier: ${metier.slug}`)
 
     try {
-      const jobCount = await getJobCountForMetier(metier.romes)
-      const companyCount = await getCompanyCountForMetier(metier.romes)
-      const applicantCount = await getApplicantCountForMetier(metier.romes)
-
-      const entreprises = await getTopCompaniesForMetier(metier.romes)
-      const villes = await getTopCitiesForMetier(metier.romes)
-      const formations = await getFormationsForMetier(metier.romes)
-      const cards = await getJobsForMetier(metier.romes)
+      const [jobCount, companyCount, applicantCount, entreprises, villes, formations, cards] = await Promise.all([
+        getJobCountForMetier(metier.romes),
+        getCompanyCountForMetier(metier.romes),
+        getApplicantCountForMetier(metier.romes),
+        getTopCompaniesForMetier(metier.romes),
+        getTopCitiesForMetier(metier.romes),
+        getFormationsForMetier(metier.romes),
+        getJobsForMetier(metier.romes),
+      ])
 
       await getDbCollection(seoMetierModel.collectionName).updateOne(
         { slug: metier.slug },
@@ -474,4 +461,71 @@ export const updateSeoMetierJobCounts = async () => {
   })
 
   logger.info("ended job updateSeoMetierJobCounts")
+}
+
+export const updateSeoDiplome = async () => {
+  logger.info("starting job updateSeoDiplome")
+  const diplomes = await getDbCollection(seoDiplomeModel.collectionName).find({}).toArray()
+
+  if (diplomes.length === 0) {
+    logger.warn("No diplomes found in the database for updateSeoDiplome.")
+    return
+  }
+
+  await asyncForEach(diplomes, async (diplome) => {
+    logger.info(`updating SEO data for diplome: ${diplome.slug}`)
+    try {
+      const entreprisesCount = await getCompanyCountForMetier(diplome.romes)
+      const jobCount = await getJobCountForMetier(diplome.romes)
+      const ecoles = (await getDbCollection("formationcatalogues")
+        .aggregate([
+          {
+            $match: {
+              intitule_long: { $regex: diplome.intituleLongFormation.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" },
+              catalogue_published: true,
+            },
+          },
+          { $sample: { size: 9 } },
+          {
+            $project: {
+              _id: 0,
+              formationTitle: "$intitule_long",
+              etablissement: "$etablissement_formateur_entreprise_raison_sociale",
+              formationClefMinistereEducatif: "$cle_ministere_educatif",
+              lieu: {
+                $concat: [{ $ifNull: ["$etablissement_formateur_code_postal", ""] }, " ", { $ifNull: ["$etablissement_formateur_localite", ""] }],
+              },
+            },
+          },
+        ])
+        .toArray()) as IDiplomeEcoleCard[]
+
+      const metiersListe = await getDbCollection(jobsPartnersModel.collectionName)
+        .aggregate([
+          {
+            $match: {
+              offer_rome_codes: { $in: diplome.romes },
+              offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+              partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+            },
+          },
+          { $group: { _id: "$offer_title", offres: { $sum: 1 } } },
+          { $sort: { offres: -1 } },
+          { $limit: 10 },
+          { $project: { _id: 0, title: "$_id", offres: 1 } },
+        ])
+        .toArray()
+
+      const cards = await getJobsForMetier(diplome.romes)
+
+      await getDbCollection(seoDiplomeModel.collectionName).updateOne(
+        { _id: diplome._id },
+        { $set: { ecoles, "kpis.entreprises": entreprisesCount, "kpis.offres": jobCount, "metiers.liste": metiersListe, cards, updated_at: new Date() } }
+      )
+    } catch (error) {
+      logger.error("Error in updateSeoDiplome for diplome " + diplome.slug, error)
+    }
+  })
+
+  logger.info("ended job updateSeoDiplome")
 }
