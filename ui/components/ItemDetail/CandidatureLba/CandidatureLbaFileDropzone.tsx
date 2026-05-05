@@ -153,6 +153,6 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
 
 const getFileExtension = (filename: string): string => {
   const pointIndex = filename.lastIndexOf(".")
-  if (pointIndex === -1) return null
+  if (pointIndex === -1) return ""
   return filename.substring(pointIndex)
 }
