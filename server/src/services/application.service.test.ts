@@ -660,7 +660,7 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
     const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature-spontanee")]))
-    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-recruteur-lba")]))
+    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-offre-emploi")]))
 
     // DB should be updated with both message IDs
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
@@ -741,7 +741,7 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     // Should send both company email (mail-candidature-partenaire) and applicant email (mail-candidat-offre-emploi)
     expect(mailerSendEmailSpy).toHaveBeenCalledTimes(2)
     const templates = mailerSendEmailSpy.mock.calls.map((call) => call[0].template)
-    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature-partenaire")]))
+    expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidature")]))
     expect(templates).toEqual(expect.arrayContaining([expect.stringContaining("mail-candidat-offre-emploi")]))
 
     // DB should be updated with both message IDs

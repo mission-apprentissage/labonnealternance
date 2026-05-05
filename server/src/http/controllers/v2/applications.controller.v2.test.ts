@@ -185,6 +185,11 @@ describe("POST /v2/application", () => {
       scan_status: "WAITING_FOR_SCAN",
       to_applicant_message_id: null,
       to_company_message_id: null,
+      applicant_contract_duration: null,
+      applicant_contract_start: null,
+      applicant_formation_description: null,
+      applicant_inscription_formation: null,
+      applicant_rythm_description: null,
     })
 
     expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
