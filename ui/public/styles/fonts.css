@@ -11,7 +11,7 @@
     url("../fonts/Marianne/Marianne-Bold.woff") format("woff"),
     url("../fonts/Marianne/Marianne-Bold.woff2") format("woff2");
   font-weight: 700;
-  font-display: optional;
+  font-display: swap;
 }
 @font-face {
   font-family: "Marianne";
@@ -20,7 +20,7 @@
     url("../fonts/Marianne/Marianne-Medium.woff") format("woff"),
     url("../fonts/Marianne/Marianne-Medium.woff2") format("woff2");
   font-weight: 500;
-  font-display: optional;
+  font-display: swap;
 }
 @font-face {
   font-family: "Marianne";
@@ -29,5 +29,5 @@
     url("../fonts/Marianne/Marianne-Regular.woff") format("woff"),
     url("../fonts/Marianne/Marianne-Regular.woff2") format("woff2");
   font-weight: 400;
-  font-display: optional;
+  font-display: swap;
 }
