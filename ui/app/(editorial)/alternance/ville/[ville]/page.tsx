@@ -160,7 +160,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
+          <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
             Le bassin socio économique
           </Typography>
           <Box sx={{ mt: fr.spacing("8v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("8v") }}>
@@ -168,7 +168,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               <Typography sx={{ whiteSpace: "pre-wrap" }} dangerouslySetInnerHTML={{ __html: data.content.vie.text }} />
             </Box>
             <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: fr.spacing("4v") }}>
+              <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
                 Activités porteuses :
               </Typography>
               {(data.content.vie.activites as { naf_label?: string; rome_codes?: string[] }[]).map((activite) => (
@@ -313,7 +313,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
           <Box sx={{ mt: fr.spacing("2v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("2v"), md: fr.spacing("8v") } }}>
             <Box sx={{ flex: 1 }}></Box>
             <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", mb: { xs: fr.spacing("3v"), md: 0 } }}>
+              <Typography variant="h3" sx={{ mb: { xs: fr.spacing("3v"), md: 0 }, fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
                 La mobilité
               </Typography>
             </Box>
@@ -360,7 +360,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
            */}
           <Box sx={{ mt: fr.spacing("3v"), display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: fr.spacing("2v"), md: fr.spacing("8v") } }}>
             <Box sx={{ flex: 1 }}>
-              <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold", my: { xs: fr.spacing("3v"), md: 0 } }}>
+              <Typography variant="h3" sx={{ mb: { xs: fr.spacing("3v"), md: 0 }, fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
                 Le logement
               </Typography>
             </Box>

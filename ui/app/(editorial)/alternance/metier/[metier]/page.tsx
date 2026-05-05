@@ -219,7 +219,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             component="hr"
             sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
           />
-          <Typography variant="h5" sx={{ mb: fr.spacing("4v") }} gutterBottom>
+          <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }} gutterBottom>
             Rémunération et évolution des apprentis
           </Typography>
           <Typography variant="body1">Minimum réglementaire en pourcentage du SMIC selon l’âge et à mesure de l’avancée dans le contrat :</Typography>
@@ -397,7 +397,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             Les formations
           </Typography>
           <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #4B9F6C", opacity: 1 }} />
-          <Typography component="h5" sx={{ fontSize: "1.375rem", fontWeight: "bold" }}>
+          <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
             Niveaux de formation disponibles
           </Typography>
           <Box sx={threeColGridSx}>
@@ -427,7 +427,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               Où trouver une alternance <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
             </Typography>
             <Box component="hr" sx={hrSx} />
-            <Typography component="h5" sx={{ fontSize: "1.375rem", fontWeight: "bold" }}>
+            <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
               Les offres par ville :
             </Typography>
           </Box>
