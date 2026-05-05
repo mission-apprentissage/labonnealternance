@@ -414,8 +414,7 @@ const TextareaInput = ({
       <TextareaAutosize
         style={{
           marginTop: fr.spacing("2v"),
-          border: "1px solid",
-          borderColor: displayedErrorOpt ? "#ce0500" : "transparent",
+          ...(displayedErrorOpt ? { borderColor: "#ce0500" } : {}),
         }}
         className={fr.cx("fr-input")}
         id={name}
