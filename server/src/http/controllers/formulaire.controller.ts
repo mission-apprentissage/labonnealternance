@@ -182,6 +182,7 @@ export default (server: Server) => {
         rome_label,
         competences_rome,
         offer_title_custom,
+        job_employer_description,
       } = req.body
       const createdOffer = await createJob({
         job: {
@@ -197,6 +198,7 @@ export default (server: Server) => {
           rome_label,
           competences_rome,
           offer_title_custom,
+          job_employer_description,
         },
         user,
         siret,
@@ -240,6 +242,7 @@ export default (server: Server) => {
         rome_label,
         competences_rome,
         offer_title_custom,
+        job_employer_description,
       } = req.body
       const createdOffer = await createJob({
         job: {
@@ -256,10 +259,12 @@ export default (server: Server) => {
           rome_label,
           competences_rome,
           offer_title_custom,
+          job_employer_description,
         },
         siret,
         user,
         source: getSourceFromCookies(req),
+        origin: user.origin ?? undefined,
       })
       const token = generateOffreToken(user, createdOffer)
       return res.status(200).send({ job_id: createdOffer._id.toString(), token })
