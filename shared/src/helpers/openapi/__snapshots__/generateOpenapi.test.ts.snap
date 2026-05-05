@@ -44,6 +44,23 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
       "ApplicationUi": {
         "additionalProperties": false,
         "properties": {
+          "applicant_contract_duration": {
+            "description": "Information donnée par le candidat. Durée souhaitée du contrat.",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "applicant_contract_start": {
+            "description": "Information donnée par le candidat. Début du contrat souhaité.",
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
           "applicant_email": {
             "description": "Email du candidat",
             "format": "email",
@@ -67,6 +84,21 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
             "minLength": 1,
             "type": "string",
           },
+          "applicant_formation_description": {
+            "description": "Information donnée par le candidat. Description de sa formation.",
+            "maxLength": 200,
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "applicant_inscription_formation": {
+            "description": "Information donnée par le candidat. Indique si le candidat est inscrit en formation.",
+            "type": [
+              "boolean",
+              "null",
+            ],
+          },
           "applicant_last_name": {
             "description": "Nom du candidat",
             "maxLength": 50,
@@ -76,6 +108,14 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "applicant_phone": {
             "description": "Téléphone du candidat",
             "type": "string",
+          },
+          "applicant_rythm_description": {
+            "description": "Information donnée par le candidat. Description du rythme de sa formation.",
+            "maxLength": 200,
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "application_url": {
             "description": "URL où a été créé la candidature. Uniquement pour les candidatures venant de LBA.",
@@ -4032,6 +4072,23 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "pattern": "((.*?))(\\.)+([Dd][Oo][Cc][Xx]|[Pp][Dd][Ff])$",
                     "type": "string",
                   },
+                  "applicant_contract_duration": {
+                    "description": "Information donnée par le candidat. Durée souhaitée du contrat.",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "applicant_contract_start": {
+                    "description": "Information donnée par le candidat. Début du contrat souhaité.",
+                    "items": {
+                      "type": "string",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
                   "applicant_email": {
                     "description": "Email du candidat",
                     "format": "email",
@@ -4042,6 +4099,21 @@ Limite : 20 appel(s) / 1 seconde(s)
                     "maxLength": 50,
                     "minLength": 1,
                     "type": "string",
+                  },
+                  "applicant_formation_description": {
+                    "description": "Information donnée par le candidat. Description de sa formation.",
+                    "maxLength": 200,
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "applicant_inscription_formation": {
+                    "description": "Information donnée par le candidat. Indique si le candidat est inscrit en formation.",
+                    "type": [
+                      "boolean",
+                      "null",
+                    ],
                   },
                   "applicant_last_name": {
                     "description": "Nom du candidat",
@@ -4059,6 +4131,14 @@ Limite : 20 appel(s) / 1 seconde(s)
                   "applicant_phone": {
                     "description": "Téléphone du candidat",
                     "type": "string",
+                  },
+                  "applicant_rythm_description": {
+                    "description": "Information donnée par le candidat. Description du rythme de sa formation.",
+                    "maxLength": 200,
+                    "type": [
+                      "string",
+                      "null",
+                    ],
                   },
                   "foreign_application_id": {
                     "description": "Identifiant de la candidature dans un système tiers.",
