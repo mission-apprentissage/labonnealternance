@@ -1,7 +1,8 @@
+import admzip from "adm-zip"
 import { stringify } from "csv-stringify"
 import { createWriteStream } from "fs"
+import { rm } from "fs/promises"
 import type { Filter } from "mongodb"
-import path from "path"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { ZAdresseCFA } from "shared/models/address.model"
@@ -9,6 +10,7 @@ import type { ICFA } from "shared/models/cfa.model"
 import { type IEntreprise, type IReferentielRome, JOB_STATUS_ENGLISH, ZAdresseV3 } from "shared/models/index"
 import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { pipeline, Readable, Transform } from "stream"
+import { fileURLToPath } from "url"
 import { promisify } from "util"
 import { sendCsvToFranceTravail } from "@/common/apis/franceTravail/franceTravail.client"
 import { logger } from "@/common/logger"
@@ -25,7 +27,7 @@ const formatDate = (date: Date | null) => (date ? dayjs(date).format("DD/MM/YYYY
 
 type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
 
-export const offerToFTOffer = (offre: DBJob) => {
+export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
   const { referentielRome, workplace_address_zipcode, cfa } = offre
   const addressPart = jobToFTOfferAddress(offre)
   //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
@@ -145,7 +147,7 @@ export const offerToFTOffer = (offre: DBJob) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: null,
+    Description_entreprise: offre.workplace_description?.slice(0, 450) || null,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -168,6 +170,7 @@ export const offerToFTOffer = (offre: DBJob) => {
     Mode_presentation: null,
     Emploi_metier_isco: null,
     ...addressPart,
+    ...override,
   }
   return ftOffre
 }
@@ -264,18 +267,78 @@ const generateCsvFile = async (csvPath: URL, jobs: DBJob[]) => {
   await pipelineAsync(source, transform, stringifier, destination)
 }
 
-export const exportJobsToFranceTravail = async () => {
+// phase de test : les 10 premières offres du flux principal sont utilisées.
+// À terme, filtrer sur un champ dédié dans jobs_partners (à créer).
+const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
+  const confieeJobs = jobs.slice(0, 10)
+  const source = Readable.from(confieeJobs)
+  const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
+  const destination = createWriteStream(csvPath)
+  const transform = new Transform({
+    objectMode: true,
+    transform(chunk, _, callback) {
+      try {
+        const job = chunk as DBJob
+        const ftOffer = offerToFTOffer(job, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
+        callback(null, ftOffer)
+      } catch (error: any) {
+        callback(error)
+      }
+    },
+  })
+  logger.info("Start stream to CSV (confiee)")
+  await pipelineAsync(source, transform, stringifier, destination)
+}
+
+const zipAndSendToFranceTravail = async (csvPath1: URL, csvPath2: URL) => {
+  const zipPath = fileURLToPath(new URL("./exportFT.zip", import.meta.url))
+  const zip = new admzip()
+  zip.addLocalFile(fileURLToPath(csvPath1))
+  zip.addLocalFile(fileURLToPath(csvPath2))
+  zip.writeZip(zipPath)
+  try {
+    logger.info("Send ZIP file to France Travail")
+    if (config.env === "production") {
+      await sendCsvToFranceTravail(zipPath)
+    }
+  } finally {
+    await rm(zipPath, { force: true })
+  }
+}
+
+export const exportJobsToFranceTravailCsvOnly = async () => {
   const csvPath = new URL("./exportFT.csv", import.meta.url)
   try {
     const jobs = await getJobsToExport()
     await generateCsvFile(csvPath, jobs)
     logger.info("Send CSV file to France Travail")
     if (config.env === "production") {
-      await sendCsvToFranceTravail(path.resolve(csvPath.pathname))
+      await sendCsvToFranceTravail(fileURLToPath(csvPath))
     }
     await notifyToSlack({
       subject: "EXPORT FRANCE TRAVAIL",
       message: `${jobs.length} offres transmises à France Travail`,
+    })
+  } catch (err) {
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `Echec de l'export des offres France Travail. ${err}`,
+      error: true,
+    })
+  }
+}
+
+export const exportJobsToFranceTravail = async () => {
+  const csvPath = new URL("./exportFT.csv", import.meta.url)
+  const csvPathConfiee = new URL("./exportFTConfiee.csv", import.meta.url)
+  try {
+    const jobs = await getJobsToExport()
+    await generateCsvFile(csvPath, jobs)
+    await generateCsvFileConfiee(csvPathConfiee, jobs)
+    await zipAndSendToFranceTravail(csvPath, csvPathConfiee)
+    await notifyToSlack({
+      subject: "EXPORT FRANCE TRAVAIL",
+      message: `${jobs.length} offres transmises à France Travail (dont 10 en flux confiée)`,
     })
   } catch (err) {
     await notifyToSlack({
