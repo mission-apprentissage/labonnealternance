@@ -52,6 +52,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         >
           <Box
             sx={{
+              position: "absolute",
+              top: "20px",
+              width: "100%",
               display: {
                 xs: "none",
                 md: "block",
