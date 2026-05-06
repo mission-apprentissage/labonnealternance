@@ -5,7 +5,12 @@ exports[`Sending application > Should send an application to a job 1`] = `{}`;
 exports[`buildApplicationFromHelloworkAndSaveToDb > Should successfully create application from Hellowork with valid data 1`] = `
 {
   "applicant_attachment_name": "CV_John_Doe.pdf",
+  "applicant_contract_duration": null,
+  "applicant_contract_start": null,
+  "applicant_formation_description": null,
+  "applicant_inscription_formation": null,
   "applicant_message_to_company": "I am very interested in this position",
+  "applicant_rythm_description": null,
   "application_url": null,
   "caller": "Hellowork",
   "company_address": "126 RUE DE L'UNIVERSITE 75007 PARIS",

@@ -1,12 +1,11 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Button, CircularProgress, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
-import Image from "next/image"
 import { useState } from "react"
 import type { DropzoneOptions } from "react-dropzone"
 import { useDropzone } from "react-dropzone"
 
-const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
+export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState<{ applicant_attachment_name: string; applicant_attachment_content: string | ArrayBuffer } | null>(
     formik.values.applicant_attachment_name
       ? { applicant_attachment_name: formik.values.applicant_attachment_name, applicant_attachment_content: formik.values.applicant_attachment_content }
@@ -90,16 +89,25 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   })
 
   const mandatoryFileError = formik.touched.applicant_attachment_name && formik.errors?.applicant_attachment_name
+  const hasError = Boolean(mandatoryFileError || showUnacceptedFileMessages)
 
   return (
-    <Box sx={{ p: "20px", border: "1px dashed", borderColor: mandatoryFileError || showUnacceptedFileMessages ? "error.main" : "grey.600" }} {...getRootProps()}>
+    <Box
+      sx={{
+        border: isDragActive ? "1px dashed" : "1px solid",
+        borderColor: isDragActive ? "grey.600" : "transparent",
+        padding: fr.spacing("4v"),
+        mx: "-" + fr.spacing("4v"),
+      }}
+      {...getRootProps()}
+    >
       {fileLoading ? (
-        <Box sx={{ display: "flex", ml: fr.spacing("12v"), alignItems: "center", flexDirection: "row" }}>
-          <CircularProgress sx={{ mr: fr.spacing("8v") }} />
-          <Typography>Chargement du fichier en cours</Typography>
+        <Box sx={{ display: "flex", ml: fr.spacing("4v"), alignItems: "center", flexDirection: "row" }}>
+          <CircularProgress size={14} />
+          <Typography sx={{ ml: fr.spacing("2v"), fontSize: "14px", color: "grey.700" }}>Chargement du fichier en cours</Typography>
         </Box>
       ) : hasSelectedFile() ? (
-        <Box sx={{ ml: 6, fontSize: "14px", fontWeight: 700, color: "grey.700" }} data-testid="selectedFile">
+        <Box sx={{ fontSize: "14px", fontWeight: 700, color: "grey.700" }} data-testid="selectedFile">
           Pièce jointe : {fileData.applicant_attachment_name}
           {
             <Button
@@ -127,24 +135,15 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
         </Box>
       ) : (
         <Box sx={{ cursor: hasSelectedFile() ? "auto" : "pointer" }} data-testid="fileDropzone">
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <Typography sx={{ ml: fr.spacing("12v") }}>Déposez le fichier ici</Typography>
-          ) : (
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", gap: fr.spacing("8v") }}>
-              <Image width={24} height={24} style={{ marginRight: "8px" }} alt="" src="/images/icons/candidature_file_upload.svg" />{" "}
-              <Box>
-                <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "grey.700", mb: 0 }}>Chargez votre CV ou déposez le ici</Typography>
-                <Typography sx={{ fontSize: "12px", color: "grey.700", mb: 0 }}>Le CV doit être au format PDF ou DOCX et ne doit pas dépasser 3 Mo</Typography>
-              </Box>
-            </Box>
-          )}
+          <Box sx={{ alignItems: "center", gap: fr.spacing("8v") }}>
+            <Typography sx={{ fontSize: "14px", fontWeight: 700, color: hasError ? "error.main" : "grey.700", mb: 0 }}>Chargez votre CV ou déposez-le ici *</Typography>
+            <Typography sx={{ fontSize: "12px", color: "grey.700", mb: 0 }}>Le CV doit être au format PDF ou Docx et ne doit pas dépasser 3 Mo</Typography>
+          </Box>
+          <input {...getInputProps()} style={{ display: "block" }} />
           {showUnacceptedFileMessages && (
-            <Typography sx={{ ml: 6, color: "error.main", fontSize: "14px" }}>
-              ⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)
-            </Typography>
+            <Typography sx={{ color: "error.main", fontSize: "14px" }}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</Typography>
           )}
-          {mandatoryFileError && <Typography sx={{ ml: 6, color: "error.main", fontSize: "14px" }}>⚠ La pièce jointe est obligatoire</Typography>}
+          {mandatoryFileError && <Typography sx={{ color: "error.main", fontSize: "14px" }}>⚠ La pièce jointe est obligatoire</Typography>}
         </Box>
       )}
     </Box>
@@ -153,8 +152,6 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
 
 const getFileExtension = (filename: string): string => {
   const pointIndex = filename.lastIndexOf(".")
-  if (pointIndex === -1) return null
+  if (pointIndex === -1) return ""
   return filename.substring(pointIndex)
 }
-
-export default CandidatureLbaFileDropzone

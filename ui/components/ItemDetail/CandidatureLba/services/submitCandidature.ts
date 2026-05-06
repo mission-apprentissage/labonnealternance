@@ -35,6 +35,11 @@ async function submitCandidature({
     recipient_id: LbaJob.recipient_id,
     caller,
     application_url: typeof window !== "undefined" ? window?.location?.href : null,
+    applicant_contract_duration: formValues.applicant_contract_duration,
+    applicant_contract_start: formValues.applicant_contract_start,
+    applicant_formation_description: formValues.applicant_formation_description,
+    applicant_inscription_formation: formValues.applicant_inscription_formation,
+    applicant_rythm_description: formValues.applicant_rythm_description,
   }
 
   sessionStorageSet("application-form-values", payload)

@@ -99,12 +99,12 @@ export enum BlackListOrigins {
 const emailCandidatTemplateMap = {
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "mail-candidat-offre-emploi",
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "mail-candidat-offre-emploi",
-  [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "mail-candidat-recruteur-lba",
+  [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "mail-candidat-offre-emploi",
 }
 
 const emailCandidatureTemplateMap = {
   [LBA_ITEM_TYPE.RECRUTEURS_LBA]: "mail-candidature-spontanee",
-  [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "mail-candidature-partenaire",
+  [LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES]: "mail-candidature",
   [LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA]: "mail-candidature",
 }
 
@@ -525,6 +525,12 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_id: applicant._id,
     applicant_attachment_name: newApplication.applicant_attachment_name,
     applicant_message_to_company: prepareMessageForMail(newApplication.applicant_message),
+    applicant_contract_duration: newApplication.applicant_contract_duration,
+    applicant_contract_start: newApplication.applicant_contract_start,
+    applicant_formation_description: newApplication.applicant_formation_description,
+    applicant_inscription_formation: newApplication.applicant_inscription_formation,
+    applicant_rythm_description: newApplication.applicant_rythm_description,
+
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_recruitment_intention: null,
     company_feedback_send_status: null,
@@ -883,11 +889,19 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     created_at,
     last_update_at,
     job_searched_by_user,
+    applicant_contract_duration,
+    applicant_contract_start,
+    applicant_formation_description,
+    applicant_rythm_description,
   } = application
   return {
+    applicant_contract_duration: sanitizeTextField(applicant_contract_duration),
+    applicant_formation_description: sanitizeTextField(applicant_formation_description),
+    applicant_rythm_description: sanitizeTextField(applicant_rythm_description),
     applicant_attachment_name: sanitizeTextField(applicant_attachment_name),
+    applicant_contract_start: applicant_contract_start?.map((label) => sanitizeTextField(label)).join(", "),
     job_searched_by_user: sanitizeTextField(job_searched_by_user),
-    applicant_message_to_company: sanitizeTextField(applicant_message_to_company, true),
+    applicant_message_to_company: sanitizeTextField(applicant_message_to_company, true).trim(),
     company_recruitment_intention: sanitizeTextField(company_recruitment_intention),
     company_feedback: sanitizeTextField(company_feedback),
     company_feedback_date: company_feedback_date,
@@ -937,6 +951,7 @@ export const processApplicationScanForVirus = async (application: IApplication, 
         ...images,
         urlOfDetail,
         urlOfDetailNoUtm,
+        attachmentName: application.applicant_attachment_name,
       },
     })
   }
@@ -1004,6 +1019,7 @@ export const processApplicationEmails = {
         urlOfDetail,
         urlOfDetailNoUtm,
         jobPartnerLabel: recruiterEmailUrls.jobPartnerLabel,
+        job_type: job_origin,
       },
       attachments: [
         {
