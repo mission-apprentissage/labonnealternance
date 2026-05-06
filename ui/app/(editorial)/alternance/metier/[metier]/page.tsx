@@ -125,7 +125,18 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "20px",
+              left: 0,
+              width: "100%",
+              display: {
+                xs: "none",
+                md: "block",
+              },
+            }}
+          >
             <HomeCircleImageDecoration size="small" />
           </Box>
           <Box sx={{ position: "relative" }}>

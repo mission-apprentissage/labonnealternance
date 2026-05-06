@@ -13,11 +13,8 @@ export const HomeCircleImageDecoration = ({ size }: { size: "small" | "high" }) 
     height={size === "high" ? motifHigh.height : motifSmall.height}
     width={size === "high" ? motifHigh.width : motifSmall.width}
     style={{
-      overflow: "visible",
-      height: "calc(100% - 10px)",
       width: "100%",
-      top: "20px",
-      position: "absolute",
+      height: "auto",
       objectFit: "cover",
     }}
   />

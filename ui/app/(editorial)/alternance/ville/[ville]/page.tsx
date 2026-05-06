@@ -53,14 +53,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Box
-            sx={{
-              display: {
-                xs: "none",
-                md: "block",
-              },
-            }}
-          >
+          <Box sx={{ display: { xs: "none", md: "block" }, position: "absolute", top: "30px", left: 0, width: "100%" }}>
             <HomeCircleImageDecoration size="small" />
           </Box>
           <Box
