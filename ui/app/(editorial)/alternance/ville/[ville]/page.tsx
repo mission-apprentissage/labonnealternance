@@ -92,7 +92,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
               </Typography>
             </Box>
             <Box sx={{ display: { xs: "none", md: "block" }, marginLeft: "auto", mt: fr.spacing("8v") }}>
-              <Image src="/images/howto1.svg" priority fetchPriority="high" alt="" unoptimized width={286} height={141} style={{ width: "100%" }} />
+              <Image src="/images/howto1.svg" priority fetchPriority="high" alt="" unoptimized width={286} height={141} style={{ width: "100%", height: "auto" }} />
             </Box>
           </Box>
         </Box>
