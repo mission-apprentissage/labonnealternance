@@ -253,7 +253,7 @@ const guideCfaPage = () => {
             </Grid>
           </Grid>
           <Grid container size={12} sx={{ backgroundColor: fr.colors.decisions.background.default.grey.hover, px: fr.spacing("6v"), py: fr.spacing("4v") }}>
-            <Grid size={{ md: 10, xs: 12 }}>
+            <Grid size={{ md: 9, xs: 12 }}>
               <Box display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")} my={fr.spacing("4v")}>
                 <Typography variant="body1" fontWeight={500}>
                   Vous avez une question sur le fonctionnement de notre plateforme ?
@@ -266,7 +266,7 @@ const guideCfaPage = () => {
                 </Box>
               </Box>
             </Grid>
-            <Grid size={{ md: 2, xs: 12 }}>
+            <Grid size={{ md: 3, xs: 12 }}>
               <Image src="/images/guides/faq.svg" width={200} height={110} alt="" aria-hidden={true} />
             </Grid>
           </Grid>
