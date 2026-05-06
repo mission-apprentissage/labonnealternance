@@ -50,7 +50,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           />
           <Box
             sx={{
-              overflow: "visible",
               top: { xs: "-10px", lg: "-20px" },
               left: { xs: "10px", lg: "-20px" },
               position: "absolute",
@@ -60,7 +59,6 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
           </Box>
           <Box
             sx={{
-              overflow: "visible",
               bottom: { xs: "-10px", lg: "-20px" },
               right: { xs: "10px", lg: "-20px" },
               position: "absolute",
