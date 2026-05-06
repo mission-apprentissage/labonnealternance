@@ -165,7 +165,7 @@ export default function UnJeune1Solution() {
 
       <Box sx={{ px: { xs: fr.spacing("3v"), md: fr.spacing("6v"), lg: 0 } }}>
         <Box sx={{ display: "flex", gap: { xs: fr.spacing("2v"), md: fr.spacing("13v") }, flexDirection: { xs: "column-reverse", md: "row" }, marginTop: fr.spacing("4v") }}>
-          <Box sx={{ flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
+          <Box sx={{ flex: 1, "& > img": { maxWidth: "513px", width: "100%", height: "auto" } }}>
             <NextImage src="/images/1j1s/depot-offre.png" alt="" aria-hidden="true" width={513} height={464} unoptimized />
           </Box>
           <Box sx={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -207,7 +207,7 @@ export default function UnJeune1Solution() {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ flex: 1, "& > img": { maxWidth: "100%", height: "auto" } }}>
+          <Box sx={{ flex: 1, "& > img": { maxWidth: "626px", width: "100%", height: "auto" } }}>
             <NextImage src="/images/1j1s/detail-offre.png" alt="" aria-hidden="true" width={626} height={428} unoptimized />
           </Box>
         </Box>
