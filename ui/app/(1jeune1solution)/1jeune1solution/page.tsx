@@ -185,16 +185,18 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               >
                 LES OFFRES D'EMPLOI
               </Typography>
-              <Typography sx={{ fontSize: "18px" }}>
-                <Box component="span" sx={{ fontWeight: 700 }}>
-                  Les offres d’emploi
-                </Box>{" "}
-                identifiables grâce au tag <TagOffreEmploi /> qui sont de 2 types :
+              <Box>
+                <Typography sx={{ fontSize: "18px" }}>
+                  <Box component="span" sx={{ fontWeight: 700 }}>
+                    Les offres d’emploi
+                  </Box>{" "}
+                  identifiables grâce au tag <TagOffreEmploi /> qui sont de 2 types :
+                </Typography>
                 <List sx={{ listStyleType: "disc", pl: 4, "& .MuiListItem-root": { display: "list-item", p: 0, fontSize: "18px" } }}>
                   <ListItem>celles publiées directement sur notre plateforme</ListItem>
                   <ListItem>celles issues de nos partenaires : France Travail, Hellowork, MétéoJob et bien d’autres !</ListItem>
                 </List>
-              </Typography>
+              </Box>
             </Box>
           </Box>
           <Box sx={{ display: { xs: "none", md: "block" } }}>
