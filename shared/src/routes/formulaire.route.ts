@@ -216,6 +216,7 @@ export const zFormulaireRoute = {
         job_employer_description: true,
         competences_rome: true,
         offer_title_custom: true,
+        to_applicant_questions: true,
       }).extend({
         job_start_date: z.coerce.date(),
         job_expiration_date: z.coerce.date(),

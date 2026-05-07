@@ -10,12 +10,14 @@ import { useState } from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
+import z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
+import { sessionStorageGet, sessionStorageSet } from "@/utils/localStorage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
 import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
 import type { IApplicationSchemaInitValues } from "./services/getSchema"
@@ -42,10 +44,33 @@ export const CandidatureLbaModalBody = ({
   onSubmit: (values: IApplicationSchemaInitValues) => void
   onClose: () => void
 }) => {
+  const customQuestions = "job" in item ? (item.job?.to_applicant_questions ?? []) : []
+
+  const questionZodExtension = Object.fromEntries(customQuestions.map((question) => [question, z.string({ required_error: "⚠ Une réponse est obligatoire" })]))
+
+  const applicantAnswersSession = JSON.parse(sessionStorageGet("application-form-answers"))
+  const questionsInitValues = Object.fromEntries(customQuestions.map((question) => [question, applicantAnswersSession?.[question] ?? ""]))
+
   const formik = useFormik({
-    initialValues: getInitialSchemaValues(),
-    validationSchema: toFormikValidationSchema(ApplicationFormikSchema),
-    onSubmit,
+    initialValues: { ...getInitialSchemaValues(), ...questionsInitValues },
+    validationSchema: toFormikValidationSchema(ApplicationFormikSchema.extend(questionZodExtension)),
+    onSubmit: (values: any) => {
+      const finalValues: IApplicationSchemaInitValues = { ...values }
+      finalValues.applicant_answers_to_recruiter_questions = []
+      const savedAnswers = {}
+
+      customQuestions.forEach((question) => {
+        delete finalValues[question]
+        const answer = values[question]
+        finalValues.applicant_answers_to_recruiter_questions.push({
+          question,
+          answer,
+        })
+        savedAnswers[question] = answer
+      })
+      sessionStorageSet("application-form-answers", savedAnswers)
+      onSubmit(finalValues)
+    },
   })
 
   const isOffre =
@@ -97,7 +122,7 @@ export const CandidatureLbaModalBody = ({
               <MaRechercheDAlternance formik={formik} />
             </Box>
             <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { sx: 0, md: fr.spacing("2v") } }}>
-              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v") }}>
+              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
                 Mon message personnalisé
               </Typography>
               <TextareaInput
@@ -108,6 +133,25 @@ export const CandidatureLbaModalBody = ({
               />
               <Box sx={{ mt: fr.spacing("4v") }}>
                 <CvFileInput formik={formik} />
+              </Box>
+              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
+                Mes réponses aux questions de l’entreprise
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+                {customQuestions.map((question, index) => (
+                  <TextareaInput
+                    key={question}
+                    formik={formik}
+                    name={question}
+                    label={question}
+                    required
+                    infoText={
+                      index === customQuestions.length - 1
+                        ? "Ces questions permettent à l’entreprise de comprendre vos motivations à la rejoindre, elle sera attentive aux réponses que vous lui apporterez."
+                        : undefined
+                    }
+                  />
+                ))}
               </Box>
 
               <Box sx={{ mt: fr.spacing("8v") }}>
