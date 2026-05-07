@@ -180,7 +180,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
             <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
             <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
               {/** biome-ignore lint/performance/noImgElement: migration */}
-              <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
+              <img className="fr-footer__logo" src="/images/france_relance.svg" width="56" height="56" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
             </a>
           </div>
           <div className="fr-footer__content">
