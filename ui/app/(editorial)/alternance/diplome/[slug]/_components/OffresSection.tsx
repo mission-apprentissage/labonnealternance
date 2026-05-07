@@ -8,7 +8,7 @@ import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { UTM_PARAMS } from "../_data/constants"
 import { SectionTitle } from "./SectionTitle"
 
-export function OffresSection({ offreCount, offres }: { offreCount: number; offres: ISeoJobCard[] }) {
+export function OffresSection({ offreCount, offres, romes }: { offreCount: number; offres: ISeoJobCard[]; romes: string[] }) {
   return (
     <Box>
       <SectionTitle title={`Découvrez les ${offreCount} offres disponibles pour ce diplôme`} />
@@ -20,7 +20,13 @@ export function OffresSection({ offreCount, offres }: { offreCount: number; offr
       </Box>
 
       <Box sx={{ textAlign: "center" }}>
-        <Button priority="primary" size="large" iconId="fr-icon-arrow-right-line" iconPosition="right" linkProps={{ href: `/recherche-emploi?${UTM_PARAMS}` }}>
+        <Button
+          priority="primary"
+          size="large"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          linkProps={{ href: `/recherche-emploi?romes=${romes.join(",")}&${UTM_PARAMS}` }}
+        >
           Voir toutes les offres en alternance
         </Button>
       </Box>
