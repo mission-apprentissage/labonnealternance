@@ -28,27 +28,38 @@ export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; 
         }}
       >
         {/* Decoration SVG - same pattern as HomeCircleImageDecoration */}
-        <Image
-          fetchPriority="low"
-          src={diplomeDecoration.src}
-          alt=""
-          unoptimized
-          width={diplomeDecoration.width}
-          height={diplomeDecoration.height}
-          style={{
-            overflow: "visible",
-            height: "100%",
-            width: "100%",
+        <Box
+          sx={{
+            position: "absolute",
             top: 0,
             left: 0,
-            position: "absolute",
-            objectFit: "cover",
+            width: "100%",
+            display: {
+              xs: "none",
+              md: "block",
+            },
           }}
-        />
+        >
+          <Image
+            fetchPriority="high"
+            priority
+            src={diplomeDecoration.src}
+            alt=""
+            unoptimized
+            width={diplomeDecoration.width}
+            height={diplomeDecoration.height}
+            style={{
+              height: "auto",
+              width: "100%",
+              objectFit: "cover",
+            }}
+          />
+        </Box>
 
         {/* Title */}
         <Box sx={{ position: "relative", display: "flex", flexDirection: "column", gap: "12px" }}>
           <Typography
+            id="editorial-content-container"
             component="h1"
             sx={{
               fontWeight: 700,
