@@ -52,132 +52,140 @@ export const CandidatureLbaModalBody = ({
     kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || kind === LBA_ITEM_TYPE_OLD.MATCHA || kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{ position: "relative" }}>
-      <Box sx={{ margin: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, mb: 0 }}>
-        {!fromWidget && (
-          <>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mr: -6, mb: fr.spacing("4v") }}>
-              <ModalCloseButton onClose={onClose} />
-            </Box>
-          </>
-        )}
-        <Typography variant="h1" sx={{ fontWeight: 700, fontSize: "32px", mb: fr.spacing("6v") }} data-testid="CandidatureSpontaneeTitle">
-          {isOffre ? (
+    <Box
+      sx={{
+        ".MuiFormLabel-asterisk": {
+          color: "#ce0500",
+        },
+      }}
+    >
+      <form onSubmit={formik.handleSubmit} style={{ position: "relative" }}>
+        <Box sx={{ margin: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, mb: 0 }}>
+          {!fromWidget && (
             <>
-              Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mr: -6, mb: fr.spacing("4v") }}>
+                <ModalCloseButton onClose={onClose} />
+              </Box>
             </>
-          ) : (
-            <>Candidature spontanée{fromWidget ? ` auprès de ${company}` : ""}</>
           )}
-        </Typography>
-
-        <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600", my: fr.spacing("2v") }}>Les champs marqués d’un astérisque (*) sont obligatoires.</Typography>
-
-        <Box sx={{ pt: fr.spacing("8v"), display: "flex", gap: fr.spacing("6v"), flexDirection: { xs: "column", md: "row" } }}>
-          <Box
-            sx={(theme) => ({
-              height: "fit-content",
-              [theme.breakpoints.up("xs")]: {},
-              [theme.breakpoints.up("md")]: {
-                backgroundColor: "#F6F6F6",
-                width: 484,
-                px: fr.spacing("6v"),
-                py: fr.spacing("8v"),
-              },
-            })}
-          >
-            <MesInformations formik={formik} />
-            <MaRechercheDAlternance formik={formik} />
-          </Box>
-          <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { sx: 0, md: fr.spacing("2v") } }}>
-            <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v") }}>
-              Mon message personnalisé
-            </Typography>
-            <TextareaInput
-              formik={formik}
-              name="applicant_message"
-              label="Message au responsable du recrutement"
-              infoText="Un message personnalisé augmente vos chances d'obtenir un contact avec le recruteur."
-            />
-            <Box sx={{ mt: fr.spacing("4v") }}>
-              <CvFileInput formik={formik} />
-            </Box>
-
-            <Box sx={{ mt: fr.spacing("8v") }}>
-              <CandidatureLbaMandataireMessage item={item} />
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-      <Box
-        sx={(theme) => ({
-          padding: fr.spacing("6v"),
-          backgroundColor: "white",
-          [theme.breakpoints.up("xs")]: {},
-          [theme.breakpoints.up("md")]: {
-            position: "sticky",
-            boxShadow: "0 6px 18px 0 #00001229",
-            bottom: 0,
-            left: 0,
-          },
-        })}
-      >
-        <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
-        <Box sx={{ display: "flex", gap: fr.spacing("6v"), alignItems: { xs: "flex-end", md: "center" }, flexDirection: { xs: "column", md: "row" } }}>
-          <Typography
-            sx={{
-              fontSize: "14px",
-              lineHeight: "24px",
-              a: {
-                fontSize: "14px !important",
-              },
-            }}
-          >
-            En remplissant ce formulaire, vous acceptez les{" "}
-            <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
-              Conditions générales d&apos;utilisation
-            </DsfrLink>{" "}
-            du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}. Pour plus d'informations sur le traitement de vos données
-            à caractère personnel, veuillez consulter la{" "}
-            <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
-              Politique de confidentialité
-            </DsfrLink>{" "}
-            de La bonne alternance.
+          <Typography variant="h1" sx={{ fontWeight: 700, fontSize: "32px", mb: fr.spacing("6v") }} data-testid="CandidatureSpontaneeTitle">
+            {isOffre ? (
+              <>
+                Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
+              </>
+            ) : (
+              <>Candidature spontanée{fromWidget ? ` auprès de ${company}` : ""}</>
+            )}
           </Typography>
 
-          {isLoading ? (
-            <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }} data-testid="candidature-currently-sending">
-              <CircularProgress sx={{ mr: fr.spacing("8v") }} />
-              <Typography>Veuillez patienter</Typography>
+          <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600", my: fr.spacing("2v") }}>Les champs marqués d’un astérisque (*) sont obligatoires.</Typography>
+
+          <Box sx={{ pt: fr.spacing("8v"), display: "flex", gap: fr.spacing("6v"), flexDirection: { xs: "column", md: "row" } }}>
+            <Box
+              sx={(theme) => ({
+                height: "fit-content",
+                [theme.breakpoints.up("xs")]: {},
+                [theme.breakpoints.up("md")]: {
+                  backgroundColor: "#F6F6F6",
+                  width: 484,
+                  px: fr.spacing("6v"),
+                  py: fr.spacing("8v"),
+                },
+              })}
+            >
+              <MesInformations formik={formik} />
+              <MaRechercheDAlternance formik={formik} />
             </Box>
-          ) : isOffre ? (
-            <Button
-              iconId="fr-icon-arrow-right-line"
-              iconPosition="left"
-              data-tracking-id="postuler-offre-lba"
-              aria-label="Envoyer la candidature"
-              type="submit"
-              data-testid="candidature-not-sent"
-              style={{ minWidth: "fit-content" }}
-            >
-              J'envoie ma candidature
-            </Button>
-          ) : (
-            <Button
-              iconId="fr-icon-arrow-right-line"
-              iconPosition="left"
-              data-tracking-id="postuler-entreprise-algo"
-              aria-label="Envoyer la candidature spontanée"
-              type="submit"
-              data-testid="candidature-not-sent"
-              style={{ minWidth: "fit-content" }}
-            >
-              J'envoie ma candidature spontanée
-            </Button>
-          )}
+            <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { sx: 0, md: fr.spacing("2v") } }}>
+              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v") }}>
+                Mon message personnalisé
+              </Typography>
+              <TextareaInput
+                formik={formik}
+                name="applicant_message"
+                label="Message au responsable du recrutement"
+                infoText="Un message personnalisé augmente vos chances d'obtenir un contact avec le recruteur."
+              />
+              <Box sx={{ mt: fr.spacing("4v") }}>
+                <CvFileInput formik={formik} />
+              </Box>
+
+              <Box sx={{ mt: fr.spacing("8v") }}>
+                <CandidatureLbaMandataireMessage item={item} />
+              </Box>
+            </Box>
+          </Box>
         </Box>
-      </Box>
-    </form>
+        <Box
+          sx={(theme) => ({
+            padding: fr.spacing("6v"),
+            backgroundColor: "white",
+            [theme.breakpoints.up("xs")]: {},
+            [theme.breakpoints.up("md")]: {
+              position: "sticky",
+              boxShadow: "0 6px 18px 0 #00001229",
+              bottom: 0,
+              left: 0,
+            },
+          })}
+        >
+          <InfoBanner showInfo={false} showAlert={false} showOK={false} forceEnvBanner={true} />
+          <Box sx={{ display: "flex", gap: fr.spacing("6v"), alignItems: { xs: "flex-end", md: "center" }, flexDirection: { xs: "column", md: "row" } }}>
+            <Typography
+              sx={{
+                fontSize: "14px",
+                lineHeight: "24px",
+                a: {
+                  fontSize: "14px !important",
+                },
+              }}
+            >
+              En remplissant ce formulaire, vous acceptez les{" "}
+              <DsfrLink href="/conditions-generales-utilisation" aria-description="Conditions générales d'utilisation - nouvelle fenêtre" external>
+                Conditions générales d&apos;utilisation
+              </DsfrLink>{" "}
+              du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}. Pour plus d'informations sur le traitement de vos
+              données à caractère personnel, veuillez consulter la{" "}
+              <DsfrLink href="/politique-de-confidentialite" aria-description="politique de confidentialité - nouvelle fenêtre" external>
+                Politique de confidentialité
+              </DsfrLink>{" "}
+              de La bonne alternance.
+            </Typography>
+
+            {isLoading ? (
+              <Box sx={{ display: "flex", alignItems: "center", flexDirection: "row" }} data-testid="candidature-currently-sending">
+                <CircularProgress sx={{ mr: fr.spacing("8v") }} />
+                <Typography>Veuillez patienter</Typography>
+              </Box>
+            ) : isOffre ? (
+              <Button
+                iconId="fr-icon-arrow-right-line"
+                iconPosition="left"
+                data-tracking-id="postuler-offre-lba"
+                aria-label="Envoyer la candidature"
+                type="submit"
+                data-testid="candidature-not-sent"
+                style={{ minWidth: "fit-content" }}
+              >
+                J'envoie ma candidature
+              </Button>
+            ) : (
+              <Button
+                iconId="fr-icon-arrow-right-line"
+                iconPosition="left"
+                data-tracking-id="postuler-entreprise-algo"
+                aria-label="Envoyer la candidature spontanée"
+                type="submit"
+                data-testid="candidature-not-sent"
+                style={{ minWidth: "fit-content" }}
+              >
+                J'envoie ma candidature spontanée
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </form>
+    </Box>
   )
 }
 
@@ -230,7 +238,13 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
         />
         {applicant_inscription_formation !== undefined && (
           <>
-            <FormikSelect formik={formik} name="applicant_contract_duration" label="Durée du contrat souhaitée" options={[6, 12, 18, 24, 36].map((len) => `${len} mois`)} />
+            <FormikSelect
+              formik={formik}
+              name="applicant_contract_duration"
+              label="Durée du contrat souhaitée"
+              emptyButtonAriaLabel="Vider la durée du contrat souhaitée"
+              options={[6, 12, 18, 24, 36].map((len) => `${len} mois`)}
+            />
             <MultiSelect name="applicant_contract_start" label="Début de contrat souhaité" formik={formik} options={contractStartLabels} />
           </>
         )}
@@ -344,35 +358,59 @@ const FormikInput = ({
   )
 }
 
-const FormikSelect = ({ formik, name, label, options }: { formik: FormikType; name: string; label: string; options: string[] }) => {
+const FormikSelect = ({
+  formik,
+  name,
+  label,
+  options,
+  emptyButtonAriaLabel,
+}: {
+  formik: FormikType
+  name: string
+  label: string
+  options: string[]
+  emptyButtonAriaLabel: string
+}) => {
   const value = formik.values[name]
   const touched = formik.touched[name]
   const error = formik.errors[name] as string
   const displayedErrorOpt = touched && error
 
   return (
-    <SelectField
-      id={name}
-      label={label}
-      style={{
-        marginBottom: 0,
-        textWrap: "nowrap",
-      }}
-      options={options.map((option) => ({ value: option, label: option, selected: option === value }))}
-      nativeSelectProps={{
-        value: value ?? undefined,
-        onChange: (event) => {
-          const { value } = event.target
-          const option = options.find((option) => option === value)
-          formik.setFieldValue(name, option, true)
-        },
-        style: {
-          fontWeight: 700,
-        },
-      }}
-      state={displayedErrorOpt ? "error" : "default"}
-      stateRelatedMessage={displayedErrorOpt}
-    />
+    <Box sx={{ display: "flex", gap: fr.spacing("3v") }}>
+      <SelectField
+        id={name}
+        label={label}
+        style={{
+          marginBottom: 0,
+          textWrap: "nowrap",
+          flex: 1,
+        }}
+        options={options.map((option) => ({ value: option, label: option, selected: option === value }))}
+        nativeSelectProps={{
+          value: value ?? undefined,
+          onChange: (event) => {
+            const { value } = event.target
+            const option = options.find((option) => option === value)
+            formik.setFieldValue(name, option, true)
+          },
+          style: {
+            fontWeight: 700,
+          },
+        }}
+        state={displayedErrorOpt ? "error" : "default"}
+        stateRelatedMessage={displayedErrorOpt}
+      />
+      <Button
+        aria-label={emptyButtonAriaLabel}
+        type="submit"
+        priority="secondary"
+        onClick={() => formik.setFieldValue(name, null, true)}
+        style={{ height: "fit-content", marginTop: "33px" }}
+      >
+        Vider
+      </Button>
+    </Box>
   )
 }
 
@@ -500,7 +538,8 @@ const MultiSelect = ({ formik, name, label, options }: { formik: FormikType; nam
       value={value}
       onChange={() => undefined}
       onConfirm={(newValue) => {
-        formik.setFieldValue(name, newValue, true)
+        const orderedValues = options.filter((option) => newValue.includes(option))
+        formik.setFieldValue(name, orderedValues, true)
       }}
       onOpen={() => undefined}
       getLabel={(selected) => (selected.length ? selected.map((option) => option.label).join(", ") : "Sélectionner une ou plusieurs options")}

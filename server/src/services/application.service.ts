@@ -527,9 +527,9 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_message_to_company: prepareMessageForMail(newApplication.applicant_message),
     applicant_contract_duration: newApplication.applicant_contract_duration,
     applicant_contract_start: newApplication.applicant_contract_start,
-    applicant_formation_description: newApplication.applicant_formation_description,
+    applicant_formation_description: prepareMessageForMail(newApplication.applicant_formation_description),
     applicant_inscription_formation: newApplication.applicant_inscription_formation,
-    applicant_rythm_description: newApplication.applicant_rythm_description,
+    applicant_rythm_description: prepareMessageForMail(newApplication.applicant_rythm_description),
 
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_recruitment_intention: null,
@@ -896,8 +896,8 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
   } = application
   return {
     applicant_contract_duration: sanitizeTextField(applicant_contract_duration),
-    applicant_formation_description: sanitizeTextField(applicant_formation_description),
-    applicant_rythm_description: sanitizeTextField(applicant_rythm_description),
+    applicant_formation_description: sanitizeTextField(applicant_formation_description, true).trim(),
+    applicant_rythm_description: sanitizeTextField(applicant_rythm_description, true).trim(),
     applicant_attachment_name: sanitizeTextField(applicant_attachment_name),
     applicant_contract_start: applicant_contract_start?.map((label) => sanitizeTextField(label)).join(", "),
     job_searched_by_user: sanitizeTextField(job_searched_by_user),
@@ -1058,6 +1058,7 @@ export const processApplicationEmails = {
         attachmentName: application.applicant_attachment_name,
         sendOtherApplicationsUrl: buildSendOtherApplicationsUrl(application, job_origin ?? LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
         recruitingCompaniesUrl: buildRecruitingCompaniesUrl(application),
+        job_type: job_origin,
       },
     })
     if (emailCandidat?.accepted?.length) {

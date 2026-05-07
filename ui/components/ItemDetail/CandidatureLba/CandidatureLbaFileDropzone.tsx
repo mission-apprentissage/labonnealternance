@@ -135,10 +135,12 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
         </Box>
       ) : (
         <Box sx={{ cursor: hasSelectedFile() ? "auto" : "pointer" }} data-testid="fileDropzone">
-          <Box sx={{ alignItems: "center", gap: fr.spacing("8v") }}>
-            <Typography sx={{ fontSize: "14px", fontWeight: 700, color: hasError ? "error.main" : "grey.700", mb: 0 }}>Chargez votre CV ou déposez-le ici *</Typography>
-            <Typography sx={{ fontSize: "12px", color: "grey.700", mb: 0 }}>Le CV doit être au format PDF ou Docx et ne doit pas dépasser 3 Mo</Typography>
-          </Box>
+          <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700, color: hasError ? "error.main" : "grey.700", mb: fr.spacing("3v") }}>
+            Chargez votre CV ou déposez-le ici <span style={{ color: "#ce0500" }}>*</span>
+          </Typography>
+          <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "grey.700", mb: fr.spacing("4v") }}>
+            Le CV doit être au format PDF ou Docx et ne doit pas dépasser 3 Mo
+          </Typography>
           <input {...getInputProps()} style={{ display: "block" }} />
           {showUnacceptedFileMessages && (
             <Typography sx={{ color: "error.main", fontSize: "14px" }}>⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)</Typography>
