@@ -1,7 +1,6 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
-import { BandeauFusionPDA } from "@/app/_components/BandeauFusionPDA"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
@@ -48,7 +47,6 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
   return (
     <>
       <AuthWatcher user={user} />
-      <BandeauFusionPDA />
       <DsfrHeader {...props} navigation={<DsfrHeaderNavigation />} />
     </>
   )

@@ -3,15 +3,16 @@ import header from "@/public/images/guides/header.svg"
 
 export const GuideHeaderIllustration = () => (
   <Image
-    fetchPriority="low"
+    fetchPriority="high"
+    priority
     src={header.src}
     alt=""
     unoptimized
     height={header.height}
     width={header.width}
     style={{
-      overflow: "visible",
-      position: "absolute",
+      maxWidth: "100%",
+      height: "auto",
       objectFit: "contain",
     }}
   />
