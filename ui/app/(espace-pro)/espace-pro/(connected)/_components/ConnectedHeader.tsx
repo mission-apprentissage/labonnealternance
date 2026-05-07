@@ -4,7 +4,6 @@ import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-d
 import { usePathname, useRouter } from "next/navigation"
 import type { IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/recruteur"
-import { BandeauFusionPDA } from "@/app/_components/BandeauFusionPDA"
 import { DsfrHeaderProps } from "@/app/_components/Header"
 import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
 import { ConnectedHeaderNavigation } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeaderNavigation"
@@ -39,7 +38,6 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
 
   return (
     <>
-      <BandeauFusionPDA />
       <WithNav user={user}>
         <DsfrHeader
           {...rest}
