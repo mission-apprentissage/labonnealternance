@@ -32,23 +32,11 @@ export const HowTo = () => (
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Le job de vos rêves</Typography>
         <Typography>
           Renseignez
-          <Box
-            component="span"
-            sx={{
-              color: fr.colors.decisions.border.default.blueFrance.default,
-            }}
-            className={fr.cx("fr-text--bold")}
-          >
+          <Box component="span" className={fr.cx("fr-text--bold")}>
             {" le métier "}
           </Box>
           que vous souhaitez faire et
-          <Box
-            component="span"
-            sx={{
-              color: fr.colors.decisions.border.default.blueFrance.default,
-            }}
-            className={fr.cx("fr-text--bold")}
-          >
+          <Box component="span" className={fr.cx("fr-text--bold")}>
             {" la localisation "}
           </Box>
           (Ville ou Code postal)
@@ -69,13 +57,7 @@ export const HowTo = () => (
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>En un clin d’oeil</Typography>
         <Typography>
           Obtenez en un clin d’oeil la
-          <Box
-            component="span"
-            sx={{
-              color: fr.colors.decisions.border.default.blueFrance.default,
-            }}
-            className={fr.cx("fr-text--bold")}
-          >
+          <Box component="span" className={fr.cx("fr-text--bold")}>
             {" liste des formations et entreprises proche de chez vous "}
           </Box>
           dans le domaine recherché.
@@ -95,13 +77,7 @@ export const HowTo = () => (
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v") }}>
         <Typography className={fr.cx("fr-text--bold", "fr-text--lg")}>Un contact facile</Typography>
         <Typography>
-          <Box
-            component="span"
-            sx={{
-              color: fr.colors.decisions.border.default.blueFrance.default,
-            }}
-            className={fr.cx("fr-text--bold")}
-          >
+          <Box component="span" className={fr.cx("fr-text--bold")}>
             {"Contactez facilement "}
           </Box>
           les centres de formations ou les entreprises pour postuler.
