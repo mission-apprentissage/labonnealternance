@@ -66,7 +66,7 @@ export default async function Ville({ params }: { params: Promise<{ ville: strin
             }}
           >
             <Box>
-              <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
+              <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("4v") }}>
                 Trouver une alternance
                 <br />
                 <Typography variant="h1" component="span" sx={{ color: fr.colors.decisions.text.default.info.default, display: "block" }}>
