@@ -51,6 +51,7 @@ const zRoutesGetP2 = {
 } as const
 
 const zRoutesGetP3 = {
+  ...zV1JobsEtFormationsRoutes.get,
   ...zAppointmentsRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zFormationsRoutes.get,
@@ -67,7 +68,6 @@ const zRoutesGetP4 = {
 } as const
 
 const zRoutesGetP5 = {
-  ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zJobsRoutesV3.get,
