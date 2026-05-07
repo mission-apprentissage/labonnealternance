@@ -1,4 +1,5 @@
-import { Box } from "@mui/material"
+import { fr } from "@codegouvfr/react-dsfr"
+import { Box, Stack } from "@mui/material"
 import Image from "next/image"
 import type { ILbaItemJobsGlobal, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { getDaysSinceDate } from "@/utils/dateUtils"
@@ -7,14 +8,14 @@ const hasJob = (item: ILbaItemJobsGlobal): item is ILbaItemLbaJobJson | ILbaItem
 
 export default function getJobPublishedTimeAndApplications({ item }: { item: ILbaItemJobsGlobal }) {
   return (
-    <Box sx={{ display: "flex", textAlign: "center" }}>
-      {hasJob(item) && item.job.creationDate && <Box sx={{ color: "grey.600", fontSize: "12px", mr: 4 }}>Publiée depuis {getDaysSinceDate(item.job.creationDate)} jour(s)</Box>}
+    <Stack direction={{ xs: "column", md: "row" }} spacing={1} sx={{ my: fr.spacing("2v") }}>
+      {hasJob(item) && item.job.creationDate && <Box sx={{ color: "grey.600", fontSize: "12px" }}>Publiée depuis {getDaysSinceDate(item.job.creationDate)} jour(s)</Box>}
       {item.contact?.hasEmail && item.applicationCount != null && (
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Image width={16} height={17} src="/images/eclair.svg" alt="" />
           <Box sx={{ color: "#0063CB", fontSize: "12px", whiteSpace: "nowrap", ml: 1, textTransform: "uppercase", fontWeight: "bold" }}>{item.applicationCount} candidature(s)</Box>
         </Box>
       )}
-    </Box>
+    </Stack>
   )
 }

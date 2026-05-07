@@ -35,7 +35,6 @@ import { getRomesFromRncp } from "@/services/external/api-alternance/certificati
 import type { FTJob } from "@/services/ftjob.service.types"
 import type { TJobSearchQuery, TLbaItemResult } from "@/services/jobOpportunity.service.types"
 import type { ILbaItemLbaCompany } from "@/services/lbaitem.shared.service.types"
-import { incrementLbaJobsViewCount } from "@/services/lbajob.service"
 import { getPartnerJobs } from "@/services/partnerJob.service"
 import { jobsQueryValidatorPrivate } from "@/services/queryValidator.service"
 import { getRecruteursLbaFromDB, getSomeCompanies } from "@/services/recruteurLba.service"
@@ -161,7 +160,6 @@ export const getJobsQueryPrivate = async (
 
   if ("lbaJobs" in result && result.lbaJobs && "results" in result.lbaJobs) {
     job_count += result.lbaJobs.results.length
-    await incrementLbaJobsViewCount(result.lbaJobs.results.flatMap((job) => (job?.id ? [job.id] : [])))
   }
 
   if ("partnerJobs" in result && result.partnerJobs && "results" in result.partnerJobs) {

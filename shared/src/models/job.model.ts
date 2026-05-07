@@ -154,6 +154,7 @@ export const ZJobCreate = ZJobFields.pick({
   job_duration: true,
   job_rythm: true,
   job_description: true,
+  job_employer_description: true,
   delegations: true,
   competences_rome: true,
   offer_title_custom: true,

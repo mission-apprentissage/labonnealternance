@@ -10,7 +10,9 @@ export const PartnerJobPostuler = ({ job, showScrollToTop }: { job: ILbaItemPart
   // KBA fix enum shared/models/lbaItem.model.ts
   if (["Pourvue", "Annulée"].includes(job.job.status)) return null
   if (job.contact?.hasEmail) {
-    return <CandidaterButton item={job} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} showScrollToTop={showScrollToTop} />
+    return (
+      <CandidaterButton CandidatureSimplifie={true} item={job} buttonLabel={"J'envoie ma candidature"} CandidaterModal={CandidatureLbaModal} showScrollToTop={showScrollToTop} />
+    )
   }
 
   if (job.contact?.url) {

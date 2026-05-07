@@ -7,7 +7,6 @@ import type { Virtualizer } from "@tanstack/react-virtual"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
-import { EnqueteTally } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/EnqueteTally"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -174,7 +173,6 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
   if (rechercheResult.status === "disabled") {
     return (
       <>
-        <EnqueteTally />
         <RecherchePageEmpty {...props} />
         <BackToTopButton />
         <Footer />
@@ -184,7 +182,6 @@ export function RecherchePageComponent(props: { rechercheParams: IRecherchePageP
 
   return (
     <>
-      <EnqueteTally />
       <RecherchePageComponentWithParams {...props} />
       <BackToTopButton />
     </>

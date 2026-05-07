@@ -59,6 +59,7 @@ export default function DropdownCombobox(props) {
         pb="0"
         required={false}
         name={name}
+        info={"Sélectionnez un métier pour référencer l'offre."}
         placeholder={placeholder || "sélectionner un métier"}
         {...getInputProps({
           onFocus() {
