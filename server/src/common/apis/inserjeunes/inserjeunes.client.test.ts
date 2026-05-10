@@ -1,11 +1,13 @@
 import nock from "nock"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { _resetForTesting, fetchInserJeunesStats } from "./inserjeunes.client"
+import { _axiosClientForTesting, _resetForTesting, fetchInserJeunesStats } from "./inserjeunes.client"
 import { inserJeunesStatsFixture, omogenAuthTokenFixture } from "./inserjeunes.client.fixture"
 
 const OMOGEN_BASE_URL = "https://omogen-api-pr.phm.education.gouv.fr"
 const STATS_PATH = "/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/12345678"
+
+const makeEconnresetError = () => Object.assign(new Error("socket hang up"), { code: "ECONNRESET" })
 
 describe("InserJeunes Client", () => {
   beforeEach(() => {
@@ -53,16 +55,17 @@ describe("InserJeunes Client", () => {
     })
 
     it("should not activate cooldown on transient network errors", async () => {
-      nock(OMOGEN_BASE_URL).post("/auth/token").replyWithError({ code: "ECONNRESET", message: "socket hang up" })
+      const postSpy = vi.spyOn(_axiosClientForTesting, "post").mockRejectedValueOnce(makeEconnresetError())
       await fetchInserJeunesStats("75001", "12345678")
+      postSpy.mockRestore()
 
-      // Next call should retry token fetch (no cooldown)
+      // Next call should retry token fetch (no cooldown activated)
       nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, omogenAuthTokenFixture)
       nock(OMOGEN_BASE_URL).get(STATS_PATH).reply(200, inserJeunesStatsFixture)
 
       const result = await fetchInserJeunesStats("75001", "12345678")
       expect(result).toEqual(inserJeunesStatsFixture)
-    }, 15_000)
+    })
 
     it("should throw internal error on 500 API errors", async () => {
       nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, omogenAuthTokenFixture)
@@ -83,22 +86,23 @@ describe("InserJeunes Client", () => {
 
     it("should retry on ECONNRESET and succeed on second attempt", async () => {
       nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, omogenAuthTokenFixture)
-
-      nock(OMOGEN_BASE_URL).get(STATS_PATH).replyWithError({ code: "ECONNRESET", message: "socket hang up" })
-      nock(OMOGEN_BASE_URL).get(STATS_PATH).reply(200, inserJeunesStatsFixture)
+      const getSpy = vi
+        .spyOn(_axiosClientForTesting, "get")
+        .mockRejectedValueOnce(makeEconnresetError())
+        .mockResolvedValueOnce({ data: inserJeunesStatsFixture } as any)
 
       const result = await fetchInserJeunesStats("75001", "12345678")
       expect(result).toEqual(inserJeunesStatsFixture)
-    }, 10_000)
+      getSpy.mockRestore()
+    }, 5_000)
 
     it("should throw after max retries on persistent transient error", async () => {
       nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, omogenAuthTokenFixture)
-
-      for (let i = 0; i < 3; i++) {
-        nock(OMOGEN_BASE_URL).get(STATS_PATH).replyWithError({ code: "ECONNRESET", message: "socket hang up" })
-      }
+      const econnresetError = makeEconnresetError()
+      const getSpy = vi.spyOn(_axiosClientForTesting, "get").mockRejectedValueOnce(econnresetError).mockRejectedValueOnce(econnresetError).mockRejectedValueOnce(econnresetError)
 
       await expect(fetchInserJeunesStats("75001", "12345678")).rejects.toThrow("Erreur lors de la récupération des données InserJeunes")
-    }, 30_000)
+      getSpy.mockRestore()
+    }, 10_000)
   })
 })

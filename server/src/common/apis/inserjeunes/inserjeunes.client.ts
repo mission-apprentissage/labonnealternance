@@ -82,6 +82,8 @@ const getOmogenToken = async (): Promise<string | null> => {
   return tokenFetchPromise
 }
 
+export const _axiosClientForTesting = axiosClient
+
 export const _resetForTesting = () => {
   omogenToken = null
   tokenFetchPromise = null
