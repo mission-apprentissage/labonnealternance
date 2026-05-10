@@ -17,19 +17,19 @@ const axiosClient = getApiClient({})
 
 let omogenToken: string | null = null
 let tokenRefreshTimeout: NodeJS.Timeout | null = null
-let tokenFetchPromise: Promise<string> | null = null
+let tokenFetchPromise: Promise<string | null> | null = null
 let tokenFailureCooldownUntil: number = 0
 const TOKEN_FAILURE_COOLDOWN_MS = 60_000
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const getOmogenToken = async (): Promise<string> => {
+const getOmogenToken = async (): Promise<string | null> => {
   if (omogenToken) return omogenToken
 
   if (tokenFetchPromise) return tokenFetchPromise
 
   if (Date.now() < tokenFailureCooldownUntil) {
-    throw internal("impossible d'obtenir un token pour l'API Omogen")
+    return null
   }
 
   tokenFetchPromise = (async () => {
@@ -68,15 +68,26 @@ const getOmogenToken = async (): Promise<string> => {
 
       return validation.data.access_token
     } catch (error: any) {
-      tokenFailureCooldownUntil = Date.now() + TOKEN_FAILURE_COOLDOWN_MS
+      const status: number | undefined = error.response?.status
+      if (status === 401 || status === 403) {
+        tokenFailureCooldownUntil = Date.now() + TOKEN_FAILURE_COOLDOWN_MS
+      }
       sentryCaptureException(error, { extra: { responseData: error.response?.data } })
-      throw internal("impossible d'obtenir un token pour l'API Omogen")
+      return null
     } finally {
       tokenFetchPromise = null
     }
   })()
 
   return tokenFetchPromise
+}
+
+export const _resetForTesting = () => {
+  omogenToken = null
+  tokenFetchPromise = null
+  tokenFailureCooldownUntil = 0
+  if (tokenRefreshTimeout) clearTimeout(tokenRefreshTimeout)
+  tokenRefreshTimeout = null
 }
 
 const TRANSIENT_CODES = new Set(["ECONNRESET", "ECONNABORTED", "ETIMEDOUT"])
@@ -88,6 +99,8 @@ const SILENT_HTTP_STATUSES = new Set([404, 502, 503])
 export const fetchInserJeunesStats = async (zipcode: string, cfd: string, attempt = 0): Promise<unknown> => {
   try {
     const token = await getOmogenToken()
+    if (!token) return null
+
     const { data } = await axiosClient.get(`${OMOGEN_BASE_URL}/exposition-inserjeunes-insersup/api/inserjeunes/regionales/${zipcode}/certifications/${cfd}`, {
       headers: {
         Authorization: `Bearer ${token}`,

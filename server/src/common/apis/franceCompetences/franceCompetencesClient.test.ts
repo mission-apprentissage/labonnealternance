@@ -1,11 +1,17 @@
 import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
+
+import config from "@/config"
 
 import { FCGetOpcoInfos, FCOpcoToOpcoEnum } from "./franceCompetencesClient"
 import { generateFCOpcoResponseFixture, nockFranceCompetencesOpcoSearch } from "./franceCompetencesClient.fixture"
 
 describe("franceCompetencesClient", () => {
+  beforeEach(() => {
+    nock.cleanAll()
+  })
+
   describe("FCOpcoToOpcoEnum", () => {
     it("should convert fc opco names to opco enum", () => {
       expect(FCOpcoToOpcoEnum("CONSTRUCTYS")).toBe(OPCOS_LABEL.CONSTRUCTYS)
@@ -69,6 +75,16 @@ describe("franceCompetencesClient", () => {
 
       expect(result).toBeNull()
       expect(nock.isDone()).toBe(true)
+    })
+
+    it("should return null on 429 (rate limit)", async () => {
+      const siret = "42476141900045"
+      nock(config.franceCompetences.baseUrl)
+        .get(`/siro/v1/public/${encodeURIComponent(siret)}`)
+        .reply(429, { message: "Too Many Requests" })
+
+      const result = await FCGetOpcoInfos(siret)
+      expect(result).toBeNull()
     })
 
     it("should return null for opco label N/C", async () => {
