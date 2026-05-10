@@ -116,8 +116,10 @@ export const FCGetOpcoInfos = async (siret: string): Promise<OPCOS_LABEL | null>
     } else {
       throw new Error(`error while calling France Compétences: status=${response.status}, data=${response.data}`)
     }
-  } catch (err) {
-    sentryCaptureException(err)
+  } catch (err: any) {
+    if (err?.response?.status !== 429) {
+      sentryCaptureException(err)
+    }
     return null
   }
 }

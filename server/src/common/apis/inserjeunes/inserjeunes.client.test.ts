@@ -46,7 +46,7 @@ describe("InserJeunes Client", () => {
       await expect(fetchInserJeunesStats("75001", "12345678")).rejects.toThrow()
     })
 
-    it("should throw internal error on non-404 API errors", async () => {
+    it("should throw internal error on 500 API errors", async () => {
       // Mock token request
       nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, omogenAuthTokenFixture)
 
@@ -54,11 +54,15 @@ describe("InserJeunes Client", () => {
       nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/12345678").reply(500, { error: "Internal error" })
 
       await expect(fetchInserJeunesStats("75001", "12345678")).rejects.toThrow()
+    })
 
-      // Mock 502 error
+    it("should return null for 502 and 503 (API temporarily unavailable)", async () => {
+      nock(OMOGEN_BASE_URL).post("/auth/token").reply(200, omogenAuthTokenFixture)
       nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/12345678").reply(502, { error: "Bad Gateway" })
+      expect(await fetchInserJeunesStats("75001", "12345678")).toBeNull()
 
-      await expect(fetchInserJeunesStats("75001", "12345678")).rejects.toThrow()
+      nock(OMOGEN_BASE_URL).get("/exposition-inserjeunes-insersup/api/inserjeunes/regionales/75001/certifications/12345678").reply(503, { error: "Service Unavailable" })
+      expect(await fetchInserJeunesStats("75001", "12345678")).toBeNull()
     })
   })
 })

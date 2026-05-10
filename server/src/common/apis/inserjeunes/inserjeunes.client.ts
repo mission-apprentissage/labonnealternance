@@ -18,14 +18,20 @@ const axiosClient = getApiClient({})
 let omogenToken: string | null = null
 let tokenRefreshTimeout: NodeJS.Timeout | null = null
 let tokenFetchPromise: Promise<string> | null = null
+let tokenFailureCooldownUntil: number = 0
+const TOKEN_FAILURE_COOLDOWN_MS = 60_000
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const getOmogenToken = async (): Promise<string> => {
   if (omogenToken) return omogenToken
 
-  // If a token fetch is already in progress, wait for it
   if (tokenFetchPromise) return tokenFetchPromise
 
-  // Start a new token fetch
+  if (Date.now() < tokenFailureCooldownUntil) {
+    throw internal("impossible d'obtenir un token pour l'API Omogen")
+  }
+
   tokenFetchPromise = (async () => {
     try {
       const requestBody = new URLSearchParams({
@@ -48,12 +54,10 @@ const getOmogenToken = async (): Promise<string> => {
 
       omogenToken = validation.data.access_token
 
-      // Clear any existing timeout
       if (tokenRefreshTimeout) {
         clearTimeout(tokenRefreshTimeout)
       }
 
-      // Refresh token before it expires (90% of expiration time)
       tokenRefreshTimeout = setTimeout(
         () => {
           omogenToken = null
@@ -64,6 +68,7 @@ const getOmogenToken = async (): Promise<string> => {
 
       return validation.data.access_token
     } catch (error: any) {
+      tokenFailureCooldownUntil = Date.now() + TOKEN_FAILURE_COOLDOWN_MS
       sentryCaptureException(error, { extra: { responseData: error.response?.data } })
       throw internal("impossible d'obtenir un token pour l'API Omogen")
     } finally {
@@ -74,10 +79,13 @@ const getOmogenToken = async (): Promise<string> => {
   return tokenFetchPromise
 }
 
+const TRANSIENT_CODES = new Set(["ECONNRESET", "ECONNABORTED", "ETIMEDOUT"])
+const SILENT_HTTP_STATUSES = new Set([404, 502, 503])
+
 /**
  * Fetch InserJeune statistics for a specific certification and region
  */
-export const fetchInserJeunesStats = async (zipcode: string, cfd: string) => {
+export const fetchInserJeunesStats = async (zipcode: string, cfd: string, attempt = 0): Promise<unknown> => {
   try {
     const token = await getOmogenToken()
     const { data } = await axiosClient.get(`${OMOGEN_BASE_URL}/exposition-inserjeunes-insersup/api/inserjeunes/regionales/${zipcode}/certifications/${cfd}`, {
@@ -87,10 +95,23 @@ export const fetchInserJeunesStats = async (zipcode: string, cfd: string) => {
     })
     return data
   } catch (error: any) {
-    if (error.response?.status === 404) {
+    const status: number | undefined = error.response?.status
+    const code: string | undefined = error.code
+
+    if (status === 404) {
       return null
     }
-    if (error.response?.status !== 502) {
+
+    if (status === 503 || status === 502) {
+      return null
+    }
+
+    if (code && TRANSIENT_CODES.has(code) && attempt < 2) {
+      await delay(500 * 2 ** attempt)
+      return fetchInserJeunesStats(zipcode, cfd, attempt + 1)
+    }
+
+    if (!SILENT_HTTP_STATUSES.has(status as number)) {
       sentryCaptureException(error, { extra: { responseData: error.response?.data, zipcode, cfd } })
     }
     throw internal("Erreur lors de la récupération des données InserJeunes")
