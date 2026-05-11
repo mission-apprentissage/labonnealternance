@@ -187,9 +187,9 @@ describe("POST /v2/application", () => {
       to_company_message_id: null,
       applicant_contract_duration: null,
       applicant_contract_start: null,
-      applicant_formation_description: null,
+      applicant_formation_description: "",
       applicant_inscription_formation: null,
-      applicant_rythm_description: null,
+      applicant_rythm_description: "",
     })
 
     expect(s3WriteString).toHaveBeenCalledWith("applications", `cv-${application!._id}`, {
