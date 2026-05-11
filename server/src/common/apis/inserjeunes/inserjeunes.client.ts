@@ -2,6 +2,7 @@ import { internal } from "@hapi/boom"
 import { z } from "zod"
 
 import getApiClient from "@/common/apis/client"
+import { delay } from "@/common/utils/asyncUtils"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 import config from "@/config"
 
@@ -20,8 +21,6 @@ let tokenRefreshTimeout: NodeJS.Timeout | null = null
 let tokenFetchPromise: Promise<string | null> | null = null
 let tokenFailureCooldownUntil: number = 0
 const TOKEN_FAILURE_COOLDOWN_MS = 60_000
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const getOmogenToken = async (): Promise<string | null> => {
   if (omogenToken) return omogenToken
