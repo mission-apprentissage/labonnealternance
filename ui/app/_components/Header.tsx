@@ -22,18 +22,7 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
     orientation: "horizontal",
   },
   id: "header-links",
-  quickAccessItems: [
-    <HeaderQuickAccessItem
-      key="publier-offre"
-      quickAccessItem={{
-        iconId: "fr-icon-global-line",
-        text: "Publier une offre d'emploi",
-        linkProps: {
-          href: PAGES.static.espaceProCreationEntreprise.getPath(),
-        },
-      }}
-    />,
-  ],
+  quickAccessItems: [],
 }
 
 export const DsfrHeaderNavigation = HeaderNavigation

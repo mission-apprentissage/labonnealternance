@@ -1,6 +1,7 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
+import { getDepotCtaHref } from "@/services/getDepotCtaHref"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
@@ -10,6 +11,18 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
     const extraItems = []
 
     if (user) {
+      extraItems.push(
+        <HeaderQuickAccessItem
+          key="publier-offre"
+          quickAccessItem={{
+            iconId: "fr-icon-global-line",
+            text: "Publier une offre d'emploi",
+            linkProps: {
+              href: getDepotCtaHref(user, "ENTREPRISE"),
+            },
+          }}
+        />
+      )
       extraItems.push(
         <HeaderQuickAccessItem
           key="mon_compte"
