@@ -377,14 +377,13 @@ const FormikSelect = ({
   const displayedErrorOpt = touched && error
 
   return (
-    <Box sx={{ display: "flex", gap: fr.spacing("3v") }}>
+    <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexDirection: "column" }}>
       <SelectField
         id={name}
         label={label}
         style={{
           marginBottom: 0,
           textWrap: "nowrap",
-          flex: 1,
         }}
         options={options.map((option) => ({ value: option, label: option, selected: option === value }))}
         nativeSelectProps={{
@@ -401,15 +400,15 @@ const FormikSelect = ({
         state={displayedErrorOpt ? "error" : "default"}
         stateRelatedMessage={displayedErrorOpt}
       />
-      <Button
-        aria-label={emptyButtonAriaLabel}
-        type="button"
-        priority="secondary"
+      <a
+        href="#"
         onClick={() => formik.setFieldValue(name, null, true)}
-        style={{ height: "fit-content", marginTop: "33px" }}
+        style={{ textUnderlinePosition: "under", height: "fit-content", alignSelf: "flex-end" }}
+        className={fr.cx("fr-link")}
+        aria-label={emptyButtonAriaLabel}
       >
-        Vider
-      </Button>
+        Réinitialiser
+      </a>
     </Box>
   )
 }
