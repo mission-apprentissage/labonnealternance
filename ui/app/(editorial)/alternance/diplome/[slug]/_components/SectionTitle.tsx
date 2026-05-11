@@ -21,14 +21,14 @@ export function SectionTitle({
           fontSize: "32px",
           lineHeight: "40px",
           color: fr.colors.decisions.text.title.grey.default,
-          mb: fr.spacing("2v"),
+          mb: fr.spacing("4v"),
         }}
       >
         {title}
         {highlightedText && <span style={{ color: fr.colors.decisions.text.default.info.default }}> {highlightedText}</span>}
         {highlightedSuffix && ` ${highlightedSuffix}`}
       </Typography>
-      <Box component="hr" sx={{ maxWidth: "89px", border: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1, mb: fr.spacing("6v") }} />
+      <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1, mb: fr.spacing("6v") }} />
       {description && <Typography sx={{ fontSize: "18px", lineHeight: "28px" }}>{description}</Typography>}
     </Box>
   )
