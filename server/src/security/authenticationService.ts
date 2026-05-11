@@ -100,14 +100,21 @@ async function authApiKey(req: FastifyRequest): Promise<AccessUserCredential | n
 }
 
 async function authApiApprentissage(req: FastifyRequest): Promise<AccessApiApprentissage | null> {
-  const result = await parseApiAlternanceToken({
-    token: req.headers.authorization ?? "",
-    publicKey: config.auth.apiApprentissage.publicKey,
-  })
+  try {
+    const result = await parseApiAlternanceToken({
+      token: req.headers.authorization ?? "",
+      publicKey: config.auth.apiApprentissage.publicKey,
+    })
 
-  if (result.success) return { type: "IApiApprentissage", value: result.data }
+    if (result.success) return { type: "IApiApprentissage", value: result.data }
 
-  throw unauthorized(`Unable to parse token ${result.reason}`)
+    throw unauthorized(`Unable to parse token ${result.reason}`)
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw unauthorized("Invalid token algorithm")
+    }
+    throw error
+  }
 }
 
 const bearerRegex = /^bearer\s+(\S+)$/i
