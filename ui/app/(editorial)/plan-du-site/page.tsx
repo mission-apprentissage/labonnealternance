@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -178,6 +179,18 @@ export default function PlanDuSite() {
                         {metierData.map((metier) => (
                           <Box component="li" key={metier.slug}>
                             <DsfrLink href={PAGES.dynamic.seoMetier(metier.slug).getPath()}>{metier.metier}</DsfrLink>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                    <Box component="li">
+                      <Typography component="h2" variant="h2" mt={fr.spacing("4v")} mb={fr.spacing("2v")}>
+                        Alternance par diplôme
+                      </Typography>
+                      <Box component="ul">
+                        {diplomeData.slice(0, 10).map((diplome) => (
+                          <Box component="li" key={diplome.slug}>
+                            <DsfrLink href={PAGES.dynamic.seoDiplome(diplome.slug).getPath()}>{diplome.titre}</DsfrLink>
                           </Box>
                         ))}
                       </Box>

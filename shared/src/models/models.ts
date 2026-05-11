@@ -68,6 +68,7 @@ import reportedCompanyModel from "./reportedCompany.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import seoDiplomeModel from "./seoDiplome.model.js"
 import seoMetierModel from "./seoMetier.model.js"
 import seoVilleModel from "./seoVille.model.js"
 import sessionModel from "./session.model.js"
@@ -153,6 +154,7 @@ const modelDescriptorMap = {
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
   [recruiterModel.collectionName]: recruiterModel,
+  [seoDiplomeModel.collectionName]: seoDiplomeModel,
   [seoMetierModel.collectionName]: seoMetierModel,
   [rawHelloWorkBuddiModel.collectionName]: rawHelloWorkBuddiModel,
 } as const satisfies Record<string, IModelDescriptor>
