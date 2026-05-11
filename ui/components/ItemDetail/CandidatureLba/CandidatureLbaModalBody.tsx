@@ -403,7 +403,7 @@ const FormikSelect = ({
       />
       <Button
         aria-label={emptyButtonAriaLabel}
-        type="submit"
+        type="button"
         priority="secondary"
         onClick={() => formik.setFieldValue(name, null, true)}
         style={{ height: "fit-content", marginTop: "33px" }}
