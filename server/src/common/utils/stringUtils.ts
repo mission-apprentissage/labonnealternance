@@ -2,7 +2,7 @@ import he from "he"
 import sanitizeHtml from "sanitize-html"
 import { stringNormaliser } from "shared"
 
-export const sanitizeTextField = (text: string | null | undefined, keepFormat: boolean = false) => {
+export const sanitizeTextField = (text: string | null | undefined, keepFormat: boolean = false): string => {
   if (!text) return ""
   const sanitizeOptions = {
     allowedTags: keepFormat ? ["b", "i", "em", "strong", "p", "br", "ul", "li"] : [],
