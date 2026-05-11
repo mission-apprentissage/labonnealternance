@@ -63,4 +63,57 @@ describe("offerToFTOffer", () => {
       )
       .toMatchSnapshot()
   })
+
+  it("should override Par_cle and Par_nom when override is provided", () => {
+    const romeAppellation = "Assistant / Assistante de gestion en ressources humaines"
+    const referentielRome: IReferentielRome = generateReferentielRome({
+      appellations: [{ code_ogr: "11235", libelle: romeAppellation, libelle_court: romeAppellation }],
+    })
+    const geopoint = { type: "Point", coordinates: [1.45264, 43.643652] } as IJobsPartnersOfferPrivate["workplace_geopoint"]
+    const entreprise: IEntreprise = generateEntrepriseFixture({ geo_coordinates: `${geopoint.coordinates[1]},${geopoint.coordinates[0]}` })
+    const cfa: ICFA = generateCfaFixture()
+    const job = generateJobsPartnersOfferPrivate({
+      offer_rome_appellation: romeAppellation,
+      offer_rome_codes: ["M1501"],
+      workplace_geopoint: geopoint,
+      is_delegated: true,
+      cfa_siret: cfa.siret,
+      cfa_legal_name: cfa.raison_sociale,
+      workplace_siret: entreprise.siret,
+    })
+
+    const result = offerToFTOffer({ ...job, referentielRome, entreprise, cfa }, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
+
+    expect(result?.Par_cle).toBe("LABONNEALTERNANCE_CONFIEE")
+    expect(result?.Par_nom).toBe("LABONNEALTERNANCE_CONFIEE")
+  })
+
+  it("should truncate Description to 450 chars for the confiée feed", () => {
+    const romeAppellation = "Assistant / Assistante de gestion en ressources humaines"
+    const referentielRome: IReferentielRome = generateReferentielRome({
+      appellations: [{ code_ogr: "11235", libelle: romeAppellation, libelle_court: romeAppellation }],
+    })
+    const geopoint = { type: "Point", coordinates: [1.45264, 43.643652] } as IJobsPartnersOfferPrivate["workplace_geopoint"]
+    const entreprise: IEntreprise = generateEntrepriseFixture({ geo_coordinates: `${geopoint.coordinates[1]},${geopoint.coordinates[0]}` })
+    const cfa: ICFA = generateCfaFixture()
+    const longDescription = "a".repeat(600)
+    const job = generateJobsPartnersOfferPrivate({
+      offer_rome_appellation: romeAppellation,
+      offer_rome_codes: ["M1501"],
+      workplace_geopoint: geopoint,
+      is_delegated: true,
+      cfa_siret: cfa.siret,
+      cfa_legal_name: cfa.raison_sociale,
+      workplace_siret: entreprise.siret,
+      offer_description: longDescription,
+    })
+
+    const ftOffer = offerToFTOffer({ ...job, referentielRome, entreprise, cfa }, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
+    if (ftOffer?.Description) {
+      ftOffer.Description = ftOffer.Description.slice(0, 450)
+    }
+
+    expect(ftOffer?.Description).toHaveLength(450)
+    expect(ftOffer?.Description).toBe("a".repeat(450))
+  })
 })

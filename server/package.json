@@ -94,6 +94,7 @@
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.3",
+    "@types/adm-zip": "^0.5.8",
     "@types/bunyan": "^1.8.11",
     "@types/ejs": "^3.1.5",
     "@types/jsonwebtoken": "^9.0.10",
