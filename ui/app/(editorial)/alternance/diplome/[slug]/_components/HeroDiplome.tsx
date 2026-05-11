@@ -15,16 +15,16 @@ const KPI_CONFIG = [
 
 export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; sousTitre: string; kpis: IDiplomeKpis; romes: string[] }) {
   return (
-    <Box sx={{ marginBottom: fr.spacing("5w") }}>
+    <Box sx={{ marginBottom: fr.spacing("10v") }}>
       {/* Banner background */}
       <Box
         sx={{
           position: "relative",
           borderRadius: "10px",
           overflow: "hidden",
-          pt: { xs: fr.spacing("4w"), md: fr.spacing("7w") },
+          pt: { xs: fr.spacing("8v"), md: fr.spacing("14v") },
           pb: { xs: fr.spacing("15v"), md: "180px" },
-          px: { xs: fr.spacing("3w"), md: fr.spacing("8w") },
+          px: { xs: 0, md: fr.spacing("16v") },
         }}
       >
         {/* Decoration SVG - same pattern as HomeCircleImageDecoration */}
@@ -102,7 +102,7 @@ export function HeroDiplome({ titre, sousTitre, kpis, romes }: { titre: string; 
           mt: { xs: `-${fr.spacing("12v")}`, md: "-144px" },
           position: "relative",
           zIndex: 1,
-          px: { xs: fr.spacing("2v"), md: fr.spacing("5w") },
+          px: { xs: 0, md: fr.spacing("10v") },
         }}
       >
         {KPI_CONFIG.map((config) => {

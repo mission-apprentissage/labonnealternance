@@ -9,7 +9,7 @@ import { SectionTitle } from "./SectionTitle"
 export function MetiersSection({ titre, text, liste, romes }: { titre: string; text: string; liste: IDiplomeMetier[]; romes: string[] }) {
   const title = `Quels métiers exercer avec un diplôme ${titre} ?`
   return (
-    <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
+    <Box>
       <SectionTitle title={title} description={text} />
 
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: fr.spacing("6v"), alignItems: "start" }}>

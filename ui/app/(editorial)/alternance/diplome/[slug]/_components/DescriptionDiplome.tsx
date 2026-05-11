@@ -6,7 +6,7 @@ import { SectionTitle } from "./SectionTitle"
 
 export function DescriptionDiplome({ titre, text, objectifs }: { titre: string; text: string; objectifs: string[] }) {
   return (
-    <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
+    <Box>
       <SectionTitle title="Qu'est-ce que le diplôme" highlightedText={`${titre} ?`} />
       <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
 

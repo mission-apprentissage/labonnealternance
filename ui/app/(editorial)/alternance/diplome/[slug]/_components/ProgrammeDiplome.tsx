@@ -44,7 +44,7 @@ function ProgrammeCard({ icon, title, items }: { icon: string; title: string; it
 
 export function ProgrammeDiplome({ titre, text, sections }: { titre: string; text: string; sections: IDiplomeProgrammeSections }) {
   return (
-    <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
+    <Box>
       <SectionTitle title="Programme du diplôme" highlightedText={titre} />
       <Typography sx={{ mb: fr.spacing("6v"), fontSize: "18px", lineHeight: "28px" }}>{text}</Typography>
 
