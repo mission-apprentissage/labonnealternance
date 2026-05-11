@@ -478,7 +478,7 @@ const diplomesData = [
     slug: "titre-pro-secretaire-medicale",
     titre: "Titre Pro Secrétaire Médicale",
     sousTitre: "Secrétaire Assistant Médico-Social",
-    intituleLongFormation: "SECRETAIRE MEDICAL ET MEDICO-SOCIAL",
+    intituleLongFormation: "SECRETAIRE MEDICAL",
     romes: ["D1401", "M1609"],
     kpis: { duration: "12 mois", entreprises: 0, offres: 0, salaire: "751€-980€" },
     description: {

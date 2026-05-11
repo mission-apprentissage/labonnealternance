@@ -56,7 +56,7 @@ export const diplomeData = [
   {
     slug: "titre-pro-secretaire-medicale",
     titre: "Titre Pro Secrétaire Médicale",
-    intituleLongFormation: "SECRETAIRE MEDICAL ET MEDICO-SOCIAL",
+    intituleLongFormation: "SECRETAIRE MEDICAL",
     romes: ["D1401", "M1609"],
   },
 ]
