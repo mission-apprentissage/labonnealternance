@@ -1,8 +1,10 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import * as mongodbUtils from "@/common/utils/mongodbUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import * as sentryUtils from "@/common/utils/sentryUtils"
 import { importFromComputedToJobsPartners } from "./importFromComputedToJobsPartners"
 
 useMongo()
@@ -48,5 +50,50 @@ describe("Importing computed_jobs_partners into jobs_partners", () => {
     // les éléments validated et déjà dans jobs partners doivent toujours y être avec les data modifiées à jour
     const existing_3 = await getDbCollection("jobs_partners").findOne({ partner_job_id: "existing_3" })
     expect.soft(existing_3?.offer_description === newDesc)
+  })
+})
+
+describe("when computed_jobs_partners updateOne in the catch block fails", () => {
+  useMongo()
+
+  afterEach(async () => {
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    await getDbCollection("jobs_partners").deleteMany({})
+  })
+
+  it("should call sentryCaptureException for both errors and not throw", async () => {
+    await createComputedJobPartner({ partner_job_id: "error_doc", validated: true })
+
+    // biome-ignore lint/suspicious/noEmptyBlockStatements: test
+    const sentrySpy = vi.spyOn(sentryUtils, "sentryCaptureException").mockImplementation(() => {})
+    const getDbCollectionOriginal = mongodbUtils.getDbCollection
+    const getDbCollectionSpy = vi.spyOn(mongodbUtils, "getDbCollection").mockImplementation((name) => {
+      const collection = getDbCollectionOriginal(name)
+      if (name === "jobs_partners") {
+        return new Proxy(collection, {
+          get(target, prop, receiver) {
+            if (prop === "updateOne") return () => Promise.reject(new Error("jobs_partners DB error"))
+            const value = Reflect.get(target, prop, receiver)
+            return typeof value === "function" ? value.bind(target) : value
+          },
+        }) as typeof collection
+      }
+      if (name === "computed_jobs_partners") {
+        return new Proxy(collection, {
+          get(target, prop, receiver) {
+            if (prop === "updateOne") return () => Promise.reject(new Error("computed_jobs_partners DB error"))
+            const value = Reflect.get(target, prop, receiver)
+            return typeof value === "function" ? value.bind(target) : value
+          },
+        }) as typeof collection
+      }
+      return collection
+    })
+
+    await expect(importFromComputedToJobsPartners()).resolves.toBeUndefined()
+    expect(sentrySpy).toHaveBeenCalledTimes(2)
+
+    sentrySpy.mockRestore()
+    getDbCollectionSpy.mockRestore()
   })
 })

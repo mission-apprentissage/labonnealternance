@@ -119,14 +119,22 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         newError.cause = err
         sentryCaptureException(newError)
 
-        await getDbCollection("computed_jobs_partners").updateOne(
-          { _id: computedJobPartner._id },
-          {
-            $set: { validated: false, updated_at: new Date() },
-            $pull: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR } },
-            $push: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR, error: err instanceof Error ? err.message : String(err) } },
-          }
-        )
+        try {
+          await getDbCollection("computed_jobs_partners").updateOne(
+            { _id: computedJobPartner._id },
+            {
+              $set: { validated: false, updated_at: new Date() },
+              $pull: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR } },
+              $push: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR, error: err instanceof Error ? err.message : String(err) } },
+            }
+          )
+        } catch (updateErr: unknown) {
+          const updateError = internal(
+            `error marking computed_job_partner as invalid after import failure, partner_label=${computedJobPartner.partner_label} partner_job_id=${computedJobPartner.partner_job_id}`
+          )
+          updateError.cause = updateErr
+          sentryCaptureException(updateError)
+        }
       }
     },
   })
