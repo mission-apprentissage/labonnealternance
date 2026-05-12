@@ -122,7 +122,8 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         await getDbCollection("computed_jobs_partners").updateOne(
           { _id: computedJobPartner._id },
           {
-            $set: { validated: false },
+            $set: { validated: false, updated_at: new Date() },
+            $pull: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR } },
             $push: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR, error: err instanceof Error ? err.message : String(err) } },
           }
         )
