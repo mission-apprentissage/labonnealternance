@@ -1,7 +1,7 @@
 import type { IUserRecruteurPublic } from "shared"
 import { PAGES } from "@/utils/routes.utils"
 
-export function getDepotCtaHref(user: IUserRecruteurPublic | null, domain: "CFA" | "ENTREPRISE") {
+export function getDepotCtaHref(user: IUserRecruteurPublic | null | undefined, domain: "CFA" | "ENTREPRISE") {
   switch (user?.type) {
     case "ENTREPRISE":
       return PAGES.static.backEntrepriseCreationOffre.getPath()
