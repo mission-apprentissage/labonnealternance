@@ -4,6 +4,7 @@ import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { pipeline } from "stream/promises"
 
 import { logger } from "@/common/logger"
@@ -117,6 +118,14 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
         logger.error(err, newError.message)
         newError.cause = err
         sentryCaptureException(newError)
+
+        await getDbCollection("computed_jobs_partners").updateOne(
+          { _id: computedJobPartner._id },
+          {
+            $set: { validated: false },
+            $push: { errors: { source: COMPUTED_ERROR_SOURCE.DB_ERROR, error: err instanceof Error ? err.message : String(err) } },
+          }
+        )
       }
     },
   })
