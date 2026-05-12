@@ -1,6 +1,4 @@
 import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
-import { HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
-import { PAGES } from "@/utils/routes.utils"
 import { HeaderNavigation } from "./HeaderNavigation"
 
 export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
@@ -22,7 +20,6 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
     orientation: "horizontal",
   },
   id: "header-links",
-  quickAccessItems: [],
 }
 
 export const DsfrHeaderNavigation = HeaderNavigation
