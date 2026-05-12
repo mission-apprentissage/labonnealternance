@@ -8,21 +8,20 @@ import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
 
 export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
-    const extraItems = []
+    const extraItems = [
+      <HeaderQuickAccessItem
+        key="publier-offre"
+        quickAccessItem={{
+          iconId: "fr-icon-global-line",
+          text: "Publier une offre d'emploi",
+          linkProps: {
+            href: getDepotCtaHref(user ?? null, "ENTREPRISE"),
+          },
+        }}
+      />,
+    ]
 
     if (user) {
-      extraItems.push(
-        <HeaderQuickAccessItem
-          key="publier-offre"
-          quickAccessItem={{
-            iconId: "fr-icon-global-line",
-            text: "Publier une offre d'emploi",
-            linkProps: {
-              href: getDepotCtaHref(user, "ENTREPRISE"),
-            },
-          }}
-        />
-      )
       extraItems.push(
         <HeaderQuickAccessItem
           key="mon_compte"
