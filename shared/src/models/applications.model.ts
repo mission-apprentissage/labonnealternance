@@ -2,11 +2,10 @@ import { ObjectId } from "bson"
 import type { Jsonify } from "type-fest"
 
 import { RefusalReasons } from "../constants/application.js"
-import { allLbaItemTypeOLD, LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "../constants/lbaitem.js"
+import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
 import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { zCallerParam } from "../routes/_params.js"
 
 import { assertUnreachable } from "../utils/assertUnreachable.js"
 import type { IModelDescriptor } from "./common.js"
@@ -109,54 +108,6 @@ export const ZApplication = ZApplicationOld.omit({
 })
 
 export type IApplication = z.output<typeof ZApplication>
-
-// KBA 20241011 to remove once V2 is LIVE and V1 support has ended
-export const ZNewApplication = ZApplicationOld.extend({
-  message: ZApplicationOld.shape.applicant_message_to_company.optional(),
-  applicant_file_name: ZApplicationOld.shape.applicant_attachment_name,
-  applicant_file_content: z.string().max(4215276).openapi({
-    description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
-    example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
-  }),
-  company_type: z.enum([allLbaItemTypeOLD[0], ...allLbaItemTypeOLD.slice(1)]).openapi({
-    description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
-    example: LBA_ITEM_TYPE_OLD.LBA,
-  }),
-  iv: z.string().optional().openapi({
-    description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
-    example: "...59c24c059b...",
-  }),
-  secret: z.string().nullish(),
-  company_email: z.string().nullish().openapi({
-    description: "L'adresse email de la société pour postuler.Uniquement dans un cas de test",
-    example: "fake@dummy.com",
-  }),
-  crypted_company_email: z.string().nullish(),
-  caller: zCallerParam.nullish(),
-  job_id: ZApplicationOld.shape.job_id.optional(),
-  searched_for_job_label: z.string().nullish().openapi({
-    description: "Le métier recherché par le candidat envoyant une candidature spontanée.",
-    example: "Vente de fleurs, végétaux",
-  }),
-})
-  .omit({
-    _id: true,
-    applicant_id: true,
-    applicant_message_to_company: true,
-    applicant_attachment_name: true,
-    job_origin: true,
-    to_applicant_message_id: true,
-    to_company_message_id: true,
-    company_recruitment_intention: true,
-    company_recruitment_intention_date: true,
-    company_feedback_send_status: true,
-    company_feedback: true,
-    company_feedback_date: true,
-    created_at: true,
-    last_update_at: true,
-    scan_status: true,
-  })
-  .openapi("ApplicationUi")
 
 export const ZJobCollectionName = z.enum(["partners", "recruiters"])
 export const JobCollectionName = ZJobCollectionName.enum
