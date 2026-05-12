@@ -55,6 +55,7 @@ import { processComputedAndImportToJobPartners } from "./offrePartenaire/process
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { refreshEntrepriseEngagementJobsPartners } from "./offrePartenaire/refreshEntrepriseEngagementJobsPartners"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
@@ -440,6 +441,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillEntrepriseEngagementJobsPartners,
     description: "Mise à jour des handi-engagement des offres actives",
+  },
+  {
+    fct: refreshEntrepriseEngagementJobsPartners,
+    description: "Rafraîchissement du champ contract_is_disabled_elligible pour toutes les offres actives de jobs_partners",
   },
   {
     fct: cleanClosedCompanies,
