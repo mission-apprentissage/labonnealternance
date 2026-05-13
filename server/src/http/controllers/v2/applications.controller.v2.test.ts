@@ -158,6 +158,7 @@ describe("POST /v2/application", () => {
 
     expect(application).toEqual({
       _id: expect.any(ObjectId),
+      applicant_answers_to_recruiter_questions: null,
       applicant_id: applicant?._id,
       applicant_attachment_name: body.applicant_attachment_name,
       applicant_message_to_company: "",
