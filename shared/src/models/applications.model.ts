@@ -96,6 +96,15 @@ const ZApplicationOld = z
       .string()
       .nullish()
       .describe("URL de suivi de la candidature dans un système tiers. ex: https://ats-partner.hellowork.com/v1/applications/{applicationId}/status"),
+    applicant_answers_to_recruiter_questions: z
+      .array(
+        z.object({
+          question: z.string(),
+          answer: z.string(),
+        })
+      )
+      .nullish()
+      .describe("Réponse du candidat aux questions du recruteur"),
   })
   .strict()
   .openapi("Application")
@@ -130,6 +139,7 @@ export const ZApplicationApiPrivate = ZApplicationOld.pick({
   application_url: true,
   foreign_application_status_url: true,
   foreign_application_id: true,
+  applicant_answers_to_recruiter_questions: true,
 }).extend({
   applicant_message: ZApplicationOld.shape.applicant_message_to_company.optional(),
   applicant_attachment_content: z.string().max(4_215_276).describe("Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo."),

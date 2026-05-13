@@ -78,7 +78,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.union([ZLbaItemLbaJob, ZLbaItemLbaCompany, ZLbaItemPartnerJob]).nullable(),
+        "200": z.union([ZLbaItemLbaCompany, ZLbaItemPartnerJob]).nullable(),
       },
       securityScheme: null,
     },

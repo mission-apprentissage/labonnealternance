@@ -105,6 +105,7 @@ function transformPartnerJob(partnerJob: IJobsPartnersOfferPrivateWithDistance, 
       elligibleHandicap: partnerJob.contract_is_disabled_elligible ?? null,
       contract_rythm: partnerJob.contract_rythm ?? null,
       isCfaEntreprise: isCfaEntreprise(partnerJob.workplace_siret, partnerJob.cfa_siret),
+      to_applicant_questions: partnerJob.to_applicant_questions,
     },
 
     contact: {

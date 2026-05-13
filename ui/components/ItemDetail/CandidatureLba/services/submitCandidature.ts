@@ -23,7 +23,7 @@ async function submitCandidature({
   LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   caller?: string
 }) {
-  const { applicant_formation_description, applicant_inscription_formation, applicant_rythm_description } = formValues
+  const { applicant_formation_description, applicant_inscription_formation, applicant_rythm_description, applicant_answers_to_recruiter_questions } = formValues
 
   const filledFields: IApplicationApiPrivate = {
     applicant_first_name: formValues.applicant_first_name,
@@ -50,6 +50,7 @@ async function submitCandidature({
     applicant_inscription_formation,
     applicant_formation_description: applicant_inscription_formation === true ? applicant_formation_description : undefined,
     applicant_rythm_description: applicant_inscription_formation === true ? applicant_rythm_description : undefined,
+    applicant_answers_to_recruiter_questions: applicant_answers_to_recruiter_questions as IApplicationApiPrivate["applicant_answers_to_recruiter_questions"],
   }
 
   await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})

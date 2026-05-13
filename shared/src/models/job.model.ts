@@ -107,6 +107,7 @@ export const ZJobFields = z
       .nullish()
       .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
       .describe("Titre de l'offre saisi par le recruteur"),
+    to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
   .strict()
   .openapi("JobWritable")
@@ -158,6 +159,7 @@ export const ZJobCreate = ZJobFields.pick({
   delegations: true,
   competences_rome: true,
   offer_title_custom: true,
+  to_applicant_questions: true,
 })
   .extend({
     job_start_date: ZJobStartDateCreate(),
