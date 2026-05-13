@@ -61,7 +61,7 @@ export const FormulaireEditionOffreStep1 = ({
 }) => {
   const { rome_appellation_label, rome_code } = offre ?? {}
   const initRome = rome_code?.at(0)
-  const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string }>(
+  const [romeAndAppellation, setRomeAndAppellation] = useState<{ rome: string; appellation: string } | null>(
     rome_appellation_label && initRome ? { rome: initRome, appellation: rome_appellation_label } : null
   )
   const { rome } = romeAndAppellation ?? {}

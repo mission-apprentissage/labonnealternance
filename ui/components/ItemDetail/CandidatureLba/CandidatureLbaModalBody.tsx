@@ -134,25 +134,29 @@ export const CandidatureLbaModalBody = ({
               <Box sx={{ mt: fr.spacing("4v") }}>
                 <CvFileInput formik={formik} />
               </Box>
-              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
-                Mes réponses aux questions de l’entreprise
-              </Typography>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
-                {customQuestions.map((question, index) => (
-                  <TextareaInput
-                    key={question}
-                    formik={formik}
-                    name={question}
-                    label={question}
-                    required
-                    infoText={
-                      index === customQuestions.length - 1
-                        ? "Ces questions permettent à l’entreprise de comprendre vos motivations à la rejoindre, elle sera attentive aux réponses que vous lui apporterez."
-                        : undefined
-                    }
-                  />
-                ))}
-              </Box>
+              {customQuestions.length > 0 && (
+                <>
+                  <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
+                    Mes réponses aux questions de l’entreprise
+                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
+                    {customQuestions.map((question, index) => (
+                      <TextareaInput
+                        key={question}
+                        formik={formik}
+                        name={question}
+                        label={question}
+                        required
+                        infoText={
+                          index === customQuestions.length - 1
+                            ? "Ces questions permettent à l’entreprise de comprendre vos motivations à la rejoindre, elle sera attentive aux réponses que vous lui apporterez."
+                            : undefined
+                        }
+                      />
+                    ))}
+                  </Box>
+                </>
+              )}
 
               <Box sx={{ mt: fr.spacing("8v") }}>
                 <CandidatureLbaMandataireMessage item={item} />
