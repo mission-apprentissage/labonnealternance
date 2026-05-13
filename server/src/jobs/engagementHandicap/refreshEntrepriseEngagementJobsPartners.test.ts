@@ -3,16 +3,118 @@ import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-import { beforeEach, describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-import { refreshEntrepriseEngagementJobsPartners } from "./refreshEntrepriseEngagementJobsPartners"
+import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refreshEntrepriseEngagementJobsPartners"
+
+vi.mock("node:fs/promises", () => ({
+  default: {
+    readFile: vi.fn(),
+  },
+}))
 
 const ENGAGED_SIRET = "12345678900011"
 const NOT_ENGAGED_SIRET = "98765432100022"
 
 useMongo()
+
+describe("refreshReferentielEngagementFranceTravail", () => {
+  beforeEach(async () => {
+    return async () => {
+      await getDbCollection("referentiel_engagement_entreprise").deleteMany({})
+    }
+  })
+
+  const mockCsvWithSirets = async (sirets: string[]) => {
+    const fs = await import("node:fs/promises")
+    const csvContent = ["SIRET", ...sirets].join("\n")
+    vi.mocked(fs.default.readFile).mockResolvedValue(Buffer.from(csvContent))
+  }
+
+  it("should insert new siret with FRANCE_TRAVAIL source", async () => {
+    // given
+    await mockCsvWithSirets([ENGAGED_SIRET])
+    // when
+    await refreshReferentielEngagementFranceTravail()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: ENGAGED_SIRET })
+    expect(doc).not.toBeNull()
+    expect(doc?.sources).toContain(EntrepriseEngagementSources.FRANCE_TRAVAIL)
+    expect(doc?.engagement).toBe("handicap")
+  })
+
+  it("should add FRANCE_TRAVAIL source to existing entry without duplicating", async () => {
+    // given
+    await getDbCollection("referentiel_engagement_entreprise").insertOne({
+      _id: new ObjectId(),
+      siret: ENGAGED_SIRET,
+      engagement: "handicap",
+      sources: [EntrepriseEngagementSources.LBA],
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
+    await mockCsvWithSirets([ENGAGED_SIRET])
+    // when
+    await refreshReferentielEngagementFranceTravail()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: ENGAGED_SIRET })
+    expect(doc?.sources).toContain(EntrepriseEngagementSources.FRANCE_TRAVAIL)
+    expect(doc?.sources).toContain(EntrepriseEngagementSources.LBA)
+    expect(doc?.sources.filter((s) => s === EntrepriseEngagementSources.FRANCE_TRAVAIL)).toHaveLength(1)
+  })
+
+  it("should not duplicate FRANCE_TRAVAIL source when already present", async () => {
+    // given
+    await getDbCollection("referentiel_engagement_entreprise").insertOne({
+      _id: new ObjectId(),
+      siret: ENGAGED_SIRET,
+      engagement: "handicap",
+      sources: [EntrepriseEngagementSources.FRANCE_TRAVAIL],
+      created_at: new Date(),
+      updated_at: new Date(),
+    })
+    await mockCsvWithSirets([ENGAGED_SIRET])
+    // when
+    await refreshReferentielEngagementFranceTravail()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: ENGAGED_SIRET })
+    expect(doc?.sources.filter((s) => s === EntrepriseEngagementSources.FRANCE_TRAVAIL)).toHaveLength(1)
+  })
+
+  it("should process multiple sirets from csv", async () => {
+    // given
+    const siret2 = "11111111100033"
+    await mockCsvWithSirets([ENGAGED_SIRET, siret2])
+    // when
+    await refreshReferentielEngagementFranceTravail()
+    // then
+    const docs = await getDbCollection("referentiel_engagement_entreprise").find({}).toArray()
+    expect(docs).toHaveLength(2)
+    expect(docs.map((d) => d.siret)).toContain(ENGAGED_SIRET)
+    expect(docs.map((d) => d.siret)).toContain(siret2)
+  })
+
+  it("should update updated_at on upsert", async () => {
+    // given
+    const before = new Date("2020-01-01")
+    await getDbCollection("referentiel_engagement_entreprise").insertOne({
+      _id: new ObjectId(),
+      siret: ENGAGED_SIRET,
+      engagement: "handicap",
+      sources: [EntrepriseEngagementSources.LBA],
+      created_at: before,
+      updated_at: before,
+    })
+    await mockCsvWithSirets([ENGAGED_SIRET])
+    // when
+    await refreshReferentielEngagementFranceTravail()
+    // then
+    const doc = await getDbCollection("referentiel_engagement_entreprise").findOne({ siret: ENGAGED_SIRET })
+    expect(doc?.updated_at.getTime()).toBeGreaterThan(before.getTime())
+  })
+})
 
 describe("refreshEntrepriseEngagementJobsPartners", () => {
   beforeEach(async () => {
