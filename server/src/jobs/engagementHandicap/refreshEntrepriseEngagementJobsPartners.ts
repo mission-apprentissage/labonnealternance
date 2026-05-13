@@ -1,8 +1,49 @@
+import fs from "node:fs/promises"
+import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 
 import { logger } from "@/common/logger"
+import { asyncForEach } from "@/common/utils/asyncUtils"
+import { parseCsvContent } from "@/common/utils/fileUtils"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+
+export const refreshReferentielEngagementFranceTravail = async () => {
+  const filepath = getStaticFilePath("referentiel/siret_handimatch_ft.csv")
+  const content = (await fs.readFile(filepath)).toString()
+  const parsedCsv = await parseCsvContent(content, { delimiter: "," })
+  const data = parsedCsv as { SIRET: string }[]
+
+  let processed = 0
+  const errors: string[] = []
+  const now = new Date()
+
+  await asyncForEach(data, async (line) => {
+    try {
+      const { SIRET: siret } = line
+      await getDbCollection("referentiel_engagement_entreprise").updateOne(
+        { siret },
+        {
+          $addToSet: { sources: EntrepriseEngagementSources.FRANCE_TRAVAIL },
+          $set: { updated_at: now, engagement: "handicap" },
+          $setOnInsert: { _id: new ObjectId(), created_at: now, siret },
+        },
+        { upsert: true }
+      )
+      processed++
+    } catch (err) {
+      logger.error("error when treating line", line)
+      logger.error(err)
+      errors.push(line.SIRET)
+    }
+  })
+
+  logger.info(`refreshReferentielEngagementFranceTravail: ${processed} upserted, ${errors.length} errors`)
+  if (errors.length) {
+    logger.warn(`refreshReferentielEngagementFranceTravail: SIRETs in error: ${errors.join(", ")}`)
+  }
+}
 
 export const refreshEntrepriseEngagementJobsPartners = async () => {
   const matchFilter = { offer_status: JOB_STATUS_ENGLISH.ACTIVE }

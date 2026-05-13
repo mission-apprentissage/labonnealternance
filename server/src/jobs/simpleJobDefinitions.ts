@@ -22,7 +22,7 @@ import {
 import { importFichesRncp } from "./domainesMetiers/importFichesRncp"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
 import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers"
-import { refreshEntrepriseEngagementJobsPartners } from "./engagementHandicap/refreshEntrepriseEngagementJobsPartners"
+import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./engagementHandicap/refreshEntrepriseEngagementJobsPartners"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -441,6 +441,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillEntrepriseEngagementJobsPartners,
     description: "Mise à jour des handi-engagement des offres actives",
+  },
+  {
+    fct: refreshReferentielEngagementFranceTravail,
+    description: "Rafraîchissement du référentiel d'engagement handicap depuis France Travail",
   },
   {
     fct: refreshEntrepriseEngagementJobsPartners,
