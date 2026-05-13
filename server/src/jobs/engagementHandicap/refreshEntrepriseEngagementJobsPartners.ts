@@ -9,8 +9,10 @@ import { parseCsvContent } from "@/common/utils/fileUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
+const HANDIMATCH_FT_CSV_PATH = "referentiel/engagementHandicap/siret_handimatch_ft.csv"
+
 export const refreshReferentielEngagementFranceTravail = async () => {
-  const filepath = getStaticFilePath("referentiel/siret_handimatch_ft.csv")
+  const filepath = getStaticFilePath(HANDIMATCH_FT_CSV_PATH)
   const content = (await fs.readFile(filepath)).toString()
   const parsedCsv = await parseCsvContent(content, { delimiter: "," })
   const data = parsedCsv as { SIRET: string }[]
