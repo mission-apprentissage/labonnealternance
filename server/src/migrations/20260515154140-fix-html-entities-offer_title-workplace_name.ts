@@ -20,7 +20,7 @@ const fixCollection = async (collectionName: "jobs_partners" | "computed_jobs_pa
     $or: fields.map((f) => ({ [f]: HTML_ENTITY_REGEX })),
   })
 
-  const bulkOps: object[] = []
+  const bulkOps: Array<Parameters<typeof collection.bulkWrite>[0][number]> = []
 
   for await (const doc of cursor) {
     const update: Record<string, string> = {}
