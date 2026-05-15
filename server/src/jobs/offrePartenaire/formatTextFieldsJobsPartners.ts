@@ -22,9 +22,9 @@ export const formatTextFieldsJobsPartners = async ({ addedMatchFilter }: FillCom
         const result: Pick<IComputedJobsPartners, (typeof fields)[number] | "_id"> = {
           _id,
           workplace_description: sanitizeTextField(workplace_description, true),
-          workplace_name: sanitizeTextField(workplace_name, true),
+          workplace_name: sanitizeTextField(workplace_name, false),
           offer_description: sanitizeTextField(offer_description, true),
-          offer_title: sanitizeTextField(offer_title, true),
+          offer_title: sanitizeTextField(offer_title, false),
         }
         return result
       })

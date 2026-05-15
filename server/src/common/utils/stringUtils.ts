@@ -8,9 +8,9 @@ export const sanitizeTextField = (text: string | null | undefined, keepFormat: b
     allowedTags: keepFormat ? ["b", "i", "em", "strong", "p", "br", "ul", "li"] : [],
     allowedAttributes: {},
   }
-  // Decode HTML entities once, then sanitize to remove dangerous content
   const decodedText = he.decode(text).trim()
-  return sanitizeHtml(decodedText, sanitizeOptions)
+  const sanitized = sanitizeHtml(decodedText, sanitizeOptions)
+  return keepFormat ? sanitized : he.decode(sanitized)
 }
 
 export const isNormalizedStringInSetOrArray = (array: string[]) => {
