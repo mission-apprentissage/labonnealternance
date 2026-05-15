@@ -8,7 +8,6 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
-import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { useAuth } from "@/context/UserContext"
 import { getEntrepriseInformation } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -66,7 +65,7 @@ const InformationEntreprise = () => (
 
 export default function CreationEntreprisePage() {
   return (
-    <DepotSimplifieStyling>
+    <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise]} />
       <Box
         sx={{
@@ -93,6 +92,6 @@ export default function CreationEntreprisePage() {
           <InformationEntreprise />
         </Box>
       </Box>
-    </DepotSimplifieStyling>
+    </>
   )
 }
