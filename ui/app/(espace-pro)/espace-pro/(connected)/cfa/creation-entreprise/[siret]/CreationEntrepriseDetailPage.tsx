@@ -13,7 +13,6 @@ import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connecte
 import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
 import { useToast } from "@/app/hooks/useToast"
 import { phoneValidation } from "@/common/validation/fieldValidations"
-import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiPost } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -137,11 +136,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
 function CreationEntrepriseDetailPage() {
   const { siret } = useParams() as { siret: string }
 
-  return (
-    <DepotSimplifieStyling>
-      <CreationEntrepriseDetail siret={siret} />
-    </DepotSimplifieStyling>
-  )
+  return <CreationEntrepriseDetail siret={siret} />
 }
 
 export default CreationEntrepriseDetailPage
