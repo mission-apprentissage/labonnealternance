@@ -1,26 +1,34 @@
 import he from "he"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-const decodeEntities = (value: string | null | undefined): string | null => {
+const HTML_ENTITY_REGEX = /&(?:[a-zA-Z]+|#[0-9]+|#x[0-9a-fA-F]+);/
+
+const decodeIteratively = (value: string | null | undefined): string | null => {
   if (!value) return value ?? null
-  const decoded = he.decode(value)
-  return decoded === value ? value : decoded
+  let current = value
+  for (let i = 0; i < 5; i++) {
+    const decoded = he.decode(current)
+    if (decoded === current) break
+    current = decoded
+  }
+  return current === value ? value : current
 }
 
-export const up = async () => {
-  const collection = getDbCollection("jobs_partners")
+const fixCollection = async (collectionName: "jobs_partners" | "computed_jobs_partners", fields: string[]) => {
+  const collection = getDbCollection(collectionName)
   const cursor = collection.find({
-    $or: [{ offer_title: /&[a-z]+;|&#\d+;/ }, { workplace_name: /&[a-z]+;|&#\d+;/ }],
+    $or: fields.map((f) => ({ [f]: HTML_ENTITY_REGEX })),
   })
 
   const bulkOps: object[] = []
 
   for await (const doc of cursor) {
     const update: Record<string, string> = {}
-    const decodedTitle = decodeEntities(doc.offer_title)
-    const decodedName = decodeEntities(doc.workplace_name)
-    if (decodedTitle !== doc.offer_title) update["offer_title"] = decodedTitle!
-    if (decodedName !== doc.workplace_name) update["workplace_name"] = decodedName!
+    for (const field of fields) {
+      const original = doc[field] as string | null | undefined
+      const decoded = decodeIteratively(original)
+      if (decoded !== original) update[field] = decoded!
+    }
     if (Object.keys(update).length) {
       bulkOps.push({ updateOne: { filter: { _id: doc._id }, update: { $set: update } } })
     }
@@ -32,6 +40,11 @@ export const up = async () => {
   if (bulkOps.length) {
     await collection.bulkWrite(bulkOps)
   }
+}
+
+export const up = async () => {
+  await fixCollection("jobs_partners", ["offer_title", "workplace_name"])
+  await fixCollection("computed_jobs_partners", ["offer_title", "workplace_name"])
 }
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)

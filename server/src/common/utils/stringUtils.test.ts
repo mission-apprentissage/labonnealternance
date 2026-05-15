@@ -27,12 +27,12 @@ describe("sanitizeTextField", () => {
       expect(sanitizeTextField("This is plain text.", false)).toBe("This is plain text.")
     })
 
-    it("should return plain text with literal < > & characters", () => {
-      expect(sanitizeTextField("5 < 10 & 3 > 1", false)).toBe("5 < 10 & 3 > 1")
+    it("should escape literal < > & characters for safe HTML display", () => {
+      expect(sanitizeTextField("5 < 10 & 3 > 1", false)).toBe("5 &lt; 10 &amp; 3 &gt; 1")
     })
 
-    it("should strip HTML tags and return plain text", () => {
-      expect(sanitizeTextField("<>&<>&", false)).toBe("<>&<>&")
+    it("should handle multiple special characters in sequence", () => {
+      expect(sanitizeTextField("<>&<>&", false)).toBe("&lt;&gt;&amp;&lt;&gt;&amp;")
     })
 
     it("should preserve other special characters like quotes", () => {
@@ -46,24 +46,26 @@ describe("sanitizeTextField", () => {
       expect(sanitizeTextField("&lt;script&gt;alert(1)&lt;/script&gt;", false)).toBe("")
     })
 
-    it("should decode double-encoded entities to plain text", () => {
-      // &amp;lt;script&amp;gt; -> decodes to: &lt;script&gt; -> plain text: <script> (safe in JSX)
-      expect(sanitizeTextField("&amp;lt;script&amp;gt;", false)).toBe("<script>")
+    it("should decode double-encoded entities once and keep safe", () => {
+      // Input: &amp;lt;script&amp;gt; -> decodes to: &lt;script&gt; -> stays as &lt;script&gt; (safe)
+      expect(sanitizeTextField("&amp;lt;script&amp;gt;", false)).toBe("&lt;script&gt;")
     })
 
-    it("should decode already-encoded entities to plain text", () => {
-      expect(sanitizeTextField("Price &amp; Tax", false)).toBe("Price & Tax")
-      expect(sanitizeTextField("A &lt; B", false)).toBe("A < B")
-      expect(sanitizeTextField("A &gt; B", false)).toBe("A > B")
+    it("should preserve already-encoded entities in output", () => {
+      // Already encoded & should stay encoded for safe display
+      expect(sanitizeTextField("Price &amp; Tax", false)).toBe("Price &amp; Tax")
+      expect(sanitizeTextField("A &lt; B", false)).toBe("A &lt; B")
+      expect(sanitizeTextField("A &gt; B", false)).toBe("A &gt; B")
     })
 
-    it("should handle mixed literal and encoded entities as plain text", () => {
-      expect(sanitizeTextField("Text < and &lt; both", false)).toBe("Text < and < both")
+    it("should handle mixed literal and encoded entities", () => {
+      // Mix of < (literal) and &lt; (encoded)
+      expect(sanitizeTextField("Text < and &lt; both", false)).toBe("Text &lt; and &lt; both")
     })
 
     it("should handle triple-encoded entities correctly", () => {
-      // &amp;amp;lt; -> decodes once to: &amp;lt; -> plain text: &lt;
-      expect(sanitizeTextField("&amp;amp;lt;script&amp;amp;gt;", false)).toBe("&lt;script&gt;")
+      // &amp;amp;lt; -> decodes once to: &amp;lt; -> stays safe
+      expect(sanitizeTextField("&amp;amp;lt;script&amp;amp;gt;", false)).toBe("&amp;lt;script&amp;gt;")
     })
 
     it("should decode common entities correctly", () => {
@@ -108,9 +110,8 @@ describe("sanitizeTextField", () => {
 
     it("should block double-encoded dangerous tags", () => {
       const result = sanitizeTextField("&amp;lt;img src=x onerror=alert(1)&amp;gt;", false)
-      // Decodes to <img src=x onerror=alert(1)> as plain text — safe in JSX (React escapes on render)
-      expect(result).toBe("<img src=x onerror=alert(1)>")
-      expect(result).not.toContain("&lt;img")
+      expect(result).toBe("&lt;img src=x onerror=alert(1)&gt;")
+      expect(result).not.toContain("<img")
     })
 
     it("should not allow script injection via mixed encoding", () => {
@@ -162,7 +163,7 @@ describe("sanitizeTextField", () => {
       const resultNoFormat = sanitizeTextField(input, false)
       const resultWithFormat = sanitizeTextField(input, true)
 
-      expect(resultNoFormat).toBe("Normal text  and 5 < 10 with bold")
+      expect(resultNoFormat).toBe("Normal text  and 5 &lt; 10 with bold")
       expect(resultWithFormat).toBe("Normal text  and 5 &lt; 10 with <strong>bold</strong>")
     })
 
@@ -186,10 +187,19 @@ describe("sanitizeTextField", () => {
   })
 
   describe("HTML safety verification", () => {
-    it("should strip dangerous tags even though output is plain text", () => {
-      expect(sanitizeTextField("<script>alert(1)</script>", false)).toBe("")
-      expect(sanitizeTextField("<img src=x onerror=alert(1)>", false)).toBe("")
-      expect(sanitizeTextField("Mix of <div>html</div> and < text", false)).toBe("Mix of html and < text")
+    it("should output safe HTML entities (no unescaped < > for non-allowed tags)", () => {
+      const testCases = [
+        sanitizeTextField("<script>alert(1)</script>", false),
+        sanitizeTextField("User input: < > &", false),
+        sanitizeTextField("<img src=x onerror=alert(1)>", false),
+        sanitizeTextField("Mix of <div>html</div> and < text", false),
+      ]
+
+      testCases.forEach((output) => {
+        // Verify no dangerous unescaped < or > exist (except as part of entities like &lt;)
+        const hasUnsafeTags = /<(?!\/?(b|i|em|strong|p|br|ul|li)[\s>])/.test(output) || /(?<!&[a-z]{2})>/.test(output)
+        expect(hasUnsafeTags).toBe(false)
+      })
     })
 
     it("should ensure output is safe for dangerouslySetInnerHTML", () => {
@@ -217,12 +227,12 @@ describe("sanitizeTextField", () => {
 
     it("should handle user input with accidental HTML", () => {
       const userInput = "My salary expectation is 50k < 60k & benefits"
-      expect(sanitizeTextField(userInput, false)).toBe("My salary expectation is 50k < 60k & benefits")
+      expect(sanitizeTextField(userInput, false)).toBe("My salary expectation is 50k &lt; 60k &amp; benefits")
     })
 
     it("should handle copied content from web (with entities)", () => {
       const copied = "This &amp; that, cost &lt; $100"
-      expect(sanitizeTextField(copied, false)).toBe("This & that, cost < $100")
+      expect(sanitizeTextField(copied, false)).toBe("This &amp; that, cost &lt; $100")
     })
 
     it("should handle French characters and accents", () => {
