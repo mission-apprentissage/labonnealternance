@@ -213,7 +213,9 @@ function TableWithPagination({
                                   },
                                 }}
                               >
-                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
+                                  {column.srOnly ? column.srOnly : column.render("Header")}
+                                </Typography>
                                 <Box component="span" sx={{ pl: fr.spacing("2v") }}>
                                   {column.isSorted ? column.isSortedDesc ? <ArrowDownLine /> : <ArrowUpLine /> : <ArrowUpDownLine />}
                                 </Box>
