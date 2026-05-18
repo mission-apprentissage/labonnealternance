@@ -19,12 +19,6 @@ const ZSeoDiplomeProgrammeSections = z.object({
   competences_developpees: z.array(z.string()),
 })
 
-const ZSeoDiplomeSalaireLigne = z.object({
-  age: z.string(),
-  premiereAnnee: z.string(),
-  deuxiemeAnnee: z.string(),
-})
-
 const ZSeoDiplomeMetier = z.object({
   title: z.string(),
   offres: z.number(),
@@ -55,7 +49,6 @@ export const ZSeoDiplome = z
       sections: ZSeoDiplomeProgrammeSections,
     }),
     ecoles: z.array(ZSeoDiplomeEcoleCard),
-    salaire: z.array(ZSeoDiplomeSalaireLigne),
     metiers: z.object({
       text: z.string(),
       liste: z.array(ZSeoDiplomeMetier),
@@ -70,7 +63,6 @@ export type ISeoDiplome = z.output<typeof ZSeoDiplome>
 
 export type IDiplomeKpis = z.output<typeof ZSeoDiplomeKpis>
 export type IDiplomeProgrammeSections = z.output<typeof ZSeoDiplomeProgrammeSections>
-export type IDiplomeSalaireLigne = z.output<typeof ZSeoDiplomeSalaireLigne>
 export type IDiplomeMetier = z.output<typeof ZSeoDiplomeMetier>
 export type IDiplomeEcoleCard = z.output<typeof ZSeoDiplomeEcoleCard>
 
