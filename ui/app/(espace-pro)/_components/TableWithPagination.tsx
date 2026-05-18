@@ -222,7 +222,9 @@ function TableWithPagination({
                               </Box>
                             ) : (
                               <Box sx={{ display: "flex", flexDirection: "row", w: "full", alignItems: "flex-start" }}>
-                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"}>{column.srOnly ? column.srOnly : column.render("Header")}</Typography>
+                                <Typography className={column.srOnly ? "fr-sr-only" : "fr-cell__title"} sx={{ fontSize: "14px" }}>
+                                  {column.srOnly ? column.srOnly : column.render("Header")}
+                                </Typography>
                               </Box>
                             )}
                           </Box>
