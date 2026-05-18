@@ -10,13 +10,30 @@ import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import { SendPlausibleEvent } from "@/utils/plausible"
 
 const partnerLabelsShownInCta = [
-  JOBPARTNERS_LABEL.LEBONCOIN,
   JOBPARTNERS_LABEL.APEC,
-  JOBPARTNERS_LABEL.RH_ALTERNANCE,
-  JOBPARTNERS_LABEL.JOBTEASER,
-  JOBPARTNERS_LABEL.METEOJOB,
+  JOBPARTNERS_LABEL.ATLAS,
+  JOBPARTNERS_LABEL.DECATHLON,
+  JOBPARTNERS_LABEL.EDF,
+  JOBPARTNERS_LABEL.ENEDIS,
   JOBPARTNERS_LABEL.HELLOWORK,
+  JOBPARTNERS_LABEL.JOBTEASER,
+  JOBPARTNERS_LABEL.LAPOSTE,
+  JOBPARTNERS_LABEL.LEBONCOIN,
+  JOBPARTNERS_LABEL.METEOJOB,
+  JOBPARTNERS_LABEL.NOS_TALENTS_NOS_EMPLOIS,
+  JOBPARTNERS_LABEL.RH_ALTERNANCE,
+  JOBPARTNERS_LABEL.TOULOUSE_METROPOLE,
+  JOBPARTNERS_LABEL.VITE_UN_EMPLOI,
+  "Action Logement",
+  "Air France",
+  "Amazon",
+  "Crédit Mutuel",
+  "Daher",
+  "ENGIE",
+  "GRDF",
   "Jobs that make sense",
+  "Institut Pasteur",
+  "L'Oréal",
 ]
 const shouldShowPartnerLabelInCta = (partnerLabel: string) => partnerLabelsShownInCta.includes(partnerLabel)
 
