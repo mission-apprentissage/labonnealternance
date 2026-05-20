@@ -4,9 +4,8 @@ import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
+import { apiEntrepriseEtablissementFixture } from "@/common/apis/apiEntreprise/apiEntreprise.client.fixture"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-
 import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./refreshEntrepriseEngagementJobsPartners"
 
 vi.mock("node:fs/promises", () => ({
@@ -15,8 +14,8 @@ vi.mock("node:fs/promises", () => ({
   },
 }))
 
-const ENGAGED_SIRET = "12345678900011"
-const NOT_ENGAGED_SIRET = "98765432100022"
+const ENGAGED_SIRET = apiEntrepriseEtablissementFixture.dinum.data.siret
+const NOT_ENGAGED_SIRET = "42476141900045"
 
 useMongo()
 
@@ -85,7 +84,7 @@ describe("refreshReferentielEngagementFranceTravail", () => {
 
   it("should process multiple sirets from csv", async () => {
     // given
-    const siret2 = "11111111100033"
+    const siret2 = "42476141900045"
     await mockCsvWithSirets([ENGAGED_SIRET, siret2])
     // when
     await refreshReferentielEngagementFranceTravail()
