@@ -755,8 +755,17 @@ export const up = async () => {
 
   const now = new Date()
 
-  await getDbCollection("seo_metiers").insertMany(
-    metierData.map((metier) => ({ ...metier, _id: new ObjectId(), created_at: now, updated_at: now })),
+  await getDbCollection("seo_metiers").bulkWrite(
+    metierData.map((metier) => ({
+      updateOne: {
+        filter: { slug: metier.slug },
+        update: {
+          $set: { ...metier, updated_at: now },
+          $setOnInsert: { _id: new ObjectId(), created_at: now },
+        },
+        upsert: true,
+      },
+    })),
     { ordered: false, bypassDocumentValidation: true }
   )
 
