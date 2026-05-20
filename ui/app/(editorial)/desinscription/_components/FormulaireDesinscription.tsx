@@ -66,6 +66,7 @@ const ConfirmationDesinscription = ({
   onClose: () => void
 }) => {
   const allSirets = companies.map((company) => company.siret)
+  const [isOpen, setIsOpen] = useState(true)
   const [selectedSirets, setSelectedSirets] = useState(allSirets)
   const areAllSelected: boolean = companies.length === selectedSirets.length
 
@@ -95,8 +96,13 @@ const ConfirmationDesinscription = ({
     }
   }
 
+  const handleClose = () => {
+    setIsOpen(false)
+    onClose()
+  }
+
   return (
-    <ModalReadOnly isOpen={true} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={handleClose}>
       <Box sx={{ p: fr.spacing("6v") }}>
         <Typography variant="h3" sx={{ mb: fr.spacing("6v") }}>
           Plusieurs établissements correspondent à cet email
