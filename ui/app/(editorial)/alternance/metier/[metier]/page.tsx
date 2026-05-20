@@ -1,16 +1,16 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, List, ListItem, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
 import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
+import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
-import { PAGES } from "@/utils/routes.utils"
 
 const UTM_PARAMS = "utm_source=lba&utm_medium=website&utm_campaign=lba_seo-prog-metiers"
 
@@ -215,156 +215,14 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         {/**
          * BLOC SALAIRE
          */}
-        <Box
-          sx={{
-            mb: fr.spacing("8v"),
-            py: fr.spacing("8v"),
-            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
-            backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-          }}
-        >
-          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v") }}>
-            Le salaire d’un alternant <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
-          <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }} gutterBottom>
-            Rémunération et évolution des apprentis
-          </Typography>
-          <Typography variant="body1">Minimum réglementaire en pourcentage du SMIC selon l’âge et à mesure de l’avancée dans le contrat :</Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", md: "repeat(4, minmax(0, 1fr))" },
-              gap: fr.spacing("4v"),
-              alignItems: "stretch",
-              mt: fr.spacing("4v"),
-            }}
-          >
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                Moins de 18 ans
-              </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    27%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    39%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    55%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
-            </Box>
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                18 à 20 ans
-              </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    43%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    51%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    60%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
-            </Box>
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                21 à 25 ans
-              </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    53%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    61%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    78%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
-            </Box>
-            <Box sx={cardSx}>
-              <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
-                26 ans et plus
-              </Typography>
-              <List
-                sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}
-              >
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    100%
-                  </Typography>{" "}
-                  la 1re année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    100%
-                  </Typography>{" "}
-                  la 2e année
-                </ListItem>
-                <ListItem>
-                  <Typography component={"span"} fontWeight={"bold"}>
-                    100%
-                  </Typography>{" "}
-                  la 3e année
-                </ListItem>
-              </List>
-            </Box>
-          </Box>
-          <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
-            <Button
-              linkProps={{ href: `${PAGES.static.salaireAlternant.getPath()}?${UTM_PARAMS}` }}
-              aria-label={"Calculer ma rémunération en alternance sur le simulateur la bonne alternance"}
-              size="large"
-              priority="secondary"
-              style={{ marginTop: fr.spacing("2v") }}
-            >
-              Calculer ma rémunération en alternance
-              <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-            </Button>
-          </Box>
-        </Box>
+        <SalaireSection
+          utmParams={UTM_PARAMS}
+          titre={
+            <>
+              Le salaire d’un alternant <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
+            </>
+          }
+        />
 
         {/**
          * BLOC ENTREPRISES

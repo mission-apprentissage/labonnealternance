@@ -42,12 +42,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS Comptabilité et Gestion ouvre les portes de nombreux métiers dans la comptabilité, la finance et la gestion d'entreprise.",
       liste: [],
@@ -96,12 +90,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS Communication ouvre les portes de nombreux métiers dans la communication d'entreprise, la publicité et le digital.",
       liste: [],
@@ -144,12 +132,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS GPME ouvre les portes de nombreux métiers dans la gestion, l'administration et les ressources humaines au sein des PME.",
       liste: [],
@@ -193,12 +175,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS MCO ouvre les portes de nombreux métiers dans le commerce, la distribution, la banque-assurance et les services.",
       liste: [],
@@ -242,12 +218,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS NDRC ouvre les portes de nombreux métiers dans la vente, la négociation commerciale et la relation client digitale.",
       liste: [],
@@ -296,12 +266,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS SAM ouvre les portes de nombreux métiers dans le support administratif, l'assistanat de direction et la gestion des ressources humaines.",
       liste: [],
@@ -350,12 +314,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le BTS SIO ouvre les portes de nombreux métiers dans le secteur du numérique et de l'informatique, que ce soit en infrastructure ou en développement.",
       liste: [],
@@ -405,12 +363,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le CAP AEPE ouvre les portes de nombreux métiers dans le secteur de la petite enfance, en accueil collectif comme individuel.",
       liste: [],
@@ -462,12 +414,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "La Licence Professionnelle Ressources Humaines ouvre les portes de nombreux métiers dans la gestion du personnel, le recrutement et l'administration RH.",
       liste: [],
@@ -516,12 +462,6 @@ const diplomesData = [
       },
     },
     ecoles: [],
-    salaire: [
-      { age: "16-17 ans", premiereAnnee: "471€", deuxiemeAnnee: "689€" },
-      { age: "18-20 ans", premiereAnnee: "751€", deuxiemeAnnee: "891€" },
-      { age: "21-25 ans", premiereAnnee: "849€", deuxiemeAnnee: "980€" },
-      { age: "26 ans et +", premiereAnnee: "1 767€", deuxiemeAnnee: "1 767€" },
-    ],
     metiers: {
       text: "Le Titre Pro Secrétaire Assistant Médico-Social ouvre les portes de nombreux métiers dans le secteur sanitaire et médico-social.",
       liste: [],
