@@ -1,13 +1,16 @@
 import fs from "node:fs/promises"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
+import { SIRET_REGEX } from "shared/constants/regex"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
+import { validateSIRET } from "shared/validators/siretValidator"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { parseCsvContent } from "@/common/utils/fileUtils"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 const HANDIMATCH_FT_CSV_PATH = "referentiel/engagementHandicap/siret_handimatch_ft.csv"
 
@@ -24,6 +27,9 @@ export const refreshReferentielEngagementFranceTravail = async () => {
   await asyncForEach(data, async (line) => {
     try {
       const { SIRET: siret } = line
+      if (!validateSIRET(siret)) {
+        throw new Error(`refreshReferentielEngagementFranceTravail: invalid SIRET format "${siret}"`)
+      }
       await getDbCollection("referentiel_engagement_entreprise").updateOne(
         { siret },
         {
