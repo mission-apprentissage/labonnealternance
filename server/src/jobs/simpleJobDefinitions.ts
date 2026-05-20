@@ -22,7 +22,11 @@ import {
 import { importFichesRncp } from "./domainesMetiers/importFichesRncp"
 import { updateRomesForDomainesMetiers } from "./domainesMetiers/updateRomesForDomainesMetiers"
 import { validateDomaineMetiers } from "./domainesMetiers/validateDomaineMetiers"
-import { refreshEntrepriseEngagementJobsPartners, refreshReferentielEngagementFranceTravail } from "./engagementHandicap/refreshEntrepriseEngagementJobsPartners"
+import {
+  refreshEntrepriseEngagementJobsPartners,
+  refreshReferentielEngagementFranceTravail,
+  refreshReferentielEtEntrepriseEngagement,
+} from "./engagementHandicap/refreshEntrepriseEngagementJobsPartners"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateParcoursupAndAffelnetInfoOnFormationCatalogue } from "./formationsCatalogue/updateParcoursupAndAffelnetInfoOnFormationCatalogue"
 import { generateFranceTravailAccess } from "./franceTravail/generateFranceTravailAccess"
@@ -449,6 +453,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: refreshEntrepriseEngagementJobsPartners,
     description: "Rafraîchissement du champ contract_is_disabled_elligible pour toutes les offres actives de jobs_partners",
+  },
+  {
+    fct: refreshReferentielEtEntrepriseEngagement,
+    description: "Rafraîchissement du référentiel d'engagement handicap et des offres actives de jobs_partners",
   },
   {
     fct: cleanClosedCompanies,

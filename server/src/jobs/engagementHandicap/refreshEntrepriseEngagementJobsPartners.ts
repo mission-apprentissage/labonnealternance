@@ -92,3 +92,10 @@ export const refreshEntrepriseEngagementJobsPartners = async () => {
 
   logger.info("refreshEntrepriseEngagementJobsPartners: terminé")
 }
+
+export const refreshReferentielEtEntrepriseEngagement = async () => {
+  logger.info("Starting refreshReferentielEtEntrepriseEngagement")
+  await refreshReferentielEngagementFranceTravail()
+  await refreshEntrepriseEngagementJobsPartners()
+  logger.info("Finished refreshReferentielEtEntrepriseEngagement")
+}
