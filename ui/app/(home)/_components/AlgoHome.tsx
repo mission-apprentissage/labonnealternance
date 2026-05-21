@@ -36,7 +36,7 @@ export const AlgoHome = () => (
           <Typography className={fr.cx("fr-text--lg")}>La bonne alternance expose différents types d&apos;opportunités d&apos;emplois :</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
             <Box className={fr.cx("fr-text--lg")}>
-              <Typography component="div">
+              <Typography sx={{ fontSize: "18px" }}>
                 <strong>Les offres d&apos;emploi</strong> identifiables grâce au tag <TagOffreEmploi /> qui sont de 3 types :
               </Typography>
               <ul>
