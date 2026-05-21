@@ -92,10 +92,12 @@ export default function DetailRendezVousRendererClient({ appointmentId, appointm
           Un candidat souhaite <br />
           être contacté <br />
           <Typography
-            variant="h2"
             component="span"
             sx={{
               color: "text.secondary",
+              fontSize: "2rem",
+              fontWeight: "bold",
+              lineHeight: "2.5rem",
             }}
           >
             par votre centre de formation

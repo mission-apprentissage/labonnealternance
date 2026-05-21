@@ -8,7 +8,6 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SiretAutocomplete } from "@/components/espace_pro/Authentification/SiretAutocomplete"
-import { DepotSimplifieStyling } from "@/components/espace_pro/common/components/DepotSimplifieLayout"
 import { useAuth } from "@/context/UserContext"
 import { getEntrepriseInformation } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
@@ -48,7 +47,7 @@ const InformationEntreprise = () => (
       Ajout d’une entreprise partenaire
     </Typography>
     <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-      <Typography sx={{ textAlign: "justify" }}>
+      <Typography>
         Ajoutez l’entreprise pour laquelle vous recherchez des candidats.
         <br />
         <strong>L’entreprise doit vous avoir préalablement donné son accord.</strong>
@@ -66,7 +65,7 @@ const InformationEntreprise = () => (
 
 export default function CreationEntreprisePage() {
   return (
-    <DepotSimplifieStyling>
+    <>
       <Breadcrumb pages={[PAGES.static.backCfaHome, PAGES.static.backCfaCreationEntreprise]} />
       <Box
         sx={{
@@ -82,7 +81,7 @@ export default function CreationEntreprisePage() {
           <Typography sx={{ fontSize: "32px", mb: fr.spacing("3v"), fontWeight: 700, lineHeight: "40px" }} component="h1">
             Renseignements entreprise
           </Typography>
-          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>
+          <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
             Précisez le nom ou le SIRET de l’entreprise partenaire pour laquelle vous souhaitez diffuser des offres.
           </Typography>
           <Box mt={4}>
@@ -93,6 +92,6 @@ export default function CreationEntreprisePage() {
           <InformationEntreprise />
         </Box>
       </Box>
-    </DepotSimplifieStyling>
+    </>
   )
 }
