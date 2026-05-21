@@ -129,10 +129,20 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #E3E3FD", pb: fr.spacing("4v"), mb: fr.spacing("4v") }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          borderBottom: "1px solid #E3E3FD",
+          pb: fr.spacing("4v"),
+          mb: fr.spacing("4v"),
+          px: fr.spacing("4v"),
+        }}
+      >
         {user.type !== "CFA" && (
           <>
-            <Typography component="h2" sx={{ fontSize: "32px", wordBreak: "break-word" }}>
+            <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, wordBreak: "break-word" }}>
               {establishmentLabel}
             </Typography>
 
@@ -141,11 +151,16 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
         )}
         {user.type === "CFA" && (
           <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
-            <Typography sx={{ fontSize: "32px", mx: 0, wordBreak: "break-word" }} component="h2">
+            <Typography sx={{ fontSize: "32px", fontWeight: 700, ml: 0, mr: fr.spacing("8v"), wordBreak: "break-word" }} component="h2">
               {establishmentLabel}
             </Typography>
 
-            <Button priority="secondary" type="button" onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}>
+            <Button
+              priority="secondary"
+              iconId="fr-icon-close-line"
+              type="button"
+              onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}
+            >
               Fermer
             </Button>
           </Box>

@@ -103,16 +103,13 @@ export default function CompteRenderer() {
                     sx={{
                       mt: fr.spacing("2v"),
                       fontSize: "20px",
-                      textAlign: "justify",
                     }}
                   >
                     {user.type === AUTHTYPE.ENTREPRISE
                       ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
                       : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
                   </Typography>
-                  {user.type === AUTHTYPE.CFA && (
-                    <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>
-                  )}
+                  {user.type === AUTHTYPE.CFA && <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>Vous recevrez les candidatures sur l’email enregistré.</Typography>}
                   <Box sx={{ mt: fr.spacing("4v") }}>
                     <Form>
                       <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />

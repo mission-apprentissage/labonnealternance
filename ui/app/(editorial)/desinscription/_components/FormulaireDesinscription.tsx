@@ -259,7 +259,7 @@ export const FormulaireDesinscription = ({ companyEmail, handleUnsubscribeSucces
               )}
 
               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: fr.spacing("6v") }}>
-                <Typography>Tous les champs sont obligatoires</Typography>
+                <Typography sx={{ fontSize: "12px" }}>Tous les champs sont obligatoires</Typography>
 
                 {!isSubmitting ? (
                   <Button disabled={isSubmitting || !isValid || !dirty} type="submit">
