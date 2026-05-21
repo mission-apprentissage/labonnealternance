@@ -1,95 +1,156 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Typography } from "@mui/material"
-import type { IDiplomeSalaireLigne } from "shared/models/seoDiplome.model"
-import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-import { UTM_PARAMS } from "../_data/constants"
-import { SectionTitle } from "./SectionTitle"
+import { Box, List, ListItem, Typography } from "@mui/material"
+import { ArrowRightLine } from "@/theme/components/icons"
+import { PAGES } from "@/utils/routes.utils"
 
-export function SalaireSection({ titre, lignes }: { titre: string; lignes: IDiplomeSalaireLigne[] }) {
-  const title = "Le salaire en"
-  const titleHighlight = titre
-  const titleSuffix = "en alternance"
-  const texteIntro = "Grille de salaire sur la base des contrats en apprentissage en France sur l'année 2024/2025 :"
-  const headerSx = {
-    fontWeight: 700,
-    px: fr.spacing("4v"),
-    py: fr.spacing("2v"),
-    backgroundColor: "#F6F6F6",
-    borderBottom: "1px solid #3A3A3A",
-    fontSize: "14px",
-    lineHeight: "24px",
-    color: fr.colors.decisions.text.default.grey.default,
-  }
+const cardSx = {
+  backgroundColor: "white",
+  padding: fr.spacing("7v"),
+  borderRadius: "5px",
+  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+}
 
-  const cellSx = {
-    px: fr.spacing("4v"),
-    py: fr.spacing("2v"),
-    borderBottom: "1px solid #929292",
-    fontSize: "14px",
-    lineHeight: "24px",
-    color: fr.colors.decisions.text.default.grey.default,
-  }
-
+export function SalaireSection({ titre, utmParams }: { titre: React.ReactNode; utmParams: string }) {
   return (
     <Box
       sx={{
-        py: fr.spacing("12v"),
+        mb: fr.spacing("8v"),
+        py: fr.spacing("8v"),
+        px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
       }}
     >
-      <DefaultContainer>
-        <SectionTitle title={title} highlightedText={titleHighlight} highlightedSuffix={titleSuffix} />
-        <Typography sx={{ fontWeight: 700, fontSize: "22px", lineHeight: "28px", mb: fr.spacing("6v"), color: fr.colors.decisions.text.title.grey.default }}>
-          {texteIntro}
-        </Typography>
-
-        <Box sx={{ overflowX: "auto", mb: fr.spacing("8v") }}>
-          <Box component="table" sx={{ width: "100%", borderCollapse: "collapse", minWidth: "500px", border: "1px solid #929292" }}>
-            <thead>
-              <tr>
-                <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
-                  Âge
-                </Box>
-                <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
-                  1ère année
-                </Box>
-                <Box component="th" sx={{ ...headerSx, textAlign: "left" }}>
-                  2ème année
-                </Box>
-              </tr>
-            </thead>
-            <tbody>
-              {lignes.map((ligne) => (
-                <tr key={ligne.age}>
-                  <Box component="td" sx={cellSx}>
-                    {ligne.age}
-                  </Box>
-                  <Box component="td" sx={cellSx}>
-                    {ligne.premiereAnnee}
-                  </Box>
-                  <Box component="td" sx={cellSx}>
-                    {ligne.deuxiemeAnnee}
-                  </Box>
-                </tr>
-              ))}
-            </tbody>
-          </Box>
+      <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v") }}>
+        {titre}
+      </Typography>
+      <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }} />
+      <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }} gutterBottom>
+        Rémunération et évolution des apprentis
+      </Typography>
+      <Typography variant="body1">Minimum réglementaire en pourcentage du SMIC selon l’âge et à mesure de l’avancée dans le contrat :</Typography>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", md: "repeat(4, minmax(0, 1fr))" },
+          gap: fr.spacing("4v"),
+          alignItems: "stretch",
+          mt: fr.spacing("4v"),
+        }}
+      >
+        <Box sx={cardSx}>
+          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+            Moins de 18 ans
+          </Typography>
+          <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                27%
+              </Typography>{" "}
+              la 1re année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                39%
+              </Typography>{" "}
+              la 2e année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                55%
+              </Typography>{" "}
+              la 3e année
+            </ListItem>
+          </List>
         </Box>
-
-        <Box sx={{ textAlign: "center" }}>
-          <Button
-            title="Accéder au simulateur de salaire pour calculer ma rémunération en alternance"
-            priority="secondary"
-            size="large"
-            iconId="fr-icon-arrow-right-line"
-            iconPosition="right"
-            linkProps={{ href: `/salaire-alternant?${UTM_PARAMS}` }}
-          >
-            Calculer ma rémunération en alternance
-          </Button>
+        <Box sx={cardSx}>
+          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+            18 à 20 ans
+          </Typography>
+          <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                43%
+              </Typography>{" "}
+              la 1re année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                51%
+              </Typography>{" "}
+              la 2e année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                60%
+              </Typography>{" "}
+              la 3e année
+            </ListItem>
+          </List>
         </Box>
-      </DefaultContainer>
+        <Box sx={cardSx}>
+          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+            21 à 25 ans
+          </Typography>
+          <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                53%
+              </Typography>{" "}
+              la 1re année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                61%
+              </Typography>{" "}
+              la 2e année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                78%
+              </Typography>{" "}
+              la 3e année
+            </ListItem>
+          </List>
+        </Box>
+        <Box sx={cardSx}>
+          <Typography sx={{ fontSize: "1.25rem", fontWeight: "bold", color: fr.colors.decisions.artwork.minor.blueFrance.default, mb: fr.spacing("4v"), textAlign: "center" }}>
+            26 ans et plus
+          </Typography>
+          <List sx={{ m: fr.spacing("2v"), "& li": { padding: fr.spacing("1v"), listStyleType: "disc", display: "list-item", textAlign: "center", listStylePosition: "inside" } }}>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                100%
+              </Typography>{" "}
+              la 1re année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                100%
+              </Typography>{" "}
+              la 2e année
+            </ListItem>
+            <ListItem>
+              <Typography component={"span"} fontWeight={"bold"}>
+                100%
+              </Typography>{" "}
+              la 3e année
+            </ListItem>
+          </List>
+        </Box>
+      </Box>
+      <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
+        <Button
+          linkProps={{ href: `${PAGES.static.salaireAlternant.getPath()}?${utmParams}` }}
+          aria-label={"Calculer ma rémunération en alternance sur le simulateur la bonne alternance"}
+          size="large"
+          priority="secondary"
+          style={{ marginTop: fr.spacing("2v") }}
+        >
+          Calculer ma rémunération en alternance
+          <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
+        </Button>
+      </Box>
     </Box>
   )
 }

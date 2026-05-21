@@ -23,6 +23,9 @@ export const ModalReadOnly = ({
 
   useEffect(() => {
     window.document.body.className = isOpen ? "is-modal-opened" : ""
+    return () => {
+      window.document.body.className = ""
+    }
   }, [isOpen])
 
   return (
