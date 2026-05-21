@@ -119,7 +119,7 @@ function CreationEntrepriseDetail({ siret }: { siret: string }) {
           <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
             Informations de contact
           </Typography>
-          <Typography sx={{ fontSize: "20px", textAlign: "justify", mt: fr.spacing("2v") }}>
+          <Typography sx={{ fontSize: "20px", mt: fr.spacing("2v") }}>
             Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
           </Typography>
         </Box>
