@@ -1,5 +1,10 @@
 export const metierData = [
   {
+    metier: "Aide-soignant",
+    slug: "aide-soignant",
+    romes: ["J1501"],
+  },
+  {
     metier: "Ambulancier",
     slug: "ambulancier",
     romes: ["J1305"],
@@ -40,6 +45,11 @@ export const metierData = [
     romes: ["J1304"],
   },
   {
+    metier: "Auxiliaire vétérinaire",
+    slug: "auxiliaire-veterinaire",
+    romes: ["A1501"],
+  },
+  {
     metier: "Chargé de communication",
     slug: "charge-de-communication",
     romes: ["E1103"],
@@ -48,6 +58,11 @@ export const metierData = [
     metier: "Chargé de recrutement",
     slug: "charge-de-recrutement",
     romes: ["M1502"],
+  },
+  {
+    metier: "Coiffeur",
+    slug: "coiffeur",
+    romes: ["D1202"],
   },
   {
     metier: "Comptable",
@@ -80,14 +95,49 @@ export const metierData = [
     romes: ["K1207"],
   },
   {
+    metier: "Électricien",
+    slug: "electricien",
+    romes: ["F1602"],
+  },
+  {
+    metier: "Esthéticien",
+    slug: "estheticien",
+    romes: ["D1208"],
+  },
+  {
     metier: "Gestionnaire de paie",
     slug: "gestionnaire-de-paie",
     romes: ["M1507"],
   },
   {
+    metier: "Juriste",
+    slug: "juriste",
+    romes: ["K1903"],
+  },
+  {
+    metier: "Manipulateur en radiologie",
+    slug: "manipulateur-en-radiologie",
+    romes: ["J1306"],
+  },
+  {
     metier: "Moniteur-éducateur",
     slug: "moniteur-educateur",
     romes: ["K1207"],
+  },
+  {
+    metier: "Notaire",
+    slug: "notaire",
+    romes: ["K1901"],
+  },
+  {
+    metier: "Pâtissier",
+    slug: "patissier",
+    romes: ["D1104"],
+  },
+  {
+    metier: "Plombier",
+    slug: "plombier",
+    romes: ["F1603"],
   },
   {
     metier: "Préparateur en pharmacie",
