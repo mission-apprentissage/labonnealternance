@@ -20,8 +20,8 @@ function InfoDelegation() {
   return (
     <Box sx={{ ml: fr.spacing("10v"), display: { xs: "none", lg: "block" } }}>
       <Box sx={{ border: "1px solid #000091", p: fr.spacing("6v") }}>
-        <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v"), ml: fr.spacing("5v") }}>Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?</Typography>
-        <Box sx={{ ml: fr.spacing("5v") }}>
+        <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v") }}>Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?</Typography>
+        <Box>
           <Typography sx={{ fontWeight: "700", mt: fr.spacing("6v") }}>Gagnez du temps.</Typography>
           <Typography sx={{ mt: fr.spacing("4v") }}>
             Accélérez votre recrutement, et trouvez des candidats qualifiés en partageant votre offre aux acteurs de l’apprentissage de votre région.
@@ -205,7 +205,7 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
         ) : (
           <>
             {etablissements?.length > 0 && (
-              <Box sx={{ p: { xs: 0, md: fr.spacing("5v") } }}>
+              <Box sx={{ p: 0 }}>
                 <Box sx={{ display: "flex" }}>
                   <Box sx={{ minWidth: { xs: "100%", md: "50%" } }}>
                     <Typography component="h1" sx={{ fontSize: "32px", lineHeight: "40px", fontWeight: "bold" }}>
@@ -296,7 +296,8 @@ export default function MiseEnRelation({ establishment_id, job_id, token }: { es
                     left: 0,
                     backgroundColor: "white",
                     zIndex: 1000,
-                    p: fr.spacing("10v"),
+                    px: fr.spacing("10v"),
+                    py: fr.spacing("4v"),
                   }}
                 >
                   <Button disabled={checkedEtablissements.length === 0 || isSubmitting} onClick={submit} data-testid="submit-delegation">
