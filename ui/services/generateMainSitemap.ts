@@ -3,13 +3,14 @@ import path from "path"
 import type { SitemapUrlEntry } from "shared/utils/sitemapUtils"
 import { generateSitemapFromUrlEntries } from "shared/utils/sitemapUtils"
 
+import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2026-03-30T15:00:00.000Z")
+export const mainSitemapLastModificationDate = new Date("2026-05-21T00:00:00.000Z")
 
 export function generateMainSitemap(request: Request) {
   const txtDirectory = path.join(process.cwd(), "config")
@@ -47,6 +48,7 @@ export function generateMainSitemap(request: Request) {
   ]
   const villePaths = villeData.map((ville) => `/alternance/ville/${ville.slug}`)
   const metierPaths = metierData.map((metier) => `/alternance/metier/${metier.slug}`)
+  const diplomePaths = diplomeData.map((diplome) => `/alternance/diplome/${diplome.slug}`)
   const jobPaths = dataJobs.map((job) => `/metiers/${job.slug}`)
 
   const sitemapEntries: SitemapUrlEntry[] = [
@@ -54,6 +56,7 @@ export function generateMainSitemap(request: Request) {
     ...paths.map((path) => ({ loc: host + path, priority: 0.9 })),
     ...villePaths.map((path) => ({ loc: host + path, priority: 0.95 })),
     ...metierPaths.map((path) => ({ loc: host + path, priority: 0.95 })),
+    ...diplomePaths.map((path) => ({ loc: host + path, priority: 0.95 })),
     ...jobPaths.map((path) => ({ loc: host + path, priority: 0.8 })),
   ]
 
