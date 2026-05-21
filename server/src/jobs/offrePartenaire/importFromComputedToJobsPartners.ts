@@ -85,6 +85,11 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           cfa_apply_phone: null,
         }
 
+        const existingJob = await getDbCollection("jobs_partners").findOne(
+          { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
+          { projection: { offer_status: 1 } }
+        )
+
         await getDbCollection("jobs_partners").updateOne(
           { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
           {
@@ -100,12 +105,17 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           },
           { upsert: true }
         )
-        if (computedJobPartner?.offer_status_history?.length) {
+
+        const historyEntriesToPush = [
+          ...(computedJobPartner?.offer_status_history ?? []),
+          ...(existingJob?.offer_status === JOB_STATUS_ENGLISH.ANNULEE && partnerJobToUpsert.offer_status === JOB_STATUS_ENGLISH.ACTIVE
+            ? [{ date: importDate, status: JOB_STATUS_ENGLISH.ACTIVE, reason: "réactivée par le flux source", granted_by: "importFromComputedToJobsPartners" }]
+            : []),
+        ]
+        if (historyEntriesToPush.length) {
           await getDbCollection("jobs_partners").updateOne(
             { partner_job_id: partnerJobToUpsert.partner_job_id, partner_label: partnerJobToUpsert.partner_label },
-            {
-              $push: { offer_status_history: { $each: computedJobPartner.offer_status_history } },
-            }
+            { $push: { offer_status_history: { $each: historyEntriesToPush } } }
           )
         }
         counters.success++

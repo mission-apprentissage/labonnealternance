@@ -1,5 +1,6 @@
 import { createComputedJobPartner, createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
+import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import * as mongodbUtils from "@/common/utils/mongodbUtils"
@@ -95,5 +96,63 @@ describe("when computed_jobs_partners updateOne in the catch block fails", () =>
 
     sentrySpy.mockRestore()
     getDbCollectionSpy.mockRestore()
+  })
+})
+
+describe("offer_status_history lors de l'import", () => {
+  useMongo()
+
+  afterEach(async () => {
+    await getDbCollection("computed_jobs_partners").deleteMany({})
+    await getDbCollection("jobs_partners").deleteMany({})
+  })
+
+  it("ajoute une entrée dans offer_status_history quand une offre annulée est réactivée par le flux", async () => {
+    await createJobPartner({ partner_job_id: "reactivated_1", offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+    await createComputedJobPartner({ partner_job_id: "reactivated_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners({}, false)
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "reactivated_1" })
+    expect.soft(job?.offer_status).toEqual(JOB_STATUS_ENGLISH.ACTIVE)
+    expect.soft(job?.offer_status_history.map(({ status, reason, granted_by }) => ({ status, reason, granted_by }))).toContainEqual({
+      status: JOB_STATUS_ENGLISH.ACTIVE,
+      reason: "réactivée par le flux source",
+      granted_by: "importFromComputedToJobsPartners",
+    })
+  })
+
+  it("n'ajoute pas d'entrée de réactivation quand l'offre était déjà active", async () => {
+    await createJobPartner({ partner_job_id: "already_active_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE })
+    await createComputedJobPartner({ partner_job_id: "already_active_1", offer_status: JOB_STATUS_ENGLISH.ACTIVE, validated: true })
+
+    await importFromComputedToJobsPartners({}, false)
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "already_active_1" })
+    expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
+  })
+
+  it("n'ajoute pas d'entrée de réactivation quand une offre annulée reste annulée", async () => {
+    await createJobPartner({ partner_job_id: "stay_cancelled_1", offer_status: JOB_STATUS_ENGLISH.ANNULEE })
+    await createComputedJobPartner({ partner_job_id: "stay_cancelled_1", offer_status: JOB_STATUS_ENGLISH.ANNULEE, validated: true })
+
+    await importFromComputedToJobsPartners({}, false)
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "stay_cancelled_1" })
+    expect.soft(job?.offer_status_history.filter(({ reason }) => reason === "réactivée par le flux source")).toHaveLength(0)
+  })
+
+  it("copie les entrées offer_status_history depuis computed_jobs_partners", async () => {
+    const historyEntry = { date: new Date(), status: JOB_STATUS_ENGLISH.ANNULEE, reason: "supprimée du flux source", granted_by: "cancelRemovedJobsPartners" }
+    await createComputedJobPartner({ partner_job_id: "with_history_1", validated: true, offer_status_history: [historyEntry] })
+
+    await importFromComputedToJobsPartners({}, false)
+
+    const job = await getDbCollection("jobs_partners").findOne({ partner_job_id: "with_history_1" })
+    expect.soft(job?.offer_status_history.map(({ status, reason, granted_by }) => ({ status, reason, granted_by }))).toContainEqual({
+      status: historyEntry.status,
+      reason: historyEntry.reason,
+      granted_by: historyEntry.granted_by,
+    })
   })
 })

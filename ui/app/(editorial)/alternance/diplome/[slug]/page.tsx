@@ -6,6 +6,7 @@ import type { ISeoDiplome } from "shared/models/seoDiplome.model"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
+import { UTM_PARAMS } from "@/app/(editorial)/alternance/diplome/[slug]/_data/constants"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
 import { DescriptionDiplome } from "./_components/DescriptionDiplome"
@@ -49,48 +50,42 @@ export default async function DiplomePage({ params }: { params: Promise<{ slug: 
     <Box>
       <Breadcrumb pages={[PAGES.static.home]} />
 
-      <DefaultContainer>
+      <DefaultContainer sx={{ px: 0 }}>
         <HeroDiplome titre={data.titre} sousTitre={data.sousTitre} kpis={data.kpis} romes={data.romes} />
-      </DefaultContainer>
 
-      <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
           <DescriptionDiplome titre={data.titre} text={data.description.text} objectifs={data.description.objectifs} />
         </Box>
-      </DefaultContainer>
 
-      <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
           <ProgrammeDiplome titre={data.titre} text={data.programme.text} sections={data.programme.sections} />
         </Box>
-      </DefaultContainer>
 
-      {/* Section pleine largeur avec fond bleu */}
-      <PreparationSection titre={data.titre} />
+        <PreparationSection titre={data.titre} />
 
-      <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
           <EcolesSection titre={data.titre} formations={data?.ecoles ?? []} romes={data.romes} />
         </Box>
-      </DefaultContainer>
 
-      {/* Section pleine largeur avec fond bleu clair */}
-      <SalaireSection titre={data.titre} lignes={data?.salaire ?? []} />
+        <SalaireSection
+          titre={
+            <>
+              Le salaire en <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.titre}</span> en alternance
+            </>
+          }
+          utmParams={UTM_PARAMS}
+        />
 
-      <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
           <MetiersSection titre={data.titre} text={data.metiers.text} liste={data?.metiers?.liste ?? []} romes={data?.romes ?? []} />
         </Box>
-      </DefaultContainer>
 
-      <DefaultContainer>
         <Box sx={{ py: fr.spacing("8v") }}>
           <OffresSection offreCount={data.kpis.offres} romes={data?.romes ?? []} offres={data?.cards ?? []} />
         </Box>
-      </DefaultContainer>
 
-      {/* Section pleine largeur avec fond bleu */}
-      <ExplorerDiplomesSection currentSlug={slug} />
+        <ExplorerDiplomesSection currentSlug={slug} />
+      </DefaultContainer>
     </Box>
   )
 }
