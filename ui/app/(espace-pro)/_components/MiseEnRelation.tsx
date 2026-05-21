@@ -20,7 +20,9 @@ function InfoDelegation() {
   return (
     <Box sx={{ ml: fr.spacing("10v"), display: { xs: "none", lg: "block" } }}>
       <Box sx={{ border: "1px solid #000091", p: fr.spacing("6v") }}>
-        <Typography sx={{ fontSize: "24px", mb: fr.spacing("3v") }}>Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?</Typography>
+        <Typography component="h2" sx={{ fontSize: "24px", lineHeight: "32px", fontWeight: "700", mb: fr.spacing("3v") }}>
+          Pourquoi être accompagné par des CFA dans votre recherche d’alternant ?
+        </Typography>
         <Box>
           <Typography sx={{ fontWeight: "700", mt: fr.spacing("6v") }}>Gagnez du temps.</Typography>
           <Typography sx={{ mt: fr.spacing("4v") }}>
