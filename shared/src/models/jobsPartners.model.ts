@@ -210,6 +210,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
     lba_url: z.string().nullable().default(null),
+    to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({

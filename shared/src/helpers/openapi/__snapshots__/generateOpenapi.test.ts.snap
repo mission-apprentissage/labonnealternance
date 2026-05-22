@@ -1662,6 +1662,28 @@ Limite : 20 appel(s) / 1 seconde(s)
               "schema": {
                 "additionalProperties": false,
                 "properties": {
+                  "applicant_answers_to_recruiter_questions": {
+                    "description": "Réponse du candidat aux questions du recruteur",
+                    "items": {
+                      "properties": {
+                        "answer": {
+                          "type": "string",
+                        },
+                        "question": {
+                          "type": "string",
+                        },
+                      },
+                      "required": [
+                        "question",
+                        "answer",
+                      ],
+                      "type": "object",
+                    },
+                    "type": [
+                      "array",
+                      "null",
+                    ],
+                  },
                   "applicant_attachment_content": {
                     "description": "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
                     "maxLength": 4215276,
