@@ -18,7 +18,7 @@ export const blockJobsPartnersFromExpirationDate = async ({ addedMatchFilter }: 
     getData: async (documents) => {
       return documents.map((document) => {
         const { _id, offer_expiration, business_error } = document
-        const isExpired = offer_expiration && new Date(offer_expiration) < new Date() ? true : false
+        const isExpired = Boolean(offer_expiration && new Date(offer_expiration) < new Date())
         const result: Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id"> = {
           _id,
           business_error: isExpired ? JOB_PARTNER_BUSINESS_ERROR.EXPIRED : business_error,
