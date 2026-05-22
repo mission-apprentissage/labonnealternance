@@ -176,7 +176,7 @@ export default function PlanDuSite() {
                         Alternance par métier
                       </Typography>
                       <Box component="ul">
-                        {metierData.map((metier) => (
+                        {metierData.slice(0, 10).map((metier) => (
                           <Box component="li" key={metier.slug}>
                             <DsfrLink href={PAGES.dynamic.seoMetier(metier.slug).getPath()}>{metier.metier}</DsfrLink>
                           </Box>

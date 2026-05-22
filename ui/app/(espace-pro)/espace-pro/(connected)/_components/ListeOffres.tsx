@@ -81,7 +81,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
   if (jobs.length === 0) {
     return (
       <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center", flexWrap: "wrap" }}>
           <Typography
             sx={{
               fontSize: "2rem",
@@ -99,7 +99,7 @@ export default function ListeOffres({ hideModify = false, showStats = false, est
 
   return (
     <Box sx={{ width: "100%", maxWidth: "1280px", my: fr.spacing("3v"), px: fr.spacing("4v") }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", gap: fr.spacing("4v"), alignItems: "center", flexWrap: "wrap" }}>
         <Typography
           sx={{
             fontSize: "2rem",

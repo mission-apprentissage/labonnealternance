@@ -197,9 +197,11 @@ function JobDetail({
                   <LbaItemTags item={selectedItem} />
                   <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
                 </Box>
-                <Typography variant={"h3"} sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}>
-                  {actualTitle}
-                </Typography>
+                <Typography
+                  variant={"h3"}
+                  sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
+                  dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
+                />
                 <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
                   <Box sx={{ mr: fr.spacing("4v") }}>
                     {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
@@ -263,9 +265,8 @@ function JobDetail({
                 id="detail-header"
                 variant={"h3"}
                 sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
-              >
-                {actualTitle}
-              </Typography>
+                dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
+              />
               <ItemDetailCard selectedItem={selectedItem} />
               <hr style={{ paddingBottom: "1px" }} />
               <Box

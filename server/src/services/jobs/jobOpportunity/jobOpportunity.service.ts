@@ -689,12 +689,21 @@ async function upsertJobOfferPrivate({
 }
 
 export async function createJobOffer(identity: IApiAlternanceTokenData, data: IJobOfferApiWriteV3): Promise<ObjectId> {
+  const partner_label = identity.organisation!
+  const partner_job_id = data?.identifier?.partner_job_id
+  let current: IJobsPartnersOfferPrivate | null = null
+  if (partner_job_id) {
+    current = await getDbCollection("jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+    if (!current) {
+      current = await getDbCollection("computed_jobs_partners").findOne<IJobsPartnersOfferPrivate>({ partner_label, partner_job_id })
+    }
+  }
   return upsertJobOfferPrivate({
     data,
-    partner_label: identity.organisation!,
-    partnerJobIdIfNew: data?.identifier?.partner_job_id,
+    partner_label,
+    partnerJobIdIfNew: partner_job_id,
     requestedByEmail: identity.email,
-    current: null,
+    current,
   })
 }
 

@@ -182,12 +182,13 @@ export default (server: Server) => {
       const requestUser = getUserFromRequest(req, zRoutes.get["/user/:userId/organization/:organizationId"]).value
       if (!requestUser) throw badRequest()
 
-      const { userId } = req.params
-      // Prefer GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
+      const { userId, organizationId } = req.params
+      // Prefer exact organizationId match > GRANTED > AWAITING_VALIDATION > any (fallback for deactivated users with a single DENIED role)
       const allRoles = await getDbCollection("rolemanagements")
         .find({ user_id: new ObjectId(userId) })
         .toArray()
       const role =
+        allRoles.find((r) => r.authorized_id === organizationId) ??
         allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.GRANTED) ??
         allRoles.find((r) => getLastStatusEvent(r.status)?.status === AccessStatus.AWAITING_VALIDATION) ??
         allRoles[0]
