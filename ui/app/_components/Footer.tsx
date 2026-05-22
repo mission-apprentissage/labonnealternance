@@ -122,7 +122,7 @@ const linkListContent: LinkCategory[] = [
   {
     categoryName: "Alternance par métier",
     // @ts-ignore min 1 link but here we have 10
-    links: metierData.map((metier) => ({
+    links: metierData.slice(0, 10).map((metier) => ({
       linkProps: {
         href: PAGES.dynamic.seoMetier(metier.slug).getPath(),
       },

@@ -14,6 +14,20 @@ import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { OffresTabsMenu } from "./OffresTabsMenu"
 
 const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
+  if (status === JOB_STATUS.POURVUE) {
+    return (
+      <Badge variant="active" textTransform="uppercase">
+        {JOB_STATUS.POURVUE}
+      </Badge>
+    )
+  }
+  if (status === JOB_STATUS.ANNULEE) {
+    return (
+      <Badge variant="inactive" textTransform="uppercase">
+        EXPIREE
+      </Badge>
+    )
+  }
   if (recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION) {
     return (
       <Badge variant="awaiting" textTransform="uppercase">
@@ -33,18 +47,6 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
       return (
         <Badge variant="neutral" textTransform="uppercase">
           {JOB_STATUS.ACTIVE}
-        </Badge>
-      )
-    case JOB_STATUS.POURVUE:
-      return (
-        <Badge variant="active" textTransform="uppercase">
-          {JOB_STATUS.POURVUE}
-        </Badge>
-      )
-    case JOB_STATUS.ANNULEE:
-      return (
-        <Badge variant="inactive" textTransform="uppercase">
-          EXPIREE
         </Badge>
       )
     case JOB_STATUS.EN_ATTENTE:
