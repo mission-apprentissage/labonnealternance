@@ -1,0 +1,94 @@
+name: Sync GitHub Project Status
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, closed]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    # Ignorer les PR draft sauf si l'event vient d'une review
+    if: github.event.pull_request.draft == false || github.event_name == 'pull_request_review'
+    steps:
+      - name: Extract linked issue number
+        id: extract
+        run: |
+          ISSUE=$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?i)closes\s+#\K\d+' | head -1)
+          echo "issue=$ISSUE" >> $GITHUB_OUTPUT
+          echo "Found linked issue: #$ISSUE"
+
+      - name: Determine target status
+        id: status
+        if: steps.extract.outputs.issue != ''
+        run: |
+          EVENT="${{ github.event_name }}"
+          ACTION="${{ github.event.action }}"
+          MERGED="${{ github.event.pull_request.merged }}"
+          REVIEW="${{ github.event.review.state }}"
+
+          if [[ "$EVENT" == "pull_request" && "$ACTION" == "closed" && "$MERGED" == "true" ]]; then
+            echo "option_id=98236657" >> $GITHUB_OUTPUT  # terminer
+            echo "label=terminer" >> $GITHUB_OUTPUT
+          elif [[ "$EVENT" == "pull_request" && ("$ACTION" == "opened" || "$ACTION" == "ready_for_review") ]]; then
+            echo "option_id=df73e18b" >> $GITHUB_OUTPUT  # en-revu-technique
+            echo "label=en-revu-technique" >> $GITHUB_OUTPUT
+          elif [[ "$EVENT" == "pull_request_review" && "$REVIEW" == "approved" ]]; then
+            echo "option_id=61e4505c" >> $GITHUB_OUTPUT  # pret-a-tester
+            echo "label=pret-a-tester" >> $GITHUB_OUTPUT
+          else
+            echo "option_id=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update project item status
+        if: steps.extract.outputs.issue != '' && steps.status.outputs.option_id != ''
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN_MNA_SHARED }}
+        run: |
+          ISSUE=${{ steps.extract.outputs.issue }}
+          OPTION_ID="${{ steps.status.outputs.option_id }}"
+          LABEL="${{ steps.status.outputs.label }}"
+
+          # Trouver l'item projet lié à l'issue
+          ITEM_ID=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $issue: Int!) {
+              repository(owner: $owner, name: $repo) {
+                issue(number: $issue) {
+                  projectItems(first: 10) {
+                    nodes {
+                      id
+                      project { number }
+                    }
+                  }
+                }
+              }
+            }
+          ' -f owner="mission-apprentissage" \
+            -f repo="labonnealternance" \
+            -F issue=$ISSUE \
+            --jq '.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | .id')
+
+          if [[ -z "$ITEM_ID" ]]; then
+            echo "⚠️ Issue #$ISSUE introuvable dans le projet #14, rien à faire"
+            exit 0
+          fi
+
+          # Mettre à jour le statut
+          gh api graphql -f query='
+            mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $projectId
+                itemId: $itemId
+                fieldId: $fieldId
+                value: { singleSelectOptionId: $optionId }
+              }) {
+                projectV2Item { id }
+              }
+            }
+          ' -f projectId="PVT_kwDOA8sl_s4BW3Li" \
+            -f itemId="$ITEM_ID" \
+            -f fieldId="PVTSSF_lADOA8sl_s4BW3LizhSIG_8" \
+            -f optionId="$OPTION_ID"
+
+          echo "✅ Issue #$ISSUE → $LABEL"
