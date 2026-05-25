@@ -1,0 +1,68 @@
+name: Feature request
+description: Proposer une nouvelle fonctionnalité ou amélioration
+title: "[Feature] "
+type: Feature
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte métier
+      description: Pourquoi ce besoin ? Qui en bénéficie ? Quel problème ça résout ?
+      placeholder: "Ex : Les employeurs n'ont aucune visibilité sur l'attractivité de leurs offres"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution souhaitée
+      description: Ce qu'on veut construire
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      description: Conditions vérifiables pour considérer la feature terminée
+      placeholder: |
+        - [ ] L'employeur voit le nombre de candidatures par offre
+        - [ ] Les données sont rafraîchies quotidiennement
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone technique
+      options:
+        - UI (interface candidat/employeur)
+        - Serveur (API, emails, jobs)
+        - UI + Serveur
+        - Shared (types, schémas)
+        - Je ne sais pas
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorité
+      options:
+        - P1 — Critique
+        - P2 — Important
+        - P3 — Normal
+        - P4 — Faible / Nice to have
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-context
+    attributes:
+      label: Contexte technique
+      description: Fichiers, routes, contraintes — si vous les connaissez
+      placeholder: |
+        - Fichiers concernés : ui/app/(espace-pro)/...
+        - Contraintes : ne pas modifier l'API publique

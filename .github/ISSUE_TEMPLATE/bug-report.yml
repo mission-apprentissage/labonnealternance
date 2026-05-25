@@ -1,0 +1,87 @@
+name: Bug report
+description: Signaler un comportement inattendu sur la plateforme
+title: "[Bug] "
+type: Bug
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte
+      description: Qui est impacté ? Dans quelle situation le bug se produit-il ?
+      placeholder: "Ex : Les candidats ne reçoivent pas leur email de confirmation après inscription"
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Comportement actuel
+      description: Ce qui se passe
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Comportement attendu
+      description: Ce qui devrait se passer
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Étapes de reproduction
+      placeholder: |
+        1. Aller sur ...
+        2. Cliquer sur ...
+        3. Observer ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      description: Conditions vérifiables pour considérer le bug corrigé
+      placeholder: |
+        - [ ] Les emails arrivent dans les 5 minutes après inscription
+        - [ ] Aucune erreur dans les logs Sentry
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone technique
+      options:
+        - UI (interface candidat/employeur)
+        - Serveur (API, emails, jobs)
+        - Shared (types, schémas)
+        - Je ne sais pas
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorité
+      options:
+        - P1 — Bloquant (production impactée)
+        - P2 — Important (dégradation significative)
+        - P3 — Normal
+        - P4 — Faible
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-context
+    attributes:
+      label: Contexte technique
+      description: Fichiers concernés, routes API, logs d'erreur — si vous les connaissez
+      placeholder: |
+        - Fichiers : server/src/services/...
+        - Erreur Sentry : ...
+        - Environnement : prod / staging / local
