@@ -15,7 +15,7 @@ jobs:
       - name: Extract linked issue number
         id: extract
         run: |
-          ISSUE=$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?i)closes\s+#\K\d+' | head -1)
+          ISSUE=$(echo "${{ github.event.pull_request.body }}" | grep -oP '(?i)closes\s+#\K\d+' | head -1 || true)
           echo "issue=$ISSUE" >> $GITHUB_OUTPUT
           echo "Found linked issue: #$ISSUE"
 
@@ -55,7 +55,7 @@ jobs:
             query($owner: String!, $repo: String!, $issue: Int!) {
               repository(owner: $owner, name: $repo) {
                 issue(number: $issue) {
-                  projectItems(first: 10) {
+                  projectItems(first: 100) {
                     nodes {
                       id
                       project { number }
@@ -67,7 +67,7 @@ jobs:
           ' -f owner="mission-apprentissage" \
             -f repo="labonnealternance" \
             -F issue=$ISSUE \
-            --jq '.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | .id')
+            --jq '[.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | .id] | first')
 
           if [[ -z "$ITEM_ID" ]]; then
             echo "⚠️ Issue #$ISSUE introuvable dans le projet #14, rien à faire"
