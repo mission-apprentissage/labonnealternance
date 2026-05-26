@@ -4,6 +4,7 @@ import { useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
+import { FormulaireEditionOffreStep3FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3FtSupport"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 export const FormulaireEditionOffre = ({
@@ -17,7 +18,7 @@ export const FormulaireEditionOffre = ({
   handleSave?: (values: any) => void
   onChangeScreen?: () => void
 }) => {
-  const [currentStep, setCurrentStep] = useState<1 | 2>(1)
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [formValues, setFormValues] = useState<any>({})
 
   if (!establishment_id) return <></>
@@ -43,18 +44,31 @@ export const FormulaireEditionOffre = ({
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
           onSubmit={(values) => {
+            setFormValues({ ...formValues, ...values })
+            setCurrentStep(3)
+            onChangeScreen?.()
+          }}
+          offre={offre}
+          onCancel={() => {
+            setCurrentStep(1)
+            onChangeScreen?.()
+          }}
+        />
+      ) : currentStep === 3 ? (
+        <FormulaireEditionOffreStep3FtSupport
+          onSubmit={(values) => {
             const finalValues = { ...formValues, ...values }
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
-              step_name: "screening_questions",
-              has_screening_questions: finalValues.to_applicant_questions?.length > 0, // true si les questions sont cochées
-              ft_eligible: false,
+              step_name: "ft_support",
+              has_screening_questions: finalValues.to_applicant_questions?.length > 0,
+              ft_eligible: finalValues.ft_support,
             })
             handleSave(finalValues)
           }}
           offre={offre}
           onCancel={() => {
-            setCurrentStep(1)
+            setCurrentStep(2)
             onChangeScreen?.()
           }}
         />
