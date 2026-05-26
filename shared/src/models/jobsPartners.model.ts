@@ -179,6 +179,7 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   cfa_apply_phone: z.string().nullish().describe("Numéro de téléphone du CFA si offre déléguée"),
   cfa_apply_email: z.string().email().nullish().describe("Email de contact du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
+  ft_support: z.boolean().default(false).describe("Indique si le créateur de l'offre a demandé un accompagnement par France Travail"),
   job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
   job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
   delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
