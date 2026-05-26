@@ -40,36 +40,24 @@ export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { off
         <>
           <Typography
             component="h1"
-            sx={(theme) => ({
+            sx={{
               fontWeight: 700,
               color: "#000091",
               mb: fr.spacing("6v"),
-              [theme.breakpoints.up("xs")]: {
-                fontSize: "18px !important",
-                lineHeight: "24px !important",
-              },
-              [theme.breakpoints.up("md")]: {
-                fontSize: "20px !important",
-                lineHeight: "28px !important",
-              },
-            })}
+              fontSize: { xs: "18px !important", md: "20px !important" },
+              lineHeight: { xs: "24px !important", md: "28px !important" },
+            }}
           >
             Étape 2/3 : Questions pour les candidats
           </Typography>
           <Typography
             component="h2"
-            sx={(theme) => ({
+            sx={{
               fontWeight: 700,
               mb: fr.spacing("6v"),
-              [theme.breakpoints.up("xs")]: {
-                fontSize: "22px !important",
-                lineHeight: "28px !important",
-              },
-              [theme.breakpoints.up("md")]: {
-                fontSize: "32px !important",
-                lineHeight: "40px !important",
-              },
-            })}
+              fontSize: { xs: "22px !important", md: "32px !important" },
+              lineHeight: { xs: "28px !important", md: "40px !important" },
+            }}
           >
             Vos questions pour les candidats (Facultatif)
           </Typography>
