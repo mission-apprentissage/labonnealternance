@@ -5,6 +5,7 @@ import omit from "lodash-es/omit"
 import { ObjectId } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import { generateComputedJobsPartnersFixture } from "shared/fixtures/jobPartners.fixture"
 import { generateRecruiterRawFixture } from "shared/fixtures/recruiterRaw.fixture"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
@@ -105,6 +106,42 @@ describe("importRecruteursLbaRaw", () => {
     const [job] = publishedJobPartners
     expect.soft(job.apply_email).toBe(null)
   })
+
+  it("should refresh raw recruiter fields when computed document already exists", async () => {
+    const rawRecruiter = generateRecruiterRawFixture({
+      siret: "13002526500013",
+      enseigne: "ETABLISSEMENTS DINUM",
+      raison_sociale: "ETABLISSEMENTS DINUM",
+    })
+
+    await getDbCollection("computed_jobs_partners").insertOne(
+      generateComputedJobsPartnersFixture({
+        _id: new ObjectId(),
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        partner_job_id: rawRecruiter.siret,
+        workplace_siret: rawRecruiter.siret,
+        workplace_brand: rawRecruiter.siret,
+        workplace_legal_name: "ANCIEN NOM",
+      })
+    )
+
+    await processRecruteursLbaFromObjects([rawRecruiter])
+
+    const computedRecruiter = await getDbCollection("computed_jobs_partners").findOne({
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      workplace_siret: rawRecruiter.siret,
+    })
+    const publishedRecruiter = await getDbCollection("jobs_partners").findOne({
+      partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      partner_job_id: rawRecruiter.siret,
+    })
+
+    expect.soft(computedRecruiter?.workplace_brand).toBe(rawRecruiter.enseigne)
+    expect.soft(computedRecruiter?.workplace_legal_name).toBe(rawRecruiter.raison_sociale)
+    expect.soft(publishedRecruiter?.workplace_brand).toBe(rawRecruiter.enseigne)
+    expect.soft(publishedRecruiter?.workplace_legal_name).toBe(rawRecruiter.raison_sociale)
+  })
+
   it("should not import recruiters that opted out", async () => {
     // given
     const siret = "13002526500013"
