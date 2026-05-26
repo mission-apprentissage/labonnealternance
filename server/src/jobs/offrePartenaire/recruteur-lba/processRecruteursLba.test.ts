@@ -113,6 +113,7 @@ describe("importRecruteursLbaRaw", () => {
       enseigne: "ETABLISSEMENTS DINUM",
       raison_sociale: "ETABLISSEMENTS DINUM",
     })
+    const originalCreatedAt = new Date("2020-01-01")
 
     await getDbCollection("computed_jobs_partners").insertOne(
       generateComputedJobsPartnersFixture({
@@ -120,8 +121,9 @@ describe("importRecruteursLbaRaw", () => {
         partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
         partner_job_id: rawRecruiter.siret,
         workplace_siret: rawRecruiter.siret,
-        workplace_brand: rawRecruiter.siret,
+        workplace_brand: "ANCIEN NOM",
         workplace_legal_name: "ANCIEN NOM",
+        created_at: originalCreatedAt,
       })
     )
 
@@ -138,8 +140,34 @@ describe("importRecruteursLbaRaw", () => {
 
     expect.soft(computedRecruiter?.workplace_brand).toBe(rawRecruiter.enseigne)
     expect.soft(computedRecruiter?.workplace_legal_name).toBe(rawRecruiter.raison_sociale)
+    expect.soft(computedRecruiter?.created_at).toEqual(originalCreatedAt)
     expect.soft(publishedRecruiter?.workplace_brand).toBe(rawRecruiter.enseigne)
     expect.soft(publishedRecruiter?.workplace_legal_name).toBe(rawRecruiter.raison_sociale)
+  })
+
+  it("should not update a computed document with the same siret but a different partner_label", async () => {
+    const siret = "13002526500013"
+    const rawRecruiter = generateRecruiterRawFixture({ siret, enseigne: "NOUVEAU NOM" })
+    const otherPartnerBrand = "AUTRE PARTENAIRE"
+
+    await getDbCollection("computed_jobs_partners").insertOne(
+      generateComputedJobsPartnersFixture({
+        _id: new ObjectId(),
+        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+        partner_job_id: "hellowork-job-42",
+        workplace_siret: siret,
+        workplace_brand: otherPartnerBrand,
+      })
+    )
+
+    await processRecruteursLbaFromObjects([rawRecruiter])
+
+    const otherPartnerDoc = await getDbCollection("computed_jobs_partners").findOne({
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      workplace_siret: siret,
+    })
+
+    expect.soft(otherPartnerDoc?.workplace_brand).toBe(otherPartnerBrand)
   })
 
   it("should not import recruiters that opted out", async () => {
