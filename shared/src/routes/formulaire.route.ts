@@ -58,7 +58,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "200": ZJob,
+        "200": ZJob.extend({ ft_support: z.boolean().optional() }),
       },
       securityScheme: {
         auth: "cookie-session",
