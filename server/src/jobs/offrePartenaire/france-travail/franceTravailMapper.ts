@@ -106,7 +106,7 @@ function getAddressLabel({ codePostal, libelle }: IFTJobRaw["lieuTravail"]): str
 }
 
 function getGeopoint({ longitude, latitude, libelle }: IFTJobRaw["lieuTravail"]) {
-  if (longitude && latitude) {
+  if (longitude != null && latitude != null) {
     return { type: "Point" as const, coordinates: [longitude, latitude] as [number, number] }
   }
   const dept = getDepartementFromLibelle(libelle)
