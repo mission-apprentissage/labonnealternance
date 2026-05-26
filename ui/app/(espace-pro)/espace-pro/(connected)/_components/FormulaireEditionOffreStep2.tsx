@@ -54,7 +54,7 @@ export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { off
               },
             })}
           >
-            Étape 2/2 : Questions pour les candidats
+            Étape 2/3 : Questions pour les candidats
           </Typography>
           <Typography
             component="h2"
@@ -151,12 +151,12 @@ const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) =>
       sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
     >
       <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button className="fr-btn--secondary" onClick={() => onCancel()}>
+        <Button aria-label="Retour vers l'étape 1 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel()}>
           Retour
         </Button>
       </Box>
-      <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
-        {offre?._id ? "Mettre à jour" : "Créer l'offre"}
+      <Button disabled={!isValid || isSubmitting} aria-label="Continuer vers l'étape 3 du formulaire de dépôt d'offre" onClick={submitForm} data-testid="continuer-creer-offre">
+        Continuer
       </Button>
     </Box>
   )

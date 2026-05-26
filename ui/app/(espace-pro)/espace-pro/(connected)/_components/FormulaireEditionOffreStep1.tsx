@@ -195,7 +195,7 @@ export const FormulaireEditionOffreStep1 = ({
                 },
               })}
             >
-              Étape 1/2 : Description de l’offre
+              Étape 1/3 : Description de l’offre
             </Typography>
             <Typography component="h2" sx={{ fontWeight: 700 }}>
               Votre offre
