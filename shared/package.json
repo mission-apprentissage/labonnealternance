@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.4",
-    "@fastify/swagger": "^9.5.2",
     "bson": "^6.10.4",
     "change-case": "5.4.4",
     "dayjs": "^1.11.19",
