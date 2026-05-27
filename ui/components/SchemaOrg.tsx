@@ -14,9 +14,11 @@ type SchemaOrgProps = {
   datePublished?: string
   dateModified?: string
   faqItems?: { question: string; answer: string }[]
+  keywords?: string[]
+  articleSection?: string
 }
 
-export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePublished, dateModified, faqItems }: SchemaOrgProps) => {
+export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePublished, dateModified, faqItems, keywords, articleSection }: SchemaOrgProps) => {
   const schemas: object[] = []
 
   const breadcrumbSchema = {
@@ -82,6 +84,8 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
       url: `${BASE_URL}${url}`,
       ...(datePublished && { datePublished }),
       ...(dateModified && { dateModified }),
+      ...(keywords?.length && { keywords: keywords.join(", ") }),
+      ...(articleSection && { articleSection }),
       author: {
         "@type": "GovernmentOrganization",
         name: "La bonne alternance",
@@ -98,6 +102,21 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
         url: BASE_URL,
       },
       inLanguage: "fr",
+    })
+  }
+
+  if (type !== "FAQPage" && faqItems?.length) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
     })
   }
 
