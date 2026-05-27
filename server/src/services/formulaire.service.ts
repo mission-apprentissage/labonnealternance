@@ -73,14 +73,12 @@ const isAuthorizedToPublishJob = async ({ userId, entrepriseId }: { userId: Obje
  */
 export const createJob = async ({
   job,
-  ft_support = false,
   siret,
   user,
   source,
   origin,
 }: {
   job: IJobCreate
-  ft_support?: boolean
   siret: string
   user: IUserWithAccount
   source?: ITrackingCookies
@@ -136,7 +134,6 @@ export const createJob = async ({
 
   const newJobPartner: IJobsPartnersOfferPrivate = await jobCreateToJobsPartner({
     job,
-    ft_support,
     cfa: cfa ?? undefined,
     entreprise,
     user,
@@ -1103,7 +1100,6 @@ export const _updateJobsPartnersFromRecruiterDelete = async (id: ObjectId) => {
 
 async function jobCreateToJobsPartner({
   job,
-  ft_support = false,
   cfa,
   entreprise,
   user,
@@ -1111,7 +1107,6 @@ async function jobCreateToJobsPartner({
   status,
 }: {
   job: IJobCreate
-  ft_support?: boolean
   cfa?: ICFA
   entreprise: IEntreprise
   user: IUserWithAccount
@@ -1220,7 +1215,7 @@ async function jobCreateToJobsPartner({
     apply_recipient_id: newId.toString(),
     establishment_id: buildEstablishmentId(user._id, entreprise.siret),
     to_applicant_questions: job.to_applicant_questions,
-    ft_support,
+    ft_support: job.ft_support ?? false,
   }
   return jobPartner
 }
