@@ -10,7 +10,7 @@ const localOriginRegexp = /^https:\/\/labonnealternance(.*).apprentissage.beta.g
 const recetteRegexp = /^https:\/\/labonnealternance-recette.apprentissage.beta.gouv.fr(.*)/i
 const prodRegexp = /^https:\/\/labonnealternance.apprentissage.beta.gouv.fr(.*)/i
 
-// test spécifique pour détecter les appels de documentation inter-environnements qui ne fournissent pas le path dans l'origin (absence /api-docs)
+// test spécifique pour détecter les appels de documentation inter-environnements qui ne fournissent pas le path attendu dans l'origin
 const isCrossEnvironmentRequest = (origin) => {
   return (recetteRegexp.test(origin) && prodRegexp.test(config.publicUrl)) || (prodRegexp.test(origin) && recetteRegexp.test(config.publicUrl))
 }
