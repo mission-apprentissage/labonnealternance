@@ -33,7 +33,7 @@ export const FormulaireEditionOffreStep3FtSupport = ({ offre, onSubmit, onCancel
       validateOnMount
       enableReinitialize={true}
       initialValues={{
-        ft_support: (offre as any)?.ft_support ?? false,
+        ft_support: offre?.ft_support ?? false,
       }}
       onSubmit={onSubmit}
     >
