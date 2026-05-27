@@ -360,8 +360,6 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
     delete jobOpt.rome_detail._id
   }
   if (jobOpt) {
-    // ft_support lives in jobs_partners, not in the legacy recruiter.jobs sub-document
-    // @ts-expect-error
     jobOpt.ft_support = jobPartner.ft_support
   }
   return jobOpt

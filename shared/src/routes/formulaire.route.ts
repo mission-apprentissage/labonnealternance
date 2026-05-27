@@ -58,7 +58,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "200": ZJob.extend({ ft_support: z.boolean().optional() }),
+        "200": ZJob,
       },
       securityScheme: {
         auth: "cookie-session",
@@ -121,7 +121,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobCreate.extend({ ft_support: z.boolean().default(false) }).nonstrict(),
+      body: ZJobCreate.nonstrict(),
       response: {
         "200": z.object({ _id: zObjectId }),
       },
@@ -139,7 +139,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
-      body: ZJobCreate.extend({ ft_support: z.boolean().default(false) }).nonstrict(),
+      body: ZJobCreate.nonstrict(),
       response: {
         "200": z
           .object({
@@ -217,10 +217,10 @@ export const zFormulaireRoute = {
         competences_rome: true,
         offer_title_custom: true,
         to_applicant_questions: true,
+        ft_support: true,
       }).extend({
         job_start_date: z.coerce.date(),
         job_expiration_date: z.coerce.date(),
-        ft_support: z.boolean().optional(),
       }),
       response: {
         "200": z.object({}),

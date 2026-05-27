@@ -27,7 +27,7 @@ const blueBoxTextStyle = {
   lineHeight: "24px",
 }
 
-export const FormulaireEditionOffreStep3FtSupport = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit?: (values: IStep3Form) => void; onCancel: () => void }) => {
+export const FormulaireEditionOffreStep3FtSupport = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit: (values: IStep3Form) => void; onCancel: () => void }) => {
   return (
     <Formik<IStep3Form>
       validateOnMount
