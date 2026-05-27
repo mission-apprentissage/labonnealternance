@@ -46,13 +46,13 @@ export const FormulaireEditionOffre = ({
   handleSave?: (values: any) => void
   onChangeScreen?: () => void
 }) => {
-  const { token } = useSearchParamsRecord() as { token: string }
+  const { token } = useSearchParamsRecord() as { token?: string }
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [formValues, setFormValues] = useState<any>({})
   const pathname = usePathname()
 
   const { data: formulaire } = useQuery({
-    queryKey: ["formulaire", establishment_id],
+    queryKey: ["formulaire", establishment_id, token],
     queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id!)),
     enabled: Boolean(establishment_id),
   })
