@@ -6,13 +6,29 @@ import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
 import { FormulaireEditionOffreStep3FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3FtSupport"
-import { getFormulaire } from "@/utils/api"
+import { getFormulaire, getFormulaireByToken } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
 const FT_ELIGIBLE_ZIP_PREFIXES = ["08", "10", "51", "52", "54", "55", "57", "67", "68", "88", "44", "49", "53", "72", "85"]
 
-const isZipEligibleForFtSupport = (zipCode?: string | null): boolean => {
-  if (!zipCode) return false
+const FRENCH_ZIP_CODE_REGEX = /\b(\d{5})\b/g
+
+const extractZipCode = (formulaire?: { address_detail?: unknown; address?: string | null } | null): string | undefined => {
+  const fromDetail = (formulaire?.address_detail as any)?.code_postal
+  if (typeof fromDetail === "string" && fromDetail.length > 0) return fromDetail
+
+  if (formulaire?.address) {
+    const matches = [...formulaire.address.matchAll(FRENCH_ZIP_CODE_REGEX)]
+    if (matches.length > 0) return matches[0][1]
+  }
+
+  return undefined
+}
+
+const isZipEligibleForFtSupport = (formulaire?: { address_detail?: unknown; address?: string | null } | null): boolean => {
+  const zipCode = extractZipCode(formulaire)
+  if (!zipCode) return true
   return FT_ELIGIBLE_ZIP_PREFIXES.some((prefix) => zipCode.startsWith(prefix))
 }
 
@@ -27,19 +43,19 @@ export const FormulaireEditionOffre = ({
   handleSave?: (values: any) => void
   onChangeScreen?: () => void
 }) => {
+  const { token } = useSearchParamsRecord() as { token: string }
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [formValues, setFormValues] = useState<any>({})
 
   const { data: formulaire } = useQuery({
     queryKey: ["formulaire", establishment_id],
-    queryFn: () => getFormulaire(establishment_id!),
+    queryFn: () => (token ? getFormulaireByToken(establishment_id, token) : getFormulaire(establishment_id!)),
     enabled: Boolean(establishment_id),
   })
 
   if (!establishment_id) return <></>
 
-  const zipCode = (formulaire?.address_detail as any)?.code_postal as string | undefined
-  const isFtEligible = isZipEligibleForFtSupport(zipCode)
+  const isFtEligible = isZipEligibleForFtSupport(formulaire)
   const totalSteps = isFtEligible ? 3 : 2
 
   return (
