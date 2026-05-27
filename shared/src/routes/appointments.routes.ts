@@ -68,7 +68,7 @@ const zAppointmentRequestContextCreateFormAvailableResponseSchema = z
     localite: z.string(),
     id_rco_formation: z
       .string()
-      
+
       .nullable(),
     cle_ministere_educatif: z.string(),
     form_url: z.string(),

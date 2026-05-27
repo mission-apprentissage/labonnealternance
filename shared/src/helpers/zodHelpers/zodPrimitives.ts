@@ -26,8 +26,7 @@ export const extensions = {
     .regex(SIRET_REGEX, "SIRET invalide")
     .refine(validateSIRET, {
       message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
-    })
-    ,
+    }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
   phone: () =>
     z

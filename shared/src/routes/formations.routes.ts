@@ -2,7 +2,6 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import { zFormationCatalogueSchema } from "../models/formation.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
 import { ZLbaItemFormation, ZLbaItemFormation2, ZLbaItemFormationResult } from "../models/lbaItem.model.js"
-import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
@@ -37,8 +36,7 @@ export const zFormationsRoutes = {
           romes: zRomesParams("romeDomain"),
           romeDomain: z
             .string()
-            .optional()
-            ,
+            .optional(),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),

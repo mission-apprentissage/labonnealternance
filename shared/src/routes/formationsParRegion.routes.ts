@@ -1,7 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 import { ZLbacError } from "../models/lbacError.model.js"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model.js"
-import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
@@ -16,18 +15,15 @@ export const zV1FormationsParRegion = {
         .object({
           romes: z
             .string()
-            .optional()
-            ,
+            .optional(),
           romeDomain: z.string().optional(),
           caller: zCallerParam,
           departement: z
             .string()
-            .optional()
-            ,
+            .optional(),
           region: z
             .string()
-            .optional()
-            ,
+            .optional(),
           diploma: zDiplomaParam,
           options: zGetFormationOptions,
         })

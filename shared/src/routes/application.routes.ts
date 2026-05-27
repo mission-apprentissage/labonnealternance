@@ -73,8 +73,7 @@ export const zApplicationRoutes = {
                 code: z.string(),
               })
               .strict(),
-          ])
-          ,
+          ]),
         "401": z
           .union([
             ZResError,
@@ -85,8 +84,7 @@ export const zApplicationRoutes = {
                 code: z.string(),
               })
               .strict(),
-          ])
-          ,
+          ]),
       },
       securityScheme: null,
     },

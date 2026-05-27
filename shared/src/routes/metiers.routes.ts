@@ -1,6 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi.js"
 import { ZAppellationsRomes, ZMetierEnrichiArray, ZMetiers } from "../models/diplomesMetiers.model.js"
-import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -14,7 +13,6 @@ export const zMetiersRoutes = {
           cfd: z
             .string()
             .min(1)
-            ,
         })
         .strict(),
       response: {
@@ -38,12 +36,11 @@ export const zMetiersRoutes = {
           title: z.string(),
           romes: z
             .string()
-            
+
             .optional(),
           rncps: z
             .string()
             .optional()
-            ,
         })
         .strict(),
       response: {
