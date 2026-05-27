@@ -20,36 +20,17 @@ export const zRefererHeaders = z
   })
   .passthrough()
 
-export const zRomesParams = (imcompatibleWith: "romeDomain" | "rncp") =>
-  z
-    .string()
-    .optional()
+export const zRomesParams = (imcompatibleWith: "romeDomain" | "rncp") => z.string().optional()
 
+export const zRncpsParams = z.string().optional()
 
-export const zRncpsParams = z
-  .string()
-  .optional()
+export const ZLatitudeParam = z.coerce.number().optional()
 
+export const ZLongitudeParam = z.coerce.number().optional()
 
-export const ZLatitudeParam = z.coerce
-  .number()
-  .optional()
+export const ZRadiusParam = z.coerce.number().optional()
 
-
-export const ZLongitudeParam = z.coerce
-  .number()
-  .optional()
-
-
-export const ZRadiusParam = z.coerce
-  .number()
-  .optional()
-
-
-export const zInseeParams = z
-  .string()
-  .optional()
-
+export const zInseeParams = z.string().optional()
 
 // const allLbaItemTypes = Object.values(LBA_ITEM_TYPE)
 const allLbaItemTypesOLD = Object.values(LBA_ITEM_TYPE_OLD)
@@ -70,29 +51,16 @@ export const zSourcesParams = z
   )
   .optional()
 
-
 const diplomaLevels = typedKeys(NIVEAUX_POUR_LBA)
 
-export const zDiplomaParam = z
-  .enum([diplomaLevels[0], ...diplomaLevels.slice(1)])
-  .optional()
-
+export const zDiplomaParam = z.enum([diplomaLevels[0], ...diplomaLevels.slice(1)]).optional()
 
 export type IDiplomaParam = z.output<typeof zDiplomaParam>
 
-export const zTypesEmploiParam = z
-  .array(extensions.buildEnum(TYPE_EMPLOI_OPTIONS))
-  .optional()
-
+export const zTypesEmploiParam = z.array(extensions.buildEnum(TYPE_EMPLOI_OPTIONS)).optional()
 
 export type ITypesEmploiParam = z.output<typeof zTypesEmploiParam>
 
-export const zOpcoParams = z
-  .string()
-  .optional()
+export const zOpcoParams = z.string().optional()
 
-
-export const zOpcoUrlParams = z
-  .string()
-  .optional()
-
+export const zOpcoUrlParams = z.string().optional()

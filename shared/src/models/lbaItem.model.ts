@@ -12,49 +12,48 @@ const ZLbaItemPlace = z
   .object({
     distance: z
       .number()
-      
+
       .nullable(), // distance au centre de recherche en km. pe --> lieutTravail.distance recalculé par turf.js | formation --> sort[0] | lbb/lba -> distance | matcha -> sort[0] | partner -> distance
     fullAddress: z
       .string()
-      
+
       .nullish(), // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex | partner -> workplace_address_label
     latitude: z
       .number()
       .nullable()
-      
+
       .optional(), // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
     longitude: z
       .number()
       .nullable()
-      
+
       .optional(), // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
     numberAndStreet: z.string().nullish(),
     city: z
       .string()
-      
+
       .nullish(), // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city | partner -> workplace_address_city
     address: z.string().nullish(), // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse | partner -> workplace_address_street_label
     cedex: z.string().nullish(), // formation -> etablissement_formateur_cedex
     zipCode: z
       .string()
-      
+
       .nullish(), // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code | partner -> workplace_address_zipcode
     insee: z
       .string()
-      
+
       .nullish(), // pe -> lieuTravail.commune, training -> code_commune_insee, lba -> insee_city_code
     departementNumber: z
       .string()
-      
+
       .nullish(), // formation -> num_departement
     region: z
       .string()
-      
+
       .nullish(), // formation -> region
     remoteOnly: z.boolean().nullish(), // formation | partner -> contract_remote
   })
   .strict()
-  
 
 export type ILbaItemPlace = z.output<typeof ZLbaItemPlace>
 
@@ -62,15 +61,14 @@ const ZLbaItemRome = z
   .object({
     code: z
       .string()
-      
+
       .nullable(), // pe -> romeCode | lbb/lba -> rome_codes | matcha -> offres.romes
     label: z
       .string()
-      
+
       .nullish(), // pe -> appellationLibelle | lbb/lba -> matched_rome_label
   })
   .strict()
-  
 
 export type ILbaItemRome = z.output<typeof ZLbaItemRome>
 
@@ -89,26 +87,25 @@ const ZLbaItemContact = z
     email: z
       .string()
       //.email()   TODO: actuellement string chiffrée qui n'a pas la shape d'une email
-      
+
       .nullish(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
     iv: z.string().nullish(),
     hasEmail: z.boolean(),
     name: z
       .string()
-      
+
       .nullish(), // pe -> contact.nom | matcha -> prenom nom
     phone: z
       .string()
-      
+
       .nullish(), // lbb/lba --> phone | matcha -> telephone | pe -> contact.telephone
     info: z
       .string()
-      
+
       .nullish(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
     url: z.string().nullish(), // pe -> contact.urlPostulation
   })
   .strict()
-  
 
 export type ILbaItemContact = z.output<typeof ZLbaItemContact>
 
@@ -122,7 +119,7 @@ const ZLbaItemCompanyHQ = z
     place: ZLbaItemPlace.partial().nullish(),
     name: z
       .string()
-      
+
       .nullish(), // formation -> etablissement_gestionnaire_entreprise_raison_sociale
   })
   .strict()
@@ -142,12 +139,12 @@ const ZLbaItemCompany = z
   .object({
     name: z
       .string()
-      
+
       .nullish(), // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
     siret: extensions.siret.nullish(), // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
     size: z
       .string()
-      
+
       .nullish(), // lbb/lba -> company_size | matcha -> tranche_effectif
     logo: z.string().nullish(), // pe -> entreprise.logo
     description: z.string().nullish(), // pe -> entreprise.description
@@ -163,7 +160,6 @@ const ZLbaItemCompany = z
     elligibleHandicap: z.boolean().nullish(),
   })
   .strict()
-  
 
 export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
 
@@ -196,7 +192,7 @@ const ZLbaItemJob = z
     to_applicant_questions: z.array(z.string()).nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
   .strict()
-   // uniquement pour pe et matcha
+// uniquement pour pe et matcha
 
 export type ILbaItemJob = z.output<typeof ZLbaItemJob>
 
@@ -207,7 +203,6 @@ const ZLbaItemTrainingSession = z
     isPermanentEntry: z.boolean(),
   })
   .strict()
-  
 
 export type ILbaItemTrainingSession = z.output<typeof ZLbaItemTrainingSession>
 
@@ -219,7 +214,6 @@ const ZLbaItemTraining = z
     duration: z.number().nullable(),
   })
   .strict()
-  
 
 export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
@@ -234,92 +228,89 @@ const ZLbaItemTraining2 = z
     cleMinistereEducatif: z.string().nullish(), // formation
     target_diploma_level: z
       .string()
-      
+
       .nullish(), // formation -> niveau
     diploma: z
       .string()
-      
+
       .nullish(), // formation -> diplome
     cfd: z
       .string()
-      
+
       .nullish(), // formation -> cfd
     rncpCode: z
       .string()
-      
+
       .nullish(), // formation -> rncp_code
     rncpLabel: z
       .string()
-      
+
       .nullish(), // formation -> rncp_intitule
     onisepUrl: z
       .string()
-      
+
       .nullish(), // formation -> onisep_url
     romes: z.array(ZLbaItemRome).nullish(),
     elligibleForAppointment: z.boolean().describe("Indique si la formation est éligible pour la prise de rendez-vous").nullish(),
   })
   .strict()
-  
 
 export type ILbaItemTraining2 = Jsonify<z.output<typeof ZLbaItemTraining2>>
 
-export const ZLbaItemFormation = z
-  .object({
-    ideaType: z.literal(LBA_ITEM_TYPE_OLD.FORMATION),
-    title: z.string().nullish(), // formation -> intitule_long OU intitule_court
-    contact: ZLbaItemContact.nullish(),
-    place: ZLbaItemPlace.nullable(),
-    company: ZLbaItemCompany.nullable(),
+export const ZLbaItemFormation = z.object({
+  ideaType: z.literal(LBA_ITEM_TYPE_OLD.FORMATION),
+  title: z.string().nullish(), // formation -> intitule_long OU intitule_court
+  contact: ZLbaItemContact.nullish(),
+  place: ZLbaItemPlace.nullable(),
+  company: ZLbaItemCompany.nullable(),
 
-    longTitle: z.string().nullish(), // formation -> intitule_long,
-    id: z.string().nullable(), // formation -> id
-    idRco: z.string().nullish(), // formation -> id_formation
-    idRcoFormation: z.string().nullish(), // formation -> id_rco_formation
+  longTitle: z.string().nullish(), // formation -> intitule_long,
+  id: z.string().nullable(), // formation -> id
+  idRco: z.string().nullish(), // formation -> id_formation
+  idRcoFormation: z.string().nullish(), // formation -> id_rco_formation
 
-    /** TODO API V2: move inside training<ILbaItemTraining> */
-    cleMinistereEducatif: z.string().nullish(), // formation
-    target_diploma_level: z
-      .string()
-      
-      .nullish(), // formation -> niveau
-    diploma: z
-      .string()
-      
-      .nullish(), // formation -> diplome
-    cfd: z
-      .string()
-      
-      .nullish(), // formation -> cfd
-    rncpCode: z
-      .string()
-      
-      .nullish(), // formation -> rncp_code
-    rncpLabel: z
-      .string()
-      
-      .nullish(), // formation -> rncp_intitule
-    rncpEligibleApprentissage: z
-      .boolean()
-      
-      .nullish(), // formation -> rncp_eligible_apprentissage
-    period: z.string().nullish(), // formation -> periode
-    capacity: z
-      .string()
-      
-      .nullish(), // formation -> capacite
-    onisepUrl: z
-      .string()
-      
-      .nullish(), // formation -> onisep_url
+  /** TODO API V2: move inside training<ILbaItemTraining> */
+  cleMinistereEducatif: z.string().nullish(), // formation
+  target_diploma_level: z
+    .string()
 
-    romes: z.array(ZLbaItemRome).nullish(),
+    .nullish(), // formation -> niveau
+  diploma: z
+    .string()
 
-    training: ZLbaItemTraining.nullish(),
+    .nullish(), // formation -> diplome
+  cfd: z
+    .string()
 
-    rdvContext: z.any().nullish(),
-  })
-  
+    .nullish(), // formation -> cfd
+  rncpCode: z
+    .string()
+
+    .nullish(), // formation -> rncp_code
+  rncpLabel: z
+    .string()
+
+    .nullish(), // formation -> rncp_intitule
+  rncpEligibleApprentissage: z
+    .boolean()
+
+    .nullish(), // formation -> rncp_eligible_apprentissage
+  period: z.string().nullish(), // formation -> periode
+  capacity: z
+    .string()
+
+    .nullish(), // formation -> capacite
+  onisepUrl: z
+    .string()
+
+    .nullish(), // formation -> onisep_url
+
+  romes: z.array(ZLbaItemRome).nullish(),
+
+  training: ZLbaItemTraining.nullish(),
+
+  rdvContext: z.any().nullish(),
+})
 
 export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>
 export type ILbaItemFormationJson = Jsonify<ILbaItemFormation>
@@ -338,7 +329,6 @@ export const ZLbaItemFormation2 = z
     training: ZLbaItemTraining2.nullish(),
   })
   .strict()
-  
 
 export type ILbaItemFormation2 = z.output<typeof ZLbaItemFormation2>
 export type ILbaItemFormation2Json = Jsonify<ILbaItemFormation2>
@@ -353,7 +343,7 @@ export const ZLbaItemLbaJob = z
     id: z.string().nullable(), // matcha -> id_form
     target_diploma_level: z
       .string()
-      
+
       .nullish(), // matcha -> offres.niveau
     job: ZLbaItemJob.nullish(),
     romes: z.array(ZLbaItemRome).nullish(),
@@ -363,7 +353,6 @@ export const ZLbaItemLbaJob = z
     recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
   })
   .strict()
-  
 
 export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
 export type ILbaItemLbaJobJson = Jsonify<z.output<typeof ZLbaItemLbaJob>>
@@ -380,7 +369,7 @@ export const ZLbaItemPartnerJob = z
     id: z.string(), // partnerJob -> _id
     target_diploma_level: z // partnerJob -> offer_target_diploma
       .string()
-      
+
       .nullish(), // matcha -> offres.niveau
     job: ZLbaItemJob,
     romes: z.array(ZLbaItemRome).nullish(),
@@ -390,7 +379,6 @@ export const ZLbaItemPartnerJob = z
     applicationCount: z.number().nullish(),
   })
   .strict()
-  
 
 export type ILbaItemPartnerJob = z.output<typeof ZLbaItemPartnerJob>
 export type ILbaItemPartnerJobJson = Jsonify<ILbaItemPartnerJob>
@@ -414,7 +402,6 @@ export const ZLbaItemLbaCompany = z
     recipient_id: z.string().describe("Identifiant personnalisé (ID mongoDB préfixé du nom de la collection) envoyé au server pour la candidature"),
   })
   .strict()
-  
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany> & { ideaType: LBA_ITEM_TYPE_OLD.LBA | LBA_ITEM_TYPE.RECRUTEURS_LBA; id: string }
 export type ILbaItemLbaCompanyJson = Jsonify<ILbaItemLbaCompany>
@@ -435,7 +422,6 @@ export const ZLbaItemFtJob = z
     nafs: z.array(ZLbaItemNaf).nullish(),
   })
   .strict()
-  
 
 export type ILbaItemFtJob = z.output<typeof ZLbaItemFtJob>
 export type ILbaItemFtJobJson = Jsonify<ILbaItemFtJob>
@@ -447,7 +433,7 @@ export const ZLbaItemFormationResult = z
     results: z.array(ZLbaItemFormation),
   })
   .strict()
-  
+
 export type ILbaItemFormationResult = Jsonify<z.output<typeof ZLbaItemFormationResult>>
 
 export type ILbaItemJobsGlobal = ILbaItemLbaCompanyJson | ILbaItemLbaJobJson | ILbaItemPartnerJobJson

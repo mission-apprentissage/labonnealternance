@@ -6,11 +6,10 @@ export const ZLbacError = z
     error: z.string(),
     error_messages: z
       .array(z.string())
-      
+
       .nullish(),
   })
   .strict()
-  
 
 export const ZApiError = z
   .object({
@@ -21,11 +20,10 @@ export const ZApiError = z
     statusText: z.string().optional(),
     error_messages: z
       .array(z.string())
-      
+
       .nullish(),
   })
   .strict()
-  
 
 export const ZLbarError = z
   .object({
@@ -33,4 +31,3 @@ export const ZLbarError = z
     message: z.string(),
   })
   .strict()
-  

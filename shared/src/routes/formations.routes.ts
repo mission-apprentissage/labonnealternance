@@ -34,9 +34,7 @@ export const zFormationsRoutes = {
       querystring: z
         .object({
           romes: zRomesParams("romeDomain"),
-          romeDomain: z
-            .string()
-            .optional(),
+          romeDomain: z.string().optional(),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),

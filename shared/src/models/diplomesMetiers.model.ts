@@ -11,28 +11,18 @@ export const ZRomeWithLabel = z
     intitule: z.string(),
   })
   .strict()
-  
 
 export type IRomeWithLabel = z.output<typeof ZRomeWithLabel>
 
 export const ZMetierEnrichi = z
   .object({
     label: z.string(),
-    romes: z
-      .string()
-      .array()
-      ,
-    rncps: z
-      .string()
-      .array()
-      .nullish()
-      .optional()
-      ,
+    romes: z.string().array(),
+    rncps: z.string().array().nullish().optional(),
     type: z.string().nullish().optional(),
     romeTitles: ZRomeWithLabel.array().nullish().optional(),
   })
   .strict()
-  
 
 export type IMetierEnrichi = z.output<typeof ZMetierEnrichi>
 export type IMetierEnrichiJson = Jsonify<IMetierEnrichi>
@@ -43,9 +33,8 @@ export const ZMetiers = z
   .object({
     metiers: z
       .string()
-      
-      .array()
-      ,
+
+      .array(),
   })
   .strict()
 

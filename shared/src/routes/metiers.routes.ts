@@ -10,9 +10,7 @@ export const zMetiersRoutes = {
       path: "/v1/metiers/metiersParFormation/:cfd",
       params: z
         .object({
-          cfd: z
-            .string()
-            .min(1)
+          cfd: z.string().min(1),
         })
         .strict(),
       response: {
@@ -38,9 +36,7 @@ export const zMetiersRoutes = {
             .string()
 
             .optional(),
-          rncps: z
-            .string()
-            .optional()
+          rncps: z.string().optional(),
         })
         .strict(),
       response: {
