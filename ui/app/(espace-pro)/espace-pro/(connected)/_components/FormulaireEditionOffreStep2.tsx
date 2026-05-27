@@ -38,7 +38,6 @@ export const FormulaireEditionOffreStep2 = ({
   isFtEligible?: boolean
   totalSteps?: number
 }) => {
-  console.log("offre", offre)
   return (
     <Formik<IStep2Form>
       validateOnMount
