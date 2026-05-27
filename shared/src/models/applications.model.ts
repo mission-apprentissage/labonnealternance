@@ -107,7 +107,6 @@ const ZApplicationOld = z
       .describe("Réponse du candidat aux questions du recruteur"),
   })
   .strict()
-  
 
 export const ZApplication = ZApplicationOld.omit({
   applicant_email: true,

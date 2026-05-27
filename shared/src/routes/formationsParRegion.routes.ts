@@ -13,17 +13,11 @@ export const zV1FormationsParRegion = {
       path: "/v1/formationsParRegion",
       querystring: z
         .object({
-          romes: z
-            .string()
-            .optional(),
+          romes: z.string().optional(),
           romeDomain: z.string().optional(),
           caller: zCallerParam,
-          departement: z
-            .string()
-            .optional(),
-          region: z
-            .string()
-            .optional(),
+          departement: z.string().optional(),
+          region: z.string().optional(),
           diploma: zDiplomaParam,
           options: zGetFormationOptions,
         })

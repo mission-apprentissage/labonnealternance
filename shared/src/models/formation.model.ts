@@ -196,7 +196,6 @@ export const zFormationCatalogueSchema = z
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)
-  
 
 export const zFormationCatalogueSchemaNew = zFormationCatalogueSchema.omit({ _id: true })
 

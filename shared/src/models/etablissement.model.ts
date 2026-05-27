@@ -36,7 +36,6 @@ export const ZEtablissement = z
     created_at: z.date().nullish(),
   })
   .strict()
-  
 
 export type IEtablissement = z.output<typeof ZEtablissement>
 export type IEtablissementJson = Jsonify<z.input<typeof ZEtablissement>>
