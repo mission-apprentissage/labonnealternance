@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { usePathname } from "next/navigation"
 import { useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
@@ -26,10 +27,12 @@ const extractZipCode = (formulaire?: { address_detail?: unknown; address?: strin
   return undefined
 }
 
-const isZipEligibleForFtSupport = (formulaire?: { address_detail?: unknown; address?: string | null } | null): boolean => {
+// dans la liste des cps autorisés, on exclut les offres du secteur interim (naf 78.20Z) et les offres publiées par les cfa (url contenant "/cfa/") qui ne sont pas éligibles au support ft
+const isEligibleForFtSupport = (pathname: string, formulaire: { address_detail?: unknown; address?: string | null; naf_code?: string | null } | null): boolean => {
   const zipCode = extractZipCode(formulaire)
-  if (!zipCode) return true
-  return FT_ELIGIBLE_ZIP_PREFIXES.some((prefix) => zipCode.startsWith(prefix))
+  if (!zipCode) return false
+
+  return FT_ELIGIBLE_ZIP_PREFIXES.some((prefix) => zipCode.startsWith(prefix)) && formulaire?.naf_code !== "78.20Z" && !pathname.includes("/cfa/")
 }
 
 export const FormulaireEditionOffre = ({
@@ -46,6 +49,7 @@ export const FormulaireEditionOffre = ({
   const { token } = useSearchParamsRecord() as { token: string }
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [formValues, setFormValues] = useState<any>({})
+  const pathname = usePathname()
 
   const { data: formulaire } = useQuery({
     queryKey: ["formulaire", establishment_id],
@@ -55,7 +59,7 @@ export const FormulaireEditionOffre = ({
 
   if (!establishment_id) return <></>
 
-  const isFtEligible = isZipEligibleForFtSupport(formulaire)
+  const isFtEligible = isEligibleForFtSupport(pathname, formulaire)
   const totalSteps = isFtEligible ? 3 : 2
 
   return (
