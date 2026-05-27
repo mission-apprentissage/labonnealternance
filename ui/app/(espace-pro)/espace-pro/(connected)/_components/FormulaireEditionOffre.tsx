@@ -1,11 +1,20 @@
 "use client"
 
+import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
 import { FormulaireEditionOffreStep3FtSupport } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep3FtSupport"
+import { getFormulaire } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
+
+const FT_ELIGIBLE_ZIP_PREFIXES = ["08", "10", "51", "52", "54", "55", "57", "67", "68", "88", "44", "49", "53", "72", "85"]
+
+const isZipEligibleForFtSupport = (zipCode?: string | null): boolean => {
+  if (!zipCode) return false
+  return FT_ELIGIBLE_ZIP_PREFIXES.some((prefix) => zipCode.startsWith(prefix))
+}
 
 export const FormulaireEditionOffre = ({
   offre,
@@ -21,7 +30,17 @@ export const FormulaireEditionOffre = ({
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [formValues, setFormValues] = useState<any>({})
 
+  const { data: formulaire } = useQuery({
+    queryKey: ["formulaire", establishment_id],
+    queryFn: () => getFormulaire(establishment_id!),
+    enabled: Boolean(establishment_id),
+  })
+
   if (!establishment_id) return <></>
+
+  const zipCode = (formulaire?.address_detail as any)?.code_postal as string | undefined
+  const isFtEligible = isZipEligibleForFtSupport(zipCode)
+  const totalSteps = isFtEligible ? 3 : 2
 
   return (
     <>
@@ -34,27 +53,41 @@ export const FormulaireEditionOffre = ({
             pushMatomoEvent({
               event: MATOMO_EVENTS.JOB_CREATION_STARTED,
               step_name: "company_description",
-              ft_eligible: false,
+              ft_eligible: isFtEligible,
             })
             onChangeScreen?.()
           }}
           offre={offre}
           establishment_id={establishment_id}
+          totalSteps={totalSteps}
         />
       ) : currentStep === 2 ? (
         <FormulaireEditionOffreStep2
           onSubmit={(values) => {
-            setFormValues({ ...formValues, ...values })
-            setCurrentStep(3)
-            onChangeScreen?.()
+            if (!isFtEligible) {
+              const finalValues = { ...formValues, ...values, ft_support: false }
+              pushMatomoEvent({
+                event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
+                step_name: "screening_questions",
+                has_screening_questions: finalValues.to_applicant_questions?.length > 0,
+                ft_eligible: isFtEligible,
+              })
+              handleSave(finalValues)
+            } else {
+              setFormValues({ ...formValues, ...values })
+              setCurrentStep(3)
+              onChangeScreen?.()
+            }
           }}
           offre={offre}
           onCancel={() => {
             setCurrentStep(1)
             onChangeScreen?.()
           }}
+          isFtEligible={isFtEligible}
+          totalSteps={totalSteps}
         />
-      ) : currentStep === 3 ? (
+      ) : currentStep === 3 && isFtEligible ? (
         <FormulaireEditionOffreStep3FtSupport
           onSubmit={(values) => {
             const finalValues = { ...formValues, ...values }
@@ -62,7 +95,11 @@ export const FormulaireEditionOffre = ({
               event: MATOMO_EVENTS.JOB_CREATION_COMPLETED,
               step_name: "ft_support",
               has_screening_questions: finalValues.to_applicant_questions?.length > 0,
-              ft_eligible: finalValues.ft_support,
+              ft_eligible: isFtEligible,
+            })
+            pushMatomoEvent({
+              event: MATOMO_EVENTS.JOB_CREATION_FT_PARTNERSHIP_STEP,
+              ft_partnership: finalValues.ft_support,
             })
             handleSave(finalValues)
           }}
