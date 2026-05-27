@@ -43,7 +43,7 @@ export const FormulaireEditionOffre = ({
 }: {
   offre?: IJob
   establishment_id?: string
-  handleSave?: (values: any) => void
+  handleSave: (values: any) => void
   onChangeScreen?: () => void
 }) => {
   const { token } = useSearchParamsRecord() as { token?: string }

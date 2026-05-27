@@ -1302,6 +1302,7 @@ export function jobPartnersToRecruiter(
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
       to_applicant_questions: jobPartner.to_applicant_questions,
+      ft_support: jobPartner.ft_support ?? false,
     }
     return ijob
   })
