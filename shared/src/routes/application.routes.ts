@@ -74,9 +74,7 @@ export const zApplicationRoutes = {
               })
               .strict(),
           ])
-          .openapi({
-            description: "Bad Request",
-          }),
+          ,
         "401": z
           .union([
             ZResError,
@@ -88,9 +86,7 @@ export const zApplicationRoutes = {
               })
               .strict(),
           ])
-          .openapi({
-            description: "Unauthorized",
-          }),
+          ,
       },
       securityScheme: null,
     },

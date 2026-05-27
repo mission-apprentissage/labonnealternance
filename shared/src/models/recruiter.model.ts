@@ -19,9 +19,7 @@ const ZRecruiterWritable = z
       .string()
       .default(() => new ObjectId().toString())
       .describe("Identifiant de formulaire unique")
-      .openapi({
-        default: "Random UUID",
-      }),
+      ,
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
     establishment_siret: z.string().describe("Numéro SIRET de l'établissement"),
@@ -49,7 +47,7 @@ const ZRecruiterWritable = z
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
     managed_by: z.string().describe("Id de l'utilisateur gestionnaire"),
   })
-  .openapi("RecruiterWritable")
+  
 
 const collectionName = "recruiters" as const
 
@@ -58,7 +56,7 @@ export const ZRecruiter = ZRecruiterWritable.extend({
   distance: z.number().nullish(),
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
-}).openapi("Recruiter")
+})
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>
 
@@ -70,7 +68,7 @@ export const ZRecruiterWithRomeDetail = ZRecruiter.omit({ jobs: true })
       })
     ),
   })
-  .openapi("Recruiter")
+  
 
 export type IRecruiterWithRomeDetail = z.output<typeof ZRecruiterWithRomeDetail>
 
@@ -83,7 +81,7 @@ export const ZRecruiterWithRomeDetailAndApplicationCount = ZRecruiter.omit({ job
       })
     ),
   })
-  .openapi("Recruiter")
+  
 
 export type IRecruiterWithRomeDetailAndApplicationCount = z.output<typeof ZRecruiterWithRomeDetailAndApplicationCount>
 

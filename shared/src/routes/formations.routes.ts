@@ -38,13 +38,7 @@ export const zFormationsRoutes = {
           romeDomain: z
             .string()
             .optional()
-            .openapi({
-              param: {
-                description:
-                  "Un domaine ROME (1 lettre et deux chiffres) ou un grand domaine ROME (1 lettre). <br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-              },
-              example: "F ou I13",
-            }),
+            ,
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),
@@ -57,21 +51,10 @@ export const zFormationsRoutes = {
       headers: zRefererHeaders,
       response: {
         "200": ZLbaItemFormationResult,
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
+        "400": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: null,
-      openapi: {
-        tags: ["V1 - Formations"] as string[],
-        description: `Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique\n${rateLimitDescription({
-          max: 7,
-          timeWindow: "1s",
-        })}`,
-      },
     },
     "/v1/_private/formations/min": {
       method: "get",
@@ -109,10 +92,6 @@ export const zFormationsRoutes = {
         "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: null,
-      openapi: {
-        tags: ["V1 - Formations"] as string[],
-        description: `Get one formation identified by it's clé ministère éducatif\n${rateLimitDescription({ max: 7, timeWindow: "1s" })}`,
-      },
     },
     "/_private/formations/:id": {
       method: "get",

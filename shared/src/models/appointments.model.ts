@@ -37,7 +37,7 @@ export const ZMailing = z
     email_sent_at: z.date().nullish(),
   })
   .strict()
-  .openapi("Mailing")
+  
 
 export type IMailing = z.output<typeof ZMailing>
 
@@ -62,7 +62,7 @@ export const ZAppointment = z
     applicant_type: extensions.buildEnum(AppointmentUserType).nullish(),
   })
   .strict()
-  .openapi("Appointment")
+  
 
 export type IAppointment = z.output<typeof ZAppointment>
 export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>

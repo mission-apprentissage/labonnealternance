@@ -67,7 +67,7 @@ export const ZAdresseCFA = z
     acheminement_postal: ZAcheminementPostal.optional(),
   })
   .strict()
-  .openapi("AdresseCFA")
+  
 
 const ZAdresseV2 = z
   .object({
@@ -82,7 +82,7 @@ const ZAdresseV2 = z
     acheminement_postal: ZAcheminementPostal.optional(),
   })
   .strict()
-  .openapi("AdresseV2")
+  
 
 export const ZAdresseV3 = z
   .object({
@@ -104,7 +104,7 @@ export const ZAdresseV3 = z
     acheminement_postal: ZAcheminementPostal.optional(),
   })
   .strict()
-  .openapi("AdresseV3")
+  
 
 export const ZGlobalAddress = z.union([ZAdresseCFA, ZAdresseV2, ZAdresseV3])
 

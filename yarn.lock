@@ -59,17 +59,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@asteasolutions/zod-to-openapi@npm:^7.3.4":
-  version: 7.3.4
-  resolution: "@asteasolutions/zod-to-openapi@npm:7.3.4"
-  dependencies:
-    openapi3-ts: ^4.1.2
-  peerDependencies:
-    zod: ^3.20.2
-  checksum: 897568b35a5a317c91cf9419d49d9ce8ab1eb8e97253b0d11149032f62a5f692b27abefe7a081717225ac5b49b14df275ae691219a09605a8c347949375a1554
-  languageName: node
-  linkType: hard
-
 "@aws-crypto/crc32@npm:5.2.0":
   version: 5.2.0
   resolution: "@aws-crypto/crc32@npm:5.2.0"
@@ -14431,7 +14420,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.5.0":
+"openapi3-ts@npm:^4.5.0":
   version: 4.5.0
   resolution: "openapi3-ts@npm:4.5.0"
   dependencies:
@@ -16671,7 +16660,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "shared@workspace:shared"
   dependencies:
-    "@asteasolutions/zod-to-openapi": ^7.3.4
     "@tsconfig/node24": ^24.0.3
     "@types/node": ^24.10.0
     bson: ^6.10.4
@@ -16682,7 +16670,6 @@ __metadata:
     lodash-es: ^4.17.21
     luhn: ^2.4.1
     mongodb: ^6.20.0
-    openapi3-ts: ^4.5.0
     type-fest: ^5.2.0
     typescript: ^5.9.3
     zod: ^3.24.3
