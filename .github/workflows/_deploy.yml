@@ -208,19 +208,21 @@ jobs:
         run: |
           CURRENT_TAG="v${{ needs.version.outputs.VERSION }}"
 
-          # Récupère la version deployée lors du dernier run réussi en production
-          # en lisant le nom du job "Deploy X.X.X on production" via l'API GitHub Actions.
-          LAST_RUN_ID=$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=20" \
-            --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id" \
-            | head -1)
-
+          # Itère sur les derniers runs réussis pour trouver le dernier déploiement en production
+          # (le workflow tourne aussi pour recette/pentest, donc on ne peut pas juste prendre head -1).
           PREV_TAG=""
-          if [ -n "$LAST_RUN_ID" ] && [ "$LAST_RUN_ID" != "null" ]; then
-            PREV_VERSION=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LAST_RUN_ID/jobs" \
-              --jq 'first(.jobs[] | select(.name | test("Deploy .* on production")) | .name | capture("Deploy (?<v>.*) on production") | .v)')
-            [ -n "$PREV_VERSION" ] && PREV_TAG="v${PREV_VERSION}"
-          fi
+          RUN_IDS=$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=20" \
+            --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id")
+
+          for RUN_ID in $RUN_IDS; do
+            PREV_VERSION=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" \
+              --jq 'first(.jobs[] | select(.name | test("Deploy .* on production")) | .name | capture("Deploy (?<v>.*) on production") | .v) // empty')
+            if [ -n "$PREV_VERSION" ]; then
+              PREV_TAG="v${PREV_VERSION}"
+              break
+            fi
+          done
 
           if [ -z "$PREV_TAG" ]; then
             echo "No previous production run found, skipping"
