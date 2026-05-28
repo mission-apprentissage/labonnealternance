@@ -43,6 +43,9 @@ on:
       TOKEN_MNA_SHARED:
         description: Authentication token for accessing private repositories
         required: true
+      PROJECT_TOKEN:
+        description: Token with project scope for updating GitHub Project items
+        required: false
 
 jobs:
   version:
@@ -324,4 +327,4 @@ jobs:
             done
           done
         env:
-          GH_TOKEN: ${{ secrets.TOKEN_MNA_SHARED }}
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
