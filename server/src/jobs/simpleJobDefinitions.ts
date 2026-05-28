@@ -70,7 +70,6 @@ import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
-import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium, inviteEtablissementAffelnetToPremiumBypassDate } from "./rdv/inviteEtablissementAffelnetToPremium"
 import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
@@ -175,10 +174,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonymizeUsers,
     description: "anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an",
-  },
-  {
-    fct: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
-    description: "Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)",
   },
   {
     fct: importReferentielOnisep,
