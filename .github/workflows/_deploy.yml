@@ -197,6 +197,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
+      issues: write
     steps:
       - name: Checkout project
         uses: actions/checkout@v6
@@ -269,3 +270,56 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Mark linked issues as en-production in GitHub Project
+        shell: bash
+        run: |
+          PR_NUMBERS=$(git log --pretty=format:"%s" "${PREV_TAG}..${CURRENT_TAG}" \
+            | grep -oP '\(#\K[0-9]+(?=\))' || true)
+
+          for PR in $PR_NUMBERS; do
+            # Utilise closingIssuesReferences pour ne cibler que les issues liées via Closes/Fixes/Resolves
+            ISSUE_NUMBERS=$(gh api graphql -f query='
+              query($owner: String!, $repo: String!, $pr: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pr) {
+                    closingIssuesReferences(first: 10) {
+                      nodes { number }
+                    }
+                  }
+                }
+              }' -f owner="mission-apprentissage" -f repo="labonnealternance" -F pr="$PR" \
+              --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].number' 2>/dev/null || true)
+
+            for ISSUE in $ISSUE_NUMBERS; do
+              ITEM_ID=$(gh api graphql -f query='
+                query($owner: String!, $repo: String!, $issue: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    issue(number: $issue) {
+                      projectItems(first: 100) {
+                        nodes { id project { number } }
+                      }
+                    }
+                  }
+                }' -f owner="mission-apprentissage" -f repo="labonnealternance" -F issue="$ISSUE" \
+                --jq '[.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | .id] | first' 2>/dev/null || true)
+
+              if [ -n "$ITEM_ID" ] && [ "$ITEM_ID" != "null" ]; then
+                gh api graphql -f query='
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId itemId: $itemId fieldId: $fieldId
+                      value: { singleSelectOptionId: $optionId }
+                    }) { projectV2Item { id } }
+                  }' \
+                  -f projectId="PVT_kwDOA8sl_s4BW3Li" \
+                  -f itemId="$ITEM_ID" \
+                  -f fieldId="PVTSSF_lADOA8sl_s4BW3LizhSIG_8" \
+                  -f optionId="a9d4a5ea" \
+                  > /dev/null 2>&1 || true
+                echo "Issue #$ISSUE → en-production"
+              fi
+            done
+          done
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN_MNA_SHARED }}
