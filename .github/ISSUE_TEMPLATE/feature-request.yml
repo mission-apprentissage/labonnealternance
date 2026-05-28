@@ -46,18 +46,6 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priorité
-      options:
-        - P1 — Critique
-        - P2 — Important
-        - P3 — Normal
-        - P4 — Faible / Nice to have
-    validations:
-      required: true
-
   - type: textarea
     id: technical-context
     attributes:

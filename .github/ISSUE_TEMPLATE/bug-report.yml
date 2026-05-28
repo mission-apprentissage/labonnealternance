@@ -64,18 +64,6 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priorité
-      options:
-        - P1 — Bloquant (production impactée)
-        - P2 — Important (dégradation significative)
-        - P3 — Normal
-        - P4 — Faible
-    validations:
-      required: true
-
   - type: textarea
     id: technical-context
     attributes:

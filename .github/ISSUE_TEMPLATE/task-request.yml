@@ -38,18 +38,6 @@ body:
         - Patterns à suivre : ...
         - Contraintes : ...
 
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priorité
-      options:
-        - P1 — Urgent
-        - P2 — Important
-        - P3 — Normal
-        - P4 — Faible
-    validations:
-      required: true
-
   - type: checkboxes
     id: definition-of-done
     attributes:
