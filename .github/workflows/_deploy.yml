@@ -188,3 +188,59 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
+
+  changelog:
+    if: ${{ success() && inputs.environment == 'production' }}
+    needs: ["version", "deploy"]
+    name: Post changelog to Slack
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Post changelog to Slack
+        shell: bash
+        run: |
+          CURRENT_TAG="v${{ needs.version.outputs.VERSION }}"
+
+          # Récupère la version deployée lors du dernier run réussi en production
+          # en lisant le nom du job "Deploy X.X.X on production" via l'API GitHub Actions.
+          LAST_RUN_ID=$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=20" \
+            --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id" \
+            | head -1)
+
+          PREV_TAG=""
+          if [ -n "$LAST_RUN_ID" ] && [ "$LAST_RUN_ID" != "null" ]; then
+            PREV_VERSION=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$LAST_RUN_ID/jobs" \
+              --jq 'first(.jobs[] | select(.name | test("Deploy .* on production")) | .name | capture("Deploy (?<v>.*) on production") | .v)')
+            [ -n "$PREV_VERSION" ] && PREV_TAG="v${PREV_VERSION}"
+          fi
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous production run found, skipping"
+            exit 0
+          fi
+
+          CHANGELOG=$(git log --pretty=format:"%an - %s" "${PREV_TAG}..${CURRENT_TAG}")
+
+          if [ -z "$CHANGELOG" ]; then
+            echo "No commits between ${PREV_TAG} and ${CURRENT_TAG}, skipping"
+            exit 0
+          fi
+
+          jq -n \
+            --arg title ":rocket: *Production déployée : ${CURRENT_TAG} (depuis ${PREV_TAG})*" \
+            --arg log "${CHANGELOG}" \
+            '{text: ($title + "\n```" + $log + "```")}' \
+          | curl -s -X POST "$SLACK_WEBHOOK_URL" \
+              -H 'Content-type: application/json' \
+              --data @-
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
