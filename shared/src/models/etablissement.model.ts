@@ -13,9 +13,7 @@ export const ZEtablissement = z
     _id: zObjectId,
     formateur_siret: extensions.siret.nullish(),
     gestionnaire_siret: extensions.siret.nullish(),
-    raison_sociale: z.string().nullable().openapi({
-      example: "CAMPUS FONDERIE DE L'IMAGE",
-    }),
+    raison_sociale: z.string().nullable(),
     adresse: z.string().nullish(),
     formateur_address: z.string().nullish(),
     formateur_zip_code: z.string().nullish(),
@@ -38,7 +36,6 @@ export const ZEtablissement = z
     created_at: z.date().nullish(),
   })
   .strict()
-  .openapi("Etablissement")
 
 export type IEtablissement = z.output<typeof ZEtablissement>
 export type IEtablissementJson = Jsonify<z.input<typeof ZEtablissement>>

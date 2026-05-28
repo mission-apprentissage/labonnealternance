@@ -1,4 +1,3 @@
-import type { oas31 } from "openapi3-ts"
 import type { Jsonify } from "type-fest"
 import type { AnyZodObject, ZodEffects, ZodType } from "zod"
 
@@ -7,44 +6,12 @@ import type { AccessPermission, AccessRessouces } from "../security/permissions.
 
 export const ZResError = z
   .object({
-    data: z
-      .any()
-      .optional()
-      .openapi({
-        description: "Données contextuelles liées à l'erreur",
-        example: {
-          validationError: {
-            issues: [
-              {
-                code: "invalid_type",
-                expected: "number",
-                received: "nan",
-                path: ["longitude"],
-                message: "Number attendu",
-              },
-            ],
-            name: "ZodError",
-            statusCode: 400,
-            code: "FST_ERR_VALIDATION",
-            validationContext: "querystring",
-          },
-        },
-      }),
-    message: z.string().openapi({
-      description: "Un message explicatif de l'erreur",
-      example: "querystring.longitude: Number attendu",
-    }),
-    error: z.string().openapi({
-      description: "Le type générique de l'erreur",
-      example: "Bad Request",
-    }),
-    statusCode: z.number().openapi({
-      description: "Le status code retourné",
-      example: 400,
-    }),
+    data: z.any().optional(),
+    message: z.string(),
+    error: z.string(),
+    statusCode: z.number(),
   })
   .strict()
-  .openapi("Error")
 
 export const ZResOk = z.object({}).strict()
 
@@ -81,7 +48,6 @@ interface IRouteSchemaCommon {
   headers?: AnyZodObject
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
-  openapi?: null | Omit<oas31.OperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
   securityScheme: SecurityScheme | null
 }
 

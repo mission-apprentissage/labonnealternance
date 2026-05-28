@@ -65,7 +65,6 @@ export const ZDelegation = z
     etablissement_id: z.string().nullish().describe("Identifiant d'établissement du catalogue correspondant à etablissement_gestionnaire_id ou etablissement_formateur_id"),
   })
   .strict()
-  .openapi("Delegation")
 
 export const ZJobFields = z
   .object({
@@ -110,19 +109,14 @@ export const ZJobFields = z
     to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
   .strict()
-  .openapi("JobWritable")
 
 export const ZJob = ZJobFields.extend({
   _id: zObjectId,
-})
-  .strict()
-  .openapi("Job")
+}).strict()
 
 export const ZJobWithRomeDetail = ZJob.extend({
   rome_detail: ZReferentielRomeForJob.nullish(),
-})
-  .strict()
-  .openapi("JobWithRomeDetail")
+}).strict()
 
 export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
   // Le changement de jour se fait à minuit (heure de Paris)
@@ -165,7 +159,6 @@ export const ZJobCreate = ZJobFields.pick({
     job_start_date: ZJobStartDateCreate(),
   })
   .strict()
-  .openapi("JobWrite")
 
 export type IDelegation = z.output<typeof ZDelegation>
 
