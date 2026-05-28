@@ -28,6 +28,19 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone technique
+      options:
+        - UI (interface candidat/employeur)
+        - Serveur (API, emails, jobs)
+        - UI + Serveur
+        - Shared (types, schémas)
+        - Je ne sais pas
+    validations:
+      required: true
+
   - type: textarea
     id: technical-notes
     attributes:
@@ -41,7 +54,7 @@ body:
   - type: checkboxes
     id: definition-of-done
     attributes:
-      label: Définition of Done
+      label: Definition of Done
       options:
         - label: Code review approuvée et mergée
         - label: "`yarn typecheck` passe"
