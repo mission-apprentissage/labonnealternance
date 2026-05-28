@@ -34,7 +34,7 @@ export const removeEligibleTrainingsForAppointmentsNotInCatalogue = async () => 
 
   const deleteOps = result.map((etfa) => ({
     deleteOne: {
-      filter: { _id: etfa._id },
+      filter: { cle_ministere_educatif: etfa.cle_ministere_educatif },
     },
   }))
 
