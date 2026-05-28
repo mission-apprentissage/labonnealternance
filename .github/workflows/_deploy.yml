@@ -229,17 +229,39 @@ jobs:
             exit 0
           fi
 
-          CHANGELOG=$(git log --pretty=format:"%an - %s" "${PREV_TAG}..${CURRENT_TAG}")
+          TODAY=$(date +%Y-%m-%d)
+          NL=$'\n'
 
-          if [ -z "$CHANGELOG" ]; then
+          FEAT_LINES=""
+          FIX_LINES=""
+          CHORE_LINES=""
+          OTHER_LINES=""
+
+          while IFS=$'\t' read -r hash author subject; do
+            desc=$(echo "$subject" | sed -E 's/^[a-z]+(\([^)]*\))?: //')
+            if echo "$subject" | grep -qE '^feat[\(:]'; then
+              FEAT_LINES+="• ${author} - ${desc} (${hash})${NL}"
+            elif echo "$subject" | grep -qE '^fix[\(:]'; then
+              FIX_LINES+="• ${author} - ${desc} (${hash})${NL}"
+            elif echo "$subject" | grep -qE '^chore[\(:]'; then
+              CHORE_LINES+="• ${author} - ${desc} (${hash})${NL}"
+            else
+              OTHER_LINES+="• ${author} - ${subject} (${hash})${NL}"
+            fi
+          done < <(git log --pretty=format:"%h%x09%an%x09%s" "${PREV_TAG}..${CURRENT_TAG}")
+
+          if [ -z "$FEAT_LINES" ] && [ -z "$FIX_LINES" ] && [ -z "$CHORE_LINES" ] && [ -z "$OTHER_LINES" ]; then
             echo "No commits between ${PREV_TAG} and ${CURRENT_TAG}, skipping"
             exit 0
           fi
 
-          jq -n \
-            --arg title ":rocket: *Production déployée : ${CURRENT_TAG} (depuis ${PREV_TAG})*" \
-            --arg log "${CHANGELOG}" \
-            '{text: ($title + "\n```" + $log + "```")}' \
+          MESSAGE=":rocket: *Déployé en production !*${NL}${PREV_TAG} → *${CURRENT_TAG}* (${TODAY})${NL}"
+          [ -n "$FEAT_LINES" ] && MESSAGE+="${NL}*Nouvelles fonctionnalités*${NL}${NL}${FEAT_LINES}"
+          [ -n "$FIX_LINES" ]  && MESSAGE+="${NL}*Corrections*${NL}${NL}${FIX_LINES}"
+          [ -n "$CHORE_LINES" ] && MESSAGE+="${NL}*Maintenance*${NL}${NL}${CHORE_LINES}"
+          [ -n "$OTHER_LINES" ] && MESSAGE+="${NL}*Autres changements*${NL}${NL}${OTHER_LINES}"
+
+          jq -n --arg text "$MESSAGE" '{text: $text}' \
           | curl -s -X POST "$SLACK_WEBHOOK_URL" \
               -H 'Content-type: application/json' \
               --data @-
