@@ -71,6 +71,7 @@ import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBre
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
+import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/removeEligibleTrainingsForAppointmentsNotInCatalogue"
 import { inviteEtablissementAffelnetToPremium, inviteEtablissementAffelnetToPremiumBypassDate } from "./rdv/inviteEtablissementAffelnetToPremium"
 import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
 import { inviteEtablissementParcoursupToPremium, inviteEtablissementParcoursupToPremiumBypassDate } from "./rdv/inviteEtablissementParcoursupToPremium"
@@ -174,6 +175,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: anonymizeUsers,
     description: "anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an",
+  },
+  {
+    fct: removeEligibleTrainingsForAppointmentsNotInCatalogue,
+    description: "Supprime les formations éligibles à la prise de rendez-vous absentes du catalogue des formations (RCO)",
   },
   {
     fct: importReferentielOnisep,

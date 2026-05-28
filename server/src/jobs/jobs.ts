@@ -37,6 +37,7 @@ import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBre
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
+import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/removeEligibleTrainingsForAppointmentsNotInCatalogue"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
 import { inviteEtablissementParcoursupToPremium } from "./rdv/inviteEtablissementParcoursupToPremium"
@@ -186,6 +187,11 @@ export async function setupJobProcessor() {
           "Supprime les etablissements dupliqués à cause du parallélisme du job de synchronisation RDVA": {
             cron_string: "30 3 * * *",
             handler: removeDuplicateEtablissements,
+            tag: "main",
+          },
+          "Suppression des formations éligibles absentes du catalogue": {
+            cron_string: "00 4 * * *",
+            handler: removeEligibleTrainingsForAppointmentsNotInCatalogue,
             tag: "main",
           },
           "Export contact recruteurs vers Brevo": {
