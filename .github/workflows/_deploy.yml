@@ -93,6 +93,7 @@ jobs:
     needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Notify new deployment on Slack
         uses: ravsamhq/notify-slack-action@v2
