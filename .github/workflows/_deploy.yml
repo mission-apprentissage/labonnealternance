@@ -214,7 +214,7 @@ jobs:
           # (le workflow tourne aussi pour recette/pentest, donc on ne peut pas juste prendre head -1).
           PREV_TAG=""
           RUN_IDS=$(gh api \
-            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=20" \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=100" \
             --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id")
 
           for RUN_ID in $RUN_IDS; do
@@ -230,6 +230,10 @@ jobs:
             echo "No previous production run found, skipping"
             exit 0
           fi
+
+          # Transmettre les tags aux steps suivants
+          echo "PREV_TAG=${PREV_TAG}" >> "$GITHUB_ENV"
+          echo "CURRENT_TAG=${CURRENT_TAG}" >> "$GITHUB_ENV"
 
           TODAY=$(date +%Y-%m-%d)
           NL=$'\n'
