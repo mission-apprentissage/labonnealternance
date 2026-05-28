@@ -284,6 +284,7 @@ jobs:
           PR_NUMBERS=$(git log --pretty=format:"%s" "${PREV_TAG}..${CURRENT_TAG}" \
             | grep -oP '\(#\K[0-9]+(?=\))' || true)
 
+          FAILED=0
           for PR in $PR_NUMBERS; do
             # Utilise closingIssuesReferences pour ne cibler que les issues liées via Closes/Fixes/Resolves
             ISSUE_NUMBERS=$(gh api graphql -f query='
@@ -322,9 +323,10 @@ jobs:
                   -f projectId="PVT_kwDOA8sl_s4BW3Li" \
                   -f itemId="$ITEM_ID" \
                   -f fieldId="PVTSSF_lADOA8sl_s4BW3LizhSIG_8" \
-                  -f optionId="a9d4a5ea" && echo "Issue #$ISSUE → en-production" || echo "Issue #$ISSUE → échec mise à jour"
+                  -f optionId="a9d4a5ea" && echo "Issue #$ISSUE → en-production" || { echo "Issue #$ISSUE → échec mise à jour"; FAILED=1; }
               fi
             done
           done
+          [ $FAILED -eq 0 ] || exit 1
         env:
           GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}
