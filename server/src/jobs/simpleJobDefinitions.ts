@@ -70,7 +70,6 @@ import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
-import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium, inviteEtablissementAffelnetToPremiumBypassDate } from "./rdv/inviteEtablissementAffelnetToPremium"
 import { inviteEtablissementAffelnetToPremiumFollowUpCli } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
@@ -79,6 +78,7 @@ import { inviteEtablissementParcoursupToPremiumFollowUpCli } from "./rdv/inviteE
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/removeEligibleTrainingsForAppointmentsNotInCatalogue"
 import { repriseEnvoiEmailsPRDV } from "./rdv/repriseEnvoiPRDV"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
@@ -177,8 +177,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an",
   },
   {
-    fct: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
-    description: "Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)",
+    fct: removeEligibleTrainingsForAppointmentsNotInCatalogue,
+    description: "Supprime les formations éligibles à la prise de rendez-vous absentes du catalogue des formations (RCO)",
   },
   {
     fct: importReferentielOnisep,
