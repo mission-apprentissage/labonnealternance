@@ -1273,6 +1273,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   await getDbCollection("applications").updateOne(
     {
       _id: application._id,
+      company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
     },
     {
       $set: {
