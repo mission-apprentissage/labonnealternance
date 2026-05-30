@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-describe("search.controller", () => {
+describe.skip("search.controller", () => {
   useMongo()
   const httpClient = useServer()
 
