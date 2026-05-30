@@ -279,10 +279,13 @@ git config merge.sops.driver "sops merge %O %A %B"
 Sans cette configuration, git ne sait pas merger des fichiers chiffrés et les marqueurs de conflit (`<<<<<<<`) corrompent le YAML. En cas de conflit non résolu automatiquement, procédure manuelle :
 
 ```bash
+# Remplacer par le fichier en conflit (ex: env.production.yml, env.recette.yml…)
+FILE=.infra/env.production.yml
+
 # Extraire les trois versions propres
-git show :1:.infra/env.production.yml > /tmp/base.yml
-git show :2:.infra/env.production.yml > /tmp/ours.yml
-git show :3:.infra/env.production.yml > /tmp/theirs.yml
+git show :1:$FILE > /tmp/base.yml
+git show :2:$FILE > /tmp/ours.yml
+git show :3:$FILE > /tmp/theirs.yml
 
 # Déchiffrer
 sops -d /tmp/base.yml   > /tmp/base.plain.yml
@@ -293,8 +296,8 @@ sops -d /tmp/theirs.yml > /tmp/theirs.plain.yml
 git merge-file /tmp/ours.plain.yml /tmp/base.plain.yml /tmp/theirs.plain.yml
 
 # Re-chiffrer et valider
-sops -e /tmp/ours.plain.yml > .infra/env.production.yml
-git add .infra/env.production.yml
+sops -e /tmp/ours.plain.yml > $FILE
+git add $FILE
 ```
 
 #### Linter
