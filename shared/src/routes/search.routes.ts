@@ -10,70 +10,30 @@ export const zSearchRoutes = {
       path: "/v1/search",
       querystring: z
         .object({
-          q: z
-            .string()
-            .optional()
-            .openapi({
-              param: { description: "Texte libre de recherche (fuzzy, analyse française)" },
-              example: "développeur web",
-            }),
-          type: z
-            .string()
-            .optional()
-            .openapi({
-              param: { description: "Type de résultat : offre ou formation" },
-              example: "offre",
-            }),
+          q: z.string().optional().describe("Texte libre de recherche (fuzzy, analyse française)"),
+          type: z.string().optional().describe("Type de résultat : offre ou formation"),
           type_filter_label: z
             .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
-            .openapi({
-              param: { description: "Libellé de type pour l'affichage des filtres (peut être passé plusieurs fois)" },
-            }),
+            .describe("Libellé de type pour l'affichage des filtres (peut être passé plusieurs fois)"),
           contract_type: z
             .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
-            .openapi({
-              param: { description: "Types de contrat (peut être passé plusieurs fois)" },
-              example: ["Apprentissage"],
-            }),
+            .describe("Types de contrat (peut être passé plusieurs fois)"),
           level: z
             .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
-            .openapi({
-              param: { description: "Niveau de diplôme européen (3 à 7, peut être passé plusieurs fois)" },
-              example: ["4"],
-            }),
+            .describe("Niveau de diplôme européen (3 à 7, peut être passé plusieurs fois)"),
           activity_sector: z
             .union([z.array(z.string()), z.string().transform((v) => [v])])
             .optional()
-            .openapi({
-              param: { description: "Secteur d'activité (peut être passé plusieurs fois)" },
-            }),
-          organization_name: z
-            .string()
-            .optional()
-            .openapi({
-              param: { description: "Filtre par nom d'entreprise (exact)" },
-            }),
+            .describe("Secteur d'activité (peut être passé plusieurs fois)"),
+          organization_name: z.string().optional().describe("Filtre par nom d'entreprise (exact)"),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),
-          page: z.coerce
-            .number()
-            .min(0)
-            .default(0)
-            .openapi({
-              param: { description: "Index de page (0-based)" },
-            }),
-          hitsPerPage: z.coerce
-            .number()
-            .min(1)
-            .max(100)
-            .default(20)
-            .openapi({
-              param: { description: "Nombre de résultats par page (max 100)" },
-            }),
+          page: z.coerce.number().min(0).default(0).describe("Index de page (0-based)"),
+          hitsPerPage: z.coerce.number().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
         })
         .strict(),
       headers: z.object({ referer: z.string().optional() }).passthrough(),
@@ -103,12 +63,6 @@ export const zSearchRoutes = {
         }),
       },
       securityScheme: null,
-      openapi: {
-        tags: ["Search"],
-        summary: "Recherche full-text dans les offres et formations",
-        description:
-          "Endpoint de recherche unifié utilisant MongoDB Search (mongot/Lucene). Supporte la recherche textuelle, le filtrage par facettes et la recherche géographique.",
-      },
     },
   },
 } as const satisfies IRoutesDef
