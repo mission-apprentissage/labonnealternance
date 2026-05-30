@@ -1,14 +1,17 @@
+import { createJobPartner } from "@tests/utils/jobsPartners.test.utils"
 import { createAndLogUser, logUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
 import { saveAdminUserTest, saveEntrepriseUserTest, saveOpcoUserTest } from "@tests/utils/user.test.utils"
 import { OPCOS_LABEL } from "shared/constants/index"
+import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () => {
   beforeEach(async () => {
     return async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
       await getDbCollection("entreprises").deleteMany({})
       await getDbCollection("userswithaccounts").deleteMany({})
       await getDbCollection("rolemanagements").deleteMany({})
@@ -176,7 +179,7 @@ describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () 
       body: {
         first_name: "testfirstname",
         last_name: "testlastname",
-        email: entrepriseUserA.user.email,
+        email: `${Math.random()}@mail.fr`,
         phone: entrepriseUserA.user.phone,
         opco: "NOT_AN_OPCO",
       },
@@ -191,13 +194,14 @@ describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () 
       body: {
         first_name: "testfirstname",
         last_name: "testlastname",
-        email: entrepriseUserA.user.email,
+        email: `${Math.random()}@mail.fr`,
         phone: entrepriseUserA.user.phone,
-        opco: entrepriseUserA.entreprise.opco,
       },
     })
     expect.soft(response.statusCode).toBe(403)
+    expect.soft(JSON.parse(response.body).data.error).toBe("UNSUPPORTED")
 
+    // test de modification par un opco
     loggedUser = await createAndLogUser(httpClient, "userOPCO", { type: "OPCO" })
     response = await httpClient().inject({
       method: "PUT",
@@ -227,5 +231,54 @@ describe("Modification des utilisateurs par ADMIN et par utilisateur OPCO ", () 
       },
     })
     expect.soft(response.statusCode).toBe(403)
+  })
+
+  it("met à jour l'OPCO uniquement sur les offres LBA gérées par l'utilisateur ciblé", async () => {
+    const entrepriseUser = await saveEntrepriseUserTest({}, {}, { siret: "89557430766546", opco: OPCOS_LABEL.AKTO })
+    await createJobPartner({
+      workplace_siret: entrepriseUser.entreprise.siret,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      managed_by: entrepriseUser.user._id,
+      workplace_opco: OPCOS_LABEL.AKTO,
+    })
+    const externalPartnerOffer = await createJobPartner({
+      workplace_siret: entrepriseUser.entreprise.siret,
+      partner_label: JOBPARTNERS_LABEL.HELLOWORK,
+      workplace_opco: OPCOS_LABEL.AKTO,
+    })
+    const otherManagedLbaOffer = await createJobPartner({
+      workplace_siret: entrepriseUser.entreprise.siret,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      workplace_opco: OPCOS_LABEL.AKTO,
+    })
+
+    const loggedUser = await createAndLogUser(httpClient, "userAdmin", { type: "ADMIN" })
+
+    const response = await httpClient().inject({
+      method: "PUT",
+      path: `/api/admin/users/${entrepriseUser.user._id.toString()}/organization/${entrepriseUser.entreprise.siret}`,
+      headers: loggedUser.bearerToken,
+      body: {
+        first_name: entrepriseUser.user.first_name,
+        last_name: entrepriseUser.user.last_name,
+        email: entrepriseUser.user.email,
+        phone: entrepriseUser.user.phone,
+        opco: OPCOS_LABEL.CONSTRUCTYS,
+      },
+    })
+
+    expect.soft(response.statusCode).toBe(200)
+
+    const updatedManagedOffer = await getDbCollection("jobs_partners").findOne({
+      workplace_siret: entrepriseUser.entreprise.siret,
+      partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
+      managed_by: entrepriseUser.user._id,
+    })
+    const unchangedExternalOffer = await getDbCollection("jobs_partners").findOne({ _id: externalPartnerOffer._id })
+    const unchangedOtherManagedOffer = await getDbCollection("jobs_partners").findOne({ _id: otherManagedLbaOffer._id })
+
+    expect.soft(updatedManagedOffer?.workplace_opco).toBe(OPCOS_LABEL.CONSTRUCTYS)
+    expect.soft(unchangedExternalOffer?.workplace_opco).toBe(OPCOS_LABEL.AKTO)
+    expect.soft(unchangedOtherManagedOffer?.workplace_opco).toBe(OPCOS_LABEL.AKTO)
   })
 })

@@ -15,7 +15,7 @@ export default async function PublicLayout({ children }: PropsWithChildren) {
       <SkipLinks
         links={[
           { label: "Menu", anchor: "#header-links" },
-          { label: "Contenu", anchor: "#home-pro-content" },
+          { label: "Contenu", anchor: "#landing-page-content" },
           { label: "Pied de page", anchor: "#footer-links" },
         ]}
       />

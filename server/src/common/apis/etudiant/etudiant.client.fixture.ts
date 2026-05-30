@@ -48,8 +48,20 @@ function buildBaseNock() {
   return nock(origin, { reqheaders: { authorization: `Bearer ${config.job_etudiant.apiKey}` } }).get(path)
 }
 
-export function nockJobEtudiantPage({ total, totalPages, ...rest }: IJobEtudiantPageResponse) {
-  return buildBaseNock().reply(200, { total: total ?? rest.jobs.length, totalPages: totalPages ?? 1, ...rest })
+type IRateLimitHeaders = { rateLimitRemaining?: number; rateLimitReset?: number }
+
+export function nockJobEtudiantPage({ total, totalPages, ...rest }: IJobEtudiantPageResponse, { rateLimitRemaining, rateLimitReset }: IRateLimitHeaders = {}) {
+  const headers: Record<string, string> = {}
+  if (rateLimitRemaining !== undefined) headers["x-ratelimit-remaining"] = String(rateLimitRemaining)
+  if (rateLimitReset !== undefined) headers["x-ratelimit-reset"] = String(rateLimitReset)
+  return buildBaseNock().reply(200, { total: total ?? rest.jobs.length, totalPages: totalPages ?? 1, ...rest }, headers)
+}
+
+export function nockJobEtudiantRateLimit({ retryAfter }: { retryAfter: number }) {
+  const { origin, pathname, search } = new URL(config.job_etudiant.url)
+  return nock(origin, { reqheaders: { authorization: `Bearer ${config.job_etudiant.apiKey}` } })
+    .get(`${pathname}${search}`)
+    .reply(429, "Too Many Requests", { "retry-after": String(retryAfter) })
 }
 
 export function nockJobEtudiantNextPage(nextPageToken: string, { total, totalPages, ...rest }: IJobEtudiantPageResponse) {

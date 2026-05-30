@@ -8,6 +8,7 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { getDepotCtaHref } from "@/services/getDepotCtaHref"
 import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -16,6 +17,8 @@ export const metadata: Metadata = PAGES.static.jeSuisCFA.getMetadata()
 const JeSuisCFAPage = async () => {
   const { user } = await getSession()
   const isCfaConnected = user && user.type === AUTHTYPE.CFA
+
+  const ctaDepotHref: string = getDepotCtaHref(user, "CFA")
 
   return (
     <Box
@@ -43,6 +46,7 @@ const JeSuisCFAPage = async () => {
             flexDirection={"column"}
             justifyContent={"center"}
             gap={fr.spacing("5v")}
+            id="landing-page-content"
           >
             <Typography variant="h1" component="h1" gutterBottom color={fr.colors.decisions.text.title.blueFrance.default}>
               Vous êtes un organisme de formation
@@ -55,7 +59,7 @@ const JeSuisCFAPage = async () => {
             </Typography>
             <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("4v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
               <Box>
-                <Button linkProps={{ href: PAGES.static.espaceProCreationCfa.getPath() }} priority="primary">
+                <Button linkProps={{ href: ctaDepotHref }} priority="primary">
                   Créer mon espace dédié
                 </Button>
               </Box>

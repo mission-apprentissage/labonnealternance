@@ -10,7 +10,6 @@ const DidYouKnow = () => {
         position: "relative",
         backgroundColor: "white",
         padding: "16px 24px",
-        maxWidth: "970px",
         mx: { xs: 0, sm: "30px", md: "30px", lg: "auto" },
         my: fr.spacing("6v"),
       }}

@@ -12,7 +12,10 @@ import { ARTICLES as ARTICLES_CFA } from "@/app/(editorial)/guide-cfa/const"
 import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteur/const"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata()
+export const metadata: Metadata = {
+  ...PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getMetadata(),
+  alternates: { canonical: PAGES.static.guidePreventionDesRisquesProfessionnelsPourLesApprentis.getPath() },
+}
 
 const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [ARTICLES_ALTERNANT["comprendre-la-remuneration"], ARTICLES_ALTERNANT["la-rupture-de-contrat"], ARTICLES_ALTERNANT["se-faire-accompagner"]]
 const ALLER_PLUS_LOIN_ITEMS_RECRUTEUR = [

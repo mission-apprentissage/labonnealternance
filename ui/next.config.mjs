@@ -35,21 +35,21 @@ const contentSecurityPolicy = `
               http://localhost:3000
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr
+              https://tally.so
               blob:;
   script-src-attr 'none';
   connect-src 'self'
               https://catalogue-apprentissage.intercariforef.org
               https://data.geopf.fr
-              https://api.mapbox.com
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr
-              https://events.mapbox.com
               https://plausible.io
               http://localhost:5000
               https://exposition-recette.inserjeunes.beta.gouv.fr
               https://exposition.inserjeunes.beta.gouv.fr
               https://sentry.apprentissage.beta.gouv.fr
               https://recherche-entreprises.api.gouv.fr
+              https://tally.so
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
   img-src 'self'
               data:
@@ -57,12 +57,14 @@ const contentSecurityPolicy = `
               https://www.notion.so
               https://www.google.com
               https://www.google.fr
+              https://tally.so
               https://stats.beta.gouv.fr;
   object-src 'self' data:;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
   frame-src ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:3000 https://labonnealternance.apprentissage.beta.gouv.fr" : ""}
             'self'
+            https://tally.so
             https://plausible.io;
   child-src 'self' blob:;
   block-all-mixed-content;

@@ -59,7 +59,9 @@ export const bindStreamProcessorServer = async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
     trustProxy: 1,
-    caseSensitive: false,
+    routerOptions: {
+      caseSensitive: false,
+    },
   }).withTypeProvider<ZodTypeProvider>()
 
   return bind(app)

@@ -135,7 +135,6 @@ const buildLinkForTownAndJob = (town: Partial<IStaticVilles>, job: IStaticMetier
 
   return PAGES.dynamic
     .recherche({
-      displayMap: false,
       romes: job.romes,
       job_name: job.name,
       ...addedParams,

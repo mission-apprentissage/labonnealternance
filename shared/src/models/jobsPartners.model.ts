@@ -22,6 +22,7 @@ export enum JOBPARTNERS_LABEL {
   OFFRES_EMPLOI_LBA = LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA,
   RECRUTEURS_LBA = LBA_ITEM_TYPE.RECRUTEURS_LBA,
   HELLOWORK = "Hellowork",
+  HELLOWORK_BUDDI = "ATS_Hellowork",
   FRANCE_TRAVAIL = "France Travail",
   FRANCE_TRAVAIL_CEGID = "FranceTravail CEGID",
   RH_ALTERNANCE = "RH Alternance",
@@ -40,7 +41,9 @@ export enum JOBPARTNERS_LABEL {
   ENGAGEMENT_JEUNES = "Engagement Jeunes",
   JOBTEASER = "Jobteaser",
   APEC = "APEC",
+  EDF = "EDF",
   EMPLOI_INCLUSION = "Les emplois de l'inclusion",
+  ENEDIS = "Enedis",
   JOB_ETUDIANT = "L'Etudiant",
   // Attention : les partner labels par API ne doivent PAS être ajoutés : par définition, nous ne connaissons pas leurs valeurs.
   // De nouvelles valeurs peuvent être ajoutées par les clients Api
@@ -53,7 +56,7 @@ export const ZJobsPartnersRecruiterApi = z.object({
   workplace_siret: extensions.siret.nullable().describe("Siret de l'entreprise"),
   workplace_brand: z.string().nullable().describe("Nom d'enseigne de l'établissement"),
   workplace_legal_name: z.string().nullable().describe("Nom légal de l'entreprise"),
-  workplace_website: z.string().nullable().describe("Site web de l'entreprise").openapi({ format: "uri" }),
+  workplace_website: z.string().nullable().describe("Site web de l'entreprise"),
   workplace_name: z.string().nullable().describe("Nom customisé de l'entreprise"),
   workplace_description: z.string().nullable().describe("description de l'entreprise"),
   workplace_size: z.string().nullable().describe("Taille de l'entreprise"),
@@ -131,7 +134,7 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   partner_label: z.string().describe("Référence du partenaire"),
   partner_job_id: z.string().describe("Identifiant d'origine de l'offre provenant du partenaire"),
 
-  contract_start: z.date().nullable().describe("Date de début de contrat").openapi({ format: "date-time" }),
+  contract_start: z.date().nullable().describe("Date de début de contrat"),
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
@@ -151,8 +154,8 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   offer_to_be_acquired_skills: z.array(z.string()).describe("Compétence acquises durant l'alternance"),
   offer_to_be_acquired_knowledge: z.array(z.string()).nullish().describe("Connaissances acquises durant l'alternance"),
   offer_access_conditions: z.array(z.string()).describe("Conditions d'accès à l'offre"),
-  offer_creation: z.date().nullable().describe("Date de creation de l'offre").openapi({ format: "date-time" }),
-  offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j").openapi({ format: "date-time" }),
+  offer_creation: z.date().nullable().describe("Date de creation de l'offre"),
+  offer_expiration: z.date().nullable().describe("Date d'expiration de l'offre. Si pas présente, mettre à creation_date + 60j"),
   offer_opening_count: z.number().describe("Nombre de poste disponible"),
   offer_status: extensions.buildEnum(JOB_STATUS_ENGLISH).describe("Status de l'offre (surtout utilisé pour les offres ajouté par API)"),
   offer_status_history: z.array(ZJobsPartnersOfferHistoryEvent).default([]).describe("Historique de l'offre"),
@@ -182,6 +185,15 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
 
   created_at: z.date().describe("Date de creation de l'offre"),
   updated_at: z.date().describe("Date de mise à jour de l'offre"),
+
+  managed_by: zObjectId.nullish().describe("Id du userwithaccount si l'offre est une offre géré par LBA"),
+  establishment_id: z.string().nullish().describe("ancien recruiter.etablishment_id si l'offre est une offre géré par LBA"),
+  relance_mail_expiration_J7: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-7"),
+  relance_mail_expiration_J1: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-1"),
+  job_last_prolongation_date: z.date().nullish().describe("Date de dernière prolongation de l'offre"),
+  job_prolongation_count: z.number().int().nullish().describe("Nombre de fois où l'offre a été prolongée"),
+  offer_rome_appellation: z.string().nullish().describe("Pour les offres LBA uniquement, libellé de l'appellation ROME"),
+  mer_sent: z.date().nullish().describe("Pour les offres LBA uniquement, date de l'envoi du mail de promotion de la mise en relation, si il a été envoyé."),
 })
 
 export const ZJobsPartnersRecruiterPrivate = ZJobsPartnersRecruiterApi.merge(ZJobsPartnersRecruiterPrivateFields)
@@ -198,6 +210,7 @@ export const ZJobsPartnersOfferPrivate = ZJobsPartnersOfferApi.omit({
     duplicates: z.array(ZComputedJobPartnersDuplicateRef).nullish().describe("Référence les autres offres en duplicata avec celle-ci"),
     applicationCount: z.number().nullish().describe("Nombre de candidatures pour cette offre"),
     lba_url: z.string().nullable().default(null),
+    to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
 
 export const ZJobsPartnersOfferPrivateWithDistance = ZJobsPartnersOfferPrivate.extend({
@@ -297,6 +310,7 @@ export default {
     [{ workplace_geopoint: "2dsphere", offer_multicast: 1, offer_rome_codes: 1, offer_status: 1, offer_expiration: 1, partner_label: 1, "offer_target_diploma.european": 1 }, {}],
     [{ workplace_geopoint: "2dsphere", offer_status: 1, offer_expiration: 1, partner_label: 1, offer_rome_codes: 1, "offer_target_diploma.european": 1 }, {}],
     [{ offer_status: 1, partner_label: 1, offer_rome_codes: 1, offer_expiration: 1, offer_creation: -1 }, {}],
+    [{ offer_status: 1, offer_rome_codes: 1 }, {}],
     [{ offer_multicast: 1, offer_rome_codes: 1, offer_creation: -1 }, {}],
     [{ offer_multicast: 1, "offer_target_diploma.european": 1, offer_creation: -1 }, {}],
     [{ partner_label: 1, partner_job_id: 1 }, { unique: true }],
@@ -311,6 +325,13 @@ export default {
     [{ contract_is_disabled_elligible: 1 }, {}],
     [{ "duplicates.partner_job_id": 1 }, {}],
     [{ "duplicates.partner_job_label": 1 }, {}],
+
+    [{ managed_by: 1 }, {}],
+    [{ establishment_id: 1 }, {}],
+    [{ relance_mail_expiration_J7: 1 }, {}],
+    [{ relance_mail_expiration_J1: 1 }, {}],
+    [{ offer_rome_appellation: 1 }, {}],
+    [{ mer_sent: 1 }, {}],
   ],
   collectionName,
 } as const satisfies IModelDescriptor

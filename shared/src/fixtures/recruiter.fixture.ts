@@ -7,7 +7,7 @@ import type { IJob } from "../models/job.model.js"
 import { JOB_STATUS } from "../models/job.model.js"
 import type { IRecruiter } from "../models/recruiter.model.js"
 
-export function generateJobFixture(data: Partial<IJob>): IJob {
+export function generateJobFixture(data: Partial<IJob> = {}): IJob {
   return {
     _id: new ObjectId(),
     job_start_date: new Date("2021-01-28T15:00:00.000Z"),

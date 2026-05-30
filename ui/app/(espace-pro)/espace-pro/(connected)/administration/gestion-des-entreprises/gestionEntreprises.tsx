@@ -13,7 +13,6 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import CustomInput from "@/app/_components/CustomInput"
-import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { phoneValidation } from "@/common/validation/fieldValidations"
 import { SearchLine } from "@/theme/components/icons"
 import { getCompanyContactInfo, putCompanyContactInfo } from "@/utils/api"
@@ -167,7 +166,7 @@ export default function GestionEntreprises() {
   const [siret, setSiret] = useState<string>("")
 
   return (
-    <AdminLayout currentAdminPage="ENTREPRISES_ALGO">
+    <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
       <Box>
         <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
@@ -176,6 +175,6 @@ export default function GestionEntreprises() {
         <FormulaireRechercheEntreprise onSiretChange={setSiret} />
         <FormulaireModificationEntreprise siret={siret} />
       </Box>
-    </AdminLayout>
+    </>
   )
 }

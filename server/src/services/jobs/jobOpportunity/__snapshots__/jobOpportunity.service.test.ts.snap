@@ -48,7 +48,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "apply": {
       "phone": "0300000000",
       "recipient_id": "partners_67520beff00dd7b9073d5fdc",
-      "url": "",
+      "url": "http://localhost:3000/emploi/offres_emploi_lba/67520beff00dd7b9073d5fdc/opérations-administratives",
     },
     "contract": {
       "duration": null,
@@ -59,8 +59,8 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       ],
     },
     "identifier": {
-      "id": "",
-      "partner_job_id": "",
+      "id": "67520beff00dd7b9073d5fdc",
+      "partner_job_id": "67520beff00dd7b9073d5fdc",
       "partner_label": "offres_emploi_lba",
     },
     "is_delegated": false,
@@ -128,7 +128,7 @@ exports[`findJobsOpportunities > should execute query 1`] = `
     "apply": {
       "phone": null,
       "recipient_id": null,
-      "url": "",
+      "url": "https://apply.com",
     },
     "contract": {
       "duration": null,
@@ -140,8 +140,8 @@ exports[`findJobsOpportunities > should execute query 1`] = `
       ],
     },
     "identifier": {
-      "id": "",
-      "partner_job_id": "",
+      "id": "675209e704377be3d437bbb9",
+      "partner_job_id": "job-id-1",
       "partner_label": "Hellowork",
     },
     "is_delegated": false,

@@ -5,7 +5,6 @@ import { getLastStatusEvent } from "shared"
 import { VALIDATION_UTILISATEUR } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import { modelToKeep } from "shared/models/model-to-keep.model"
 import type { CollectionName } from "shared/models/models"
 import { modelDescriptors } from "shared/models/models"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
@@ -97,15 +96,6 @@ const obfuscateElligibleTrainingsForAppointment = async () => {
     {},
     {
       $set: { lieu_formation_email: fakeEmail },
-    }
-  )
-  await getDbCollection("eligible_trainings_for_appointments_histories").updateMany(
-    {},
-    {
-      $set: { lieu_formation_email: fakeEmail },
-    },
-    {
-      bypassDocumentValidation: true,
     }
   )
 }
@@ -223,36 +213,6 @@ const keepSpecificUser = async (email: string, type: AccessEntityType) => {
 }
 
 const ADMIN_EMAIL = "admin-recette@beta.gouv.fr"
-const obfuscateRecruiter = async () => {
-  logger.info(`obfuscating recruiters`)
-
-  const remainingUsers = getDbCollection("recruiters").find({ first_name: { $ne: "prenom" } })
-  for await (const user of remainingUsers) {
-    const replacement = { $set: { email: getFakeEmail(), phone: "0601010106", last_name: "nom_famille", first_name: "prenom" } }
-    getDbCollection("recruiters").findOneAndUpdate({ _id: user._id }, replacement, { bypassDocumentValidation: true })
-  }
-
-  const recruitersWithDelegations = getDbCollection("recruiters").find({ "jobs.delegations.0": { $exists: true } })
-
-  for await (const recruiter of recruitersWithDelegations) {
-    let shouldSave = false
-    if (recruiter.jobs) {
-      recruiter.jobs.forEach((job) => {
-        if (job.delegations) {
-          shouldSave = true
-          job.delegations.forEach((delegation) => {
-            delegation.email = fakeEmail
-          })
-        }
-      })
-    }
-    if (shouldSave) {
-      await getDbCollection("recruiters").updateOne({ _id: recruiter._id }, { $set: { ...recruiter, updatedAt: new Date() } }, { bypassDocumentValidation: true })
-    }
-  }
-
-  logger.info(`obfuscating recruiters done`)
-}
 
 const obfuscateUser = async () => {
   logger.info(`obfuscating users`)
@@ -292,6 +252,26 @@ const obfuscateUsersWithAccounts = async () => {
   await keepSpecificUser("opco@beta.gouv.fr", AccessEntityType.OPCO)
 }
 
+const obfuscateEntreprisesManagedByCfa = async () => {
+  logger.info(`obfuscating entreprise_managed_by_cfa`)
+  const entreprises = getDbCollection("entreprise_managed_by_cfa").find({})
+  for await (const entreprise of entreprises) {
+    await getDbCollection("entreprise_managed_by_cfa").findOneAndUpdate(
+      { _id: entreprise._id },
+      {
+        $set: {
+          email: getFakeEmail(),
+          phone: "0601010106",
+          last_name: "nom_famille",
+          first_name: "prenom",
+        },
+      }
+    )
+  }
+}
+
+const modelToKeep: string[] = ["algolia", "job_processor.workers", "job_processor.jobs", "changelog"]
+
 const dropUnknownCollections = async () => {
   const knownCollections = new Set<string>([...modelDescriptors.map((d) => d.collectionName), ...modelToKeep])
   const existingCollections = await getDatabase().listCollections().toArray()
@@ -327,7 +307,6 @@ export async function obfuscateCollections(): Promise<void> {
     "cache_geolocation",
     "cache_siret",
     "computed_jobs_partners",
-    "eligible_trainings_for_appointments_histories",
     "emailblacklists",
     "jobs",
     "opcos",
@@ -383,9 +362,10 @@ export async function obfuscateCollections(): Promise<void> {
   await obfuscateElligibleTrainingsForAppointment()
   await obfuscateEtablissements()
   await obfuscateFormations()
-  await obfuscateRecruiter()
   await obfuscateUser()
   await obfuscateUsersWithAccounts()
+  await obfuscatePartnerJobs()
+  await obfuscateEntreprisesManagedByCfa()
 
   await recreateIndexes({ drop: true })
 }

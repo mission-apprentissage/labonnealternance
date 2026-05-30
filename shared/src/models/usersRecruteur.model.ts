@@ -191,6 +191,7 @@ export const UserRecruteurForAdminProjection = {
 
 export const ZUserRecruteurForAdmin = ZUserRecruteur.pick(UserRecruteurForAdminProjection).extend({
   organizationId: z.string(),
+  hasJobs: z.boolean(),
 })
 
 export type IUserRecruteurForAdmin = z.output<typeof ZUserRecruteurForAdmin>

@@ -15,6 +15,7 @@ import { useSimulateur } from "@/app/(landing-pages)/salaire-alternant/context/S
 import { DATE_DERNIERE_MISE_A_JOUR, MAX_DATE_NAISSANCE, MIN_DATE_NAISSANCE, MIN_DEBUT_CONTRAT, NEXT_START_OF_MONTH } from "@/config/simulateur-alternant"
 import type { InputSimulation } from "@/services/simulateurAlternant"
 import { getSimulationInformation } from "@/services/simulateurAlternant"
+import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
 const ISO_DATE_FORMAT = "YYYY-MM-DD"
 
@@ -118,7 +119,19 @@ export const FormulaireSituation = () => {
       isRegionMayotte: values.isRegionMayotte,
     }
 
-    setSimulation(getSimulationInformation(inputSimulation))
+    try {
+      const simulation = getSimulationInformation(inputSimulation)
+      setSimulation(simulation)
+      pushMatomoEvent({
+        event: MATOMO_EVENTS.SALARY_SIMULATION_COMPLETED,
+        result_status: "success",
+      })
+    } catch {
+      pushMatomoEvent({
+        event: MATOMO_EVENTS.SALARY_SIMULATION_COMPLETED,
+        result_status: "failed",
+      })
+    }
   }
 
   return (

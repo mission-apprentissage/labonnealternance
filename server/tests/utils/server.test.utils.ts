@@ -12,3 +12,5 @@ export const useServer = () => {
 
   return () => app
 }
+
+export type TestHttpClient = ReturnType<typeof useServer>

@@ -27,7 +27,7 @@ type EntrepriseOrCfaType = typeof AUTHTYPE.ENTREPRISE | typeof AUTHTYPE.CFA
 
 type Organisation = Awaited<ReturnType<typeof searchEntreprise>>[number]
 
-const CreationCompteForm = ({
+export const CreationCompteForm = ({
   organisationType,
   setBandeau,
   origin,

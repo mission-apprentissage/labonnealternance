@@ -13,4 +13,4 @@ export default async function PolitiqueDeConfidentialite() {
   return <PolitiqueDeConfidentialiteRendererClient politiqueDeConfidentialite={politiqueDeConfidentialite} />
 }
 
-export const revalidate = 3600 // revalider toutes les heures
+export const revalidate = 86400 // revalider toutes les 24h (API Notion rate-limitée)

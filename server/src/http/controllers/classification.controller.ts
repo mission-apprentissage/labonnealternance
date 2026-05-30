@@ -2,7 +2,7 @@ import { unauthorized } from "@hapi/boom"
 import { addJob } from "job-processor"
 import type { ICredential } from "shared"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
-import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
 
@@ -155,12 +155,18 @@ const updateClassificationAndSynchronise = async ({ classification, partner_job_
             },
           }
         ),
-        getDbCollection("computed_jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { business_error: null, errors: [], validated: false } }),
+        getDbCollection("computed_jobs_partners").updateOne(
+          { partner_job_id: job.partner_job_id },
+          { $set: { business_error: null, errors: [], validated: false }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
+        ),
       ])
     } else {
       const computedJobPartner = await getDbCollection("computed_jobs_partners").findOne({ partner_job_id: job.partner_job_id })
       if (computedJobPartner) {
-        await getDbCollection("computed_jobs_partners").updateOne({ partner_job_id: job.partner_job_id }, { $set: { business_error: null, errors: [], validated: false } })
+        await getDbCollection("computed_jobs_partners").updateOne(
+          { partner_job_id: job.partner_job_id },
+          { $set: { business_error: null, errors: [], validated: false }, $pull: { jobs_in_success: COMPUTED_ERROR_SOURCE.CLASSIFICATION } }
+        )
       }
     }
   }

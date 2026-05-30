@@ -1,11 +1,11 @@
 "use client"
 
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import type { IUserRecruteurPublic } from "shared"
 import { AUTHTYPE } from "shared/constants/recruteur"
-import { BandeauFusionPDA } from "@/app/_components/BandeauFusionPDA"
 import { DsfrHeaderProps } from "@/app/_components/Header"
+import NavigationAdmin from "@/app/_components/Layout/NavigationAdmin"
 import { ConnectedHeaderNavigation } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConnectedHeaderNavigation"
 import { apiGet } from "@/utils/api.utils"
 import { PAGES } from "@/utils/routes.utils"
@@ -22,8 +22,12 @@ const WithNav = ({ user, children }: { user: IUserRecruteurPublic; children: Rea
   )
 }
 
+const ADMIN_PATH_PREFIX = "/espace-pro/administration"
+
 export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
   const router = useRouter()
+  const pathname = usePathname()
+  const isAdminPage = pathname.startsWith(ADMIN_PATH_PREFIX)
 
   const { quickAccessItems, ...rest } = DsfrHeaderProps
 
@@ -34,7 +38,6 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
 
   return (
     <>
-      <BandeauFusionPDA />
       <WithNav user={user}>
         <DsfrHeader
           {...rest}
@@ -60,7 +63,7 @@ export const ConnectedHeader = ({ user }: { user: IUserRecruteurPublic }) => {
               }}
             />,
           ]}
-          navigation={user && user.type === AUTHTYPE.CFA && <ConnectedHeaderNavigation />}
+          navigation={isAdminPage && user.type === AUTHTYPE.ADMIN ? <NavigationAdmin /> : user.type === AUTHTYPE.CFA && <ConnectedHeaderNavigation />}
         />
       </WithNav>
     </>

@@ -1,7 +1,6 @@
 import type { ObjectId } from "mongodb"
 import anonymizedApplicantsModel from "shared/models/anonymizedApplicant.model"
 import anonymizedApplicationsModel from "shared/models/anonymizedApplications.model"
-import anonymizedRecruitersModel from "shared/models/anonymizedRecruiters.model"
 import anonymizedUsersWithAccountsModel from "shared/models/anonymizedUsersWithAccounts.model"
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -26,41 +25,6 @@ const anonimizeUserWithAccount = (_id: ObjectId) =>
     ])
     .toArray()
 
-const anonimizeRecruiterByUserId = (userId: ObjectId) =>
-  getDbCollection("recruiters")
-    .aggregate([
-      {
-        $match: { managed_by: userId },
-      },
-      {
-        $project: {
-          establishment_id: 1,
-          establishment_raison_sociale: 1,
-          establishment_enseigne: 1,
-          establishment_siret: 1,
-          address_detail: 1,
-          address: 1,
-          geo_coordinates: 1,
-          is_delegated: 1,
-          cfa_delegated_siret: 1,
-          jobs: 1,
-          origin: 1,
-          opco: 1,
-          idcc: 1,
-          status: 1,
-          naf_code: 1,
-          naf_label: 1,
-          establishment_size: 1,
-          establishment_creation_date: 1,
-        },
-      },
-      {
-        $merge: anonymizedRecruitersModel.collectionName,
-      },
-    ])
-    .toArray()
-
-const deleteRecruiter = (query) => getDbCollection("recruiters").deleteMany(query)
 const deleteUserWithAccount = (query) => getDbCollection("userswithaccounts").deleteMany(query)
 
 const anonymizeApplication = async (_id: ObjectId) => {
@@ -143,8 +107,8 @@ const anonymizeUserWithAccountAndRecruiter = async (userId: ObjectId) => {
   if (!user) {
     throw new Error("Anonymize user with account not found")
   }
-  await Promise.all([anonimizeUserWithAccount(userId), anonimizeRecruiterByUserId(userId)])
-  await Promise.all([deleteUserWithAccount({ _id: userId }), deleteRecruiter({ managed_by: userId })])
+  await anonimizeUserWithAccount(userId)
+  await deleteUserWithAccount({ _id: userId })
   logger.info(`[END] Anonymized user with account & related recruiters`)
 }
 

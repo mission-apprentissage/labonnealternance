@@ -55,11 +55,12 @@ const AProposDesFormationsPage = () => {
               <Typography component="span" fontWeight={"bold"}>
                 Renseignez-vous sur votre futur métier :
               </Typography>{" "}
-              Avant de vous lancer, informez-vous sur le secteur qui vous intéresse.{" "}
-              <DsfrLink href={"https://www.intercariforef.org/formations/recherche-formations.html"} aria-label="Consulter le site du réseau des Carif-Oref">
-                Le réseau des Carif-Oref
+              Avant de vous lancer, informez-vous sur le secteur qui vous intéresse. Les{" "}
+              <DsfrLink href={"https://www.intercariforef.org/#thematiques"} aria-label="Consulter le site du réseau des Carif-Oref">
+                Carif-Oref
               </DsfrLink>{" "}
-              informe sur les métiers, les formations et le marché du travail. Il met à votre disposition des données sur le marché du travail et les perspectives d'emploi.
+              informent sur les métiers, les formations et le marché du travail pour chaque territoire. Ils mettent à votre disposition des données sur le marché du travail, les
+              perspectives d'emploi ainsi que les aides mobilisables propres à chaque région.
             </>,
             <>
               <Typography component="span" fontWeight={"bold"}>

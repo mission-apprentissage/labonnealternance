@@ -1,24 +1,24 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
-import { getFormulaire } from "@/utils/api"
+import { useConnectedSessionClient } from "@/app/(espace-pro)/espace-pro/contexts/userContext"
+import { getEntrepriseManagedByCfa } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 
-export default function Page() {
-  const { establishment_id } = useParams() as { establishment_id: string }
-
+export function EntrepriseInformationsPage({ establishment_id }: { establishment_id: string }) {
+  const { access } = useConnectedSessionClient()
+  const cfaId = access.cfas?.at(0)
   const {
     data: recruiter,
     isLoading: recruiterLoading,
     refetch: refetchRecruiter,
   } = useQuery({
-    queryKey: ["recruiter", establishment_id],
-    enabled: Boolean(establishment_id),
-    queryFn: () => getFormulaire(establishment_id),
+    queryKey: ["recruiter", cfaId, establishment_id],
+    enabled: Boolean(establishment_id && cfaId),
+    queryFn: () => getEntrepriseManagedByCfa(cfaId, establishment_id),
   })
 
   if (!establishment_id || recruiterLoading) {

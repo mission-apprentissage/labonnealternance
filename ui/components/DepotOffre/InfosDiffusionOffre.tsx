@@ -16,7 +16,17 @@ export const InfosDiffusionOffre = () => {
         <Typography sx={{ mb: fr.spacing("6v") }}>Cela permettra à votre offre d’être visible des candidats intéressés.</Typography>
       </Box>
       <br />
-      <Typography>
+      <Typography
+        sx={{
+          "& .fr-link": {
+            fontSize: "inherit !important",
+            lineHeight: "inherit !important",
+          },
+          "& .fr-link::after": {
+            "--icon-size": "1em !important",
+          },
+        }}
+      >
         Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants,&nbsp;
         <DsfrLink
           aria-label="Liste des partenaires - nouvelle fenêtre"

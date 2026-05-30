@@ -1,23 +1,18 @@
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
-import type { FastifyStaticSwaggerOptions } from "@fastify/swagger"
-import fastifySwagger from "@fastify/swagger"
-import type { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
-import fastifySwaggerUI from "@fastify/swagger-ui"
 import { notFound } from "@hapi/boom"
 import type { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
 import fastify from "fastify"
 import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { Netmask } from "netmask"
-import type { OpenAPIV3_1 } from "openapi-types"
-import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 import config from "@/config"
+import jobsEtFormationsController from "@/http/controllers/jobsEtFormations.controller"
 import { initBrevoWebhooks } from "@/services/brevo.service"
 import { processorAdminRoutes } from "./controllers/_private/admin/processor.admin.routes"
 import { geoRouteController } from "./controllers/_private/geo.private.controller"
@@ -37,7 +32,6 @@ import formationsV1Route from "./controllers/formations.controller"
 import formulaireRoute from "./controllers/formulaire.controller"
 import inserjeunesRoute from "./controllers/inserjeunes.controller"
 import jobsV1Route from "./controllers/jobs.controller"
-import jobsEtFormationsV1Route from "./controllers/jobsEtFormations.controller"
 import login from "./controllers/login.controller"
 import metiers from "./controllers/metiers.controller"
 import partnersRoute from "./controllers/partners.controller"
@@ -81,33 +75,6 @@ export async function bind(app: Server) {
     },
   })
 
-  const swaggerOpts: FastifyStaticSwaggerOptions = {
-    mode: "static",
-    specification: {
-      // @ts-expect-error invalid definition of document type
-      document: generateOpenApiSchema(config.version, config.env, config.env === "local" ? "http://localhost:5001/api" : `${config.publicUrl}/api`) as OpenAPIV3_1.Document,
-    },
-  }
-  await app.register(fastifySwagger, swaggerOpts)
-
-  const swaggerUiOptions: FastifySwaggerUiOptions = {
-    routePrefix: "/api/docs",
-    theme: {
-      // @ts-expect-error invalid definition of css theme type
-      css: [{ content: ".swagger-ui .topbar { display: none }" }],
-    },
-    uiConfig: {
-      displayOperationId: true,
-      operationsSorter: "method",
-      tagsSorter: "alpha",
-    },
-  }
-  await app.register(fastifySwaggerUI, swaggerUiOptions)
-
-  app.get("/api-docs/swagger.json", (_req, res) => {
-    return res.redirect("/api/docs/json", 301)
-  })
-
   app.register(fastifyCookie)
 
   app.decorate("auth", <S extends IRouteSchema & WithSecurityScheme>(scheme: S) => auth(scheme))
@@ -143,7 +110,7 @@ export async function bind(app: Server) {
       jobsV1Route(typedSubApp)
       formationsV1Route(typedSubApp)
       formationsRegionV1Route(typedSubApp)
-      jobsEtFormationsV1Route(typedSubApp)
+      jobsEtFormationsController(typedSubApp)
       reportedCompanyController(typedSubApp)
       geoRouteController(typedSubApp)
       seoRouteController(typedSubApp)

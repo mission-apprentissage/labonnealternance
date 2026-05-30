@@ -79,7 +79,7 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   // Return results in the same order as input jobs
   return jobs.map((job, index) => {
     const cached = cachedClassifications[index]
-    if (cached) return cached.classification
+    if (cached) return cached.human_verification ? cached.human_verification : cached.classification
 
     // Use the map for safe lookup
     const result = classificationMap.get(job.partner_job_id)

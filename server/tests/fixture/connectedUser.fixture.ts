@@ -13,12 +13,17 @@ export const givenAConnectedOpcoUser = async (opcoProps: Partial<IUserWithAccoun
     ...opcoProps,
   })
   await getDbCollection("userswithaccounts").insertOne(opcoUser)
-  const token = createSessionToken(opcoUser.email)
+  const { cookies, token } = await getConnectedInfos(opcoUser.email)
+  const role = generateRoleManagementFixture({ user_id: opcoUser._id, ...roleProps })
+  await getDbCollection("rolemanagements").insertOne(role)
+  return { user: opcoUser, token, cookies, role }
+}
+
+export const getConnectedInfos = async (email: string) => {
+  const token = createSessionToken(email)
   await createSession({ token })
   const cookies = {
     [config.auth.session.cookieName]: token,
   }
-  const role = generateRoleManagementFixture({ user_id: opcoUser._id, ...roleProps })
-  await getDbCollection("rolemanagements").insertOne(role)
-  return { user: opcoUser, token, cookies, role }
+  return { cookies, token }
 }

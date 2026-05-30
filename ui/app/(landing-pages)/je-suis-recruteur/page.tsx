@@ -8,10 +8,16 @@ import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
+import { getDepotCtaHref } from "@/services/getDepotCtaHref"
+import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = PAGES.static.jeSuisRecruteur.getMetadata()
-const JeSuisRecruteurPage = () => {
+const JeSuisRecruteurPage = async () => {
+  const { user } = await getSession()
+
+  const ctaDepotHref: string = getDepotCtaHref(user, "ENTREPRISE")
+
   return (
     <Box
       sx={{
@@ -30,7 +36,7 @@ const JeSuisRecruteurPage = () => {
       />
       <Breadcrumb pages={[PAGES.static.jeSuisRecruteur]} />
       <DefaultContainer>
-        <Grid container spacing={fr.spacing("4v")}>
+        <Grid container spacing={fr.spacing("4v")} id="landing-page-content">
           <Grid
             size={{ md: 6, xs: 12 }}
             spacing={{ md: fr.spacing("16v"), xs: fr.spacing("8v") }}
@@ -49,7 +55,7 @@ const JeSuisRecruteurPage = () => {
               Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
             </Typography>
             <Box display={"flex"} flexDirection={"row"} gap={fr.spacing("4v")}>
-              <Button linkProps={{ href: PAGES.static.espaceProCreationEntreprise.getPath() }} priority="primary">
+              <Button linkProps={{ href: ctaDepotHref }} priority="primary">
                 Déposer une offre
               </Button>
               <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">

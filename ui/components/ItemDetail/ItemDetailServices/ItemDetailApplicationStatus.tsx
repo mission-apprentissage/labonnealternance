@@ -20,7 +20,6 @@ const blueApplicationTag = (icon, text) => (
     }}
     className={fr.cx(icon, "fr-icon--sm", "fr-text--sm")}
   >
-    {" "}
     {text}
   </Typography>
 )

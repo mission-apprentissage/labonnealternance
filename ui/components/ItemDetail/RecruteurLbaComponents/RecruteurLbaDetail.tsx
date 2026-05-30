@@ -25,15 +25,10 @@ const RecruteurLbaDetail = ({ recruteurLba }: { recruteurLba: ILbaItemLbaCompany
     notifyJobDetailViewV3(recruteurLba)
   }, [recruteurLba?.company?.siret])
 
-  useEffect(() => {
-    // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
-    document.getElementsByClassName("choiceCol")[0]?.scrollTo(0, 0)
-  }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
-
   const { formValues } = useContext(DisplayContext)
 
   return (
-    <Box sx={{ mx: { xs: 0, md: "auto" }, maxWidth: "970px" }}>
+    <Box sx={{ mx: { xs: 0, md: "auto" } }}>
       <Box sx={{ pt: 2, pb: 3, px: 3, position: "relative", bgcolor: "white", mt: fr.spacing("6v") }}>
         <Typography variant="h4" sx={{ mb: fr.spacing("4v"), color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>
           Comment fonctionnent les candidatures spontanées La bonne alternance ?

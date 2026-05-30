@@ -32,6 +32,8 @@ const errorHandler = (error: any): undefined => {
 export const getDelegationDetails = async (establishment_id: string, token: string) =>
   apiGet("/formulaire/delegation/:establishment_id", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 export const getFormulaire = async (establishment_id: string) => apiGet("/formulaire/:establishment_id", { params: { establishment_id } }).catch(errorHandler)
+export const getEntrepriseManagedByCfa = async (cfaId: string, establishment_id: string) =>
+  apiGet("/etablissement/cfa/:cfaId/entreprise/:establishment_id", { params: { establishment_id, cfaId } }).catch(errorHandler)
 export const getFormulaireByToken = async (establishment_id: string, token: string) =>
   apiGet("/formulaire/:establishment_id/by-token", { params: { establishment_id }, headers: { authorization: `Bearer ${token}` } }).catch(errorHandler)
 

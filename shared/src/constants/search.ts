@@ -1,0 +1,2 @@
+export const MAX_SEARCH_ROMES = 20
+export const MAX_SEARCH_ROMES_PRIVATE = 110

@@ -13,10 +13,10 @@ export default function ItemGoogleSearchLink({ item }: { item: ILbaItemFormation
         direction="row"
         sx={{
           alignItems: "center",
-          mt: fr.spacing("8v"),
+          pt: fr.spacing("2v"),
         }}
       >
-        <Image src="/images/icons/magnifyingglass.svg" alt="" aria-hidden={true} width={24} height={24} style={{ marginRight: "16px" }} />
+        <Image src="/images/icons/magnifyingglass.svg" alt="" aria-hidden={true} width={24} height={24} style={{ marginRight: fr.spacing("2v") }} />
         <Typography component="span">
           Lancer une recherche Google sur{" "}
           <DsfrLink href={getCompanyGoogleSearchLink(item)} aria-label="Recherche de l'entreprise sur google.fr - nouvelle fenêtre">

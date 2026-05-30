@@ -61,6 +61,8 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     created_at: new Date("2021-01-28T15:00:00.000Z"),
     updated_at: new Date("2021-01-28T15:00:00.000Z"),
     offer_status_history: [],
+    job_last_prolongation_date: null,
+    job_prolongation_count: 0,
 
     stats_detail_view: 0,
     stats_postuler: 0,
@@ -137,6 +139,8 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     created_at: new Date("2021-01-28T15:00:00.000Z"),
     updated_at: new Date("2021-01-28T15:00:00.000Z"),
     offer_status_history: [],
+    job_last_prolongation_date: null,
+    job_prolongation_count: 0,
 
     stats_detail_view: 0,
     stats_postuler: 0,

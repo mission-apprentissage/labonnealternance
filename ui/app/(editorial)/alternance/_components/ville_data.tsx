@@ -49,6 +49,106 @@ export const villeData = [
     slug: "grenoble",
     cp: "38000",
   },
+  {
+    ville: "Lille",
+    slug: "lille",
+    cp: "59000",
+  },
+  {
+    ville: "Nice",
+    slug: "nice",
+    cp: "06000",
+  },
+  {
+    ville: "Annecy",
+    slug: "annecy",
+    cp: "74000",
+  },
+  {
+    ville: "Reims",
+    slug: "reims",
+    cp: "51100",
+  },
+  {
+    ville: "Rouen",
+    slug: "rouen",
+    cp: "76000",
+  },
+  {
+    ville: "Tours",
+    slug: "tours",
+    cp: "37000",
+  },
+  {
+    ville: "Dijon",
+    slug: "dijon",
+    cp: "21000",
+  },
+  {
+    ville: "Clermont-Ferrand",
+    slug: "clermont-ferrand",
+    cp: "63000",
+  },
+  {
+    ville: "Metz",
+    slug: "metz",
+    cp: "57000",
+  },
+  {
+    ville: "Saint-Étienne",
+    slug: "saint-etienne",
+    cp: "42000",
+  },
+  {
+    ville: "Nancy",
+    slug: "nancy",
+    cp: "54000",
+  },
+  {
+    ville: "Angers",
+    slug: "angers",
+    cp: "49000",
+  },
+  {
+    ville: "Brest",
+    slug: "brest",
+    cp: "29200",
+  },
+  {
+    ville: "Orléans",
+    slug: "orleans",
+    cp: "45000",
+  },
+  {
+    ville: "Limoges",
+    slug: "limoges",
+    cp: "87000",
+  },
+  {
+    ville: "Caen",
+    slug: "caen",
+    cp: "14000",
+  },
+  {
+    ville: "Le Mans",
+    slug: "le-mans",
+    cp: "72000",
+  },
+  {
+    ville: "Besançon",
+    slug: "besancon",
+    cp: "25000",
+  },
+  {
+    ville: "Amiens",
+    slug: "amiens",
+    cp: "80000",
+  },
+  {
+    ville: "Pau",
+    slug: "pau",
+    cp: "64000",
+  },
 ]
 
 export const loisirs = {

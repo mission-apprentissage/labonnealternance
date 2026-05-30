@@ -1,5 +1,4 @@
-import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
-import { HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
+import { type HeaderProps, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { PAGES } from "@/utils/routes.utils"
 import { HeaderNavigation } from "./HeaderNavigation"
 

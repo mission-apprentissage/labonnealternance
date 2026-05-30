@@ -1,44 +1,14 @@
 import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { ZHelloworkApplication, ZNewApplication } from "../models/applications.model.js"
+import { ZHelloworkApplication } from "../models/applications.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
-import { rateLimitDescription } from "../utils/rateLimitDescription.js"
 
 import type { IRoutesDef } from "./common.routes.js"
 import { ZResError } from "./common.routes.js"
 
 export const zApplicationRoutes = {
   post: {
-    "/v1/application": {
-      path: "/v1/application",
-      method: "post",
-      body: ZNewApplication,
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok").openapi({
-              description: "Indique le succès ou l'échec de l'opération",
-              example: "ok",
-            }),
-            message: z.literal("messages sent"),
-          })
-          .strict(),
-        "400": z.union([ZResError, ZLbacError]).openapi({
-          description: "Bad Request",
-        }),
-        "500": z.union([ZResError, ZLbacError]).openapi({
-          description: "Internal Server Error",
-        }),
-      },
-      securityScheme: null,
-      openapi: {
-        tags: ["V1 - Applications"] as string[],
-        description: `Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique 'Ne pas répondre' de La bonne alternance.\n${rateLimitDescription(
-          { max: 5, timeWindow: "5s" }
-        )}`,
-      },
-    },
     "/application/intentionComment/:id": {
       path: "/application/intentionComment/:id",
       method: "post",
@@ -93,34 +63,26 @@ export const zApplicationRoutes = {
             atsApplicationId: z.string(),
           })
           .strict(),
-        "400": z
-          .union([
-            ZResError,
-            ZLbacError,
-            z
-              .object({
-                message: z.string(),
-                code: z.string(),
-              })
-              .strict(),
-          ])
-          .openapi({
-            description: "Bad Request",
-          }),
-        "401": z
-          .union([
-            ZResError,
-            ZLbacError,
-            z
-              .object({
-                message: z.string(),
-                code: z.string(),
-              })
-              .strict(),
-          ])
-          .openapi({
-            description: "Unauthorized",
-          }),
+        "400": z.union([
+          ZResError,
+          ZLbacError,
+          z
+            .object({
+              message: z.string(),
+              code: z.string(),
+            })
+            .strict(),
+        ]),
+        "401": z.union([
+          ZResError,
+          ZLbacError,
+          z
+            .object({
+              message: z.string(),
+              code: z.string(),
+            })
+            .strict(),
+        ]),
       },
       securityScheme: null,
     },

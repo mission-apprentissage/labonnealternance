@@ -20,7 +20,7 @@ const NAV_ITEMS: NavItem[] = [
     menuLinks: [
       {
         text: "Je recherche une alternance",
-        href: PAGES.dynamic.recherche(null).getPath(),
+        href: PAGES.dynamic.recherche({}).getPath(),
       },
       {
         text: "Je m'informe sur l'alternance",

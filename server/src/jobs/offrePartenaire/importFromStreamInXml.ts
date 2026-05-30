@@ -27,7 +27,7 @@ function logError(error: any) {
 
 const xmlParser = new xml2j.Parser({ explicitArray: false, emptyTag: null, trim: true })
 
-const xmlToJson = async (offerXml: string, index: number) => {
+export const xmlToJson = async (offerXml: string, index: number) => {
   try {
     if (index % 1_000 === 0) logger.info("parsing offer", index)
     offerXml = offerXml.replaceAll("<br>", "<br/>")

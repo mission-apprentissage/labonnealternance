@@ -7,6 +7,7 @@ import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { DisplayContext } from "@/context/DisplayContextProvider"
 import { apiPost } from "@/utils/api.utils"
 import { sessionStorageSet } from "@/utils/localStorage"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 import type { IApplicationSchemaInitValues } from "./getSchema"
 
 export const useStoredApplicationDate = (item: ILbaItem) => {
@@ -22,7 +23,9 @@ async function submitCandidature({
   LbaJob: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson
   caller?: string
 }) {
-  const payload: IApplicationApiPrivate = {
+  const { applicant_formation_description, applicant_inscription_formation, applicant_rythm_description, applicant_answers_to_recruiter_questions } = formValues
+
+  const filledFields: IApplicationApiPrivate = {
     applicant_first_name: formValues.applicant_first_name,
     applicant_last_name: formValues.applicant_last_name,
     applicant_email: formValues.applicant_email,
@@ -34,9 +37,22 @@ async function submitCandidature({
     recipient_id: LbaJob.recipient_id,
     caller,
     application_url: typeof window !== "undefined" ? window?.location?.href : null,
+    applicant_contract_duration: formValues.applicant_contract_duration,
+    applicant_contract_start: formValues.applicant_contract_start,
+    applicant_formation_description,
+    applicant_inscription_formation,
+    applicant_rythm_description,
+  }
+  sessionStorageSet("application-form-values", filledFields)
+
+  const payload: IApplicationApiPrivate = {
+    ...filledFields,
+    applicant_inscription_formation,
+    applicant_formation_description: applicant_inscription_formation === true ? applicant_formation_description : undefined,
+    applicant_rythm_description: applicant_inscription_formation === true ? applicant_rythm_description : undefined,
+    applicant_answers_to_recruiter_questions: applicant_answers_to_recruiter_questions as IApplicationApiPrivate["applicant_answers_to_recruiter_questions"],
   }
 
-  sessionStorageSet("application-form-values", payload)
   await apiPost("/v2/_private/application", { body: payload, headers: { authorization: `Bearer ${LbaJob.token}` } }, {})
 }
 
@@ -57,8 +73,17 @@ export const useSubmitCandidature = (
   const { isPending, error, isSuccess, isError, mutate } = useMutation({
     mutationKey: ["submitCandidature", LbaJob.id],
     mutationFn: submitCandidature,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       setApplicationDate(Date.now())
+      pushMatomoEvent({
+        event: MATOMO_EVENTS.SMART_APPLY_CONFIRMED,
+        job_offer_id: variables.LbaJob.id,
+        job_offer_type: getMatomoJobOfferType(variables.LbaJob.ideaType),
+        job_offer_company: variables.LbaJob.company?.name || "non_renseigné",
+        job_offer_name: variables.LbaJob.title || "non_renseigné",
+        has_cv: Boolean(variables.formValues.applicant_attachment_name),
+        has_motivation: Boolean(variables.formValues.applicant_message?.trim()),
+      })
     },
   })
 

@@ -36,5 +36,6 @@ export const importKelioToComputed = async () => {
     zodInput: ZKelioJob,
     mapper: kelioJobToJobsPartners,
     documentJobRoot: offerXmlTag,
+    rawFilterQuery: { "job.job_type": { $in: ["Alternating", "Professional Contract"] } },
   })
 }

@@ -1,4 +1,5 @@
 import { getDistance } from "geolib"
+import { MAX_SEARCH_ROMES } from "shared"
 import type { IFormationCatalogue, IReferentielCommune } from "shared/models/index"
 import { URL } from "url"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -48,14 +49,16 @@ const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, para
 
 const getFormations = (
   query: object,
-  filter: object = {
+  projection: object = {
     lieu_formation_geo_coordonnees: 1,
     rome_codes: 1,
     _id: 0,
   }
-) => getDbCollection("formationcatalogues").find(query, filter).toArray()
+) => getDbCollection("formationcatalogues").find(query, { projection }).toArray()
 
-const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalogue[]> => {
+const limitSearchRomes = (romes: string[]) => romes.slice(0, MAX_SEARCH_ROMES)
+
+const getTrainingsFromParameters = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>): Promise<IFormationCatalogue[]> => {
   let formations
   let query: any = { $or: [] }
 
@@ -74,7 +77,7 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   }
   // search by cle ME
   if (wish.cle_ministere_educatif) {
-    formations = await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    formations = formationsByCle ? (formationsByCle.get(wish.cle_ministere_educatif) ?? []) : await getFormations({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
   // KBA 2024_07_29 : commenté en attendant la remonté du champ uai_formation dans le catalogue RCO
@@ -112,29 +115,30 @@ const getTrainingsFromParameters = async (wish: IWish): Promise<IFormationCatalo
   return formations || []
 }
 
-const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
+type IRomesFormation = { rome_codes?: string[] | null; rncp_code?: string | null; cfd?: string | null; bcn_mefs_10?: Array<{ mef10?: string }> | null }
+type IRomesFormationsIndex = { byRncp: Map<string, IRomesFormation[]>; byCfd: Map<string, IRomesFormation[]>; byMef: Map<string, IRomesFormation[]> }
+
+const getRomesGlobaux = async ({ rncp, cfd, mef }: { rncp?: string | null; cfd?: string | null; mef?: string | null }, index?: IRomesFormationsIndex): Promise<string[]> => {
   let romes = [] as string[]
+
+  if (index) {
+    const seen = new Set<IRomesFormation>()
+    if (rncp) for (const f of index.byRncp.get(rncp) ?? []) seen.add(f)
+    if (cfd) for (const f of index.byCfd.get(cfd) ?? []) seen.add(f)
+    if (mef) for (const f of index.byMef.get(mef) ?? []) seen.add(f)
+    const matching = [...seen].slice(0, 5)
+    if (matching.length) {
+      romes = [...new Set(matching.flatMap(({ rome_codes }) => rome_codes ?? []))] as string[]
+    }
+    return romes
+  }
+
   const tmpFormations = await getDbCollection("formationcatalogues")
     .find(
       {
-        $or: [
-          {
-            rncp_code: rncp,
-          },
-          {
-            cfd: cfd ? cfd : undefined,
-          },
-          {
-            "bcn_mefs_10.mef10": mef,
-          },
-        ],
+        $or: [{ rncp_code: rncp }, { cfd: cfd ? cfd : undefined }, { "bcn_mefs_10.mef10": mef }],
       },
-      {
-        projection: {
-          rome_codes: 1,
-          _id: 0,
-        },
-      }
+      { projection: { rome_codes: 1, _id: 0 } }
     )
     .limit(5)
     .toArray()
@@ -144,26 +148,26 @@ const getRomesGlobaux = async ({ rncp, cfd, mef }) => {
   return romes
 }
 
-const getPrdvLink = async (wish: IWish): Promise<string> => {
+const getPrdvLink = async (wish: IWish, eligibleCles?: Set<string>): Promise<string> => {
   if (!wish.cle_ministere_educatif) {
     return ""
   }
 
   const utmParams = wish.utm_data ? wish.utm_data : defaultUtmData
 
-  const elligibleFormation = await getDbCollection("eligible_trainings_for_appointments").findOne(
-    {
-      cle_ministere_educatif: wish.cle_ministere_educatif,
-      lieu_formation_email: {
-        $ne: null,
-        $exists: true,
-        $not: /^$/,
-      },
-    },
-    { projection: { _id: 1 } }
-  )
+  const isEligible = eligibleCles
+    ? eligibleCles.has(wish.cle_ministere_educatif)
+    : Boolean(
+        await getDbCollection("eligible_trainings_for_appointments").findOne(
+          {
+            cle_ministere_educatif: wish.cle_ministere_educatif,
+            lieu_formation_email: { $ne: null, $exists: true, $not: /^$/ },
+          },
+          { projection: { _id: 1 } }
+        )
+      )
 
-  if (elligibleFormation) {
+  if (isEligible) {
     return buildEmploiUrl({
       baseUrl: `${config.publicUrl}/rdva`,
       params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmParams },
@@ -197,9 +201,9 @@ async function getWishCommune(wish: IWish): Promise<IReferentielCommune | null> 
   return null
 }
 
-export const getLBALink = async (wish: IWish): Promise<string> => {
+export const getLBALink = async (wish: IWish, formationsByCle?: Map<string, IFormationCatalogue[]>, romesIndex?: IRomesFormationsIndex): Promise<string> => {
   // Try getting formations first
-  const formations = await getTrainingsFromParameters(wish)
+  const formations = await getTrainingsFromParameters(wish, formationsByCle)
 
   const utmParams = wish.utm_data ? wish.utm_data : defaultUtmData
 
@@ -207,7 +211,7 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
   if (formations?.length === 1) {
     const { rome_codes, lieu_formation_geo_coordonnees } = formations[0]
     const [latitude, longitude] = lieu_formation_geo_coordonnees!.split(",")
-    const romes = await expandRomesV3toV4(rome_codes ?? [])
+    const romes = limitSearchRomes(await expandRomesV3toV4(rome_codes ?? []))
     return buildEmploiUrl({ params: { romes, lat: latitude, lon: longitude, radius: "60", ...utmParams } })
   }
 
@@ -219,11 +223,11 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
 
   // Get romes based on rncp or training database
   let romes = wish.rncp
-    ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }))
-    : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef })
+    ? (await getRomesFromRncp(wish.rncp)) || (await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesIndex))
+    : await getRomesGlobaux({ rncp: wish.rncp, cfd: wish.cfd, mef: wish.mef }, romesIndex)
 
   romes = romes.filter((rome_code) => rome_code.length === 5 && !rome_code.endsWith("00"))
-  romes = await expandRomesV3toV4(romes)
+  romes = limitSearchRomes(await expandRomesV3toV4(romes))
 
   // Build url based on formations and coordinates
   if (formations?.length) {
@@ -261,9 +265,70 @@ export const getLBALink = async (wish: IWish): Promise<string> => {
 }
 
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
+  const cles = [...new Set(params.map((w) => w.cle_ministere_educatif).filter(Boolean) as string[])]
+  const allRncps = [...new Set(params.map((w) => w.rncp).filter(Boolean) as string[])]
+  const allCfds = [...new Set(params.map((w) => w.cfd).filter(Boolean) as string[])]
+  const allMefs = [...new Set(params.map((w) => w.mef).filter(Boolean) as string[])]
+  const hasRomesQuery = allRncps.length || allCfds.length || allMefs.length
+
+  const [eligibleTrainings, allFormations, romesFormations] = await Promise.all([
+    cles.length
+      ? getDbCollection("eligible_trainings_for_appointments")
+          .find({ cle_ministere_educatif: { $in: cles }, lieu_formation_email: { $ne: null, $exists: true, $not: /^$/ } }, { projection: { _id: 0, cle_ministere_educatif: 1 } })
+          .toArray()
+      : Promise.resolve([]),
+    cles.length
+      ? getDbCollection("formationcatalogues")
+          .find({ cle_ministere_educatif: { $in: cles } }, { projection: { lieu_formation_geo_coordonnees: 1, rome_codes: 1, cle_ministere_educatif: 1, _id: 0 } })
+          .toArray()
+      : Promise.resolve([]),
+    hasRomesQuery
+      ? (getDbCollection("formationcatalogues")
+          .find(
+            {
+              $or: [
+                ...(allRncps.length ? [{ rncp_code: { $in: allRncps } }] : []),
+                ...(allCfds.length ? [{ cfd: { $in: allCfds } }] : []),
+                ...(allMefs.length ? [{ "bcn_mefs_10.mef10": { $in: allMefs } }] : []),
+              ],
+            },
+            { projection: { rome_codes: 1, rncp_code: 1, cfd: 1, "bcn_mefs_10.mef10": 1, _id: 0 } }
+          )
+          .limit(500)
+          .toArray() as Promise<IRomesFormation[]>)
+      : Promise.resolve([] as IRomesFormation[]),
+  ])
+
+  const eligibleCles = new Set(eligibleTrainings.map((f) => f.cle_ministere_educatif as string))
+
+  const formationsByCle = new Map<string, IFormationCatalogue[]>()
+  for (const formation of allFormations) {
+    const cle = formation.cle_ministere_educatif as string
+    if (!formationsByCle.has(cle)) formationsByCle.set(cle, [])
+    formationsByCle.get(cle)!.push(formation)
+  }
+
+  const romesIndex: IRomesFormationsIndex = { byRncp: new Map(), byCfd: new Map(), byMef: new Map() }
+  for (const f of romesFormations) {
+    if (f.rncp_code) {
+      if (!romesIndex.byRncp.has(f.rncp_code)) romesIndex.byRncp.set(f.rncp_code, [])
+      romesIndex.byRncp.get(f.rncp_code)!.push(f)
+    }
+    if (f.cfd) {
+      if (!romesIndex.byCfd.has(f.cfd)) romesIndex.byCfd.set(f.cfd, [])
+      romesIndex.byCfd.get(f.cfd)!.push(f)
+    }
+    for (const { mef10 } of f.bcn_mefs_10 ?? []) {
+      if (mef10) {
+        if (!romesIndex.byMef.has(mef10)) romesIndex.byMef.set(mef10, [])
+        romesIndex.byMef.get(mef10)!.push(f)
+      }
+    }
+  }
+
   const results: ILinks[] = []
   await asyncForEach(params, async (training) => {
-    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training), getLBALink(training)])
+    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training, eligibleCles), getLBALink(training, formationsByCle, romesIndex)])
     results.push({ id: training.id, lien_prdv, lien_lba })
   })
 

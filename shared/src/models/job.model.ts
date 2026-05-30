@@ -21,6 +21,7 @@ export enum JOB_STATUS_ENGLISH {
   ACTIVE = "Active",
   POURVUE = "Filled",
   ANNULEE = "Cancelled",
+  EN_ATTENTE = "Pending",
 }
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
@@ -46,6 +47,8 @@ export function traductionJobStatus(status: JOB_STATUS_ENGLISH): JOB_STATUS {
       return JOB_STATUS.POURVUE
     case JOB_STATUS_ENGLISH.ANNULEE:
       return JOB_STATUS.ANNULEE
+    case JOB_STATUS_ENGLISH.EN_ATTENTE:
+      return JOB_STATUS.EN_ATTENTE
     default: {
       assertUnreachable(status)
     }
@@ -59,9 +62,9 @@ export const ZDelegation = z
     siret_code: z.string().describe("SIRET de l'établissement"),
     email: z.string().describe("Email gestionnaire de l'établissement"),
     cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
+    etablissement_id: z.string().nullish().describe("Identifiant d'établissement du catalogue correspondant à etablissement_gestionnaire_id ou etablissement_formateur_id"),
   })
   .strict()
-  .openapi("Delegation")
 
 export const ZJobFields = z
   .object({
@@ -103,21 +106,17 @@ export const ZJobFields = z
       .nullish()
       .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
       .describe("Titre de l'offre saisi par le recruteur"),
+    to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
   })
   .strict()
-  .openapi("JobWritable")
 
 export const ZJob = ZJobFields.extend({
   _id: zObjectId,
-})
-  .strict()
-  .openapi("Job")
+}).strict()
 
 export const ZJobWithRomeDetail = ZJob.extend({
   rome_detail: ZReferentielRomeForJob.nullish(),
-})
-  .strict()
-  .openapi("JobWithRomeDetail")
+}).strict()
 
 export const ZJobStartDateCreate = (now: dayjs.Dayjs | null = null) =>
   // Le changement de jour se fait à minuit (heure de Paris)
@@ -150,15 +149,16 @@ export const ZJobCreate = ZJobFields.pick({
   job_duration: true,
   job_rythm: true,
   job_description: true,
+  job_employer_description: true,
   delegations: true,
   competences_rome: true,
   offer_title_custom: true,
+  to_applicant_questions: true,
 })
   .extend({
     job_start_date: ZJobStartDateCreate(),
   })
   .strict()
-  .openapi("JobWrite")
 
 export type IDelegation = z.output<typeof ZDelegation>
 

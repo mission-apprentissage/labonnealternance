@@ -15,7 +15,10 @@ import { ARTICLES as ARTICLES_RECRUTEUR } from "@/app/(editorial)/guide-recruteu
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { PAGES } from "@/utils/routes.utils"
 
-export const metadata: Metadata = PAGES.static.guideDecouvrirLAlternance.getMetadata()
+export const metadata: Metadata = {
+  ...PAGES.static.guideDecouvrirLAlternance.getMetadata(),
+  alternates: { canonical: PAGES.static.guideDecouvrirLAlternance.getPath() },
+}
 
 const ALLER_PLUS_LOIN_ITEMS_ALTERNANT = [
   ARTICLES_ALTERNANT["preparer-son-projet-en-alternance"],

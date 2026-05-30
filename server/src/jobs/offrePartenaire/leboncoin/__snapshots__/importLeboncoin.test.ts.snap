@@ -10,7 +10,10 @@ exports[`importLeboncoin > should test the import of Le bon coin emploi data int
     "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
-    "contract_type": [],
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],
@@ -91,7 +94,10 @@ Nous nous mobilisons au quotidien autour de 4 piliers de responsabilité sociét
     "contract_is_disabled_elligible": false,
     "contract_remote": null,
     "contract_start": null,
-    "contract_type": [],
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
     "errors": [],
     "jobs_in_success": [],
     "offer_access_conditions": [],

@@ -6,6 +6,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 
+import { DEPARTEMENTS_BY_CODE } from "@/common/utils/departements"
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
 
 export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPartners => {
@@ -42,13 +43,7 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
     workplace_name: job.entreprise.nom,
     workplace_description: job.entreprise.description,
     workplace_address_label,
-    workplace_geopoint:
-      job.lieuTravail.longitude && job.lieuTravail.latitude
-        ? {
-            type: "Point",
-            coordinates: [job.lieuTravail.longitude, job.lieuTravail.latitude],
-          }
-        : null,
+    workplace_geopoint: getGeopoint(job.lieuTravail),
     workplace_siret: job.entreprise.siret,
     workplace_naf_code: job.codeNAF,
     workplace_naf_label: job.secteurActiviteLibelle,
@@ -88,10 +83,37 @@ function getFTContractType(natureContrat: string) {
   }
 }
 
+function getDepartementFromLibelle(libelle: string) {
+  const match = libelle.match(/^(\d{2,3}|2[AB]) - /i)
+  if (!match) return null
+  return DEPARTEMENTS_BY_CODE[match[1].toUpperCase()] ?? null
+}
+
 function getAddressLabel({ codePostal, libelle }: IFTJobRaw["lieuTravail"]): string | null {
-  const dashIndex = libelle.indexOf("-")
-  const city = dashIndex === -1 ? null : libelle.substring(dashIndex + 2)
-  return [codePostal, city].filter((x) => x).join(" ") || null
+  const dashIndex = libelle.indexOf(" - ")
+  const city = dashIndex === -1 ? null : libelle.substring(dashIndex + 3).trim()
+
+  if (codePostal) {
+    return [codePostal, city].filter(Boolean).join(" ") || null
+  }
+
+  const dept = getDepartementFromLibelle(libelle)
+  if (dept) {
+    return `${dept.code_postal_chef_lieu} ${dept.chef_lieu}`
+  }
+
+  return city || null
+}
+
+function getGeopoint({ longitude, latitude, libelle }: IFTJobRaw["lieuTravail"]) {
+  if (longitude != null && latitude != null) {
+    return { type: "Point" as const, coordinates: [longitude, latitude] as [number, number] }
+  }
+  const dept = getDepartementFromLibelle(libelle)
+  if (dept) {
+    return { type: "Point" as const, coordinates: [dept.geopoint_chef_lieu.lon, dept.geopoint_chef_lieu.lat] as [number, number] }
+  }
+  return null
 }
 
 export function exactractFTContractDuration(typeContratLibelle: string): number | null {

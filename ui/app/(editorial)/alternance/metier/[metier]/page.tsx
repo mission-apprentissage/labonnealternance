@@ -6,6 +6,8 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
+import { JobsCtaTracked } from "@/app/(editorial)/alternance/_components/JobsCtaTracked"
+import { SalaireSection } from "@/app/(editorial)/alternance/diplome/[slug]/_components/SalaireSection"
 import { HomeCircleImageDecoration } from "@/app/(home)/_components/HomeCircleImageDecoration"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -53,13 +55,13 @@ async function fetchMetierData(metier: string) {
   return apiGet("/_private/seo/metier/:metier", { params: { metier } })
 }
 
-function JobsCta({ href }: { href: string }) {
+function JobsCta({ href, metier }: { href: string; metier: string }) {
   return (
     <Box sx={{ textAlign: "center", mx: fr.spacing("4v") }}>
-      <Button linkProps={{ href }} size="large" priority="primary" style={{ marginTop: fr.spacing("2v") }}>
+      <JobsCtaTracked href={href} searchOrigin="page_metier" searchJobName={metier} style={{ marginTop: fr.spacing("2v") }}>
         Voir toutes les offres en alternance
         <ArrowRightLine sx={{ color: "#fff", mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-      </Button>
+      </JobsCtaTracked>
     </Box>
   )
 }
@@ -103,10 +105,10 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
   const formationsSearchUrl = `/recherche?romes=${romesParam}&radius=30&displayEntreprises=false&job_name=${encodeURIComponent(data.metier)}&${UTM_PARAMS}`
 
   const statItems = [
-    { icon: "/images/seo/metier/malette.svg", value: data.job_count, label: "Offres d'emploi en alternance disponibles" },
+    { icon: "/images/seo/malette.svg", value: data.job_count, label: "Offres d'emploi en alternance disponibles" },
     { icon: "/images/seo/metier/ecosystem.svg", value: data.applicant_count, label: "candidats sur les 3 derniers mois" },
-    { icon: "/images/seo/metier/usine.svg", value: data.company_count, label: "entreprises recrutent activement" },
-    { icon: "/images/seo/metier/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
+    { icon: "/images/seo/usine.svg", value: data.company_count, label: "entreprises recrutent activement" },
+    { icon: "/images/seo/monnaie.svg", value: `${data.salaire.salaire_brut_moyen}€`, label: "Salaire brut mensuel moyen*" },
   ]
 
   return (
@@ -123,11 +125,22 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
           }}
         >
-          <Box sx={{ display: { xs: "none", md: "block" } }}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "20px",
+              left: 0,
+              width: "100%",
+              display: {
+                xs: "none",
+                md: "block",
+              },
+            }}
+          >
             <HomeCircleImageDecoration size="small" />
           </Box>
           <Box sx={{ position: "relative" }}>
-            <Typography component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
+            <Typography id="editorial-content-container" component="h1" variant="h1" sx={{ mb: fr.spacing("10v") }}>
               Alternance{" "}
               <Typography component="span" variant="h1" sx={{ color: fr.colors.decisions.text.default.info.default }}>
                 {data.metier}
@@ -156,7 +169,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
         </Box>
 
-        <JobsCta href={jobsSearchUrl} />
+        <JobsCta href={jobsSearchUrl} metier={data.metier} />
 
         {/**
          * BLOC DESCRIPTION METIER
@@ -202,65 +215,14 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
         {/**
          * BLOC SALAIRE
          */}
-        {/* <Box
-          sx={{
-            mb: fr.spacing("8v"),
-            py: fr.spacing("8v"),
-            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
-            backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-          }}
-        >
-          <Typography component={"h2"} variant="h2" sx={{ mb: fr.spacing("4v") }}>
-            Le salaire d’un alternant <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
-          </Typography>
-          <Box
-            component="hr"
-            sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1 }}
-          />
-          <Typography component={"h5"} sx={{ fontSize: "22px", fontWeight: "bold" }}>
-            Rémunération et évolution
-          </Typography>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", md: "repeat(3, minmax(0, 1fr))" },
-              gap: fr.spacing("4v"),
-              alignItems: "stretch",
-              mt: fr.spacing("4v"),
-            }}
-          >
-            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
-              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>1 ère année</Typography>
-              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
-                ≃ {data.salaire.salaire_1ere_annee}€
-              </Typography>
-              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
-            </Box>
-            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
-              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>2 ème année</Typography>
-              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
-                ≃ {data.salaire.salaire_2eme_annee}€
-              </Typography>
-              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
-            </Box>
-            <Box sx={{ ...boxCss, minWidth: "220px", width: "100%", maxWidth: "100%" }}>
-              <Typography sx={{ fontSize: "20px", fontWeight: "bold", mb: fr.spacing("4v") }}>
-                Salaire médian pour un professionnel{" "}
-                <Tooltip kind="hover" title="Le salaire médian divise les travailleurs en deux groupes, la moitié gagne davantage, l'autre moins" />
-              </Typography>
-              <Typography sx={{ fontSize: "40px", fontWeight: "bold", mb: fr.spacing("4v"), color: fr.colors.decisions.text.default.info.default }}>
-                ≃ {data.salaire.salaire_median}€
-              </Typography>
-              <Typography sx={{ fontSize: "16px" }}>par mois</Typography>
-            </Box>
-          </Box>
-          <Box sx={{ mt: fr.spacing("6v"), mb: fr.spacing("4v"), textAlign: "center" }}>
-            <Button linkProps={{ href: `/simulateur?${utmParams}` }} size="large" priority="secondary" style={{ marginTop: fr.spacing("2v") }}>
-              Calculer ma rémunération en alternance
-              <ArrowRightLine sx={{ mt: fr.spacing("1v"), ml: fr.spacing("3v"), width: 16, height: 16 }} />
-            </Button>
-          </Box>
-        </Box> */}
+        <SalaireSection
+          utmParams={UTM_PARAMS}
+          titre={
+            <>
+              Le salaire d’un alternant <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span>
+            </>
+          }
+        />
 
         {/**
          * BLOC ENTREPRISES
@@ -289,7 +251,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
           </Box>
         </Box>
 
-        <JobsCta href={jobsSearchUrl} />
+        <JobsCta href={jobsSearchUrl} metier={data.metier} />
 
         <Box
           sx={{
@@ -304,7 +266,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
             Les formations
           </Typography>
           <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderBottom: "none", borderTop: "4px solid #4B9F6C", opacity: 1 }} />
-          <Typography component="h5" sx={{ fontSize: "1.375rem", fontWeight: "bold" }}>
+          <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
             Niveaux de formation disponibles
           </Typography>
           <Box sx={threeColGridSx}>
@@ -334,7 +296,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               Où trouver une alternance <span style={{ color: fr.colors.decisions.text.default.info.default }}>{data.metier.toLocaleLowerCase()}</span> ?
             </Typography>
             <Box component="hr" sx={hrSx} />
-            <Typography component="h5" sx={{ fontSize: "1.375rem", fontWeight: "bold" }}>
+            <Typography variant="h3" sx={{ mb: fr.spacing("4v"), fontSize: { xs: "1.25rem", md: "1.375rem" }, lineHeight: "1.75rem" }}>
               Les offres par ville :
             </Typography>
           </Box>
@@ -416,7 +378,7 @@ export default async function Metier({ params }: { params: Promise<{ metier: str
               ))}
             </Box>
 
-            <JobsCta href={jobsSearchUrl} />
+            <JobsCta href={jobsSearchUrl} metier={data.metier} />
           </Box>
         )}
       </DefaultContainer>

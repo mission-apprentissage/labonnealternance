@@ -1,0 +1,120 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`importEnedis > should test the import of Enedis data into computed_job_partners 1`] = `
+[
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.enedis.fr/emploi/100001?LCID=1036&idOffre=100001&idOrigine=2679&offerReference=2025-100001",
+    "business_error": null,
+    "contract_duration": 24,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_type": [
+      "Apprentissage",
+      "Professionnalisation",
+    ],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_description": "Avec votre tuteur, vous contribuerez directement au quotidien à renforcer la satisfaction de nos clients.
+
+Profil recherché :
+
+Vous êtes dynamique, ouvert et à l'écoute. Vous préparez un BTS NDRC.
+
+Une prime d'intéressement avec abondement possible. 30 jours de congés payés par an.",
+    "offer_desired_skills": [],
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "5",
+      "label": "BTS, DEUST, autres formations (Bac+2)",
+    },
+    "offer_title": "Alternance - Chargé de Relations Clients F/H",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [
+      "Electricité",
+    ],
+    "partner_job_id": "100001",
+    "partner_label": "Enedis",
+    "validated": false,
+    "workplace_address_city": "Evry Courcouronnes",
+    "workplace_address_label": "Evry Courcouronnes",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": "Acteur majeur du secteur de l'énergie en France, Enedis distribue l'électricité via le plus grand réseau électrique d'Europe.",
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": "35.14Y",
+    "workplace_naf_label": "Distribution d'électricité",
+    "workplace_name": "Enedis",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+  {
+    "apply_phone": null,
+    "apply_url": "https://www.enedis.fr/emploi/100002?LCID=1036&idOffre=100002&idOrigine=2679&offerReference=2025-100002",
+    "business_error": "FULL_TIME",
+    "contract_duration": null,
+    "contract_is_disabled_elligible": false,
+    "contract_remote": null,
+    "contract_type": [],
+    "errors": [],
+    "jobs_in_success": [],
+    "offer_access_conditions": [],
+    "offer_description": "Vous interviendrez sur le terrain et préparerez les chantiers.
+
+Profil recherché :
+
+Vous avez un fort esprit de sécurité, capable de travailler en autonomie.
+
+Rémunération : De 27 800€ à 29 300€ brut annuel minimum
+
+De 27 800€ à 29 300€ brut annuel minimum.",
+    "offer_desired_skills": [],
+    "offer_multicast": true,
+    "offer_opening_count": 1,
+    "offer_origin": null,
+    "offer_rome_codes": null,
+    "offer_status": "Active",
+    "offer_status_history": [],
+    "offer_target_diploma": {
+      "european": "5",
+      "label": "BTS, DEUST, autres formations (Bac+2)",
+    },
+    "offer_title": "CDI - Technicien Réseau Electrique F/H",
+    "offer_to_be_acquired_knowledge": [],
+    "offer_to_be_acquired_skills": [
+      "Electricité",
+      "Electrotechnique",
+    ],
+    "partner_job_id": "100002",
+    "partner_label": "Enedis",
+    "validated": false,
+    "workplace_address_city": "La Defense",
+    "workplace_address_label": "La Defense",
+    "workplace_address_street_label": null,
+    "workplace_address_zipcode": null,
+    "workplace_brand": null,
+    "workplace_description": "Acteur majeur du secteur de l'énergie en France, Enedis distribue l'électricité via le plus grand réseau électrique d'Europe.",
+    "workplace_geopoint": null,
+    "workplace_idcc": null,
+    "workplace_legal_name": null,
+    "workplace_naf_code": "35.14Y",
+    "workplace_naf_label": "Distribution d'électricité",
+    "workplace_name": "Enedis",
+    "workplace_opco": null,
+    "workplace_siret": null,
+    "workplace_size": null,
+    "workplace_website": null,
+  },
+]
+`;

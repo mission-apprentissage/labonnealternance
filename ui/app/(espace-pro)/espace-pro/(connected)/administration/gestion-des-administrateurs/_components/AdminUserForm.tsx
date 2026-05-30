@@ -78,7 +78,7 @@ export const AdminUserForm = ({
   const onDeleteClicked = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault()
     if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
-      const result = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() }, querystring: {} })
+      const result = await apiDelete("/admin/users/:userId", { params: { userId: user._id.toString() } })
       if (result?.ok) {
         toast({
           title: "Utilisateur supprimé",
@@ -95,7 +95,7 @@ export const AdminUserForm = ({
     }
   }
 
-  const statusArray = role?.status as unknown as Jsonify<IRoleManagementEvent>[] | undefined
+  const statusArray = (role?.status ?? []) as Jsonify<IRoleManagementEvent>[]
   const accessStatus = getLastStatusEvent(statusArray)?.status
 
   return (

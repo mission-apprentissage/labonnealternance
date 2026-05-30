@@ -14,20 +14,15 @@ const DescriptionSection = ({ title, children }: { title: string; children: stri
 )
 
 export const JobDescription = ({ job }: { job: ILbaItemPartnerJobJson | ILbaItemLbaJobJson }) => {
-  const { description, employeurDescription, partner_label } = job.job
+  const { description, partner_label } = job.job
 
   const validCustomDescription = useMemo(() => (description && description.length > BAD_DESCRIPTION_LENGTH ? description : null), [description])
 
   const descriptionTitle = useMemo(() => `Description ${partner_label === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA ? "du métier" : "de l'offre"}`, [partner_label])
 
-  if (!validCustomDescription && !employeurDescription) {
+  if (!validCustomDescription) {
     return null
   }
 
-  return (
-    <>
-      {validCustomDescription && <DescriptionSection title={descriptionTitle}>{validCustomDescription}</DescriptionSection>}
-      {employeurDescription && <DescriptionSection title="Description de l'employeur">{employeurDescription}</DescriptionSection>}
-    </>
-  )
+  return <>{validCustomDescription && <DescriptionSection title={descriptionTitle}>{validCustomDescription}</DescriptionSection>}</>
 }

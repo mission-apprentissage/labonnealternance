@@ -101,6 +101,18 @@ const getDescription = (job: ILaposteJob): string => {
 }
 
 export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartners => {
+  let business_error: JOB_PARTNER_BUSINESS_ERROR | null = null
+  const contract_duration = getContractDuration(job["duree-du-contrat"])
+  const offer_target_diploma = getOfferTargetDiploma(job, contract_duration)
+  const descriptionComputed = getDescription(job)
+  const publicationDate = new Date()
+  const now = new Date()
+  const [day, month, yearAndTime] = job["date-de-mise-a-jour"]
+    ? job["date-de-mise-a-jour"].split("-")
+    : [String(now.getDate()).padStart(2, "0"), String(now.getMonth() + 1).padStart(2, "0"), String(now.getFullYear()) + " 00:00:00"]
+  const [year, _] = yearAndTime.split(" ")
+  const isoString = `${year}-${month}-${day}`
+  const updatedDate = new Date(isoString)
   const workplace_geopoint: {
     type: "Point"
     coordinates: [number, number]
@@ -109,54 +121,33 @@ export const laposteJobToJobsPartners = (job: ILaposteJob): IComputedJobsPartner
     coordinates: [job.longitude, job.latitude],
   }
 
-  let business_error: string | null = null
-  let contract_type: ("Apprentissage" | "Professionnalisation")[] = []
-  if (job["type-de-contrat"] !== "Alternance") {
+  if (job["intitule-du-poste"].length < 3 || descriptionComputed.length < 30) {
     business_error = JOB_PARTNER_BUSINESS_ERROR.WRONG_DATA
-  } else {
-    contract_type = [TRAINING_CONTRACT_TYPE.APPRENTISSAGE]
   }
-
-  const contract_duration = getContractDuration(job["duree-du-contrat"])
-
-  const offer_target_diploma = getOfferTargetDiploma(job, contract_duration)
-
-  const descriptionComputed = getDescription(job)
-
-  const publicationDate = new Date()
-  const now = new Date()
-
-  const [day, month, yearAndTime] = job["date-de-mise-a-jour"]
-    ? job["date-de-mise-a-jour"].split("-")
-    : [String(now.getDate()).padStart(2, "0"), String(now.getMonth() + 1).padStart(2, "0"), String(now.getFullYear()) + " 00:00:00"]
-  const [year, _] = yearAndTime.split(" ")
-  const isoString = `${year}-${month}-${day}`
-
-  const updatedDate = new Date(isoString)
 
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(now),
     _id: new ObjectId(),
     partner_label: JOBPARTNERS_LABEL.LAPOSTE,
     partner_job_id: job.reference,
-    offer_title: job["intitule-du-poste"],
     workplace_name: "La Poste",
     workplace_geopoint,
     workplace_address_city: job["localisation-du-poste"],
     workplace_address_label: job["localisation-du-poste"],
     workplace_description: `Service : ${job.company}${job.contexte ? `\r\n\r\n${job.contexte}` : ""}`,
+    offer_target_diploma,
+    offer_multicast: true,
+    offer_title: job["intitule-du-poste"],
     offer_description: descriptionComputed,
     offer_creation: updatedDate ?? publicationDate,
     offer_expiration: dayjs(updatedDate ?? publicationDate)
       .tz()
       .add(2, "months")
       .toDate(),
-    apply_url: job["url-de-l-offre"],
-    contract_type,
+    contract_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     contract_remote: !job.teletravail ? null : job.teletravail === "Oui" ? TRAINING_REMOTE_TYPE.hybrid : TRAINING_REMOTE_TYPE.onsite,
-    offer_target_diploma,
     contract_duration,
-    offer_multicast: true,
+    apply_url: job["url-de-l-offre"],
     business_error,
   }
   return partnerJob

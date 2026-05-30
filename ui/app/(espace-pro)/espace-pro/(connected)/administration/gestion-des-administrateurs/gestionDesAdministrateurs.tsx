@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import TableWithPagination from "@/app/(espace-pro)/_components/TableWithPagination"
-import { AdminLayout } from "@/app/(espace-pro)/espace-pro/(connected)/_components/AdminLayout"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableString } from "@/common/utils/dateUtils"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
@@ -39,7 +38,7 @@ export default function GestionDesAdministrateurs() {
   }
 
   return (
-    <AdminLayout currentAdminPage="GESTION_ADMINISTRATEURS">
+    <>
       <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
       <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose} size="md">
         <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
@@ -108,6 +107,6 @@ export default function GestionDesAdministrateurs() {
         description={null}
         defaultSortBy={[{ id: "createdAt", desc: true }]}
       />
-    </AdminLayout>
+    </>
   )
 }

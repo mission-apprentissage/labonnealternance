@@ -11,62 +11,30 @@ export const ZRomeWithLabel = z
     intitule: z.string(),
   })
   .strict()
-  .openapi("RomeWithLabel")
 
 export type IRomeWithLabel = z.output<typeof ZRomeWithLabel>
 
 export const ZMetierEnrichi = z
   .object({
-    label: z.string().openapi({
-      example: "Décor et accessoires pour le spectacle",
-      description: "Le nom du métier",
-    }),
-    romes: z
-      .string()
-      .array()
-      .openapi({
-        example: ["L1503", "L1502", "L1506"],
-        description: "La liste des codes ROMEs correspondants au métier",
-      }),
-    rncps: z
-      .string()
-      .array()
-      .nullish()
-      .optional()
-      .openapi({
-        example: ["RNCP500", "RNCP806"],
-        description: "La liste des codes RNCPs correspondants au métier",
-      }),
-    type: z.string().nullish().optional().openapi({
-      example: "job",
-      description: "Indique que l'objet est de type job",
-    }),
-    romeTitles: ZRomeWithLabel.array().nullish().optional().openapi({
-      description: "Optionnel : tableau de couples romes / libellés",
-    }),
+    label: z.string(),
+    romes: z.string().array(),
+    rncps: z.string().array().nullish().optional(),
+    type: z.string().nullish().optional(),
+    romeTitles: ZRomeWithLabel.array().nullish().optional(),
   })
   .strict()
-  .openapi("MetierEnrichi")
 
 export type IMetierEnrichi = z.output<typeof ZMetierEnrichi>
 export type IMetierEnrichiJson = Jsonify<IMetierEnrichi>
 
-export const ZMetierEnrichiArray = z.array(ZMetierEnrichi).openapi({
-  description: "Un tableau de métiers correspondantes aux critères",
-})
+export const ZMetierEnrichiArray = z.array(ZMetierEnrichi)
 
 export const ZMetiers = z
   .object({
     metiers: z
       .string()
-      .openapi({
-        example: "Accueil touristique",
-        description: "Un nom de métier du référentiel La bonne alternance",
-      })
-      .array()
-      .openapi({
-        description: "Un tableau des noms des métiers triés par ordre alphabétique",
-      }),
+
+      .array(),
   })
   .strict()
 

@@ -1,10 +1,15 @@
 import nock from "nock"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import config from "@/config"
 import { getJobEtudiantJobs } from "./etudiant.client"
-import { generateJobEtudiantJobFixture, nockJobEtudiantNextPage, nockJobEtudiantPage } from "./etudiant.client.fixture"
+import { generateJobEtudiantJobFixture, nockJobEtudiantNextPage, nockJobEtudiantPage, nockJobEtudiantRateLimit } from "./etudiant.client.fixture"
 
 describe("getJobEtudiantJobs", () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    nock.cleanAll()
+  })
+
   it("should return jobs from a single page", async () => {
     const job = generateJobEtudiantJobFixture()
     nockJobEtudiantPage({ jobs: [job] })
@@ -64,5 +69,54 @@ describe("getJobEtudiantJobs", () => {
     nock(origin).get(`${pathname}${search}`).reply(401, "Unauthorized")
 
     await expect(getJobEtudiantJobs()).rejects.toThrow()
+  })
+
+  it("should retry on 429 and succeed after waiting Retry-After seconds", async () => {
+    vi.spyOn(global, "setTimeout").mockImplementation((fn) => {
+      if (typeof fn === "function") fn()
+      return 0 as unknown as ReturnType<typeof setTimeout>
+    })
+
+    const job = generateJobEtudiantJobFixture()
+    nockJobEtudiantRateLimit({ retryAfter: 2 })
+    nockJobEtudiantPage({ jobs: [job] })
+
+    const result = await getJobEtudiantJobs()
+
+    expect(result).toEqual([job])
+    expect(nock.isDone()).toBe(true)
+  })
+
+  it("should throw after MAX_RETRIES consecutive 429 responses", async () => {
+    vi.spyOn(global, "setTimeout").mockImplementation((fn) => {
+      if (typeof fn === "function") fn()
+      return 0 as unknown as ReturnType<typeof setTimeout>
+    })
+
+    nockJobEtudiantRateLimit({ retryAfter: 1 })
+    nockJobEtudiantRateLimit({ retryAfter: 1 })
+    nockJobEtudiantRateLimit({ retryAfter: 1 })
+    nockJobEtudiantRateLimit({ retryAfter: 1 })
+
+    await expect(getJobEtudiantJobs()).rejects.toThrow("429")
+  })
+
+  it("should pause proactively when X-RateLimit-Remaining is low", async () => {
+    vi.spyOn(global, "setTimeout").mockImplementation((fn) => {
+      if (typeof fn === "function") fn()
+      return 0 as unknown as ReturnType<typeof setTimeout>
+    })
+
+    const job1 = generateJobEtudiantJobFixture({ public_id: "job-1" })
+    const job2 = generateJobEtudiantJobFixture({ public_id: "job-2" })
+    const nextPageToken = "token-abc"
+
+    nockJobEtudiantPage({ "next-page": nextPageToken, jobs: [job1] }, { rateLimitRemaining: 1, rateLimitReset: 2 })
+    nockJobEtudiantNextPage(nextPageToken, { jobs: [job2] })
+
+    const result = await getJobEtudiantJobs()
+
+    expect(result).toEqual([job1, job2])
+    expect(nock.isDone()).toBe(true)
   })
 })

@@ -7,7 +7,7 @@ import { sentryCaptureException, startSentryPerfRecording } from "@/common/utils
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import config from "@/config"
 
-const isClamavDisabled = config.env === "preview"
+const isClamavDisabled = config.env === "preview" || config.env === "local"
 
 let clamavCache: Promise<NodeClam> | null = null
 let watcher: NodeJS.Timeout | null = null

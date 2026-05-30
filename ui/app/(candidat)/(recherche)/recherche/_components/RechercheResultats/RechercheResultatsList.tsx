@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
+import { TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 import { assertUnreachable } from "shared/utils/assertUnreachable"
 import { Footer } from "@/app/_components/Footer"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
@@ -23,11 +24,18 @@ import type { ResultCardData } from "./ResultCardData"
 import { Whisper } from "./Whisper"
 
 export function RechercheResultatsList(props: { rechercheParams: IRecherchePageParams; scrollToItem: (item: ResultCardData) => void }) {
-  const { displayMap } = props.rechercheParams
   const result = useRechercheResults(props.rechercheParams)
   const whispers = useWhispers(props.rechercheParams)
 
   const shouldDisplayCandidatureSpontaneBoost = result.jobQuery.lbaJobs.length + result.jobQuery.partnerJobs.length >= 10
+
+  const hasFormationError = result.formationQuery.status === "success" && result.formationQuery.formations.length === 0
+  const hasExpandedRadius =
+    result.formationQuery.status === "success" &&
+    result.formationQuery.formations[0] &&
+    props.rechercheParams.geo !== null &&
+    props.rechercheParams.radius < result.formationQuery.formations[0].place?.distance
+  const hasHeaderContent = !!result.formationQuery.errorMessage || !!result.jobQuery.errorMessage || hasFormationError || hasExpandedRadius
 
   const items = useMemo(() => {
     const itemsCount = result.displayedItems.length
@@ -78,7 +86,6 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
     return [<ResultListsLoading isJobSearchLoading={jobQuery.status === "loading"} isTrainingSearchLoading />]
   }
 
-  const [firstFormation] = formationQuery.formations
   const jobsCount = result.displayedJobs.length
 
   const onRenderLbaItem = (item: ILbaItem) => {
@@ -97,11 +104,11 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
   }
 
   return [
-    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto" }}>
+    <Box id="search-content-container" tabIndex={-1} key={0} sx={{ maxWidth: "xl", margin: "auto", ...(hasHeaderContent && { mt: fr.spacing("5v") }) }}>
       {formationQuery.errorMessage && <ErrorMessage message={formationQuery.errorMessage} />}
       {jobQuery.errorMessage && <ErrorMessage message={jobQuery.errorMessage} />}
 
-      {formationQuery.status === "success" && formationQuery.formations.length === 0 && (
+      {hasFormationError && (
         <Box
           sx={{
             mx: fr.spacing("12v"),
@@ -113,7 +120,7 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
           Aucune formation en alternance disponible pour ce métier
         </Box>
       )}
-      {formationQuery.status === "success" && firstFormation && props.rechercheParams.geo !== null && props.rechercheParams.radius < firstFormation.place?.distance && (
+      {hasExpandedRadius && (
         <Box
           sx={{
             fontWeight: 700,
@@ -126,20 +133,26 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
         </Box>
       )}
     </Box>,
-    ...items.map((data, index) => ({
-      height: heightEstimation(data.type),
-      render: () => (
-        <ResultCardWithContainer
-          key={index}
-          rechercheParams={props.rechercheParams}
-          data={data}
-          displayMap={displayMap}
-          onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
-        />
-      ),
-      onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
-      item: data,
-    })),
+    ...(() => {
+      let jobPosition = 0
+      return items.map((data, index) => {
+        const currentJobPosition = data.type === "lba_item" ? ++jobPosition : undefined
+        return {
+          height: heightEstimation(data.type),
+          render: () => (
+            <ResultCardWithContainer
+              key={index}
+              rechercheParams={props.rechercheParams}
+              data={data}
+              jobPosition={currentJobPosition}
+              onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick}
+            />
+          ),
+          onRender: data.type === "lba_item" ? () => onRenderLbaItem(data.value) : undefined,
+          item: data,
+        }
+      })
+    })(),
     <Box
       key="footer"
       sx={{
@@ -160,22 +173,24 @@ export function RechercheResultatsList(props: { rechercheParams: IRecherchePageP
 function ResultCardWithContainer({
   data,
   rechercheParams,
-  displayMap,
+  jobPosition,
   onValorisationCandidatureSpontaneeClick,
 }: {
   data: ResultCardData
   rechercheParams: IRecherchePageParams
-  displayMap: boolean
+  jobPosition?: number
   onValorisationCandidatureSpontaneeClick: () => void
 }) {
   return (
     <Box
       sx={{
+        maxWidth: "xl",
+        margin: "auto",
         my: fr.spacing("2v"),
-        px: { md: displayMap ? fr.spacing("2v") : 0, lg: fr.spacing("4v") },
+        px: { md: 0, lg: fr.spacing("4v") },
       }}
     >
-      <ResultCard data={data} rechercheParams={rechercheParams} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />
+      <ResultCard data={data} rechercheParams={rechercheParams} jobPosition={jobPosition} onValorisationCandidatureSpontaneeClick={onValorisationCandidatureSpontaneeClick} />
     </Box>
   )
 }
@@ -183,10 +198,12 @@ function ResultCardWithContainer({
 function ResultCard({
   data,
   rechercheParams,
+  jobPosition,
   onValorisationCandidatureSpontaneeClick,
 }: {
   data: ResultCardData
   rechercheParams: IRecherchePageParams
+  jobPosition?: number
   onValorisationCandidatureSpontaneeClick: () => void
 }) {
   const { type } = data
@@ -196,7 +213,7 @@ function ResultCard({
     }
     case "lba_item": {
       const item = data.value
-      return <LbaItemCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} />
+      return <LbaItemCard active={isItemReferenceInList(item, rechercheParams.activeItems ?? [])} item={item} rechercheParams={rechercheParams} position={jobPosition ?? 0} />
     }
     case "ValorisationCandidatureSpontanee": {
       return (
@@ -207,6 +224,7 @@ function ResultCard({
             utm_medium: "website",
             utm_campaign: "lba_recherche_promo-candidature-spontanee",
           }}
+          disabled={rechercheParams.typesEmploi && rechercheParams.typesEmploi.length !== 0 && !rechercheParams.typesEmploi.includes(TYPE_EMPLOI_OPTIONS.candidatures_spontanees)}
         />
       )
     }

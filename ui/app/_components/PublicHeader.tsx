@@ -1,14 +1,25 @@
 import { Header as DsfrHeader, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { useMemo } from "react"
 import type { IUserRecruteurPublic } from "shared"
-import { BandeauFusionPDA } from "@/app/_components/BandeauFusionPDA"
+import { getDepotCtaHref } from "@/services/getDepotCtaHref"
 import { PAGES } from "@/utils/routes.utils"
 import { AuthWatcher } from "./AuthWatcher"
 import { DsfrHeaderNavigation, DsfrHeaderProps } from "./Header"
 
 export function PublicHeader({ user, hideConnectionButton = false }: { user?: IUserRecruteurPublic; hideConnectionButton?: boolean }) {
   const props = useMemo(() => {
-    const extraItems = []
+    const extraItems = [
+      <HeaderQuickAccessItem
+        key="publier-offre"
+        quickAccessItem={{
+          iconId: "fr-icon-global-line",
+          text: "Publier une offre d'emploi",
+          linkProps: {
+            href: getDepotCtaHref(user ?? null, "ENTREPRISE"),
+          },
+        }}
+      />,
+    ]
 
     if (user) {
       extraItems.push(
@@ -48,7 +59,6 @@ export function PublicHeader({ user, hideConnectionButton = false }: { user?: IU
   return (
     <>
       <AuthWatcher user={user} />
-      <BandeauFusionPDA />
       <DsfrHeader {...props} navigation={<DsfrHeaderNavigation />} />
     </>
   )

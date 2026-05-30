@@ -10,7 +10,10 @@ export default {
       createdAt: z.date(),
     })
     .passthrough(),
-  indexes: [],
+  indexes: [
+    [{ "job.reference": 1 }, {}],
+    [{ ref_start: 1 }, {}],
+  ],
   collectionName: "raw_hellowork",
   authorizeAdditionalProperties: true,
 } as const satisfies IModelDescriptor

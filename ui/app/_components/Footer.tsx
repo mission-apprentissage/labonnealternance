@@ -1,4 +1,5 @@
 import { Typography } from "@mui/material"
+import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
 import { metierData } from "@/app/(editorial)/alternance/_components/metier_data"
 import { villeData } from "@/app/(editorial)/alternance/_components/ville_data"
 import { publicConfig } from "@/config.public"
@@ -111,7 +112,7 @@ const linkListContent: LinkCategory[] = [
   {
     categoryName: "Alternance par ville",
     // @ts-ignore min 1 link but here we have 10
-    links: villeData.map((ville) => ({
+    links: villeData.slice(0, 10).map((ville) => ({
       linkProps: {
         href: PAGES.dynamic.seoVille(ville.slug).getPath(),
       },
@@ -121,11 +122,21 @@ const linkListContent: LinkCategory[] = [
   {
     categoryName: "Alternance par métier",
     // @ts-ignore min 1 link but here we have 10
-    links: metierData.map((metier) => ({
+    links: metierData.slice(0, 10).map((metier) => ({
       linkProps: {
         href: PAGES.dynamic.seoMetier(metier.slug).getPath(),
       },
       text: `${metier.metier}`,
+    })),
+  },
+  {
+    categoryName: "Alternance par diplôme",
+    // @ts-ignore min 1 link but here we have 10
+    links: diplomeData.slice(0, 10).map((diplome) => ({
+      linkProps: {
+        href: PAGES.dynamic.seoDiplome(diplome.slug).getPath(),
+      },
+      text: diplome.titre,
     })),
   },
 ]
@@ -180,7 +191,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
             <p className="fr-logo">{DsfrHeaderProps.brandTop}</p>
             <a className="fr-footer__brand-link" href={DsfrHeaderProps.homeLinkProps.href as string} title={DsfrHeaderProps.homeLinkProps.title}>
               {/** biome-ignore lint/performance/noImgElement: migration */}
-              <img className="fr-footer__logo" src="/images/france_relance.svg" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
+              <img className="fr-footer__logo" src="/images/france_relance.svg" width="56" height="56" alt="France relance" style={{ width: "3.5rem", height: "auto" }} />
             </a>
           </div>
           <div className="fr-footer__content">

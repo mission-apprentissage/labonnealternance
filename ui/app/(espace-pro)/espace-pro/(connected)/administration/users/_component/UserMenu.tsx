@@ -25,7 +25,7 @@ export const UserMenu = ({
       label: "Voir les informations",
       ariaLabel: `Voir les informations de l'entreprise ${row.establishment_raison_sociale}`,
       type: "link",
-      link: `/espace-pro/administration/users/${row._id}`,
+      link: `/espace-pro/administration/users/${row._id}?organizationId=${row.organizationId || "unused"}`,
     },
     canActivate
       ? {

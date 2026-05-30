@@ -9,7 +9,7 @@ import { ResultatSimulation } from "./ResultatSimulation"
 
 export const SimulateurRemuneration = () => (
   <SimulateurProvider>
-    <Grid container spacing={6}>
+    <Grid container spacing={6} id="landing-page-content">
       <Typography variant="h1" color={fr.colors.decisions.text.default.info.default} fontWeight={700}>
         Salaire alternant : simulateur de rémunération
       </Typography>

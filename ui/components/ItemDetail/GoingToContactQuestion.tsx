@@ -35,7 +35,6 @@ const GoingToContactQuestion = ({ kind, item }: GoingToContactQuestionProps) => 
         alignItems: "center",
         justifyContent: "space-around",
         backgroundColor: "white",
-        maxWidth: "970px",
         mx: { xs: 0, md: "auto" },
       }}
       data-testid="GoingToContactQuestion"

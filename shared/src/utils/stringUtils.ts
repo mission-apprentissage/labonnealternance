@@ -21,3 +21,10 @@ export const hashcode = (str: string) => {
 }
 
 export const toKebabCase = (str: string) => kebabCase(str)
+
+export const stringNormaliser = (str: string): string => {
+  return removeAccents(str.toLowerCase())
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ")
+}

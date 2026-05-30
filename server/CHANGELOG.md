@@ -15,7 +15,7 @@
 
 ## 1.20.7 [15/09/2022]
 
-[LBAC-302] Correction détection tests swagger inter environnements
+[LBAC-302] Correction détection tests documentation API inter environnements
 [LBAC-298] Fix zoom après première recherche
 [LBAR-617] Modification endpoint "intitule"
 [LBAC-67] Automate d'anonymisation des candidatures
@@ -720,7 +720,7 @@ Ajustements recherche domainesMetiers : plus de résultats, ignore les mots cour
 
 ## 1.3.0 [14/01/2021]
 
-[303] Ajouter la route swagger.json
+[303] Ajouter la route documentation-api.json
 
 ## 1.2.1 [14/01/2021]
 
@@ -978,7 +978,7 @@ Fix tests
 
 ## 0.0.9 (02/11/2020)
 
-[#299] Doc swagger des api
+[#299] Documentation API
 
 - /api/V1/formationsParRegion
 - /api/V1/jobs
@@ -986,7 +986,7 @@ Fix tests
 
 ## 0.0.8 (30/10/2020)
 
-[#299] Doc swagger des api - /api/V1/formations
+[#299] Documentation API - /api/V1/formations
 
 ## 0.0.7 (29/10/2020)
 

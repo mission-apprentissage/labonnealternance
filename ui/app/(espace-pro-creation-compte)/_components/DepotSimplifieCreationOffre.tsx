@@ -1,8 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import type { IJobJson } from "shared"
-
+import { useState } from "react"
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { FormulaireEditionOffre } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffre"
 import { createOffreByToken } from "@/utils/api"
@@ -13,14 +12,14 @@ export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: b
   const router = useRouter()
   const { displayBanner, userId, establishment_id } = useSearchParamsRecord()
   const { email, token } = useSearchParamsRecord() as { token: string; email: string }
+  const [hasChangedScreen, setChangedScreen] = useState(false)
 
   const submit = async (values) => {
-    const { recruiter: formulaire, token: jobToken } = await createOffreByToken(establishment_id, values, token)
-    const job = formulaire.jobs.at(-1) as IJobJson
+    const { job_id, token: jobToken } = await createOffreByToken(establishment_id, values, token)
     router.replace(
       PAGES.dynamic
         .espaceProCreationFin({
-          jobId: job._id.toString(),
+          jobId: job_id,
           email,
           withDelegation: false,
           fromDashboard: false,
@@ -34,12 +33,14 @@ export function DepotSimplifieCreationOffre({ isWidget = false }: { isWidget?: b
 
   return (
     <>
-      <Bandeau
-        type="success"
-        header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
-        description="Déposez votre offre dès maintenant."
-      />
-      <FormulaireEditionOffre establishment_id={establishment_id} handleSave={submit} />
+      {!hasChangedScreen && (
+        <Bandeau
+          type="success"
+          header={`Votre compte a été créé avec succès${displayBanner === "true" ? " et est en attente de vérification" : ""}.`}
+          description="Déposez votre offre dès maintenant."
+        />
+      )}
+      <FormulaireEditionOffre establishment_id={establishment_id} handleSave={submit} onChangeScreen={() => setChangedScreen(true)} />
     </>
   )
 }
