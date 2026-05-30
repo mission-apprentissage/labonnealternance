@@ -286,7 +286,6 @@ jobs:
 
           FAILED=0
           for PR in $PR_NUMBERS; do
-            # Utilise closingIssuesReferences pour ne cibler que les issues liées via Closes/Fixes/Resolves
             ISSUE_NUMBERS=$(gh api graphql -f query='
               query($owner: String!, $repo: String!, $pr: Int!) {
                 repository(owner: $owner, name: $repo) {
@@ -300,6 +299,9 @@ jobs:
               --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].number' 2>/dev/null || true)
 
             for ISSUE in $ISSUE_NUMBERS; do
+              # Valider que ISSUE est bien un entier pour éviter de passer du JSON d'erreur en paramètre
+              [[ "$ISSUE" =~ ^[0-9]+$ ]] || continue
+
               ITEM_ID=$(gh api graphql -f query='
                 query($owner: String!, $repo: String!, $issue: Int!) {
                   repository(owner: $owner, name: $repo) {
