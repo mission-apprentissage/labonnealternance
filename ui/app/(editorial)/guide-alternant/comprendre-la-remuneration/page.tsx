@@ -77,7 +77,7 @@ const BlocSalaire = () => (
         </ListItem>
         <ListItem>
           <Typography component={"span"} fontWeight={"bold"}>
-            60%
+            67%
           </Typography>{" "}
           la 3e année
         </ListItem>

@@ -2,6 +2,7 @@ import type {
   ContextConfigDefault,
   FastifyBaseLogger,
   FastifyRequest,
+  FastifySchema,
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
   preHandlerHookHandler,

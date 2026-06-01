@@ -123,6 +123,24 @@
               <% } %>
               <br /><br />
             </mj-text>
+
+            <% if (data.applicant_answers_to_recruiter_questions?.length) { %>
+                <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">
+                  Ses réponses à vos questions
+                  <br /><br />
+                </mj-text>
+                <% data.applicant_answers_to_recruiter_questions.forEach(function(answerData) { %>
+                  <mj-text align="left" color="#161616" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="16px" font-weight="400" line-height="24px">
+                    <span style="font-weight: 700;"><%= answerData.question %></span>
+                    <br />
+                    <span>
+                      <%- answerData.answer %>
+                    </span>
+                    <br />
+                    <br />
+                  </mj-text>
+                <% }) %>
+              <% } %>
             
             <% if (data.applicant_contract_duration || data.applicant_contract_start || data.applicant_formation_description || data.applicant_rythm_description) { %>
               <mj-text align="left" color="#000091" css-class="text" font-family="Arial, Helvetica, Verdana, sans-serif" font-size="20px" font-weight="700" line-height="22px">

@@ -596,6 +596,7 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
     workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
+    to_applicant_questions: job.to_applicant_questions,
   }
 
   await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
@@ -1209,6 +1210,7 @@ async function jobCreateToJobsPartner({
     duplicates: [],
     apply_recipient_id: newId.toString(),
     establishment_id: buildEstablishmentId(user._id, entreprise.siret),
+    to_applicant_questions: job.to_applicant_questions,
   }
   return jobPartner
 }
@@ -1289,6 +1291,7 @@ export function jobPartnersToRecruiter(
       mer_sent: jobPartner.mer_sent,
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
+      to_applicant_questions: jobPartner.to_applicant_questions,
     }
     return ijob
   })

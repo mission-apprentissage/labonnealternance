@@ -350,29 +350,31 @@ Configuration: `.husky/commitlint.config.js` extends `@commitlint/config-convent
 
 ### Pull Request Requirements
 
-**PR Title Format**: MUST include JIRA ticket reference
+**PR Title Format**: MUST include GitHub issue reference
 
 ```
 feat(lba-XXX): brief description
 fix(lba-XXX): brief description
 ```
 
-**CRITICAL: PR Description with JIRA Link**
+Where `XXX` is the GitHub issue number (e.g., `fix(lba-4049): fix status display`).
+
+**CRITICAL: PR Description with GitHub Issue Link**
 
 When creating or updating ANY pull request description (whether using the Copilot Summary button, generating a description, or responding to `@copilot` mentions):
 
-1. **FIRST STEP - Extract JIRA ticket**: Look at the PR title and extract the ticket number (format: `lba-XXX` or `LBA-XXX`)
-   - Example: From title `fix(lba-3524): copilot pr review`, extract `3524`
+1. **FIRST STEP - Extract the issue number**: Look at the PR title and extract the issue number (format: `lba-XXX`)
+   - Example: From title `fix(lba-4049): fix status display`, extract `4049`
 
-2. **SECOND STEP - Add JIRA link as FIRST LINE**: The description MUST start with:
+2. **SECOND STEP - Add Closes link as FIRST LINE**: The description MUST start with:
 
    ```
-   https://tableaudebord-apprentissage.atlassian.net/browse/LBA-3524
+   Closes #4049
    ```
 
-   (Replace 3524 with the actual ticket number from the title, ALWAYS UPPERCASE)
+   (Replace 4049 with the actual issue number from the title)
 
-3. **THIRD STEP - Add Changes section**: After the JIRA link, add:
+3. **THIRD STEP - Add Changes section**: After the issue link, add:
 
    ```
    ## Changes
@@ -383,7 +385,7 @@ When creating or updating ANY pull request description (whether using the Copilo
 4. **MANDATORY FORMAT**:
 
    ```
-   https://tableaudebord-apprentissage.atlassian.net/browse/LBA-{NUMBER}
+   Closes #XXX
 
    ## Changes
 
@@ -394,7 +396,7 @@ When creating or updating ANY pull request description (whether using the Copilo
    - How it was tested...
    ```
 
-**IMPORTANT**: The JIRA link is NOT optional. NEVER generate a PR description without the JIRA link. ALWAYS check the PR title for the ticket number first.
+**IMPORTANT**: The GitHub issue link is NOT optional. NEVER generate a PR description without `Closes #XXX`. ALWAYS check the PR title for the issue number first.
 
 **Code Review Focus Areas**:
 

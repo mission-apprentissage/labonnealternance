@@ -23,9 +23,9 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
   })
 
   it("devrait trouver les CFA avec des variations mixtes", () => {
-    expect(isCompanyInBlockedCfaList("afpa PAYS DE savoie")).toBe(true)
+    expect(isCompanyInBlockedCfaList("walter LEARNING")).toBe(true)
     expect(isCompanyInBlockedCfaList("IPAC BACHELOR FACTORY vannes")).toBe(true)
-    expect(isCompanyInBlockedCfaList("Institut europeen de formation")).toBe(true)
+    expect(isCompanyInBlockedCfaList("pigier BORDEAUX")).toBe(true)
     expect(isCompanyInBlockedCfaList("CIO'sup drome-ardeche")).toBe(true)
   })
 
@@ -38,5 +38,11 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("Boulangerie Dupont")).toBe(false)
     expect(isCompanyInBlockedCfaList("Plomberie Martin")).toBe(false)
     expect(isCompanyInBlockedCfaList("Université Inconnue")).toBe(false)
+  })
+
+  it("ne doit pas trouver les établissements publics supprimés de la liste", () => {
+    expect(isCompanyInBlockedCfaList("afpa PAYS DE savoie")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Chambre de Metiers et de l'Artisanat de Region Bretagne")).toBe(false)
+    expect(isCompanyInBlockedCfaList("Universite de Rennes")).toBe(false)
   })
 })

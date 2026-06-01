@@ -14,9 +14,6 @@ export const zApplicationRoutesV2 = {
         }),
       },
       securityScheme: { auth: "api-apprentissage", access: "api-apprentissage:applications", resources: {} },
-      openapi: {
-        tags: ["V2 - Application"] as string[],
-      },
     },
     "/v2/_private/application": {
       path: "/v2/_private/application",

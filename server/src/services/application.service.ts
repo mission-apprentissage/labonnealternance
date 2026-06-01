@@ -156,7 +156,7 @@ export const findApplicationByMessageId = async ({ messageId, email }: { message
   getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await getDbCollection("jobs_partners").updateMany({ email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { $set: { email: "" } })
+  return await getDbCollection("jobs_partners").updateMany({ apply_email: email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { $set: { apply_email: null } })
 }
 
 async function identifyFileType(base64Data: string): Promise<string | undefined> {
@@ -289,8 +289,7 @@ export const sendApplicationV2 = async ({
   if (!PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
     const recruteurEmail = job.apply_email?.toLowerCase()
     if (!recruteurEmail) {
-      sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${`job_partners avec id=${job._id}`}`)
-      throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
+      throw badRequest(BusinessErrorCodes.INTERNAL_EMAIL)
     }
   }
 
@@ -530,6 +529,7 @@ const newApplicationToApplicationDocumentV2 = async (
     applicant_formation_description: prepareMessageForMail(newApplication.applicant_formation_description),
     applicant_inscription_formation: newApplication.applicant_inscription_formation,
     applicant_rythm_description: prepareMessageForMail(newApplication.applicant_rythm_description),
+    applicant_answers_to_recruiter_questions: newApplication.applicant_answers_to_recruiter_questions,
 
     job_searched_by_user: "job_searched_by_user" in newApplication ? newApplication.job_searched_by_user : null,
     company_recruitment_intention: null,
@@ -893,6 +893,7 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     applicant_contract_start,
     applicant_formation_description,
     applicant_rythm_description,
+    applicant_answers_to_recruiter_questions,
   } = application
   return {
     applicant_contract_duration: sanitizeTextField(applicant_contract_duration),
@@ -917,6 +918,10 @@ const sanitizeApplicationForEmail = (application: IApplication) => {
     caller: sanitizeTextField(caller),
     created_at: created_at,
     last_update_at: last_update_at,
+    applicant_answers_to_recruiter_questions: (applicant_answers_to_recruiter_questions ?? []).map(({ question, answer }) => ({
+      question,
+      answer: prepareMessageForMail(sanitizeTextField(answer)),
+    })),
   }
 }
 

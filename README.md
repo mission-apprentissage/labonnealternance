@@ -267,6 +267,39 @@ Par défaut, le fichier `.infra/env.global.yml` est édité.
 
 Si un environnement est renseigné, le fichier associé `.infra/env.<env>.yml` à cet environnement est édité.
 
+##### Merge driver SOPS (à configurer une fois par développeur)
+
+Les fichiers `.infra/env.*.yml` utilisent un merge driver git pour résoudre automatiquement les conflits sur les fichiers chiffrés SOPS. Il faut l'activer localement :
+
+```bash
+git config merge.sops.name "sops merge driver"
+git config merge.sops.driver "sops merge %O %A %B"
+```
+
+Sans cette configuration, git ne sait pas merger des fichiers chiffrés et les marqueurs de conflit (`<<<<<<<`) corrompent le YAML. En cas de conflit non résolu automatiquement, procédure manuelle :
+
+```bash
+# Remplacer par le fichier en conflit (ex: env.production.yml, env.recette.yml…)
+FILE=.infra/env.production.yml
+
+# Extraire les trois versions propres
+git show :1:$FILE > /tmp/base.yml
+git show :2:$FILE > /tmp/ours.yml
+git show :3:$FILE > /tmp/theirs.yml
+
+# Déchiffrer
+sops -d /tmp/base.yml   > /tmp/base.plain.yml
+sops -d /tmp/ours.yml   > /tmp/ours.plain.yml
+sops -d /tmp/theirs.yml > /tmp/theirs.plain.yml
+
+# Merger en clair, résoudre les conflits
+git merge-file /tmp/ours.plain.yml /tmp/base.plain.yml /tmp/theirs.plain.yml
+
+# Re-chiffrer et valider
+sops -e /tmp/ours.plain.yml > $FILE
+git add $FILE
+```
+
 #### Linter
 
 Lint global du projet

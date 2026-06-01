@@ -43,6 +43,9 @@ on:
       TOKEN_MNA_SHARED:
         description: Authentication token for accessing private repositories
         required: true
+      PROJECT_TOKEN:
+        description: Token with project scope for updating GitHub Project items
+        required: false
 
 jobs:
   version:
@@ -93,6 +96,7 @@ jobs:
     needs: ["version", "npm-packages-check"]
     name: Deploy ${{ needs.version.outputs.VERSION }} on ${{ inputs.environment }}
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Notify new deployment on Slack
         uses: ravsamhq/notify-slack-action@v2
@@ -188,3 +192,143 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
+
+  changelog:
+    if: ${{ success() && inputs.environment == 'production' }}
+    needs: ["version", "deploy"]
+    name: Post changelog to Slack
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      issues: write
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Post changelog to Slack
+        shell: bash
+        run: |
+          CURRENT_TAG="v${{ needs.version.outputs.VERSION }}"
+
+          # Itère sur les derniers runs réussis pour trouver le dernier déploiement en production
+          # (le workflow tourne aussi pour recette/pentest, donc on ne peut pas juste prendre head -1).
+          PREV_TAG=""
+          RUN_IDS=$(gh api \
+            "repos/$GITHUB_REPOSITORY/actions/workflows/_deploy.yml/runs?status=success&per_page=20" \
+            --jq ".workflow_runs[] | select(.id | tostring != \"$GITHUB_RUN_ID\") | .id")
+
+          for RUN_ID in $RUN_IDS; do
+            PREV_VERSION=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" \
+              --jq 'first(.jobs[] | select(.name | test("Deploy .* on production")) | .name | capture("Deploy (?<v>.*) on production") | .v) // empty')
+            if [ -n "$PREV_VERSION" ]; then
+              PREV_TAG="v${PREV_VERSION}"
+              break
+            fi
+          done
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "No previous production run found, skipping"
+            exit 0
+          fi
+
+          # Transmettre les tags aux steps suivants
+          echo "PREV_TAG=${PREV_TAG}" >> "$GITHUB_ENV"
+          echo "CURRENT_TAG=${CURRENT_TAG}" >> "$GITHUB_ENV"
+
+          TODAY=$(date +%Y-%m-%d)
+          NL=$'\n'
+
+          FEAT_LINES=""
+          FIX_LINES=""
+          CHORE_LINES=""
+          OTHER_LINES=""
+
+          while IFS=$'\t' read -r hash author subject; do
+            desc=$(echo "$subject" | sed -E 's/^[a-z]+(\([^)]*\))?: //')
+            if echo "$subject" | grep -qE '^feat[\(:]'; then
+              FEAT_LINES+="• ${author} - ${desc} (${hash})${NL}"
+            elif echo "$subject" | grep -qE '^fix[\(:]'; then
+              FIX_LINES+="• ${author} - ${desc} (${hash})${NL}"
+            elif echo "$subject" | grep -qE '^chore[\(:]'; then
+              CHORE_LINES+="• ${author} - ${desc} (${hash})${NL}"
+            else
+              OTHER_LINES+="• ${author} - ${subject} (${hash})${NL}"
+            fi
+          done < <(git log --pretty=format:"%h%x09%an%x09%s" "${PREV_TAG}..${CURRENT_TAG}")
+
+          if [ -z "$FEAT_LINES" ] && [ -z "$FIX_LINES" ] && [ -z "$CHORE_LINES" ] && [ -z "$OTHER_LINES" ]; then
+            echo "No commits between ${PREV_TAG} and ${CURRENT_TAG}, skipping"
+            exit 0
+          fi
+
+          MESSAGE=":rocket: *Déployé en production !*${NL}${PREV_TAG} → *${CURRENT_TAG}* (${TODAY})${NL}"
+          [ -n "$FEAT_LINES" ] && MESSAGE+="${NL}*Nouvelles fonctionnalités*${NL}${NL}${FEAT_LINES}"
+          [ -n "$FIX_LINES" ]  && MESSAGE+="${NL}*Corrections*${NL}${NL}${FIX_LINES}"
+          [ -n "$CHORE_LINES" ] && MESSAGE+="${NL}*Maintenance*${NL}${NL}${CHORE_LINES}"
+          [ -n "$OTHER_LINES" ] && MESSAGE+="${NL}*Autres changements*${NL}${NL}${OTHER_LINES}"
+
+          jq -n --arg text "$MESSAGE" '{text: $text}' \
+          | curl -s -X POST "$SLACK_WEBHOOK_URL" \
+              -H 'Content-type: application/json' \
+              --data @-
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Mark linked issues as en-production in GitHub Project
+        shell: bash
+        run: |
+          PR_NUMBERS=$(git log --pretty=format:"%s" "${PREV_TAG}..${CURRENT_TAG}" \
+            | grep -oP '\(#\K[0-9]+(?=\))' || true)
+
+          FAILED=0
+          for PR in $PR_NUMBERS; do
+            ISSUE_NUMBERS=$(gh api graphql -f query='
+              query($owner: String!, $repo: String!, $pr: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pr) {
+                    closingIssuesReferences(first: 10) {
+                      nodes { number }
+                    }
+                  }
+                }
+              }' -f owner="mission-apprentissage" -f repo="labonnealternance" -F pr="$PR" \
+              --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].number' 2>/dev/null || true)
+
+            for ISSUE in $ISSUE_NUMBERS; do
+              # Valider que ISSUE est bien un entier pour éviter de passer du JSON d'erreur en paramètre
+              [[ "$ISSUE" =~ ^[0-9]+$ ]] || continue
+
+              ITEM_ID=$(gh api graphql -f query='
+                query($owner: String!, $repo: String!, $issue: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    issue(number: $issue) {
+                      projectItems(first: 100) {
+                        nodes { id project { number } }
+                      }
+                    }
+                  }
+                }' -f owner="mission-apprentissage" -f repo="labonnealternance" -F issue="$ISSUE" \
+                --jq '[.data.repository.issue.projectItems.nodes[] | select(.project.number == 14) | .id] | first' 2>/dev/null || true)
+
+              if [ -n "$ITEM_ID" ] && [ "$ITEM_ID" != "null" ]; then
+                gh api graphql -f query='
+                  mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                    updateProjectV2ItemFieldValue(input: {
+                      projectId: $projectId itemId: $itemId fieldId: $fieldId
+                      value: { singleSelectOptionId: $optionId }
+                    }) { projectV2Item { id } }
+                  }' \
+                  -f projectId="PVT_kwDOA8sl_s4BW3Li" \
+                  -f itemId="$ITEM_ID" \
+                  -f fieldId="PVTSSF_lADOA8sl_s4BW3LizhSIG_8" \
+                  -f optionId="a9d4a5ea" && echo "Issue #$ISSUE → en-production" || { echo "Issue #$ISSUE → échec mise à jour"; FAILED=1; }
+              fi
+            done
+          done
+          [ $FAILED -eq 0 ] || exit 1
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN }}

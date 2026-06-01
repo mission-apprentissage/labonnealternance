@@ -3,20 +3,18 @@ import { z } from "../helpers/zodWithOpenApi.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
-export const ZEntrepriseManagedByCfa = z
-  .object({
-    _id: zObjectId,
-    createdAt: z.date().describe("Date de création du document dans la collection"),
-    updatedAt: z.date().describe("Date de mise à jour du document dans la collection"),
-    entreprise_id: zObjectId.describe("_id de la collection entreprises"),
-    cfa_id: zObjectId.describe("_id de la collection cfa"),
-    last_name: z.string().nullish().describe("Nom du contact"),
-    first_name: z.string().nullish().describe("Prenom du contact"),
-    phone: z.string().nullish().describe("Téléphone du contact"),
-    email: z.string().describe("Email du contact"),
-    origin: z.string().nullish().describe("Origine de la creation de l'établissement"),
-  })
-  .openapi("EntrepriseManagedByCfa")
+export const ZEntrepriseManagedByCfa = z.object({
+  _id: zObjectId,
+  createdAt: z.date().describe("Date de création du document dans la collection"),
+  updatedAt: z.date().describe("Date de mise à jour du document dans la collection"),
+  entreprise_id: zObjectId.describe("_id de la collection entreprises"),
+  cfa_id: zObjectId.describe("_id de la collection cfa"),
+  last_name: z.string().nullish().describe("Nom du contact"),
+  first_name: z.string().nullish().describe("Prenom du contact"),
+  phone: z.string().nullish().describe("Téléphone du contact"),
+  email: z.string().describe("Email du contact"),
+  origin: z.string().nullish().describe("Origine de la creation de l'établissement"),
+})
 
 export type IEntrepriseManagedByCfa = z.output<typeof ZEntrepriseManagedByCfa>
 

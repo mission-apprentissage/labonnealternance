@@ -97,6 +97,9 @@ export function VirtualTable<T>({
 
   const virtualRows = virtualizer.getVirtualItems()
 
+  const paddingTop = virtualRows.length > 0 ? (virtualRows[0].start ?? 0) : 0
+  const paddingBottom = virtualRows.length > 0 ? virtualizer.getTotalSize() - (virtualRows[virtualRows.length - 1].end ?? 0) : 0
+
   useEffect(() => {
     const lastRow = virtualRows.at(-1)
     if (lastRow && lastRow.index >= rows.length - 10) {
@@ -172,23 +175,16 @@ export function VirtualTable<T>({
             ))}
           </thead>
 
-          <tbody style={{ height: `${virtualizer.getTotalSize()}px`, position: "relative" }}>
+          <tbody>
+            {paddingTop > 0 && (
+              <tr>
+                <td colSpan={99} style={{ height: `${paddingTop}px`, padding: 0, border: 0 }} />
+              </tr>
+            )}
             {virtualRows.map((virtualRow) => {
               const row = rows[virtualRow.index]
               return (
-                <tr
-                  key={row.id}
-                  data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    display: "flex",
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
+                <tr key={row.id} data-index={virtualRow.index} ref={virtualizer.measureElement} style={{ display: "flex", width: "100%" }}>
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
@@ -207,6 +203,11 @@ export function VirtualTable<T>({
                 </tr>
               )
             })}
+            {paddingBottom > 0 && (
+              <tr>
+                <td colSpan={99} style={{ height: `${paddingBottom}px`, padding: 0, border: 0 }} />
+              </tr>
+            )}
           </tbody>
         </table>
       </Box>

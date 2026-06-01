@@ -183,6 +183,7 @@ export default (server: Server) => {
         competences_rome,
         offer_title_custom,
         job_employer_description,
+        to_applicant_questions,
       } = req.body
       const createdOffer = await createJob({
         job: {
@@ -199,6 +200,7 @@ export default (server: Server) => {
           competences_rome,
           offer_title_custom,
           job_employer_description,
+          to_applicant_questions,
         },
         user,
         siret,
@@ -243,6 +245,7 @@ export default (server: Server) => {
         competences_rome,
         offer_title_custom,
         job_employer_description,
+        to_applicant_questions,
       } = req.body
       const createdOffer = await createJob({
         job: {
@@ -260,6 +263,7 @@ export default (server: Server) => {
           competences_rome,
           offer_title_custom,
           job_employer_description,
+          to_applicant_questions,
         },
         siret,
         user,
