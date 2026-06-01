@@ -1,6 +1,6 @@
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
-import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"
 import { fillFieldsForComputedPartnersFactory } from "./fillFieldsForPartnersFactory"
 
