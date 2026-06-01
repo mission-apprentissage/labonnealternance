@@ -127,11 +127,11 @@ export default function UnJeune1Solution() {
           <NextImage src="/images/1j1s/graph.svg" width={89} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
 
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, fontSize: "50px", lineHeight: "60px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, fontSize: "50px", lineHeight: "60px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
             3,5 M
           </Typography>
-          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mb: fr.spacing("3v") }}>
+          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mb: fr.spacing("3v") }}>
             DE VISITEURS
           </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>Sur La bonne alternance en 2025</Typography>
@@ -140,11 +140,11 @@ export default function UnJeune1Solution() {
         <Box sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/heart.svg" width={70} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, fontSize: "50px", lineHeight: "60px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, fontSize: "50px", lineHeight: "60px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
             200 000
           </Typography>
-          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mb: fr.spacing("3v") }}>
+          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mb: fr.spacing("3v") }}>
             CANDIDATS
           </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>postulent aux offres chaque année</Typography>
@@ -152,11 +152,11 @@ export default function UnJeune1Solution() {
         <Box sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/scroll.svg" width={71} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, fontSize: "50px", lineHeight: "60px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, fontSize: "50px", lineHeight: "60px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
             30%
           </Typography>
-          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mb: fr.spacing("3v") }}>
+          <Typography sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mb: fr.spacing("3v") }}>
             1 APPRENTI SUR 3
           </Typography>
           <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>reste dans l'entreprise qui l'a formé</Typography>
