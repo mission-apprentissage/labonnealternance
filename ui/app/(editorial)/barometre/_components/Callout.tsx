@@ -33,7 +33,7 @@ export function Callout({ variant = "highlight", children }: { variant?: Variant
         <Box
           sx={{
             backgroundColor: style.background,
-            borderRadius: "6px",
+            borderRadius: "4px",
             p: fr.spacing("6v"),
             my: fr.spacing("6v"),
             color: fr.colors.decisions.text.default.grey.default,

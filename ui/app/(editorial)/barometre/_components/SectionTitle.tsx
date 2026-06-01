@@ -29,9 +29,13 @@ export function SectionTitle({
         }}
       >
         {title}
-        {highlightedText && <span style={{ color: fr.colors.decisions.text.default.info.default }}> {highlightedText}</span>}
+        {highlightedText && <span style={{ color: fr.colors.decisions.artwork.minor.purpleGlycine.default }}> {highlightedText}</span>}
       </Typography>
-      <Box component="hr" sx={{ maxWidth: "93px", border: "none", borderTop: `4px solid ${fr.colors.decisions.text.default.info.default}`, opacity: 1, m: 0 }} aria-hidden="true" />
+      <Box
+        component="hr"
+        sx={{ maxWidth: "93px", border: "none", borderTop: `4px solid ${fr.colors.decisions.artwork.minor.purpleGlycine.default}`, opacity: 1, m: 0 }}
+        aria-hidden="true"
+      />
     </Box>
   )
 }

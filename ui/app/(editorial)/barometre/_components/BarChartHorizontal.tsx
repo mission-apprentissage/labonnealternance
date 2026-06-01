@@ -49,7 +49,7 @@ export function BarChartHorizontal({
           my: fr.spacing("8v"),
           p: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
           border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-          borderRadius: "12px",
+          borderRadius: "4px",
           backgroundColor: fr.colors.decisions.background.default.grey.default,
           boxShadow: "0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04)",
           transition: "box-shadow 0.2s ease",
@@ -57,9 +57,7 @@ export function BarChartHorizontal({
         }}
       >
         <Box component="figcaption" sx={{ mb: fr.spacing("6v") }}>
-          <Typography component="h3" sx={{ fontWeight: 700, fontSize: { xs: "16px", md: "18px" }, color: fr.colors.decisions.text.default.info.default, lineHeight: 1.3 }}>
-            {title}
-          </Typography>
+          <Typography sx={{ fontWeight: 700, fontSize: { xs: "16px", md: "18px" }, color: fr.colors.decisions.text.title.grey.default, lineHeight: 1.3 }}>{title}</Typography>
           {caption ? (
             <Typography component="p" sx={{ fontSize: "13px", color: fr.colors.decisions.text.mention.grey.default, mt: fr.spacing("1v"), fontStyle: "italic" }}>
               {caption}
