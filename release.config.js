@@ -17,7 +17,8 @@ module.exports = {
       {
         notifyOnSuccess: true,
         notifyOnFail: true,
-        onSuccessFunction: ".github/scripts/slack-release-payload.cjs",
+        // biome-ignore lint/style/noCommonJs: fonction injectée dans semantic-release-slack-bot
+        onSuccessFunction: require("./.github/scripts/slack-release-payload.cjs"),
       },
     ],
   ],
