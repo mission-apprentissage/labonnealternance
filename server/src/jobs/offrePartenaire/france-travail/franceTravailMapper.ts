@@ -14,10 +14,6 @@ export const franceTravailJobsToJobsPartners = (job: IFTJobRaw): IComputedJobsPa
   const expirationDate = dayjs(job.dateCreation).tz().add(2, "months").toDate()
   let businessError: null | JOB_PARTNER_BUSINESS_ERROR = null
 
-  if (expirationDate <= now) {
-    businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
-  }
-
   const workplace_address_label = getAddressLabel(job.lieuTravail)
   if (!workplace_address_label) {
     businessError = JOB_PARTNER_BUSINESS_ERROR.GEOLOCATION_NOT_FOUND

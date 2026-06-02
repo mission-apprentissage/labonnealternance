@@ -133,17 +133,6 @@ describe("franceTravailJobsToJobsPartners", () => {
     })
   })
 
-  it("should set EXPIRED when job creation date is more than 2 months ago", () => {
-    const job = {
-      ...baseJob,
-      dateCreation: "2024-12-01T10:00:00.000Z",
-    }
-
-    expect(franceTravailJobsToJobsPartners(job)).toMatchObject({
-      business_error: JOB_PARTNER_BUSINESS_ERROR.EXPIRED,
-    })
-  })
-
   it("should map contract type to PROFESSIONNALISATION", () => {
     const job = {
       ...baseJob,
