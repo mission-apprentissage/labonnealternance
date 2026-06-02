@@ -71,12 +71,11 @@ yarn dedupe --check
 - Covers lint + format in a single tool (replaces ESLint + Prettier)
 - Pre-commit hook runs `biome check --write` on staged files automatically via lint-staged
 
-**Prettier configuration** (in `package.json`):
+**Biome formatter configuration** (in `biome.json`):
 
-- No semicolons (`semi: false`)
 - 2 spaces indentation
 - 180 char print width
-- ES5 trailing commas
+- LF line endings
 
 ### Testing - MongoDB dependency
 
@@ -245,9 +244,9 @@ yarn gitleaks:check      # Gitleaks security scan
 
 **lint-staged** configuration (in `package.json`):
 
-- `*.{js,jsx,ts,tsx,json}`: Biome check + fix
-- All files: Biome check
-- `yarn.lock`: Run `yarn dedupe`
+- `*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc}`: `biome check --write --no-errors-on-unmatched`
+- All files: `biome check --no-errors-on-unmatched --files-ignore-unknown=true`
+- `yarn.lock`: `yarn dedupe`
 
 ### Other Workflows
 

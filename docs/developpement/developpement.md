@@ -5,7 +5,6 @@
   - [Opérations](#opérations)
     - [Installation et Mise à jour des dépendences](#installation-et-mise-à-jour-des-dépendences)
   - [Linter](#linter)
-  - [Prettier](#prettier)
   - [Typescript](#typescript)
     - [Arrêt des services](#arrêt-des-services)
     - [Suppression des services](#suppression-des-services)
