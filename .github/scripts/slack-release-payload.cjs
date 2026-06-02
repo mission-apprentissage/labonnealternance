@@ -22,7 +22,7 @@ function parseSection(notes, heading) {
 
 module.exports = function slackReleasePayload({ releasedVersion, releaseNotes, repoURL }) {
   const today = new Date().toISOString().slice(0, 10)
-  const releaseUrl = `${repoURL}/releases/tag/v${releasedVersion}`
+  const releaseUrl = `${repoURL.replace(/\.git$/, "")}/releases/tag/v${releasedVersion}`
   const features = parseSection(releaseNotes, "Features")
   const fixes = parseSection(releaseNotes, "Bug Fixes")
 
