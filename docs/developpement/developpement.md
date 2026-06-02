@@ -36,23 +36,13 @@ Pour installer et mettre à jour les dépendences, vous pouvez au choix:
 
 ## Linter
 
-Un linter (via ESLint) est mis en place dans le projet, pour le lancer :
+Le projet utilise [Biome](https://biomejs.dev/) pour le lint et le formatage. Pour vérifier et corriger en une commande :
 
 ```bash
-yarn lint
+yarn check:fix
 ```
 
-**Note:** eslint est run automatiquement à chaque commit
-
-## Prettier
-
-Prettier est mis en place dans le projet, pour le lancer :
-
-```bash
-yarn prettier:fix
-```
-
-**Note:** eslint est run automatiquement à chaque commit
+**Note:** Biome est run automatiquement sur les fichiers staged à chaque commit (pre-commit hook)
 
 ## Typescript
 
