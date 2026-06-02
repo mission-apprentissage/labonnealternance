@@ -17,7 +17,7 @@ module.exports = {
       {
         notifyOnSuccess: true,
         notifyOnFail: true,
-        markdownReleaseNotes: true,
+        onSuccessFunction: ".github/scripts/slack-release-payload.cjs",
       },
     ],
   ],
