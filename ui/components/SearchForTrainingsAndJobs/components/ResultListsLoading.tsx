@@ -88,7 +88,7 @@ const ResultListsLoading = ({ isTrainingSearchLoading, isJobSearchLoading }: Pro
 
   const resultListProperties = {
     color: "grey.700",
-    fontWeight: 500,
+    fontWeight: 700,
     fontSize: "18px",
     mt: { xs: 0, sm: 0, md: 2 },
   }
