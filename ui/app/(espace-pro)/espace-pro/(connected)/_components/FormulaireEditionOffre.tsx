@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { IJob } from "shared"
 import { FormulaireEditionOffreStep1 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep1"
 import { FormulaireEditionOffreStep2 } from "@/app/(espace-pro)/espace-pro/(connected)/_components/FormulaireEditionOffreStep2"
@@ -49,6 +49,11 @@ export const FormulaireEditionOffre = ({
   const { token } = useSearchParamsRecord() as { token?: string }
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1)
   const [formValues, setFormValues] = useState<any>({})
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [currentStep])
+
   const pathname = usePathname()
 
   const { data: formulaire } = useQuery({
