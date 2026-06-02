@@ -20,15 +20,17 @@ function parseSection(notes, heading) {
     .filter(Boolean)
 }
 
-module.exports = function slackReleasePayload({ releasedVersion, releaseNotes, repoURL }) {
+module.exports = function slackReleasePayload(_pluginConfig, context) {
+  const { nextRelease, options } = context
   const today = new Date().toISOString().slice(0, 10)
-  const releaseUrl = `${repoURL.replace(/\.git$/, "")}/releases/tag/v${releasedVersion}`
-  const features = parseSection(releaseNotes, "Features")
-  const fixes = parseSection(releaseNotes, "Bug Fixes")
+  const repoUrl = options.repositoryUrl.replace(/\.git$/, "")
+  const releaseUrl = `${repoUrl}/releases/tag/${nextRelease.gitTag}`
+  const features = parseSection(nextRelease.notes, "Features")
+  const fixes = parseSection(nextRelease.notes, "Bug Fixes")
 
   const blocks = [
-    { type: "header", text: { type: "plain_text", text: `📦 Nouvelle release — v${releasedVersion}` } },
-    { type: "section", text: { type: "mrkdwn", text: `\`mna-lba\` · v${releasedVersion} · ${today}` } },
+    { type: "header", text: { type: "plain_text", text: `📦 Nouvelle release — ${nextRelease.gitTag}` } },
+    { type: "section", text: { type: "mrkdwn", text: `\`mna-lba\` · ${nextRelease.gitTag} · ${today}` } },
     { type: "divider" },
   ]
 
