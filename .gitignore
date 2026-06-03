@@ -171,4 +171,5 @@ tmp
 venv
 CLAUDE.md
 .mcp.json
+_temp/
 

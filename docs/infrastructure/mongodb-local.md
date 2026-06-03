@@ -223,7 +223,7 @@ docker exec labonnealternance-mongodb-1 mongosh \
 **Solution :** Relancer `yarn setup`, ou créer l'utilisateur manuellement :
 
 ```bash
-MONGOT_PWD=$(sops --decrypt --extract '["MONGOT_PASSWORD"]' .infra/env.global.yml)
+MONGOT_PWD=$(cat .infra/local/mongot_password)
 docker compose exec mongodb mongosh \
   "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
   --eval "db.createUser({ user: 'mongotUser', pwd: '${MONGOT_PWD}', roles: ['searchCoordinator'] })"

@@ -22,7 +22,9 @@ yarn services:start
 yarn setup:mongodb
 
 echo "Creating mongotUser in MongoDB..."
-MONGOT_PWD=$(sops --decrypt --extract '["MONGOT_PASSWORD"]' "${ROOT_DIR}/.infra/env.global.yml")
+# Use the local password file — mongot is built with this file baked in,
+# so the user password must match it exactly.
+MONGOT_PWD=$(cat "${ROOT_DIR}/.infra/local/mongot_password")
 docker compose exec mongodb mongosh \
   "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
   --eval "try { db.createUser({ user: 'mongotUser', pwd: '${MONGOT_PWD}', roles: ['searchCoordinator'] }); print('mongotUser created') } catch(e) { if (e.code === 51003) { print('mongotUser already exists, skipping') } else { throw e } }" \
