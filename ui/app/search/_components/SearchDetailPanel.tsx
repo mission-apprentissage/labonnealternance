@@ -1,8 +1,11 @@
 "use client"
 
+import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Skeleton } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import type { ReactNode } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ILbaItemFormation2Json, ILbaItemJobsGlobal } from "shared/models/lbaItem.model"
 
@@ -16,15 +19,43 @@ import type { Hit } from "./SearchHitCard"
 interface SearchDetailPanelProps {
   hit: Hit | null
   currentParams: ISearchPageParams
+  /** Fourni en mobile : affiche le bouton « Retour ». */
+  onBack?: () => void
+}
+
+/** Carte blanche arrondie DSFR posée sur le fond gris du panneau. */
+function DetailCard({ children, onBack }: { children: ReactNode; onBack?: () => void }) {
+  return (
+    <Box>
+      {onBack && (
+        <Box sx={{ mb: fr.spacing("2v") }}>
+          <Button priority="tertiary no outline" size="small" iconId="fr-icon-arrow-left-line" onClick={onBack}>
+            Retour
+          </Button>
+        </Box>
+      )}
+      <Box
+        sx={{
+          backgroundColor: fr.colors.decisions.background.default.grey.default,
+          border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+          borderRadius: "10px",
+          boxShadow: "0 1px 6px rgba(0,0,18,0.08)",
+          p: { xs: fr.spacing("5v"), lg: fr.spacing("8v") },
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  )
 }
 
 function DetailSkeleton() {
   return (
-    <Box sx={{ p: 3 }}>
-      <Skeleton variant="rectangular" height={24} sx={{ mb: 2, borderRadius: "4px", width: "60%" }} />
+    <Box>
+      <Skeleton variant="rectangular" height={24} sx={{ mb: 2, borderRadius: "4px", width: "40%" }} />
       <Skeleton variant="rectangular" height={32} sx={{ mb: 1, borderRadius: "4px" }} />
-      <Skeleton variant="rectangular" height={20} sx={{ mb: 3, borderRadius: "4px", width: "75%" }} />
-      <Skeleton variant="rectangular" height={120} sx={{ borderRadius: "4px" }} />
+      <Skeleton variant="rectangular" height={20} sx={{ mb: 3, borderRadius: "4px", width: "70%" }} />
+      <Skeleton variant="rectangular" height={140} sx={{ borderRadius: "4px" }} />
     </Box>
   )
 }
@@ -37,22 +68,19 @@ function EmptyState() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100%",
-        gap: 2,
-        color: "#94A3B8",
-        p: 4,
+        minHeight: 280,
+        gap: fr.spacing("3v"),
+        color: fr.colors.decisions.text.mention.grey.default,
         textAlign: "center",
       }}
     >
-      <Box component="span" sx={{ fontSize: "3rem" }}>
-        📋
-      </Box>
-      <Box sx={{ fontSize: "1rem", fontWeight: 500 }}>Cliquez sur une offre pour voir le détail</Box>
+      <Box component="span" className={fr.cx("fr-icon-search-line")} aria-hidden="true" sx={{ fontSize: "2.5rem" }} />
+      <Box sx={{ fontSize: "1rem", fontWeight: 500 }}>Sélectionnez une offre dans la liste pour afficher le détail.</Box>
     </Box>
   )
 }
 
-export function SearchDetailPanel({ hit, currentParams }: SearchDetailPanelProps) {
+export function SearchDetailPanel({ hit, currentParams, onBack }: SearchDetailPanelProps) {
   const isFormation = hit?.type === LBA_ITEM_TYPE.FORMATION
 
   const { data, isLoading, isError } = useQuery({
@@ -69,24 +97,36 @@ export function SearchDetailPanel({ hit, currentParams }: SearchDetailPanelProps
   })
 
   if (!hit) {
-    return <EmptyState />
+    return (
+      <DetailCard>
+        <EmptyState />
+      </DetailCard>
+    )
   }
 
   if (isLoading) {
-    return <DetailSkeleton />
+    return (
+      <DetailCard onBack={onBack}>
+        <DetailSkeleton />
+      </DetailCard>
+    )
   }
 
   if (isError || !data) {
     return (
-      <Box sx={{ p: 3 }}>
+      <DetailCard onBack={onBack}>
         <Alert severity="error" title="Erreur" description="Impossible de charger le détail de cette offre." />
-      </Box>
+      </DetailCard>
     )
   }
 
-  if (isFormation) {
-    return <FormationDetailPanel training={data as ILbaItemFormation2Json} currentParams={currentParams} />
-  }
-
-  return <JobDetailPanel job={data as ILbaItemJobsGlobal} currentParams={currentParams} />
+  return (
+    <DetailCard onBack={onBack}>
+      {isFormation ? (
+        <FormationDetailPanel training={data as ILbaItemFormation2Json} currentParams={currentParams} />
+      ) : (
+        <JobDetailPanel job={data as ILbaItemJobsGlobal} currentParams={currentParams} />
+      )}
+    </DetailCard>
+  )
 }

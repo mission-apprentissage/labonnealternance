@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, TextField } from "@mui/material"
+import { Box, MenuItem, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -30,22 +30,42 @@ function useThrottle(value: string, delay: number) {
   return debouncedValue
 }
 
+const RADIUS_OPTIONS = [10, 30, 60, 100]
+
+// Taille de police commune à toute la barre (Métier/Lieu/Rayon), alignée sur les filtres.
+const FIELD_FONT_SIZE = "0.875rem"
+const INPUT_SX = { ".MuiInputBase-input": { fontSize: FIELD_FONT_SIZE } }
+
 type LieuOption = { label: string; latitude: number; longitude: number }
 
 interface SearchBarProps {
   initialQ?: string
   initialLieuLabel?: string
+  radius: number
   onSubmit: (q: string) => void
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number } | null) => void
+  onRadiusChange: (radius: number) => void
+  /** "row" : barre desktop ; "column" : panneau mobile (sans bouton, géré par le footer). */
+  layout?: "row" | "column"
 }
 
-export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange }: SearchBarProps) {
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <Box component="label" sx={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}>
+      {children}
+    </Box>
+  )
+}
+
+export function SearchBar({ initialQ = "", initialLieuLabel, radius, onSubmit, onLieuChange, onRadiusChange, layout = "row" }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
 
   const debouncedInput = useThrottle(inputValue, 300)
   const debouncedLieu = useThrottle(lieuInput, 300)
+
+  const isColumn = layout === "column"
 
   // Suggestions pour le champ métier
   const { data: suggestionData } = useQuery({
@@ -82,16 +102,14 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     <Box
       sx={{
         display: "flex",
-        gap: fr.spacing("2v"),
-        alignItems: "flex-end",
-        background: fr.colors.decisions.background.default.grey.default,
-        borderRadius: "4px",
-        p: fr.spacing("2v"),
-        boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+        flexDirection: isColumn ? "column" : "row",
+        gap: isColumn ? fr.spacing("4v") : fr.spacing("3v"),
+        alignItems: isColumn ? "stretch" : "flex-end",
       }}
     >
       {/* Champ métier */}
-      <Box sx={{ flex: 2 }}>
+      <Box sx={{ flex: isColumn ? "none" : 2, width: isColumn ? "100%" : undefined }}>
+        <FieldLabel>Métier ou formation</FieldLabel>
         <Autocomplete
           freeSolo
           options={suggestions}
@@ -112,6 +130,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               variant="outlined"
               size="small"
               fullWidth
+              sx={INPUT_SX}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue)
               }}
@@ -129,7 +148,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
       </Box>
 
       {/* Champ lieu */}
-      <Box sx={{ flex: 1 }}>
+      <Box sx={{ flex: isColumn ? "none" : "0 0 320px", width: isColumn ? "100%" : undefined }}>
+        <FieldLabel>Lieu</FieldLabel>
         <Autocomplete
           freeSolo
           options={lieuSuggestions}
@@ -159,6 +179,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               variant="outlined"
               size="small"
               fullWidth
+              sx={INPUT_SX}
               InputProps={{
                 ...params.InputProps,
                 startAdornment: (
@@ -172,9 +193,23 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
         />
       </Box>
 
-      <Button priority="primary" onClick={() => handleSubmit(inputValue)} iconId="fr-icon-search-line" iconPosition="right">
-        Rechercher
-      </Button>
+      {/* Rayon */}
+      <Box sx={{ flex: isColumn ? "none" : "0 0 150px", width: isColumn ? "100%" : undefined }}>
+        <FieldLabel>Rayon</FieldLabel>
+        <TextField select size="small" fullWidth value={String(radius)} onChange={(e) => onRadiusChange(Number(e.target.value))} sx={INPUT_SX}>
+          {RADIUS_OPTIONS.map((r) => (
+            <MenuItem key={r} value={String(r)} sx={{ fontSize: FIELD_FONT_SIZE }}>
+              {r} km
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
+
+      {!isColumn && (
+        <Button priority="primary" onClick={() => handleSubmit(inputValue)} iconId="fr-icon-search-line">
+          C'est parti
+        </Button>
+      )}
     </Box>
   )
 }

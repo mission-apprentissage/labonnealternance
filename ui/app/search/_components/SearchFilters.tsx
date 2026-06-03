@@ -1,11 +1,15 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Checkbox, Drawer, FormControl, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, Typography, useMediaQuery, useTheme } from "@mui/material"
-import { useEffect, useState } from "react"
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
+import { Box } from "@mui/material"
+import { useEffect, useMemo, useState } from "react"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
+import { buildTypeGroups } from "../_utils/search.type-groups"
+import { SearchEntrepriseAutocomplete } from "./SearchEntrepriseAutocomplete"
+import type { MultiSelectGroup, MultiSelectOption } from "./SearchMultiSelectField"
+import { SearchMultiSelectField } from "./SearchMultiSelectField"
 
 interface FacetCounts {
   type?: Record<string, number>
@@ -20,126 +24,95 @@ interface SearchFiltersProps {
   params: ISearchPageParams
   facets?: FacetCounts
   onNavigate: (newParams: ISearchPageParams) => void
+  /** "bar" : barre desktop (dropdowns) ; "sections" : panneau mobile (cases empilées). */
+  variant?: "bar" | "sections"
 }
 
-const RADIUS_OPTIONS = [10, 30, 60, 100]
+const STABLE_KEYS: (keyof FacetCounts)[] = ["type_filter_label", "contract_type", "level", "activity_sector", "organization_name"]
 
-function buildOptions(counts?: Record<string, number>): Array<{ value: string; label: string }> {
-  if (!counts) return []
-  return Object.entries(counts)
-    .sort(([, a], [, b]) => b - a)
-    .map(([value, count]) => ({ value, label: `${value} (${count})` }))
+/** Construit les options (valeur/label/compteur) en incluant toujours les valeurs sélectionnées. */
+function buildOptions(counts?: Record<string, number>, selected: string[] = []): MultiSelectOption[] {
+  const map = new Map<string, number | undefined>()
+  for (const [value, count] of Object.entries(counts ?? {})) map.set(value, count)
+  for (const value of selected) if (!map.has(value)) map.set(value, undefined)
+  return [...map.entries()].map(([value, count]) => ({ value, label: value, count }))
 }
 
-const SELECT_SX = {
-  width: 160,
-  height: 36,
-  fontSize: "0.875rem",
-  ".MuiSelect-select": { py: "6px" },
+function sortAlpha(options: MultiSelectOption[]): MultiSelectOption[] {
+  return [...options].sort((a, b) => a.label.localeCompare(b.label, "fr"))
 }
 
-function MultiSelect({
-  label,
+/** Section de cases à cocher inline (panneau mobile), avec sous-groupes optionnels. */
+function CheckboxSection({
+  title,
   options,
+  groups,
   value,
   onChange,
 }: {
-  label: string
-  options: Array<{ value: string; label: string }>
+  title: string
+  options?: MultiSelectOption[]
+  groups?: MultiSelectGroup[]
   value: string[]
   onChange: (vals: string[]) => void
 }) {
-  if (!options.length && !value.length) return null
+  const renderGroups: MultiSelectGroup[] = groups ? groups.map((g) => ({ label: g.label, options: sortAlpha(g.options) })) : [{ label: "", options: sortAlpha(options ?? []) }]
 
-  // Les valeurs sélectionnées sont toujours présentes dans la liste,
-  // même si elles disparaissent temporairement des facettes lors d'un refetch.
-  const allOptions = [...options, ...value.filter((v) => !options.some((o) => o.value === v)).map((v) => ({ value: v, label: v }))]
-
-  return (
-    <FormControl size="small" sx={SELECT_SX}>
-      <InputLabel sx={{ fontSize: "0.875rem" }}>{label}</InputLabel>
-      <Select
-        multiple
-        value={value}
-        onChange={(e) => {
-          const raw = e.target.value
-          onChange(typeof raw === "string" ? raw.split(",") : raw)
-        }}
-        input={<OutlinedInput label={label} />}
-        renderValue={(selected) => (
-          <Typography noWrap sx={{ fontSize: "0.875rem", lineHeight: "1.4" }}>
-            {selected.length === 1 ? selected[0] : `${label} (${selected.length})`}
-          </Typography>
-        )}
-        MenuProps={{ PaperProps: { sx: { maxHeight: 300 } } }}
-      >
-        {allOptions.map((o) => (
-          <MenuItem key={o.value} value={o.value} dense>
-            <Checkbox checked={value.includes(o.value)} size="small" sx={{ py: 0 }} />
-            <ListItemText primary={o.label} primaryTypographyProps={{ fontSize: "0.875rem" }} />
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  )
-}
-
-function FiltersContent({ facets, current, onChange }: { facets?: FacetCounts; current: ISearchPageParams; onChange: (p: ISearchPageParams) => void }) {
-  const typeOptions = buildOptions(facets?.type_filter_label)
-  const contractOptions = buildOptions(facets?.contract_type)
-  const levelOptions = buildOptions(facets?.level)
-  const sectorOptions = buildOptions(facets?.activity_sector)
+  const toggle = (optionValue: string) => {
+    onChange(value.includes(optionValue) ? value.filter((v) => v !== optionValue) : [...value, optionValue])
+  }
 
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("3v"), alignItems: "center" }}>
-      {/* Rayon — single select */}
-      <FormControl size="small" sx={SELECT_SX}>
-        <Select value={current.radius} onChange={(e) => onChange({ ...current, radius: Number(e.target.value), page: 0 })} renderValue={(v) => `Rayon : ${v} km`} displayEmpty>
-          {RADIUS_OPTIONS.map((r) => (
-            <MenuItem key={r} value={r} dense>
-              <ListItemText primary={`${r} km`} primaryTypographyProps={{ fontSize: "0.875rem" }} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <MultiSelect
-        label="Type"
-        options={typeOptions}
-        value={current.type_filter_label ?? []}
-        onChange={(vals) => onChange({ ...current, type_filter_label: vals.length ? vals : undefined, page: 0 })}
-      />
-
-      <MultiSelect
-        label="Contrat"
-        options={contractOptions}
-        value={current.contract_type ?? []}
-        onChange={(vals) => onChange({ ...current, contract_type: vals.length ? vals : undefined, page: 0 })}
-      />
-
-      <MultiSelect
-        label="Niveau"
-        options={levelOptions}
-        value={current.level ?? []}
-        onChange={(vals) => onChange({ ...current, level: vals.length ? vals : undefined, page: 0 })}
-      />
-
-      <MultiSelect
-        label="Secteur"
-        options={sectorOptions}
-        value={current.activity_sector ?? []}
-        onChange={(vals) => onChange({ ...current, activity_sector: vals.length ? vals : undefined, page: 0 })}
-      />
+    <Box sx={{ py: fr.spacing("2v"), borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}` }}>
+      <Box component="h3" className={fr.cx("fr-h6")} sx={{ margin: 0, mb: fr.spacing("2v") }}>
+        {title}
+      </Box>
+      {renderGroups.map((group) => (
+        <Box key={group.label || "__flat__"}>
+          {group.label && (
+            <Box
+              sx={{
+                pt: fr.spacing("1v"),
+                pb: fr.spacing("1v"),
+                fontSize: "0.6875rem",
+                fontWeight: 700,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                color: fr.colors.decisions.text.mention.grey.default,
+              }}
+            >
+              {group.label}
+            </Box>
+          )}
+          <Checkbox
+            small
+            options={group.options.map((option) => ({
+              label: (
+                <Box component="span" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: fr.spacing("2v"), width: "100%" }}>
+                  <span>{option.label}</span>
+                  {option.count != null && (
+                    <Box
+                      component="span"
+                      sx={{ flex: "0 0 auto", color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.8125rem", fontVariantNumeric: "tabular-nums" }}
+                    >
+                      {option.count}
+                    </Box>
+                  )}
+                </Box>
+              ),
+              nativeInputProps: {
+                checked: value.includes(option.value),
+                onChange: () => toggle(option.value),
+              },
+            }))}
+          />
+        </Box>
+      ))}
     </Box>
   )
 }
 
-export function SearchFilters({ params, facets, onNavigate }: SearchFiltersProps) {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [localParams, setLocalParams] = useState<ISearchPageParams>(params)
-
+export function SearchFilters({ params, facets, onNavigate, variant = "bar" }: SearchFiltersProps) {
   // Accumule toutes les valeurs de facettes vues — les options ne disparaissent
   // jamais même quand un filtre réduit les résultats retournés par l'API.
   const [stableFacets, setStableFacets] = useState<FacetCounts>({})
@@ -147,8 +120,7 @@ export function SearchFilters({ params, facets, onNavigate }: SearchFiltersProps
     if (!facets) return
     setStableFacets((prev) => {
       const next: FacetCounts = {}
-      const keys: (keyof FacetCounts)[] = ["type_filter_label", "contract_type", "level", "activity_sector"]
-      for (const key of keys) {
+      for (const key of STABLE_KEYS) {
         if (!prev[key] && !facets[key]) continue
         next[key] = { ...prev[key], ...facets[key] }
       }
@@ -156,65 +128,42 @@ export function SearchFilters({ params, facets, onNavigate }: SearchFiltersProps
     })
   }, [facets])
 
-  const activeFilterCount = [params.type_filter_label?.length, params.contract_type?.length, params.level?.length, params.activity_sector?.length, params.organization_name].filter(
-    Boolean
-  ).length
+  const typeOptions = useMemo(() => buildOptions(stableFacets.type_filter_label, params.type_filter_label), [stableFacets.type_filter_label, params.type_filter_label])
+  const typeGroups = useMemo(() => buildTypeGroups(typeOptions), [typeOptions])
+  const contractOptions = useMemo(() => buildOptions(stableFacets.contract_type, params.contract_type), [stableFacets.contract_type, params.contract_type])
+  const levelOptions = useMemo(() => buildOptions(stableFacets.level, params.level), [stableFacets.level, params.level])
+  const sectorOptions = useMemo(() => buildOptions(stableFacets.activity_sector, params.activity_sector), [stableFacets.activity_sector, params.activity_sector])
+  const entrepriseOptions = useMemo(() => Object.keys(stableFacets.organization_name ?? {}), [stableFacets.organization_name])
 
-  if (isMobile) {
+  const setMulti = (key: "type_filter_label" | "contract_type" | "level" | "activity_sector") => (vals: string[]) =>
+    onNavigate({ ...params, [key]: vals.length ? vals : undefined, page: 0 })
+
+  const setEntreprise = (name: string | null) => onNavigate({ ...params, organization_name: name ?? undefined, page: 0 })
+
+  if (variant === "sections") {
     return (
-      <>
-        <Button
-          priority="secondary"
-          iconId="fr-icon-settings-5-line"
-          onClick={() => {
-            setLocalParams(params)
-            setDrawerOpen(true)
-          }}
-          size="small"
-        >
-          Modifier les filtres{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-        </Button>
-
-        <Drawer
-          anchor="bottom"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          PaperProps={{
-            sx: {
-              borderTopLeftRadius: "12px",
-              borderTopRightRadius: "12px",
-              p: fr.spacing("6v"),
-              maxHeight: "85vh",
-            },
-          }}
-        >
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: fr.spacing("4v") }}>
-            <h2 className={fr.cx("fr-h5")} style={{ margin: 0 }}>
-              Modifier les filtres
-            </h2>
-            <Button priority="tertiary no outline" iconId="fr-icon-close-line" onClick={() => setDrawerOpen(false)} title="Fermer" />
+      <Box>
+        <CheckboxSection title="Type" groups={typeGroups} value={params.type_filter_label ?? []} onChange={setMulti("type_filter_label")} />
+        <CheckboxSection title="Contrat" options={contractOptions} value={params.contract_type ?? []} onChange={setMulti("contract_type")} />
+        <CheckboxSection title="Niveau" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
+        <CheckboxSection title="Secteur" options={sectorOptions} value={params.activity_sector ?? []} onChange={setMulti("activity_sector")} />
+        <Box sx={{ py: fr.spacing("2v") }}>
+          <Box component="h3" className={fr.cx("fr-h6")} sx={{ margin: 0, mb: fr.spacing("2v") }}>
+            Entreprise
           </Box>
-
-          <Box sx={{ overflowY: "auto", flex: 1 }}>
-            <FiltersContent facets={stableFacets} current={localParams} onChange={setLocalParams} />
-          </Box>
-
-          <Box sx={{ mt: fr.spacing("4v") }}>
-            <Button
-              priority="primary"
-              onClick={() => {
-                onNavigate(localParams)
-                setDrawerOpen(false)
-              }}
-              style={{ width: "100%" }}
-            >
-              Appliquer les filtres
-            </Button>
-          </Box>
-        </Drawer>
-      </>
+          <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} fullWidth />
+        </Box>
+      </Box>
     )
   }
 
-  return <FiltersContent facets={stableFacets} current={params} onChange={onNavigate} />
+  return (
+    <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+      <SearchMultiSelectField id="filter-type" label="Type" groups={typeGroups} value={params.type_filter_label ?? []} onChange={setMulti("type_filter_label")} />
+      <SearchMultiSelectField id="filter-contract" label="Contrat" options={contractOptions} value={params.contract_type ?? []} onChange={setMulti("contract_type")} />
+      <SearchMultiSelectField id="filter-level" label="Niveau" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
+      <SearchMultiSelectField id="filter-sector" label="Secteur" options={sectorOptions} value={params.activity_sector ?? []} onChange={setMulti("activity_sector")} />
+      <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} />
+    </Box>
+  )
 }

@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Button } from "@mui/material"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import type { ILbaItemFormation2Json } from "shared/models/lbaItem.model"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
@@ -23,49 +24,50 @@ export function FormationDetailPanel({ training, currentParams }: FormationDetai
   const sessions = training.training?.sessions
 
   const detailUrl = buildHitDetailUrl({ sub_type: training.type, url_id: training.id, title }, buildSearchUrl(currentParams))
-
   const appointmentUrl = elligibleForAppointment ? detailUrl : null
 
   return (
-    <Box sx={{ p: fr.spacing("6v") }}>
+    <Box>
       {/* Badge */}
       <Box sx={{ mb: fr.spacing("3v") }}>
-        <span className={fr.cx("fr-badge", "fr-badge--sm")} style={{ backgroundColor: fr.colors.decisions.background.actionHigh.greenTilleulVerveine.default, color: "#fff" }}>
-          Formation
-        </span>
+        <span className={fr.cx("fr-badge", "fr-badge--sm", "fr-badge--success")}>Formation</span>
       </Box>
 
       {/* Titre */}
-      <Box
-        component="h2"
-        sx={{
-          fontSize: "1.25rem",
-          fontWeight: 700,
-          color: "#1E293B",
-          mb: fr.spacing("2v"),
-          lineHeight: 1.3,
-        }}
-      >
+      <Box component="h2" sx={{ fontSize: "1.375rem", fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("2v"), lineHeight: 1.25 }}>
         {title}
       </Box>
 
       {/* CFA & lieu */}
-      <Box sx={{ color: "#475569", fontSize: "0.9375rem", mb: fr.spacing("4v") }}>
-        {cfaName && <Box sx={{ fontWeight: 500 }}>{cfaName}</Box>}
+      <Box sx={{ mb: fr.spacing("4v") }}>
+        {cfaName && <Box sx={{ fontSize: "1.125rem", fontWeight: 700, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{cfaName}</Box>}
         {(fullAddress || city) && (
-          <Box sx={{ mt: fr.spacing("1v"), display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
+          <Box
+            sx={{ mt: fr.spacing("1v"), display: "flex", alignItems: "center", gap: fr.spacing("1v"), color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.9375rem" }}
+          >
             <span className={fr.cx("fr-icon-map-pin-2-line", "fr-icon--sm")} aria-hidden="true" />
             {fullAddress ?? city}
           </Box>
         )}
       </Box>
 
+      <Box component="hr" sx={{ border: "none", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, my: fr.spacing("5v") }} />
+
       {/* Diplôme & niveau */}
       {(diploma || targetDiplomaLevel) && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("4v"), mb: fr.spacing("4v"), color: "#64748B", fontSize: "0.875rem" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: `${fr.spacing("2v")} ${fr.spacing("6v")}`,
+            mb: fr.spacing("4v"),
+            color: fr.colors.decisions.text.mention.grey.default,
+            fontSize: "0.9375rem",
+          }}
+        >
           {diploma && (
             <Box>
-              <Box component="span" sx={{ fontWeight: 600 }}>
+              <Box component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
                 Diplôme :{" "}
               </Box>
               {diploma}
@@ -73,7 +75,7 @@ export function FormationDetailPanel({ training, currentParams }: FormationDetai
           )}
           {targetDiplomaLevel && (
             <Box>
-              <Box component="span" sx={{ fontWeight: 600 }}>
+              <Box component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
                 Niveau :{" "}
               </Box>
               {targetDiplomaLevel}
@@ -85,10 +87,11 @@ export function FormationDetailPanel({ training, currentParams }: FormationDetai
       {/* Sessions */}
       {sessions && sessions.length > 0 && (
         <Box sx={{ mb: fr.spacing("4v") }}>
-          <Box sx={{ fontWeight: 600, color: "#1E293B", mb: fr.spacing("1v"), fontSize: "0.9375rem" }}>Prochaines sessions</Box>
+          <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("1v"), fontSize: "1rem" }}>Prochaines sessions</Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("1v") }}>
             {sessions.slice(0, 3).map((session, i) => (
-              <Box key={i} sx={{ color: "#334155", fontSize: "0.875rem" }}>
+              <Box key={i} sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), color: fr.colors.decisions.text.default.grey.default, fontSize: "0.9375rem" }}>
+                <span className={fr.cx("fr-icon-calendar-line", "fr-icon--sm")} aria-hidden="true" />
                 {session.isPermanentEntry
                   ? "Entrée permanente"
                   : session.startDate
@@ -103,28 +106,28 @@ export function FormationDetailPanel({ training, currentParams }: FormationDetai
       {/* Objectif */}
       {objectif && (
         <Box sx={{ mb: fr.spacing("4v") }}>
-          <Box sx={{ fontWeight: 600, color: "#1E293B", mb: fr.spacing("1v"), fontSize: "0.9375rem" }}>Objectif</Box>
-          <Box sx={{ color: "#334155", fontSize: "0.875rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{objectif}</Box>
+          <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("1v"), fontSize: "1rem" }}>Objectif</Box>
+          <Box sx={{ color: fr.colors.decisions.text.default.grey.default, fontSize: "0.9375rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{objectif}</Box>
         </Box>
       )}
 
       {/* Description */}
       {description && (
         <Box sx={{ mb: fr.spacing("4v") }}>
-          <Box sx={{ fontWeight: 600, color: "#1E293B", mb: fr.spacing("1v"), fontSize: "0.9375rem" }}>Description</Box>
-          <Box sx={{ color: "#334155", fontSize: "0.875rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{description}</Box>
+          <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("1v"), fontSize: "1rem" }}>Description</Box>
+          <Box sx={{ color: fr.colors.decisions.text.default.grey.default, fontSize: "0.9375rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{description}</Box>
         </Box>
       )}
 
       {/* Actions */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), mt: fr.spacing("6v") }}>
         {appointmentUrl && (
-          <Button component="a" href={appointmentUrl} variant="contained" sx={{ backgroundColor: "#2563EB", "&:hover": { backgroundColor: "#1D4ED8" } }}>
+          <Button linkProps={{ href: appointmentUrl }} priority="primary" style={{ width: "100%", justifyContent: "center" }}>
             Prendre rendez-vous
           </Button>
         )}
-        <Button component="a" href={detailUrl} variant="outlined" sx={{ borderColor: "#2563EB", color: "#2563EB" }}>
-          Voir la fiche complète →
+        <Button linkProps={{ href: detailUrl }} priority="secondary" iconId="fr-icon-arrow-right-line" iconPosition="right" style={{ width: "100%", justifyContent: "center" }}>
+          Voir la fiche complète
         </Button>
       </Box>
     </Box>

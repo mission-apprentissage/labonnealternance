@@ -1,5 +1,4 @@
 import { type HeaderProps, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
-import { PAGES } from "@/utils/routes.utils"
 import { HeaderNavigation } from "./HeaderNavigation"
 
 export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
@@ -25,20 +24,10 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
     <HeaderQuickAccessItem
       key="search-split"
       quickAccessItem={{
-        iconId: null,
-        text: "Recherche split",
+        iconId: "fr-icon-search-line",
+        text: "Recherche avancée",
         linkProps: {
           href: "/search/split",
-        },
-      }}
-    />,
-    <HeaderQuickAccessItem
-      key="publier-offre"
-      quickAccessItem={{
-        iconId: "fr-icon-global-line",
-        text: "Publier une offre d'emploi",
-        linkProps: {
-          href: PAGES.static.espaceProCreationEntreprise.getPath(),
         },
       }}
     />,

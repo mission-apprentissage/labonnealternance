@@ -173,3 +173,6 @@ CLAUDE.md
 .mcp.json
 _temp/
 
+
+# Dossier de handoff local (non versionné)
+handoff/

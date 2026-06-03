@@ -2,8 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
 import Link from "next/link"
 import type { IGetRoutes, IResponse } from "shared"
-
-import { getDaysSinceDate } from "@/utils/dateUtils"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildHitDetailUrl, buildSearchUrl } from "../_utils/search.params.utils"
@@ -19,87 +18,74 @@ interface SearchHitCardProps {
   onSelect?: (hit: Hit) => void
 }
 
-function formatPublicationDate(date: Date | string | null | undefined): string | null {
-  if (!date) return null
-  const days = getDaysSinceDate(new Date(date))
-  if (days === 0) return "Aujourd'hui"
-  if (days === 1) return "Hier"
-  return `Il y a ${days} jours`
-}
-
-function getTypeBadgeColor(type?: string): string {
-  if (type === "offre") return fr.colors.decisions.background.actionHigh.blueFrance.default
-  return fr.colors.decisions.background.actionHigh.greenTilleulVerveine.default
-}
-
 export function SearchHitCard({ hit, currentParams, isSelected, onSelect }: SearchHitCardProps) {
   const currentSearchUrl = buildSearchUrl(currentParams)
   const detailUrl = buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)
 
-  const publicationDateStr = formatPublicationDate(hit.publication_date)
-  const _titleContent = hit.preview && hit.preview.length > 0 ? <SearchHitPreview preview={hit.preview} /> : (hit.title ?? "")
+  const isFormation = hit.type === LBA_ITEM_TYPE.FORMATION
+  const titleContent = hit.preview && hit.preview.length > 0 ? <SearchHitPreview preview={hit.preview} /> : (hit.title ?? "")
+
+  // Accent gauche bleu france via box-shadow inset (sélection) : conserve le box 1px
+  // complet sur les 4 côtés — pas de bord gauche manquant ni de décalage de contenu.
+  const accent = `inset 3px 0 0 0 ${fr.colors.decisions.border.actionHigh.blueFrance.default}`
+  const elevation = "0 2px 8px rgba(0,0,0,0.12)"
 
   const cardContent = (
     <Box
       sx={{
+        position: "relative",
         border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
         borderRadius: "4px",
-        borderLeft: isSelected ? "3px solid #2563EB" : undefined,
         p: fr.spacing("4v"),
+        pr: fr.spacing("8v"),
         mb: fr.spacing("3v"),
-        backgroundColor: isSelected ? "#EFF6FF" : fr.colors.decisions.background.default.grey.default,
-        transition: "box-shadow 0.15s ease",
+        backgroundColor: isSelected ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.default.grey.default,
+        boxShadow: isSelected ? accent : "none",
+        transition: "box-shadow 0.12s ease, border-color 0.12s ease",
         "&:hover": {
-          boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-          borderColor: fr.colors.decisions.border.actionHigh.blueFrance.default,
+          boxShadow: isSelected ? `${accent}, ${elevation}` : elevation,
         },
         cursor: "pointer",
       }}
     >
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("1v"), mb: fr.spacing("2v") }}>
-        <span className={fr.cx("fr-badge", "fr-badge--sm")} style={{ backgroundColor: getTypeBadgeColor(hit.type), color: "#fff" }}>
-          {hit.type_filter_label}
-        </span>
-        {hit.contract_type?.map((ct) => (
-          <span key={ct} className={fr.cx("fr-badge", "fr-badge--sm")}>
-            {ct}
-          </span>
-        ))}
-      </Box>
+      <span className={fr.cx("fr-badge", "fr-badge--sm", isFormation ? "fr-badge--success" : "fr-badge--info")}>{isFormation ? "Formation" : "Offre d'emploi"}</span>
 
       <Box
         sx={{
-          fontSize: "1rem",
-          fontWeight: 600,
-          color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+          mt: fr.spacing("2v"),
           mb: fr.spacing("1v"),
-          lineHeight: 1.4,
+          fontSize: "0.9375rem",
+          fontWeight: 700,
+          color: fr.colors.decisions.text.title.grey.default,
+          lineHeight: 1.3,
         }}
       >
-        {hit.title}
+        {titleContent}
       </Box>
 
-      <Box sx={{ color: fr.colors.decisions.text.default.grey.default, fontSize: "0.875rem", mb: fr.spacing("1v") }}>
+      <Box sx={{ color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.8125rem", lineHeight: 1.4 }}>
         {hit.organization_name}
         {hit.address && ` · ${hit.address}`}
       </Box>
 
-      {(hit.application_count != null || publicationDateStr) && (
-        <Box sx={{ display: "flex", gap: fr.spacing("3v"), color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.8125rem" }}>
-          {hit.application_count != null && (
-            <span>
-              {hit.application_count} candidature{(hit.application_count ?? 0) > 1 ? "s" : ""}
-            </span>
-          )}
-          {publicationDateStr && <span>{publicationDateStr}</span>}
-        </Box>
-      )}
+      <Box
+        component="span"
+        className={fr.cx("fr-icon-arrow-right-line")}
+        aria-hidden="true"
+        sx={{
+          position: "absolute",
+          right: fr.spacing("3v"),
+          top: "50%",
+          transform: "translateY(-50%)",
+          color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+        }}
+      />
     </Box>
   )
 
   if (onSelect) {
     return (
-      <Box onClick={() => onSelect(hit)} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+      <Box onClick={() => onSelect(hit)} sx={{ textDecoration: "none", color: "inherit", display: "block" }}>
         {cardContent}
       </Box>
     )

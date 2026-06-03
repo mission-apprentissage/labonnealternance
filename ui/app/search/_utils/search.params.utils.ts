@@ -47,7 +47,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
   }
 }
 
-export function buildSearchUrl(params: ISearchPageParams, basePath = "/search"): string {
+export function buildSearchUrl(params: ISearchPageParams, basePath = "/search/split"): string {
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)

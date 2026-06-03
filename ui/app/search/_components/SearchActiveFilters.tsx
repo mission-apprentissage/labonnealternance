@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Chip } from "@mui/material"
+import { Tag } from "@codegouvfr/react-dsfr/Tag"
+import { Box } from "@mui/material"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 
@@ -11,51 +12,85 @@ interface SearchActiveFiltersProps {
 
 type ArrayFilterKey = "type_filter_label" | "contract_type" | "level" | "activity_sector"
 
+const CATEGORIES: { key: ArrayFilterKey; label: string }[] = [
+  { key: "type_filter_label", label: "Type" },
+  { key: "contract_type", label: "Contrat" },
+  { key: "level", label: "Niveau" },
+  { key: "activity_sector", label: "Secteur" },
+]
+
+// Tags actifs : fond blue-france-850, police blue-france-sun-113 (tokens DSFR via le helper fr).
+const TAG_STYLE = {
+  backgroundColor: fr.colors.options.blueFrance._850_200.default,
+  color: fr.colors.options.blueFrance.sun113_625.default,
+  minHeight: 0,
+  lineHeight: 0,
+}
+
 export function SearchActiveFilters({ params, onNavigate }: SearchActiveFiltersProps) {
-  const arrayFilters: ArrayFilterKey[] = ["type_filter_label", "contract_type", "level", "activity_sector"]
+  const groups = CATEGORIES.map(({ key, label }) => ({ key, label, values: params[key] ?? [] })).filter((g) => g.values.length > 0)
 
-  const activeFilters: Array<{ key: string; value: string; filterKey: ArrayFilterKey }> = []
+  const total = groups.reduce((n, g) => n + g.values.length, 0) + (params.organization_name ? 1 : 0)
 
-  for (const key of arrayFilters) {
-    for (const val of params[key] ?? []) {
-      activeFilters.push({ key: `${key}:${val}`, value: val, filterKey: key })
-    }
-  }
-
-  if (activeFilters.length === 0) return null
+  if (total === 0) return null
 
   function removeFilter(filterKey: ArrayFilterKey, val: string) {
     const newVals = (params[filterKey] ?? []).filter((v) => v !== val)
     onNavigate({ ...params, [filterKey]: newVals.length ? newVals : undefined, page: 0 })
   }
 
+  function removeEntreprise() {
+    onNavigate({ ...params, organization_name: undefined, page: 0 })
+  }
+
   function clearAll() {
-    onNavigate({ ...params, type_filter_label: undefined, contract_type: undefined, level: undefined, activity_sector: undefined, page: 0 })
+    onNavigate({ ...params, type_filter_label: undefined, contract_type: undefined, level: undefined, activity_sector: undefined, organization_name: undefined, page: 0 })
   }
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v"), mt: fr.spacing("5v") }}>
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v"), flex: 1 }}>
-        {activeFilters.map((filter) => (
-          <Chip
-            key={filter.key}
-            label={filter.value}
-            onDelete={() => removeFilter(filter.filterKey, filter.value)}
-            size="small"
-            sx={{
-              backgroundColor: fr.colors.decisions.background.contrast.blueCumulus.default,
-              color: fr.colors.decisions.text.actionHigh.blueCumulus.default,
-              fontWeight: 500,
-              fontSize: "0.8125rem",
-              "& .MuiChip-deleteIcon": {
-                color: fr.colors.decisions.text.actionHigh.blueCumulus.default,
-                "&:hover": { color: fr.colors.decisions.text.default.grey.default },
-              },
-            }}
-          />
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: fr.spacing("4v"),
+        mt: fr.spacing("3v"),
+        pt: fr.spacing("3v"),
+        borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+      }}
+    >
+      <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: `${fr.spacing("2v")} ${fr.spacing("5v")}`, flex: 1 }}>
+        {groups.map((group) => (
+          <Box key={group.key} sx={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: fr.spacing("2v") }}>
+            <Box
+              component="span"
+              sx={{ fontSize: "0.6875rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: fr.colors.decisions.text.mention.grey.default }}
+            >
+              {group.label}
+            </Box>
+            {group.values.map((value) => (
+              <Tag key={value} dismissible style={TAG_STYLE} nativeButtonProps={{ onClick: () => removeFilter(group.key, value) }}>
+                {value}
+              </Tag>
+            ))}
+          </Box>
         ))}
+
+        {params.organization_name && (
+          <Box sx={{ display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: fr.spacing("2v") }}>
+            <Box
+              component="span"
+              sx={{ fontSize: "0.6875rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: fr.colors.decisions.text.mention.grey.default }}
+            >
+              Entreprise
+            </Box>
+            <Tag dismissible style={TAG_STYLE} nativeButtonProps={{ onClick: removeEntreprise }}>
+              {params.organization_name}
+            </Tag>
+          </Box>
+        )}
       </Box>
-      {activeFilters.length > 1 && (
+
+      {total > 1 && (
         <Button priority="tertiary no outline" size="small" onClick={clearAll}>
           Effacer tous les filtres
         </Button>

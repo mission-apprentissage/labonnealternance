@@ -1,9 +1,15 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, useMediaQuery, useTheme } from "@mui/material"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
+
+import { Footer } from "@/app/_components/Footer"
+import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { PublicHeader } from "@/app/_components/PublicHeader"
+
 import { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
@@ -12,11 +18,18 @@ import { SearchBar } from "./SearchBar"
 import { SearchDetailPanel } from "./SearchDetailPanel"
 import { SearchFilters } from "./SearchFilters"
 import type { Hit } from "./SearchHitCard"
+import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SearchResultsList } from "./SearchResultsList"
 
 interface SearchSplitPageClientProps {
   initialParams: ISearchPageParams
 }
+
+type MobilePanel = null | "search" | "filters"
+
+// Largeur dynamique du contenu desktop : 92% de l'écran, bornée à 2240px sur
+// ultra-wide. CSS pur (pas de JS / pas de flash). Mobile = pleine largeur.
+const CONTENT_MAX_WIDTH = "min(92vw, 2240px)"
 
 export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientProps) {
   const rawSearchParams = useSearchParams()
@@ -24,7 +37,8 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
 
   const result = useSearchResults(params)
   const router = useRouter()
-  const theme = useTheme()
+
+  const [panel, setPanel] = useState<MobilePanel>(null)
 
   const navigateSilent = useCallback(
     (newParams: ISearchPageParams) => {
@@ -32,10 +46,17 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
     },
     [router]
   )
-  const isDesktop = useMediaQuery(theme.breakpoints.up("md"))
 
   const allHits = result.data?.pages.flatMap((p) => p.hits) ?? []
+  const nbHits = result.data?.pages.at(-1)?.nbHits ?? 0
   const selectedHit: Hit | null = params.selected ? (allHits.find((h) => h.url_id === params.selected) ?? null) : null
+
+  const activeFilterCount =
+    (params.type_filter_label?.length ?? 0) +
+    (params.contract_type?.length ?? 0) +
+    (params.level?.length ?? 0) +
+    (params.activity_sector?.length ?? 0) +
+    (params.organization_name ? 1 : 0)
 
   function handleSearch(q: string) {
     navigateSilent({ ...params, q: q || undefined, page: 0, selected: undefined })
@@ -49,6 +70,10 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
     }
   }
 
+  function handleRadiusChange(radius: number) {
+    navigateSilent({ ...params, radius, page: 0, selected: undefined })
+  }
+
   function handleFilterChange(newParams: ISearchPageParams) {
     navigateSilent({ ...newParams, selected: undefined })
   }
@@ -57,68 +82,160 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
     navigateSilent({ ...params, selected: hit.url_id ?? undefined })
   }
 
+  function clearAllFilters() {
+    navigateSilent({
+      ...params,
+      type_filter_label: undefined,
+      contract_type: undefined,
+      level: undefined,
+      activity_sector: undefined,
+      organization_name: undefined,
+      page: 0,
+      selected: undefined,
+    })
+  }
+
   return (
-    <Box
-      component="main"
-      sx={{
-        height: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#F8FAFC",
-        overflow: "hidden",
-      }}
-    >
-      {/* Header sticky */}
+    <>
       <Box
+        component="main"
         sx={{
-          flexShrink: 0,
+          display: "flex",
+          flexDirection: "column",
           backgroundColor: fr.colors.decisions.background.alt.grey.default,
-          py: fr.spacing("4v"),
-          borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-          px: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
+          minHeight: "100dvh",
+          // Desktop : hauteur fixe pour le scroll interne du split (footer révélé en scrollant la page). Mobile : flux naturel.
+          height: { lg: "100dvh" },
+          overflow: { lg: "hidden" },
         }}
       >
-        <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
-        <Box sx={{ mt: fr.spacing("3v") }}>
-          <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
+        <Box sx={{ flexShrink: 0 }}>
+          <PublicHeader />
         </Box>
-        <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
-      </Box>
 
-      {/* Body */}
-      {isDesktop ? (
-        // Desktop : split layout
-        <Box sx={{ flex: 1, display: "flex", overflow: "hidden" }}>
-          {/* Colonne gauche */}
+        {/* Desktop : vue scindée (affichage piloté par CSS pour éviter le flash d'hydratation) */}
+        <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "column", flex: 1, minHeight: 0, overflow: "hidden" }}>
+          {/* Barre recherche + filtres */}
           <Box
             sx={{
-              width: 560,
               flexShrink: 0,
-              overflowY: "auto",
-              borderRight: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-              px: fr.spacing("4v"),
+              backgroundColor: fr.colors.decisions.background.default.grey.default,
+              borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
             }}
           >
-            <SearchResultsList result={result} params={params} selectedHitId={params.selected} onHitSelect={handleHitSelect} />
+            {/* Barre exclue de la largeur dynamique : conteneur fixe (xl) comme le legacy. */}
+            <DefaultContainer sx={{ py: fr.spacing("4v") }}>
+              <SearchBar
+                initialQ={params.q}
+                initialLieuLabel={params.lieu_label}
+                radius={params.radius}
+                onSubmit={handleSearch}
+                onLieuChange={handleLieuChange}
+                onRadiusChange={handleRadiusChange}
+              />
+              <Box sx={{ mt: fr.spacing("4v"), mb: fr.spacing("1v"), fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default }}>
+                Filtrer les offres
+              </Box>
+              <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
+              <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
+            </DefaultContainer>
           </Box>
 
-          {/* Colonne droite */}
-          <Box
-            sx={{
-              flex: 1,
-              overflowY: "auto",
-              transition: "opacity 150ms ease",
-            }}
-          >
-            <SearchDetailPanel hit={selectedHit} currentParams={params} />
+          {/* Split */}
+          <Box sx={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0, maxWidth: CONTENT_MAX_WIDTH, mx: "auto", width: "100%" }}>
+            <Box
+              sx={{
+                flex: "0 0 480px",
+                overflowY: "auto",
+                borderRight: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+                px: fr.spacing("5v"),
+                py: fr.spacing("4v"),
+              }}
+            >
+              <SearchResultsList result={result} params={params} selectedHitId={params.selected} onHitSelect={handleHitSelect} />
+            </Box>
+
+            <Box sx={{ flex: 1, overflowY: "auto", px: fr.spacing("8v"), py: fr.spacing("6v") }}>
+              <SearchDetailPanel hit={selectedHit} currentParams={params} />
+            </Box>
           </Box>
         </Box>
-      ) : (
-        // Mobile : layout colonne classique (cards naviguent vers la page détail)
-        <Box sx={{ flex: 1, overflowY: "auto", px: fr.spacing("4v") }}>
-          <SearchResultsList result={result} params={params} />
+
+        {/* Mobile : liste plein écran + 2 boutons (affichage piloté par CSS) */}
+        <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
+          {/* Barre d'actions mobile */}
+          <Box
+            sx={{
+              position: "sticky",
+              top: 0,
+              zIndex: 30,
+              flexShrink: 0,
+              display: "flex",
+              gap: fr.spacing("2v"),
+              px: fr.spacing("4v"),
+              py: fr.spacing("2v"),
+              backgroundColor: fr.colors.decisions.background.default.grey.default,
+              borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+            }}
+          >
+            <Button priority="secondary" iconId="fr-icon-search-line" onClick={() => setPanel("search")} style={{ flex: 1, justifyContent: "center" }}>
+              Modifier la recherche
+            </Button>
+            <Button priority="secondary" iconId="fr-icon-filter-line" onClick={() => setPanel("filters")} style={{ flex: 1, justifyContent: "center" }}>
+              Filtrer{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+            </Button>
+          </Box>
+
+          {/* Liste plein écran */}
+          <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
+            <SearchResultsList result={result} params={params} />
+          </Box>
         </Box>
-      )}
-    </Box>
+
+        {panel === "search" && (
+          <SearchMobilePanel
+            title="Modifier la recherche"
+            onClose={() => setPanel(null)}
+            footer={
+              <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)} style={{ width: "100%", justifyContent: "center" }}>
+                C'est parti
+              </Button>
+            }
+          >
+            <SearchBar
+              layout="column"
+              initialQ={params.q}
+              initialLieuLabel={params.lieu_label}
+              radius={params.radius}
+              onSubmit={handleSearch}
+              onLieuChange={handleLieuChange}
+              onRadiusChange={handleRadiusChange}
+            />
+          </SearchMobilePanel>
+        )}
+
+        {panel === "filters" && (
+          <SearchMobilePanel
+            title="Filtrer les offres"
+            onClose={() => setPanel(null)}
+            footer={
+              <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3v") }}>
+                {activeFilterCount > 1 && (
+                  <Button priority="tertiary no outline" onClick={clearAllFilters}>
+                    Tout effacer
+                  </Button>
+                )}
+                <Button priority="primary" onClick={() => setPanel(null)} style={{ flex: 1, justifyContent: "center" }}>
+                  Voir les {nbHits} résultats
+                </Button>
+              </Box>
+            }
+          >
+            <SearchFilters variant="sections" params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
+          </SearchMobilePanel>
+        )}
+      </Box>
+      <Footer />
+    </>
   )
 }

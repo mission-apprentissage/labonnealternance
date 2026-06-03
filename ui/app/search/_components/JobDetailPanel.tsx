@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Button } from "@mui/material"
+import Button from "@codegouvfr/react-dsfr/Button"
+import { Box } from "@mui/material"
 import type { ILbaItemJobsGlobal } from "shared/models/lbaItem.model"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
@@ -33,46 +34,55 @@ export function JobDetailPanel({ job, currentParams }: JobDetailPanelProps) {
   const detailUrl = buildHitDetailUrl({ sub_type: ideaType, url_id: String(urlId), title: title }, buildSearchUrl(currentParams))
 
   return (
-    <Box sx={{ p: fr.spacing("6v") }}>
-      {/* Badges */}
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("1v"), mb: fr.spacing("3v") }}>
-        <span className={fr.cx("fr-badge", "fr-badge--sm")} style={{ backgroundColor: fr.colors.decisions.background.actionHigh.blueFrance.default, color: "#fff" }}>
-          {ideaType}
-        </span>
-        {contractType && <span className={fr.cx("fr-badge", "fr-badge--sm")}>{contractType}</span>}
+    <Box>
+      {/* Badge */}
+      <Box sx={{ mb: fr.spacing("3v") }}>
+        <span className={fr.cx("fr-badge", "fr-badge--sm", "fr-badge--info")}>Offre d'emploi</span>
       </Box>
 
       {/* Titre */}
-      <Box
-        component="h2"
-        sx={{
-          fontSize: "1.25rem",
-          fontWeight: 700,
-          color: "#1E293B",
-          mb: fr.spacing("2v"),
-          lineHeight: 1.3,
-        }}
-      >
+      <Box component="h2" sx={{ fontSize: "1.375rem", fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("2v"), lineHeight: 1.25 }}>
         {title}
       </Box>
 
       {/* Entreprise & lieu */}
-      <Box sx={{ color: "#475569", fontSize: "0.9375rem", mb: fr.spacing("4v") }}>
-        {companyName && <Box sx={{ fontWeight: 500 }}>{companyName}</Box>}
+      <Box sx={{ mb: fr.spacing("4v") }}>
+        {companyName && <Box sx={{ fontSize: "1.125rem", fontWeight: 700, color: fr.colors.decisions.text.actionHigh.blueFrance.default }}>{companyName}</Box>}
         {(fullAddress || city) && (
-          <Box sx={{ mt: fr.spacing("1v"), display: "flex", alignItems: "center", gap: fr.spacing("1v") }}>
+          <Box
+            sx={{ mt: fr.spacing("1v"), display: "flex", alignItems: "center", gap: fr.spacing("1v"), color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.9375rem" }}
+          >
             <span className={fr.cx("fr-icon-map-pin-2-line", "fr-icon--sm")} aria-hidden="true" />
             {fullAddress ?? city}
           </Box>
         )}
       </Box>
 
+      <Box component="hr" sx={{ border: "none", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, my: fr.spacing("5v") }} />
+
       {/* Infos complémentaires */}
-      {(targetDiplomaLevel || applicationCount != null) && (
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("4v"), mb: fr.spacing("4v"), color: "#64748B", fontSize: "0.875rem" }}>
+      {(contractType || targetDiplomaLevel || applicationCount != null) && (
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: `${fr.spacing("2v")} ${fr.spacing("6v")}`,
+            mb: fr.spacing("4v"),
+            color: fr.colors.decisions.text.mention.grey.default,
+            fontSize: "0.9375rem",
+          }}
+        >
+          {contractType && (
+            <Box>
+              <Box component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
+                Contrat :{" "}
+              </Box>
+              {contractType}
+            </Box>
+          )}
           {targetDiplomaLevel && (
             <Box>
-              <Box component="span" sx={{ fontWeight: 600 }}>
+              <Box component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
                 Niveau :{" "}
               </Box>
               {targetDiplomaLevel}
@@ -80,7 +90,7 @@ export function JobDetailPanel({ job, currentParams }: JobDetailPanelProps) {
           )}
           {applicationCount != null && (
             <Box>
-              <Box component="span" sx={{ fontWeight: 600 }}>
+              <Box component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
                 Candidatures :{" "}
               </Box>
               {applicationCount}
@@ -92,35 +102,28 @@ export function JobDetailPanel({ job, currentParams }: JobDetailPanelProps) {
       {/* Description employeur */}
       {employeurDescription && (
         <Box sx={{ mb: fr.spacing("4v") }}>
-          <Box sx={{ fontWeight: 600, color: "#1E293B", mb: fr.spacing("1v"), fontSize: "0.9375rem" }}>À propos de l'entreprise</Box>
-          <Box sx={{ color: "#334155", fontSize: "0.875rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{employeurDescription}</Box>
+          <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("1v"), fontSize: "1rem" }}>À propos de l'entreprise</Box>
+          <Box sx={{ color: fr.colors.decisions.text.default.grey.default, fontSize: "0.9375rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{employeurDescription}</Box>
         </Box>
       )}
 
       {/* Description du poste */}
       {jobDescription && (
         <Box sx={{ mb: fr.spacing("4v") }}>
-          <Box sx={{ fontWeight: 600, color: "#1E293B", mb: fr.spacing("1v"), fontSize: "0.9375rem" }}>Description du poste</Box>
-          <Box sx={{ color: "#334155", fontSize: "0.875rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{jobDescription}</Box>
+          <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default, mb: fr.spacing("1v"), fontSize: "1rem" }}>Description du poste</Box>
+          <Box sx={{ color: fr.colors.decisions.text.default.grey.default, fontSize: "0.9375rem", lineHeight: 1.6, whiteSpace: "pre-line" }}>{jobDescription}</Box>
         </Box>
       )}
 
       {/* Actions */}
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("2v"), mt: fr.spacing("6v") }}>
         {applicationUrl && (
-          <Button
-            component="a"
-            href={applicationUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="contained"
-            sx={{ backgroundColor: "#2563EB", "&:hover": { backgroundColor: "#1D4ED8" } }}
-          >
-            Postuler
+          <Button linkProps={{ href: applicationUrl, target: "_blank", rel: "noopener noreferrer" }} priority="primary" style={{ width: "100%", justifyContent: "center" }}>
+            J'envoie ma candidature
           </Button>
         )}
-        <Button component="a" href={detailUrl} variant="outlined" sx={{ borderColor: "#2563EB", color: "#2563EB" }}>
-          Voir la fiche complète →
+        <Button linkProps={{ href: detailUrl }} priority="secondary" iconId="fr-icon-arrow-right-line" iconPosition="right" style={{ width: "100%", justifyContent: "center" }}>
+          Voir l'offre complète
         </Button>
       </Box>
     </Box>
