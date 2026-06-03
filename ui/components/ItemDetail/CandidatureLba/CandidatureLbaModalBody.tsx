@@ -79,9 +79,9 @@ export const CandidatureLbaModalBody = ({
   const handleSubmitWithScrollOnFirstError = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const errors = await formik.validateForm()
-    await formik.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])))
 
     if (Object.keys(errors).length > 0) {
+      await formik.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])))
       const errorElements = Object.keys(errors)
         .map((field) => document.getElementById(field) ?? document.querySelector<HTMLElement>(`[name="${field}"]`))
         .filter(Boolean) as HTMLElement[]
