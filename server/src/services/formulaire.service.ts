@@ -1209,7 +1209,6 @@ async function jobCreateToJobsPartner({
     applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
-    establishment_id: buildEstablishmentId(user._id, entreprise.siret),
     to_applicant_questions: job.to_applicant_questions,
   }
   return jobPartner
