@@ -1,4 +1,3 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi"
 import i18next from "i18next"
 import { z } from "zod"
 import { makeZodI18nMap, zodI18nMap } from "zod-i18n-map"
@@ -14,7 +13,6 @@ i18next.init({
 })
 
 z.setErrorMap(zodI18nMap)
-extendZodWithOpenApi(z)
 
 const setZodLanguage = (language: "fr" | "en") => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises

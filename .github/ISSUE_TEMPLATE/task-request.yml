@@ -1,0 +1,63 @@
+name: Task
+description: Demander une tâche technique, de maintenance ou de refactoring
+title: "[Task] "
+type: Task
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Résumé
+      description: Description courte de la tâche à effectuer
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte
+      description: Pourquoi cette tâche est nécessaire
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: zone
+    attributes:
+      label: Zone technique
+      options:
+        - UI (interface candidat/employeur)
+        - Serveur (API, emails, jobs)
+        - UI + Serveur
+        - Shared (types, schémas)
+        - Je ne sais pas
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Notes techniques
+      description: Contraintes, fichiers concernés, hints d'implémentation — si pertinent
+      placeholder: |
+        - Fichiers concernés : ...
+        - Patterns à suivre : ...
+        - Contraintes : ...
+
+  - type: checkboxes
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      options:
+        - label: Code review approuvée et mergée
+        - label: "`yarn typecheck` passe"
+        - label: "`yarn lint` passe"
+        - label: Tests ajoutés ou mis à jour si pertinent
+        - label: Testé en local

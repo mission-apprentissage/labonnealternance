@@ -1,18 +1,12 @@
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
-import type { FastifyStaticSwaggerOptions } from "@fastify/swagger"
-import fastifySwagger from "@fastify/swagger"
-import type { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
-import fastifySwaggerUI from "@fastify/swagger-ui"
 import { notFound } from "@hapi/boom"
 import type { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
 import fastify from "fastify"
 import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { Netmask } from "netmask"
-import type { OpenAPIV3_1 } from "openapi-types"
-import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
@@ -78,33 +72,6 @@ export async function bind(app: Server) {
       // Do not rate-limit private & internal IPs
       return allowedIps.some((block) => block.contains(req.ip))
     },
-  })
-
-  const swaggerOpts: FastifyStaticSwaggerOptions = {
-    mode: "static",
-    specification: {
-      // @ts-expect-error invalid definition of document type
-      document: generateOpenApiSchema(config.version, config.env, config.env === "local" ? "http://localhost:5001/api" : `${config.publicUrl}/api`) as OpenAPIV3_1.Document,
-    },
-  }
-  await app.register(fastifySwagger, swaggerOpts)
-
-  const swaggerUiOptions: FastifySwaggerUiOptions = {
-    routePrefix: "/api/docs",
-    theme: {
-      // @ts-expect-error invalid definition of css theme type
-      css: [{ content: ".swagger-ui .topbar { display: none }" }],
-    },
-    uiConfig: {
-      displayOperationId: true,
-      operationsSorter: "method",
-      tagsSorter: "alpha",
-    },
-  }
-  await app.register(fastifySwaggerUI, swaggerUiOptions)
-
-  app.get("/api-docs/swagger.json", (_req, res) => {
-    return res.redirect("/api/docs/json", 301)
   })
 
   app.register(fastifyCookie)

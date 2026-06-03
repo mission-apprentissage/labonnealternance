@@ -124,8 +124,31 @@ export const importRecruteurLbaToComputed = async () => {
       for (const document of documents) {
         try {
           const parsedDocument = ZRecruteursLbaRaw.parse(document)
-          const { apply_email, apply_phone, updated_at, offer_creation, ...rest } = recruteursLbaToJobPartners(parsedDocument)
-          const { workplace_address_zipcode } = rest
+          const {
+            partner_label,
+            partner_job_id,
+            workplace_siret,
+            workplace_brand,
+            workplace_legal_name,
+            workplace_naf_code,
+            workplace_naf_label,
+            workplace_address_city,
+            workplace_address_street_label,
+            workplace_address_zipcode,
+            workplace_address_label,
+            workplace_geopoint,
+            workplace_size,
+            offer_rome_codes,
+            offer_title,
+            offer_description,
+            offer_multicast,
+            apply_email,
+            apply_phone,
+            offer_creation,
+            _id: _unusedId,
+            updated_at: _unusedUpdatedAt,
+            ...blankMetaFields
+          } = recruteursLbaToJobPartners(parsedDocument)
 
           if (workplace_address_zipcode) {
             if (!extensions.zipCode().safeParse(workplace_address_zipcode).success) {
@@ -136,16 +159,31 @@ export const importRecruteurLbaToComputed = async () => {
 
           operations.push({
             updateOne: {
-              filter: { workplace_siret: rest.workplace_siret },
+              filter: { partner_label, workplace_siret },
               update: {
                 $set: {
+                  workplace_brand,
+                  workplace_legal_name,
+                  workplace_naf_code,
+                  workplace_naf_label,
+                  workplace_address_city,
+                  workplace_address_street_label,
+                  workplace_address_zipcode,
+                  workplace_address_label,
+                  workplace_geopoint,
+                  workplace_size,
+                  offer_rome_codes,
+                  offer_title,
+                  offer_description,
+                  offer_multicast,
                   apply_email,
                   apply_phone,
                   offer_creation,
                   updated_at: importDate,
                 },
                 $setOnInsert: {
-                  ...rest,
+                  ...blankMetaFields,
+                  partner_job_id,
                   offer_status_history: [],
                   _id: new ObjectId(),
                 },
