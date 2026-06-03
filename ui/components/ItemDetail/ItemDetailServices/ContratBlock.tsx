@@ -10,11 +10,14 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
 
 export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartnerJobJson; showMandataireInfo?: boolean }) => {
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
+  const isUrgentRecruitment = job?.job?.startType === "des_que_possible"
+  const isFlexibleStartDate = Boolean(job?.job?.startDateFlexible)
+  const contractStartLabel = isUrgentRecruitment ? "Démarrage dès que possible" : jobStartDate ? `${jobStartDate}${isFlexibleStartDate ? ", date flexible" : ""}` : undefined
   return (
     <Stack spacing={1} sx={{ mb: fr.spacing("4v") }}>
-      {jobStartDate && (
+      {contractStartLabel && (
         <div>
-          <strong>Début du contrat le : </strong> {jobStartDate}
+          <strong>Date de début de contrat souhaitée :</strong> {contractStartLabel}
         </div>
       )}
       {job?.job?.dureeContrat && (

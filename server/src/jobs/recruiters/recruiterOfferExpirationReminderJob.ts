@@ -2,6 +2,7 @@ import { internal } from "@hapi/boom"
 import { groupBy } from "lodash-es"
 import type { Filter } from "mongodb"
 import { ObjectId } from "mongodb"
+import { CFA, ENTREPRISE } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
@@ -16,7 +17,8 @@ import { notifyToSlack } from "@/common/utils/slackUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import { userWithAccountToUserForToken } from "@/security/accessTokenService"
-import { createAuthMagicLink, createCancelJobLink, createProvidedJobLink } from "@/services/appLinks.service"
+import { createAuthMagicLink, createCancelJobLink, createProlongerOffreLink, createProvidedJobLink } from "@/services/appLinks.service"
+import { buildEstablishmentId } from "@/services/etablissement.service"
 import mailer from "@/services/mailer.service"
 
 const getReminderCompanyName = ({
@@ -97,6 +99,7 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
           establishment_raison_sociale: getReminderCompanyName(firstJob),
           is_delegated,
           offres: jobsGroup.map((job) => ({
+            workplace_siret: job.workplace_siret,
             job_title: job.offer_title,
             rome_appellation_label: job.offer_rome_appellation,
             job_type: job.contract_type.join(", "),
@@ -104,6 +107,11 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
             job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
+            prolonger: createProlongerOffreLink(userWithAccountToUserForToken(contactUser), {
+              jobId: job._id.toString(),
+              establishment_id: buildEstablishmentId(contactUser._id, job.workplace_siret!),
+              userType: is_delegated ? CFA : ENTREPRISE,
+            }),
           })),
           threshold: numberOfDaysToExpirationDate,
           connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),

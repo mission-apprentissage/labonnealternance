@@ -259,6 +259,8 @@ const ZLbaItemJob = z
     offer_to_be_acquired_knowledge: z.array(z.string()).nullish(),
     offer_access_conditions: z.array(z.string()).nullish(), // partner -> offer_access_conditions
     contract_rythm: z.string().nullish(),
+    startType: z.enum(["des_que_possible", "precise_date"]).nullish(),
+    startDateFlexible: z.boolean().nullish(),
     isCfaEntreprise: z.boolean().nullish(), // issu de la liste des cfa d'entreprise cf shared/src/services/isCfaEntreprise.ts
     to_applicant_questions: z.array(z.string()).nullish().describe("Questions posées par le recruteur pour le candidat"),
   })

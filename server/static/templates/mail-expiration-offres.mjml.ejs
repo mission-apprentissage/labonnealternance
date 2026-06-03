@@ -90,7 +90,7 @@
               Bonjour <%= data.first_name %> <%= data.last_name %>,
               <br />
               <br />
-              L’offre d’alternance que vous avez publiée pour <span style="font-weight: 700;"><%= data.establishment_raison_sociale %></span> expire <%= dansXjours %>.
+              L’offre d’alternance que vous avez publiée pour <span style="font-weight: 700;"><%= data.establishment_raison_sociale %></span><% if (offre.workplace_siret) { %>, SIRET <span style="font-weight: 700;"><%= offre.workplace_siret %></span><% } %> expire <%= dansXjours %>.
               <br />
               <br />
               Connectez-vous à votre espace afin de gérer vos offres :
@@ -132,8 +132,8 @@
               <span style="font-weight: 700;"><%= offre.job_type %></span>
               <br /><br />
 
-              <a href="<%= offre.supprimer %>" style="text-decoration: underline; color: inherit;">
-                Supprimer
+              <a href="<%= offre.prolonger %>" style="text-decoration: underline; color: inherit;">
+                Prolonger mon offre
               </a>
               <br />
             </mj-text>

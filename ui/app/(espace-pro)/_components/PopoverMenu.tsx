@@ -5,7 +5,7 @@ import type { Dispatch, ReactNode } from "react"
 import { useEffect, useRef, useState } from "react"
 
 export type PopoverMenuAction = {
-  label: string | React.JSX.Element
+  label: string | React.ReactNode
   onClick?: (any) => void
   link?: string
   ariaLabel?: string

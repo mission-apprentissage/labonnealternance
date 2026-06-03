@@ -8,8 +8,8 @@ import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
-import { JOB_STATUS } from "shared/models/job.model"
-import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
+import { JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
+import { detectUrlAndEmails, detectUrls } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
@@ -115,8 +115,10 @@ export const FormulaireEditionOffreStep1 = ({
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
 
   const localOnSubmit = (values) => {
+    const isPreciseDate = values.job_start_type === JOB_START_TYPE.PRECISE_DATE
     values = {
       ...values,
+      job_start_date_flexible: isPreciseDate ? Boolean(values.job_start_date_flexible) : false,
       competences_rome: finalSelectedCompetences,
       offer_title_custom: values.offer_title_custom || null,
       job_employer_description: values.job_employer_description || null,
@@ -137,6 +139,8 @@ export const FormulaireEditionOffreStep1 = ({
     rome_appellation_label: offre?.rome_appellation_label ?? "",
     rome_code: offre?.rome_code ?? [],
     job_level_label: offre?.job_level_label ?? "Indifférent",
+    job_start_type: offre?.job_start_type ?? (offre ? JOB_START_TYPE.PRECISE_DATE : ""),
+    job_start_date_flexible: offre?.job_start_date_flexible ?? false,
     job_start_date: offre?.job_start_date ? dayjs(offre.job_start_date).format(ISO_DATE_FORMAT) : "",
     job_creation_date: offre?.job_creation_date ?? dayjs().format(ISO_DATE_FORMAT),
     job_expiration_date: offre?.job_expiration_date ?? dayjs().add(2, "month").format(ISO_DATE_FORMAT),
@@ -161,8 +165,13 @@ export const FormulaireEditionOffreStep1 = ({
         validationSchema={Yup.object().shape({
           rome_label: Yup.string().required("Champ obligatoire"),
           job_level_label: Yup.string().required("Champ obligatoire"),
+          job_start_type: Yup.mixed<JOB_START_TYPE>().oneOf([JOB_START_TYPE.DES_QUE_POSSIBLE, JOB_START_TYPE.PRECISE_DATE], "Champ obligatoire").required("Champ obligatoire"),
+          job_start_date_flexible: Yup.boolean().default(false),
           job_start_date: jobStartDateYup,
           job_type: Yup.array().required("Champ obligatoire"),
+          job_rythm: Yup.string()
+            .max(100)
+            .test("no-url", "Les urls sont interdites", (value) => !value || !value.split(/\s+/).some((token) => token && detectUrls(token).length > 0)),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").required("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
             .trim()
