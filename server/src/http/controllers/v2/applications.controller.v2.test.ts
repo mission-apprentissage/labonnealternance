@@ -297,6 +297,31 @@ describe("POST /v2/application", () => {
     })
   })
 
+  it("does not reset SENT application to SCHEDULED when schedule link is re-opened", async () => {
+    await getDbCollection("applications").updateOne(
+      { _id: new ObjectId("6081289803569600282e0001") },
+      {
+        $set: {
+          company_feedback_send_status: CompanyFeebackSendStatus.SENT,
+          company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+        },
+      }
+    )
+
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/application/intention/schedule/6081289803569600282e0001?intention=${ApplicationIntention.ENTRETIEN}`,
+      headers: { authorization: `Bearer ${intentionToken}` },
+    })
+
+    expect.soft(response.statusCode).toEqual(200)
+    const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
+    expect.soft(application).toMatchObject({
+      company_feedback_send_status: CompanyFeebackSendStatus.SENT,
+      company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+    })
+  })
+
   it.skip("Remove scheduled intention when Envoyer le message button", async () => {
     await httpClient().inject({
       method: "GET",
