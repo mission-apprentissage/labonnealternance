@@ -41,15 +41,15 @@
     "match-sorter": "^8.1.0",
     "mersenne-twister": "^1.1.0",
     "motion": "^12.23.24",
-    "next": "^16.1.6",
+    "next": "^16.2.6",
     "next-plausible": "^3.12.5",
     "next-recompose-plugins": "^3.0.1",
     "notion-client": "7.10.0",
     "notistack": "^3.0.2",
-    "react": "19.2.3",
+    "react": "19.2.6",
     "react-csv": "^2.2.2",
     "react-dates": "^21.8.0",
-    "react-dom": "19.2.3",
+    "react-dom": "19.2.6",
     "react-dropzone": "14.3.8",
     "react-notion-x": "^7.10.0",
     "react-qr-code": "^2.0.18",
@@ -68,7 +68,7 @@
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/mersenne-twister": "^1.1.7",
     "@types/node": "^24.10.0",
-    "@types/react": "19.2.2",
+    "@types/react": "19.2.6",
     "@types/react-csv": "^1.1.10",
     "dotenv": "^17.2.3",
     "sass": "^1.93.3",
@@ -76,6 +76,6 @@
     "typescript": "^5.9.3"
   },
   "resolutions": {
-    "@types/react": "19.2.0"
+    "@types/react": "19.2.6"
   }
 }

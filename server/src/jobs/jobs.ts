@@ -36,7 +36,6 @@ import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
 import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
-import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./rdv/inviteEtablissementAffelnetToPremiumFollowUp"
@@ -45,6 +44,7 @@ import { inviteEtablissementParcoursupToPremiumFollowUp } from "./rdv/inviteEtab
 import { inviteEtablissementToOptOut } from "./rdv/inviteEtablissementToOptOut"
 import { premiumActivatedReminder, premiumActivatedReminderAffelnet } from "./rdv/premiumActivatedReminder"
 import { removeDuplicateEtablissements } from "./rdv/removeDuplicateEtablissements"
+import { removeEligibleTrainingsForAppointmentsNotInCatalogue } from "./rdv/removeEligibleTrainingsForAppointmentsNotInCatalogue"
 import { resetInvitationDates } from "./rdv/resetInvitationDates"
 import { syncEtablissementDates } from "./rdv/syncEtablissementDates"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
@@ -189,9 +189,9 @@ export async function setupJobProcessor() {
             handler: removeDuplicateEtablissements,
             tag: "main",
           },
-          "Historisation des formations éligibles à la prise de rendez-vous": {
+          "Suppression des formations éligibles absentes du catalogue": {
             cron_string: "00 4 * * *",
-            handler: eligibleTrainingsForAppointmentsHistoryWithCatalogue,
+            handler: removeEligibleTrainingsForAppointmentsNotInCatalogue,
             tag: "main",
           },
           "Export contact recruteurs vers Brevo": {

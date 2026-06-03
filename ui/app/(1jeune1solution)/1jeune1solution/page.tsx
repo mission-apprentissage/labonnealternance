@@ -92,7 +92,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               background: "#FFE817",
               width: "fit-content",
               padding: "0",
-              fontWeight: 800,
+              fontWeight: 700,
               lineHeight: "32px",
               fontSize: "20px",
               mt: fr.spacing("6v"),
@@ -106,7 +106,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
               background: "#FFE817",
               width: "fit-content",
               padding: "0",
-              fontWeight: 800,
+              fontWeight: 700,
               lineHeight: "32px",
               fontSize: "20px",
               mt: fr.spacing("2v"),
@@ -130,7 +130,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         <Box sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/arrow.svg" width={71} height={80} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
             EN UN CLIN D’OEIL
           </Typography>
@@ -144,7 +144,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
         <Box sx={{ flex: 1 }}>
           <NextImage src="/images/1j1s/dialog.svg" width={78} height={78} fetchPriority="low" alt="" unoptimized aria-hidden="true" />
           <Typography
-            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 800, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
+            sx={{ background: "#FFE817", width: "fit-content", padding: "0", fontWeight: 700, lineHeight: "32px", fontSize: "20px", mt: fr.spacing("6v"), mb: fr.spacing("3v") }}
           >
             UN CONTACT FACILE
           </Typography>
@@ -176,7 +176,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
                   background: "#FFE817",
                   width: "fit-content",
                   padding: "0",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   lineHeight: "32px",
                   fontSize: "20px",
                   mt: fr.spacing("6v"),
@@ -215,7 +215,7 @@ export default async function unJeune1Solution({ searchParams }: { searchParams:
                   background: "#FFE817",
                   width: "fit-content",
                   padding: "0",
-                  fontWeight: 800,
+                  fontWeight: 700,
                   lineHeight: "32px",
                   fontSize: "20px",
                   mt: fr.spacing("6v"),

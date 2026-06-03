@@ -15,7 +15,7 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import mailer from "@/services/mailer.service"
-import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, sendApplicationV2 } from "./application.service"
+import { buildApplicationFromHelloworkAndSaveToDb, processApplicationEmails, removeEmailFromLbaCompanies, sendApplicationV2 } from "./application.service"
 
 // Mock S3 operations to avoid actual AWS calls during tests
 vi.mock("@/common/utils/awsUtils", () => {
@@ -142,7 +142,7 @@ describe("Sending application", () => {
 
     expect(result).toHaveProperty("_id")
   })
-  it("Should throw INTERNAL_EMAIL for a non-Taleez partner job with null apply_email", async () => {
+  it("Should throw INTERNAL_EMAIL as a 400 badRequest for a non-Taleez partner job with null apply_email", async () => {
     const partnerJobId = new ObjectId("6081289803569600282e0006")
     await getDbCollection("jobs_partners").insertOne(
       generateJobsPartnersOfferPrivate({
@@ -153,14 +153,21 @@ describe("Sending application", () => {
       })
     )
 
-    await expect(
-      sendApplicationV2({
+    let thrownError: unknown
+    try {
+      await sendApplicationV2({
         newApplication: {
           ...fakeApplication,
           recipient_id: { collectionName: "partners", jobId: partnerJobId.toString() },
         },
       })
-    ).rejects.toThrow(BusinessErrorCodes.INTERNAL_EMAIL)
+    } catch (err) {
+      thrownError = err
+    }
+
+    expect(thrownError).toBeDefined()
+    expect((thrownError as ReturnType<typeof badRequest>).message).toContain(BusinessErrorCodes.INTERNAL_EMAIL)
+    expect((thrownError as ReturnType<typeof badRequest>).output.statusCode).toBe(400)
   })
   it("Should refuse sending application to expired job because of expiry date", async () => {
     const expiredJob = await createJobPartner({
@@ -748,5 +755,58 @@ describe("processApplicationEmails.sendEmailsIfNeeded", () => {
     const updatedApplication = await getDbCollection("applications").findOne({ _id: application._id })
     expect(updatedApplication?.to_company_message_id).toBe("test-message-id")
     expect(updatedApplication?.to_applicant_message_id).toBe("test-message-id")
+  })
+})
+
+describe("removeEmailFromLbaCompanies", () => {
+  beforeEach(() => {
+    return async () => {
+      await getDbCollection("jobs_partners").deleteMany({})
+    }
+  })
+
+  it("should set apply_email to null for matching RECRUTEURS_LBA jobs", async () => {
+    const email = "recruteur@company.fr"
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        apply_email: email,
+      })
+    )
+
+    await removeEmailFromLbaCompanies(email)
+
+    const updated = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+    expect(updated?.apply_email).toBeNull()
+  })
+
+  it("should not affect jobs with a different email", async () => {
+    const otherEmail = "autre@company.fr"
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+        apply_email: otherEmail,
+      })
+    )
+
+    await removeEmailFromLbaCompanies("different@company.fr")
+
+    const unchanged = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA })
+    expect(unchanged?.apply_email).toBe(otherEmail)
+  })
+
+  it("should not affect non-RECRUTEURS_LBA jobs", async () => {
+    const email = "recruteur@company.fr"
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+        apply_email: email,
+      })
+    )
+
+    await removeEmailFromLbaCompanies(email)
+
+    const unchanged = await getDbCollection("jobs_partners").findOne({ partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL })
+    expect(unchanged?.apply_email).toBe(email)
   })
 })
