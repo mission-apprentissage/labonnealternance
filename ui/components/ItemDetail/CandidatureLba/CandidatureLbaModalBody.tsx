@@ -76,7 +76,7 @@ export const CandidatureLbaModalBody = ({
   const isOffre =
     kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || kind === LBA_ITEM_TYPE_OLD.MATCHA || kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB
 
-  const handleSubmitWithScroll = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitWithScrollOnFirstError = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const errors = await formik.validateForm()
     await formik.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])))
@@ -102,7 +102,7 @@ export const CandidatureLbaModalBody = ({
         },
       }}
     >
-      <form onSubmit={handleSubmitWithScroll} style={{ position: "relative" }}>
+      <form onSubmit={handleSubmitWithScrollOnFirstError} style={{ position: "relative" }}>
         <Box sx={{ margin: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, mb: 0 }}>
           {!fromWidget && (
             <>
