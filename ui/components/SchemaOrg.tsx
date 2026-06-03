@@ -84,8 +84,8 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
       url: `${BASE_URL}${url}`,
       ...(datePublished && { datePublished }),
       ...(dateModified && { dateModified }),
-      ...(keywords?.length && { keywords: keywords.join(", ") }),
-      ...(articleSection && { articleSection }),
+      ...(keywords && keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
+      ...(articleSection ? { articleSection } : {}),
       author: {
         "@type": "GovernmentOrganization",
         name: "La bonne alternance",
@@ -105,22 +105,9 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
     })
   }
 
-  if (type !== "FAQPage" && faqItems?.length) {
-    schemas.push({
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqItems.map((item) => ({
-        "@type": "Question",
-        name: item.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: item.answer,
-        },
-      })),
-    })
-  }
-
-  if (type === "FAQPage" && faqItems?.length) {
+  // Schéma FAQ ajouté dès que des questions sont fournies, qu'il s'agisse d'une page
+  // FAQPage dédiée ou d'un Article complété par une FAQ (ex. baromètre).
+  if (faqItems?.length) {
     schemas.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",

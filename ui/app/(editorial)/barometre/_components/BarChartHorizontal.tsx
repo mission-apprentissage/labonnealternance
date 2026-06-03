@@ -36,7 +36,7 @@ export function BarChartHorizontal({
   tone?: Tone
   source?: string
 }) {
-  const max = Math.max(...items.map((item) => item.value))
+  const max = items.length > 0 ? Math.max(...items.map((item) => item.value)) : 0
   const color = toneToColor[tone]
   const gradient = `linear-gradient(90deg, ${color} 0%, ${darken(color)} 100%)`
 

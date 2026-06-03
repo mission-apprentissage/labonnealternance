@@ -40,7 +40,7 @@ export function BarChartVertical({
   source?: string
   yAxisLabel?: string
 }) {
-  const max = Math.max(...items.map((item) => item.total ?? item.segments.reduce((sum, s) => sum + s.value, 0)))
+  const max = items.length > 0 ? Math.max(...items.map((item) => item.total ?? item.segments.reduce((sum, s) => sum + s.value, 0))) : 0
   const shouldRotateLabels = items.length > 8
 
   return (
@@ -98,6 +98,9 @@ export function BarChartVertical({
               height: "280px",
               borderBottom: `2px solid ${fr.colors.decisions.border.default.grey.default}`,
               pb: fr.spacing("1v"),
+              // Espace réservé sous l'axe pour les libellés (positionnés en absolu) :
+              // plus large quand ils sont pivotés à -45°.
+              mb: shouldRotateLabels ? fr.spacing("14v") : fr.spacing("7v"),
             }}
           >
             {items.map((item, index) => {
@@ -169,10 +172,10 @@ export function BarChartVertical({
                       height: `${heightPercent}%`,
                       minHeight: total > 0 ? "4px" : 0,
                       position: "relative",
-                      "&:hover .bar-stack": {
+                      "&:hover .bar-stack, &:focus-within .bar-stack": {
                         filter: "brightness(1.08)",
                       },
-                      "&:hover .bar-tooltip": {
+                      "&:hover .bar-tooltip, &:focus-within .bar-tooltip": {
                         opacity: 1,
                         transform: "translate(-50%, -8px)",
                       },
@@ -185,7 +188,8 @@ export function BarChartVertical({
                       viewport={{ once: true, amount: 0.3 }}
                       transition={{ duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] }}
                       role="img"
-                      aria-label={`${item.label}${item.totalDisplay ? `: ${item.totalDisplay}` : ""}`}
+                      tabIndex={0}
+                      aria-label={`${item.label}: ${item.totalDisplay ?? total.toLocaleString("fr-FR")}`}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -251,15 +255,19 @@ export function BarChartVertical({
                   <Typography
                     component="span"
                     sx={{
+                      position: "absolute",
+                      top: "100%",
+                      mt: fr.spacing("1v"),
                       fontSize: shouldRotateLabels ? { xs: "8.5px", md: "9.5px" } : { xs: "10px", md: "11px" },
                       color: fr.colors.decisions.text.default.grey.default,
-                      mt: fr.spacing("2v"),
-                      textAlign: shouldRotateLabels ? "right" : "center",
                       lineHeight: 1.2,
                       fontWeight: item.highlighted ? 700 : 400,
-                      transform: shouldRotateLabels ? "rotate(-45deg)" : "none",
-                      transformOrigin: shouldRotateLabels ? "top right" : "top center",
                       whiteSpace: "nowrap",
+                      // Libellés ancrés au centre de chaque barre : centrés à l'horizontale, ou
+                      // coin haut-droit ancré au centre de la barre quand ils sont pivotés à -45°.
+                      ...(shouldRotateLabels
+                        ? { right: "50%", transformOrigin: "top right", transform: "rotate(-45deg)" }
+                        : { left: "50%", transform: "translateX(-50%)", textAlign: "center" }),
                     }}
                   >
                     {item.shortLabel ?? item.label}
