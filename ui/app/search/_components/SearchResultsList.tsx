@@ -57,7 +57,6 @@ export function SearchResultsList({ result, params, selectedHitId, onHitSelect }
   if (!data) return null
 
   const allHits = data.pages.flatMap((p) => p.hits)
-  const nbHits = data.pages.at(-1)?.nbHits ?? 0
 
   if (allHits.length === 0) {
     return (
@@ -68,18 +67,7 @@ export function SearchResultsList({ result, params, selectedHitId, onHitSelect }
   }
 
   return (
-    <Box sx={{ mt: fr.spacing("4v") }}>
-      <Box
-        sx={{
-          mb: fr.spacing("3v"),
-          color: fr.colors.decisions.text.mention.grey.default,
-          fontSize: "0.875rem",
-          fontWeight: 500,
-        }}
-      >
-        {nbHits} résultat{nbHits > 1 ? "s" : ""}
-      </Box>
-
+    <Box>
       <Box>
         {allHits.map((hit) => (
           <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} isSelected={selectedHitId !== undefined && hit.url_id === selectedHitId} onSelect={onHitSelect} />

@@ -27,10 +27,6 @@ interface SearchSplitPageClientProps {
 
 type MobilePanel = null | "search" | "filters"
 
-// Largeur dynamique du contenu desktop : 92% de l'écran, bornée à 2240px sur
-// ultra-wide. CSS pur (pas de JS / pas de flash). Mobile = pleine largeur.
-const CONTENT_MAX_WIDTH = "min(92vw, 2240px)"
-
 export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientProps) {
   const rawSearchParams = useSearchParams()
   const params = rawSearchParams ? parseSearchPageParams(new URLSearchParams(rawSearchParams.toString())) : initialParams
@@ -142,7 +138,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
           </Box>
 
           {/* Split */}
-          <Box sx={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0, maxWidth: CONTENT_MAX_WIDTH, mx: "auto", width: "100%" }}>
+          <DefaultContainer sx={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
             <Box
               sx={{
                 flex: "0 0 480px",
@@ -155,10 +151,10 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
               <SearchResultsList result={result} params={params} selectedHitId={params.selected} onHitSelect={handleHitSelect} />
             </Box>
 
-            <Box sx={{ flex: 1, overflowY: "auto", px: fr.spacing("8v"), py: fr.spacing("6v") }}>
+            <Box sx={{ flex: 1, overflowY: "auto", px: fr.spacing("8v"), py: fr.spacing("4v") }}>
               <SearchDetailPanel hit={selectedHit} currentParams={params} />
             </Box>
-          </Box>
+          </DefaultContainer>
         </Box>
 
         {/* Mobile : liste plein écran + 2 boutons (affichage piloté par CSS) */}

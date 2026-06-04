@@ -38,7 +38,6 @@ function DetailCard({ children, onBack }: { children: ReactNode; onBack?: () => 
         sx={{
           backgroundColor: fr.colors.decisions.background.default.grey.default,
           border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-          borderRadius: "10px",
           boxShadow: "0 1px 6px rgba(0,0,18,0.08)",
           p: { xs: fr.spacing("5v"), lg: fr.spacing("8v") },
         }}
