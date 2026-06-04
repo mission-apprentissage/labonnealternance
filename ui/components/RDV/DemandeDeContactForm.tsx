@@ -25,6 +25,7 @@ export const DemandeDeContactForm = ({
   onRdvSuccess: (props: { appointmentId: string; token: string }) => void
 }) => {
   const [error, setError] = useState<string | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   return (
     <Formik
@@ -83,11 +84,32 @@ export const DemandeDeContactForm = ({
       }}
     >
       {(formik) => {
+        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault()
+          const errors = await formik.validateForm()
+          formik.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])), false)
+          if (Object.keys(errors).length > 0 && formRef.current) {
+            const selector = Object.keys(errors)
+              .map((name) => `[name="${name}"]`)
+              .join(", ")
+            const firstErrorEl = formRef.current.querySelector<HTMLElement>(selector)
+            if (firstErrorEl) {
+              firstErrorEl.scrollIntoView({ behavior: "smooth", block: "center" })
+              firstErrorEl.focus()
+            }
+            return
+          }
+          formik.submitForm()
+        }
+
         return (
-          <form onSubmit={formik.handleSubmit}>
+          <form ref={formRef} onSubmit={handleSubmit}>
+            <Typography sx={{ fontSize: "14px", lineHeight: "24px", color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("6v") }}>
+              Tous les champs sont obligatoires.
+            </Typography>
             <FormControl>
               <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "flex-start", md: "center" }, mb: fr.spacing("4v") }}>
-                <Typography sx={{ mr: { xs: 0, md: fr.spacing("2v") }, mb: { xs: fr.spacing("2v"), sm: fr.spacing("2v"), md: 0 } }}>Vous êtes * :</Typography>
+                <Typography sx={{ mr: { xs: 0, md: fr.spacing("2v") }, mb: { xs: fr.spacing("2v"), sm: fr.spacing("2v"), md: 0 } }}>Vous êtes :</Typography>
                 <RadioGroup row data-testid="fieldset-who-type" value={formik.values.applicantType} onChange={async (_, value) => formik.setFieldValue("applicantType", value)}>
                   <FormControlLabel value={EApplicantType.ETUDIANT} label="L'étudiant" control={<Radio />} />
                   <FormControlLabel value={EApplicantType.PARENT} label="Le parent" control={<Radio />} />
@@ -96,7 +118,7 @@ export const DemandeDeContactForm = ({
             </FormControl>
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
               <FormControl data-testid="fieldset-lastname" error={formik.touched.lastname && Boolean(formik.errors.lastname)} fullWidth>
-                <FormLabel htmlFor="lastname">Nom *</FormLabel>
+                <FormLabel htmlFor="lastname">Nom</FormLabel>
                 <Input
                   className={fr.cx("fr-input")}
                   data-testid="lastname"
@@ -109,7 +131,7 @@ export const DemandeDeContactForm = ({
                 <FormHelperText>{formik.touched.lastname && formik.errors.lastname}</FormHelperText>
               </FormControl>
               <FormControl data-testid="fieldset-firstname" error={formik.touched.firstname && Boolean(formik.errors.firstname)} fullWidth>
-                <FormLabel htmlFor="firstname">Prénom *</FormLabel>
+                <FormLabel htmlFor="firstname">Prénom</FormLabel>
                 <Input
                   className={fr.cx("fr-input")}
                   data-testid="firstname"
@@ -125,7 +147,7 @@ export const DemandeDeContactForm = ({
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
               <EmailField />
               <FormControl data-testid="fieldset-phone" error={formik.touched.phone && Boolean(formik.errors.phone)} fullWidth>
-                <FormLabel htmlFor="email">Téléphone *</FormLabel>
+                <FormLabel htmlFor="email">Téléphone</FormLabel>
                 <Input
                   className={fr.cx("fr-input")}
                   data-testid="phone"
@@ -142,17 +164,6 @@ export const DemandeDeContactForm = ({
               <ReasonsField formik={formik} />
             </Box>
             <Box sx={{ width: "95%" }}>
-              <Typography
-                variant="caption"
-                component="p"
-                sx={{
-                  color: fr.colors.decisions.text.mention.grey.default,
-                  mb: fr.spacing("4v"),
-                  display: "block",
-                }}
-              >
-                * Champs obligatoires
-              </Typography>
               <Typography variant="body2" sx={{ mb: fr.spacing("4v") }}>
                 En remplissant ce formulaire, vous acceptez les{" "}
                 <DsfrLink href="/conditions-generales-utilisation" external aria-description="Conditions générales d'utilisation - nouvelle fenêtre">
@@ -228,7 +239,7 @@ const EmailField = () => {
 
   return (
     <FormControl data-testid="fieldset-email" error={!!(meta.touched && meta.error)} fullWidth>
-      <FormLabel htmlFor="email">E-mail *</FormLabel>
+      <FormLabel htmlFor="email">E-mail</FormLabel>
       <Input className={fr.cx("fr-input")} data-testid="email" name="email" type="email" onChange={onEmailChange} onBlur={field.onBlur} value={field.value} />
       {suggestedEmails.length > 0 && (
         <Box
@@ -272,14 +283,14 @@ const ReasonsField = ({ formik }: { formik: any }) => {
 
   return (
     <FormControl data-testid="fieldset-reasons" error={meta.touched && Boolean(meta.error)} fullWidth>
-      <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ? *</FormLabel>
+      <FormLabel htmlFor="reasons">Quel(s) sujet(s) souhaitez-vous aborder ?</FormLabel>
       <Box sx={{ display: "flex", flexDirection: "column", mt: fr.spacing("2v") }}>
         {RdvReasons.map(({ key, title }, index) => {
           const checked = applicantReasons.includes(key)
           return (
             <FormControlLabel
               key={key}
-              control={<Checkbox checked={checked} onChange={(e) => onChangeApplicantReasons(key, e.target.checked)} id={`reason-${index}`} />}
+              control={<Checkbox checked={checked} onChange={(e) => onChangeApplicantReasons(key, e.target.checked)} id={`reason-${index}`} name="applicantReasons" />}
               label={title}
             />
           )
