@@ -17,6 +17,7 @@ import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { AUTHTYPE } from "@/common/contants"
 import { phoneValidation } from "@/common/validation/fieldValidations"
+import { LbaTitle } from "@/components/dsfr/LbaTitle"
 import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { ArrowRightLine } from "@/theme/components/icons"
@@ -159,9 +160,7 @@ const FormulaireLayout = ({ left, right, type }: { left: React.ReactNode; right:
       }}
     >
       <Box>
-        <Typography component="h2" sx={{ fontSize: "24px", fontWeight: "bold" }}>
-          {type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}
-        </Typography>
+        <LbaTitle component="h1">{type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}</LbaTitle>
         <Typography sx={{ fontSize: "20px", pt: fr.spacing("2v"), pb: fr.spacing("4v") }}>
           {type === AUTHTYPE.ENTREPRISE
             ? "Seul le numéro de téléphone sera visible sur vos offres. Vous recevrez les candidatures sur l'email renseigné."

@@ -8,6 +8,7 @@ import { Formik, useField, useFormikContext } from "formik"
 import { type IJob, ZJobFields } from "shared"
 import type z from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
+import { LbaTitle } from "@/components/dsfr/LbaTitle"
 
 const questions = [
   "Pourquoi souhaitez-vous rejoindre notre entreprise ?",
@@ -38,41 +39,21 @@ export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { off
     >
       {({ values }) => (
         <>
-          <Typography
-            component="h1"
-            sx={(theme) => ({
-              fontWeight: 700,
+          <LbaTitle
+            component="p"
+            sx={{
               color: "#000091",
               mb: fr.spacing("6v"),
-              [theme.breakpoints.up("xs")]: {
-                fontSize: "18px !important",
-                lineHeight: "24px !important",
-              },
-              [theme.breakpoints.up("md")]: {
-                fontSize: "20px !important",
-                lineHeight: "28px !important",
-              },
-            })}
+              fontSize: { xs: "18px !important", md: "20px !important" },
+              lineHeight: { xs: "24px !important", md: "28px !important" },
+              fontWeight: 700,
+            }}
           >
             Étape 2/2 : Questions pour les candidats
-          </Typography>
-          <Typography
-            component="h2"
-            sx={(theme) => ({
-              fontWeight: 700,
-              mb: fr.spacing("6v"),
-              [theme.breakpoints.up("xs")]: {
-                fontSize: "22px !important",
-                lineHeight: "28px !important",
-              },
-              [theme.breakpoints.up("md")]: {
-                fontSize: "32px !important",
-                lineHeight: "40px !important",
-              },
-            })}
-          >
+          </LbaTitle>
+          <LbaTitle component="h1" sx={{ mb: fr.spacing("6v") }}>
             Vos questions pour les candidats (Facultatif)
-          </Typography>
+          </LbaTitle>
           <Checkboxs
             name="to_applicant_questions"
             label="Sélectionnez jusqu’à 3 questions pour mieux comprendre les motivations des candidats."

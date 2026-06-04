@@ -9,6 +9,7 @@ import { FieldWithValue } from "@/app/(espace-pro)/_components/FieldWithValue"
 import { InfoTooltip } from "@/app/(espace-pro)/_components/InfoToolTip"
 import type { AUTHTYPE } from "@/common/contants"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
+import { LbaTitle } from "@/components/dsfr/LbaTitle"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { getCfaInformation, getEntrepriseInformation } from "@/utils/api"
 
@@ -34,9 +35,9 @@ const InformationLegaleEntreprise = ({ siret, type, opco, viewerType }: { siret:
 
   return (
     <BorderedBox>
-      <Typography fontWeight={700} component="h2" mb={2}>
+      <LbaTitle component="h2" sx={{ mb: fr.spacing("4v") }}>
         {type === ENTREPRISE ? "Informations de l'entreprise" : "Informations légales"}
-      </Typography>
+      </LbaTitle>
       {!raisonSociale && (
         <Box sx={{ display: "flex", alignItems: "flex-start", mb: fr.spacing("8v") }}>
           <Typography color={fr.colors.decisions.text.mention.grey.default} className={fr.cx("fr-icon-information-line")} />
