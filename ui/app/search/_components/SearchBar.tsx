@@ -2,7 +2,7 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, MenuItem, TextField } from "@mui/material"
+import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import { useCallback, useEffect, useRef, useState } from "react"
@@ -30,9 +30,7 @@ function useThrottle(value: string, delay: number) {
   return debouncedValue
 }
 
-const RADIUS_OPTIONS = [10, 30, 60, 100]
-
-// Taille de police commune à toute la barre (Métier/Lieu/Rayon), alignée sur les filtres.
+// Taille de police commune à toute la barre (Métier/Lieu), alignée sur les filtres.
 const FIELD_FONT_SIZE = "0.875rem"
 const INPUT_SX = { ".MuiInputBase-input": { fontSize: FIELD_FONT_SIZE } }
 
@@ -41,10 +39,8 @@ type LieuOption = { label: string; latitude: number; longitude: number }
 interface SearchBarProps {
   initialQ?: string
   initialLieuLabel?: string
-  radius: number
   onSubmit: (q: string) => void
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number } | null) => void
-  onRadiusChange: (radius: number) => void
   /** "row" : barre desktop ; "column" : panneau mobile (sans bouton, géré par le footer). */
   layout?: "row" | "column"
 }
@@ -57,7 +53,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function SearchBar({ initialQ = "", initialLieuLabel, radius, onSubmit, onLieuChange, onRadiusChange, layout = "row" }: SearchBarProps) {
+export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, layout = "row" }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -191,18 +187,6 @@ export function SearchBar({ initialQ = "", initialLieuLabel, radius, onSubmit, o
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
-      </Box>
-
-      {/* Rayon */}
-      <Box sx={{ flex: isColumn ? "none" : "0 0 150px", width: isColumn ? "100%" : undefined }}>
-        <FieldLabel>Rayon</FieldLabel>
-        <TextField select size="small" fullWidth value={String(radius)} onChange={(e) => onRadiusChange(Number(e.target.value))} sx={INPUT_SX}>
-          {RADIUS_OPTIONS.map((r) => (
-            <MenuItem key={r} value={String(r)} sx={{ fontSize: FIELD_FONT_SIZE }}>
-              {r} km
-            </MenuItem>
-          ))}
-        </TextField>
       </Box>
 
       {!isColumn && (

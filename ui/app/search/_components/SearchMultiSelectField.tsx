@@ -39,6 +39,7 @@ function Count({ count }: { count?: number }) {
 export function SearchMultiSelectField({
   id,
   label,
+  topLabel,
   options,
   groups,
   value,
@@ -46,6 +47,8 @@ export function SearchMultiSelectField({
 }: {
   id: string
   label: string
+  /** Si fourni, affiche un libellé au-dessus de la pilule (variante « une ligne ») au lieu du label flottant. */
+  topLabel?: string
   options?: MultiSelectOption[]
   groups?: MultiSelectGroup[]
   value: string[]
@@ -58,30 +61,48 @@ export function SearchMultiSelectField({
   if (!hasOptions && value.length === 0) return null
 
   return (
-    <FormControl size="small" sx={{ width: 170, flexShrink: 0 }}>
-      <InputLabel id={`${id}-label`} sx={{ fontSize: "0.875rem" }}>
-        {label}
-      </InputLabel>
+    <FormControl size="small" sx={{ flexShrink: 0, ...(topLabel ? {} : { width: 170 }) }}>
+      {topLabel ? (
+        <Box
+          component="label"
+          htmlFor={id}
+          sx={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}
+        >
+          {topLabel}
+        </Box>
+      ) : (
+        <InputLabel id={`${id}-label`} sx={{ fontSize: "0.875rem" }}>
+          {label}
+        </InputLabel>
+      )}
       <Select
-        labelId={`${id}-label`}
+        labelId={topLabel ? undefined : `${id}-label`}
         id={id}
         multiple
+        displayEmpty={Boolean(topLabel)}
         value={value}
         onChange={(e) => {
           const raw = e.target.value
           onChange(typeof raw === "string" ? raw.split(",") : raw)
         }}
-        input={<OutlinedInput label={label} />}
+        input={topLabel ? <OutlinedInput /> : <OutlinedInput label={label} />}
         // Toujours « Label (N) » (jamais la valeur) → texte court et largeur constante.
+        // En mode topLabel, l'état vide affiche le label court comme placeholder dans la pilule.
         renderValue={(selected) =>
-          selected.length === 0 ? null : (
+          selected.length === 0 ? (
+            topLabel ? (
+              <Box component="span" sx={{ fontSize: "0.875rem", lineHeight: 1.4, color: fr.colors.decisions.text.mention.grey.default }}>
+                {label}
+              </Box>
+            ) : null
+          ) : (
             <Box component="span" sx={{ fontSize: "0.875rem", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {`${label} (${selected.length})`}
             </Box>
           )
         }
         MenuProps={{ PaperProps: { sx: { maxHeight: 360, minWidth: 280 } } }}
-        sx={{ height: 40, ".MuiSelect-select": { display: "flex", alignItems: "center", py: "8px" } }}
+        sx={{ height: 40, width: topLabel ? 170 : undefined, ".MuiSelect-select": { display: "flex", alignItems: "center", py: "8px" } }}
       >
         {renderGroups.flatMap((group) => {
           const items = group.options.map((option) => (

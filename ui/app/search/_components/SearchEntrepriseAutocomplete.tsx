@@ -12,13 +12,15 @@ interface SearchEntrepriseAutocompleteProps {
   onChange: (value: string | null) => void
   /** Affichage pleine largeur (panneau mobile). */
   fullWidth?: boolean
+  /** Si fourni, libellé affiché au-dessus du champ (remplace le label flottant). */
+  topLabel?: string
 }
 
 /**
  * Filtre mono-valeur sur `organization_name` (opérateur equals côté API).
  * Champ DSFR + liste de suggestions filtrée par sous-chaîne et triée alpha.
  */
-export function SearchEntrepriseAutocomplete({ options, value, onChange, fullWidth = false }: SearchEntrepriseAutocompleteProps) {
+export function SearchEntrepriseAutocomplete({ options, value, onChange, fullWidth = false, topLabel }: SearchEntrepriseAutocompleteProps) {
   const [inputValue, setInputValue] = useState("")
   const active = Boolean(value)
 
@@ -61,23 +63,29 @@ export function SearchEntrepriseAutocomplete({ options, value, onChange, fullWid
 
   return (
     <Box sx={{ position: "relative", display: fullWidth ? "block" : "inline-block", width: fullWidth ? "100%" : "auto" }}>
-      {active && (
-        <Box
-          component="span"
-          sx={{
-            position: "absolute",
-            top: -9,
-            left: 8,
-            px: "4px",
-            backgroundColor: fr.colors.decisions.background.default.grey.default,
-            fontSize: "0.6875rem",
-            fontWeight: 500,
-            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-            zIndex: 1,
-          }}
-        >
-          Entreprise
+      {topLabel ? (
+        <Box component="span" sx={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}>
+          {topLabel}
         </Box>
+      ) : (
+        active && (
+          <Box
+            component="span"
+            sx={{
+              position: "absolute",
+              top: -9,
+              left: 8,
+              px: "4px",
+              backgroundColor: fr.colors.decisions.background.default.grey.default,
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+              zIndex: 1,
+            }}
+          >
+            Entreprise
+          </Box>
+        )
       )}
 
       <Box

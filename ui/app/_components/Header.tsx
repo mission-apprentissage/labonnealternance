@@ -31,6 +31,16 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
         },
       }}
     />,
+    <HeaderQuickAccessItem
+      key="search-filter-only"
+      quickAccessItem={{
+        iconId: "fr-icon-search-line",
+        text: "Recherche par filtres",
+        linkProps: {
+          href: "/search/filter-only",
+        },
+      }}
+    />,
   ],
 }
 

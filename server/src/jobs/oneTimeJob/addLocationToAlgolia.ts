@@ -8,8 +8,7 @@ const BATCH_SIZE = 1000
 
 /**
  * KBA 2026-03-17 : Complète le champ `location` (GeoJSON Point pour MongoDB Search)
- * à partir du champ `_geoloc` (format Algolia { lat, lng }) et convertit
- * `publication_date` de millisecondes en Date sur la collection `algolia`.
+ * à partir du champ `_geoloc` (format Algolia { lat, lng })
  */
 export const OneTimeJob_AddLocationToAlgolia = async () => {
   logger.info("OneTimeJob_AddLocationToAlgolia - START")
@@ -48,10 +47,6 @@ export const OneTimeJob_AddLocationToAlgolia = async () => {
         type: "Point",
         coordinates: [doc._geoloc.lng, doc._geoloc.lat],
       },
-    }
-
-    if (typeof doc.publication_date === "number") {
-      setFields.publication_date = new Date(doc.publication_date)
     }
 
     batch.push({

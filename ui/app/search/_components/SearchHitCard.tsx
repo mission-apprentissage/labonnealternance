@@ -68,6 +68,12 @@ export function SearchHitCard({ hit, currentParams, isSelected, onSelect }: Sear
         {hit.address && ` · ${hit.address}`}
       </Box>
 
+      {hit.distance != null && (
+        <Box sx={{ mt: fr.spacing("1v"), color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.75rem", lineHeight: 1.4 }}>
+          {hit.distance} km(s) du lieu de recherche
+        </Box>
+      )}
+
       <Box
         component="span"
         className={fr.cx("fr-icon-arrow-right-line")}

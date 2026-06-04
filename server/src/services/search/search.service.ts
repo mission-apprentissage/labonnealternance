@@ -1,5 +1,6 @@
 import type { IAlgolia } from "shared/models/index"
 
+import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const HIGHLIGHT_MAX_PASSAGES = 5
@@ -202,6 +203,7 @@ function buildBaselineCompound(filters: ISearchFilters) {
 export type SearchHit = IAlgolia & {
   preview: PreviewItem[]
   matched_words: Array<{ word: string; count: number }>
+  distance: number | null
 }
 
 export async function searchAlgolia(params: ISearchFilters): Promise<{
@@ -211,7 +213,7 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
   nbPages: number
   facets?: ISearchFacets
 }> {
-  const { page, hitsPerPage } = params
+  const { page, hitsPerPage, latitude, longitude } = params
   const compound = buildCompoundOperator(params)
   const compoundBaseline = buildBaselineCompound(params)
 
@@ -280,11 +282,21 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
   const nbHits = rows[0]?._meta?.count?.total ?? 0
   const nbPages = Math.ceil(nbHits / hitsPerPage)
 
-  const hits: SearchHit[] = rows.map(({ highlights, _meta: _m, ...doc }) => ({
-    ...(doc as IAlgolia),
-    preview: buildPreviewText(highlights ?? []),
-    matched_words: buildSearchMatchWords(highlights ?? []),
-  }))
+  const hasGeo = latitude !== undefined && longitude !== undefined
+
+  const hits: SearchHit[] = rows.map(({ highlights, _meta: _m, ...doc }) => {
+    const algoliaDoc = doc as IAlgolia
+    const distance =
+      hasGeo && algoliaDoc._geoloc
+        ? getDistanceInKm({ origin: { latitude, longitude }, destination: { latitude: algoliaDoc._geoloc.lat, longitude: algoliaDoc._geoloc.lng } })
+        : null
+    return {
+      ...algoliaDoc,
+      preview: buildPreviewText(highlights ?? []),
+      matched_words: buildSearchMatchWords(highlights ?? []),
+      distance,
+    }
+  })
 
   const metaResult = meta[0]
   const facets: ISearchFacets | undefined = metaResult?.facet

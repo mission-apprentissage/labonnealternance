@@ -2,33 +2,97 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box } from "@mui/material"
+import { Box, TextField } from "@mui/material"
+import Autocomplete from "@mui/material/Autocomplete"
+import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
+import { searchAddress } from "@/services/baseAdresse"
 
 import { useAutoRadius } from "../_hooks/useAutoRadius"
 import { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
-import { SearchActiveFilters } from "./SearchActiveFilters"
-import { SearchBar } from "./SearchBar"
 import { SearchDetailPanel } from "./SearchDetailPanel"
+import { SearchFilterBar } from "./SearchFilterBar"
 import { SearchFilters } from "./SearchFilters"
 import type { Hit } from "./SearchHitCard"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SearchResultsList } from "./SearchResultsList"
 
-interface SearchSplitPageClientProps {
+interface SearchFilterOnlyPageClientProps {
   initialParams: ISearchPageParams
 }
 
 type MobilePanel = null | "search" | "filters"
 
-export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientProps) {
+type LieuOption = { label: string; latitude: number; longitude: number }
+
+/** Champ Lieu pour le panneau mobile « Modifier la recherche » (dupliqué de la barre, vue de test). */
+function MobileSearchFields({ params, onNavigate }: { params: ISearchPageParams; onNavigate: (p: ISearchPageParams) => void }) {
+  const [lieuInput, setLieuInput] = useState(params.lieu_label ?? "")
+  const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
+  const [debounced, setDebounced] = useState(lieuInput)
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(lieuInput), 300)
+    return () => clearTimeout(t)
+  }, [lieuInput])
+
+  const { data } = useQuery({
+    queryKey: ["lieu-suggestions", debounced],
+    queryFn: () => searchAddress(debounced),
+    enabled: debounced.length >= 2,
+    staleTime: 1000 * 60 * 5,
+    throwOnError: false,
+  })
+  const suggestions: LieuOption[] = (data ?? []).map((item) => ({ label: item.label, latitude: item.value.coordinates[1], longitude: item.value.coordinates[0] }))
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+      <Box>
+        <Box
+          component="label"
+          htmlFor="m-lieu"
+          sx={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}
+        >
+          Où cherchez-vous une alternance ?
+        </Box>
+        <Autocomplete
+          freeSolo
+          fullWidth
+          options={suggestions}
+          getOptionLabel={(o) => (typeof o === "string" ? o : o.label)}
+          isOptionEqualToValue={(o, v) => (typeof v === "string" ? o.label === v : o.label === v.label)}
+          inputValue={lieuInput}
+          value={lieuValue}
+          onInputChange={(_e, value, reason) => {
+            setLieuInput(value)
+            if (reason === "clear") {
+              setLieuValue(null)
+              onNavigate({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, page: 0 })
+            }
+          }}
+          onChange={(_e, value) => {
+            if (value && typeof value !== "string") {
+              setLieuValue(value)
+              // Nouveau lieu → rayon repart à 20 (élargissement auto ensuite).
+              onNavigate({ ...params, lieu_label: value.label, latitude: value.latitude, longitude: value.longitude, radius: 20, page: 0 })
+            }
+          }}
+          renderInput={(p) => <TextField {...p} id="m-lieu" placeholder="Adresse, ville ou code postal" size="small" fullWidth />}
+          noOptionsText="Aucune suggestion"
+          filterOptions={(x) => x}
+        />
+      </Box>
+    </Box>
+  )
+}
+
+export function SearchFilterOnlyPageClient({ initialParams }: SearchFilterOnlyPageClientProps) {
   const rawSearchParams = useSearchParams()
   const params = rawSearchParams ? parseSearchPageParams(new URLSearchParams(rawSearchParams.toString())) : initialParams
 
@@ -39,7 +103,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
 
   const navigateSilent = useCallback(
     (newParams: ISearchPageParams) => {
-      router.replace(buildSearchUrl(newParams, "/search/split"))
+      router.replace(buildSearchUrl(newParams, "/search/filter-only"))
     },
     [router]
   )
@@ -55,28 +119,11 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
     (params.activity_sector?.length ?? 0) +
     (params.organization_name ? 1 : 0)
 
-  function handleSearch(q: string) {
-    navigateSilent({ ...params, q: q || undefined, page: 0, selected: undefined })
-  }
-
-  function handleLieuChange(lieu: { label: string; latitude: number; longitude: number } | null) {
-    // Nouveau lieu → on repart du rayon le plus étroit (élargissement auto ensuite).
-    if (lieu) {
-      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, radius: 20, page: 0, selected: undefined })
-    } else {
-      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, radius: 20, page: 0, selected: undefined })
-    }
-  }
-
-  function handleRadiusChange(radius: number) {
-    navigateSilent({ ...params, radius, page: 0, selected: undefined })
-  }
-
-  useAutoRadius({ params, result, onRadiusChange: handleRadiusChange })
-
   function handleFilterChange(newParams: ISearchPageParams) {
     navigateSilent({ ...newParams, selected: undefined })
   }
+
+  useAutoRadius({ params, result, onRadiusChange: (radius) => navigateSilent({ ...params, radius, page: 0, selected: undefined }) })
 
   function handleHitSelect(hit: Hit) {
     navigateSilent({ ...params, selected: hit.url_id ?? undefined })
@@ -104,7 +151,6 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
           flexDirection: "column",
           backgroundColor: fr.colors.decisions.background.alt.grey.default,
           minHeight: "100dvh",
-          // Desktop : hauteur fixe pour le scroll interne du split (footer révélé en scrollant la page). Mobile : flux naturel.
           height: { lg: "100dvh" },
           overflow: { lg: "hidden" },
         }}
@@ -113,9 +159,8 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
           <PublicHeader />
         </Box>
 
-        {/* Desktop : vue scindée (affichage piloté par CSS pour éviter le flash d'hydratation) */}
+        {/* Desktop : barre une ligne + split (affichage CSS, pas de useMediaQuery) */}
         <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "column", flex: 1, minHeight: 0, overflow: "hidden" }}>
-          {/* Barre recherche + filtres */}
           <Box
             sx={{
               flexShrink: 0,
@@ -123,18 +168,11 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
               borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
             }}
           >
-            {/* Barre exclue de la largeur dynamique : conteneur fixe (xl) comme le legacy. */}
             <DefaultContainer sx={{ py: fr.spacing("4v") }}>
-              <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
-              <Box sx={{ mt: fr.spacing("4v"), mb: fr.spacing("1v"), fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default }}>
-                Filtrer les offres
-              </Box>
-              <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
-              <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
+              <SearchFilterBar params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
             </DefaultContainer>
           </Box>
 
-          {/* Split */}
           <DefaultContainer sx={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
             <Box
               sx={{
@@ -154,9 +192,8 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
           </DefaultContainer>
         </Box>
 
-        {/* Mobile : liste plein écran + 2 boutons (affichage piloté par CSS) */}
+        {/* Mobile : liste plein écran + 2 boutons (affichage CSS) */}
         <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
-          {/* Barre d'actions mobile */}
           <Box
             sx={{
               position: "sticky",
@@ -179,7 +216,6 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
             </Button>
           </Box>
 
-          {/* Liste plein écran */}
           <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
             <SearchResultsList result={result} params={params} />
           </Box>
@@ -191,11 +227,11 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
             onClose={() => setPanel(null)}
             footer={
               <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)} style={{ width: "100%", justifyContent: "center" }}>
-                C'est parti
+                Rechercher
               </Button>
             }
           >
-            <SearchBar layout="column" initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+            <MobileSearchFields params={params} onNavigate={handleFilterChange} />
           </SearchMobilePanel>
         )}
 
