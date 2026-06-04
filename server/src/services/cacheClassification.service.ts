@@ -72,8 +72,6 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
     await getDbCollection("cache_classification").insertMany(payloads)
   }
 
-  const newClassificationsByIndex = new Map(zippedJobsNotFound.map(({ index, classificationResult }) => [index, classificationResult.label]))
-
   // Return results in the same order as input jobs
   return jobs.map((_job, index) => {
     const cached = cachedClassifications[index]
@@ -81,6 +79,6 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
       return cached.human_verification ? cached.human_verification : cached.classification
     }
 
-    return newClassificationsByIndex.get(index) ?? null
+    return classificationsById.get(index.toString())?.label ?? null
   })
 }
