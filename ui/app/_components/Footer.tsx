@@ -141,7 +141,7 @@ const linkListContent: LinkCategory[] = [
   },
 ]
 
-export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: boolean; hideLinkList?: boolean }) {
+export function Footer({ isWidget = false }: { isWidget?: boolean }) {
   const description =
     "La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
   const widgetDescription = (
@@ -152,7 +152,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
     </Typography>
   )
 
-  const showLinkList = !isWidget && !hideLinkList
+  const showLinkList = !isWidget
 
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">
