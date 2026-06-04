@@ -22,15 +22,19 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
 
 export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
   const cachedClassifications = await getClassificationFromDB(jobs)
-  const notFoundJobs = jobs.filter((_job, index) => {
-    return cachedClassifications[index] === null
+  const notFoundJobs = jobs.flatMap((job, index) => {
+    if (cachedClassifications[index] !== null) {
+      return []
+    }
+
+    return [{ job, index }]
   })
 
   if (!notFoundJobs.length) {
     return cachedClassifications.map((cached) => (cached?.human_verification ? cached.human_verification : (cached?.classification ?? null)))
   }
 
-  const classificationPayload = notFoundJobs.map((job, index) => ({
+  const classificationPayload = notFoundJobs.map(({ job, index }) => ({
     id: index.toString(),
     workplace_name: job.workplace_name,
     workplace_description: job.workplace_description,
@@ -39,14 +43,16 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   }))
 
   const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
+  const classificationsById = new Map(classificationsFromLab.map((result) => [result.id, result]))
 
   const now = new Date()
-  const zippedJobsNotFound = notFoundJobs.flatMap((job, index) => {
-    const result = classificationsFromLab.find((result) => result.id === index.toString())
+  const zippedJobsNotFound = notFoundJobs.flatMap(({ job, index }) => {
+    const result = classificationsById.get(index.toString())
     if (!result) return []
 
     return [
       {
+        index,
         dbClassification: {
           _id: new ObjectId(),
           partner_label: job.partner_label,
@@ -66,13 +72,15 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
     await getDbCollection("cache_classification").insertMany(payloads)
   }
 
+  const newClassificationsByIndex = new Map(zippedJobsNotFound.map(({ index, classificationResult }) => [index, classificationResult.label]))
+
   // Return results in the same order as input jobs
-  return jobs.map((job, index) => {
+  return jobs.map((_job, index) => {
     const cached = cachedClassifications[index]
     if (cached) {
       return cached.human_verification ? cached.human_verification : cached.classification
     }
-    const found = zippedJobsNotFound.find(({ dbClassification }) => dbClassification.partner_job_id === job.partner_job_id && dbClassification.partner_label === job.partner_label)
-    return found?.classificationResult.label ?? null
+
+    return newClassificationsByIndex.get(index) ?? null
   })
 }
