@@ -147,12 +147,12 @@ export const DemandeDeContactForm = ({
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("4v"), mb: fr.spacing("4v") }}>
               <EmailField />
               <FormControl data-testid="fieldset-phone" error={formik.touched.phone && Boolean(formik.errors.phone)} fullWidth>
-                <FormLabel htmlFor="email">Téléphone</FormLabel>
+                <FormLabel htmlFor="phone">Téléphone</FormLabel>
                 <Input
                   className={fr.cx("fr-input")}
                   data-testid="phone"
                   name="phone"
-                  type="phone"
+                  type="tel"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   value={formik.values.phone}
