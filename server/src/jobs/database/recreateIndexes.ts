@@ -1,8 +1,5 @@
-import { execSync } from "child_process"
-import path from "path"
-
 import { logger } from "@/common/logger"
-import { createIndexes, dropIndexes } from "@/common/utils/mongodbUtils"
+import { createIndexes, createSearchIndexes, dropIndexes } from "@/common/utils/mongodbUtils"
 import { seedSearchSynonyms } from "./seedSearchSynonyms"
 
 export const recreateIndexes = async ({ drop } = { drop: false }) => {
@@ -23,8 +20,7 @@ export const recreateIndexes = async ({ drop } = { drop: false }) => {
 
   logger.info("Create MongoDB Search indexes...")
   try {
-    const script = path.resolve(process.cwd(), "../.infra/files/scripts/create-search-indexes.sh")
-    execSync(`bash "${script}"`, { stdio: "inherit" })
+    await createSearchIndexes()
     logger.info("MongoDB Search indexes done.")
   } catch (err) {
     logger.error(`Failed to create MongoDB Search indexes: ${err}`)

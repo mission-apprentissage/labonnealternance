@@ -229,6 +229,41 @@ export const createIndexes = async () => {
   }
 }
 
+/**
+ * Crée les MongoDB Search indexes (mongot) déclarés dans les descripteurs de modèle,
+ * via le driver Node — fonctionne depuis le conteneur server (pas besoin de mongosh/docker).
+ * mongod route les commandes searchIndex vers mongot (searchIndexManagementHostAndPort).
+ */
+export const createSearchIndexes = async () => {
+  for (const descriptor of modelDescriptors) {
+    const searchIndexes = (descriptor as IModelDescriptor).searchIndexes
+    if (!searchIndexes?.length) continue
+
+    const collection = getDbCollection(descriptor.collectionName)
+    let existing: string[] = []
+    try {
+      existing = (await collection.listSearchIndexes().toArray()).map((i) => i.name).filter((name): name is string => Boolean(name))
+    } catch (err) {
+      logger.warn(`Search indexes indisponibles pour ${descriptor.collectionName} (mongot absent ?): ${err}`)
+      continue
+    }
+
+    for (const searchIndex of searchIndexes) {
+      try {
+        if (searchIndex.name && existing.includes(searchIndex.name)) {
+          logger.info(`Search index ${searchIndex.name} déjà présent sur ${descriptor.collectionName}`)
+          continue
+        }
+        await collection.createSearchIndex(searchIndex)
+        logger.info(`Search index ${searchIndex.name} créé sur ${descriptor.collectionName}`)
+      } catch (err) {
+        captureException(err)
+        logger.error(`Erreur création du search index ${searchIndex.name} sur ${descriptor.collectionName}: ${err}`)
+      }
+    }
+  }
+}
+
 export const dropIndexes = async () => {
   const collections = (await getCollectionList()).map((collection) => collection.name)
   for (const descriptor of modelDescriptors) {
