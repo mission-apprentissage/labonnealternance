@@ -142,7 +142,18 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
                 placeholder="Adresse, ville ou code postal"
                 variant="outlined"
                 size="small"
-                sx={{ ...INPUT_SX }}
+                // Restylage DSFR : fond gris contrasté + bordure basse (bleue si un lieu est saisi), sans contour MUI.
+                sx={{
+                  ...INPUT_SX,
+                  ".MuiOutlinedInput-root": {
+                    backgroundColor: params.lieu_label ? fr.colors.decisions.background.contrast.info.default : fr.colors.decisions.background.contrast.grey.default,
+                    borderRadius: "4px 4px 0 0",
+                    borderBottom: `2px solid ${params.lieu_label ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.plain.grey.default}`,
+                  },
+                  ".MuiOutlinedInput-notchedOutline": { border: "none" },
+                  ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+                  ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
                 // endAdornment MUI conservé (croix de réinitialisation) ; on n'ajoute que l'icône Lieu.
                 InputProps={{
                   ...p.InputProps,

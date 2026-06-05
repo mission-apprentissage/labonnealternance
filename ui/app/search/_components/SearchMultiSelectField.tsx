@@ -49,6 +49,26 @@ export function SearchMultiSelectField({
   // Aucune option disponible (et rien de sélectionné) → on garde le champ affiché mais désactivé.
   const disabled = !hasOptions && value.length === 0
 
+  // Restylage DSFR (fond gris contrasté + bordure basse bleue si actif), activé uniquement
+  // en mode `topLabel` (barre /search/filter-only) — le split garde le rendu MUI standard.
+  const dsfr = Boolean(topLabel)
+  const active = value.length > 0
+  const dsfrSelectSx = dsfr
+    ? {
+        backgroundColor: disabled
+          ? fr.colors.decisions.background.disabled.grey.default
+          : active
+            ? fr.colors.decisions.background.contrast.info.default
+            : fr.colors.decisions.background.contrast.grey.default,
+        borderRadius: "4px 4px 0 0",
+        // DSFR : pas de barre inférieure quand le champ est désactivé.
+        borderBottom: disabled ? "none" : `2px solid ${active ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.plain.grey.default}`,
+        "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+        "&:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+      }
+    : {}
+
   return (
     <FormControl size="small" disabled={disabled} sx={{ flexShrink: 0, ...(topLabel ? {} : { width: 170 }) }}>
       {topLabel ? (
@@ -59,7 +79,11 @@ export function SearchMultiSelectField({
             display: "block",
             fontSize: "0.75rem",
             fontWeight: 500,
-            color: disabled ? fr.colors.decisions.text.disabled.grey.default : fr.colors.decisions.text.mention.grey.default,
+            color: disabled
+              ? fr.colors.decisions.text.disabled.grey.default
+              : active
+                ? fr.colors.decisions.text.actionHigh.blueFrance.default
+                : fr.colors.decisions.text.mention.grey.default,
             mb: fr.spacing("1v"),
           }}
         >
@@ -91,7 +115,18 @@ export function SearchMultiSelectField({
               </Box>
             ) : null
           ) : (
-            <Box component="span" sx={{ fontSize: "0.875rem", lineHeight: 1.4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <Box
+              component="span"
+              sx={{
+                fontSize: "0.875rem",
+                lineHeight: 1.4,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                color: dsfr ? fr.colors.decisions.text.actionHigh.blueFrance.default : undefined,
+                fontWeight: dsfr ? 500 : undefined,
+              }}
+            >
               {`${label} (${selected.length})`}
             </Box>
           )
@@ -100,6 +135,7 @@ export function SearchMultiSelectField({
         sx={{
           height: 40,
           width: topLabel ? 170 : undefined,
+          ...dsfrSelectSx,
           ".MuiSelect-select": { display: "flex", alignItems: "center", py: "8px" },
           // État désactivé plus lisible : fond grisé + curseur interdit (le défaut MUI est trop discret).
           "&.Mui-disabled": {

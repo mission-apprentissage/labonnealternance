@@ -33,6 +33,19 @@ function useThrottle(value: string, delay: number) {
 const FIELD_FONT_SIZE = "0.875rem"
 const INPUT_SX = { ".MuiInputBase-input": { fontSize: FIELD_FONT_SIZE } }
 
+// Restylage DSFR des champs : fond gris contrasté + bordure basse (bleue si rempli), sans contour MUI.
+const dsfrFieldSx = (active: boolean) => ({
+  ...INPUT_SX,
+  ".MuiOutlinedInput-root": {
+    backgroundColor: active ? fr.colors.decisions.background.contrast.info.default : fr.colors.decisions.background.contrast.grey.default,
+    borderRadius: "4px 4px 0 0",
+    borderBottom: `2px solid ${active ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.plain.grey.default}`,
+  },
+  ".MuiOutlinedInput-notchedOutline": { border: "none" },
+  ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
+  ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+})
+
 type LieuOption = { label: string; latitude: number; longitude: number }
 
 interface SearchBarProps {
@@ -125,7 +138,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               variant="outlined"
               size="small"
               fullWidth
-              sx={INPUT_SX}
+              sx={dsfrFieldSx(inputValue.trim().length > 0)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue)
               }}
@@ -174,7 +187,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               variant="outlined"
               size="small"
               fullWidth
-              sx={INPUT_SX}
+              sx={dsfrFieldSx(lieuInput.trim().length > 0)}
               InputProps={{
                 ...params.InputProps,
                 startAdornment: (

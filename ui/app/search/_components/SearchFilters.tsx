@@ -137,11 +137,32 @@ export function SearchFilters({ params, facets, onNavigate, variant = "bar" }: S
 
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
-      <SearchMultiSelectField id="filter-type" label="Type" groups={typeGroups} value={params.type_filter_label ?? []} onChange={setMulti("type_filter_label")} />
-      <SearchMultiSelectField id="filter-contract" label="Contrat" options={contractOptions} value={params.contract_type ?? []} onChange={setMulti("contract_type")} />
-      <SearchMultiSelectField id="filter-level" label="Niveau" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
-      <SearchMultiSelectField id="filter-sector" label="Secteur" options={sectorOptions} value={params.activity_sector ?? []} onChange={setMulti("activity_sector")} />
-      <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} />
+      <SearchMultiSelectField
+        id="filter-type"
+        label="Type"
+        topLabel="Type d'offres ou formations"
+        groups={typeGroups}
+        value={params.type_filter_label ?? []}
+        onChange={setMulti("type_filter_label")}
+      />
+      <SearchMultiSelectField
+        id="filter-contract"
+        label="Contrat"
+        topLabel="Type de contrat"
+        options={contractOptions}
+        value={params.contract_type ?? []}
+        onChange={setMulti("contract_type")}
+      />
+      <SearchMultiSelectField id="filter-level" label="Niveau" topLabel="Niveau de formation" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
+      <SearchMultiSelectField
+        id="filter-sector"
+        label="Secteur"
+        topLabel="Secteur d'activité"
+        options={sectorOptions}
+        value={params.activity_sector ?? []}
+        onChange={setMulti("activity_sector")}
+      />
+      <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} topLabel="Entreprise / organisme" />
     </Box>
   )
 }
