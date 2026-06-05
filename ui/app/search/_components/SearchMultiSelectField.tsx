@@ -46,15 +46,22 @@ export function SearchMultiSelectField({
   const renderGroups: MultiSelectGroup[] = groups ? groups.map((g) => ({ label: g.label, options: sortAlpha(g.options) })) : [{ label: "", options: sortAlpha(options ?? []) }]
 
   const hasOptions = renderGroups.some((g) => g.options.length > 0)
-  if (!hasOptions && value.length === 0) return null
+  // Aucune option disponible (et rien de sélectionné) → on garde le champ affiché mais désactivé.
+  const disabled = !hasOptions && value.length === 0
 
   return (
-    <FormControl size="small" sx={{ flexShrink: 0, ...(topLabel ? {} : { width: 170 }) }}>
+    <FormControl size="small" disabled={disabled} sx={{ flexShrink: 0, ...(topLabel ? {} : { width: 170 }) }}>
       {topLabel ? (
         <Box
           component="label"
           htmlFor={id}
-          sx={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}
+          sx={{
+            display: "block",
+            fontSize: "0.75rem",
+            fontWeight: 500,
+            color: disabled ? fr.colors.decisions.text.disabled.grey.default : fr.colors.decisions.text.mention.grey.default,
+            mb: fr.spacing("1v"),
+          }}
         >
           {topLabel}
         </Box>
@@ -90,7 +97,17 @@ export function SearchMultiSelectField({
           )
         }
         MenuProps={{ PaperProps: { sx: { maxHeight: 360, minWidth: 280 } } }}
-        sx={{ height: 40, width: topLabel ? 170 : undefined, ".MuiSelect-select": { display: "flex", alignItems: "center", py: "8px" } }}
+        sx={{
+          height: 40,
+          width: topLabel ? 170 : undefined,
+          ".MuiSelect-select": { display: "flex", alignItems: "center", py: "8px" },
+          // État désactivé plus lisible : fond grisé + curseur interdit (le défaut MUI est trop discret).
+          "&.Mui-disabled": {
+            backgroundColor: fr.colors.decisions.background.disabled.grey.default,
+            cursor: "not-allowed",
+          },
+          "&.Mui-disabled .MuiSelect-select": { WebkitTextFillColor: fr.colors.decisions.text.disabled.grey.default, cursor: "not-allowed" },
+        }}
       >
         {renderGroups.flatMap((group) => {
           const items = group.options.map((option) => (

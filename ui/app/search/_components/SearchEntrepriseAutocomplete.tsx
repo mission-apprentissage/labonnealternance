@@ -23,6 +23,8 @@ interface SearchEntrepriseAutocompleteProps {
 export function SearchEntrepriseAutocomplete({ options, value, onChange, fullWidth = false, topLabel }: SearchEntrepriseAutocompleteProps) {
   const [inputValue, setInputValue] = useState("")
   const active = Boolean(value)
+  // Aucune entreprise disponible (et rien de sélectionné) → champ affiché mais désactivé.
+  const disabled = options.length === 0 && !active
 
   const items = useMemo(() => {
     const query = inputValue.trim().toLowerCase()
@@ -101,6 +103,7 @@ export function SearchEntrepriseAutocomplete({ options, value, onChange, fullWid
           borderBottom: `2px solid ${active ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.plain.grey.default}`,
           borderRadius: "4px 4px 0 0",
           color: active ? fr.colors.decisions.text.actionHigh.blueFrance.default : fr.colors.decisions.text.mention.grey.default,
+          opacity: disabled ? 0.5 : 1,
         }}
       >
         <Box component="span" className={fr.cx("fr-icon-building-line", "fr-icon--sm")} aria-hidden="true" sx={{ flex: "0 0 auto" }} />
@@ -108,6 +111,7 @@ export function SearchEntrepriseAutocomplete({ options, value, onChange, fullWid
           component="input"
           {...getInputProps({
             placeholder: "Entreprise",
+            disabled,
             value: isOpen ? inputValue : (value ?? ""),
             onPointerDown: () => {
               userIntentRef.current = true

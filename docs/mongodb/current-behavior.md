@@ -43,9 +43,15 @@ Ajouté à la réponse `/v1/search` ([`search.routes.ts`](../../shared/src/route
 
 ---
 
-## 4. Faceting disjoint (compteurs stables)
+## 4. Faceting disjonctif (filtres dynamiques et synchronisés)
 
-Les facettes sont calculées via `$searchMeta` sur un **compound « baseline » = `q` + géo uniquement** (`buildBaselineCompound`), **sans** les filtres de dimension. Résultat : cocher une valeur **n'effondre pas** les compteurs des autres options — tous les buckets restent visibles. Le front accumule en plus `stableFacets` (les options vues ne disparaissent jamais).
+Les facettes sont **dynamiques** : chaque facette est recalculée via `$searchMeta` avec tous les filtres actifs **sauf le sien** (`buildFacetCompound` / `buildFacetGroups`). Conséquences :
+
+- Sélectionner une valeur dans un filtre **restreint les options des autres filtres** (synchronisation).
+- Une facette **ne masque pas ses propres options** en multi-sélection (on peut toujours ajouter une 2ᵉ valeur — logique OR au sein d'un filtre).
+- Les options **indisponibles n'apparaissent plus** ; si un filtre n'a aucune option, son champ **reste affiché mais désactivé** (côté front).
+
+Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectionnées (+ `type`), puis 1 requête par dimension sélectionnée. Le front n'accumule plus de `stableFacets` — il affiche les compteurs live, en gardant toujours les valeurs sélectionnées (pour pouvoir les retirer).
 
 ---
 

@@ -32,7 +32,6 @@ interface SearchFilterBarProps {
 
 const FIELD_FONT_SIZE = "0.875rem"
 const INPUT_SX = { ".MuiInputBase-input": { fontSize: FIELD_FONT_SIZE } }
-const STABLE_KEYS: (keyof FacetCounts)[] = ["type_filter_label", "contract_type", "level", "activity_sector", "organization_name"]
 
 function buildOptions(counts?: Record<string, number>, selected: string[] = []): MultiSelectOption[] {
   const map = new Map<string, number | undefined>()
@@ -80,20 +79,6 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
   const [lieuInput, setLieuInput] = useState(params.lieu_label ?? "")
   const debouncedLieu = useThrottle(lieuInput, 300)
 
-  // Accumulation des facettes vues (compteurs disjoints, options stables).
-  const [stableFacets, setStableFacets] = useState<FacetCounts>({})
-  useEffect(() => {
-    if (!facets) return
-    setStableFacets((prev) => {
-      const next: FacetCounts = {}
-      for (const key of STABLE_KEYS) {
-        if (!prev[key] && !facets[key]) continue
-        next[key] = { ...prev[key], ...facets[key] }
-      }
-      return next
-    })
-  }, [facets])
-
   const { data: lieuOptions } = useQuery({
     queryKey: ["lieu-suggestions", debouncedLieu],
     queryFn: () => searchAddress(debouncedLieu),
@@ -107,12 +92,13 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
     longitude: item.value.coordinates[0],
   }))
 
-  const typeOptions = useMemo(() => buildOptions(stableFacets.type_filter_label, params.type_filter_label), [stableFacets.type_filter_label, params.type_filter_label])
+  // Facettes dynamiques/synchronisées : compteurs live de l'API (faceting disjonctif).
+  const typeOptions = useMemo(() => buildOptions(facets?.type_filter_label, params.type_filter_label), [facets?.type_filter_label, params.type_filter_label])
   const typeGroups = useMemo(() => buildTypeGroups(typeOptions), [typeOptions])
-  const contractOptions = useMemo(() => buildOptions(stableFacets.contract_type, params.contract_type), [stableFacets.contract_type, params.contract_type])
-  const levelOptions = useMemo(() => buildOptions(stableFacets.level, params.level), [stableFacets.level, params.level])
-  const sectorOptions = useMemo(() => buildOptions(stableFacets.activity_sector, params.activity_sector), [stableFacets.activity_sector, params.activity_sector])
-  const entrepriseOptions = useMemo(() => Object.keys(stableFacets.organization_name ?? {}), [stableFacets.organization_name])
+  const contractOptions = useMemo(() => buildOptions(facets?.contract_type, params.contract_type), [facets?.contract_type, params.contract_type])
+  const levelOptions = useMemo(() => buildOptions(facets?.level, params.level), [facets?.level, params.level])
+  const sectorOptions = useMemo(() => buildOptions(facets?.activity_sector, params.activity_sector), [facets?.activity_sector, params.activity_sector])
+  const entrepriseOptions = useMemo(() => Object.keys(facets?.organization_name ?? {}), [facets?.organization_name])
 
   const _moreCount = (params.activity_sector?.length ?? 0) + (params.organization_name ? 1 : 0)
 

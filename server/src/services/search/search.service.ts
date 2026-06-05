@@ -213,33 +213,57 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
 
 // Compound sans filtres de dimension — utilisé pour $searchMeta (faceting disjoint).
 // Les counts reflètent texte + géo seulement, indépendamment des filtres actifs,
-// ce qui permet à tous les buckets de rester visibles lors de la multi-sélection.
-function buildBaselineCompound(filters: ISearchFilters) {
-  const { q, latitude, longitude, radius } = filters
+// Dimensions de facette pilotées par les filtres multi-sélection du front.
+const FACET_DIMENSIONS = ["type_filter_label", "contract_type", "level", "activity_sector", "organization_name"] as const
+type FacetDimension = (typeof FACET_DIMENSIONS)[number]
 
-  const should: object[] = q
-    ? [
-        { text: { query: q, path: ["title", "description", "keywords", "organization_name"], fuzzy: { maxEdits: 1 } } },
-        { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms" } },
-      ]
-    : []
+const FACET_FIELD_DEFS: Record<string, object> = {
+  type: { type: "string", path: "type" },
+  type_filter_label: { type: "string", path: "type_filter_label" },
+  contract_type: { type: "string", path: "contract_type" },
+  level: { type: "string", path: "level" },
+  activity_sector: { type: "string", path: "activity_sector" },
+  organization_name: { type: "string", path: "organization_name", numBuckets: 100 },
+}
 
+function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolean {
+  const value = filters[key]
+  return Array.isArray(value) ? value.length > 0 : Boolean(value)
+}
+
+// Faceting DISJONCTIF : compound = texte + géo + type + tous les filtres de dimension
+// SAUF `exclude`. Ainsi une facette ne masque pas ses propres options en multi-sélection,
+// mais reflète bien les restrictions imposées par les AUTRES filtres (filtres synchronisés).
+function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null) {
+  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, latitude, longitude, radius } = filters
+  const hasGeo = latitude !== undefined && longitude !== undefined
+  const textClauses = buildTextClauses(q)
   const filter: object[] = []
 
-  if (latitude !== undefined && longitude !== undefined) {
-    filter.push({
-      geoWithin: {
-        circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 },
-        path: "location",
-      },
-    })
-  }
+  if (type) filter.push({ equals: { path: "type", value: type } })
+  if (exclude !== "type_filter_label" && type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
+  if (exclude !== "contract_type" && contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
+  if (exclude !== "level" && level?.length) filter.push({ in: { path: "level", value: level } })
+  if (exclude !== "activity_sector" && activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
+  if (exclude !== "organization_name" && organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
+  if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
 
-  if (!should.length && !filter.length) {
-    filter.push({ exists: { path: "type" } })
-  }
+  if (!textClauses.length && !filter.length) filter.push({ exists: { path: "type" } })
+  return { ...(textClauses.length ? { should: textClauses, minimumShouldMatch: 1 } : {}), filter }
+}
 
-  return { ...(should.length ? { should, minimumShouldMatch: 1 } : {}), filter }
+type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
+
+// Construit les groupes de $searchMeta minimisant le nombre de requêtes :
+// - 1 groupe pour toutes les dimensions NON sélectionnées (+ `type`), calculé avec tous les filtres actifs ;
+// - 1 groupe par dimension sélectionnée, calculé en excluant cette dimension.
+function buildFacetGroups(filters: ISearchFilters): { keys: string[]; compound: object }[] {
+  const activeDims = FACET_DIMENSIONS.filter((k) => isDimensionActive(filters, k))
+  const inactiveDims = FACET_DIMENSIONS.filter((k) => !activeDims.includes(k))
+
+  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type"], compound: buildFacetCompound(filters, null) }]
+  for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, dim) })
+  return groups
 }
 
 export type SearchHit = IAlgolia & {
@@ -257,9 +281,9 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
 }> {
   const { page, hitsPerPage, latitude, longitude } = params
   const compound = buildCompoundOperator(params)
-  const compoundBaseline = buildBaselineCompound(params)
+  const facetGroups = buildFacetGroups(params)
 
-  const [rows, meta] = await Promise.all([
+  const [rows, ...metaArrays] = await Promise.all([
     getDbCollection("algolia")
       .aggregate<SearchRow>([
         {
@@ -285,36 +309,22 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
       ])
       .toArray(),
 
-    getDbCollection("algolia")
-      .aggregate<{
-        count: { lowerBound: number }
-        facet: {
-          type: { buckets: { _id: string; count: number }[] }
-          type_filter_label: { buckets: { _id: string; count: number }[] }
-          contract_type: { buckets: { _id: string; count: number }[] }
-          level: { buckets: { _id: string; count: number }[] }
-          activity_sector: { buckets: { _id: string; count: number }[] }
-          organization_name: { buckets: { _id: string; count: number }[] }
-        }
-      }>([
-        {
-          $searchMeta: {
-            index: "algolia_search",
-            facet: {
-              operator: { compound: compoundBaseline },
-              facets: {
-                type: { type: "string", path: "type" },
-                type_filter_label: { type: "string", path: "type_filter_label" },
-                contract_type: { type: "string", path: "contract_type" },
-                level: { type: "string", path: "level" },
-                activity_sector: { type: "string", path: "activity_sector" },
-                organization_name: { type: "string", path: "organization_name", numBuckets: 100 },
+    // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
+    ...facetGroups.map((group) =>
+      getDbCollection("algolia")
+        .aggregate<FacetMetaRow>([
+          {
+            $searchMeta: {
+              index: "algolia_search",
+              facet: {
+                operator: { compound: group.compound },
+                facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
               },
             },
           },
-        },
-      ])
-      .toArray(),
+        ])
+        .toArray()
+    ),
   ])
 
   const nbHits = rows[0]?._meta?.count?.total ?? 0
@@ -339,17 +349,16 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
     }
   })
 
-  const metaResult = meta[0]
-  const facets: ISearchFacets | undefined = metaResult?.facet
-    ? {
-        type: Object.fromEntries(metaResult.facet.type.buckets.map((b) => [b._id, b.count])),
-        type_filter_label: Object.fromEntries(metaResult.facet.type_filter_label.buckets.map((b) => [b._id, b.count])),
-        contract_type: Object.fromEntries(metaResult.facet.contract_type.buckets.map((b) => [b._id, b.count])),
-        level: Object.fromEntries(metaResult.facet.level.buckets.map((b) => [b._id, b.count])),
-        activity_sector: Object.fromEntries(metaResult.facet.activity_sector.buckets.map((b) => [b._id, b.count])),
-        organization_name: Object.fromEntries(metaResult.facet.organization_name.buckets.map((b) => [b._id, b.count])),
-      }
-    : undefined
+  // Fusionne les buckets de chaque groupe en un seul objet de facettes.
+  const facets: ISearchFacets = { type: {}, type_filter_label: {}, contract_type: {}, level: {}, activity_sector: {}, organization_name: {} }
+  metaArrays.forEach((arr, i) => {
+    const facet = arr[0]?.facet
+    if (!facet) return
+    for (const key of facetGroups[i].keys) {
+      const buckets = facet[key]?.buckets ?? []
+      facets[key as keyof ISearchFacets] = Object.fromEntries(buckets.map((b) => [b._id, b.count]))
+    }
+  })
 
   return { hits, nbHits, page, nbPages, facets }
 }
