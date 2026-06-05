@@ -127,10 +127,9 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
             {/* Barre exclue de la largeur dynamique : conteneur fixe (xl) comme le legacy. */}
             <DefaultContainer sx={{ py: fr.spacing("4v") }}>
               <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
-              <Box sx={{ mt: fr.spacing("4v"), mb: fr.spacing("1v"), fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default }}>
-                Filtrer les offres
+              <Box sx={{ pt: fr.spacing("4v") }}>
+                <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
               </Box>
-              <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
               <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
             </DefaultContainer>
           </Box>
