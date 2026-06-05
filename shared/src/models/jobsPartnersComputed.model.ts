@@ -25,6 +25,7 @@ export const PARTNER_WHITELIST: string[] = [
   "GRDF",
   "Institut Pasteur",
   "L'Oreal",
+  "OPCO EP",
   "Serpe",
   "Thales",
   "Veritone",
