@@ -19,7 +19,7 @@ export function SearchSortSelect({ params, onNavigate }: { params: ISearchPagePa
   const hasGeo = params.latitude !== undefined && params.longitude !== undefined
 
   return (
-    <FormControl size="small" sx={{ flexShrink: 0, width: 300 }}>
+    <FormControl size="small" sx={{ flexShrink: 0, width: "100%" }}>
       <Select
         id="search-sort"
         displayEmpty
