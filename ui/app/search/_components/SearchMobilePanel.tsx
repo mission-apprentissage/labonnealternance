@@ -25,7 +25,9 @@ export function SearchMobilePanel({ title, onClose, children, footer }: SearchMo
       sx={{
         position: "fixed",
         inset: 0,
-        zIndex: 1400,
+        // Sous le niveau "modal" (1300) pour que les dropdowns des Autocomplete
+        // (MUI Popper) et de l'autocomplete Entreprise (downshift) passent devant.
+        zIndex: 1250,
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         display: "flex",
         flexDirection: "column",

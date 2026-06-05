@@ -29,6 +29,7 @@ export const zSearchRoutes = {
             .optional()
             .describe("Secteur d'activité (peut être passé plusieurs fois)"),
           organization_name: z.string().optional().describe("Filtre par nom d'entreprise (exact)"),
+          sort: z.enum(["proximity", "smart_apply", "date"]).optional().describe("Tri : proximité (géo), candidature simplifiée, ou date de publication. Par défaut : pertinence."),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),

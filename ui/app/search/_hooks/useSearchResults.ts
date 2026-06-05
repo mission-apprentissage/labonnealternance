@@ -15,6 +15,7 @@ function paramsToQuerystring(params: ISearchPageParams) {
   if (params.level?.length) qs.level = params.level
   if (params.activity_sector?.length) qs.activity_sector = params.activity_sector
   if (params.organization_name) qs.organization_name = params.organization_name
+  if (params.sort) qs.sort = params.sort
   if (params.latitude !== undefined) qs.latitude = params.latitude
   if (params.longitude !== undefined) qs.longitude = params.longitude
   return qs

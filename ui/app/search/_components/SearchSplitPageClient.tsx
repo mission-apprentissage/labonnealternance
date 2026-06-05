@@ -21,6 +21,7 @@ import { SearchFilters } from "./SearchFilters"
 import type { Hit } from "./SearchHitCard"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SearchResultsList } from "./SearchResultsList"
+import { SearchSortSelect } from "./SearchSortSelect"
 
 interface SearchSplitPageClientProps {
   initialParams: ISearchPageParams
@@ -145,6 +146,9 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
                 py: fr.spacing("4v"),
               }}
             >
+              <Box sx={{ mb: fr.spacing("3v") }}>
+                <SearchSortSelect params={params} onNavigate={handleFilterChange} />
+              </Box>
               <SearchResultsList result={result} params={params} selectedHitId={params.selected} onHitSelect={handleHitSelect} />
             </Box>
 
@@ -181,6 +185,9 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
 
           {/* Liste plein écran */}
           <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
+            <Box sx={{ mb: fr.spacing("3v") }}>
+              <SearchSortSelect params={params} onNavigate={handleFilterChange} />
+            </Box>
             <SearchResultsList result={result} params={params} />
           </Box>
         </Box>

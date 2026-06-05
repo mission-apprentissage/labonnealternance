@@ -95,6 +95,8 @@ export function buildSearchMatchWords(highlights: Highlight[]): Array<{ word: st
   return result.sort((a, b) => b.count - a.count)
 }
 
+type SortOption = "proximity" | "smart_apply" | "date"
+
 interface ISearchFilters {
   q?: string
   type?: string
@@ -103,6 +105,7 @@ interface ISearchFilters {
   level?: string[]
   activity_sector?: string[]
   organization_name?: string
+  sort?: SortOption
   latitude?: number
   longitude?: number
   radius: number
@@ -131,19 +134,24 @@ const SYNONYM_MULTI_PATHS = [
   { value: "organization_name", multi: "standard" },
 ]
 
-function buildCompoundOperator(filters: ISearchFilters) {
-  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, latitude, longitude, radius } = filters
-
-  // Deux clauses should pour la recherche textuelle :
+function buildTextClauses(q?: string): object[] {
+  // Deux clauses pour la recherche textuelle :
   // 1. French + fuzzy  — couverture principale des termes français
   // 2. Standard + synonymes — expansion des abréviations (ex: ccgo → Chef de chantier gros oeuvre)
-  // minimumShouldMatch: 1 garantit qu'au moins une clause doit matcher (logique OR)
-  const should: object[] = q
+  return q
     ? [
         { text: { query: q, path: ["title", "description", "keywords", "organization_name"], fuzzy: { maxEdits: 1 } } },
         { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms" } },
       ]
     : []
+}
+
+function buildCompoundOperator(filters: ISearchFilters) {
+  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, sort, latitude, longitude, radius } = filters
+  const hasGeo = latitude !== undefined && longitude !== undefined
+  const proximity = sort === "proximity" && hasGeo
+
+  const textClauses = buildTextClauses(q)
 
   const filter: object[] = []
 
@@ -153,7 +161,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   if (level?.length) filter.push({ in: { path: "level", value: level } })
   if (activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
   if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
-  if (latitude !== undefined && longitude !== undefined) {
+  if (hasGeo) {
     filter.push({
       geoWithin: {
         circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 },
@@ -162,11 +170,45 @@ function buildCompoundOperator(filters: ISearchFilters) {
     })
   }
 
-  if (!should.length && !filter.length) {
+  // Tri par proximité : le texte devient un filtre (must), et le score provient
+  // de l'opérateur `near` (plus c'est proche, plus le score est élevé). Le tri
+  // par score restitue donc les résultats du plus proche au plus lointain.
+  if (proximity) {
+    if (textClauses.length) filter.push({ compound: { should: textClauses, minimumShouldMatch: 1 } })
+    // `near` en `must` : matche tous les docs et donne un score décroissant avec la
+    // distance. pivot = 1 km → score très sensible à la distance (tri ~ proche d'abord).
+    const near = { near: { path: "location", origin: { type: "Point", coordinates: [longitude, latitude] }, pivot: 1000 } }
+    if (!filter.length) filter.push({ exists: { path: "type" } })
+    return { must: [near], filter }
+  }
+
+  // minimumShouldMatch: 1 garantit qu'au moins une clause texte matche (logique OR)
+  if (!textClauses.length && !filter.length) {
     filter.push({ exists: { path: "type" } })
   }
 
-  return { ...(should.length ? { should, minimumShouldMatch: 1 } : {}), filter }
+  return { ...(textClauses.length ? { should: textClauses, minimumShouldMatch: 1 } : {}), filter }
+}
+
+// Étape de tri du $search selon l'option choisie (défaut : pertinence + tie-breaks).
+function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
+  const hasGeo = filters.latitude !== undefined && filters.longitude !== undefined
+
+  if (filters.sort === "date") {
+    return { publication_date: { order: -1 } }
+  }
+  if (filters.sort === "smart_apply") {
+    return { smart_apply: { order: -1 }, score: { $meta: "searchScore", order: -1 }, application_count: { order: 1 } }
+  }
+  if (filters.sort === "proximity" && hasGeo) {
+    return { score: { $meta: "searchScore", order: -1 } }
+  }
+
+  return {
+    score: { $meta: "searchScore", order: -1 },
+    smart_apply: { order: 1 },
+    application_count: { order: 1 },
+  }
 }
 
 // Compound sans filtres de dimension — utilisé pour $searchMeta (faceting disjoint).
@@ -224,11 +266,7 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
           $search: {
             index: "algolia_search",
             compound,
-            sort: {
-              score: { $meta: "searchScore", order: -1 },
-              smart_apply: { order: 1 },
-              application_count: { order: 1 },
-            },
+            sort: buildSortStage(params),
             highlight: {
               path: ["title", "description"],
               maxNumPassages: HIGHLIGHT_MAX_PASSAGES,

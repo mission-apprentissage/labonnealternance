@@ -9,6 +9,7 @@ export interface ISearchPageParams {
   level?: string[]
   activity_sector?: string[]
   organization_name?: string
+  sort?: SortOption // tri des résultats (défaut : pertinence)
   latitude?: number
   longitude?: number
   radius: number
@@ -16,6 +17,9 @@ export interface ISearchPageParams {
   hitsPerPage: number
   selected?: string // url_id du hit sélectionné dans le split layout
 }
+
+export type SortOption = "proximity" | "smart_apply" | "date"
+const SORT_OPTIONS: SortOption[] = ["proximity", "smart_apply", "date"]
 
 /**
  * Les filtres multi-valeurs utilisent des paramètres répétés dans l'URL :
@@ -38,6 +42,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     level: getMulti("level"),
     activity_sector: getMulti("activity_sector"),
     organization_name: search.get("organization_name") || undefined,
+    sort: SORT_OPTIONS.includes(search.get("sort") as SortOption) ? (search.get("sort") as SortOption) : undefined,
     latitude: search.get("latitude") ? parseFloat(search.get("latitude")!) : undefined,
     longitude: search.get("longitude") ? parseFloat(search.get("longitude")!) : undefined,
     radius: parseInt(search.get("radius") ?? "20", 10),
@@ -59,6 +64,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/search/sp
   for (const val of params.activity_sector ?? []) query.append("activity_sector", val)
 
   if (params.organization_name) query.set("organization_name", params.organization_name)
+  if (params.sort) query.set("sort", params.sort)
   if (params.latitude !== undefined) query.set("latitude", params.latitude.toString())
   if (params.longitude !== undefined) query.set("longitude", params.longitude.toString())
   if (params.radius !== 20) query.set("radius", params.radius.toString())

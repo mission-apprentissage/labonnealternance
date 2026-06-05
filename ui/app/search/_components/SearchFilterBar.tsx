@@ -2,13 +2,13 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, InputAdornment, TextField } from "@mui/material"
+import { Badge, Box, InputAdornment, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react"
+import LbaBadge from "@/app/(espace-pro)/_components/Badge"
 
 import { searchAddress } from "@/services/baseAdresse"
-
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildTypeGroups } from "../_utils/search.type-groups"
 import { SearchActiveFilters } from "./SearchActiveFilters"
@@ -114,7 +114,7 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
   const sectorOptions = useMemo(() => buildOptions(stableFacets.activity_sector, params.activity_sector), [stableFacets.activity_sector, params.activity_sector])
   const entrepriseOptions = useMemo(() => Object.keys(stableFacets.organization_name ?? {}), [stableFacets.organization_name])
 
-  const moreCount = (params.activity_sector?.length ?? 0) + (params.organization_name ? 1 : 0)
+  const _moreCount = (params.activity_sector?.length ?? 0) + (params.organization_name ? 1 : 0)
 
   const setMulti = (key: "type_filter_label" | "contract_type" | "level" | "activity_sector") => (vals: string[]) =>
     onNavigate({ ...params, [key]: vals.length ? vals : undefined, page: 0 })
@@ -132,7 +132,7 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
     <Box>
       <Box sx={{ display: "flex", alignItems: "flex-end", flexWrap: "wrap", gap: fr.spacing("3v") }}>
         {/* Lieu — bouton Rechercher intégré dans le champ via InputAdornment */}
-        <Box sx={{ flex: "0 0 360px", minWidth: 300 }}>
+        <Box id="filter-lieu-container" sx={{ flex: "0 0 420px", minWidth: 300 }}>
           <FieldLabel htmlFor="filter-lieu">Où cherchez-vous une alternance ?</FieldLabel>
           <Autocomplete
             freeSolo
@@ -210,7 +210,7 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
           />
           <SearchMultiSelectField id="filter-level" label="Niveau" topLabel="Niveau de formation" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
           <Button priority="secondary" iconId={more ? "fr-icon-subtract-line" : "fr-icon-add-line"} onClick={() => setMore((m) => !m)}>
-            {!more && moreCount > 0 ? ` (${moreCount})` : null}
+            {more ? "Moins" : "Plus"} de filtres {_moreCount > 0 && <Badge sx={{ pl: fr.spacing("4v") }} badgeContent={_moreCount} color="primary" />}
           </Button>
         </Box>
       </Box>
