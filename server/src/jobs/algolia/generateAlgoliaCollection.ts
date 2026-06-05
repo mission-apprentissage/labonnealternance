@@ -8,7 +8,11 @@ import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sendMistralMessages } from "@/services/mistralai/mistralai.service"
+import type { Message } from "@/services/mistralai/mistralai.service"
+import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
+
+// Taille de tranche pour le batch Mistral inline (limite API < 10k requêtes par job).
+const KEYWORDS_BATCH_CHUNK_SIZE = 5000
 
 const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> = {
   intitule_rco: 1,
@@ -83,37 +87,24 @@ const getJobType = (partner_label: string) => {
   }
 }
 
-const getKeywords = async (description: string): Promise<string[] | null> => {
-  if (!description) return null
+const KEYWORDS_SYSTEM_PROMPT = `Extrais les mots-clés pertinents d'une offre d'alternance pour un moteur de recherche sémantique.
+Règles : uniquement des termes PRÉSENTS dans le texte (n'invente rien) ; compétences techniques/humaines et secteurs d'activité ; 5 à 15 mots-clés ; ignore le HTML.
+Réponds STRICTEMENT en JSON : {"keywords": ["mot1", "mot2"]}`
+
+const buildKeywordsMessages = (text: string): Message[] => [
+  { role: "system", content: KEYWORDS_SYSTEM_PROMPT },
+  { role: "user", content: text.substring(0, 2000) },
+]
+
+/** Parse la réponse Mistral `{"keywords": [...]}` en tableau de strings (null si invalide). */
+const parseKeywords = (content: string): string[] | null => {
   try {
-    const response = await sendMistralMessages({
-      messages: [
-        {
-          role: "system",
-          content: `Tu es un extracteur de mots-clés pour des offres d'emploi en alternance.
-
-**Contexte** : Les mots-clés extraits seront indexés dans un moteur de recherche sémantique. En indexant toute la description brute, le moteur analyse du bruit et perd en qualité. Ton rôle est de filtrer et extraire uniquement les termes pertinents. Tu ne dois en aucun cas inventer ou déduire des mots qui te sembleraient pertinents, mais bien te cantonner à extraire des mots du texte qui t'es fournis en entrée.
-
-**Critères de sélection** :
-- Compétences techniques et humaines (ex: JavaScript, Excel, gestion de projet)
-- Secteurs d'activité (ex: commerce, santé, informatique)
-
-**Contraintes** :
-- Extrais 5-15 mots-clés maximum
-- Ignore les balises HTML et le formatage
-- Retourne UNIQUEMENT un tableau JSON : ["mot1", "mot2", ...]
-- Pas de commentaire ni texte additionnel`,
-        },
-        { role: "user", content: `Description : ${description.substring(0, 2000)}` },
-      ],
-      maxTokens: 100,
-      responseFormat: { type: "json_object" },
-    })
-
-    if (!response) return []
-    return JSON.parse(response)
+    const parsed = JSON.parse(content)
+    const keywords = parsed?.keywords
+    if (Array.isArray(keywords) && keywords.every((k) => typeof k === "string")) return keywords
+    return null
   } catch {
-    return []
+    return null
   }
 }
 
@@ -364,11 +355,22 @@ export const fillAlgoliaCollection = async () => {
     })
   }
 
-  // Seconde passe : génération des mots-clés (Mistral) pour les docs insérés sans mots-clés.
-  await asyncForEach(keywordsToGenerate, async ({ _id, text }) => {
-    const keywords = await getKeywords(text)
-    if (keywords && keywords.length > 0) {
-      await algoliaCollection.updateOne({ _id }, { $set: { keywords } })
-    }
-  })
+  // Seconde passe : génération des mots-clés via l'API Batch Mistral (asynchrone, -50%).
+  // Tranches < 10k pour rester en mode inline.
+  for (let i = 0; i < keywordsToGenerate.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
+    const chunk = keywordsToGenerate.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
+    const contentByCustomId = await sendMistralBatch({
+      requests: chunk.map(({ _id, text }) => ({ customId: _id.toString(), messages: buildKeywordsMessages(text) })),
+      model: "mistral-small-latest",
+      maxTokens: 200,
+    })
+
+    await asyncForEach(chunk, async ({ _id }) => {
+      const content = contentByCustomId.get(_id.toString())
+      const keywords = content ? parseKeywords(content) : null
+      if (keywords && keywords.length > 0) {
+        await algoliaCollection.updateOne({ _id }, { $set: { keywords } })
+      }
+    })
+  }
 }

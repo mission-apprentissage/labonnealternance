@@ -1,3 +1,5 @@
+import { setTimeout as sleep } from "node:timers/promises"
+
 import { Mistral } from "@mistralai/mistralai"
 
 import { logger } from "@/common/logger"
@@ -46,5 +48,89 @@ export const sendMistralMessages = async ({
     sentryCaptureException(error)
     console.error(error)
     return null
+  }
+}
+
+export type MistralBatchRequest = { customId: string; messages: Message[] }
+
+const BATCH_TERMINAL_STATUSES = new Set(["SUCCESS", "FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"])
+
+/**
+ * Exécute une série de requêtes chat via l'API Batch Mistral (asynchrone, -50% de coût)
+ * en mode « inline » (< 10k requêtes). Soumet le job, sonde son statut jusqu'à terminaison,
+ * puis télécharge et parse le JSONL de sortie.
+ *
+ * NB : le `body` des requêtes batch est transmis verbatim à l'API → noms snake_case
+ * (`max_tokens`, `response_format`), contrairement à `chat.complete`.
+ *
+ * @returns Map customId → contenu texte de la réponse (les échecs sont simplement absents).
+ */
+export const sendMistralBatch = async ({
+  requests,
+  model = "mistral-small-latest",
+  maxTokens = 2048,
+  responseFormat = { type: "json_object" },
+  pollIntervalMs = 5000,
+  maxWaitMs = 60 * 60 * 1000,
+  timeoutHours = 24,
+}: {
+  requests: MistralBatchRequest[]
+  model?: string
+  maxTokens?: number
+  responseFormat?: { type: "text" | "json_object" }
+  pollIntervalMs?: number
+  maxWaitMs?: number
+  timeoutHours?: number
+}): Promise<Map<string, string>> => {
+  const results = new Map<string, string>()
+  if (requests.length === 0) return results
+
+  try {
+    const job = await mistral.batch.jobs.create({
+      model,
+      endpoint: "/v1/chat/completions",
+      timeoutHours,
+      requests: requests.map((r) => ({
+        customId: r.customId,
+        body: { messages: r.messages, max_tokens: maxTokens, response_format: responseFormat },
+      })),
+    })
+
+    // Polling jusqu'à un statut terminal (ou expiration de maxWaitMs côté job runner).
+    let current = job
+    const startedAt = Date.now()
+    while (!BATCH_TERMINAL_STATUSES.has(current.status)) {
+      if (Date.now() - startedAt > maxWaitMs) {
+        logger.warn(`Mistral batch ${job.id} : maxWaitMs atteint (statut ${current.status}), abandon du polling`)
+        return results
+      }
+      await sleep(pollIntervalMs)
+      current = await mistral.batch.jobs.get({ jobId: job.id })
+      logger.info(`Mistral batch ${job.id} : ${current.status} ${current.completedRequests}/${current.totalRequests}`)
+    }
+
+    if (current.status !== "SUCCESS" || !current.outputFile) {
+      logger.error(`Mistral batch ${job.id} terminé en ${current.status} (${current.failedRequests} échecs)`)
+      return results
+    }
+
+    // Téléchargement + parsing du JSONL de sortie ({ custom_id, response: { body: { choices } } }).
+    const stream = await mistral.files.download({ fileId: current.outputFile })
+    const text = await new Response(stream).text()
+    for (const line of text.split("\n")) {
+      if (!line.trim()) continue
+      try {
+        const parsed = JSON.parse(line)
+        const content = parsed?.response?.body?.choices?.[0]?.message?.content
+        if (parsed.custom_id && typeof content === "string") results.set(parsed.custom_id, content)
+      } catch {
+        // ligne non parsable → ignorée
+      }
+    }
+    return results
+  } catch (error) {
+    sentryCaptureException(error)
+    console.error(error)
+    return results
   }
 }
