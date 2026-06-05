@@ -100,6 +100,31 @@ GET /api/v1/search?q=web&page=2&hitsPerPage=10
 - **`smart_apply`** : afficher le badge "Postuler rapidement" lorsque `true`
 - **Tri** : les résultats sont triés par pertinence, avec boost pour `smart_apply` et pénalité pour les offres très sollicitées (`application_count`)
 
+## Recherche textuelle « Métier » (`q`)
+
+### Côté moteur — règle de matching
+
+Définie par `buildTextClauses` ([`search.service.ts`](../../server/src/services/search/search.service.ts)). Le `q` est interprété par **deux clauses Atlas Search en `should` (OR, `minimumShouldMatch: 1`)** : un document remonte s'il satisfait **au moins une** clause.
+
+| # | Champs (`path`) | Analyseur / mécanisme |
+|---|---|---|
+| 1 | `title`, `description`, `keywords`, `organization_name` | `lucene.french` + **fuzzy 1 typo** (`maxEdits: 1`) |
+| 2 | mêmes 4 champs en variante `.standard` | analyseur standard + **synonymes `lba_synonyms`** (expansion d'abréviations, ex. `ccgo` → « Chef de chantier gros œuvre ») |
+
+- Les 4 champs interrogés incluent les **mots-clés générés par Mistral** (`keywords`) et le nom d'entreprise.
+- Le **score** (`searchScore`) de ce match pilote le tri **par défaut** (cf. [`current-behavior.md`](./current-behavior.md) §1).
+- En tri `sort=proximity`, ces deux clauses **basculent en `filter`** (elles ne scorent plus) ; le score provient alors de l'opérateur `near`.
+- `q` est **optionnel** : sans `q`, aucune clause texte n'est ajoutée (la recherche repose sur la géo et les filtres).
+
+### Côté front — champ « Métier » (`/search/split`)
+
+Composant [`SearchBar.tsx`](../../ui/app/search/_components/SearchBar.tsx) :
+
+- **Champ texte libre** (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
+- **Suggestions** : titres distincts (`title`) des **5 premiers hits** de `/v1/search?q=<saisie>&hitsPerPage=5&radius=30`, avec *throttle* ~300 ms, déclenchées à partir de **2 caractères**. → l'autocomplétion **réutilise le moteur de recherche**, il n'y a pas d'endpoint de suggestion dédié.
+- **Déclenchement de la recherche** (pas de bouton de soumission) : touche **Entrée**, **sélection d'une suggestion**, ou **vidage** du champ (retire `q`).
+- La vue `/search/filter-only` n'a **pas de champ Métier** (`q` non utilisé) : recherche pilotée par lieu + filtres.
+
 ## Architecture technique
 
 - **Collection** : `algolia` (MongoDB)
