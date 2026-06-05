@@ -19,6 +19,7 @@ GET /api/v1/search
 | `level` | `string` | — | Niveau européen de diplôme : `"3"` à `"7"` |
 | `activity_sector` | `string` | — | Secteur d'activité |
 | `organization_name` | `string` | — | Filtre par nom d'entreprise (exact) |
+| `sort` | `string` | — | Tri : `proximity` (géo), `smart_apply`, `date`. Défaut : pertinence (cf. `current-behavior.md` §1) |
 | `latitude` | `number` | — | Latitude WGS84 |
 | `longitude` | `number` | — | Longitude WGS84 |
 | `radius` | `number` | `30` | Rayon de recherche en km |
@@ -60,12 +61,12 @@ GET /api/v1/search
 | `title` | `string` | Titre de l'offre ou de la formation |
 | `description` | `string` | Description |
 | `address` | `string` | Adresse complète |
-| `_geoloc` | `{ lat: number, lng: number }` | Coordonnées géographiques (format Algolia) |
-| `location` | `{ type: "Point", coordinates: [lng, lat] }` | Coordonnées GeoJSON (MongoDB Search) |
+| `location` | `{ type: "Point", coordinates: [lng, lat] }` | Coordonnées GeoJSON (MongoDB Search) — seul champ géo |
 | `organization_name` | `string` | Nom de l'entreprise |
 | `level` | `string \| null` | Niveau de diplôme visé |
 | `activity_sector` | `string \| null` | Secteur d'activité |
 | `keywords` | `string[]` | Mots-clés indexés |
+| `distance` | `number \| null` | Distance en km au lieu recherché (`null` si pas de géo) — ajouté à la réponse, hors `IAlgolia` |
 
 ## Exemples d'appels
 
@@ -81,6 +82,9 @@ GET /api/v1/search?type=offre&contract_type=Apprentissage
 
 # Combiné : texte + géo + filtre
 GET /api/v1/search?q=dev&latitude=48.86&longitude=2.35&radius=30&type=offre
+
+# Tri par proximité (nécessite une géo)
+GET /api/v1/search?latitude=48.86&longitude=2.35&radius=30&sort=proximity
 
 # Pagination
 GET /api/v1/search?q=web&page=2&hitsPerPage=10

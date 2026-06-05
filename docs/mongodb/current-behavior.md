@@ -7,32 +7,20 @@
 
 ## 1. Tri des résultats (`/v1/search`)
 
-Défini dans le `$search` de [`search.service.ts`](../../server/src/services/search/search.service.ts) :
+Le tri est **configurable** via le paramètre `sort` (`buildSortStage` / `buildCompoundOperator` dans [`search.service.ts`](../../server/src/services/search/search.service.ts)). Valeurs possibles : `proximity`, `smart_apply`, `date` — sinon tri par défaut.
 
-```ts
-sort: {
-  score: { $meta: "searchScore", order: -1 },  // 1. pertinence (décroissant)
-  smart_apply: { order: 1 },                    // 2. tie-break (croissant)
-  application_count: { order: 1 },              // 3. tie-break (croissant)
-}
-```
+| `sort` | Étape de tri appliquée |
+|---|---|
+| _(absent, défaut)_ | `searchScore` desc, puis `smart_apply` asc (non-smart d'abord), puis `application_count` asc (moins candidatées d'abord) |
+| `date` | `publication_date` desc (plus récent d'abord) |
+| `smart_apply` | `smart_apply` desc (candidature simplifiée d'abord), puis `searchScore` desc, puis `application_count` asc |
+| `proximity` (+ géo) | tri par `searchScore` desc, le score étant **fourni par l'opérateur `near`** sur `location` (pivot 1 km) → **plus proche d'abord**. Le texte `q` bascule alors en `filter`. |
 
-Ordre appliqué :
+> `proximity` n'a d'effet qu'avec une géolocalisation (`latitude`/`longitude`). Sans géo, on retombe sur le tri par défaut.
 
-1. **`searchScore` décroissant** — pertinence du match texte `q` (meilleures correspondances d'abord).
-2. **`smart_apply` croissant** — `false` (0) avant `true` (1).
-3. **`application_count` croissant** — offres avec **moins de candidatures** d'abord (visibilité aux moins sollicitées).
+### ⚠️ Tri par défaut sans texte (`q` absent)
 
-### ⚠️ Conséquence sans texte (`q` absent)
-
-Quand il n'y a **pas de `q`** (cas de `/search/filter-only`, et de `/search/split` tant qu'aucun métier n'est saisi), le `compound` ne contient que des clauses **`filter`** (type, contrat, géo…). Ces clauses **ne contribuent pas au score** → `searchScore` est **constant** pour tous les documents. Le tri se résume alors à :
-
-> `smart_apply` (non-smart d'abord) puis `application_count` (moins candidatées d'abord).
-
-Donc, pour ces vues :
-
-- **Pas de tri par distance** — l'offre la plus proche n'est pas remontée en premier (même si la distance est affichée).
-- **Pas de tri par date** de publication.
+Quand il n'y a **pas de `q`** (cas fréquent de `/search/filter-only`, et de `/search/split` tant qu'aucun métier n'est saisi) **et** que le tri reste au défaut, le `compound` ne contient que des clauses **`filter`** qui **ne contribuent pas au score** → `searchScore` est **constant**. Le tri se résume alors à `smart_apply` puis `application_count`. Les tris explicites `date` et `proximity` restent eux pleinement opérants.
 
 ---
 
@@ -40,18 +28,18 @@ Donc, pour ces vues :
 
 Ajouté à la réponse `/v1/search` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts), [`search.service.ts`](../../server/src/services/search/search.service.ts)).
 
-- Calculé en **haversine** (`getDistanceInKm`, [`geolib.ts`](../../server/src/common/utils/geolib.ts), arrondi `Math.ceil`) entre le lieu recherché (`latitude`/`longitude`) et le `_geoloc` de chaque hit.
-- **`null`** si la recherche n'est pas géolocalisée (pas de `latitude`/`longitude`).
+- Calculé en **haversine** (`getDistanceInKm`, [`geolib.ts`](../../server/src/common/utils/geolib.ts), arrondi `Math.ceil`) entre le lieu recherché (`latitude`/`longitude`) et le champ **`location`** (GeoJSON `[lng, lat]`) de chaque hit.
+- **`null`** si la recherche n'est pas géolocalisée (pas de `latitude`/`longitude`) ou si le hit n'a pas de `location`.
 - Affiché en front uniquement quand `hit.distance != null` (« X km(s) du lieu de recherche »).
 
 ---
 
 ## 3. Géo : le champ `location` doit être peuplé
 
-- Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans l'index `algolia_search`).
-- Les documents portent **deux** champs géo : `_geoloc { lat, lng }` (format Algolia historique) et `location` (GeoJSON, requis par mongot).
+- Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans l'index `algolia_search`). Le tri par proximité utilise `near` sur ce même champ (cf. §1).
+- **`location` est le seul champ géo** du modèle ([`algolia.model.ts`](../../shared/src/models/algolia.model.ts)). L'ancien champ Algolia `_geoloc { lat, lng }` a été **supprimé**, ainsi que le job de backfill `OneTimeJob_AddLocationToAlgolia`.
 - **Si `location` est absent/`null`, toute recherche géo renvoie `0` résultat** (le `geoWithin` ne matche rien) — alors que la recherche globale fonctionne.
-- Backfill : job [`OneTimeJob_AddLocationToAlgolia`](../../server/src/jobs/oneTimeJob/addLocationToAlgolia.ts) (`yarn cli OneTimeJob_AddLocationToAlgolia`) remplit `location` depuis `_geoloc`. À jouer après tout import qui ne renseigne que `_geoloc`.
+- Alimentation : le job [`fillAlgoliaCollection`](../../server/src/jobs/algolia/generateAlgoliaCollection.ts) écrit `location` **à la source** pour chaque document (formations, jobs, recruteurs) — aucun backfill nécessaire sur les données régénérées.
 
 ---
 
@@ -77,7 +65,8 @@ Les facettes sont calculées via `$searchMeta` sur un **compound « baseline » 
 - **Données + scroll infini** : `useSearchResults` ([`useSearchResults.ts`](../../ui/app/search/_hooks/useSearchResults.ts)) — TanStack `useInfiniteQuery`, pagination par `pageParam`, chargement via **`IntersectionObserver` sentinel** ([`SearchResultsList.tsx`](../../ui/app/search/_components/SearchResultsList.tsx)). Pas de virtualizer.
 - **Sélection détail** : param URL `selected` (= `hit.url_id`), posé par clic carte en `router.replace` (shallow). Desktop = pas de navigation page ; mobile = navigation vers la page détail.
 - **Facettes** : `/v1/search` → `facets`, accumulées en `stableFacets`.
-- **Filtres multi** : `SearchMultiSelectField` = MUI `Select multiple` (pilule + label, compteurs, tri alpha, sous-groupes `Type` via `ListSubheader`). Mapping `type_filter_label` → Formation/Offre d'emploi **codé en dur** ([`search.type-groups.ts`](../../ui/app/search/_utils/search.type-groups.ts)).
+- **Filtres multi** : `SearchMultiSelectField` = MUI `Select multiple` (pilule + label, tri alpha, sous-groupes `Type` via `ListSubheader`). La pilule fermée affiche « Label (N) » où **N = nombre de valeurs sélectionnées** ; les **compteurs par valeur ont été retirés** des options (desktop et sections mobiles). Mapping `type_filter_label` → Formation/Offre d'emploi **codé en dur** ([`search.type-groups.ts`](../../ui/app/search/_utils/search.type-groups.ts)).
+- **Tri** : `SearchSortSelect` (« Trier par : Proximité / Candidature simplifiée / Date de publication ») placé dans la colonne de gauche, au-dessus de la liste (desktop et mobile). Pilote le param `sort` (cf. §1) ; « Proximité » désactivée sans géo.
 - **Entreprise** : `SearchEntrepriseAutocomplete` (mono-valeur `organization_name`, `downshift`, ≤100 buckets).
 - **Tags actifs** : `SearchActiveFilters` (groupés par catégorie, `Tag` DSFR dismiss, « Effacer tous » si > 1).
 - **Mobile** : header burger DSFR (`PublicHeader`) + 2 boutons sticky (« Modifier la recherche » / « Filtrer ») ouvrant des panneaux plein écran. Bascule desktop/mobile en **CSS breakpoints (`lg` 992px)**, **pas de `useMediaQuery`** (évite le flash d'hydratation).
@@ -85,14 +74,14 @@ Les facettes sont calculées via `$searchMeta` sur un **compound « baseline » 
 
 ### Spécifique `/search/split`
 
-- Barre : **Métier** (texte libre `q`) + **Lieu** + bouton « C'est parti », puis ligne de filtres (`SearchFilters`) + tags.
+- Barre : **Métier** (texte libre `q`) + **Lieu**, puis ligne de filtres (`SearchFilters`) + tags. **Pas de bouton de soumission** : la recherche se déclenche sur Entrée, sélection d'une suggestion métier, ou sélection d'un lieu.
 - Layout desktop : conteneur `DefaultContainer` (xl, 1536px) ; split liste 480px / détail en **carte blanche sur fond gris**.
 
 ### Spécifique `/search/filter-only`
 
 - Barre **« une ligne »** : `[Lieu + bouton Rechercher intégré]` · séparateur · `Type` · `Contrat` · `Niveau` · `[+ Plus de filtres]` → déplie `Secteur` + `Entreprise`.
-- **Pas de champ Métier** (`q` non utilisé) → recherche pilotée par lieu + filtres (cf. §1, conséquence sur le tri).
-- Bouton « Rechercher » **dans** le champ Lieu via `InputAdornment` (Autocomplete `disableClearable`, vidage géré sur input vide).
+- **Pas de champ Métier** (`q` non utilisé) → recherche pilotée par lieu + filtres (cf. §1, conséquence sur le tri par défaut).
+- Champ Lieu : recherche déclenchée par la sélection d'une adresse ; **croix native de réinitialisation** (Autocomplete clearable) qui vide le champ et retire le filtre géo.
 
 ### Rayon automatique (les deux vues)
 
@@ -104,7 +93,7 @@ Les facettes sont calculées via `$searchMeta` sur un **compound « baseline » 
 
 ## Limitations connues
 
-- **Tri non géographique / non chronologique** sans `q` (cf. §1) : pas de « plus proche d'abord » ni « plus récent d'abord ».
-- **Distance** affichée mais non utilisée pour le tri.
+- **Tri par défaut sans `q`** (cf. §1) : ni « plus proche » ni « plus récent » d'abord. Les tris explicites `proximity` et `date` lèvent cette limite, mais ne sont appliqués que si l'utilisateur les sélectionne.
 - Le `radius` par défaut de l'API reste `30` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts)) ; côté front les vues forcent `20` et l'auto-élargissement.
+- Données legacy : un document sans `location` (non régénéré par `fillAlgoliaCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).
 - Mobile : barre + panneaux **dupliqués** dans le client `filter-only` (vue de test, pas d'extraction partagée).
