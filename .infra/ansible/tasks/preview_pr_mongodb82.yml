@@ -40,7 +40,9 @@
 
     - name: "[{{ pr_number }}] Créer le fichier mot de passe mongot"
       ansible.builtin.copy:
-        content: "{{ MONGOT_PASSWORD }}"
+        # trim : supprime un éventuel \n/espace de fin dans la valeur SOPS, sinon le mot de
+        # passe diverge de celui posé par createUser (qui le conserve via -e) → AuthenticationFailed.
+        content: "{{ MONGOT_PASSWORD | trim }}"
         dest: "/opt/app/projects/{{ pr_number }}/mongot_password"
         mode: "0400"
 
@@ -147,7 +149,7 @@
         # qu'interpolé dans la chaîne --eval : évite toute corruption par l'échappement
         # shell/JS s'il contient des caractères spéciaux (', \, $, `…).
         cmd: >
-          docker exec -e MONGOT_PWD={{ MONGOT_PASSWORD | quote }} lba_{{ pr_number }}_mongodb mongosh
+          docker exec -e MONGOT_PWD={{ MONGOT_PASSWORD | trim | quote }} lba_{{ pr_number }}_mongodb mongosh
           "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true"
           --quiet
           --eval 'try { db.dropUser("mongotUser") } catch (e) {} db.createUser({ user: "mongotUser", pwd: process.env.MONGOT_PWD, roles: [{ role: "searchCoordinator", db: "admin" }] })'
