@@ -122,7 +122,13 @@ export function JobDetailPanel({ job, currentParams }: JobDetailPanelProps) {
             J'envoie ma candidature
           </Button>
         )}
-        <Button linkProps={{ href: detailUrl }} priority="secondary" iconId="fr-icon-arrow-right-line" iconPosition="right" style={{ width: "100%", justifyContent: "center" }}>
+        <Button
+          linkProps={{ href: detailUrl, target: "_blank", rel: "noopener noreferrer" }}
+          priority="secondary"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          style={{ width: "100%", justifyContent: "center" }}
+        >
           Voir l'offre complète
         </Button>
       </Box>

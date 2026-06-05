@@ -6,7 +6,9 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildHitDetailUrl, buildSearchUrl } from "../_utils/search.params.utils"
-import { SearchHitPreview } from "./SearchHitPreview"
+
+// Highlight de recherche désactivé temporairement (cf. titleContent ci-dessous).
+// import { SearchHitPreview } from "./SearchHitPreview"
 
 type SearchResponse = IResponse<IGetRoutes["/v1/search"]>
 export type Hit = SearchResponse["hits"][number]
@@ -23,7 +25,9 @@ export function SearchHitCard({ hit, currentParams, isSelected, onSelect }: Sear
   const detailUrl = buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)
 
   const isFormation = hit.type === LBA_ITEM_TYPE.FORMATION
-  const titleContent = hit.preview && hit.preview.length > 0 ? <SearchHitPreview preview={hit.preview} /> : (hit.title ?? "")
+  // Highlight de recherche désactivé temporairement : on affiche toujours le titre de l'offre/formation.
+  // const titleContent = hit.preview && hit.preview.length > 0 ? <SearchHitPreview preview={hit.preview} /> : (hit.title ?? "")
+  const titleContent = hit.title ?? ""
 
   // Accent gauche bleu france via box-shadow inset (sélection) : conserve le box 1px
   // complet sur les 4 côtés — pas de bord gauche manquant ni de décalage de contenu.

@@ -126,7 +126,13 @@ export function FormationDetailPanel({ training, currentParams }: FormationDetai
             Prendre rendez-vous
           </Button>
         )}
-        <Button linkProps={{ href: detailUrl }} priority="secondary" iconId="fr-icon-arrow-right-line" iconPosition="right" style={{ width: "100%", justifyContent: "center" }}>
+        <Button
+          linkProps={{ href: detailUrl, target: "_blank", rel: "noopener noreferrer" }}
+          priority="secondary"
+          iconId="fr-icon-arrow-right-line"
+          iconPosition="right"
+          style={{ width: "100%", justifyContent: "center" }}
+        >
           Voir la fiche complète
         </Button>
       </Box>
