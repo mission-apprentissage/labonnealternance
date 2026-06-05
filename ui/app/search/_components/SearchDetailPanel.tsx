@@ -3,8 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
-import { Box, Skeleton } from "@mui/material"
+import { Box, Skeleton, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
+import Image from "next/image"
 import type { ReactNode } from "react"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ILbaItemFormation2Json, ILbaItemJobsGlobal } from "shared/models/lbaItem.model"
@@ -59,6 +60,7 @@ function DetailSkeleton() {
   )
 }
 
+/** Placeholder affiché dans la carte de droite tant qu'aucune offre/formation n'est sélectionnée. */
 function EmptyState() {
   return (
     <Box
@@ -67,14 +69,24 @@ function EmptyState() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: 280,
-        gap: fr.spacing("3v"),
-        color: fr.colors.decisions.text.mention.grey.default,
         textAlign: "center",
+        minHeight: 280,
+        gap: fr.spacing("6v"),
+        py: fr.spacing("6v"),
       }}
     >
-      <Box component="span" className={fr.cx("fr-icon-search-line")} aria-hidden="true" sx={{ fontSize: "2.5rem" }} />
-      <Box sx={{ fontSize: "1rem", fontWeight: 500 }}>Sélectionnez une offre dans la liste pour afficher le détail.</Box>
+      <Image src="/images/dosearch.svg" width={269} height={216} alt="" aria-hidden="true" unoptimized style={{ maxWidth: "100%", height: "auto" }} />
+      <Box>
+        <Typography variant="h1">
+          Trouvez votre{" "}
+          <Box component="span" sx={{ color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
+            alternance
+          </Box>
+        </Typography>
+        <Typography className={fr.cx("fr-text--lead")} sx={{ maxWidth: 460, mx: "auto" }}>
+          Sélectionnez une offre ou une formation dans la liste pour afficher le détail
+        </Typography>
+      </Box>
     </Box>
   )
 }
