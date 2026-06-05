@@ -50,8 +50,8 @@ export const DemandeDeContactForm = ({
         applicantMessageToCfa: Yup.string(),
         applicantType: Yup.mixed().oneOf(Object.values(EApplicantType)),
         applicantReasons: Yup.array(Yup.mixed().oneOf(RdvReasons.map((item) => item.key)))
-          .min(1, "Le(s) sujet(s) que je souhaite aborder doit/doivent être renseigné(s).")
-          .required("Le(s) sujet(s) que je souhaite aborder doit/doivent être renseigné(s)."),
+          .min(1, "Veuillez sélectionner au moins un sujet pour envoyer votre message au CFA.")
+          .required("Veuillez sélectionner au moins un sujet pour envoyer votre message au CFA."),
       })}
       onSubmit={async (values) => {
         try {
