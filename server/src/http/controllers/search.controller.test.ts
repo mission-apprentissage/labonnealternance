@@ -48,6 +48,48 @@ describe.skip("search.controller", () => {
         const body = response.json()
         expect(body.page).toBe(0)
       })
+
+      it("retourne 400 si hitsPerPage vaut 0 (min 1)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?hitsPerPage=0" })
+
+        expect(response.statusCode).toBe(400)
+      })
+
+      it("accepte hitsPerPage=100 (borne max)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?hitsPerPage=100" })
+
+        expect(response.statusCode).toBe(200)
+      })
+
+      it("retourne 400 si radius n'est pas numérique", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?radius=abc" })
+
+        expect(response.statusCode).toBe(400)
+      })
+
+      it("retourne 400 si latitude n'est pas numérique", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?latitude=paris" })
+
+        expect(response.statusCode).toBe(400)
+      })
+
+      it("retourne 400 sur un paramètre inconnu (querystring strict)", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?foo=bar" })
+
+        expect(response.statusCode).toBe(400)
+      })
+
+      it("retourne 400 si sort a une valeur hors enum", async () => {
+        const response = await httpClient().inject({ method: "GET", path: "/api/v1/search?sort=zzz" })
+
+        expect(response.statusCode).toBe(400)
+      })
+
+      it.each(["proximity", "smart_apply", "date"])("accepte sort=%s", async (sort) => {
+        const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?sort=${sort}&latitude=48.86&longitude=2.35` })
+
+        expect(response.statusCode).toBe(200)
+      })
     })
 
     describe("réponse sans mongot ($search retourne vide sans moteur de recherche)", () => {
@@ -66,7 +108,7 @@ describe.skip("search.controller", () => {
 
         const response = await httpClient().inject({
           method: "GET",
-          path: "/api/v1/search?q=test&type=offre&contract_type=Apprentissage&level=5&activity_sector=Informatique&organization_name=Corp&latitude=48.86&longitude=2.35&radius=20&page=0&hitsPerPage=10",
+          path: "/api/v1/search?q=test&type=offre&contract_type=Apprentissage&level=5&activity_sector=Informatique&organization_name=Corp&sort=date&latitude=48.86&longitude=2.35&radius=20&page=0&hitsPerPage=10",
         })
 
         expect(response.statusCode).toBe(200)
