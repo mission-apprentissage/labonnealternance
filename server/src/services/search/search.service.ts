@@ -325,8 +325,11 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
   const hits: SearchHit[] = rows.map(({ highlights, _meta: _m, ...doc }) => {
     const algoliaDoc = doc as IAlgolia
     const distance =
-      hasGeo && algoliaDoc._geoloc
-        ? getDistanceInKm({ origin: { latitude, longitude }, destination: { latitude: algoliaDoc._geoloc.lat, longitude: algoliaDoc._geoloc.lng } })
+      hasGeo && algoliaDoc.location
+        ? getDistanceInKm({
+            origin: { latitude, longitude },
+            destination: { latitude: algoliaDoc.location.coordinates[1], longitude: algoliaDoc.location.coordinates[0] },
+          })
         : null
     return {
       ...algoliaDoc,

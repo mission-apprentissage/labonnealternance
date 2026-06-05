@@ -3,6 +3,7 @@ import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
 import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
+import { fillAlgoliaCollection } from "./algolia/generateAlgoliaCollection"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
@@ -61,7 +62,6 @@ import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersFo
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
-import { OneTimeJob_AddLocationToAlgolia } from "./oneTimeJob/addLocationToAlgolia"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
 import { renvoiMailCreationCompte } from "./oneTimeJob/renvoiMailCreationCompte"
@@ -364,8 +364,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Envoi les mails de validation de compte",
   },
   {
-    fct: OneTimeJob_AddLocationToAlgolia,
-    description: "Complète le champ location (GeoJSON Point) à partir du champ _geoloc dans la collection algolia",
+    fct: fillAlgoliaCollection,
+    description: "Génère/met à jour la collection algolia (formations, jobs, recruteurs) pour MongoDB Search",
   },
   {
     fct: analyzeClosedCompanies,

@@ -17,7 +17,6 @@ export function generateAlgoliaFixture(data: Partial<IAlgolia> = {}): IAlgolia {
     title: "Développeur web",
     description: "Nous recherchons un développeur web en alternance pour rejoindre notre équipe.",
     address: "126 Rue de l'Université, 75007 Paris",
-    _geoloc: { lat: 48.8566, lng: 2.3522 },
     location: { type: "Point", coordinates: [2.3522, 48.8566] },
     organization_name: "Entreprise Test",
     level: "6",

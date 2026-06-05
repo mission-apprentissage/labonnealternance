@@ -5,11 +5,6 @@ import { zObjectId } from "./common.js"
 
 const collectionName = "algolia" as const
 
-export const ZAlgoliaGeoloc = z.object({
-  lat: z.number().describe("Latitude"),
-  lng: z.number().describe("Longitude"),
-})
-
 export const ZAlgoliaLocation = z
   .object({
     type: z.literal("Point"),
@@ -31,7 +26,6 @@ export const ZAlgolia = z.object({
   title: z.string().describe("Titre de l'offre"),
   description: z.string().describe("Description de l'offre"),
   address: z.string().describe("Adresse complète"),
-  _geoloc: ZAlgoliaGeoloc.describe("Coordonnées géographiques (format Algolia)"),
   location: ZAlgoliaLocation.optional().describe("GeoJSON Point pour MongoDB Search"),
   organization_name: z.string().describe("Nom de l'entreprise"),
   level: z.string().nullable().describe("Niveau de diplôme visé"),
