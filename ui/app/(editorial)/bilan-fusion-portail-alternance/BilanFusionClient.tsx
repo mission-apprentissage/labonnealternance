@@ -148,6 +148,26 @@ const WEEK_LABELS: [string, string][] = [
 
 const COL = { propre: "#00a95f", redir: "#009099", autres: "#929299" }
 
+// --- Vue agrégée « Audience totale » : PdA 2025 vs LBA 2026, empilé par canal ---
+// SEO = Search Console ; autres canaux = Matomo.
+const AGG_COL = { seo: "#000091", direct: "#00a95f", ref: "#37635a", ia: "#2f4077", social: "#929299", redir: "#009099" }
+type AggChannel = keyof typeof AGG_COL
+const AGG = {
+  labels: ["PdA 2025", "LBA 2026"] as [string, string],
+  pda: { seo: 35326, direct: 0, ref: 36348, ia: 0, social: 0, redir: 0 } as Record<AggChannel, number>,
+  lba: { seo: 22484, direct: 29723, ref: 1184, ia: 1079, social: 49, redir: 25787 } as Record<AggChannel, number>,
+}
+const AGG_TOT_PDA = 71674
+const AGG_TOT_LBA = 80306
+const AGG_CHANNELS: { key: AggChannel; label: string }[] = [
+  { key: "seo", label: "SEO" },
+  { key: "direct", label: "Accès direct" },
+  { key: "ref", label: "Référents" },
+  { key: "ia", label: "IA / LLM" },
+  { key: "social", label: "Social" },
+  { key: "redir", label: "Redirection 301" },
+]
+
 type Serie = RawSerie & { peri?: boolean; absP: number[]; absR: number[]; absA: number[] }
 
 const sum = (a: number[]) => a.reduce((x, y) => x + y, 0)
@@ -192,10 +212,11 @@ function withAbs(d: RawSerie): Serie {
 
 const ALL: Serie[] = [buildPerimetre(), ...RAW.map(withAbs)]
 
-type Mode = "pct" | "abs"
+type Mode = "pct" | "abs" | "tot"
 const MODES: [Mode, string][] = [
   ["pct", "% du trafic"],
   ["abs", "Visites absolues"],
+  ["tot", "Audience totale"],
 ]
 
 // --- Échelle / graduations « jolies » pour l'axe Y en mode absolu ---
@@ -319,6 +340,88 @@ function StackedBarChart({ d, mode }: { d: Serie; mode: Mode }) {
   )
 }
 
+// Graphe « Audience totale » : 2 barres (PdA 2025 vs LBA 2026) empilées par canal.
+function TotalAudienceChart() {
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const [tooltip, setTooltip] = useState<Tooltip>(null)
+
+  const data = [AGG.pda, AGG.lba]
+  const rawMax = Math.max(AGG_TOT_PDA, AGG_TOT_LBA, 1)
+  const yStep = niceNum(rawMax / 5, true)
+  const yMax = yStep * Math.ceil(rawMax / yStep)
+  const ticks: number[] = []
+  for (let t = 0; t <= yMax + 0.5; t += yStep) ticks.push(t)
+
+  const y = (v: number) => M.top + PLOT_H * (1 - v / yMax)
+  const band = PLOT_W / 2
+  const barW = Math.min(170, band * 0.5)
+
+  const showTooltip = (e: React.MouseEvent, text: string) => {
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const r = wrap.getBoundingClientRect()
+    setTooltip({ left: e.clientX - r.left, top: e.clientY - r.top, text })
+  }
+
+  return (
+    <div className="chartwrap" ref={wrapRef}>
+      <svg viewBox={`0 0 ${VB_W} ${VB_H}`} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Audience totale PdA 2025 vs LBA 2026 par canal">
+        {ticks.map((t) => (
+          <g key={`y${t}`}>
+            <line x1={M.left} x2={M.left + PLOT_W} y1={y(t)} y2={y(t)} stroke="rgba(0,0,0,.06)" />
+            <text x={M.left - 8} y={y(t) + 4} textAnchor="end" fontSize="12" fill="#666">
+              {frFmt(t)}
+            </text>
+          </g>
+        ))}
+
+        {AGG.labels.map((label, i) => {
+          const cx = M.left + band * i + band / 2
+          const left = cx - barW / 2
+          let acc = 0
+          const rects = AGG_CHANNELS.map((ch) => {
+            const v = data[i][ch.key]
+            if (v <= 0) return null
+            const y0 = y(acc)
+            const y1 = y(acc + v)
+            acc += v
+            const h = Math.max(0, y0 - y1)
+            const tip = `${ch.label} : ${frFmt(v)} visites`
+            return (
+              <g key={ch.key}>
+                <rect x={left} y={y1} width={barW} height={h} fill={AGG_COL[ch.key]} onMouseMove={(e) => showTooltip(e, tip)} onMouseLeave={() => setTooltip(null)}>
+                  <title>{tip}</title>
+                </rect>
+                {v >= 900 && h >= 14 && (
+                  <text x={cx} y={(y0 + y1) / 2 + 4} textAnchor="middle" fontSize="11" fontWeight={500} fill="#fff" pointerEvents="none">
+                    {frFmt(v)}
+                  </text>
+                )}
+              </g>
+            )
+          })
+          return (
+            <g key={label}>
+              {rects}
+              <text x={cx} y={y(acc) - 7} textAnchor="middle" fontSize="12" fontWeight={700} fill="#161616">
+                {frFmt(acc)}
+              </text>
+              <text x={cx} y={M.top + PLOT_H + 24} textAnchor="middle" fontSize="13" fontWeight={500} fill="#161616">
+                {label}
+              </text>
+            </g>
+          )
+        })}
+      </svg>
+      {tooltip && (
+        <div className="tooltip" style={{ left: tooltip.left, top: tooltip.top }}>
+          {tooltip.text}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function BilanFusionClient() {
   const [current, setCurrent] = useState(0)
   const [mode, setMode] = useState<Mode>("pct")
@@ -370,6 +473,21 @@ export default function BilanFusionClient() {
   ]
   const cardColor = (k: string) => (k === "Part trafic propre" ? COL.propre : k === "Part redirection" ? COL.redir : undefined)
 
+  const isTot = mode === "tot"
+  const totCards: [string, string, string][] = [
+    ["Audience totale PdA 2025", frFmt(AGG_TOT_PDA), "SEO + référents"],
+    ["Audience totale LBA 2026", frFmt(AGG_TOT_LBA), "toutes sources"],
+    ["Socle durable — SEO LBA", frFmt(AGG.lba.seo), "64 % du SEO PdA"],
+    ["Redirection (transitoire)", frFmt(AGG.lba.redir), "s’efface"],
+  ]
+  const totInfo = {
+    cls: "",
+    tag: "À lire",
+    txt: `Toutes sources confondues, LBA (~${frFmt(AGG_TOT_LBA)}) est au niveau du PdA (~${frFmt(AGG_TOT_PDA)}). L’écart est porté par le direct et la redirection 301 (transitoire) ; le socle durable, le SEO, est encore en rattrapage (64 %).`,
+  }
+  const displayCards = isTot ? totCards : cards
+  const displayInfo = isTot ? totInfo : info
+
   return (
     <Box>
       <Breadcrumb pages={[PAGES.static.bilanFusionPortail]} />
@@ -390,45 +508,49 @@ export default function BilanFusionClient() {
           </div>
 
           <div className="controls">
-            <div className="field">
-              <label htmlFor="bilan-dd-btn">Page</label>
-              <div className="dd" ref={ddRef}>
-                <button type="button" id="bilan-dd-btn" className="dd-btn" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-                  <span className="lab">{d.url}</span>
-                  <span className="vis">{frFmt(sumTot)} visites</span>
-                  <span className="car">▾</span>
-                </button>
-                {open && (
-                  <div className="dd-panel" role="listbox">
-                    {ALL.map((x, i) => (
-                      <button
-                        type="button"
-                        key={x.url}
-                        className={`dd-opt${i === 0 ? " grp grp-last" : ""}`}
-                        role="option"
-                        aria-selected={i === current}
-                        onClick={() => {
-                          setCurrent(i)
-                          setOpen(false)
-                        }}
-                      >
-                        <span className="u">{x.url}</span>
-                        <span className="n">{frFmt(sum(x.total))} visites</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
+            {!isTot && (
+              <div className="field">
+                <label htmlFor="bilan-dd-btn">Page</label>
+                <div className="dd" ref={ddRef}>
+                  <button type="button" id="bilan-dd-btn" className="dd-btn" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+                    <span className="lab">{d.url}</span>
+                    <span className="vis">{frFmt(sumTot)} visites</span>
+                    <span className="car">▾</span>
+                  </button>
+                  {open && (
+                    <div className="dd-panel" role="listbox">
+                      {ALL.map((x, i) => (
+                        <button
+                          type="button"
+                          key={x.url}
+                          className={`dd-opt${i === 0 ? " grp grp-last" : ""}`}
+                          role="option"
+                          aria-selected={i === current}
+                          onClick={() => {
+                            setCurrent(i)
+                            setOpen(false)
+                          }}
+                        >
+                          <span className="u">{x.url}</span>
+                          <span className="n">{frFmt(sum(x.total))} visites</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="nav">
-              <button type="button" aria-label="Précédent" onClick={() => setCurrent((c) => (c - 1 + ALL.length) % ALL.length)}>
-                ‹
-              </button>
-              <button type="button" aria-label="Suivant" onClick={() => setCurrent((c) => (c + 1) % ALL.length)}>
-                ›
-              </button>
-            </div>
+            {!isTot && (
+              <div className="nav">
+                <button type="button" aria-label="Précédent" onClick={() => setCurrent((c) => (c - 1 + ALL.length) % ALL.length)}>
+                  ‹
+                </button>
+                <button type="button" aria-label="Suivant" onClick={() => setCurrent((c) => (c + 1) % ALL.length)}>
+                  ›
+                </button>
+              </div>
+            )}
 
             <div className="toggle" role="group" aria-label="Mode">
               {MODES.map((m) => (
@@ -440,10 +562,10 @@ export default function BilanFusionClient() {
           </div>
 
           <div className="cards">
-            {cards.map((c) => (
+            {displayCards.map((c) => (
               <div className="card" key={c[0]}>
                 <div className="k">{c[0]}</div>
-                <div className="v" style={{ color: cardColor(c[0]) }}>
+                <div className="v" style={{ color: isTot ? undefined : cardColor(c[0]) }}>
                   {c[1]}
                 </div>
                 {c[2] && <div className="s">{c[2]}</div>}
@@ -451,29 +573,45 @@ export default function BilanFusionClient() {
             ))}
           </div>
 
-          <div className={`insight ${info.cls}`}>
-            <span className="tag">{info.tag}</span>
-            <span className="txt">{info.txt}</span>
+          <div className={`insight ${displayInfo.cls}`}>
+            <span className="tag">{displayInfo.tag}</span>
+            <span className="txt">{displayInfo.txt}</span>
           </div>
 
-          <div className="legend">
-            <span>
-              <i style={{ background: COL.propre }} />
-              Trafic propre (survit à la coupure)
-            </span>
-            <span>
-              <i style={{ background: COL.redir }} />
-              Redirection (disparaît à la coupure)
-            </span>
-            <span>
-              <i style={{ background: COL.autres }} />
-              Autres
-            </span>
-          </div>
+          {isTot ? (
+            <div className="legend">
+              {AGG_CHANNELS.map((ch) => (
+                <span key={ch.key}>
+                  <i style={{ background: AGG_COL[ch.key] }} />
+                  {ch.label}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="legend">
+              <span>
+                <i style={{ background: COL.propre }} />
+                Trafic propre (survit à la coupure)
+              </span>
+              <span>
+                <i style={{ background: COL.redir }} />
+                Redirection (disparaît à la coupure)
+              </span>
+              <span>
+                <i style={{ background: COL.autres }} />
+                Autres
+              </span>
+            </div>
+          )}
 
-          <StackedBarChart d={d} mode={mode} />
+          {isTot ? <TotalAudienceChart /> : <StackedBarChart d={d} mode={mode} />}
 
-          {mode === "pct" ? (
+          {isTot ? (
+            <div className="note">
+              <strong>SEO = Search Console</strong> ; autres canaux = Matomo (~2 k d’écart d’unité assumé). Côté PdA 2025, l’accès direct est quasi nul (Eulerian) ; les référents
+              (liens partenaires) arrivent aujourd’hui via la redirection 301.
+            </div>
+          ) : mode === "pct" ? (
             <div className="note">
               <strong>Trafic propre</strong> = référencement Google + accès directs : tout ce qui ne dépend pas du Portail et survit à une coupure des redirections. Le nombre
               au-dessus de chaque barre indique <strong>le total de visites</strong> de la semaine.
@@ -485,7 +623,11 @@ export default function BilanFusionClient() {
             </div>
           )}
 
-          <p className="foot">Source : Matomo, fichier de trafic par URL (organique + direct regroupés en trafic propre). Fenêtre 9 avril – 31 mai 2026.</p>
+          <p className="foot">
+            {isTot
+              ? "Source : SEO = Search Console ; autres canaux = Matomo. Audience agrégée PdA 2025 (année pleine) vs LBA 2026."
+              : "Source : Matomo, fichier de trafic par URL (organique + direct regroupés en trafic propre). Fenêtre 9 avril – 31 mai 2026."}
+          </p>
         </Box>
       </DefaultContainer>
     </Box>
