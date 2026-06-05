@@ -253,6 +253,9 @@ export const fillAlgoliaCollection = async () => {
 
   const processedIds = new Set<string>()
   const algoliaCollection = getDbCollection("algolia")
+  // Docs sans mots-clés existants : on les insère d'abord (keywords: null) puis on génère
+  // les mots-clés via Mistral dans une seconde passe, pour ne pas bloquer l'insertion.
+  const keywordsToGenerate: { _id: ObjectId; text: string }[] = []
 
   // Process formations and insert immediately
   await asyncForEach(formations, async (formation) => {
@@ -287,8 +290,8 @@ export const fillAlgoliaCollection = async () => {
   // Process jobs and insert immediately
   await asyncForEach(jobs, async (job) => {
     const jobId = job._id.toString()
-    const existingKeywordsForJob = keywordsMap.get(jobId)
-    const keywords = existingKeywordsForJob || (await getKeywords(job.offer_description))
+    const existingKeywords = keywordsMap.get(jobId)
+    if (!existingKeywords && job.offer_description) keywordsToGenerate.push({ _id: job._id, text: job.offer_description })
 
     const jobDoc: IAlgolia = {
       _id: job._id,
@@ -311,7 +314,7 @@ export const fillAlgoliaCollection = async () => {
       organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
-      keywords,
+      keywords: existingKeywords ?? null,
     }
 
     await algoliaCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
@@ -321,8 +324,9 @@ export const fillAlgoliaCollection = async () => {
   // Process recruteurs and insert immediately
   await asyncForEach(recruteur, async (job) => {
     const jobId = job._id.toString()
-    const existingKeywordsForJob = keywordsMap.get(jobId)
-    const keywords = existingKeywordsForJob || (await getKeywords(job.intitule_romes.join(", ") || null))
+    const existingKeywords = keywordsMap.get(jobId)
+    const romesText = job.intitule_romes.join(", ")
+    if (!existingKeywords && romesText) keywordsToGenerate.push({ _id: job._id, text: romesText })
 
     const recruteurDoc: IAlgolia = {
       _id: job._id,
@@ -345,7 +349,7 @@ export const fillAlgoliaCollection = async () => {
       organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
-      keywords: keywords,
+      keywords: existingKeywords ?? null,
     }
 
     await algoliaCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
@@ -359,4 +363,12 @@ export const fillAlgoliaCollection = async () => {
       _id: { $in: idsToDelete.map((id) => new ObjectId(id)) },
     })
   }
+
+  // Seconde passe : génération des mots-clés (Mistral) pour les docs insérés sans mots-clés.
+  await asyncForEach(keywordsToGenerate, async ({ _id, text }) => {
+    const keywords = await getKeywords(text)
+    if (keywords && keywords.length > 0) {
+      await algoliaCollection.updateOne({ _id }, { $set: { keywords } })
+    }
+  })
 }
