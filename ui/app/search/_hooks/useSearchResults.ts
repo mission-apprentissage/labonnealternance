@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query"
 
 import { apiGet } from "@/utils/api.utils"
 
@@ -35,5 +35,8 @@ export function useSearchResults(params: ISearchPageParams) {
     },
     staleTime: 1000 * 60 * 5,
     throwOnError: false,
+    // Conserve les données précédentes (résultats + facettes) pendant le rechargement
+    // déclenché par un changement de filtre → évite le flicker des filtres et de la liste.
+    placeholderData: keepPreviousData,
   })
 }
