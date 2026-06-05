@@ -92,13 +92,13 @@ GET /api/v1/search?q=web&page=2&hitsPerPage=10
 
 ## Notes d'intégration frontend
 
-- **Pagination** : utiliser `page` (0-based) et `nbPages` pour les contrôles, afficher `nbHits` comme total
-- **Facettes** : les compteurs permettent de désactiver les options de filtre sans résultats
+- **Pagination** : utiliser `page` (0-based) et `nbPages` pour les contrôles. `nbHits` est renvoyé et sert au bouton mobile « Voir les N résultats », mais **n'est plus affiché en en-tête de la liste** (choix POC).
+- **Facettes** : renvoyées par l'API et utilisées pour alimenter les options de filtre disponibles (accumulées en `stableFacets`). En revanche, **les compteurs par valeur ne sont plus affichés** dans les filtres (desktop et sections mobiles).
 - **contract_type** : peut être passé plusieurs fois dans la query string (`?contract_type=Apprentissage&contract_type=Contrat+pro`)
 - **Géo** : les paramètres `latitude`, `longitude` et `radius` sont indépendants du texte — entièrement combinables
 - **Lien de détail** : construire l'URL depuis `url_id` et `type` (ex: `/offre/{url_id}`)
 - **`smart_apply`** : afficher le badge "Postuler rapidement" lorsque `true`
-- **Tri** : les résultats sont triés par pertinence, avec boost pour `smart_apply` et pénalité pour les offres très sollicitées (`application_count`)
+- **Tri** : configurable via `sort` (`proximity` / `smart_apply` / `date`). Par défaut : pertinence, avec `smart_apply` puis `application_count` (moins candidatées d'abord) en tie-break. Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
 
 ## Recherche textuelle « Métier » (`q`)
 
