@@ -6,6 +6,7 @@ import { getDatabase } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
+import { applyKeywordsBatchFile } from "./algolia/generateAlgoliaCollection"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
@@ -388,6 +389,9 @@ export async function setupJobProcessor() {
       },
       "referentiel:commune:import": {
         handler: updateReferentielCommune,
+      },
+      "algolia:apply-keywords-batch": {
+        handler: async (job) => applyKeywordsBatchFile(job.payload as any),
       },
       ...Object.fromEntries(
         simpleJobDefinitions.map((jobDef) => {

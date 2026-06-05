@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises"
+
 import { ObjectId } from "bson"
 import type { IFormationCatalogue } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
@@ -6,6 +8,7 @@ import type { IAlgolia } from "shared/models/algolia.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 
+import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Message } from "@/services/mistralai/mistralai.service"
@@ -107,6 +110,41 @@ const parseKeywords = (content: string): string[] | null => {
   } catch {
     return null
   }
+}
+
+/**
+ * Applique un fichier JSONL de sortie d'un batch Mistral (téléchargé manuellement depuis
+ * la console, ou via l'API) aux mots-clés de la collection `algolia`. Chaque ligne :
+ * `{ custom_id, response: { body: { choices: [{ message: { content } }] } } }`.
+ * Utile pour rattraper un batch finalisé après l'expiration du polling.
+ */
+export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
+  const file = payload?.file
+  if (!file) throw new Error("Paramètre --file requis (chemin du JSONL de sortie Mistral)")
+
+  const algoliaCollection = getDbCollection("algolia")
+  const text = await readFile(file, "utf8")
+
+  let updated = 0
+  let skipped = 0
+  for (const line of text.split("\n")) {
+    if (!line.trim()) continue
+    try {
+      const parsed = JSON.parse(line)
+      const content = parsed?.response?.body?.choices?.[0]?.message?.content
+      const keywords = typeof content === "string" ? parseKeywords(content) : null
+      if (parsed.custom_id && keywords && keywords.length > 0) {
+        await algoliaCollection.updateOne({ _id: new ObjectId(parsed.custom_id) }, { $set: { keywords } })
+        updated++
+      } else {
+        skipped++
+      }
+    } catch {
+      skipped++
+    }
+  }
+
+  logger.info(`applyKeywordsBatchFile: ${updated} documents mis à jour, ${skipped} ignorés`)
 }
 
 /**
