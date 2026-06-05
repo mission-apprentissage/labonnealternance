@@ -1,7 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
@@ -188,12 +187,6 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           filterOptions={(x) => x}
         />
       </Box>
-
-      {!isColumn && (
-        <Button priority="primary" onClick={() => handleSubmit(inputValue)} iconId="fr-icon-search-line">
-          C'est parti
-        </Button>
-      )}
     </Box>
   )
 }
