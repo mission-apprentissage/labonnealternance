@@ -193,15 +193,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
         </Box>
 
         {panel === "search" && (
-          <SearchMobilePanel
-            title="Modifier la recherche"
-            onClose={() => setPanel(null)}
-            footer={
-              <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)} style={{ width: "100%", justifyContent: "center" }}>
-                C'est parti
-              </Button>
-            }
-          >
+          <SearchMobilePanel title="Modifier la recherche" onClose={() => setPanel(null)}>
             <SearchBar layout="column" initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
           </SearchMobilePanel>
         )}

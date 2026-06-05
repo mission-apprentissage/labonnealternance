@@ -6,8 +6,8 @@ import { Box, Checkbox, FormControl, InputLabel, ListItemText, ListSubheader, Me
 /**
  * Multi-select de filtre pour `/search/split`, basé sur le `Select multiple`
  * MUI (rendu pilule + label flottant, proche de la maquette). Ajoute le
- * support des sous-groupes (`groups`), des compteurs par option et le tri
- * alphabétique. Application immédiate à chaque coche (pas de confirmation).
+ * support des sous-groupes (`groups`) et le tri alphabétique. Application
+ * immédiate à chaque coche (pas de confirmation).
  */
 export type MultiSelectOption = {
   value: string
@@ -22,18 +22,6 @@ export type MultiSelectGroup = {
 
 function sortAlpha(options: MultiSelectOption[]): MultiSelectOption[] {
   return [...options].sort((a, b) => a.label.localeCompare(b.label, "fr"))
-}
-
-function Count({ count }: { count?: number }) {
-  if (count == null) return null
-  return (
-    <Box
-      component="span"
-      sx={{ ml: fr.spacing("3v"), flexShrink: 0, color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.8125rem", fontVariantNumeric: "tabular-nums" }}
-    >
-      {count}
-    </Box>
-  )
 }
 
 export function SearchMultiSelectField({
@@ -109,7 +97,6 @@ export function SearchMultiSelectField({
             <MenuItem key={option.value} value={option.value} dense sx={{ pl: group.label ? fr.spacing("2v") : undefined }}>
               <Checkbox checked={value.includes(option.value)} size="small" sx={{ py: 0 }} />
               <ListItemText primary={option.label} primaryTypographyProps={{ fontSize: "0.875rem" }} />
-              <Count count={option.count} />
             </MenuItem>
           ))
           if (!group.label) return items

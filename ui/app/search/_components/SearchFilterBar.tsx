@@ -136,7 +136,6 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
           <FieldLabel htmlFor="filter-lieu">Où cherchez-vous une alternance ?</FieldLabel>
           <Autocomplete
             freeSolo
-            disableClearable
             fullWidth
             options={lieuSuggestions}
             getOptionLabel={(o) => (typeof o === "string" ? o : o.label)}
@@ -144,7 +143,7 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
             inputValue={lieuInput}
             onInputChange={(_e, value) => {
               setLieuInput(value)
-              // Champ vidé → on retire le filtre géo (remplace le bouton clear désactivé).
+              // Champ vidé (saisie ou croix de réinitialisation) → on retire le filtre géo.
               if (value === "") handleLieuSelect(null)
             }}
             onChange={(_e, value) => {
@@ -157,26 +156,13 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
                 placeholder="Adresse, ville ou code postal"
                 variant="outlined"
                 size="small"
-                // Bouton seul endAdornment (en flux) + padding droit nul → collé à la bordure droite.
                 sx={{ ...INPUT_SX }}
+                // endAdornment MUI conservé (croix de réinitialisation) ; on n'ajoute que l'icône Lieu.
                 InputProps={{
                   ...p.InputProps,
                   startAdornment: (
                     <InputAdornment position="start">
                       <Box component="span" className={fr.cx("fr-icon-map-pin-2-line")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end" sx={{ height: "100%", maxHeight: "none", ml: 0 }}>
-                      <Button
-                        priority="primary"
-                        size="small"
-                        iconId="fr-icon-search-line"
-                        onClick={() => onNavigate({ ...params, page: 0, selected: undefined })}
-                        style={{ height: "100%", whiteSpace: "nowrap" }}
-                      >
-                        Rechercher
-                      </Button>
                     </InputAdornment>
                   ),
                 }}

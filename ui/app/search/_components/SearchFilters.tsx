@@ -87,19 +87,7 @@ function CheckboxSection({
           <Checkbox
             small
             options={group.options.map((option) => ({
-              label: (
-                <Box component="span" sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: fr.spacing("2v"), width: "100%" }}>
-                  <span>{option.label}</span>
-                  {option.count != null && (
-                    <Box
-                      component="span"
-                      sx={{ flex: "0 0 auto", color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.8125rem", fontVariantNumeric: "tabular-nums" }}
-                    >
-                      {option.count}
-                    </Box>
-                  )}
-                </Box>
-              ),
+              label: option.label,
               nativeInputProps: {
                 checked: value.includes(option.value),
                 onChange: () => toggle(option.value),
