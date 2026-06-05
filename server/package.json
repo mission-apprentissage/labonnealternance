@@ -28,7 +28,7 @@
     "@fastify/rate-limit": "^10.3.0",
     "@getbrevo/brevo": "^3.0.1",
     "@hapi/boom": "^10.0.1",
-    "@mistralai/mistralai": "^1.10.0",
+    "@mistralai/mistralai": "^2.2.5",
     "@sentry/node": "^9.46.0",
     "@sentry/profiling-node": "^9.46.0",
     "@smithy/types": "^4.8.1",

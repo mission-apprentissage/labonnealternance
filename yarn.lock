@@ -2697,13 +2697,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mistralai/mistralai@npm:^1.10.0":
-  version: 1.10.0
-  resolution: "@mistralai/mistralai@npm:1.10.0"
+"@mistralai/mistralai@npm:^2.2.5":
+  version: 2.2.5
+  resolution: "@mistralai/mistralai@npm:2.2.5"
   dependencies:
-    zod: ^3.20.0
-    zod-to-json-schema: ^3.24.1
-  checksum: d63e934efd381dd68b48ec39438260d9fa1290d08794d73c8bdcce51facb0ff8cfe727bf4fef8056e5bd01fb8f1cf69b85c6c66f9a8da9a1552e512af0d1c3da
+    ws: ^8.18.0
+    zod: ^3.25.0 || ^4.0.0
+    zod-to-json-schema: ^3.25.0
+  checksum: a02d5adc3d26dde9079d531e647c2e1b104a06a9452ec62a798dbf48bfdab4440ddc8965f5c3f0d335e9c5f563ee3712ada4e3e131fe8e1cf56e58bc6003b018
   languageName: node
   linkType: hard
 
@@ -16548,7 +16549,7 @@ __metadata:
     "@fastify/rate-limit": ^10.3.0
     "@getbrevo/brevo": ^3.0.1
     "@hapi/boom": ^10.0.1
-    "@mistralai/mistralai": ^1.10.0
+    "@mistralai/mistralai": ^2.2.5
     "@sentry/node": ^9.46.0
     "@sentry/profiling-node": ^9.46.0
     "@smithy/types": ^4.8.1
@@ -18986,6 +18987,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ws@npm:^8.18.0":
+  version: 8.21.0
+  resolution: "ws@npm:8.21.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 83ff89ae011bc5c3c5605a45a0d50e12589143c7500ca4de83a8d43b3cd26e71f422cb3206fd1a9e6d541d666eeb66255c30d095d62d413b3c7afe5d2c5cb928
+  languageName: node
+  linkType: hard
+
 "xml2js@npm:^0.6.2":
   version: 0.6.2
   resolution: "xml2js@npm:0.6.2"
@@ -19212,7 +19228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.3, zod-to-json-schema@npm:^3.24.1":
+"zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.23.3":
   version: 3.24.6
   resolution: "zod-to-json-schema@npm:3.24.6"
   peerDependencies:
@@ -19221,10 +19237,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.20.0, zod@npm:^3.24.3, zod@npm:^3.25.76":
+"zod-to-json-schema@npm:^3.25.0":
+  version: 3.25.2
+  resolution: "zod-to-json-schema@npm:3.25.2"
+  peerDependencies:
+    zod: ^3.25.28 || ^4
+  checksum: 8b728476374a38711e0ca5c066be16ed8facf5a5eb5a76f371b0062e5b6b11f906f446c616d6879b9a4d373738c74cd26e4dfe1d460e7fb9a155a3fe9d04b690
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.24.3, zod@npm:^3.25.76":
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: c9a403a62b329188a5f6bd24d5d935d2bba345f7ab8151d1baa1505b5da9f227fb139354b043711490c798e91f3df75991395e40142e6510a4b16409f302b849
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.25.0 || ^4.0.0":
+  version: 4.4.3
+  resolution: "zod@npm:4.4.3"
+  checksum: bf236fdee7a5a5ec645eef5bfea3aad34e7df912931c2a23bc17e5b59882482751da42392916529da52ff9bc70f584797a5d496f1fb81f2d1a4c90fdd3922d2a
   languageName: node
   linkType: hard
 
