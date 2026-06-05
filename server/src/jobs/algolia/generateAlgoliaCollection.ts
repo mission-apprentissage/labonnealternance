@@ -11,8 +11,9 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
 
-// Taille de tranche pour le batch Mistral inline (limite API < 10k requêtes par job).
-const KEYWORDS_BATCH_CHUNK_SIZE = 5000
+// Taille de tranche par job batch Mistral (mode fichier, jusqu'à 1M req / 512 Mo).
+// On borne pour limiter la mémoire du JSONL et le wall-clock de polling par job.
+const KEYWORDS_BATCH_CHUNK_SIZE = 50_000
 
 const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> = {
   intitule_rco: 1,
@@ -108,12 +109,40 @@ const parseKeywords = (content: string): string[] | null => {
   }
 }
 
-export const fillAlgoliaCollection = async () => {
-  // Récupérer les documents existants pour conserver les mots-clés et identifier les suppressions
-  const existingDocs = await getDbCollection("algolia")
-    .find({}, { projection: { _id: 1, keywords: 1 } })
+/**
+ * Génère les mots-clés (batch Mistral) pour toutes les offres de la collection `algolia`
+ * qui n'en ont pas encore — indépendamment de la façon dont elles ont été insérées.
+ * Les formations sont exclues (pas de mots-clés). Découpé en tranches (un job/fichier par tranche).
+ */
+const fillMissingKeywords = async () => {
+  const algoliaCollection = getDbCollection("algolia")
+  const docs = await algoliaCollection
+    .find({ type: "offre", description: { $ne: "" }, $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, description: 1 } })
     .toArray()
-  const keywordsMap = new Map(existingDocs.map((doc) => [doc._id.toString(), doc.keywords]))
+
+  for (let i = 0; i < docs.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
+    const chunk = docs.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
+    const contentByCustomId = await sendMistralBatch({
+      requests: chunk.map((doc) => ({ customId: doc._id.toString(), messages: buildKeywordsMessages(doc.description) })),
+      model: "mistral-small-latest",
+      maxTokens: 200,
+    })
+
+    await asyncForEach(chunk, async (doc) => {
+      const content = contentByCustomId.get(doc._id.toString())
+      const keywords = content ? parseKeywords(content) : null
+      if (keywords && keywords.length > 0) {
+        await algoliaCollection.updateOne({ _id: doc._id }, { $set: { keywords } })
+      }
+    })
+  }
+}
+
+export const fillAlgoliaCollection = async () => {
+  // Récupérer les _id existants : on saute les docs déjà présents et on identifie les suppressions.
+  const existingDocs = await getDbCollection("algolia")
+    .find({}, { projection: { _id: 1 } })
+    .toArray()
   const existingIds = new Set(existingDocs.map((doc) => doc._id.toString()))
   const [formations, jobs, recruteur] = await Promise.all([
     getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).toArray(),
@@ -244,12 +273,15 @@ export const fillAlgoliaCollection = async () => {
 
   const processedIds = new Set<string>()
   const algoliaCollection = getDbCollection("algolia")
-  // Docs sans mots-clés existants : on les insère d'abord (keywords: null) puis on génère
-  // les mots-clés via Mistral dans une seconde passe, pour ne pas bloquer l'insertion.
-  const keywordsToGenerate: { _id: ObjectId; text: string }[] = []
 
   // Process formations and insert immediately
   await asyncForEach(formations, async (formation) => {
+    // Déjà en base → on conserve tel quel (marqué traité pour ne pas le supprimer).
+    if (existingIds.has(formation._id.toString())) {
+      processedIds.add(formation._id.toString())
+      return
+    }
+
     const formationDoc: IAlgolia = {
       _id: formation._id,
       objectID: formation._id.toString(),
@@ -281,8 +313,11 @@ export const fillAlgoliaCollection = async () => {
   // Process jobs and insert immediately
   await asyncForEach(jobs, async (job) => {
     const jobId = job._id.toString()
-    const existingKeywords = keywordsMap.get(jobId)
-    if (!existingKeywords && job.offer_description) keywordsToGenerate.push({ _id: job._id, text: job.offer_description })
+    // Déjà en base → on conserve tel quel (marqué traité pour ne pas le supprimer).
+    if (existingIds.has(jobId)) {
+      processedIds.add(jobId)
+      return
+    }
 
     const jobDoc: IAlgolia = {
       _id: job._id,
@@ -305,7 +340,7 @@ export const fillAlgoliaCollection = async () => {
       organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
-      keywords: existingKeywords ?? null,
+      keywords: null,
     }
 
     await algoliaCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
@@ -315,9 +350,11 @@ export const fillAlgoliaCollection = async () => {
   // Process recruteurs and insert immediately
   await asyncForEach(recruteur, async (job) => {
     const jobId = job._id.toString()
-    const existingKeywords = keywordsMap.get(jobId)
-    const romesText = job.intitule_romes.join(", ")
-    if (!existingKeywords && romesText) keywordsToGenerate.push({ _id: job._id, text: romesText })
+    // Déjà en base → on conserve tel quel (marqué traité pour ne pas le supprimer).
+    if (existingIds.has(jobId)) {
+      processedIds.add(jobId)
+      return
+    }
 
     const recruteurDoc: IAlgolia = {
       _id: job._id,
@@ -340,7 +377,7 @@ export const fillAlgoliaCollection = async () => {
       organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
-      keywords: existingKeywords ?? null,
+      keywords: null,
     }
 
     await algoliaCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
@@ -355,22 +392,6 @@ export const fillAlgoliaCollection = async () => {
     })
   }
 
-  // Seconde passe : génération des mots-clés via l'API Batch Mistral (asynchrone, -50%).
-  // Tranches < 10k pour rester en mode inline.
-  for (let i = 0; i < keywordsToGenerate.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
-    const chunk = keywordsToGenerate.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
-    const contentByCustomId = await sendMistralBatch({
-      requests: chunk.map(({ _id, text }) => ({ customId: _id.toString(), messages: buildKeywordsMessages(text) })),
-      model: "mistral-small-latest",
-      maxTokens: 200,
-    })
-
-    await asyncForEach(chunk, async ({ _id }) => {
-      const content = contentByCustomId.get(_id.toString())
-      const keywords = content ? parseKeywords(content) : null
-      if (keywords && keywords.length > 0) {
-        await algoliaCollection.updateOne({ _id }, { $set: { keywords } })
-      }
-    })
-  }
+  // Seconde passe : génération des mots-clés pour toutes les offres qui n'en ont pas.
+  await fillMissingKeywords()
 }
