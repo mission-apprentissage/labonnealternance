@@ -152,6 +152,11 @@
 .bilanFusion .dd-opt.grp {
   font-weight: 700;
   color: var(--bleu);
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+.bilanFusion .dd-opt.grp .n {
+  color: #2f4077;
 }
 .bilanFusion .dd-opt.grp-last {
   border-bottom: 1px solid var(--bord);
