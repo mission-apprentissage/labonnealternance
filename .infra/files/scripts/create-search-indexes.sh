@@ -46,7 +46,8 @@ elif [[ -n "${MONGO_CONTAINER:-}" ]]; then
   echo "  (using mongosh from container: $MONGO_CONTAINER)"
   MONGOSH="docker exec $MONGO_CONTAINER mongosh"
 else
-  CONTAINER=$(docker ps --filter "name=mongodb" --format "{{.Names}}" | head -1)
+  # -q (ID du conteneur) plutôt qu'un format Go nommé : évite les doubles accolades que le déploiement Ansible (Jinja2) tenterait d'interpréter.
+  CONTAINER=$(docker ps --filter "name=mongodb" -q | head -1)
   if [[ -z "$CONTAINER" ]]; then
     echo "ERROR: mongosh not found and no running mongodb container detected" >&2
     exit 1
