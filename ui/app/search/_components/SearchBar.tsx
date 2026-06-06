@@ -75,15 +75,15 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
 
   const isColumn = layout === "column"
 
-  // Suggestions pour le champ métier
+  // Suggestions pour le champ métier — autocomplétion par préfixe (endpoint dédié, min 3 caractères)
   const { data: suggestionData } = useQuery({
-    queryKey: ["/v1/search/suggestions", debouncedInput],
-    queryFn: ({ signal }) => apiGet("/v1/search", { querystring: { q: debouncedInput, hitsPerPage: 5, page: 0, radius: 30 } }, { signal }),
-    enabled: debouncedInput.length >= 2,
+    queryKey: ["/v1/search/suggest", debouncedInput],
+    queryFn: ({ signal }) => apiGet("/v1/search/suggest", { querystring: { q: debouncedInput, limit: 8 } }, { signal }),
+    enabled: debouncedInput.length >= 3,
     staleTime: 1000 * 60 * 5,
     throwOnError: false,
   })
-  const suggestions = Array.from(new Set((suggestionData?.hits ?? []).map((h) => h.title))).slice(0, 5)
+  const suggestions = suggestionData?.suggestions ?? []
 
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({

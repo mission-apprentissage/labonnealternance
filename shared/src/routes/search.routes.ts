@@ -66,5 +66,22 @@ export const zSearchRoutes = {
       },
       securityScheme: null,
     },
+    "/v1/search/suggest": {
+      method: "get",
+      path: "/v1/search/suggest",
+      querystring: z
+        .object({
+          q: z.string().min(3).describe("Texte de saisie (autocomplétion par préfixe, min 3 caractères)"),
+          limit: z.coerce.number().min(1).max(20).default(8).describe("Nombre de suggestions (max 20)"),
+        })
+        .strict(),
+      headers: z.object({ referer: z.string().optional() }).passthrough(),
+      response: {
+        "200": z.object({
+          suggestions: z.array(z.string()).describe("Intitulés suggérés (dédupliqués)"),
+        }),
+      },
+      securityScheme: null,
+    },
   },
 } as const satisfies IRoutesDef

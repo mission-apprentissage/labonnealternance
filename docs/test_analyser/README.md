@@ -8,6 +8,7 @@
 | Date | Fichier | Objet |
 |---|---|---|
 | 2026-06-06 | [2026-06-06-baseline-boosting-sans-phase3.md](./2026-06-06-baseline-boosting-sans-phase3.md) | Baseline du boosting keyword-centric + `rome_labels` + `lba_company`, **avant** autocomplétion (Phase 3) |
+| — | [comparaison-avec-phase3.md](./comparaison-avec-phase3.md) | Protocole de comparaison des 2 previews (base vs autocomplétion), à exécuter |
 
 ## Convention
 
