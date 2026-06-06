@@ -250,15 +250,18 @@ export const createSearchIndexes = async () => {
 
     for (const searchIndex of searchIndexes) {
       try {
+        // Index déjà présent → on met à jour sa définition (sinon un changement d'analyzer/champ
+        // ne serait jamais appliqué). updateSearchIndex est idempotent côté mongot.
         if (searchIndex.name && existing.includes(searchIndex.name)) {
-          logger.info(`Search index ${searchIndex.name} déjà présent sur ${descriptor.collectionName}`)
+          await collection.updateSearchIndex(searchIndex.name, searchIndex.definition)
+          logger.info(`Search index ${searchIndex.name} mis à jour sur ${descriptor.collectionName}`)
           continue
         }
         await collection.createSearchIndex(searchIndex)
         logger.info(`Search index ${searchIndex.name} créé sur ${descriptor.collectionName}`)
       } catch (err) {
         captureException(err)
-        logger.error(`Erreur création du search index ${searchIndex.name} sur ${descriptor.collectionName}: ${err}`)
+        logger.error(`Erreur création/mise à jour du search index ${searchIndex.name} sur ${descriptor.collectionName}: ${err}`)
       }
     }
   }

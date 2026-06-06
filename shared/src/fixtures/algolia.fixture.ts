@@ -22,6 +22,7 @@ export function generateAlgoliaFixture(data: Partial<IAlgolia> = {}): IAlgolia {
     level: "6",
     activity_sector: "Informatique",
     keywords: ["javascript", "react", "node"],
+    rome_labels: ["Développement informatique et télécommunication"],
     ...data,
   }
 }

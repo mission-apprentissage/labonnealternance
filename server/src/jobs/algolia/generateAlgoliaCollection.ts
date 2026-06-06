@@ -29,11 +29,13 @@ const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> = {
   etablissement_formateur_entreprise_raison_sociale: 1,
   entierement_a_distance: 1,
   cle_ministere_educatif: 1,
+  rome_codes: 1,
 }
 
 const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   offer_title: 1,
   offer_description: 1,
+  offer_rome_codes: 1,
   offer_target_diploma: 1,
   offer_creation: 1,
 
@@ -49,6 +51,29 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   apply_email: 1,
   is_delegated: 1,
   contract_type: 1,
+}
+
+/**
+ * Charge une fois le référentiel ROME en mémoire : code_rome → intitulé.
+ * Réutilisé pour dériver `rome_labels` (signal métier déterministe) sur les 3 types de docs.
+ */
+const loadRomeLabelByCode = async (): Promise<Map<string, string>> => {
+  const docs = await getDbCollection("referentielromes")
+    .find({}, { projection: { _id: 0, "rome.code_rome": 1, "rome.intitule": 1 } })
+    .toArray()
+  const map = new Map<string, string>()
+  for (const doc of docs) {
+    const code = doc.rome?.code_rome
+    const intitule = doc.rome?.intitule
+    if (code && intitule) map.set(code, intitule)
+  }
+  return map
+}
+
+/** Résout des codes ROME en intitulés uniques (ignore les codes inconnus / vides). */
+const resolveRomeLabels = (codes: (string | null | undefined)[] | null | undefined, romeLabelByCode: Map<string, string>): string[] => {
+  const labels = (codes ?? []).map((code) => (code ? romeLabelByCode.get(code) : undefined)).filter((label): label is string => Boolean(label))
+  return [...new Set(labels)]
 }
 
 const convertFormationNiveauDiplome = (niveau: string) => {
@@ -152,25 +177,28 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
  * qui n'en ont pas encore — indépendamment de la façon dont elles ont été insérées.
  * Les formations sont exclues (pas de mots-clés). Découpé en tranches (un job/fichier par tranche).
  */
-const fillMissingKeywords = async () => {
+const _fillMissingKeywords = async () => {
   const algoliaCollection = getDbCollection("algolia")
   const docs = await algoliaCollection
-    .find({ type: "offre", description: { $ne: "" }, $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, description: 1 } })
+    .find({ type: "offre", $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, description: 1, rome_labels: 1 } })
     .toArray()
 
-  for (let i = 0; i < docs.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
-    const chunk = docs.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
+  // Texte source : la description (offres), à défaut les intitulés ROME (recruteurs, description vide).
+  const withText = docs.map((doc) => ({ id: doc._id, text: (doc.description?.trim() ? doc.description : (doc.rome_labels ?? []).join(", ")).trim() })).filter((d) => d.text)
+
+  for (let i = 0; i < withText.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
+    const chunk = withText.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
     const contentByCustomId = await sendMistralBatch({
-      requests: chunk.map((doc) => ({ customId: doc._id.toString(), messages: buildKeywordsMessages(doc.description) })),
+      requests: chunk.map((doc) => ({ customId: doc.id.toString(), messages: buildKeywordsMessages(doc.text) })),
       model: "mistral-small-latest",
       maxTokens: 200,
     })
 
     await asyncForEach(chunk, async (doc) => {
-      const content = contentByCustomId.get(doc._id.toString())
+      const content = contentByCustomId.get(doc.id.toString())
       const keywords = content ? parseKeywords(content) : null
       if (keywords && keywords.length > 0) {
-        await algoliaCollection.updateOne({ _id: doc._id }, { $set: { keywords } })
+        await algoliaCollection.updateOne({ _id: doc.id }, { $set: { keywords } })
       }
     })
   }
@@ -265,49 +293,20 @@ export const fillAlgoliaCollection = async () => {
           },
         },
         {
-          $lookup: {
-            from: "referentielromes",
-            let: { romes: "$rome_codes" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $in: ["$rome.code_rome", "$$romes"],
-                  },
-                },
-              },
-              {
-                $project: {
-                  _id: 0,
-                  intitule: "$rome.intitule",
-                },
-              },
-            ],
-            as: "romes",
-          },
-        },
-        {
-          $addFields: {
-            intitule_romes: {
-              $map: {
-                input: "$romes",
-                as: "r",
-                in: "$$r.intitule",
-              },
-            },
-          },
-        },
-        {
+          // Les intitulés ROME sont résolus côté JS via une Map en mémoire (resolveRomeLabels),
+          // partagée avec les offres/formations — plus de $lookup referentielromes par doc.
           $project: {
             ...jobsProjection,
             application_count: 1,
-            intitule_romes: 1,
+            rome_codes: 1,
           },
         },
       ])
       .limit(80_000)
       .toArray(),
   ])
+
+  const romeLabelByCode = await loadRomeLabelByCode()
 
   const processedIds = new Set<string>()
   const algoliaCollection = getDbCollection("algolia")
@@ -342,6 +341,7 @@ export const fillAlgoliaCollection = async () => {
       level: convertFormationNiveauDiplome(formation.niveau || ""),
       activity_sector: null,
       keywords: null,
+      rome_labels: resolveRomeLabels(formation.rome_codes, romeLabelByCode),
     }
 
     await algoliaCollection.replaceOne({ _id: formationDoc._id }, formationDoc, { upsert: true })
@@ -379,6 +379,7 @@ export const fillAlgoliaCollection = async () => {
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
       keywords: null,
+      rome_labels: resolveRomeLabels(job.offer_rome_codes, romeLabelByCode),
     }
 
     await algoliaCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
@@ -406,7 +407,8 @@ export const fillAlgoliaCollection = async () => {
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       title: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
-      description: job.intitule_romes.join(", ") || "",
+      // Pas une offre d'emploi → pas de vraie description. Le signal métier vit dans rome_labels.
+      description: "",
       address: job.workplace_address_label || "",
       location: {
         type: "Point",
@@ -416,6 +418,7 @@ export const fillAlgoliaCollection = async () => {
       level: job.offer_target_diploma?.label || "",
       activity_sector: job.workplace_naf_label,
       keywords: null,
+      rome_labels: resolveRomeLabels(job.rome_codes, romeLabelByCode),
     }
 
     await algoliaCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
@@ -431,5 +434,5 @@ export const fillAlgoliaCollection = async () => {
   }
 
   // Seconde passe : génération des mots-clés pour toutes les offres qui n'en ont pas.
-  await fillMissingKeywords()
+  // await fillMissingKeywords()
 }

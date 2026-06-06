@@ -30,7 +30,8 @@ export const ZAlgolia = z.object({
   organization_name: z.string().describe("Nom de l'entreprise"),
   level: z.string().nullable().describe("Niveau de diplôme visé"),
   activity_sector: z.string().nullable().describe("Secteur d'activité"),
-  keywords: z.array(z.string()).nullable().describe("Mots-clés associés à l'offre"),
+  keywords: z.array(z.string()).nullable().describe("Mots-clés associés à l'offre (enrichissement Mistral)"),
+  rome_labels: z.array(z.string()).nullable().describe("Intitulés ROME associés (signal métier déterministe, dérivé des rome_codes)"),
 })
 
 export type IAlgolia = z.output<typeof ZAlgolia>
@@ -53,7 +54,9 @@ export default {
             title: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
             description: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
             keywords: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
-            organization_name: [{ type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
+            rome_labels: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            // organization_name : nom d'organisme (CFA / entreprise), jamais à raciniser → analyzer dédié sans stemming.
+            organization_name: [{ type: "string", analyzer: "lba_company", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
             type: { type: "token" },
             type_filter_label: { type: "token" },
             sub_type: { type: "token" },
@@ -66,6 +69,14 @@ export default {
             location: { type: "geo" },
           },
         },
+        analyzers: [
+          {
+            // Noms d'organismes : minuscules + sans accents, sans stemming ni stopwords (noms propres préservés).
+            name: "lba_company",
+            tokenizer: { type: "standard" },
+            tokenFilters: [{ type: "lowercase" }, { type: "asciiFolding" }],
+          },
+        ],
         synonyms: [
           {
             name: "lba_synonyms",

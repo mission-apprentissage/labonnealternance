@@ -131,16 +131,22 @@ const SYNONYM_MULTI_PATHS = [
   { value: "title", multi: "standard" },
   { value: "description", multi: "standard" },
   { value: "keywords", multi: "standard" },
+  { value: "rome_labels", multi: "standard" },
   { value: "organization_name", multi: "standard" },
 ]
 
 function buildTextClauses(q?: string): object[] {
-  // Deux clauses pour la recherche textuelle :
-  // 1. French + fuzzy  — couverture principale des termes français
-  // 2. Standard + synonymes — expansion des abréviations (ex: ccgo → Chef de chantier gros oeuvre)
+  // Champs homogènes cross-type (offre / formation / recruteur) → boosting par champ correct.
+  // rome_labels : signal métier déterministe (dérivé des rome_codes), présent pour les 3 types.
+  // Une clause `text` par champ avec un poids dédié, + une clause synonymes (expansion d'abréviations).
+  const fuzzy = { maxEdits: 1, prefixLength: 1 }
   return q
     ? [
-        { text: { query: q, path: ["title", "description", "keywords", "organization_name"], fuzzy: { maxEdits: 1 } } },
+        { text: { query: q, path: "rome_labels", fuzzy, score: { boost: { value: 8 } } } },
+        { text: { query: q, path: "title", fuzzy, score: { boost: { value: 7 } } } },
+        { text: { query: q, path: "keywords", fuzzy, score: { boost: { value: 5 } } } },
+        { text: { query: q, path: "organization_name", fuzzy, score: { boost: { value: 3 } } } },
+        { text: { query: q, path: "description", fuzzy, score: { boost: { value: 2 } } } },
         { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms" } },
       ]
     : []
@@ -292,7 +298,8 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
             compound,
             sort: buildSortStage(params),
             highlight: {
-              path: ["title", "description"],
+              // rome_labels inclus : les recruteurs n'ont pas de description → preview via les intitulés métier.
+              path: ["title", "description", "rome_labels"],
               maxNumPassages: HIGHLIGHT_MAX_PASSAGES,
             },
             count: { type: "total" },
