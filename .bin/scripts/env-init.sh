@@ -35,6 +35,10 @@ yarn setup:mongodb
 echo "Creating mongotUser in MongoDB..."
 # Mot de passe passé via process.env (pas d'interpolation dans la chaîne --eval) → pas de
 # corruption sur caractères spéciaux. Identique au fichier baké dans l'image mongot.
+# NB : sur un volume MongoDB déjà provisionné, si un mongotUser existe avec un ancien mot de
+# passe, ce dropUser/createUser doit le resynchroniser. En cas de mongot en AuthenticationFailed
+# (boucle de restart) après un changement de MONGOT_PASSWORD au vault : re-jouer ce bloc, ou
+# repartir propre avec `yarn services:clean`. Cf. docs/mongodb/current-behavior.md (Limitations).
 docker compose exec -e MONGOT_VALUE="$MONGOT_VALUE" mongodb mongosh \
   "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
   --eval 'try { db.dropUser("mongotUser") } catch (e) {} db.createUser({ user: "mongotUser", pwd: process.env.MONGOT_VALUE, roles: ["searchCoordinator"] }); print("mongotUser created")' \
