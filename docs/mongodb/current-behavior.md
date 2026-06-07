@@ -104,3 +104,14 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 - Données legacy : un document sans `location` (non régénéré par `fillAlgoliaCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).
 - Mobile : barre + panneaux **dupliqués** dans le client `filter-only` (vue de test, pas d'extraction partagée).
 - **Local — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD`** : le `createUser mongotUser` d'[`env-init.sh`](../../.bin/scripts/env-init.sh) ne synchronise pas le mot de passe si un `mongotUser` existe déjà dans le volume MongoDB persistant (le `dropUser` préalable peut échouer / l'ancien user survit). Symptôme : mongot en boucle de redémarrage. Correctif manuel : re-jouer le bloc `dropUser`/`createUser` d'env-init avec la valeur courante de `.infra/local/mongot_password`, puis `docker compose restart mongot`. Réinitialiser le volume (`yarn services:clean`) repart d'un état propre.
+- **Preview — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD` au vault** : même cause côté serveur. Le `createUser` du playbook ([`preview_pr_mongodb82.yml`](../../.infra/ansible/tasks/preview_pr_mongodb82.yml)) est un resync idempotent qui lit **le même fichier** que mongot — sur un deploy complet et propre il ne peut pas diverger. Mais si un **redeploy réécrit le fichier mot de passe (nouvelle valeur) sans atteindre le `createUser`** (échec entre les deux tâches) **et que le volume mongo `*_mongodb82` survit** (le `down --volumes` de la tâche « Stop existing application » porte `ignore_errors: true`), la base garde l'ancien `mongotUser` alors que mongot lit la nouvelle valeur → boucle de redémarrage. Correctif manuel sur le serveur (PR `N`) :
+  ```bash
+  PR=N
+  KEYFILE="$(cat /opt/app/projects/$PR/mongo_keyfile)"
+  MV="$(cat /opt/app/projects/$PR/mongot_password)"
+  docker exec -e MV="$MV" lba_${PR}_mongodb mongosh \
+    "mongodb://__system:${KEYFILE}@127.0.0.1:27017/admin?authSource=local&directConnection=true" --quiet \
+    --eval 'try{db.dropUser("mongotUser")}catch(e){}; db.createUser({user:"mongotUser",pwd:process.env.MV,roles:[{role:"searchCoordinator",db:"admin"}]})'
+  docker restart lba_${PR}_mongot
+  ```
+  Comme le mot de passe change rarement, on garde ce correctif manuel plutôt qu'un wipe de volume forcé dans le playbook. Pour fiabiliser si besoin un jour : supprimer explicitement les volumes `{{ pr_number }}_mongodb82` / `{{ pr_number }}_mongotdata` au (re)deploy, ou ajouter une tâche finale d'auto-réparation (resync + `restart mongot` si mongot n'est pas healthy).
