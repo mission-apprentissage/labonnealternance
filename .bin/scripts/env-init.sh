@@ -18,16 +18,26 @@ echo "NEXT_PUBLIC_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_API_PORT=5001" >> "${ROOT_DIR}/ui/.env"
 
 yarn
+
+# Mot de passe mongot : récupéré depuis server/.env (généré du vault via .env_server),
+# écrit dans le fichier que l'image mongot copie au build (Dockerfile.mongot), AVANT services:start.
+echo "Provisioning du mot de passe mongot..."
+MONGOT_VALUE=$(grep -E '^MONGOT_PASSWORD=' "${ROOT_DIR}/server/.env" | head -1 | cut -d= -f2-)
+if [ -z "$MONGOT_VALUE" ]; then
+  echo "ERREUR: MONGOT_PASSWORD absent de server/.env (ajoute-le à .infra/.env_server)" >&2
+  exit 1
+fi
+printf '%s' "$MONGOT_VALUE" > "${ROOT_DIR}/.infra/local/mongot_password"
+
 yarn services:start
 yarn setup:mongodb
 
 echo "Creating mongotUser in MongoDB..."
-# Use the local password file — mongot is built with this file baked in,
-# so the user password must match it exactly.
-MONGOT_PWD=$(cat "${ROOT_DIR}/.infra/local/mongot_password")
-docker compose exec mongodb mongosh \
+# Mot de passe passé via process.env (pas d'interpolation dans la chaîne --eval) → pas de
+# corruption sur caractères spéciaux. Identique au fichier baké dans l'image mongot.
+docker compose exec -e MONGOT_VALUE="$MONGOT_VALUE" mongodb mongosh \
   "mongodb://__system:password@localhost:27017/admin?authSource=local&directConnection=true" \
-  --eval "try { db.createUser({ user: 'mongotUser', pwd: '${MONGOT_PWD}', roles: ['searchCoordinator'] }); print('mongotUser created') } catch(e) { if (e.code === 51003) { print('mongotUser already exists, skipping') } else { throw e } }" \
+  --eval 'try { db.dropUser("mongotUser") } catch (e) {} db.createUser({ user: "mongotUser", pwd: process.env.MONGOT_VALUE, roles: ["searchCoordinator"] }); print("mongotUser created")' \
   --quiet
 docker compose restart mongot
 

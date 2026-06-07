@@ -172,3 +172,6 @@ venv
 CLAUDE.md
 .mcp.json
 _temp/
+
+# Mot de passe mongot local généré depuis le vault par yarn setup (env:init)
+.infra/local/mongot_password
