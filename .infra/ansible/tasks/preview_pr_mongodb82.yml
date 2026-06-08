@@ -169,6 +169,21 @@
       environment:
         MONGOT_SYNC_VALUE: "{{ mongot_password_file.content | b64decode }}"
 
+    - name: "[{{ pr_number }}] Vérifier l'authentification de mongotUser"
+      no_log: true
+      shell:
+        cmd: >
+          docker exec -e MONGOT_SYNC_VALUE lba_{{ pr_number }}_mongodb mongosh
+          "mongodb://127.0.0.1:27017/admin?directConnection=true"
+          --quiet
+          --eval 'quit(db.auth("mongotUser", process.env.MONGOT_SYNC_VALUE) ? 0 : 1)'
+      environment:
+        MONGOT_SYNC_VALUE: "{{ mongot_password_file.content | b64decode }}"
+      register: mongot_user_auth_check
+      retries: 10
+      delay: 2
+      until: mongot_user_auth_check.rc == 0
+
     - name: "[{{ pr_number }}] Check if database is already seeded (MongoDB 8.2)"
       shell:
         cmd: >
