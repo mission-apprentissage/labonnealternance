@@ -152,8 +152,10 @@
       ansible.builtin.slurp:
         src: "/opt/app/projects/{{ pr_number }}/mongot_password"
       register: mongot_password_file
+      no_log: true
 
     - name: "[{{ pr_number }}] Créer mongotUser"
+      no_log: true
       shell:
         # Le mot de passe est injecté via `environment:` (octets exacts du fichier, b64decode par
         # Ansible) puis transmis tel quel par `docker exec -e MONGOT_SYNC_VALUE` (sans =valeur →
