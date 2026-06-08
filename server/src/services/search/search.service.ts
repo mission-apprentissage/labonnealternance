@@ -350,6 +350,11 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
         : null
     return {
       ...algoliaDoc,
+      // Champs d'enrichissement ajoutés après coup (rome_labels, keywords) : absents des docs
+      // seedés antérieurs → on force la clé à null pour satisfaire le schéma `.nullable()`
+      // (sinon `undefined` → erreur de sérialisation Zod → 500).
+      keywords: algoliaDoc.keywords ?? null,
+      rome_labels: algoliaDoc.rome_labels ?? null,
       preview: buildPreviewText(highlights ?? []),
       matched_words: buildSearchMatchWords(highlights ?? []),
       distance,
