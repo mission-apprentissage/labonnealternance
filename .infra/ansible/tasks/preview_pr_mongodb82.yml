@@ -205,9 +205,51 @@
         (db_collections_count.stdout | trim | int) == 0
 
     - name: "[{{ pr_number }}] Start Application"
-      shell:
-        chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml up -d --remove-orphans --wait
+      block:
+        - name: "[{{ pr_number }}] Start Application"
+          shell:
+            chdir: "/opt/app/projects/{{ pr_number }}"
+            cmd: docker compose -f docker-compose.yml -f docker-compose.mongodb82.yml up -d --remove-orphans --wait
+      rescue:
+        - name: "[{{ pr_number }}] Collect mongot status"
+          shell:
+            cmd: docker ps -a --filter name=lba_{{ pr_number }}_mongot
+          register: mongot_ps_output
+          changed_when: false
+          ignore_errors: true
+
+        - name: "[{{ pr_number }}] Collect mongot state"
+          shell:
+            cmd: >
+              docker inspect lba_{{ pr_number }}_mongot
+              --format '{% raw %}{{json .State}}{% endraw %}'
+          register: mongot_state_output
+          changed_when: false
+          ignore_errors: true
+
+        - name: "[{{ pr_number }}] Collect mongot logs"
+          shell:
+            cmd: docker logs --tail 200 lba_{{ pr_number }}_mongot
+          register: mongot_logs_output
+          changed_when: false
+          ignore_errors: true
+
+        - name: "[{{ pr_number }}] Print mongot diagnostics"
+          debug:
+            msg: |
+              mongot ps:
+              {{ mongot_ps_output.stdout | default('unavailable') }}
+
+              mongot state:
+              {{ mongot_state_output.stdout | default('unavailable') }}
+
+              mongot logs:
+              {{ mongot_logs_output.stdout | default('') }}
+              {{ mongot_logs_output.stderr | default('') }}
+
+        - name: "[{{ pr_number }}] Fail after mongot diagnostics"
+          ansible.builtin.fail:
+            msg: "Start Application failed because mongot did not become healthy; see diagnostics above."
 
     # indexes:recreate crée aussi les MongoDB Search indexes via le driver (createSearchIndexes),
     # depuis le conteneur server — plus besoin du script host create-search-indexes.sh.
