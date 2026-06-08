@@ -643,7 +643,7 @@ async function upsertJobOfferPrivate({
     offer_creation: data.offer.publication.creation ?? invariantData.created_at,
     offer_expiration: data.offer.publication.expiration || defaultOfferExpiration,
     offer_opening_count: data.offer.opening_count,
-    offer_origin: data.offer.origin,
+    offer_origin: null, // data.offer.origin
     offer_status: data.offer.status,
     offer_multicast: data.offer.multicast,
 

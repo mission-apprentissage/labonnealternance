@@ -75,7 +75,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
           apply_phone: computedJobPartner.apply_phone ?? null,
           apply_email: computedJobPartner.apply_email ?? null,
           offer_multicast: computedJobPartner.offer_multicast ?? true,
-          offer_origin: computedJobPartner.offer_origin ?? null,
+          offer_origin: null,
           rank: computedJobPartner.rank ?? null,
           duplicates: computedJobPartner.duplicates ?? null,
           cfa_siret: null,

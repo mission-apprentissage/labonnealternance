@@ -138,7 +138,7 @@ export const createJob = async ({
     entreprise,
     user,
     status: newJobStatus,
-    origin: origin ?? "lba",
+    origin: "La bonne alternance",
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
