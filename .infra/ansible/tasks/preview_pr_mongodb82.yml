@@ -204,6 +204,32 @@
         db_collections_count.rc != 0 or
         (db_collections_count.stdout | trim | int) == 0
 
+    - name: "[{{ pr_number }}] Resynchroniser mongotUser après seed"
+      no_log: true
+      shell:
+        cmd: >
+          docker exec -e MONGOT_SYNC_VALUE lba_{{ pr_number }}_mongodb mongosh
+          "mongodb://__system:{{ MONGODB_KEYFILE }}@127.0.0.1:27017/admin?authSource=local&directConnection=true"
+          --quiet
+          --eval 'try { db.dropUser("mongotUser") } catch (e) {} db.runCommand({ createUser: "mongotUser", pwd: process.env.MONGOT_SYNC_VALUE, roles: [{ role: "searchCoordinator", db: "admin" }], mechanisms: ["SCRAM-SHA-256"] })'
+      environment:
+        MONGOT_SYNC_VALUE: "{{ mongot_password_file.content | b64decode }}"
+
+    - name: "[{{ pr_number }}] Vérifier l'authentification de mongotUser après seed"
+      no_log: true
+      shell:
+        cmd: >
+          docker exec -e MONGOT_SYNC_VALUE lba_{{ pr_number }}_mongodb mongosh
+          "mongodb://127.0.0.1:27017/admin?directConnection=true"
+          --quiet
+          --eval 'quit(db.auth({ user: "mongotUser", pwd: process.env.MONGOT_SYNC_VALUE, mechanism: "SCRAM-SHA-256" }) ? 0 : 1)'
+      environment:
+        MONGOT_SYNC_VALUE: "{{ mongot_password_file.content | b64decode }}"
+      register: mongot_user_auth_check_after_seed
+      retries: 10
+      delay: 2
+      until: mongot_user_auth_check_after_seed.rc == 0
+
     - name: "[{{ pr_number }}] Start Application"
       block:
         - name: "[{{ pr_number }}] Start Application"
