@@ -138,7 +138,7 @@ export const createJob = async ({
     entreprise,
     user,
     status: newJobStatus,
-    origin: "La bonne alternance",
+    origin: origin ?? "La bonne alternance",
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
@@ -1165,7 +1165,7 @@ async function jobCreateToJobsPartner({
     workplace_naf_code: entreprise.naf_code ?? null,
     workplace_naf_label: entreprise.naf_label ?? null,
     workplace_size: entrepriseDataOpt?.establishment_size ?? null,
-    offer_origin: origin ?? null,
+    offer_origin: origin,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_desired_skills:
       job.competences_rome?.savoir_etre_professionnel?.map((savoirEtre) => savoirEtre.libelle) ??
