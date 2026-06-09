@@ -9,6 +9,7 @@ import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod
 import { Netmask } from "netmask"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 import config from "@/config"
@@ -49,7 +50,6 @@ import { jobsApiV3Routes } from "./controllers/v3/jobs/jobs.controller.v3"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
-import { logMiddleware } from "./middlewares/logMiddleware"
 
 export type Server = FastifyInstance<
   RawServerDefault,
@@ -60,6 +60,11 @@ export type Server = FastifyInstance<
 >
 
 export async function bind(app: Server) {
+  // Premier hook onRequest (avant Sentry) : propage le logger de requête (reqId) au contexte async
+  app.addHook("onRequest", (request, _reply, done) => {
+    enterRequestLoggerContext(request.log)
+    done()
+  })
   initSentryFastify(app)
   setZodLanguage("en")
   app.setValidatorCompiler(validatorCompiler)
@@ -164,7 +169,7 @@ export async function bind(app: Server) {
 
 export const bindFastifyServer = async (): Promise<Server> => {
   const app: Server = fastify({
-    logger: logMiddleware(),
+    loggerInstance: getRootLogger(),
     trustProxy: 1,
     routerOptions: {
       caseSensitive: false,

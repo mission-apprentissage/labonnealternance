@@ -477,11 +477,14 @@ export const entrepriseOnboardingWorkflow = {
       try {
         await sendUserConfirmationEmail(managingUser)
       } catch (error) {
-        logger.error("Failed to send user confirmation email after enterprise account creation", {
-          userId: managingUser._id,
-          email: managingUser.email,
-          error,
-        })
+        logger.error(
+          {
+            userId: managingUser._id,
+            email: managingUser.email,
+            err: error,
+          },
+          "Failed to send user confirmation email after enterprise account creation"
+        )
         sentryCaptureException(error, { extra: { userId: managingUser._id, email: managingUser.email } })
       }
     }

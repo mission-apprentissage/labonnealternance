@@ -3,10 +3,10 @@ import fastify from "fastify"
 import type { ZodTypeProvider } from "fastify-type-provider-zod"
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { zRoutes } from "shared"
+import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { ensureInitialization, getMongodbClientState } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
-import { logMiddleware } from "./middlewares/logMiddleware"
 import type { Server } from "./server"
 
 const getHealthCheck = async () => {
@@ -26,6 +26,10 @@ const getHealthCheck = async () => {
 }
 
 async function bind(app: Server) {
+  app.addHook("onRequest", (request, _reply, done) => {
+    enterRequestLoggerContext(request.log)
+    done()
+  })
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
@@ -57,7 +61,7 @@ async function bind(app: Server) {
 
 export const bindStreamProcessorServer = async (): Promise<Server> => {
   const app: Server = fastify({
-    logger: logMiddleware(),
+    loggerInstance: getRootLogger(),
     trustProxy: 1,
     routerOptions: {
       caseSensitive: false,
