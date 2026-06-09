@@ -319,6 +319,7 @@ export const cfaCompanyList = [
   "BRUNO TRIAY CONSEIL",
   "BSA MAUD BADUREAU",
   "BSF",
+  "BTP CFA",
   "BTP CFA AUVERGNE RHONE ALPES",
   "BTP CFA CENTRE",
   "BTP CFA GRAND EST",
