@@ -20,9 +20,6 @@ export const zJobsRoutesV3 = {
         access: null,
         resources: {},
       },
-      openapi: {
-        tags: ["V3 - Jobs"] as string[],
-      },
     },
     "/v3/jobs/:id": {
       method: "get",
@@ -37,9 +34,6 @@ export const zJobsRoutesV3 = {
         auth: "api-apprentissage",
         access: null,
         resources: {},
-      },
-      openapi: {
-        tags: ["V3 - Jobs"] as string[],
       },
     },
     "/v3/jobs/:id/publishing-informations": {
@@ -56,9 +50,6 @@ export const zJobsRoutesV3 = {
         access: null,
         resources: {},
       },
-      openapi: {
-        tags: ["V3 - Jobs"] as string[],
-      },
     },
     "/v3/jobs/export": {
       method: "get",
@@ -74,9 +65,6 @@ export const zJobsRoutesV3 = {
         access: null,
         resources: {},
       },
-      openapi: {
-        tags: ["V3 - Jobs"] as string[],
-      },
     },
   },
   post: {
@@ -91,9 +79,6 @@ export const zJobsRoutesV3 = {
         auth: "api-apprentissage",
         access: "api-apprentissage:jobs",
         resources: {},
-      },
-      openapi: {
-        tags: ["V3 - Jobs"] as string[],
       },
     },
     "/v3/jobs/multi-partner": {
@@ -178,9 +163,6 @@ export const zJobsRoutesV3 = {
         resources: {
           job: [{ _id: { type: "params", key: "id" } }],
         },
-      },
-      openapi: {
-        tags: ["V3 - Jobs"] as string[],
       },
     },
   },

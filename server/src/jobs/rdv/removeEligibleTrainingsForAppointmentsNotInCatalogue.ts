@@ -1,23 +1,17 @@
-import { ObjectId } from "bson"
-import type { IEligibleTrainingsForAppointment } from "shared"
-
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 
 /**
  * @description remove ETFA training that are not in formationcatalogues
- * @return {Promise<{ AncientElligibleTrainingCount: number, NewElligibleTrainingCount: number }>}
  */
-export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => {
-  logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue started.")
-  const now = new Date()
+export const removeEligibleTrainingsForAppointmentsNotInCatalogue = async () => {
+  logger.info("Cron #removeEligibleTrainingsForAppointmentsNotInCatalogue started.")
 
   const formationcataloguesCount = await getDbCollection("formationcatalogues").countDocuments()
   if (formationcataloguesCount === 0) return
 
   const eligibleTrainingsCollection = getDbCollection("eligible_trainings_for_appointments")
-  const historyCollection = getDbCollection("eligible_trainings_for_appointments_histories")
 
   const result = await eligibleTrainingsCollection
     .aggregate([
@@ -38,15 +32,6 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
 
   if (!result.length) return
 
-  const insertOps = result.map((etfa) => ({
-    ...(etfa as IEligibleTrainingsForAppointment),
-    _id: new ObjectId(),
-    lieu_formation_email: null,
-    historization_date: now,
-  }))
-
-  await historyCollection.insertMany(insertOps)
-
   const deleteOps = result.map((etfa) => ({
     deleteOne: {
       filter: { cle_ministere_educatif: etfa.cle_ministere_educatif },
@@ -55,7 +40,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
 
   await eligibleTrainingsCollection.bulkWrite(deleteOps)
 
-  await notifyToSlack({ subject: "Historisation des formations éligibles", message: `Formations historisées : ${result.length}` })
+  await notifyToSlack({ subject: "Suppression des formations éligibles absentes du catalogue", message: `Formations supprimées : ${result.length}` })
 
-  logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue done.")
+  logger.info("Cron #removeEligibleTrainingsForAppointmentsNotInCatalogue done.")
 }

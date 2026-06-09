@@ -98,15 +98,6 @@ const obfuscateElligibleTrainingsForAppointment = async () => {
       $set: { lieu_formation_email: fakeEmail },
     }
   )
-  await getDbCollection("eligible_trainings_for_appointments_histories").updateMany(
-    {},
-    {
-      $set: { lieu_formation_email: fakeEmail },
-    },
-    {
-      bypassDocumentValidation: true,
-    }
-  )
 }
 
 const obfuscateEtablissements = async () => {
@@ -316,7 +307,6 @@ export async function obfuscateCollections(): Promise<void> {
     "cache_geolocation",
     "cache_siret",
     "computed_jobs_partners",
-    "eligible_trainings_for_appointments_histories",
     "emailblacklists",
     "jobs",
     "opcos",

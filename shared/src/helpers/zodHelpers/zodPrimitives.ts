@@ -20,20 +20,9 @@ export const createProjectionFromZod = <T extends z.ZodObject<any>>(schema: T, e
 }
 
 export const extensions = {
-  siret: z
-    .string()
-    .trim()
-    .regex(SIRET_REGEX, "SIRET invalide")
-    .refine(validateSIRET, {
-      message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
-    })
-    .openapi({
-      description: "Le numéro de SIRET de l'établissement",
-      param: {
-        description: "Le numéro de SIRET de l'établissement",
-      },
-      example: "78424186100011",
-    }),
+  siret: z.string().trim().regex(SIRET_REGEX, "SIRET invalide").refine(validateSIRET, {
+    message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
+  }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
   phone: () =>
     z

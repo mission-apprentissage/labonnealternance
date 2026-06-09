@@ -156,7 +156,7 @@ export const findApplicationByMessageId = async ({ messageId, email }: { message
   getDbCollection("applications").findOne({ company_email: email, to_company_message_id: messageId })
 
 export const removeEmailFromLbaCompanies = async (email: string) => {
-  return await getDbCollection("jobs_partners").updateMany({ email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { $set: { email: "" } })
+  return await getDbCollection("jobs_partners").updateMany({ apply_email: email, partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA }, { $set: { apply_email: null } })
 }
 
 async function identifyFileType(base64Data: string): Promise<string | undefined> {
@@ -289,8 +289,7 @@ export const sendApplicationV2 = async ({
   if (!PARTNERS_WITH_APPLICATION_API.includes(job.partner_label)) {
     const recruteurEmail = job.apply_email?.toLowerCase()
     if (!recruteurEmail) {
-      sentryCaptureException(`${BusinessErrorCodes.INTERNAL_EMAIL} ${`job_partners avec id=${job._id}`}`)
-      throw internal(BusinessErrorCodes.INTERNAL_EMAIL)
+      throw badRequest(BusinessErrorCodes.INTERNAL_EMAIL)
     }
   }
 
@@ -1273,6 +1272,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   await getDbCollection("applications").updateOne(
     {
       _id: application._id,
+      company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
     },
     {
       $set: {

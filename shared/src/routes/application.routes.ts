@@ -63,34 +63,26 @@ export const zApplicationRoutes = {
             atsApplicationId: z.string(),
           })
           .strict(),
-        "400": z
-          .union([
-            ZResError,
-            ZLbacError,
-            z
-              .object({
-                message: z.string(),
-                code: z.string(),
-              })
-              .strict(),
-          ])
-          .openapi({
-            description: "Bad Request",
-          }),
-        "401": z
-          .union([
-            ZResError,
-            ZLbacError,
-            z
-              .object({
-                message: z.string(),
-                code: z.string(),
-              })
-              .strict(),
-          ])
-          .openapi({
-            description: "Unauthorized",
-          }),
+        "400": z.union([
+          ZResError,
+          ZLbacError,
+          z
+            .object({
+              message: z.string(),
+              code: z.string(),
+            })
+            .strict(),
+        ]),
+        "401": z.union([
+          ZResError,
+          ZLbacError,
+          z
+            .object({
+              message: z.string(),
+              code: z.string(),
+            })
+            .strict(),
+        ]),
       },
       securityScheme: null,
     },

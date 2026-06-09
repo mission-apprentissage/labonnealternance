@@ -7,9 +7,10 @@
 @font-face {
   font-family: "Marianne";
   src:
-    local("Marianne"),
-    url("../fonts/Marianne/Marianne-Bold.woff") format("woff"),
-    url("../fonts/Marianne/Marianne-Bold.woff2") format("woff2");
+    local("Marianne Bold"),
+    local("Marianne-Bold"),
+    url("../fonts/Marianne/Marianne-Bold.woff2") format("woff2"),
+    url("../fonts/Marianne/Marianne-Bold.woff") format("woff");
   font-weight: 700;
   font-display: swap;
 }
@@ -17,17 +18,10 @@
   font-family: "Marianne";
   src:
     local("Marianne"),
-    url("../fonts/Marianne/Marianne-Medium.woff") format("woff"),
-    url("../fonts/Marianne/Marianne-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Marianne";
-  src:
-    local("Marianne"),
-    url("../fonts/Marianne/Marianne-Regular.woff") format("woff"),
-    url("../fonts/Marianne/Marianne-Regular.woff2") format("woff2");
+    local("Marianne Regular"),
+    local("Marianne-Regular"),
+    url("../fonts/Marianne/Marianne-Regular.woff2") format("woff2"),
+    url("../fonts/Marianne/Marianne-Regular.woff") format("woff");
   font-weight: 400;
   font-display: swap;
 }
