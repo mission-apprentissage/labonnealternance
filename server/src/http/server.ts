@@ -60,12 +60,12 @@ export type Server = FastifyInstance<
 >
 
 export async function bind(app: Server) {
-  initSentryFastify(app)
-  // Doit rester le premier hook onRequest : propage le logger de requête (reqId) au contexte async
+  // Premier hook onRequest (avant Sentry) : propage le logger de requête (reqId) au contexte async
   app.addHook("onRequest", (request, _reply, done) => {
     enterRequestLoggerContext(request.log)
     done()
   })
+  initSentryFastify(app)
   setZodLanguage("en")
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)

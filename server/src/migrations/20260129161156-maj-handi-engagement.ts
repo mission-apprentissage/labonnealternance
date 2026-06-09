@@ -39,8 +39,7 @@ export const up = async () => {
         })
       }
     } catch (err) {
-      logger.error({ line }, "error when treating line")
-      logger.error(err)
+      logger.error({ err, line }, "error when treating line")
     }
   })
 }

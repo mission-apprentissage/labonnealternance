@@ -6,8 +6,8 @@ import { logger } from "./common/logger"
 import { configureDbSchemaValidation, connectToMongodb } from "./common/utils/mongodbUtils"
 import config from "./config"
 
-process.on("unhandledRejection", (err) => logger.error(err, "unhandledRejection"))
-process.on("uncaughtException", (err) => logger.error(err, "uncaughtException"))
+process.on("unhandledRejection", (err) => logger.error({ err }, "unhandledRejection"))
+process.on("uncaughtException", (err) => logger.error({ err }, "uncaughtException"))
 
 try {
   logger.warn("starting application")
@@ -16,7 +16,7 @@ try {
   await configureDbSchemaValidation(modelDescriptors)
   await startCLI()
 } catch (err) {
-  logger.error(err, "startup error")
+  logger.error({ err }, "startup error")
 
   setTimeout(() => {
     process.exit(1) // eslint-disable-line n/no-process-exit
