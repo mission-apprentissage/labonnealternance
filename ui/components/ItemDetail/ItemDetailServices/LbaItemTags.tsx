@@ -2,7 +2,6 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { isCfaEntreprise } from "shared/services/isCfaEntreprise"
-import { isGeiqEntreprise } from "shared/services/isGeiqEntreprise"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { CustomTooltip } from "@/app/(espace-pro)/_components/CustomTooltip"
 import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagementTag"
@@ -43,9 +42,8 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
     tags.push(tag)
   } else if (ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
     const isCfa = isCfaEntreprise(company?.siret, company?.headquarter?.siret)
-    const isGeiq = isGeiqEntreprise(company?.siret, company?.headquarter?.siret)
-    tags.push(isCfa || isGeiq ? <TagCfaDEntreprise key="cfa d entreprise" /> : <TagFormation key="formation" />)
-  } else if (company?.mandataire) {
+    tags.push(isCfa ? <TagCfaDEntreprise key="cfa d entreprise" /> : <TagFormation key="formation" />)
+  } else if (company?.mandataire || company?.isGeiq) {
     tags.push(<TagEmploiFormation key="tag emploi formation" />)
   } else {
     tags.push(<TagOffreEmploi key="offre emploi" />)

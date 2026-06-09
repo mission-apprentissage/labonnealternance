@@ -1,5 +1,5 @@
 import type { Filter } from "mongodb"
-import { GEIQ_WHITELIST } from "shared/constants"
+import GEIQ_WHITELIST from "shared/constants/geiq"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST } from "shared/models/jobsPartnersComputed.model"
 import type { FillComputedJobsPartnersContext } from "./fillComputedJobsPartners"

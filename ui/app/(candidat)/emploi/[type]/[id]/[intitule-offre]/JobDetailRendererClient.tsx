@@ -133,6 +133,8 @@ function JobDetail({
   const kind = selectedItem.ideaType
   const isMandataire = Boolean(selectedItem?.company?.mandataire)
   const isCfaEntreprise = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).job?.isCfaEntreprise)
+  const isGeiq = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).company?.isGeiq)
+
   const reportItemId = (() => {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) return (selectedItem as ILbaItemLbaJobJson).job?.id ?? null
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) return (selectedItem as ILbaItemPartnerJobJson).id
@@ -297,7 +299,7 @@ function JobDetail({
                   )}
                 </Box>
               </Box>
-              {selectedItem.company?.mandataire && selectedItem.contact?.hasEmail && (
+              {(selectedItem.company?.mandataire || selectedItem.company?.isGeiq) && selectedItem.contact?.hasEmail && (
                 <Stack
                   direction="row"
                   sx={{
@@ -310,7 +312,9 @@ function JobDetail({
                     <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
                   </Box>
                   <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
-                    Votre candidature sera envoyée à l'organisme en charge du recrutement pour le compte de l'entreprise.{" "}
+                    {selectedItem.company?.mandataire
+                      ? "Votre candidature sera envoyée à l'organisme en charge du recrutement pour le compte de l'entreprise."
+                      : "Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement."}
                   </Typography>
                 </Stack>
               )}
@@ -320,7 +324,7 @@ function JobDetail({
           <Box id="detail-content-container" />
           <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isCfaEntreprise && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && isCfaEntreprise && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
