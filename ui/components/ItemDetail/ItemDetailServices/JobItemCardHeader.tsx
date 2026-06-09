@@ -28,7 +28,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
       res = (
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           <Typography component="span" sx={{ fontWeight: 400 }}>
-            Le centre de formation&nbsp;
+            L'organisme&nbsp;
           </Typography>
           <Typography component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
           <Typography component="span" sx={{ fontWeight: 400 }}>
