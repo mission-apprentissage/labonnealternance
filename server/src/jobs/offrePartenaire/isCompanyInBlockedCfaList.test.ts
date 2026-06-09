@@ -37,6 +37,8 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
   it("devrait bloquer les variantes BTP CFA via l'entrée générique", () => {
     expect(getCompanyInBlockedCfaList("BTP CFA BRETAGNE")).toBeTruthy()
     expect(getCompanyInBlockedCfaList("BTP CFA CENTRE")).toBeTruthy()
+    expect(isCompanyInBlockedCfaList("BTP CFA BRETAGNE")).toBe(true)
+    expect(isCompanyInBlockedCfaList("BTP CFA CENTRE")).toBe(true)
   })
 
   it("ne doit pas trouver un CFA qui n'existe pas", () => {
