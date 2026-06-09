@@ -312,9 +312,7 @@ function JobDetail({
                     <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
                   </Box>
                   <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
-                    {selectedItem.company?.mandataire
-                      ? "Votre candidature sera envoyée à l'organisme en charge du recrutement pour le compte de l'entreprise."
-                      : "Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement."}
+                    Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement.
                   </Typography>
                 </Stack>
               )}

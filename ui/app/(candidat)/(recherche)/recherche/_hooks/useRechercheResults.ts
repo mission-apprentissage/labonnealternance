@@ -235,11 +235,11 @@ function useFormationQuery(rechercheParams: IRecherchePageParams | null) {
 
 export type DisplayedJob = ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson | ILbaItemLbaJobJson
 
-function splitLbaJobs<T extends { company?: { mandataire?: boolean | null } | null }>(lbaJobs: T[]): { direct: T[]; delegated: T[] } {
+function splitLbaJobs<T extends { company?: { mandataire?: boolean | null; isGeiq?: boolean | null } | null }>(lbaJobs: T[]): { direct: T[]; delegated: T[] } {
   const direct: T[] = []
   const delegated: T[] = []
   for (const job of lbaJobs) {
-    if (job.company?.mandataire === true) {
+    if (job.company?.mandataire === true || job.company?.isGeiq === true) {
       delegated.push(job)
     } else {
       direct.push(job)
@@ -253,9 +253,12 @@ export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): b
     case TYPE_EMPLOI_OPTIONS.alternance:
       return (job.ideaType === "offres_emploi_lba" && job.company?.mandataire === false) || job.ideaType === "offres_emploi_partenaires"
     case TYPE_EMPLOI_OPTIONS.formation_incluse:
-      return job.ideaType === "offres_emploi_lba" && job.company?.mandataire === true
+      return (
+        (job.ideaType === "offres_emploi_lba" && job.company?.mandataire === true) ||
+        (["offres_emploi_lba", "recruteurs_lba"].includes(job.ideaType) && job.company?.isGeiq === true)
+      )
     case TYPE_EMPLOI_OPTIONS.candidatures_spontanees:
-      return job.ideaType === "lba"
+      return job.ideaType === "lba" || job.ideaType === "recruteurs_lba"
   }
 }
 

@@ -36,7 +36,7 @@ export default function ItemDetailCard({ selectedItem }: { selectedItem: ILbaIte
           />
         </svg>
         <Typography sx={{ ml: fr.spacing("2v") }} component="span">
-          Formation : {selectedItem?.place?.fullAddress}
+          Ecole : {selectedItem?.place?.fullAddress}
         </Typography>
       </Stack>
     </Box>
