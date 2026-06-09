@@ -24,10 +24,12 @@ export enum JOB_STATUS_ENGLISH {
   EN_ATTENTE = "Pending",
 }
 
-export enum JOB_START_TYPE {
-  DES_QUE_POSSIBLE = "des_que_possible",
-  PRECISE_DATE = "precise_date",
-}
+export const JOB_START_TYPE = {
+  DES_QUE_POSSIBLE: "des_que_possible",
+  PRECISE_DATE: "precise_date",
+} as const
+
+export type JOB_START_TYPE = (typeof JOB_START_TYPE)[keyof typeof JOB_START_TYPE]
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
