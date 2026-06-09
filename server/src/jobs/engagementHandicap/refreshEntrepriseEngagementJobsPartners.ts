@@ -41,7 +41,7 @@ export const refreshReferentielEngagementFranceTravail = async () => {
       )
       processed++
     } catch (err) {
-      logger.error("error when treating line", line)
+      logger.error({ line }, "error when treating line")
       logger.error(err)
       errors.push(line.SIRET)
     }

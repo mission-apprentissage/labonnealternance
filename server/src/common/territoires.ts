@@ -1463,7 +1463,7 @@ export const getDepartmentInfos = (zipCode: string): IDepartmentsRegionAndAcadem
   const codeDepartement = codePostalToDepartement(zipCode)
   const result = departmentsRegionAndAcademieCode.find((departement) => departement.code === codeDepartement)
   if (!result) {
-    logger.error("Unable to return department from zip code", { zipCode })
+    logger.error({ zipCode }, "Unable to return department from zip code")
     return undefined
   }
 

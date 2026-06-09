@@ -11,7 +11,7 @@ process.on("uncaughtException", (err) => logger.error(err, "uncaughtException"))
 
 try {
   logger.warn("starting application")
-  logger.info("V8 Options:", v8.getHeapStatistics())
+  logger.info({ v8HeapStatistics: v8.getHeapStatistics() }, "V8 Options")
   await connectToMongodb(config.mongodb.uri)
   await configureDbSchemaValidation(modelDescriptors)
   await startCLI()

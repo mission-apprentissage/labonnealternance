@@ -64,7 +64,7 @@ export const inviteEtablissementParcoursupToPremium = async (bypassDate?: boolea
 
   let count = 0
 
-  logger.info("Cron #inviteEtablissementToPremium / Etablissement: ", etablissementsToInviteToPremium.length)
+  logger.info({ count: etablissementsToInviteToPremium.length }, "Cron #inviteEtablissementToPremium / Etablissement")
 
   for (const etablissement of etablissementsToInviteToPremium) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
