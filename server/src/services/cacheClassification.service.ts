@@ -21,21 +21,21 @@ const getClassificationFromDB = async (jobs: TJobClassification[]): Promise<(ICl
 }
 
 export const getClassificationFromLab = async (jobs: TJobClassification[]): Promise<(string | null)[]> => {
-  const now = new Date()
   const cachedClassifications = await getClassificationFromDB(jobs)
   const notFoundJobs = jobs.flatMap((job, index) => {
     if (cachedClassifications[index] !== null) {
       return []
     }
-    return [{ ...job, originalIndex: index }]
+
+    return [{ job, index }]
   })
 
   if (!notFoundJobs.length) {
     return cachedClassifications.map((cached) => (cached?.human_verification ? cached.human_verification : (cached?.classification ?? null)))
   }
 
-  const classificationPayload = notFoundJobs.map((job) => ({
-    id: job.partner_job_id,
+  const classificationPayload = notFoundJobs.map(({ job, index }) => ({
+    id: index.toString(),
     workplace_name: job.workplace_name,
     workplace_description: job.workplace_description,
     offer_title: job.offer_title,
@@ -43,23 +43,17 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
   }))
 
   const classificationsFromLab = await getLabClassificationBatch(classificationPayload)
+  const classificationsById = new Map(classificationsFromLab.map((result) => [result.id, result]))
 
-  // Create a map from job ID to classification result for safe lookup
-  const classificationMap = new Map<string, { label: string; scores: any; model: string }>()
-  if (classificationsFromLab && classificationsFromLab.length) {
-    classificationsFromLab.forEach((result) => {
-      if (result?.label && result?.id) {
-        classificationMap.set(result.id, { label: result.label, scores: result.scores, model: result.model })
-      }
-    })
+  const now = new Date()
+  const zippedJobsNotFound = notFoundJobs.flatMap(({ job, index }) => {
+    const result = classificationsById.get(index.toString())
+    if (!result) return []
 
-    // Save to database using the map for safe lookups
-    const payloads = notFoundJobs
-      .map((job) => {
-        const result = classificationMap.get(job.partner_job_id)
-        if (!result) return null
-
-        return {
+    return [
+      {
+        index,
+        dbClassification: {
           _id: new ObjectId(),
           partner_label: job.partner_label,
           partner_job_id: job.partner_job_id,
@@ -67,22 +61,24 @@ export const getClassificationFromLab = async (jobs: TJobClassification[]): Prom
           scores: result.scores,
           model: result.model,
           created_at: now,
-        }
-      })
-      .filter((payload): payload is NonNullable<typeof payload> => payload !== null)
+        },
+        classificationResult: result,
+      },
+    ]
+  })
 
-    if (payloads.length > 0) {
-      await getDbCollection("cache_classification").insertMany(payloads)
-    }
+  if (zippedJobsNotFound.length) {
+    const payloads = zippedJobsNotFound.map(({ dbClassification }) => dbClassification)
+    await getDbCollection("cache_classification").insertMany(payloads)
   }
 
   // Return results in the same order as input jobs
-  return jobs.map((job, index) => {
+  return jobs.map((_job, index) => {
     const cached = cachedClassifications[index]
-    if (cached) return cached.human_verification ? cached.human_verification : cached.classification
+    if (cached) {
+      return cached.human_verification ? cached.human_verification : cached.classification
+    }
 
-    // Use the map for safe lookup
-    const result = classificationMap.get(job.partner_job_id)
-    return result?.label ?? null
+    return classificationsById.get(index.toString())?.label ?? null
   })
 }
