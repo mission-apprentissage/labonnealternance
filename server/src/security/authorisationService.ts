@@ -123,7 +123,7 @@ async function getJobsResource<S extends WithSecurityScheme>(schema: S, req: IRe
           return result ? [result] : null
         } else if ("establishment_id" in jobDef) {
           const establishmentIdValue = getAccessResourcePathValue(jobDef.establishment_id, req)
-          const { siret } = await establishmentIdToUserIdAndSiret(establishmentIdValue)
+          const { siret } = establishmentIdToUserIdAndSiret(establishmentIdValue)
           const userWithType = getUserFromRequest(req, schema)
           if (userWithType.type !== "IUser2") {
             return []

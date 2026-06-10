@@ -706,21 +706,7 @@ export function buildEstablishmentId(userId: ObjectId, siret: string) {
   return `${userId}_${siret}`
 }
 
-export async function establishmentIdToUserIdAndSiret(establishment_id: string): Promise<{ userId: ObjectId; siret: string }> {
-  if (establishment_id.includes("_")) {
-    const [userId, siret] = establishment_id.split("_")
-    return { userId: new ObjectId(userId), siret }
-  }
-  const offer = await getDbCollection("jobs_partners").findOne({ establishment_id })
-  if (offer) {
-    const { managed_by, workplace_siret } = offer
-    if (!managed_by) {
-      throw new Error(`managed_by vide pour l offre id=${offer._id}`)
-    }
-    if (!workplace_siret) {
-      throw new Error(`workplace_siret vide pour l offre id=${offer._id}`)
-    }
-    return { userId: managed_by, siret: workplace_siret }
-  }
-  throw new Error(`could not find user and siret from establishment_id=${establishment_id}`)
+export function establishmentIdToUserIdAndSiret(establishment_id: string): { userId: ObjectId; siret: string } {
+  const [userId, siret] = establishment_id.split("_")
+  return { userId: new ObjectId(userId), siret }
 }

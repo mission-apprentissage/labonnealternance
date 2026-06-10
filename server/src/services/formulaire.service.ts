@@ -360,7 +360,7 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
 }
 
 export const getFormulaireWithRomeDetail = async ({ establishment_id }: { establishment_id: string }): Promise<IRecruiter | null> => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const recruiter = await getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: false })
   recruiter?.jobs.forEach((job) => {
     // @ts-expect-error
@@ -376,7 +376,7 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
 }: {
   establishment_id: string
 }): Promise<IRecruiterWithRomeDetailAndApplicationCount | null> => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
@@ -521,7 +521,7 @@ const getRecruiterFromJobsPartnerFilter = async ({
  * @description Archive existing formulaire and cancel all its job offers
  */
 export const archiveFormulaireByEstablishmentId = async (id: string) => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(id)
   await archiveFormulaire(userId, siret)
 }
 
@@ -943,7 +943,7 @@ export const updateCfaManagedRecruiter = async (user: IUserWithAccount, establis
     throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${user._id}`)
   }
   const cfaId = new ObjectId(mainRole.authorized_id)
-  const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error(`inattendu: entreprise non trouvée pour l'establishment_id=${establishment_id}`)
@@ -1209,7 +1209,6 @@ async function jobCreateToJobsPartner({
     applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
-    establishment_id: buildEstablishmentId(user._id, entreprise.siret),
     to_applicant_questions: job.to_applicant_questions,
   }
   return jobPartner
