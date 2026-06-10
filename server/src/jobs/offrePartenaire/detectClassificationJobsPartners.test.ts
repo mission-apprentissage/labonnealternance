@@ -1,7 +1,7 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
-import { GEIQ_WHITELIST } from "shared/constants"
+import GEIQ_WHITELIST from "shared/constants/geiq"
 import type { IClassificationLabBatchResponse } from "shared/models/cacheClassification.model"
 import { COMPUTED_ERROR_SOURCE, JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"

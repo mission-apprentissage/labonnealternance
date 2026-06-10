@@ -11,6 +11,7 @@ import type {
   IQuery,
   IResponse,
 } from "shared"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { type ITypeEmploi, TYPE_EMPLOI_OPTIONS } from "shared/constants/recruteur"
 
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
@@ -251,14 +252,14 @@ function splitLbaJobs<T extends { company?: { mandataire?: boolean | null; isGei
 export function matchesTypeEmploi(job: DisplayedJob, typeEmploi: ITypeEmploi): boolean {
   switch (typeEmploi) {
     case TYPE_EMPLOI_OPTIONS.alternance:
-      return (job.ideaType === "offres_emploi_lba" && job.company?.mandataire === false) || job.ideaType === "offres_emploi_partenaires"
+      return (job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && job.company?.mandataire === false) || job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
     case TYPE_EMPLOI_OPTIONS.formation_incluse:
       return (
-        (job.ideaType === "offres_emploi_lba" && job.company?.mandataire === true) ||
-        (["offres_emploi_lba", "recruteurs_lba"].includes(job.ideaType) && job.company?.isGeiq === true)
+        (job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && job.company?.mandataire === true) ||
+        ((job.ideaType === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || job.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) && job.company?.isGeiq === true)
       )
     case TYPE_EMPLOI_OPTIONS.candidatures_spontanees:
-      return job.ideaType === "lba" || job.ideaType === "recruteurs_lba"
+      return job.ideaType === "lba" || job.ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA
   }
 }
 
