@@ -149,7 +149,7 @@ export const FormulaireEditionOffreStep1 = ({
     delegations: offre?.delegations ?? undefined,
     job_count: offre?.job_count ?? 1,
     job_duration: offre?.job_duration ?? 12,
-    job_rythm: offre?.job_rythm ?? null,
+    job_rythm: offre?.job_rythm ?? "",
     offer_title_custom: offre?.offer_title_custom ?? "",
     job_employer_description: offre?.job_employer_description ?? "",
     ...formValues,
@@ -186,105 +186,107 @@ export const FormulaireEditionOffreStep1 = ({
         })}
         onSubmit={(values: any) => localOnSubmit(values)}
       >
-        {({ values }) => (
-          <div>
-            <Typography
-              component="h1"
-              sx={(theme) => ({
-                fontWeight: 700,
-                color: "#000091",
-                mb: fr.spacing("6v"),
-                [theme.breakpoints.up("xs")]: {
-                  fontSize: "18px !important",
-                  lineHeight: "24px !important",
-                },
-                [theme.breakpoints.up("md")]: {
-                  fontSize: "20px !important",
-                  lineHeight: "28px !important",
-                },
-              })}
-            >
-              Étape 1/2 : Description de l’offre
-            </Typography>
-            <Typography component="h2" sx={{ fontWeight: 700 }}>
-              Votre offre
-            </Typography>
-            <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
-              Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
-            </Typography>
-            <Box
-              sx={{
-                rowGap: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
-                columnGap: fr.spacing("8v"),
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1.4fr 2fr" },
-                gridTemplateRows: { xs: "auto", md: "1fr auto" },
-              }}
-            >
-              {/* Colonne gauche : Le contrat */}
+        {({ values }) => {
+          return (
+            <div>
+              <Typography
+                component="h1"
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  color: "#000091",
+                  mb: fr.spacing("6v"),
+                  [theme.breakpoints.up("xs")]: {
+                    fontSize: "18px !important",
+                    lineHeight: "24px !important",
+                  },
+                  [theme.breakpoints.up("md")]: {
+                    fontSize: "20px !important",
+                    lineHeight: "28px !important",
+                  },
+                })}
+              >
+                Étape 1/2 : Description de l’offre
+              </Typography>
+              <Typography component="h2" sx={{ fontWeight: 700 }}>
+                Votre offre
+              </Typography>
+              <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
+                Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
+              </Typography>
               <Box
                 sx={{
-                  gridRow: { md: "1 / 3" },
-                  borderRadius: fr.spacing("1v"),
+                  rowGap: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+                  columnGap: fr.spacing("8v"),
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", md: "1.4fr 2fr" },
+                  gridTemplateRows: { xs: "auto", md: "1fr auto" },
                 }}
               >
+                {/* Colonne gauche : Le contrat */}
                 <Box
                   sx={{
-                    padding: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
-                    backgroundColor: fr.colors.decisions.background.alt.grey.default,
-                    border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+                    gridRow: { md: "1 / 3" },
+                    borderRadius: fr.spacing("1v"),
                   }}
                 >
-                  <Typography component="h2" sx={{ fontWeight: 700 }}>
-                    Le contrat
+                  <Box
+                    sx={{
+                      padding: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
+                      backgroundColor: fr.colors.decisions.background.alt.grey.default,
+                      border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+                    }}
+                  >
+                    <Typography component="h2" sx={{ fontWeight: 700 }}>
+                      Le contrat
+                    </Typography>
+                    <Box sx={{ mt: fr.spacing("4v") }}>
+                      <FormulaireEditionOffreFields section="contract" />
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
+                <Box>
+                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                    La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
-                    <FormulaireEditionOffreFields section="contract" />
+                    <EmployerDescriptionField />
+                  </Box>
+
+                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                    La description de l'offre
+                  </Typography>
+                  <Box sx={{ mt: fr.spacing("4v") }}>
+                    <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
+                  </Box>
+
+                  <Box sx={{ mt: fr.spacing("4v") }}>
+                    {romeAndAppellation ? (
+                      <RomeDetailWithQuery
+                        selectedCompetences={{
+                          savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                          savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+                          savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                        }}
+                        title={values.offer_title_custom || romeAndAppellation.appellation}
+                        rome={romeAndAppellation.rome}
+                        onChange={onSelectedCompetencesChange}
+                      />
+                    ) : (
+                      <Box sx={{ display: ["none", "block"] }}>
+                        <InfosDiffusionOffre />
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </Box>
-
-              {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
-              <Box>
-                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
-                  La présentation de l'entreprise
-                </Typography>
-                <Box sx={{ mt: fr.spacing("4v") }}>
-                  <EmployerDescriptionField />
-                </Box>
-
-                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
-                  La description de l'offre
-                </Typography>
-                <Box sx={{ mt: fr.spacing("4v") }}>
-                  <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
-                </Box>
-
-                <Box sx={{ mt: fr.spacing("4v") }}>
-                  {romeAndAppellation ? (
-                    <RomeDetailWithQuery
-                      selectedCompetences={{
-                        savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                        savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
-                        savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                      }}
-                      title={values.offer_title_custom || romeAndAppellation.appellation}
-                      rome={romeAndAppellation.rome}
-                      onChange={onSelectedCompetencesChange}
-                    />
-                  ) : (
-                    <Box sx={{ display: ["none", "block"] }}>
-                      <InfosDiffusionOffre />
-                    </Box>
-                  )}
-                </Box>
+              <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
+                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
               </Box>
-            </Box>
-            <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
-              <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
-            </Box>
-          </div>
-        )}
+            </div>
+          )
+        }}
       </Formik>
     </>
   )
