@@ -1,5 +1,7 @@
 import GEIQ_WHITELIST from "../constants/geiq.js"
 
-export const isGeiqEntreprise = (siret: string | undefined | null, siretGestionnaire?: string | undefined | null) => {
-  return (siret ? GEIQ_WHITELIST.indexOf(siret) >= 0 : false) || (siretGestionnaire ? GEIQ_WHITELIST.indexOf(siretGestionnaire) >= 0 : false)
+const GEIQ_WHITELIST_SET = new Set(GEIQ_WHITELIST)
+
+export const isGeiqEntreprise = (siret: string | undefined | null, siretGestionnaire?: string | undefined | null): boolean => {
+  return (siret != null && GEIQ_WHITELIST_SET.has(siret)) || (siretGestionnaire != null && GEIQ_WHITELIST_SET.has(siretGestionnaire))
 }
