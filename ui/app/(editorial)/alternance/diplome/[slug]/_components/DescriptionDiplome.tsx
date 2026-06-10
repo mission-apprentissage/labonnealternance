@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 
-import { SectionTitle } from "./SectionTitle"
+import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 
 export function DescriptionDiplome({ titre, text, objectifs }: { titre: string; text: string; objectifs: string[] }) {
   return (

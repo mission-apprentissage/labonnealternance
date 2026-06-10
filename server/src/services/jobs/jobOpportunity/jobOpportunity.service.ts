@@ -741,7 +741,7 @@ export async function findJobOpportunityById(id: ObjectId, context: JobOpportuni
 
     if (!foundJob) {
       context.addWarning("JOB_NOT_FOUND")
-      logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
+      logger.warn({ context }, `Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
       throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
     }
 
@@ -763,7 +763,7 @@ export async function findOfferPublishing(id: ObjectId, context: JobOpportunityR
 
   if (!publishing) {
     context.addWarning("JOB_NOT_FOUND")
-    logger.warn(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`, { context })
+    logger.warn({ context }, `Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
     throw notFound(`Aucune offre d'emploi trouvée pour l'ID: ${id.toString()}`)
   }
 

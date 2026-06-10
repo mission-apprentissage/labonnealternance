@@ -1,7 +1,7 @@
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { SendPlausibleEvent } from "@/utils/plausible"
 import { DemandeDeContactButton } from "./DemandeDeContactButton"
-import { DemandeDeContactModal } from "./DemandeDeContactModal"
+import { type DemandeDeContactContext, DemandeDeContactModal } from "./DemandeDeContactModal"
 
 export const DemandeDeContact = ({
   context: { cle_ministere_educatif },
@@ -11,7 +11,7 @@ export const DemandeDeContact = ({
   onRdvSuccess,
   hideButton = false,
 }: {
-  context: { cle_ministere_educatif: string; etablissement_formateur_entreprise_raison_sociale: string }
+  context: DemandeDeContactContext
   referrer: string
   isCollapsedHeader?: boolean
   onRdvSuccess: () => void

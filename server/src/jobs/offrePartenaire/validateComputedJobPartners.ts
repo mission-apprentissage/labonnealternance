@@ -93,7 +93,7 @@ export const validateComputedJobPartners = async ({ addedMatchFilter, shouldNoti
 
   await pipeline(cursor, groupStreamData({ size: groupSize }), validateStream)
 
-  logger.info(`validation terminé`, counters)
+  logger.info({ counters }, "validation terminé")
 
   if (shouldNotifySlack) {
     await notifyToSlack({

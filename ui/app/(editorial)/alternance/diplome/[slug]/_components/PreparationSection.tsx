@@ -4,10 +4,8 @@ import Image from "next/image"
 import Link from "next/link"
 
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
-
+import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 import { UTM_PARAMS } from "../_data/constants"
-
-import { SectionTitle } from "./SectionTitle"
 
 const RESSOURCES = [
   {

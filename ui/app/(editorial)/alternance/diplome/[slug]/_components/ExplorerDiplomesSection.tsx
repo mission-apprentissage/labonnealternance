@@ -3,9 +3,9 @@ import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { diplomeData } from "@/app/(editorial)/alternance/_components/diplome_data"
+import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { UTM_PARAMS } from "../_data/constants"
-import { SectionTitle } from "./SectionTitle"
 
 export function ExplorerDiplomesSection({ currentSlug }: { currentSlug: string }) {
   const autresDiplomes = diplomeData.filter((d) => d.slug !== currentSlug)
