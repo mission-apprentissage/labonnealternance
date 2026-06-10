@@ -23,11 +23,7 @@ type Props = {
  * Appointment form page.
  */
 export default function PriseDeRendezVous({ data, cleMinistereEducatif, referrer }: Props) {
-  return (
-    <Container disableGutters>
-      <PageContent data={data} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
-    </Container>
-  )
+  return <PageContent data={data} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
 }
 
 const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Props) => {
@@ -77,13 +73,14 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
   return confirmation ? (
     <DemandeDeContactConfirmation {...confirmation} />
   ) : (
-    <Box sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>
+    <Box id="main-content" tabIndex={-1} sx={{ my: fr.spacing("6v"), mx: fr.spacing("2v") }}>
       <ContactCfaSummary
         entrepriseRaisonSociale={data.etablissement_formateur_entreprise_raison_sociale}
         intitule={data.intitule_long}
         adresse={data.lieu_formation_adresse}
         codePostal={data.code_postal}
         ville={data.localite}
+        fromMail={true}
       />
       <DemandeDeContactForm context={context} referrer={referrer ?? "lba"} onRdvSuccess={localOnSuccess} />
     </Box>

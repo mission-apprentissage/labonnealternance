@@ -111,37 +111,58 @@ const linkListContent: LinkCategory[] = [
   },
   {
     categoryName: "Alternance par ville",
-    // @ts-ignore min 1 link but here we have 10
-    links: villeData.slice(0, 10).map((ville) => ({
-      linkProps: {
-        href: PAGES.dynamic.seoVille(ville.slug).getPath(),
+    links: [
+      ...villeData.slice(0, 10).map((ville) => ({
+        linkProps: {
+          href: PAGES.dynamic.seoVille(ville.slug).getPath(),
+        },
+        text: `Alternance à ${ville.ville}`,
+      })),
+      {
+        linkProps: {
+          href: PAGES.static.alternanceVilles.getPath(),
+        },
+        text: "Voir toutes les villes en alternance",
       },
-      text: `Alternance à ${ville.ville}`,
-    })),
+    ],
   },
   {
     categoryName: "Alternance par métier",
-    // @ts-ignore min 1 link but here we have 10
-    links: metierData.slice(0, 10).map((metier) => ({
-      linkProps: {
-        href: PAGES.dynamic.seoMetier(metier.slug).getPath(),
+    links: [
+      ...metierData.slice(0, 10).map((metier) => ({
+        linkProps: {
+          href: PAGES.dynamic.seoMetier(metier.slug).getPath(),
+        },
+        text: `${metier.metier}`,
+      })),
+      {
+        linkProps: {
+          href: PAGES.static.alternanceMetiers.getPath(),
+        },
+        text: "Voir tous les métiers en alternance",
       },
-      text: `${metier.metier}`,
-    })),
+    ],
   },
   {
     categoryName: "Alternance par diplôme",
-    // @ts-ignore min 1 link but here we have 10
-    links: diplomeData.slice(0, 10).map((diplome) => ({
-      linkProps: {
-        href: PAGES.dynamic.seoDiplome(diplome.slug).getPath(),
+    links: [
+      ...diplomeData.slice(0, 10).map((diplome) => ({
+        linkProps: {
+          href: PAGES.dynamic.seoDiplome(diplome.slug).getPath(),
+        },
+        text: diplome.titre,
+      })),
+      {
+        linkProps: {
+          href: PAGES.static.alternanceDiplomes.getPath(),
+        },
+        text: "Voir tous les diplômes en alternance",
       },
-      text: diplome.titre,
-    })),
+    ],
   },
 ]
 
-export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: boolean; hideLinkList?: boolean }) {
+export function Footer({ isWidget = false }: { isWidget?: boolean }) {
   const description =
     "La bonne alternance simplifie les mises en relation entre les trois types d’acteurs candidats, recruteurs et centres de formation, afin de faciliter les entrées en alternance."
   const widgetDescription = (
@@ -152,7 +173,7 @@ export function Footer({ isWidget = false, hideLinkList = false }: { isWidget?: 
     </Typography>
   )
 
-  const showLinkList = !isWidget && !hideLinkList
+  const showLinkList = !isWidget
 
   return (
     <footer className="fr-footer" role="contentinfo" id="footer-links">

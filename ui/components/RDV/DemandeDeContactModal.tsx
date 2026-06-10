@@ -1,10 +1,20 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Typography } from "@mui/material"
+import { Box } from "@mui/material"
 import { useState } from "react"
 import type { useDisclosure } from "@/common/hooks/useDisclosure"
+import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { DemandeDeContactConfirmation } from "./DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "./DemandeDeContactForm"
+
+export type DemandeDeContactContext = {
+  cle_ministere_educatif: string
+  etablissement_formateur_entreprise_raison_sociale: string
+  intitule: string
+  adresse: string
+  codePostal: string
+  ville: string
+}
 
 export const DemandeDeContactModal = ({
   context: { cle_ministere_educatif },
@@ -13,7 +23,7 @@ export const DemandeDeContactModal = ({
   onRdvSuccess,
   modalControls,
 }: {
-  context: { cle_ministere_educatif: string; etablissement_formateur_entreprise_raison_sociale: string }
+  context: DemandeDeContactContext
   referrer: string
   onRdvSuccess: () => void
   modalControls: ReturnType<typeof useDisclosure>
@@ -28,12 +38,12 @@ export const DemandeDeContactModal = ({
 }
 
 const DemandeDeContactBody = ({
-  context: { etablissement_formateur_entreprise_raison_sociale },
   context,
+  context: { etablissement_formateur_entreprise_raison_sociale, intitule, adresse, codePostal, ville },
   referrer,
   onRdvSuccess,
 }: {
-  context: { cle_ministere_educatif: string; etablissement_formateur_entreprise_raison_sociale: string }
+  context: DemandeDeContactContext
   referrer: string
   onRdvSuccess: () => void
 }) => {
@@ -50,9 +60,14 @@ const DemandeDeContactBody = ({
         <DemandeDeContactConfirmation {...confirmation} />
       ) : (
         <>
-          <Typography variant="h4" data-testid="DemandeDeContactFormTitle" sx={{ mb: fr.spacing("4v") }}>
-            Contacter {etablissement_formateur_entreprise_raison_sociale}
-          </Typography>
+          <ContactCfaSummary
+            entrepriseRaisonSociale={etablissement_formateur_entreprise_raison_sociale}
+            intitule={intitule}
+            adresse={adresse}
+            codePostal={codePostal}
+            ville={ville}
+            fromMail={false}
+          />
           <DemandeDeContactForm context={context} onRdvSuccess={localOnSuccess} referrer={referrer} />
         </>
       )}

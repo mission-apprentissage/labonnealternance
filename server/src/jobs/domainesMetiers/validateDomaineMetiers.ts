@@ -7,7 +7,7 @@ export async function validateDomaineMetiers() {
   domaineMetiers.forEach((domaineMetier) => {
     const { errors } = domaineMetierToDomaineMetierSimple(domaineMetier)
     if (errors.length) {
-      logger.error(`domaine metier _id=${domaineMetier._id}, sous_domaine=${domaineMetier.sous_domaine} a les erreurs suivantes :`, errors)
+      logger.error({ errors }, `domaine metier _id=${domaineMetier._id}, sous_domaine=${domaineMetier.sous_domaine} a les erreurs suivantes :`)
     }
   })
 }

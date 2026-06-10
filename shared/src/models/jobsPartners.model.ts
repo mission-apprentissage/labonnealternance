@@ -187,7 +187,6 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   updated_at: z.date().describe("Date de mise à jour de l'offre"),
 
   managed_by: zObjectId.nullish().describe("Id du userwithaccount si l'offre est une offre géré par LBA"),
-  establishment_id: z.string().nullish().describe("ancien recruiter.etablishment_id si l'offre est une offre géré par LBA"),
   relance_mail_expiration_J7: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-7"),
   relance_mail_expiration_J1: z.date().nullish().describe("Date de l'envoi du mail de relance avant expiration à J-1"),
   job_last_prolongation_date: z.date().nullish().describe("Date de dernière prolongation de l'offre"),
@@ -327,7 +326,6 @@ export default {
     [{ "duplicates.partner_job_label": 1 }, {}],
 
     [{ managed_by: 1 }, {}],
-    [{ establishment_id: 1 }, {}],
     [{ relance_mail_expiration_J7: 1 }, {}],
     [{ relance_mail_expiration_J1: 1 }, {}],
     [{ offer_rome_appellation: 1 }, {}],
