@@ -6,6 +6,14 @@ import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherch
 import { type DisplayedJob, matchesTypeEmploi } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
+// Libellés d'affichage découplés de la valeur d'enum (qui sert aussi de param d'URL / dimension Matomo).
+// Ne pas modifier les valeurs de TYPE_EMPLOI_OPTIONS pour renommer un type : changer uniquement ici.
+const TYPE_EMPLOI_LABELS: Record<ITypeEmploi, string> = {
+  [TYPE_EMPLOI_OPTIONS.alternance]: TYPE_EMPLOI_OPTIONS.alternance,
+  [TYPE_EMPLOI_OPTIONS.formation_incluse]: TYPE_EMPLOI_OPTIONS.formation_incluse,
+  [TYPE_EMPLOI_OPTIONS.candidatures_spontanees]: "Entreprise à contacter",
+}
+
 const TYPE_EMPLOI_DESCRIPTIONS: Partial<Record<ITypeEmploi, string>> = {
   [TYPE_EMPLOI_OPTIONS.formation_incluse]: "Vous devrez vous inscrire dans la formation associée à l'offre",
   [TYPE_EMPLOI_OPTIONS.candidatures_spontanees]: "Entreprises susceptibles de recruter en alternance",
@@ -22,7 +30,7 @@ function buildOptions(allJobs: DisplayedJob[], hasResults: boolean): MultiSelect
     const count = hasResults ? countByTypeEmploi(allJobs, value) : undefined
     return {
       value,
-      label: `${value}${count !== undefined ? ` (${count})` : ""}`,
+      label: `${TYPE_EMPLOI_LABELS[value]}${count !== undefined ? ` (${count})` : ""}`,
       hintText: TYPE_EMPLOI_DESCRIPTIONS[value],
     }
   })
@@ -30,7 +38,7 @@ function buildOptions(allJobs: DisplayedJob[], hasResults: boolean): MultiSelect
 
 function getLabel(selected: MultiSelectOption[], allOptions: MultiSelectOption[]): string {
   if (selected.length === 0 || selected.length === allOptions.length) return "Indifférent"
-  if (selected.length === 1) return selected[0].value
+  if (selected.length === 1) return TYPE_EMPLOI_LABELS[selected[0].value as ITypeEmploi]
   return `${selected.length} types sélectionnés`
 }
 
