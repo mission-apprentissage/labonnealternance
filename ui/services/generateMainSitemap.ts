@@ -10,7 +10,7 @@ import { getStaticMetiers } from "@/utils/getStaticData"
 import { getHostFromHeader } from "@/utils/requestUtils"
 
 // Attention ! Il faut mettre à jour cette date lorsque le sitemap généré par ce fichier change
-export const mainSitemapLastModificationDate = new Date("2026-05-21T00:00:00.000Z")
+export const mainSitemapLastModificationDate = new Date("2026-06-03T00:00:00.000Z")
 
 // Une page référencée à la fois dans le sitemap et dans le llms.txt.
 // `label` et `description` ne servent qu'au llms.txt (le sitemap n'utilise que le path).
@@ -150,6 +150,27 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
         { path: "/mentions-legales", label: "Mentions légales", description: "Mentions légales du site La bonne alternance." },
         { path: "/cgu", label: "Conditions générales d'utilisation", description: "Conditions générales d'utilisation du service." },
         { path: "/politique-de-confidentialite", label: "Politique de confidentialité", description: "Politique de confidentialité et traitement des données personnelles." },
+      ],
+    },
+    {
+      title: "Explorer l'alternance",
+      priority: 0.95,
+      pages: [
+        {
+          path: "/alternance/metiers",
+          label: "Métiers en alternance",
+          description: "Tous les métiers accessibles en alternance : offres, salaires, formations et entreprises qui recrutent.",
+        },
+        {
+          path: "/alternance/villes",
+          label: "Alternance dans les grandes villes",
+          description: "Trouver une alternance dans les grandes villes françaises : offres, logement, transports et vie d'alternant.",
+        },
+        {
+          path: "/alternance/diplomes",
+          label: "Diplômes en alternance",
+          description: "Tous les diplômes accessibles en alternance (BTS, BUT, Licence Pro, CAP, Titres Pro) : programme, durée et débouchés.",
+        },
       ],
     },
     {

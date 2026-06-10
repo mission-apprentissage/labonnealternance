@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 
 import type { IDiplomeProgrammeSections } from "shared/models/seoDiplome.model"
 
-import { SectionTitle } from "./SectionTitle"
+import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 
 const SECTION_CONFIG = [
   { key: "enseignements_generaux" as const, icon: "fr-icon-book-2-line", title: "Enseignements généraux" },
