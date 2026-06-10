@@ -107,11 +107,13 @@ export const recruiterOfferExpirationReminderJob = async (numberOfDaysToExpirati
             job_start_date: dayjs(job.contract_start).format("DD/MM/YYYY"),
             supprimer: createCancelJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
             pourvue: createProvidedJobLink(userWithAccountToUserForToken(contactUser), job._id.toString(), LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA),
-            prolonger: createProlongerOffreLink(userWithAccountToUserForToken(contactUser), {
-              jobId: job._id.toString(),
-              establishment_id: buildEstablishmentId(contactUser._id, job.workplace_siret!),
-              userType: is_delegated ? CFA : ENTREPRISE,
-            }),
+            prolonger: job.workplace_siret
+              ? createProlongerOffreLink(userWithAccountToUserForToken(contactUser), {
+                  jobId: job._id.toString(),
+                  establishment_id: buildEstablishmentId(contactUser._id, job.workplace_siret),
+                  userType: is_delegated ? CFA : ENTREPRISE,
+                })
+              : createAuthMagicLink(userWithAccountToUserForToken(contactUser)),
           })),
           threshold: numberOfDaysToExpirationDate,
           connectionUrl: createAuthMagicLink(userWithAccountToUserForToken(contactUser)),

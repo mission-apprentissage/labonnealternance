@@ -1,7 +1,8 @@
 "use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
-import type { IJobJson, ILbaItemPartnerJobJson } from "shared"
+import { type IJobJson, type ILbaItemPartnerJobJson, JOB_START_TYPE } from "shared"
 import { formatDate } from "@/utils/strutils"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
@@ -10,7 +11,7 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
 
 export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartnerJobJson; showMandataireInfo?: boolean }) => {
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
-  const isUrgentRecruitment = job?.job?.startType === "des_que_possible"
+  const isUrgentRecruitment = job?.job?.startType === JOB_START_TYPE.DES_QUE_POSSIBLE
   const isFlexibleStartDate = Boolean(job?.job?.startDateFlexible)
   const contractStartLabel = isUrgentRecruitment ? "Démarrage dès que possible" : jobStartDate ? `${jobStartDate}${isFlexibleStartDate ? ", date flexible" : ""}` : undefined
   return (

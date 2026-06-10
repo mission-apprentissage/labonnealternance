@@ -681,15 +681,17 @@ export const cancelOffreFromAdminInterface = async ({
  */
 export const extendOffre = async (id: ObjectId, jobFields: Pick<IJobCreate, "job_start_date" | "job_start_type" | "job_start_date_flexible">): Promise<Date> => {
   const now = new Date()
-  const { job_start_date, job_start_date_flexible, job_start_type } = jobFields
+  const { job_start_date_flexible, job_start_type } = jobFields
+  const contractStart = resolveContractStartFromJob(jobFields, now)
+  const isAsapStart = job_start_type === JOB_START_TYPE.DES_QUE_POSSIBLE
   const jobPartnersFields: Partial<IJobsPartnersOfferPrivate> = {
     offer_expiration: addExpirationPeriod(dayjs()).toDate(),
     job_last_prolongation_date: now,
     relance_mail_expiration_J7: null,
     relance_mail_expiration_J1: null,
     updated_at: now,
-    contract_start: job_start_date,
-    contract_start_is_flexible: Boolean(job_start_date_flexible),
+    contract_start: contractStart,
+    contract_start_is_flexible: !isAsapStart && Boolean(job_start_date_flexible),
     contract_start_type: job_start_type,
   }
 

@@ -28,8 +28,10 @@ export const OffreProlongationModal = ({
   const minStartDate = dayjs().startOf("day")
   const maxStartDate = dayjs().add(2, "years")
 
-  let jobStartDateYup = Yup.date()
-  jobStartDateYup = jobStartDateYup.max(maxStartDate, `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`).required("Champ obligatoire")
+  const jobStartDateYup = Yup.date()
+    .min(minStartDate.toDate(), `La date de début doit être à partir du ${minStartDate.format(FR_DATE_FORMAT)}`)
+    .max(maxStartDate.toDate(), `La date de début doit être avant le ${maxStartDate.format(FR_DATE_FORMAT)}`)
+    .required("Champ obligatoire")
 
   return (
     <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
