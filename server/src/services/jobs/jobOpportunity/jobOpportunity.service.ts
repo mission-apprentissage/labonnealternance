@@ -12,7 +12,7 @@ import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { IJobsPartnersOfferApi, IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, INiveauDiplomeEuropeen } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners, IComputedJobsPartnersWrite } from "shared/models/jobsPartnersComputed.model"
-import { JOB_PARTNER_BUSINESS_ERROR, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
+import { JOB_PARTNER_BUSINESS_ERROR, JOBS_PARTNERS_OFFER_ORIGIN, PARTNER_WHITELIST, TRUSTED_COMPANY_JOB_PARTNERS } from "shared/models/jobsPartnersComputed.model"
 import type {
   IJobOfferApiReadV3,
   IJobOfferApiWriteV3,
@@ -643,7 +643,7 @@ async function upsertJobOfferPrivate({
     offer_creation: data.offer.publication.creation ?? invariantData.created_at,
     offer_expiration: data.offer.publication.expiration || defaultOfferExpiration,
     offer_opening_count: data.offer.opening_count,
-    offer_origin: null, // data.offer.origin
+    offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.LBA_API,
     offer_status: data.offer.status,
     offer_multicast: data.offer.multicast,
 
@@ -978,6 +978,7 @@ export async function upsertJobsPartnersMulti({
     validated: false,
     jobs_in_success: [],
     currently_processed_id: null,
+    offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING,
   } satisfies Partial<IComputedJobsPartners>
   const writtenFields: Omit<IComputedJobsPartners, InvariantFields> = { ...userWrittenFields, ...technicalFields }
   let modified: boolean

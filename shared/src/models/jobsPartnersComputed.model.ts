@@ -86,6 +86,13 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
 }
 
+export enum JOBS_PARTNERS_OFFER_ORIGIN {
+  SCRAPPING = "Scrapping",
+  FLUX = "Flux",
+  LBA = "La bonne alternance",
+  LBA_API = "La bonne alternance API",
+}
+
 export const ZComputedJobsPartnersBase = extensions
   .optionalToNullish(ZJobsPartnersOfferPrivate.partial())
   .omit({
