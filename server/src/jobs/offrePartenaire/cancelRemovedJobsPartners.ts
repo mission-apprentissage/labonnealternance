@@ -16,6 +16,10 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners>) => {
   logger.info("début de cancelRemovedJobsPartners")
 
+  if (!matchFilter || Object.keys(matchFilter).length === 0) {
+    throw new Error("cancelRemovedJobsPartners: matchFilter is required and must not be empty")
+  }
+
   const matchStage = {
     $match: {
       $and: [matchFilter, { offer_status: JOB_STATUS_ENGLISH.ACTIVE }],
