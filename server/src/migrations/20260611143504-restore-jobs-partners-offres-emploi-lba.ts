@@ -42,6 +42,7 @@ export const up = async () => {
   })
 
   logger.info(`restore offres_emploi_lba : ${modifiedCount}/${matchedCount} offres réactivées`)
+}
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
 export const requireShutdown: boolean = false
