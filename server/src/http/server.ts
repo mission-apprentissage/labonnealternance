@@ -70,11 +70,18 @@ export async function bind(app: Server) {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  const allowedIps = [new Netmask("127.0.0.0/16"), new Netmask("10.0.0.0/8"), new Netmask("172.16.0.0/12"), new Netmask("192.168.0.0/16")]
+  const allowedIps = [
+    new Netmask("127.0.0.0/16"),
+    new Netmask("10.0.0.0/8"),
+    new Netmask("172.16.0.0/12"),
+    new Netmask("192.168.0.0/16"),
+    ...config.apiApprentissage.serverIps.map((ip) => new Netmask(`${ip}/32`)),
+  ]
   await app.register(fastifyRateLimt, {
     global: false,
     allowList: (req) => {
-      // Do not rate-limit private & internal IPs
+      // Ne pas rate-limiter les IPs privées/internes ni les serveurs api-apprentissage
+      // (rate-limit posé en amont par consommateur, cf. issue #4806)
       return allowedIps.some((block) => block.contains(req.ip))
     },
   })
