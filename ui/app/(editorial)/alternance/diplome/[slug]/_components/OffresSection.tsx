@@ -4,9 +4,8 @@ import { Box } from "@mui/material"
 import type { ISeoJobCard } from "shared/models/seoMetier.model"
 
 import CarteOffre from "@/app/(editorial)/alternance/_components/CarteOffre"
-
+import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 import { UTM_PARAMS } from "../_data/constants"
-import { SectionTitle } from "./SectionTitle"
 
 export function OffresSection({ offreCount, offres, romes }: { offreCount: number; offres: ISeoJobCard[]; romes: string[] }) {
   return (

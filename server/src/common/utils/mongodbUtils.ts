@@ -223,7 +223,7 @@ export const createIndexes = async () => {
     )
 
     if (indexesToRemove.size > 0) {
-      logger.warn(`Dropping extra indexes for collection ${descriptor.collectionName}`, indexesToRemove)
+      logger.warn({ indexesToRemove: Array.from(indexesToRemove) }, `Dropping extra indexes for collection ${descriptor.collectionName}`)
       await Promise.all(Array.from(indexesToRemove).map(async (index) => getDbCollection(descriptor.collectionName).dropIndex(index.name)))
     }
   }

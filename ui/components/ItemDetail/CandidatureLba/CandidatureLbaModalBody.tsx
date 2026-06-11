@@ -75,6 +75,24 @@ export const CandidatureLbaModalBody = ({
   const isOffre =
     kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES || kind === LBA_ITEM_TYPE_OLD.MATCHA || kind === LBA_ITEM_TYPE_OLD.PARTNER_JOB
 
+  const handleSubmitWithScrollOnFirstError = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const errors = await formik.validateForm()
+
+    if (Object.keys(errors).length > 0) {
+      await formik.setTouched(Object.fromEntries(Object.keys(errors).map((k) => [k, true])))
+      const errorElements = Object.keys(errors)
+        .map((field) => document.getElementById(field) ?? document.querySelector<HTMLElement>(`[name="${field}"]`))
+        .filter(Boolean) as HTMLElement[]
+      const firstEl = errorElements.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1))[0]
+      firstEl?.scrollIntoView({ behavior: "smooth", block: "center" })
+      firstEl?.focus()
+      return
+    }
+
+    formik.submitForm()
+  }
+
   return (
     <Box
       sx={{
@@ -83,7 +101,7 @@ export const CandidatureLbaModalBody = ({
         },
       }}
     >
-      <form onSubmit={formik.handleSubmit} style={{ position: "relative" }}>
+      <form onSubmit={handleSubmitWithScrollOnFirstError} style={{ position: "relative" }}>
         <Box sx={{ margin: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, mb: 0 }}>
           {!fromWidget && (
             <>

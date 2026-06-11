@@ -76,6 +76,10 @@ function TrainingDetailPage({
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
     etablissement_formateur_entreprise_raison_sociale: selectedItem.company.name,
+    intitule: selectedItem.training.title ?? "",
+    adresse: selectedItem.place?.address ?? "",
+    codePostal: selectedItem.place?.zipCode ?? "",
+    ville: selectedItem.place?.city ?? "",
   }
 
   const headerRef = useRef<HTMLDivElement>(null)
