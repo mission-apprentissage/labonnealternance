@@ -71,7 +71,7 @@ export async function bind(app: Server) {
   app.setSerializerCompiler(serializerCompiler)
 
   const allowedIps = [
-    new Netmask("127.0.0.0/16"),
+    new Netmask("127.0.0.0/8"),
     new Netmask("10.0.0.0/8"),
     new Netmask("172.16.0.0/12"),
     new Netmask("192.168.0.0/16"),
