@@ -1,3 +1,4 @@
+import { JOBPARTNERS_LABEL, jobPartnersExcludedFromFlux } from "shared/models/jobsPartners.model"
 import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -39,7 +40,13 @@ const ORIGIN_MAP: Record<string, string> = {
   redirec_from_widget_lesentreprisessengagent: "Les entreprises s'engagent",
 }
 
-const LBA_PARTNER_LABELS = ["recruteurs_lba", "offres_emploi_lba"]
+const LBA_PARTNER_LABELS = jobPartnersExcludedFromFlux as string[]
+
+const FLUX_PARTNER_LABELS = Object.values(JOBPARTNERS_LABEL).filter((label) => !LBA_PARTNER_LABELS.includes(label))
+
+//TODO Scrapping partners doivent être identifiés
+
+const SCRAPPING_PARTNER_LABELS = Object.values(JOBPARTNERS_LABEL).filter((label) => !LBA_PARTNER_LABELS.includes(label) && !FLUX_PARTNER_LABELS.includes(label))
 
 export const up = async () => {
   const collection = getDbCollection("jobs_partners")
@@ -49,22 +56,31 @@ export const up = async () => {
 
   let totalModified = 0
 
-  const nullifyFilter = { partner_label: { $nin: LBA_PARTNER_LABELS }, offer_origin: { $ne: null } }
-  const nullifyCount = await collection.countDocuments(nullifyFilter)
-  console.info(`offer_origin → null pour partenaires hors LBA : ${nullifyCount} document(s) concerné(s)`)
-  if (nullifyCount > 0) {
-    const nullifyResult = await collection.updateMany(nullifyFilter, { $set: { offer_origin: null } })
-    totalModified += nullifyResult.modifiedCount
-    console.info(`offer_origin → null : ${nullifyResult.modifiedCount}/${nullifyCount} document(s) mis à jour`)
+  const fluxFilter = { partner_label: { $in: FLUX_PARTNER_LABELS } }
+  const fluxCount = await collection.countDocuments(fluxFilter)
+  console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.FLUX}" pour partenaires flux : ${fluxCount} document(s) concerné(s)`)
+  if (fluxCount > 0) {
+    const fluxResult = await collection.updateMany(fluxFilter, { $set: { offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.FLUX } })
+    totalModified += fluxResult.modifiedCount
+    console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.FLUX}" : ${fluxResult.modifiedCount}/${fluxCount} document(s) mis à jour`)
+  }
+
+  const scrappingFilter = { partner_label: { $in: SCRAPPING_PARTNER_LABELS } }
+  const scrappingCount = await collection.countDocuments(scrappingFilter)
+  console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING}" pour partenaires scrapping : ${scrappingCount} document(s) concerné(s)`)
+  if (scrappingCount > 0) {
+    const scrappingResult = await collection.updateMany(scrappingFilter, { $set: { offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING } })
+    totalModified += scrappingResult.modifiedCount
+    console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING}" : ${scrappingResult.modifiedCount}/${scrappingCount} document(s) mis à jour`)
   }
 
   for (const [from, to] of Object.entries(ORIGIN_MAP)) {
-    const count = await collection.countDocuments({ offer_origin: from })
+    const count = await collection.countDocuments({ offer_origin: from, partner_label: { $in: LBA_PARTNER_LABELS } })
     if (count === 0) {
       console.info(`offer_origin "${from}" : aucun document trouvé, passage à la suivante`)
       continue
     }
-    const result = await collection.updateMany({ offer_origin: from }, { $set: { offer_origin: to } })
+    const result = await collection.updateMany({ offer_origin: from, partner_label: { $in: LBA_PARTNER_LABELS } }, { $set: { offer_origin: to } })
     totalModified += result.modifiedCount
     console.info(`offer_origin "${from}" → "${to}" : ${result.modifiedCount}/${count} document(s) mis à jour`)
   }
