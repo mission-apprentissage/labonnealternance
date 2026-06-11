@@ -29,7 +29,7 @@ export const up = async () => {
     offer_expiration: { $gt: now },
   }
 
-  const { matchedCount } = await getDbCollection("jobs_partners").updateMany(filter, {
+  const { matchedCount, modifiedCount } = await getDbCollection("jobs_partners").updateMany(filter, {
     $set: { offer_status: JOB_STATUS_ENGLISH.ACTIVE },
     $push: {
       offer_status_history: {
@@ -41,8 +41,7 @@ export const up = async () => {
     },
   })
 
-  logger.info(`restore offres_emploi_lba : ${matchedCount} offres réactivées`)
-}
+  logger.info(`restore offres_emploi_lba : ${modifiedCount}/${matchedCount} offres réactivées`)
 
 // set to false ONLY IF migration does not imply a breaking change (ex: update field value or add index)
 export const requireShutdown: boolean = false
