@@ -5,7 +5,15 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
-export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners> = {}) => {
+/**
+ * Annule les offres jobs_partners absentes (ou expirées) du flux source correspondant.
+ *
+ * IMPORTANT : `matchFilter` est obligatoire et ne doit jamais être vide. Un filtre vide
+ * annulerait toutes les offres actives tous partenaires confondus. Cette fonction n'est donc
+ * pas exposée en CLI : passer par les sous-jobs dédiés (cancelRemovedJobsPartnersFlux,
+ * cancelRemovedJobsPartnersRecruteursLba) qui encapsulent leur filtre respectif.
+ */
+export const cancelRemovedJobsPartners = async (matchFilter: Filter<IComputedJobsPartners>) => {
   logger.info("début de cancelRemovedJobsPartners")
 
   const matchStage = {
