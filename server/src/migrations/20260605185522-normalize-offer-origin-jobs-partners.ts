@@ -46,7 +46,7 @@ const FLUX_PARTNER_LABELS = Object.values(JOBPARTNERS_LABEL).filter((label) => !
 
 //TODO Scrapping partners doivent être identifiés
 
-const SCRAPPING_PARTNER_LABELS = Object.values(JOBPARTNERS_LABEL).filter((label) => !LBA_PARTNER_LABELS.includes(label) && !FLUX_PARTNER_LABELS.includes(label))
+const SCRAPPING_PARTNER_LABELS = ["Amazon", "BPCE", "Bpifrance", "Daher", "Engie", "Formaposte", "Framatome", "GRDF", "Institut Pasteur", "L'Oreal", "Serpe", "Thales", "Veritone"]
 
 export const up = async () => {
   const collection = getDbCollection("jobs_partners")
@@ -65,15 +65,6 @@ export const up = async () => {
     console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.FLUX}" : ${fluxResult.modifiedCount}/${fluxCount} document(s) mis à jour`)
   }
 
-  const scrappingFilter = { partner_label: { $in: SCRAPPING_PARTNER_LABELS } }
-  const scrappingCount = await collection.countDocuments(scrappingFilter)
-  console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING}" pour partenaires scrapping : ${scrappingCount} document(s) concerné(s)`)
-  if (scrappingCount > 0) {
-    const scrappingResult = await collection.updateMany(scrappingFilter, { $set: { offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING } })
-    totalModified += scrappingResult.modifiedCount
-    console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING}" : ${scrappingResult.modifiedCount}/${scrappingCount} document(s) mis à jour`)
-  }
-
   for (const [from, to] of Object.entries(ORIGIN_MAP)) {
     const count = await collection.countDocuments({ offer_origin: from, partner_label: { $in: LBA_PARTNER_LABELS } })
     if (count === 0) {
@@ -83,6 +74,15 @@ export const up = async () => {
     const result = await collection.updateMany({ offer_origin: from, partner_label: { $in: LBA_PARTNER_LABELS } }, { $set: { offer_origin: to } })
     totalModified += result.modifiedCount
     console.info(`offer_origin "${from}" → "${to}" : ${result.modifiedCount}/${count} document(s) mis à jour`)
+  }
+
+  const scrappingFilter = { partner_label: { $in: SCRAPPING_PARTNER_LABELS } }
+  const scrappingCount = await collection.countDocuments(scrappingFilter)
+  console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING}" pour partenaires scrapping : ${scrappingCount} document(s) concerné(s)`)
+  if (scrappingCount > 0) {
+    const scrappingResult = await collection.updateMany(scrappingFilter, { $set: { offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING } })
+    totalModified += scrappingResult.modifiedCount
+    console.info(`offer_origin → "${JOBS_PARTNERS_OFFER_ORIGIN.SCRAPPING}" : ${scrappingResult.modifiedCount}/${scrappingCount} document(s) mis à jour`)
   }
 
   console.info(`Migration terminée : ${totalModified} document(s) modifié(s) au total`)
