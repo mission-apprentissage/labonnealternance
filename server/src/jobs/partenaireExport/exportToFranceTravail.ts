@@ -164,7 +164,9 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: offre.workplace_description ? sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`) || null : null,
+    Description_entreprise: offre.workplace_description
+      ? sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`) || null
+      : null,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -231,6 +233,7 @@ const getJobsToExport = async () => {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     updated_at: { $gt: minDate },
+    offer_target_diploma: { $ne: null },
   }
   const jobs = (await getDbCollection("jobs_partners")
     .aggregate([
