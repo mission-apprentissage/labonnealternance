@@ -31,7 +31,7 @@ export const zFTOffre = z.object({
   Off_experience_commentaire: z.string().max(36).nullable().optional().describe("Complément sur l'expérience"),
 
   // ── Qualification ───────────────────────────────────────────────────────────
-  Qua_cle: z.number().int().min(1).max(8).nullable().optional().describe("Code niveau de qualification (clé) — valeur de 1 à 8"),
+  Qua_cle: z.number().int().min(1).max(9).nullable().optional().describe("Code niveau de qualification (clé) — valeur de 1 à 9"),
   Qua_libelle: z.string().max(100).nullable().optional().describe("Niveau de qualification (libellé)"),
 
   // ── Secteur NAF ─────────────────────────────────────────────────────────────
@@ -131,6 +131,7 @@ export const zFTOffre = z.object({
   // ── Dates (format DD/MM/YYYY) ────────────────────────────────────────────────
   Off_date_creation: z.string().nullable().describe("Date de création de l'offre"),
   Off_date_modification: z.string().nullable().optional().describe("Date de modification de l'offre"),
+  Off_date_fin_publication: z.string().nullable().optional().describe("Date de fin de publication de l'offre"),
 
   // ── Divers ──────────────────────────────────────────────────────────────────
   OST_poste_restant_nb: z.number().int().min(1).max(999).nullable().optional().describe("Nombre de postes restants (1-999)"),

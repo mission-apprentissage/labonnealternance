@@ -16,7 +16,7 @@ const TYPE_EMPLOI_LABELS: Record<ITypeEmploi, string> = {
 
 const TYPE_EMPLOI_DESCRIPTIONS: Partial<Record<ITypeEmploi, string>> = {
   [TYPE_EMPLOI_OPTIONS.formation_incluse]: "Vous devrez vous inscrire dans la formation associée à l'offre",
-  [TYPE_EMPLOI_OPTIONS.candidatures_spontanees]: "Entreprises susceptibles de recruter en alternance",
+  [TYPE_EMPLOI_OPTIONS.candidatures_spontanees]: "Vous pouvez leur adresser vos candidatures spontanées",
 }
 
 const typeEmploiValues = Object.values(TYPE_EMPLOI_OPTIONS)
