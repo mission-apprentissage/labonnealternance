@@ -24,6 +24,7 @@ export function RechercheLieuAutocomplete() {
       getOptionKey={(option) => option.label}
       getOptionLabel={(option) => option.label}
       placeholder="France entière"
+      iconIdWithPlaceholder="fr-icon-close-line"
     />
   )
 }

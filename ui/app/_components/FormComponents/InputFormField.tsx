@@ -5,12 +5,9 @@ import { Input } from "@codegouvfr/react-dsfr/Input"
 import type { PropsWithRef } from "react"
 
 export function InputFormField(props: PropsWithRef<InputProps.RegularInput>) {
-  const iconIdProp = props.label === "Lieu" && props.nativeInputProps?.value === "" ? { iconId: "fr-icon-close-line" as const } : {}
-
   return (
     <Input
       {...props}
-      {...iconIdProp}
       nativeInputProps={{
         ...props.nativeInputProps,
         style: {

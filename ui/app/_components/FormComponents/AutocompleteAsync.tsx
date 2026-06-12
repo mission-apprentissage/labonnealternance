@@ -1,4 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
+import type { InputProps } from "@codegouvfr/react-dsfr/Input"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import type { AutocompleteInputChangeReason, AutocompleteRenderGroupParams, AutocompleteRenderInputParams, AutocompleteRenderOptionState } from "@mui/material/Autocomplete"
 import Autocomplete from "@mui/material/Autocomplete"
@@ -28,6 +29,7 @@ interface AutocompleteAsyncProps<T> {
   id: string
   label: string
   disabled?: boolean
+  iconIdWithPlaceholder?: InputProps.RegularInput["iconId"]
 }
 
 function renderGroup(props: AutocompleteRenderGroupParams) {
@@ -120,6 +122,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         <InputFormField
           disabled={inputParams.disabled ?? false}
           label={props.label}
+          iconId={inputParams.inputProps.value === "" ? props.iconIdWithPlaceholder : undefined}
           // @ts-expect-error
           ref={inputParams.InputProps.ref}
           nativeInputProps={{
