@@ -22,7 +22,6 @@ exports[`createJob > should insert a job 1`] = `
   ],
   "delegations": undefined,
   "duplicates": [],
-  "establishment_id": "670ce1ded6ce30c3c90a0e1d_42476141900045",
   "is_delegated": false,
   "job_delegation_count": 0,
   "job_last_prolongation_date": null,

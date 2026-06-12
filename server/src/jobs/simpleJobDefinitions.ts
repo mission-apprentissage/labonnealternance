@@ -33,7 +33,6 @@ import { generateFranceTravailAccess } from "./franceTravail/generateFranceTrava
 import { createRoleManagement360 } from "./metabase/metabaseRoleManagement360"
 import { sendMiseEnRelation } from "./miseEnRelation/sendMiseEnRelation"
 import { processApec } from "./offrePartenaire/apec/processApec"
-import { cancelRemovedJobsPartners } from "./offrePartenaire/cancelRemovedJobsPartners"
 import { processAtlas, processMeteojob, processNosTalentsNosEmplois, processToulouseMetropole, processViteUnEmploi } from "./offrePartenaire/clever-connect/processCleverConnect"
 import { processDecathlon } from "./offrePartenaire/decathlon/importDecathlon"
 import { detectClassificationJobsPartners } from "./offrePartenaire/detectClassificationJobsPartners"
@@ -56,10 +55,10 @@ import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
 import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
-import { processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
+import { cancelRemovedJobsPartnersFlux, processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
-import { processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
+import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
 import { processRhAlternance } from "./offrePartenaire/rh-alternance/processRhAlternance"
 import { analyzeClosedCompanies } from "./oneTimeJob/analyzeClosedCompanies"
 import { cleanClosedCompanies } from "./oneTimeJob/cleanClosedCompanies"
@@ -407,8 +406,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Renouvelle le champ lba_url dans la collection jobs_partners",
   },
   {
-    fct: cancelRemovedJobsPartners,
-    description: "Annule les offres présentes dans jobs_partners qui ne sont plus présentes dans le flux source (ex: recruteurs LBA)",
+    fct: cancelRemovedJobsPartnersFlux,
+    description: "Annule les offres des partenaires traités par flux absentes du flux source",
+  },
+  {
+    fct: cancelRemovedJobsPartnersRecruteursLba,
+    description: "Annule les offres recruteurs LBA absentes du flux source",
   },
   {
     fct: processRecruteursLbaRawToEnd,

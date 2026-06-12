@@ -76,7 +76,6 @@ async function exportLbaJobsToS3() {
       first_name: 0,
       last_name: 0,
       is_disabled_elligible: 0,
-      establishment_id: 0,
       origin: 0,
       recruiterStatus: 0,
       job_delegation_count: 0,

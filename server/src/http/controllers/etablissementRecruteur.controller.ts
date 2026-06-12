@@ -202,7 +202,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { cfaId: cfaIdString, establishment_id } = req.params
-      const { siret, userId } = await establishmentIdToUserIdAndSiret(establishment_id)
+      const { siret, userId } = establishmentIdToUserIdAndSiret(establishment_id)
 
       const cfaId = new ObjectId(cfaIdString)
 

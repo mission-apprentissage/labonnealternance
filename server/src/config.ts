@@ -117,6 +117,19 @@ const config = {
   apiApprentissage: {
     baseUrl: "https://api.apprentissage.beta.gouv.fr/api",
     apiKey: env.get("LBA_API_APPRENTISSAGE_KEY").required().asString(),
+    // IPs des serveurs api-apprentissage qui forwardent vers LBA, par environnement.
+    // Le rate-limit par consommateur est posé côté api-apprentissage (cf. issue #4806) ;
+    // ces IPs sont allowlistées pour éviter qu'un consommateur sature le bucket des autres.
+    // On ne charge que l'IP de l'environnement courant pour ne pas élargir la surface.
+    serverIps: (
+      {
+        production: ["54.38.65.110"],
+        recette: ["162.19.79.129"],
+        local: [],
+        pentest: [],
+        preview: [],
+      } as const
+    )[env.get("LBA_ENV").required().asEnum(["local", "recette", "pentest", "production", "preview"])],
   },
   parcoursupPeriods: {
     start: {
