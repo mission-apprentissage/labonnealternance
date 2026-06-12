@@ -31,15 +31,13 @@ const formatDate = (date: Date | null) => (date ? dayjs(date).format("DD/MM/YYYY
  *
  * Équivalence conventionnelle : les deux référentiels ne mesurent pas la même chose
  * (niveau de formation vs niveau de poste), il n'existe pas de correspondance officielle 1:1.
- * NB : la nomenclature FT va jusqu'à 9 (Cadre) mais Qua_cle est plafonné à 8 dans le schéma ;
- * le niveau Bac+5 est donc rabattu sur 8 (Agent de maîtrise).
  */
 const DIPLOMA_TO_FT_QUALIFICATION: Record<INiveauDiplomeEuropeen, { cle: number; libelle: string }> = {
   "3": { cle: 6, libelle: "Employé qualifié" }, // CAP, Infrabac
   "4": { cle: 6, libelle: "Employé qualifié" }, // BP, Bac
   "5": { cle: 7, libelle: "Technicien" }, // BTS, DEUST, Bac+2
   "6": { cle: 8, libelle: "Agent de maîtrise" }, // Licence, Maîtrise, Bac+3 à Bac+4
-  "7": { cle: 8, libelle: "Agent de maîtrise" }, // Master, ingénieur, Bac+5 (Cadre=9 hors limite Qua_cle)
+  "7": { cle: 9, libelle: "Cadre" }, // Master, ingénieur, Bac+5
 }
 
 type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
