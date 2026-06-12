@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import { decathlonJobToJobsPartners } from "./decathlonMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
@@ -162,7 +162,7 @@ describe("decathlonMapper", () => {
       offer_expiration: new Date("2026-01-24T09:18:17.000Z"),
       offer_multicast: true,
       offer_opening_count: 1,
-      offer_origin: null,
+      offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.FLUX,
       offer_rome_codes: undefined,
       offer_status: "Active",
       offer_target_diploma: {

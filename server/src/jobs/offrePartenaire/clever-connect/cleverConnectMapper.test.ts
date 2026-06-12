@@ -1,7 +1,7 @@
 //import { ObjectId } from "mongodb"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import { cleverConnectJobToJobsPartners } from "./cleverConnectMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
@@ -162,7 +162,7 @@ describe("cleverConnectJobToJobsPartners", () => {
       offer_rome_codes: null,
       offer_creation: new Date("2025-02-25T02:46:50.131Z"),
       offer_expiration: new Date("2025-04-25T02:46:50.131Z"),
-      offer_origin: null,
+      offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.FLUX,
       offer_opening_count: 1,
       offer_multicast: true,
       workplace_siret: null,
@@ -338,7 +338,7 @@ describe("cleverConnectJobToJobsPartners", () => {
       offer_rome_codes: null,
       offer_creation: new Date("2025-02-25T02:46:50.131Z"),
       offer_expiration: new Date("2025-04-25T02:46:50.131Z"),
-      offer_origin: null,
+      offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.FLUX,
       offer_opening_count: 1,
       offer_multicast: true,
       workplace_siret: null,
