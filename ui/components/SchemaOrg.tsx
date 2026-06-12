@@ -5,8 +5,13 @@ type BreadcrumbItem = {
   url: string
 }
 
+type ItemListEntry = {
+  name: string
+  url: string
+}
+
 type SchemaOrgProps = {
-  type: "WebSite" | "WebPage" | "Article" | "FAQPage"
+  type: "WebSite" | "WebPage" | "CollectionPage" | "Article" | "FAQPage" | "ItemList"
   title: string
   description: string
   url: string
@@ -16,22 +21,26 @@ type SchemaOrgProps = {
   faqItems?: { question: string; answer: string }[]
   keywords?: string[]
   articleSection?: string
+  itemList?: ItemListEntry[]
+  omitBreadcrumb?: boolean
 }
 
-export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePublished, dateModified, faqItems, keywords, articleSection }: SchemaOrgProps) => {
+export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePublished, dateModified, faqItems, itemList, omitBreadcrumb }: SchemaOrgProps) => {
   const schemas: object[] = []
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: breadcrumbs.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: `${BASE_URL}${item.url}`,
-    })),
+  if (!omitBreadcrumb) {
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbs.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        item: `${BASE_URL}${item.url}`,
+      })),
+    }
+    schemas.push(breadcrumbSchema)
   }
-  schemas.push(breadcrumbSchema)
 
   if (type === "WebSite") {
     schemas.push({
@@ -75,6 +84,27 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
     })
   }
 
+  if (type === "CollectionPage") {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: title,
+      description,
+      url: `${BASE_URL}${url}`,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "La bonne alternance",
+        url: BASE_URL,
+      },
+      publisher: {
+        "@type": "GovernmentOrganization",
+        name: "Délégation générale à l'emploi et à la formation professionnelle (DGEFP)",
+        url: "https://travail-emploi.gouv.fr",
+      },
+      inLanguage: "fr",
+    })
+  }
+
   if (type === "Article") {
     schemas.push({
       "@context": "https://schema.org",
@@ -105,9 +135,24 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
     })
   }
 
-  // Schéma FAQ ajouté dès que des questions sont fournies, qu'il s'agisse d'une page
-  // FAQPage dédiée ou d'un Article complété par une FAQ (ex. baromètre).
-  if (faqItems?.length) {
+  if (type === "ItemList" && itemList?.length) {
+    schemas.push({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: title,
+      description,
+      url: `${BASE_URL}${url}`,
+      numberOfItems: itemList.length,
+      itemListElement: itemList.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        url: `${BASE_URL}${item.url}`,
+      })),
+    })
+  }
+
+  if (type === "FAQPage" && faqItems?.length) {
     schemas.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",

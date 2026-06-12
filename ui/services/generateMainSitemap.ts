@@ -158,6 +158,27 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
       ],
     },
     {
+      title: "Explorer l'alternance",
+      priority: 0.95,
+      pages: [
+        {
+          path: "/alternance/metiers",
+          label: "Métiers en alternance",
+          description: "Tous les métiers accessibles en alternance : offres, salaires, formations et entreprises qui recrutent.",
+        },
+        {
+          path: "/alternance/villes",
+          label: "Alternance dans les grandes villes",
+          description: "Trouver une alternance dans les grandes villes françaises : offres, logement, transports et vie d'alternant.",
+        },
+        {
+          path: "/alternance/diplomes",
+          label: "Diplômes en alternance",
+          description: "Tous les diplômes accessibles en alternance (BTS, BUT, Licence Pro, CAP, Titres Pro) : programme, durée et débouchés.",
+        },
+      ],
+    },
+    {
       title: "L'alternance par ville",
       priority: 0.95,
       pages: villeData.map((ville) => ({
