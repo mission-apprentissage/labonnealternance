@@ -568,14 +568,15 @@ type PatchOffreBody = z.output<(typeof zRoutes.put)["/formulaire/offre/:jobId"][
 export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise<void> => {
   await validateFieldsFromReferentielRome(payload)
 
-  const job = payload
-  const now = new Date()
-
-  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
   const existingJob = await getDbCollection("jobs_partners").findOne({ _id: id })
   if (!existingJob) {
     throw internal("Job not found")
   }
+
+  const job = payload
+  const now = new Date()
+
+  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
 
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
     offer_opening_count: job.job_count ?? 1,
@@ -591,6 +592,8 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
       [],
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+    offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
+    offer_description: romeDetails?.definition,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
