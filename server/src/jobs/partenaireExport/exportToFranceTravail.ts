@@ -164,7 +164,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description?.slice(0, 450)}`) || null,
+    Description_entreprise: offre.workplace_description ? sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`) || null : null,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
