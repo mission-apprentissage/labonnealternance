@@ -132,8 +132,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         state={errors.job_level_label && touched.job_level_label ? "error" : "default"}
         stateRelatedMessage={errors.job_level_label as string}
         label="Niveau de formation visé en fin de contrat"
-        nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label, onChange: handleChange }}
+        nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label || "", onChange: handleChange }}
       >
+        <option value="" disabled hidden>
+          Sélectionnez un niveau de formation
+        </option>
         <option value="Cap, autres formations (Infrabac)">Cap, autres formations (Infrabac)</option>
         <option value="BP, Bac, autres formations (Bac)">BP, Bac, autres formations (Bac)</option>
         <option value="BTS, DEUST, autres formations (Bac+2)">BTS, DEUST, autres formations (Bac+2)</option>
