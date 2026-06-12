@@ -137,7 +137,7 @@ export const OffresTabs = ({
         setCurrentOfferId(null)
         offreProlongationModalControls.onClose()
         toast({
-          title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
+          title: `Offre mise à jour avec succès. Nouvelle date d’expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
         })
       })
       .finally(async () => {
