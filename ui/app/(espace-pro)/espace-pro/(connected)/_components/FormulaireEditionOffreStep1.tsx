@@ -138,7 +138,7 @@ export const FormulaireEditionOffreStep1 = ({
     rome_label: offre?.rome_label ?? "",
     rome_appellation_label: offre?.rome_appellation_label ?? "",
     rome_code: offre?.rome_code ?? [],
-    job_level_label: offre?.job_level_label ?? "Indifférent",
+    job_level_label: offre?.job_level_label ?? "",
     job_start_type: offre?.job_start_type ?? (offre ? JOB_START_TYPE.PRECISE_DATE : ""),
     job_start_date_flexible: offre?.job_start_date_flexible ?? false,
     job_start_date: offre?.job_start_date ? dayjs(offre.job_start_date).format(ISO_DATE_FORMAT) : "",

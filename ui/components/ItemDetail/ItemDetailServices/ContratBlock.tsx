@@ -42,7 +42,7 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
         </div>
       )}
       <Stack direction="row" sx={{ flexWrap: "wrap" }}>
-        <strong>Niveau visé en fin d&apos;études : </strong>{" "}
+        <strong>Niveau de formation visé en fin de contrat :</strong>{" "}
         {job?.target_diploma_level ? (
           <Stack direction="row" sx={{ flexWrap: "wrap" }}>
             {job?.target_diploma_level.split(", ").map((d, idx) => (
