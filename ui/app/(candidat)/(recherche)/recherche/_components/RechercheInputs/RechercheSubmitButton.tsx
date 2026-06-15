@@ -41,6 +41,7 @@ export function RechercheSubmitButton({ children, style, forceMobileStyle = fals
           lineHeight: "inherit",
           ...style,
         }}
+        aria-label="Rechercher des offres d’alternance"
       >
         {children}
       </Button>

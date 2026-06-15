@@ -6,7 +6,7 @@ import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureS
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 
 export const AlgoHome = () => (
-  <Container maxWidth="xl" component="section">
+  <Container sx={{ px: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
     <Box
       sx={{
         display: "grid",
