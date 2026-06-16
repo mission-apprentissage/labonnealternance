@@ -31,7 +31,7 @@ export const AlgoHome = () => (
             le marché caché de l&apos;emploi
           </Box>
         </Typography>
-        <Box sx={{ width: "13%", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
         <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
           <Typography className={fr.cx("fr-text--lg")}>La bonne alternance expose différents types d&apos;opportunités d&apos;emplois :</Typography>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>

@@ -2,9 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
 import Image from "next/image"
 import { GrandsGroupes } from "@/app/(home)/_components/GrandsGroupes"
+import { ArrowRightLine } from "@/theme/components/icons"
 
 export const GrandsGroupesRecruteur = () => (
-  <Container sx={{ padding: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
+  <Container maxWidth="xl" component="section">
     <Box>
       <Box
         sx={{
@@ -20,7 +21,7 @@ export const GrandsGroupesRecruteur = () => (
             confiance
           </Box>
         </Typography>
-        <Box sx={{ width: "13%", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
         <GrandsGroupes />
 
         <Typography sx={{ width: "100%", fontSize: "18px", lineHeight: "28px" }}>
@@ -40,6 +41,23 @@ export const GrandsGroupesRecruteur = () => (
           <Image src="images/home_pics/logos_partenaires/hw.svg" alt="Logo de HelloWork" width={171} height={66} />
           <Image src="images/home_pics/logos_partenaires/talentplug.svg" alt="Logo de Talentplug" width={171} height={66} />
           <Image src="images/home_pics/logos_partenaires/veritone.svg" alt="Logo de Veritone" width={171} height={66} />
+        </Box>
+      </Box>
+      <Box sx={{ mt: fr.spacing("2v") }}>
+        <Box
+          component="button"
+          sx={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+            fontSize: "14px",
+            textDecoration: "underline",
+          }}
+        >
+          Voir tous les partenaires{" "}
+          <ArrowRightLine sx={{ flexShrink: 0, fontSize: "12px", color: fr.colors.decisions.background.actionHigh.blueFrance.default, ml: fr.spacing("1v") }} />
         </Box>
       </Box>
     </Box>

@@ -18,7 +18,7 @@ export const GrandsGroupesCandidat = () => (
           de grands groupes
         </Box>
       </Typography>
-      <Box sx={{ width: "13%", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+      <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
       <GrandsGroupes />
     </Box>
   </Container>

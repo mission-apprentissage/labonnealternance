@@ -7,6 +7,7 @@ import { AUTHTYPE } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
+import { cardSx } from "@/app/(landing-pages)/je-suis-recruteur/page"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/getDepotCtaHref"
@@ -89,7 +90,7 @@ const JeSuisCFAPage = async () => {
           sx={{
             mt: fr.spacing("16v"),
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
-            borderRadius: fr.spacing("5v"),
+            borderRadius: fr.spacing("2v"),
             padding: { md: fr.spacing("12v"), xs: fr.spacing("3v") },
           }}
         >
@@ -157,12 +158,81 @@ const JeSuisCFAPage = async () => {
             </Grid>
           </Grid>
         </Grid>
+
+        <Box
+          sx={{
+            mt: fr.spacing("10v"),
+            mb: fr.spacing("8v"),
+            py: fr.spacing("8v"),
+            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+            borderRadius: fr.spacing("2v"),
+            display: "flex",
+            flexDirection: "column",
+            gap: fr.spacing("10v"),
+          }}
+        >
+          <Typography component="h1" variant="h1">
+            Nos offres d’emploi en alternance
+            <br />
+            <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
+              en chiffres
+            </Box>
+          </Typography>
+          <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              alignItems: "stretch",
+              mt: fr.spacing("4v"),
+            }}
+          >
+            <Box sx={{ ...cardSx }}>
+              <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Image src="/images/home_pics/icons/file_eyes.svg" alt="" aria-hidden={true} width={80} height={80} />
+              </Typography>
+              <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>+ 60 000</Typography>
+              <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                formations exposées
+                <br />
+                sur La bonne alternance
+              </Typography>
+            </Box>
+            <Box sx={{ ...cardSx }}>
+              <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Image src="/images/home_pics/icons/envelop.svg" alt="" aria-hidden={true} width={80} height={80} />
+              </Typography>
+              <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>+ 100 000</Typography>
+              <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                demandes envoyées
+                <br />
+                par les candidats aux CFA
+              </Typography>
+            </Box>
+            <Box sx={{ ...cardSx }}>
+              <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Image src="/images/home_pics/icons/ordi.svg" alt="" aria-hidden={true} width={80} height={80} />
+              </Typography>
+              <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>20</Typography>
+              <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                demandes reçues en moyenne
+                <br />
+                par CFA sur une année
+              </Typography>
+            </Box>
+          </Box>
+
+          <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#161616" }}>* Données calculées sur l'année 2025</Typography>
+        </Box>
+
         <Grid
           container
           sx={{
             mt: fr.spacing("16v"),
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
-            borderRadius: fr.spacing("5v"),
+            borderRadius: fr.spacing("2v"),
             padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
           }}
         >
@@ -249,7 +319,7 @@ const JeSuisCFAPage = async () => {
           sx={{
             mt: fr.spacing("16v"),
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
-            borderRadius: fr.spacing("5v"),
+            borderRadius: fr.spacing("2v"),
             padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
           }}
           spacing={fr.spacing("12v")}

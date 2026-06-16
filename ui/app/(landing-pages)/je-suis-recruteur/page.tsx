@@ -14,6 +14,14 @@ import { getDepotCtaHref } from "@/services/getDepotCtaHref"
 import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
 
+export const cardSx = {
+  backgroundColor: "white",
+  padding: fr.spacing("7v"),
+  borderRadius: fr.spacing("1v"),
+  boxShadow: "0 2px 6px 0 rgba(0, 0, 18, 0.16)",
+  textAlign: "center",
+}
+
 export const metadata: Metadata = PAGES.static.jeSuisRecruteur.getMetadata()
 const JeSuisRecruteurPage = async () => {
   const { user } = await getSession()
@@ -84,7 +92,7 @@ const JeSuisRecruteurPage = async () => {
             sx={{
               mt: fr.spacing("8v"),
               backgroundColor: fr.colors.decisions.background.default.grey.hover,
-              borderRadius: fr.spacing("5v"),
+              borderRadius: fr.spacing("2v"),
               padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
             }}
           >
@@ -179,14 +187,82 @@ const JeSuisRecruteurPage = async () => {
               </Grid>
             </Grid>
           </Grid>
-        </DefaultContainer>
-        <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
-          <GrandsGroupesRecruteur />
-        </Box>
-        <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
-          <AppreciationUsagers realm="recruteur" />
-        </Box>
-        <DefaultContainer>
+
+          <Box
+            sx={{
+              mt: fr.spacing("10v"),
+              mb: fr.spacing("8v"),
+              py: fr.spacing("8v"),
+              px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+              backgroundColor: fr.colors.decisions.background.default.grey.hover,
+              borderRadius: fr.spacing("2v"),
+              display: "flex",
+              flexDirection: "column",
+              gap: fr.spacing("10v"),
+            }}
+          >
+            <Typography component="h1" variant="h1">
+              Nos offres d’emploi en alternance
+              <br />
+              <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
+                en chiffres
+              </Box>
+            </Typography>
+            <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+                gap: fr.spacing("4v"),
+                alignItems: "stretch",
+                mt: fr.spacing("4v"),
+              }}
+            >
+              <Box sx={{ ...cardSx }}>
+                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                  <Image src="/images/home_pics/icons/malette.svg" alt="" aria-hidden={true} width={80} height={80} />
+                </Typography>
+                <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>+ 347 000</Typography>
+                <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                  offres en alternance
+                  <br />
+                  collectées sur les 12 derniers mois
+                </Typography>
+              </Box>
+              <Box sx={{ ...cardSx }}>
+                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                  <Image src="/images/home_pics/icons/file_eyes.svg" alt="" aria-hidden={true} width={80} height={80} />
+                </Typography>
+                <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>17</Typography>
+                <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                  consultations
+                  <br />
+                  en moyenne par offre
+                </Typography>
+              </Box>
+              <Box sx={{ ...cardSx }}>
+                <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                  <Image src="/images/home_pics/icons/files.svg" alt="" aria-hidden={true} width={80} height={80} />
+                </Typography>
+                <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>11</Typography>
+                <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                  candidatures
+                  <br />
+                  en moyenne par offre
+                </Typography>
+              </Box>
+            </Box>
+
+            <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#161616" }}>* Données calculées sur l'année 2025</Typography>
+          </Box>
+
+          <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+            <GrandsGroupesRecruteur />
+          </Box>
+          <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+            <AppreciationUsagers realm="recruteur" />
+          </Box>
+
           <Grid
             container
             sx={{
@@ -250,7 +326,7 @@ const JeSuisRecruteurPage = async () => {
             sx={{
               mt: { md: fr.spacing("16v"), xs: fr.spacing("8v") },
               backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-              borderRadius: fr.spacing("5v"),
+              borderRadius: fr.spacing("2v"),
               padding: { md: fr.spacing("12v"), xs: fr.spacing("3v") },
               mb: fr.spacing("16v"),
             }}

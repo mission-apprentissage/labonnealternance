@@ -94,7 +94,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
   const testimonies = TESTIMONIES[realm]
 
   return (
-    <Container sx={{ padding: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
+    <Container sx={{ paddingY: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
       <Box
         sx={{
           display: "flex",
@@ -109,7 +109,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
             de nos usagers
           </Box>
         </Typography>
-        <Box sx={{ width: "13%", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
         <Box>
           <Box
             sx={{
