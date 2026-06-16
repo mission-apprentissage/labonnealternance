@@ -151,8 +151,8 @@ export const AppreciationUsagers = ({ realm }: Props) => {
           <Box sx={{ mt: fr.spacing("4v"), display: "flex", justifyContent: "flex-end" }}>
             <Box
               component="button"
+              type="button"
               onClick={toggle}
-              sx={{
                 display: { xs: "block", lg: "none" },
                 alignSelf: "flex-end",
                 background: "none",
