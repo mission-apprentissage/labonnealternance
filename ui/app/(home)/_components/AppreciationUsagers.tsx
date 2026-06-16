@@ -153,6 +153,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
               component="button"
               type="button"
               onClick={toggle}
+              sx={{
                 display: { xs: "block", lg: "none" },
                 alignSelf: "flex-end",
                 background: "none",
