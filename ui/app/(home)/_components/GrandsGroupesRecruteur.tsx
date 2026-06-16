@@ -1,8 +1,10 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
 import Image from "next/image"
+import Link from "next/link"
 import { GrandsGroupes } from "@/app/(home)/_components/GrandsGroupes"
 import { ArrowRightLine } from "@/theme/components/icons"
+import { PAGES } from "@/utils/routes.utils"
 
 export const GrandsGroupesRecruteur = () => (
   <Container maxWidth="xl" component="section">
@@ -44,21 +46,10 @@ export const GrandsGroupesRecruteur = () => (
         </Box>
       </Box>
       <Box sx={{ mt: fr.spacing("2v") }}>
-        <Box
-          component="button"
-          sx={{
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-            fontSize: "14px",
-            textDecoration: "underline",
-          }}
-        >
+        <Link href={`${PAGES.static.aPropos.getPath()}#nos-partenaires`} className={fr.cx("fr-link")}>
           Voir tous les partenaires{" "}
           <ArrowRightLine sx={{ flexShrink: 0, fontSize: "12px", color: fr.colors.decisions.background.actionHigh.blueFrance.default, ml: fr.spacing("1v") }} />
-        </Box>
+        </Link>
       </Box>
     </Box>
   </Container>
