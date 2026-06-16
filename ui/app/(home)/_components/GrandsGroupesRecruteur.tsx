@@ -36,11 +36,11 @@ export const GrandsGroupesRecruteur = () => (
             flexWrap: "wrap",
           }}
         >
-          <Image src="images/home_pics/logos_partenaires/ft.svg" alt="Logo de France Travail" width={171} height={66} />
-          <Image src="images/home_pics/logos_partenaires/ep.svg" alt="Logo de L'OPCO EP" width={171} height={66} />
-          <Image src="images/home_pics/logos_partenaires/pass.svg" alt="Logo de Pass" width={171} height={66} />
-          <Image src="images/home_pics/logos_partenaires/job-teaser.svg" alt="Logo de Jobteaser" width={171} height={66} />
-          <Image src="images/home_pics/logos_partenaires/hw.svg" alt="Logo de HelloWork" width={171} height={66} />
+          <Image src="/images/home_pics/logos_partenaires/ft.svg" alt="Logo de France Travail" width={171} height={66} />
+          <Image src="/images/home_pics/logos_partenaires/ep.svg" alt="Logo de L'OPCO EP" width={171} height={66} />
+          <Image src="/images/home_pics/logos_partenaires/pass.svg" alt="Logo de Pass" width={171} height={66} />
+          <Image src="/images/home_pics/logos_partenaires/job-teaser.svg" alt="Logo de Jobteaser" width={171} height={66} />
+          <Image src="/images/home_pics/logos_partenaires/hw.svg" alt="Logo de HelloWork" width={171} height={66} />
           <Image src="images/home_pics/logos_partenaires/talentplug.svg" alt="Logo de Talentplug" width={171} height={66} />
           <Image src="images/home_pics/logos_partenaires/veritone.svg" alt="Logo de Veritone" width={171} height={66} />
         </Box>
