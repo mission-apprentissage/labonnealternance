@@ -83,6 +83,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
   useWindowSize()
 
   const [isOpen, setIsOpenned] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
 
   const onOpen = useCallback(() => {
     setIsOpenned(true)
@@ -122,12 +123,20 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         <InputFormField
           disabled={inputParams.disabled ?? false}
           label={props.label}
-          iconId={inputParams.inputProps.value === "" ? props.iconIdWithPlaceholder : undefined}
+          iconId={!isFocused && inputParams.inputProps.value === "" ? props.iconIdWithPlaceholder : undefined}
           // @ts-expect-error
           ref={inputParams.InputProps.ref}
           nativeInputProps={{
             ...inputParams.inputProps,
             placeholder: props.placeholder,
+            onFocus: (e) => {
+              setIsFocused(true)
+              inputParams.inputProps.onFocus?.(e)
+            },
+            onBlur: (e) => {
+              setIsFocused(false)
+              inputParams.inputProps.onBlur?.(e)
+            },
           }}
           action={
             isDeferredOrFetching ? (
@@ -153,7 +162,7 @@ export function AutocompleteAsync<T>(props: AutocompleteAsyncProps<T>) {
         />
       )
     },
-    [props.label, props.placeholder, isDeferredOrFetching, meta]
+    [props.label, props.placeholder, isDeferredOrFetching, meta, isFocused, setIsFocused]
   )
 
   const renderOption = useCallback(
