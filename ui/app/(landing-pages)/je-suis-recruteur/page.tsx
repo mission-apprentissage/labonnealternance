@@ -248,6 +248,7 @@ const JeSuisRecruteurPage = async () => {
               backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
               borderRadius: fr.spacing("5v"),
               padding: { md: fr.spacing("12v"), xs: fr.spacing("3v") },
+              mb: fr.spacing("16v"),
             }}
             spacing={{
               md: fr.spacing("8v"),
@@ -302,50 +303,6 @@ const JeSuisRecruteurPage = async () => {
                 style={{ width: "100%" }}
                 aria-hidden={true}
               />
-            </Grid>
-          </Grid>
-          <Grid container spacing={fr.spacing("8v")} sx={{ mt: fr.spacing("16v") }}>
-            <Grid size={12}>
-              <Box sx={{ display: "flex", flexDirection: "row", mx: "auto", justifyContent: "center" }}>
-                <Typography component={"h2"} variant={"h2"}>
-                  Vous souhaitez recruter un alternant pour votre entreprise ?
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid size={12} sx={{ display: "flex", flexDirection: "row", my: "auto", justifyContent: "center" }} gap={fr.spacing("4v")}>
-              <Button linkProps={{ href: PAGES.static.espaceProCreationEntreprise.getPath() }} priority="primary">
-                Déposer une offre
-              </Button>
-              <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
-                Me connecter
-              </Button>
-            </Grid>
-          </Grid>
-          <Grid
-            container
-            sx={{
-              mt: fr.spacing("16v"),
-              backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
-              borderRadius: fr.spacing("5v"),
-              padding: { md: fr.spacing("12v"), xs: fr.spacing("3v") },
-            }}
-            spacing={fr.spacing("8v")}
-          >
-            <Grid size={{ md: 9, xs: 12 }} display={"flex"} flexDirection={"column"} gap={fr.spacing("4v")}>
-              <Typography fontWeight={"bold"} textAlign={{ md: "start", xs: "center" }}>
-                La bonne alternance est édité par la Délégation générale à l’emploi et à la formation professionnelle (DGEFP) et conçoit des services numériques qui facilitent les
-                entrées en apprentissage.
-              </Typography>
-              <Typography component={"h2"} variant={"h2"} color={fr.colors.decisions.text.title.blueFrance.default} textAlign={{ md: "start", xs: "center" }}>
-                Rendez-vous sur LinkedIn pour suivre nos actualités
-              </Typography>
-            </Grid>
-            <Grid size={{ md: 3, xs: 12 }} sx={{ my: "auto" }}>
-              <Box sx={{ display: "flex", flexDirection: "row", my: "auto", justifyContent: "center" }}>
-                <Button linkProps={{ href: "https://www.linkedin.com/company/la-bonne-alternance/posts/" }} priority="primary">
-                  Voir notre page LinkedIn
-                </Button>
-              </Box>
             </Grid>
           </Grid>
         </DefaultContainer>

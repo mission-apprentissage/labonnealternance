@@ -6,6 +6,7 @@ import Image from "next/image"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/getDepotCtaHref"
@@ -300,6 +301,11 @@ const JeSuisCFAPage = async () => {
             </Box>
           </Grid>
         </Grid>
+      </DefaultContainer>
+      <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+        <AppreciationUsagers realm="cfa" />
+      </Box>
+      <DefaultContainer>
         <Grid container sx={{ mt: fr.spacing("16v") }} spacing={fr.spacing("8v")}>
           <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }} gap={fr.spacing("4v")}>
             <Image fetchPriority="low" src={"/images/je-suis-cfa/illu-lba.svg"} alt="" width={212} height={145} unoptimized style={{ width: "100%" }} aria-hidden={true} />
