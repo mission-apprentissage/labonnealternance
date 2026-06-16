@@ -80,7 +80,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </Grid>
 
         <GrandsGroupes />
-        <AppreciationUsagers />
+        <AppreciationUsagers realm="candidat" />
         <AlgoHome />
       </Container>
     </>
