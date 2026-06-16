@@ -144,7 +144,7 @@ export const AppreciationUsagers = ({ realm }: Props) => {
                     </span>
                   ))}
                 </Typography>
-                <Typography sx={{ textAlign: "center" }}>"{testimony.quote}"</Typography>
+                <Typography sx={{ textAlign: "center" }}>{testimony.quote}</Typography>
               </Box>
             ))}
           </Box>
