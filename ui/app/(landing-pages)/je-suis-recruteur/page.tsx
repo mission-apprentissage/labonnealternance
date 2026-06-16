@@ -7,6 +7,7 @@ import Image from "next/image"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
+import { GrandsGroupesRecruteur } from "@/app/(home)/_components/GrandsGroupesRecruteur"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/getDepotCtaHref"
@@ -179,6 +180,9 @@ const JeSuisRecruteurPage = async () => {
             </Grid>
           </Grid>
         </DefaultContainer>
+        <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+          <GrandsGroupesRecruteur />
+        </Box>
         <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
           <AppreciationUsagers realm="recruteur" />
         </Box>
