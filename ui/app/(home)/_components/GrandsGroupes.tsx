@@ -18,8 +18,8 @@ export const GrandsGroupes = () => (
       <Image src="/images/home_pics/logos_partenaires/engie.svg" alt="Logo d'Engie" width={171} height={66} />
       <Image src="/images/home_pics/logos_partenaires/la-poste.svg" alt="Logo de La Poste" width={171} height={66} />
       <Image src="/images/home_pics/logos_partenaires/auchan.svg" alt="Logo d'Auchan" width={171} height={66} />
-      <Image src="images/home_pics/logos_partenaires/institut-pasteur.svg" alt="Logo de l'Institut Pasteur" width={171} height={66} />
-      <Image src="images/home_pics/logos_partenaires/daher.svg" alt="Logo de Daher" width={171} height={66} />
+      <Image src="/images/home_pics/logos_partenaires/institut-pasteur.svg" alt="Logo de l'Institut Pasteur" width={171} height={66} />
+      <Image src="/images/home_pics/logos_partenaires/daher.svg" alt="Logo de Daher" width={171} height={66} />
     </Box>
   </>
 )
