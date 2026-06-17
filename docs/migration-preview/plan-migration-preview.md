@@ -20,7 +20,7 @@ Le système de preview actuel repose sur quatre couches principales :
 1. Une PR est ouverte ou mise à jour.
 2. Le workflow [preview.yml](../../.github/workflows/preview.yml) publie un commentaire expliquant comment déclencher une preview.
 3. Un commentaire `🚀` déclenche [deploy_preview.yml](../../.github/workflows/deploy_preview.yml).
-4. Le workflow prépare le runner GitHub Actions, puis appelle `.bin/mna-lba app:deploy preview <pr_number>`.
+4. Le workflow prépare le runner GitHub Actions, puis appelle `.bin/mna app:deploy preview <pr_number>`.
 5. Ansible démarre ou maintient le système preview partagé sur l’hôte distant.
 6. Le dépôt est cloné sur la VM preview au SHA de la PR.
 7. Les images Docker sont buildées localement sur cette VM.
@@ -216,7 +216,7 @@ Retirer du flux preview ce qui ne sera plus nécessaire une fois le runtime par 
 3. Après harmonisation du tagging preview, vérifier que le compose runtime référence les tags server et UI attendus, et que le cleanup Ansible supprime exactement ces mêmes tags sans dépendre d’un prune global.
 4. Tester un cycle complet sur une PR de test : déploiement preview, redéploiement, fermeture de PR, suppression immédiate, puis vérification qu’aucune image locale ni base Mongo `preview_<PR>` ne subsiste.
 5. Vérifier que le cron de cleanup reste idempotent après ajout du cleanup événementiel, en particulier sur les previews déjà supprimées.
-6. Une fois la migration CI immuable faite, vérifier qu’un déploiement preview ne clone plus le dépôt et n’exécute plus `.bin/mna-lba app:build` sur l’hôte preview.
+6. Une fois la migration CI immuable faite, vérifier qu’un déploiement preview ne clone plus le dépôt et n’exécute plus `.bin/mna app:build` sur l’hôte preview.
 7. Vérifier que le SHA déployé correspond exactement à une image GHCR produite par une CI verte, et que le workflow refuse un SHA non validé.
 
 ## Décisions prises dans ce plan
