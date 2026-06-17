@@ -488,6 +488,6 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   {
     fct: processMissingRomeAndImportToJobPartners,
-    description: "Importe les offres partenaires qui n'ont pas de code ROME dans computed_jobs_partners",
-  },
+    description: "Complète les codes ROME manquants des offres partenaires puis les importe dans jobs_partners",
+  }
 ]
