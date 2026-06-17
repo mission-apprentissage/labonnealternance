@@ -1,5 +1,6 @@
 import { processEdf } from "@/jobs/offrePartenaire/edf/processEdf"
 import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
+import { processMissingRomeAndImportToJobPartners } from "@/jobs/offrePartenaire/processMissingRomeAndImportToJobPartners"
 import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
@@ -484,5 +485,9 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: analyzeCfaBlockList,
     description: "",
+  },
+  {
+    fct: processMissingRomeAndImportToJobPartners,
+    description: "Importe les offres partenaires qui n'ont pas de code ROME dans computed_jobs_partners",
   },
 ]
