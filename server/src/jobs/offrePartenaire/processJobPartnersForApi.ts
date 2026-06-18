@@ -29,10 +29,10 @@ export const processJobPartnersForApi = async () => {
 }
 
 export const processJobPartnersWithFilter = async (filter: Filter<IComputedJobsPartners>) => {
-  logger.info("début de processJobPartnersWithFilter", filter)
+  logger.info({ filter }, "début de processJobPartnersWithFilter")
   await fillComputedJobsPartners({ addedMatchFilter: filter, shouldNotifySlack: false })
   await importFromComputedToJobsPartners(filter, false)
   await fillLbaUrl()
   await getDbCollection("computed_jobs_partners").deleteMany({ $and: [filter, { validated: true }] })
-  logger.info("fin de processJobPartnersWithFilter", filter)
+  logger.info({ filter }, "fin de processJobPartnersWithFilter")
 }

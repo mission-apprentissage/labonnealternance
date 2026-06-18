@@ -2,9 +2,8 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Link from "next/link"
 import type { IDiplomeMetier } from "shared/models/seoDiplome.model"
+import { SectionTitle } from "@/app/(editorial)/alternance/_components/SectionTitle"
 import { UTM_PARAMS } from "../_data/constants"
-
-import { SectionTitle } from "./SectionTitle"
 
 export function MetiersSection({ titre, text, liste, romes }: { titre: string; text: string; liste: IDiplomeMetier[]; romes: string[] }) {
   const title = `Quels métiers exercer avec un diplôme ${titre} ?`

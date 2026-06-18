@@ -41,7 +41,7 @@ const ItemDetailLoading = ({ type }: Props) => {
 
   const resultListProperties = {
     color: "#666666",
-    fontWeight: 500,
+    fontWeight: 700,
     fontSize: "18px",
     marginTop: { xs: 0, md: fr.spacing("4v") },
   }

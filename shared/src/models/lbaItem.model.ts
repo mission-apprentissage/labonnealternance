@@ -182,7 +182,7 @@ const ZLbaItemJob = z
     status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
     type: ZJobType.nullish(), // partner -> contract_type
     partner_label: z.string().nullish(), // partner -> partner_label
-    origin: z.string().nullish(), // partner -> offer_origin
+    origin: z.string().nullish(), // partner -> offer_origin. Déprécié 06/2026
     offer_desired_skills: z.array(z.string()).nullish(), // partner -> offer_desired_skills,
     offer_to_be_acquired_skills: z.array(z.string()).nullish(), // partner -> offer_to_be_acquired_skills,
     offer_to_be_acquired_knowledge: z.array(z.string()).nullish(),

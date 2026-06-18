@@ -9,6 +9,7 @@ import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod
 import { Netmask } from "netmask"
 import { setZodLanguage } from "shared/helpers/zodWithOpenApi"
 import type { IRouteSchema, WithSecurityScheme } from "shared/routes/common.routes"
+import { enterRequestLoggerContext, getRootLogger } from "@/common/logger"
 import { initSentryFastify } from "@/common/sentry/sentry.fastify"
 import { localOrigin } from "@/common/utils/isOriginLocal"
 import config from "@/config"
@@ -49,7 +50,6 @@ import { jobsApiV3Routes } from "./controllers/v3/jobs/jobs.controller.v3"
 import version from "./controllers/version.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
-import { logMiddleware } from "./middlewares/logMiddleware"
 
 export type Server = FastifyInstance<
   RawServerDefault,
@@ -60,16 +60,28 @@ export type Server = FastifyInstance<
 >
 
 export async function bind(app: Server) {
+  // Premier hook onRequest (avant Sentry) : propage le logger de requête (reqId) au contexte async
+  app.addHook("onRequest", (request, _reply, done) => {
+    enterRequestLoggerContext(request.log)
+    done()
+  })
   initSentryFastify(app)
   setZodLanguage("en")
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
-  const allowedIps = [new Netmask("127.0.0.0/16"), new Netmask("10.0.0.0/8"), new Netmask("172.16.0.0/12"), new Netmask("192.168.0.0/16")]
+  const allowedIps = [
+    new Netmask("127.0.0.0/8"),
+    new Netmask("10.0.0.0/8"),
+    new Netmask("172.16.0.0/12"),
+    new Netmask("192.168.0.0/16"),
+    ...config.apiApprentissage.serverIps.map((ip) => new Netmask(`${ip}/32`)),
+  ]
   await app.register(fastifyRateLimt, {
     global: false,
     allowList: (req) => {
-      // Do not rate-limit private & internal IPs
+      // Ne pas rate-limiter les IPs privées/internes ni les serveurs api-apprentissage
+      // (rate-limit posé en amont par consommateur, cf. issue #4806)
       return allowedIps.some((block) => block.contains(req.ip))
     },
   })
@@ -164,7 +176,7 @@ export async function bind(app: Server) {
 
 export const bindFastifyServer = async (): Promise<Server> => {
   const app: Server = fastify({
-    logger: logMiddleware(),
+    loggerInstance: getRootLogger(),
     trustProxy: 1,
     routerOptions: {
       caseSensitive: false,

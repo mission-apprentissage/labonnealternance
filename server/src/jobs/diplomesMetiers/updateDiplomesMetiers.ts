@@ -129,9 +129,7 @@ export const updateDiplomeMetier = async (): Promise<void> => {
         diplomesToInsert.push(parsedDiplomeMetier.data)
       } else {
         invalidDiplomes.push(diplome.intitule_long)
-        logger.error(`Mauvais format diplomesmetier pour le diplôme ${diplome.intitule_long}`, {
-          errors: parsedDiplomeMetier.error.errors,
-        })
+        logger.error({ errors: parsedDiplomeMetier.error.errors }, `Mauvais format diplomesmetier pour le diplôme ${diplome.intitule_long}`)
       }
     }
 
@@ -153,7 +151,7 @@ export const updateDiplomeMetier = async (): Promise<void> => {
 
     logger.info(`Fin traitement`)
   } catch (error) {
-    logger.error("Error during updateDiplomeMetier", { error })
+    logger.error({ err: error }, "Error during updateDiplomeMetier")
     await notifyToSlack({
       subject: "Erreur Mise à jour Diplome Metier",
       message: `Erreur lors de la mise à jour des diplomes metiers : ${error}`,

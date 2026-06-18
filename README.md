@@ -12,7 +12,7 @@
     - [Détails des commandes globales](#détails-des-commandes-globales)
       - [Installation .env](#installation-env)
       - [Lancement de la stack compléte](#lancement-de-la-stack-compléte)
-      - [CLI mna-lba](#cli-mna-lba)
+      - [CLI mna](#cli-mna)
       - [Lancement de l'application](#lancement-de-lapplication)
       - [Gestion des services docker](#gestion-des-services-docker)
       - [Hydratation du projet en local](#hydratation-du-projet-en-local)
@@ -158,13 +158,13 @@ Lance la stack local de développement (server, ui, services)
 
 Cette commande démarre les containers définis dans le fichier `docker-compose.yml`.
 
-#### CLI mna-lba
+#### CLI mna
 
 ```bash
   yarn cli <command>
 ```
 
-commande pour lancer les commandes du cli mna-lba
+commande pour lancer les commandes du cli mna
 
 #### Lancement de l'application
 

@@ -77,7 +77,7 @@ export const cleanClosedCompanies = async (csvPath?: string) => {
       successCount++
     } catch (error) {
       errorCount++
-      logger.error(`cleanClosedCompanies: erreur sur la ligne ${index + 1} (id=${row.id}, managed-by=${row["managed-by"]})`, error)
+      logger.error({ err: error }, `cleanClosedCompanies: erreur sur la ligne ${index + 1} (id=${row.id}, managed-by=${row["managed-by"]})`)
     }
   })
 

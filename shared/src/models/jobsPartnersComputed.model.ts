@@ -25,6 +25,7 @@ export const PARTNER_WHITELIST: string[] = [
   "GRDF",
   "Institut Pasteur",
   "L'Oreal",
+  "OPCO EP",
   "Serpe",
   "Thales",
   "Veritone",
@@ -83,6 +84,13 @@ export enum JOB_PARTNER_BUSINESS_ERROR {
   WRONG_DATA = "WRONG_DATA",
   GEOLOCATION_NOT_FOUND = "GEOLOCATION_NOT_FOUND",
   TRUSTED_COMPANY_JOB_DUPLICATE = "TRUSTED_COMPANY_JOB_DUPLICATE",
+}
+
+export enum JOBS_PARTNERS_OFFER_ORIGIN {
+  SCRAPPING = "Scrapping",
+  FLUX = "Flux",
+  LBA = "La bonne alternance",
+  LBA_API = "La bonne alternance API",
 }
 
 export const ZComputedJobsPartnersBase = extensions

@@ -25,7 +25,7 @@ import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -138,7 +138,7 @@ export const createJob = async ({
     entreprise,
     user,
     status: newJobStatus,
-    origin: origin ?? "lba",
+    origin: origin ?? JOBS_PARTNERS_OFFER_ORIGIN.LBA,
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
@@ -360,7 +360,7 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
 }
 
 export const getFormulaireWithRomeDetail = async ({ establishment_id }: { establishment_id: string }): Promise<IRecruiter | null> => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const recruiter = await getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: false })
   recruiter?.jobs.forEach((job) => {
     // @ts-expect-error
@@ -376,7 +376,7 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
 }: {
   establishment_id: string
 }): Promise<IRecruiterWithRomeDetailAndApplicationCount | null> => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
@@ -521,7 +521,7 @@ const getRecruiterFromJobsPartnerFilter = async ({
  * @description Archive existing formulaire and cancel all its job offers
  */
 export const archiveFormulaireByEstablishmentId = async (id: string) => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(id)
   await archiveFormulaire(userId, siret)
 }
 
@@ -568,14 +568,15 @@ type PatchOffreBody = z.output<(typeof zRoutes.put)["/formulaire/offre/:jobId"][
 export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise<void> => {
   await validateFieldsFromReferentielRome(payload)
 
-  const job = payload
-  const now = new Date()
-
-  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
   const existingJob = await getDbCollection("jobs_partners").findOne({ _id: id })
   if (!existingJob) {
     throw internal("Job not found")
   }
+
+  const job = payload
+  const now = new Date()
+
+  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
 
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
     offer_opening_count: job.job_count ?? 1,
@@ -591,6 +592,8 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
       [],
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+    offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
+    offer_description: romeDetails?.definition,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
@@ -943,7 +946,7 @@ export const updateCfaManagedRecruiter = async (user: IUserWithAccount, establis
     throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${user._id}`)
   }
   const cfaId = new ObjectId(mainRole.authorized_id)
-  const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error(`inattendu: entreprise non trouvée pour l'establishment_id=${establishment_id}`)
@@ -1209,7 +1212,6 @@ async function jobCreateToJobsPartner({
     applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
-    establishment_id: buildEstablishmentId(user._id, entreprise.siret),
     to_applicant_questions: job.to_applicant_questions,
   }
   return jobPartner
