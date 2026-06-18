@@ -106,7 +106,7 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
     workplace_address_city: address?.parts?.city || null,
     workplace_address_street_label: address?.parts?.street || null,
     workplace_geopoint:
-      lat && lon
+      lat != null && lon != null
         ? {
             type: "Point",
             coordinates: [lon, lat],
