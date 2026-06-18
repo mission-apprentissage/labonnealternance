@@ -34,7 +34,7 @@ export const jobsApiV3Routes = (server: Server) => {
     {
       schema: zRoutes.post["/v3/jobs"],
       onRequest: server.auth(zRoutes.post["/v3/jobs"]),
-      config,
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806)
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/v3/jobs"]).value
@@ -48,7 +48,7 @@ export const jobsApiV3Routes = (server: Server) => {
     {
       schema: zRoutes.put["/v3/jobs/:id"],
       onRequest: server.auth(zRoutes.put["/v3/jobs/:id"]),
-      config,
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806)
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.put["/v3/jobs/:id"]).value
@@ -67,7 +67,7 @@ export const jobsApiV3Routes = (server: Server) => {
     {
       schema: zRoutes.post["/v3/jobs/multi-partner"],
       onRequest: server.auth(zRoutes.post["/v3/jobs/multi-partner"]),
-      config,
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806)
     },
     async (req, res) => {
       const { partner_label, partner_job_id } = req.body
@@ -82,7 +82,7 @@ export const jobsApiV3Routes = (server: Server) => {
     {
       schema: zRoutes.post["/v4/jobs/multi-partner"],
       onRequest: server.auth(zRoutes.post["/v4/jobs/multi-partner"]),
-      config,
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806)
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/v4/jobs/multi-partner"]).value
@@ -99,7 +99,7 @@ export const jobsApiV3Routes = (server: Server) => {
     {
       schema: zRoutes.post["/v4/jobs/multi-partner/bulk"],
       onRequest: server.auth(zRoutes.post["/v4/jobs/multi-partner/bulk"]),
-      config,
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806)
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/v4/jobs/multi-partner/bulk"]).value
@@ -191,12 +191,7 @@ export const jobsApiV3Routes = (server: Server) => {
     {
       schema: zRoutes.get["/v3/jobs/export"],
       onRequest: server.auth(zRoutes.get["/v3/jobs/export"]),
-      config: {
-        rateLimit: {
-          max: 1,
-          timeWindow: "1s",
-        },
-      },
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806)
     },
     async (_, res) => {
       const url = await s3SignedUrl("storage", EXPORT_JOBS_TO_S3_V2_FILENAME, { expiresIn: 120 })

@@ -109,11 +109,9 @@ describe("offerToFTOffer", () => {
     })
 
     const ftOffer = offerToFTOffer({ ...job, referentielRome, entreprise, cfa }, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
-    if (ftOffer?.Description) {
-      ftOffer.Description = ftOffer.Description.slice(0, 450)
-    }
+    const truncated = ftOffer?.Description?.slice(0, 450)
 
-    expect(ftOffer?.Description).toHaveLength(450)
-    expect(ftOffer?.Description).toBe("a".repeat(450))
+    expect(truncated).toHaveLength(450)
+    expect(truncated).toBe(`Offre collectée par La bonne alternance : ${longDescription}`.slice(0, 450))
   })
 })

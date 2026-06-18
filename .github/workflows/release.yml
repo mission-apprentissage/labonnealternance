@@ -41,9 +41,8 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.TOKEN_MNA_SHARED }}
           persist-credentials: false
-          submodules: recursive
+          submodules: true
           fetch-depth: 0
 
       - uses: actions/setup-node@v6
@@ -94,7 +93,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.TOKEN_MNA_SHARED }}
           submodules: true
 
       - name: Initialize the GnuPG keyring
@@ -131,7 +129,7 @@ jobs:
         uses: crazy-max/ghaction-github-runtime@v4
 
       - name: Build UI recette
-        run: .bin/mna-lba app:build ${{ needs.release.outputs.VERSION }} push $(git rev-parse HEAD) recette
+        run: .bin/mna app:build ${{ needs.release.outputs.VERSION }} push $(git rev-parse HEAD) recette
         env:
           CI: true
 
@@ -203,7 +201,6 @@ jobs:
       DEPLOY_PASS: ${{ secrets.DEPLOY_PASS }}
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       OPENPGP_PRIVATE_SUBKEY: ${{ secrets.OPENPGP_PRIVATE_SUBKEY }}
-      TOKEN_MNA_SHARED: ${{ secrets.TOKEN_MNA_SHARED }}
 
   sentry:
     needs: ["release"]
@@ -212,9 +209,8 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.TOKEN_MNA_SHARED }}
           persist-credentials: false
-          submodules: recursive
+          submodules: true
           fetch-depth: 0
 
       - name: Initialize the GnuPG keyring
@@ -261,7 +257,7 @@ jobs:
           docker rm temp-ui
 
       - name: upload sourcemaps to sentry
-        run: .bin/mna-lba sentry:release ${{ needs.release.outputs.VERSION }}
+        run: .bin/mna sentry:release ${{ needs.release.outputs.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF_NAME: ${{ env.GITHUB_REF_NAME }}
