@@ -19,7 +19,7 @@ export const ZDecathlonJob = z
     published_at: z.string().nullish(),
     contract_duration: z
       .object({
-        min: z.number().nullish(),
+        min: z.coerce.number().nullish(),
       })
       .passthrough()
       .nullish(),
