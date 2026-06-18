@@ -14,6 +14,7 @@ import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
 import { RomeDetailWithQuery } from "@/components/DepotOffre/RomeDetailWithQuery"
+import { LbaTitle } from "@/components/dsfr/LbaTitle"
 import { getRomeDetail } from "@/utils/api"
 import { FormulaireEditionOffreButtons } from "./FormulaireEditionOffreButtons"
 import { FormulaireEditionOffreFields } from "./FormulaireEditionOffreFields"
@@ -179,28 +180,20 @@ export const FormulaireEditionOffreStep1 = ({
       >
         {({ values }) => (
           <div>
-            <Typography
-              component="h1"
-              sx={(theme) => ({
-                fontWeight: 700,
+            <LbaTitle
+              component="p"
+              sx={{
                 color: "#000091",
                 mb: fr.spacing("6v"),
-                [theme.breakpoints.up("xs")]: {
-                  fontSize: "18px !important",
-                  lineHeight: "24px !important",
-                },
-                [theme.breakpoints.up("md")]: {
-                  fontSize: "20px !important",
-                  lineHeight: "28px !important",
-                },
-              })}
+                fontSize: { xs: "18px !important", md: "20px !important" },
+                lineHeight: { xs: "24px !important", md: "28px !important" },
+                fontWeight: 700,
+              }}
             >
               Étape 1/2 : Description de l’offre
-            </Typography>
-            <Typography component="h2" sx={{ fontWeight: 700 }}>
-              Votre offre
-            </Typography>
-            <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
+            </LbaTitle>
+            <LbaTitle component="h1">Votre offre</LbaTitle>
+            <Typography sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
               Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
             </Typography>
             <Box
@@ -237,14 +230,14 @@ export const FormulaireEditionOffreStep1 = ({
 
               {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
               <Box>
-                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                <Typography component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
                   La présentation de l'entreprise
                 </Typography>
                 <Box sx={{ mt: fr.spacing("4v") }}>
                   <EmployerDescriptionField />
                 </Box>
 
-                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                <Typography component="h3" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
                   La description de l'offre
                 </Typography>
                 <Box sx={{ mt: fr.spacing("4v") }}>

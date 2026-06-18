@@ -10,6 +10,7 @@ import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { BandeauProps } from "@/app/(espace-pro)/_components/Bandeau"
 import { Bandeau } from "@/app/(espace-pro)/_components/Bandeau"
 import { AUTHTYPE } from "@/common/contants"
+import { LbaTitle } from "@/components/dsfr/LbaTitle"
 import { InformationsSiret } from "@/components/espace_pro/CreationRecruteur/InformationsSiret"
 import { BorderedBox } from "@/components/espace_pro/common/components/BorderedBox"
 import { publicConfig } from "@/config.public"
@@ -197,9 +198,7 @@ export default function CreationCompte({ type, isWidget = false, origin = "lba" 
             mb: fr.spacing("8v"),
           }}
         >
-          <Typography component="h1" sx={{ fontSize: "32px", fontWeight: 700 }}>
-            Vous recrutez des alternants ?
-          </Typography>
+          <LbaTitle component="h1">Vous recrutez des alternants ?</LbaTitle>
           <Typography component="div" sx={{ fontSize: "20px", lineHeight: "24px", mb: fr.spacing("4v"), mt: fr.spacing("8v") }}>
             Pour diffuser gratuitement vos offres, précisez le nom ou le SIRET de votre établissement.
           </Typography>
