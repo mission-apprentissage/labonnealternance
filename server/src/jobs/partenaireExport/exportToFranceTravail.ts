@@ -288,8 +288,8 @@ const generateCsvFile = async (csvPath: URL, jobs: DBJob[]) => {
   await pipelineAsync(source, transform, stringifier, destination)
 }
 
-// phase de test : les 10 premières offres du flux principal sont utilisées.
-// À terme, filtrer sur un champ dédié dans jobs_partners (à créer).
+// Flux "confiée" : export des offres filtrées via `ft_support` avec un identifiant partenaire dédié.
+// Le fichier contient l'ensemble des offres confiées retournées par `getJobsToExport({ ftSupport: true })`.
 const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
   const source = Readable.from(jobs)
   const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
