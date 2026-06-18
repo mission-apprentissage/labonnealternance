@@ -386,6 +386,16 @@ export const PAGES = {
         description: "Consultez nos statistiques et analyses sur le marché de l’alternance en France.",
       }),
     },
+    bilanFusionPortail: {
+      getPath: () => `/bilan-fusion-portail-alternance` as string,
+      title: "Bilan de la fusion du Portail de l'alternance et de La bonne alternance",
+      index: false,
+      getMetadata: () => ({
+        title: "Bilan de la fusion du Portail de l'alternance et de La bonne alternance",
+        description: "Page de démonstration : suivi du trafic propre vs redirection après la fusion du Portail de l'alternance et de La bonne alternance.",
+        robots: { index: false, follow: false },
+      }),
+    },
     accesRecruteur: {
       getPath: () => `/acces-recruteur` as string,
       title: "Recruteur",

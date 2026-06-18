@@ -1,0 +1,321 @@
+.bilanFusion {
+  --bleu: #000091;
+  --archipel: #009099;
+  --emeraude: #00a95f;
+  --gris: #929299;
+  --bg: #f6f6f6;
+  --bord: #e3e3e8;
+  --texte: #161616;
+  --t2: #666;
+  --r: 8px;
+  color: var(--texte);
+  line-height: 1.5;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+.bilanFusion * {
+  box-sizing: border-box;
+}
+.bilanFusion .bandeau {
+  border-top: 4px solid var(--bleu);
+  padding-top: 16px;
+  margin-bottom: 20px;
+}
+.bilanFusion .bandeau h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.bilanFusion .bandeau p {
+  font-size: 14px;
+  color: var(--t2);
+  margin: 0;
+}
+.bilanFusion .controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+.bilanFusion .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 280px;
+}
+.bilanFusion .field > label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.bilanFusion .dd {
+  position: relative;
+}
+.bilanFusion .dd-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  background: #fff;
+  color: var(--texte);
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 var(--bleu);
+}
+.bilanFusion .dd-btn:focus {
+  outline: 2px solid var(--bleu);
+  outline-offset: 2px;
+}
+.bilanFusion .dd-btn .lab {
+  flex: 1;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bilanFusion .dd-btn .vis {
+  font-size: 13px;
+  color: var(--t2);
+  white-space: nowrap;
+}
+.bilanFusion .dd-btn .car {
+  color: var(--bleu);
+  transition: transform 0.15s;
+}
+.bilanFusion .dd-btn[aria-expanded="true"] .car {
+  transform: rotate(180deg);
+}
+.bilanFusion .dd-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #fff;
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  max-height: 360px;
+  overflow: auto;
+  padding: 4px;
+}
+.bilanFusion .dd-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px 9px 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+}
+.bilanFusion .dd-opt:hover {
+  background: var(--bg);
+}
+.bilanFusion .dd-opt .u {
+  flex: 1;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bilanFusion .dd-opt .n {
+  font-size: 13px;
+  color: var(--t2);
+  white-space: nowrap;
+}
+.bilanFusion .dd-opt[aria-selected="true"] {
+  background: #f0f0fb;
+  box-shadow: inset 3px 0 0 var(--bleu);
+}
+.bilanFusion .dd-opt[aria-selected="true"]::before {
+  content: "\2713";
+  position: absolute;
+  left: 9px;
+  color: var(--bleu);
+  font-weight: 700;
+  font-size: 13px;
+}
+.bilanFusion .dd-opt.grp {
+  font-weight: 700;
+  color: var(--bleu);
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+.bilanFusion .dd-opt.grp .n {
+  color: #2f4077;
+}
+.bilanFusion .dd-opt.grp-last {
+  border-bottom: 1px solid var(--bord);
+  margin-bottom: 2px;
+}
+.bilanFusion .toggle {
+  display: inline-flex;
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.bilanFusion .toggle button {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 14px;
+  border: 0;
+  background: #fff;
+  color: var(--t2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.bilanFusion .toggle button.on {
+  background: var(--bleu);
+  color: #fff;
+}
+.bilanFusion .nav {
+  display: flex;
+  gap: 6px;
+}
+.bilanFusion .nav button {
+  font-family: inherit;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  background: #fff;
+  color: var(--bleu);
+  font-size: 18px;
+  cursor: pointer;
+}
+.bilanFusion .nav button:hover {
+  background: var(--bg);
+}
+.bilanFusion .cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.bilanFusion .card {
+  background: var(--bg);
+  border-radius: var(--r);
+  padding: 14px 16px;
+}
+.bilanFusion .card .k {
+  font-size: 12px;
+  color: var(--t2);
+  margin-bottom: 6px;
+}
+.bilanFusion .card .v {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.bilanFusion .card .s {
+  font-size: 12px;
+  color: var(--t2);
+  margin-top: 2px;
+}
+.bilanFusion .insight {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: var(--r);
+  margin-bottom: 18px;
+  border-left: 4px solid var(--bleu);
+  background: #f0f0fb;
+}
+.bilanFusion .insight.ok {
+  border-left-color: var(--emeraude);
+  background: #e9f7ef;
+}
+.bilanFusion .insight.warn {
+  border-left-color: var(--archipel);
+  background: #e6f3f4;
+}
+.bilanFusion .insight.low {
+  border-left-color: var(--gris);
+  background: var(--bg);
+}
+.bilanFusion .insight .tag {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.bilanFusion .insight .txt {
+  font-size: 14px;
+}
+.bilanFusion .legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin: 4px 0 8px;
+  font-size: 13px;
+  color: var(--t2);
+}
+.bilanFusion .legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bilanFusion .legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  display: inline-block;
+}
+.bilanFusion .chartwrap {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  padding: 14px;
+}
+.bilanFusion .note {
+  font-size: 12.5px;
+  color: var(--t2);
+  margin-top: 10px;
+  background: var(--bg);
+  border-radius: var(--r);
+  padding: 10px 12px;
+}
+.bilanFusion .foot {
+  font-size: 12px;
+  color: var(--t2);
+  margin-top: 14px;
+  border-top: 1px solid var(--bord);
+  padding-top: 12px;
+}
+.bilanFusion .tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: #fff;
+  border: 1px solid var(--bord);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  padding: 6px 9px;
+  font-size: 12.5px;
+  z-index: 60;
+  white-space: nowrap;
+  transform: translate(-50%, -115%);
+}
+@media (max-width: 720px) {
+  .bilanFusion .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
