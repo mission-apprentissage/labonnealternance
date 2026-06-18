@@ -84,8 +84,10 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
 
 const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
   logger.info(`début de detectDuplicateJobPartners groupé par le champ ${groupField}`)
+  const projectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
   return getDbCollection("computed_jobs_partners").aggregate([
     { $match: computedJobPartnersFilter },
+    { $project: { ...projectFields, [groupField]: 1 } },
     { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
     { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
     {
