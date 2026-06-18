@@ -122,6 +122,53 @@ describe("formulaire.controller", () => {
   }, 10_000)
 
   describe("mise à jour", () => {
+    it("met à jour la description publique quand le ROME est modifié", async () => {
+      // given
+      const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+
+      const createOfferResponse = await entrepriseSdkInstance.createOffer({
+        establishment_id: formulaire!.establishment_id,
+        cookies,
+        job: buildCreateJobDataFromReferentiel(referentielRome),
+      })
+
+      const { _id: jobObjectId } = createOfferResponse.json() as OfferCreationResponse
+      const jobId = jobObjectId.toString()
+
+      const newRome = generateReferentielRome({
+        rome: {
+          code_rome: "D1106",
+          intitule: "Vente en alimentation",
+          code_ogr: "335",
+        },
+        definition: "Réalise la vente de produits alimentaires (frais et hors frais) selon la réglementation du commerce, les règles d'hygiène et de sécurité alimentaires.",
+      })
+      await getDbCollection("referentielromes").insertOne(newRome)
+
+      const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
+      const job = offerResponse.json() as GetOfferResponse
+
+      // when
+      const response = await entrepriseSdkInstance.updateOffer({
+        jobId,
+        cookies,
+        body: {
+          ...jobToJobPatch(job),
+          rome_code: [newRome.rome.code_rome],
+          rome_label: newRome.rome.intitule,
+          rome_appellation_label: newRome.appellations[0].libelle,
+          competences_rome: newRome.competences,
+        },
+      })
+
+      // then
+      expect.soft(response.statusCode).toBe(200)
+
+      const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+      expect.soft(updatedJob?.offer_description).toEqual(newRome.definition)
+      expect.soft(updatedJob?.offer_rome_codes).toEqual([newRome.rome.code_rome])
+    })
+
     it("met à jour une offre active", async () => {
       // given
       const { cookies: entrepriseCookies, formulaire, opco } = await entrepriseSdkInstance.createAndGetConnectedUser()

@@ -39,7 +39,6 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
         "offer_desired_skills": [],
         "offer_to_be_acquired_knowledge": [],
         "offer_to_be_acquired_skills": [],
-        "origin": null,
         "partner_label": "Hellowork",
         "quantiteContrat": 1,
         "status": "Active",

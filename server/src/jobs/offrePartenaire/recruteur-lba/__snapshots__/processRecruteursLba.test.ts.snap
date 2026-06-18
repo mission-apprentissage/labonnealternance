@@ -27,7 +27,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "offer_expiration": null,
     "offer_multicast": true,
     "offer_opening_count": 1,
-    "offer_origin": null,
+    "offer_origin": "La bonne alternance",
     "offer_rome_codes": [
       "M1607",
       "M1203",
@@ -92,7 +92,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "offer_expiration": null,
     "offer_multicast": true,
     "offer_opening_count": 1,
-    "offer_origin": null,
+    "offer_origin": "La bonne alternance",
     "offer_rome_codes": [
       "D1208",
       "I1203",

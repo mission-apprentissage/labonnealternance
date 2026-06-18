@@ -168,7 +168,7 @@ export default (server: Server) => {
       const { establishment_id } = req.params
       const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/offre"]).value
 
-      const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+      const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
       const {
         job_type,
         delegations,
@@ -231,7 +231,7 @@ export default (server: Server) => {
         throw internal(`inattendu : impossible de récupérer l'utilisateur de type token ayant pour email=${email}`)
       }
 
-      const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+      const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
       const {
         job_type,
         delegations,

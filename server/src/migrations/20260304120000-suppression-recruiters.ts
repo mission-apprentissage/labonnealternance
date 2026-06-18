@@ -10,10 +10,7 @@ import { groupStreamData } from "@/common/utils/streamUtils"
 
 const BULK_GROUP_SIZE = 1000
 
-type RecruiterJobUpdate = Pick<
-  IJobsPartnersOfferPrivate,
-  "_id" | "establishment_id" | "relance_mail_expiration_J7" | "relance_mail_expiration_J1" | "offer_rome_appellation" | "mer_sent"
-> & {
+type RecruiterJobUpdate = Pick<IJobsPartnersOfferPrivate, "_id" | "relance_mail_expiration_J7" | "relance_mail_expiration_J1" | "offer_rome_appellation" | "mer_sent"> & {
   managed_by?: string
 }
 
@@ -30,7 +27,6 @@ export const up = async () => {
           $project: {
             _id: "$jobs._id",
             managed_by: "$managed_by",
-            establishment_id: 1,
             relance_mail_expiration_J7: "$jobs.relance_mail_expiration_J7",
             relance_mail_expiration_J1: "$jobs.relance_mail_expiration_J1",
             offer_rome_appellation: "$jobs.rome_appellation_label",
@@ -53,7 +49,7 @@ export const up = async () => {
       counters.total += documents.length
 
       const operations: AnyBulkWriteOperation<IJobsPartnersOfferPrivate>[] = documents.map(
-        ({ _id, managed_by, relance_mail_expiration_J1, relance_mail_expiration_J7, mer_sent, establishment_id, offer_rome_appellation }) => {
+        ({ _id, managed_by, relance_mail_expiration_J1, relance_mail_expiration_J7, mer_sent, offer_rome_appellation }) => {
           if (!managed_by || !ObjectId.isValid(managed_by)) {
             logger.warn(`[migration:20260304120000-suppression-recruiters] document id=${_id} managed_by is not an ObjectId`)
           }
@@ -63,7 +59,6 @@ export const up = async () => {
               update: {
                 $set: {
                   managed_by: managed_by && ObjectId.isValid(managed_by) ? new ObjectId(managed_by) : null,
-                  establishment_id,
                   relance_mail_expiration_J7,
                   relance_mail_expiration_J1,
                   offer_rome_appellation,

@@ -39,7 +39,6 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     historization_date: z.date().nullish(),
   })
   .strict()
-  .openapi("EligibleTrainingsForAppointment")
 
 export type IEligibleTrainingsForAppointment = z.output<typeof ZEligibleTrainingsForAppointmentSchema>
 export type IEligibleTrainingsForAppointmentJson = Jsonify<z.input<typeof ZEligibleTrainingsForAppointmentSchema>>

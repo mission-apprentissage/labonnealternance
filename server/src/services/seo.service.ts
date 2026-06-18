@@ -456,7 +456,7 @@ export const updateSeoMetierJobCounts = async () => {
         { $set: { job_count: jobCount, company_count: companyCount, applicant_count: applicantCount, entreprises, formations, villes, cards } }
       )
     } catch (error) {
-      logger.error("Error in updateSeoMetierJobCounts for metier " + metier.slug, error)
+      logger.error({ err: error }, "Error in updateSeoMetierJobCounts for metier " + metier.slug)
     }
   })
 
@@ -523,7 +523,7 @@ export const updateSeoDiplome = async () => {
         { $set: { ecoles, "kpis.entreprises": entreprisesCount, "kpis.offres": jobCount, "metiers.liste": metiersListe, cards, updated_at: new Date() } }
       )
     } catch (error) {
-      logger.error("Error in updateSeoDiplome for diplome " + diplome.slug, error)
+      logger.error({ err: error }, "Error in updateSeoDiplome for diplome " + diplome.slug)
     }
   })
 

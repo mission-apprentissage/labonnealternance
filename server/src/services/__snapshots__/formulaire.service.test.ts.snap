@@ -37,7 +37,7 @@ exports[`createJob > should insert a job 1`] = `
   ],
   "offer_multicast": true,
   "offer_opening_count": 1,
-  "offer_origin": "lba",
+  "offer_origin": "La bonne alternance",
   "offer_rome_appellation": "Agent administratif / Agente administrative",
   "offer_rome_codes": [
     "M1602",

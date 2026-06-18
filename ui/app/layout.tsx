@@ -33,21 +33,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
     <html {...getHtmlAttributes({ lang })}>
       <head>
         <HeadLaBonneAlternance />
-        <DsfrHead
-          preloadFonts={[
-            //"Marianne-Light",
-            //"Marianne-Light_Italic",
-            "Marianne-Regular",
-            //"Marianne-Regular_Italic",
-            "Marianne-Medium",
-            //"Marianne-Medium_Italic",
-            "Marianne-Bold",
-            //"Marianne-Bold_Italic",
-            //"Spectral-Regular",
-            //"Spectral-ExtraBold"
-          ]}
-          doDisableFavicon={true}
-        />
+        <DsfrHead preloadFonts={["Marianne-Regular", "Marianne-Bold"]} doDisableFavicon={true} />
         <Matomo />
       </head>
       <body>

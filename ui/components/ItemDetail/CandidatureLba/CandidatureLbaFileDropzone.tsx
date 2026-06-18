@@ -93,6 +93,7 @@ export const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
 
   return (
     <Box
+      id="applicant_attachment_name"
       sx={{
         border: isDragActive ? "1px dashed" : "1px solid",
         borderColor: isDragActive ? "grey.600" : "transparent",

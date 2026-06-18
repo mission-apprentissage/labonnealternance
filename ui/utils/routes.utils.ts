@@ -101,6 +101,38 @@ export const PAGES = {
         description: "Découvrez plus de 200 métiers accessibles en alternance : commerce, informatique, santé, BTP et bien d'autres. Trouvez la voie qui vous correspond.",
       }),
     },
+    // Note : les compteurs des meta ci-dessous sont en dur volontairement.
+    // routes.utils est importé par de nombreux composants client ; importer les
+    // tableaux _data juste pour un .length les embarquerait dans les bundles client.
+    // À mettre à jour lors d'un changement de palier (30/30/10 → 100). Les pages hub
+    // (Server Components) affichent, elles, le décompte dynamique via {data.length}.
+    alternanceMetiers: {
+      getPath: () => `/alternance/metiers` as string,
+      title: "Métiers en alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "30 métiers en alternance qui recrutent | La bonne alternance",
+        description: "Découvrez 30 métiers accessibles en alternance avec offres, salaires moyens et formations. Tertiaire, numérique, médico-social, artisanat.",
+      }),
+    },
+    alternanceVilles: {
+      getPath: () => `/alternance/villes` as string,
+      title: "Alternance dans les grandes villes",
+      index: true,
+      getMetadata: () => ({
+        title: "Alternance dans 30 grandes villes | La bonne alternance",
+        description: "Trouvez votre alternance dans 30 grandes villes françaises. Offres, entreprises qui recrutent, logement, transports et vie d'alternant.",
+      }),
+    },
+    alternanceDiplomes: {
+      getPath: () => `/alternance/diplomes` as string,
+      title: "Diplômes en alternance",
+      index: true,
+      getMetadata: () => ({
+        title: "Diplômes en alternance : BTS, BUT, Licence Pro | LBA",
+        description: "Explorez 10 diplômes accessibles en alternance (BTS, BUT, Licence Pro, CAP, Titres Pro). Programme, durée, salaire et débouchés.",
+      }),
+    },
     codeSources: {
       getPath: () => `https://github.com/mission-apprentissage/labonnealternance` as string,
       title: "Sources",

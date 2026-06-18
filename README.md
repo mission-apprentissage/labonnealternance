@@ -8,11 +8,11 @@
     - [Pré-requis](#pré-requis)
     - [Clé OpenPGP](#clé-gpg)
   - [Développement](#développement)
-    - [Gettting started](#gettting-started)
+    - [Getting started](#getting-started)
     - [Détails des commandes globales](#détails-des-commandes-globales)
       - [Installation .env](#installation-env)
       - [Lancement de la stack compléte](#lancement-de-la-stack-compléte)
-      - [CLI mna-lba](#cli-mna-lba)
+      - [CLI mna](#cli-mna)
       - [Lancement de l'application](#lancement-de-lapplication)
       - [Gestion des services docker](#gestion-des-services-docker)
       - [Hydratation du projet en local](#hydratation-du-projet-en-local)
@@ -105,7 +105,7 @@ Voici les étapes pour créer votre clé OpenPGP :
 
 ## Développement
 
-### Gettting started
+### Getting started
 
 Avant de lancer l'application, assurez-vous d'avoir Docker actif et d'avoir installer toutes les dépendances nécessaires en exécutant la commande suivante :
 
@@ -130,7 +130,7 @@ yarn seed
 
 Vous pouvez maintenant accéder à l'application via l'URL [http://localhost:3000](http://localhost:3000)
 
-Vous pouvez maintenant accéder à l'API via l'URL [http://localhost:5001](http://localhost:5000)
+Vous pouvez maintenant accéder à l'API via l'URL [http://localhost:5001](http://localhost:5001)
 
 Vous pouvez maintenant accéder au SMTP via l'URL [http://localhost:8025](http://localhost:8025)
 
@@ -158,13 +158,13 @@ Lance la stack local de développement (server, ui, services)
 
 Cette commande démarre les containers définis dans le fichier `docker-compose.yml`.
 
-#### CLI mna-lba
+#### CLI mna
 
 ```bash
   yarn cli <command>
 ```
 
-commande pour lancer les commandes du cli mna-lba
+commande pour lancer les commandes du cli mna
 
 #### Lancement de l'application
 
@@ -267,13 +267,50 @@ Par défaut, le fichier `.infra/env.global.yml` est édité.
 
 Si un environnement est renseigné, le fichier associé `.infra/env.<env>.yml` à cet environnement est édité.
 
-#### Linter
+##### Merge driver SOPS (à configurer une fois par développeur)
 
-Lint global du projet
+Les fichiers `.infra/env.*.yml` utilisent un merge driver git pour résoudre automatiquement les conflits sur les fichiers chiffrés SOPS. Il faut l'activer localement :
 
 ```bash
-  yarn lint
+git config merge.sops.name "sops merge driver"
+git config merge.sops.driver "sops merge %O %A %B"
 ```
+
+Sans cette configuration, git ne sait pas merger des fichiers chiffrés et les marqueurs de conflit (`<<<<<<<`) corrompent le YAML. En cas de conflit non résolu automatiquement, procédure manuelle :
+
+```bash
+# Remplacer par le fichier en conflit (ex: env.production.yml, env.recette.yml…)
+FILE=.infra/env.production.yml
+
+# Extraire les trois versions propres
+git show :1:$FILE > /tmp/base.yml
+git show :2:$FILE > /tmp/ours.yml
+git show :3:$FILE > /tmp/theirs.yml
+
+# Déchiffrer
+sops -d /tmp/base.yml   > /tmp/base.plain.yml
+sops -d /tmp/ours.yml   > /tmp/ours.plain.yml
+sops -d /tmp/theirs.yml > /tmp/theirs.plain.yml
+
+# Merger en clair, résoudre les conflits
+git merge-file /tmp/ours.plain.yml /tmp/base.plain.yml /tmp/theirs.plain.yml
+
+# Re-chiffrer et valider
+sops -e /tmp/ours.plain.yml > $FILE
+git add $FILE
+```
+
+#### Linter
+
+Le projet utilise [Biome](https://biomejs.dev/) pour le lint et le formatage.
+
+Vérifier et corriger lint + formatage en une commande :
+
+```bash
+  yarn check:fix
+```
+
+> Le hook pre-commit applique cette vérification automatiquement sur les fichiers staged.
 
 #### Release depuis l'environnement local
 

@@ -73,7 +73,7 @@
 
     - name: "[{{ pr_number }}] Build local images preview-{{ pr_number }}"
       shell:
-        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba app:build preview-{{ pr_number }} load commit-hash-temp preview"
+        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna app:build preview-{{ pr_number }} load commit-hash-temp preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       environment:
         CI: "{{ CI | default('true') }}"

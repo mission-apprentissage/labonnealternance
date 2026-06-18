@@ -76,12 +76,6 @@ export const passJobToJobsPartners = (job: IPassJob): IComputedJobsPartners => {
     businessError = JOB_PARTNER_BUSINESS_ERROR.STAGE
   }
 
-  if (contractStart) {
-    if (offerExpiration <= now) {
-      businessError = JOB_PARTNER_BUSINESS_ERROR.EXPIRED
-    }
-  }
-
   const partnerJob: IComputedJobsPartners = {
     ...blankComputedJobPartner(now),
     _id: new ObjectId(),

@@ -31,14 +31,23 @@ export const processRecruteursLba = async ({ sourceFileReadStream, skipCheckFile
   logger.info("fin de processRecruteursLba")
 }
 
+const recruteursLbaFilter: Filter<IComputedJobsPartners> = {
+  partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+}
+
+/**
+ * Annule les offres recruteurs LBA qui ne sont plus présentes dans le flux source.
+ * Sous-job CLI-safe : le filtre est encapsulé ici, jamais vide.
+ */
+export const cancelRemovedJobsPartnersRecruteursLba = async () => {
+  await cancelRemovedJobsPartners(recruteursLbaFilter)
+}
+
 export async function processRecruteursLbaRawToEnd() {
   await importRecruteurLbaToComputed()
   await fillComputedRecruteursLba()
 
-  const filter: Filter<IComputedJobsPartners> = {
-    partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-  }
-  await importFromComputedToJobsPartners(filter)
+  await importFromComputedToJobsPartners(recruteursLbaFilter)
   await fillLbaUrl()
-  await cancelRemovedJobsPartners(filter)
+  await cancelRemovedJobsPartnersRecruteursLba()
 }
