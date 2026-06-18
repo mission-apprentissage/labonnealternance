@@ -1,10 +1,9 @@
 import { zObjectId } from "zod-mongodb-schema"
-
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS, ZJob, ZJobCreate } from "../models/job.model.js"
 import { ZRecruiter, ZRecruiterWithRomeDetailAndApplicationCount } from "../models/recruiter.model.js"
 import { ZUserWithAccountFields } from "../models/userWithAccount.model.js"
-
 import type { IRoutesDef } from "./common.routes.js"
 
 export const zFormulaireRoute = {
@@ -217,9 +216,11 @@ export const zFormulaireRoute = {
         competences_rome: true,
         offer_title_custom: true,
         to_applicant_questions: true,
+        job_start_date_flexible: true,
       }).extend({
         job_start_date: z.coerce.date(),
         job_expiration_date: z.coerce.date(),
+        job_start_type: extensions.buildEnum(JOB_START_TYPE),
       }),
       response: {
         "200": z.object({}),
@@ -287,6 +288,11 @@ export const zFormulaireRoute = {
       method: "put",
       path: "/formulaire/offre/:jobId/extend",
       params: z.object({ jobId: zObjectId }).strict(),
+      body: ZJobCreate.pick({
+        job_start_date: true,
+        job_start_type: true,
+        job_start_date_flexible: true,
+      }),
       response: {
         "200": z
           .object({

@@ -11,6 +11,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOB_START_TYPE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -33,6 +34,8 @@ const buildCreateJobDataFromReferentiel = (referentielRome: IReferentielRome) =>
     competences_rome: referentielRome.competences,
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     job_count: 1,
+    job_start_type: JOB_START_TYPE.PRECISE_DATE,
+    job_start_date_flexible: false,
   }
 }
 
@@ -50,6 +53,8 @@ function jobToJobPatch(job: IJob): OfferUpdateBody {
     offer_title_custom,
     rome_appellation_label,
     rome_label,
+    job_start_type,
+    job_start_date_flexible,
     job_start_date,
     job_expiration_date,
   } = job
@@ -67,6 +72,8 @@ function jobToJobPatch(job: IJob): OfferUpdateBody {
     offer_title_custom,
     rome_appellation_label,
     rome_label,
+    job_start_type: job_start_type!,
+    job_start_date_flexible: Boolean(job_start_date_flexible),
     job_start_date: job_start_date!,
     job_expiration_date: job_expiration_date!,
   }
@@ -119,6 +126,53 @@ describe("formulaire.controller", () => {
   }, 10_000)
 
   describe("mise à jour", () => {
+    it("met à jour la description publique quand le ROME est modifié", async () => {
+      // given
+      const { cookies, formulaire } = await entrepriseSdkInstance.createAndGetConnectedUser()
+
+      const createOfferResponse = await entrepriseSdkInstance.createOffer({
+        establishment_id: formulaire!.establishment_id,
+        cookies,
+        job: buildCreateJobDataFromReferentiel(referentielRome),
+      })
+
+      const { _id: jobObjectId } = createOfferResponse.json() as OfferCreationResponse
+      const jobId = jobObjectId.toString()
+
+      const newRome = generateReferentielRome({
+        rome: {
+          code_rome: "D1106",
+          intitule: "Vente en alimentation",
+          code_ogr: "335",
+        },
+        definition: "Réalise la vente de produits alimentaires (frais et hors frais) selon la réglementation du commerce, les règles d'hygiène et de sécurité alimentaires.",
+      })
+      await getDbCollection("referentielromes").insertOne(newRome)
+
+      const offerResponse = await entrepriseSdkInstance.getOffer({ jobId, cookies })
+      const job = offerResponse.json() as GetOfferResponse
+
+      // when
+      const response = await entrepriseSdkInstance.updateOffer({
+        jobId,
+        cookies,
+        body: {
+          ...jobToJobPatch(job),
+          rome_code: [newRome.rome.code_rome],
+          rome_label: newRome.rome.intitule,
+          rome_appellation_label: newRome.appellations[0].libelle,
+          competences_rome: newRome.competences,
+        },
+      })
+
+      // then
+      expect.soft(response.statusCode).toBe(200)
+
+      const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: new ObjectId(jobId) })
+      expect.soft(updatedJob?.offer_description).toEqual(newRome.definition)
+      expect.soft(updatedJob?.offer_rome_codes).toEqual([newRome.rome.code_rome])
+    })
+
     it("met à jour une offre active", async () => {
       // given
       const { cookies: entrepriseCookies, formulaire, opco } = await entrepriseSdkInstance.createAndGetConnectedUser()

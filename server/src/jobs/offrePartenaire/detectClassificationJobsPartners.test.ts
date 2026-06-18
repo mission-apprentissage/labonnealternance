@@ -125,7 +125,7 @@ describe("detectClassificationJobsPartners", () => {
     nock.cleanAll()
     const unpublishResponse: IClassificationLabBatchResponse = [
       {
-        id: partner_job_id,
+        id: "0",
         label: "unpublish",
         model: "model",
         scores: { publish: 0.3, unpublish: 0.7 },

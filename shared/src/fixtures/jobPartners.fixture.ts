@@ -1,7 +1,7 @@
 import { ObjectId } from "bson"
 
 import { OPCOS_LABEL, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
-import { JOB_STATUS_ENGLISH } from "../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH } from "../models/job.model.js"
 import type { IJobsPartnersOfferPrivate } from "../models/jobsPartners.model.js"
 import { JOBPARTNERS_LABEL } from "../models/jobsPartners.model.js"
 import type { IComputedJobsPartners } from "../models/jobsPartnersComputed.model.js"
@@ -36,6 +36,8 @@ export function generateJobsPartnersOfferPrivate(data: Partial<IJobsPartnersOffe
     partner_job_id: new ObjectId().toString(),
 
     contract_start: null,
+    contract_start_type: JOB_START_TYPE.PRECISE_DATE,
+    contract_start_is_flexible: false,
     contract_duration: null,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,
@@ -112,6 +114,8 @@ export function generateJobsPartnersFull(data: Partial<IJobsPartnersOfferPrivate
     partner_job_id: new ObjectId().toString(),
 
     contract_start: new Date("2021-01-28T15:00:00.000Z"),
+    contract_start_type: JOB_START_TYPE.PRECISE_DATE,
+    contract_start_is_flexible: false,
     contract_duration: 6,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: TRAINING_REMOTE_TYPE.onsite,
@@ -203,6 +207,8 @@ export function generateComputedJobsPartnersFixture(data: Partial<IComputedJobsP
     partner_job_id: "partner_job_id",
 
     contract_start: null,
+    contract_start_type: JOB_START_TYPE.PRECISE_DATE,
+    contract_start_is_flexible: false,
     contract_duration: null,
     contract_type: ["Apprentissage", "Professionnalisation"],
     contract_remote: null,

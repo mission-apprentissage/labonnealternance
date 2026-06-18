@@ -1,7 +1,8 @@
 import type { Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { logger } from "@/common/logger"
+import { blockJobsPartnersFromExpirationDate } from "@/jobs/offrePartenaire/blockJobsPartnersFromExpirationDate"
 import { blockJobsPartnersFromFluxCompanyList } from "@/jobs/offrePartenaire/blockJobsPartnersFromFluxCompanyList"
 import { blockBadRomeJobsPartners } from "./blockBadRomeJobsPartners"
 import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
@@ -30,6 +31,7 @@ export const fillComputedJobsPartners = async (partialContext: Partial<FillCompu
   logger.info("début de fillComputedJobsPartners")
   const context: FillComputedJobsPartnersContext = { ...defaultFillComputedJobsPartnersContext, ...partialContext }
   await blockJobsPartnersFromFluxCompanyList(context)
+  await blockJobsPartnersFromExpirationDate(context)
   await fillEntrepriseEngagementComputedJobsPartners(context)
   await formatTextFieldsJobsPartners(context)
   await blockJobsPartnersFromCfaList(context)
@@ -68,7 +70,7 @@ export const blankComputedJobPartner = (now: Date): Omit<IComputedJobsPartners, 
   offer_expiration: null,
   offer_multicast: false,
   offer_opening_count: 1,
-  offer_origin: null,
+  offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.FLUX,
   offer_rome_codes: null,
   offer_status: JOB_STATUS_ENGLISH.ACTIVE,
   offer_target_diploma: null,

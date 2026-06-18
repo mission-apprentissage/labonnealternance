@@ -626,6 +626,34 @@ describe("checkMaxApplicationCount", () => {
     const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
     expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
   })
+
+  it("Should update offer status to ANNULEE when application count exceeds limit (OFFRES_EMPLOI_PARTENAIRES)", async () => {
+    const jobId = new ObjectId("6081289803569600282e0034")
+
+    await getDbCollection("referentielromes").insertOne(generateReferentielRome({ rome: { code_rome: "A1101", intitule: "Opérations administratives", code_ogr: "475" } }))
+    await getDbCollection("jobs_partners").insertOne(
+      generateJobsPartnersOfferPrivate({
+        _id: jobId,
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+        apply_email: "employer@test.fr",
+        partner_label: JOBPARTNERS_LABEL.FRANCE_TRAVAIL,
+      })
+    )
+
+    // 80 existing + current submission = 81 total, condition (80+1) > 80 is true
+    const applications = Array.from({ length: 80 }, () => generateApplicationFixture({ job_id: jobId, created_at: new Date() }))
+    await getDbCollection("applications").insertMany(applications)
+
+    await sendApplicationV2({
+      newApplication: {
+        ...fakeApplication,
+        recipient_id: { collectionName: "partners", jobId: jobId.toString() },
+      },
+    })
+
+    const updatedJob = await getDbCollection("jobs_partners").findOne({ _id: jobId })
+    expect(updatedJob?.offer_status).toBe(JOB_STATUS_ENGLISH.ANNULEE)
+  })
 })
 
 describe("processApplicationEmails.sendEmailsIfNeeded", () => {

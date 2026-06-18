@@ -1,7 +1,8 @@
 "use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Stack, Typography } from "@mui/material"
-import type { IJobJson, ILbaItemPartnerJobJson } from "shared"
+import { type IJobJson, type ILbaItemPartnerJobJson, JOB_START_TYPE } from "shared"
 import { formatDate } from "@/utils/strutils"
 
 const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
@@ -10,11 +11,14 @@ const getContractTypes = (contractTypes: IJobJson["job_type"] | string) => {
 
 export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartnerJobJson; showMandataireInfo?: boolean }) => {
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
+  const isUrgentRecruitment = job?.job?.startType === JOB_START_TYPE.DES_QUE_POSSIBLE
+  const isFlexibleStartDate = Boolean(job?.job?.startDateFlexible)
+  const contractStartLabel = isUrgentRecruitment ? "Démarrage dès que possible" : jobStartDate ? `${jobStartDate}${isFlexibleStartDate ? ", date flexible" : ""}` : undefined
   return (
     <Stack spacing={1} sx={{ mb: fr.spacing("4v") }}>
-      {jobStartDate && (
+      {contractStartLabel && (
         <div>
-          <strong>Début du contrat le : </strong> {jobStartDate}
+          <strong>Date de début de contrat souhaitée :</strong> {contractStartLabel}
         </div>
       )}
       {job?.job?.dureeContrat && (
@@ -38,7 +42,7 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
         </div>
       )}
       <Stack direction="row" sx={{ flexWrap: "wrap" }}>
-        <strong>Niveau visé en fin d&apos;études : </strong>{" "}
+        <strong>Niveau de formation visé en fin de contrat :</strong>{" "}
         {job?.target_diploma_level ? (
           <Stack direction="row" sx={{ flexWrap: "wrap" }}>
             {job?.target_diploma_level.split(", ").map((d, idx) => (

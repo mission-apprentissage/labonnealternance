@@ -159,5 +159,5 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
     })
   }
 
-  logger.info(`import dans jobs_partners terminé`, counters)
+  logger.info({ counters }, "import dans jobs_partners terminé")
 }

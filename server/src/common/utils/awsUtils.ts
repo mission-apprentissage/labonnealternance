@@ -53,7 +53,7 @@ export async function s3ReadAsString(bucket: Bucket, fileKey: string): Promise<s
 export async function s3WriteStream(bucket: Bucket, fileKey: string, options: Omit<Upload["params"], "Bucket" | "Key">) {
   const bucketName = getBucketName(bucket)
   try {
-    logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })
+    logger.info({ bucket: bucketName, key: fileKey }, "writing s3 file")
     const uploadResponse = new Upload({ client: s3Client, params: { Bucket: bucketName, Key: fileKey, ...options } })
     uploadResponse.on("httpUploadProgress", (progress) => logger.info(`File upload ${fileKey} to S3 in progress: ${JSON.stringify(progress)}`))
     await uploadResponse.done()
@@ -67,7 +67,7 @@ export async function s3WriteStream(bucket: Bucket, fileKey: string, options: Om
 export async function s3WriteString(bucket: Bucket, fileKey: string, options: Omit<PutObjectRequest, "Body" | "Bucket" | "Key"> & { Body: StreamingBlobPayloadInputTypes }) {
   const bucketName = getBucketName(bucket)
   try {
-    logger.info("writing s3 file:", { bucket: bucketName, key: fileKey })
+    logger.info({ bucket: bucketName, key: fileKey }, "writing s3 file")
     await s3Client.send(new PutObjectCommand({ Bucket: bucketName, Key: fileKey, ...options }))
   } catch (error: any) {
     const newError = internal(`Error writing S3 file`, { key: fileKey, bucket: getBucketName(bucket) })
@@ -79,7 +79,7 @@ export async function s3WriteString(bucket: Bucket, fileKey: string, options: Om
 export async function s3Delete(bucket: Bucket, fileKey: string) {
   const bucketName = getBucketName(bucket)
   try {
-    logger.info("deleting s3 file:", { bucket: bucketName, key: fileKey })
+    logger.info({ bucket: bucketName, key: fileKey }, "deleting s3 file")
     await s3Client.send(new DeleteObjectCommand({ Bucket: bucketName, Key: fileKey }))
   } catch (error: any) {
     const newError = internal(`error while deleting s3 file`, { key: fileKey, bucket: bucketName })

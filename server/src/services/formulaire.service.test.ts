@@ -9,7 +9,8 @@ import { generateJobFixture } from "shared/fixtures/recruiter.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import type { IEntreprise, IReferentielRome, IUserWithAccount } from "shared/models/index"
+import type { IEntreprise, IJobCreate, IReferentielRome, IUserWithAccount } from "shared/models/index"
+import { JOB_START_TYPE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { createJob, getCompetencesRomeFromPartnerJob } from "./formulaire.service"
@@ -50,8 +51,10 @@ describe("createJob", () => {
     }
   })
 
-  const generateValidJobWritable = () => {
-    return generateJobFixture({
+  const generateValidJobWritable = (): IJobCreate => {
+    const fixture = generateJobFixture({
+      job_start_type: JOB_START_TYPE.PRECISE_DATE,
+      job_start_date_flexible: false,
       rome_code: [referentielRome.rome.code_rome],
       rome_label: referentielRome.rome.intitule,
       rome_appellation_label: referentielRome.appellations[0].libelle,
@@ -61,6 +64,25 @@ describe("createJob", () => {
         savoirs: referentielRome.competences.savoirs?.slice(0, 1),
       },
     })
+    return {
+      job_start_type: fixture.job_start_type ?? JOB_START_TYPE.PRECISE_DATE,
+      job_start_date_flexible: Boolean(fixture.job_start_date_flexible),
+      job_start_date: fixture.job_start_date,
+      rome_code: fixture.rome_code,
+      rome_label: fixture.rome_label,
+      rome_appellation_label: fixture.rome_appellation_label,
+      competences_rome: fixture.competences_rome,
+      job_type: fixture.job_type,
+      job_count: fixture.job_count,
+      job_duration: fixture.job_duration,
+      job_level_label: fixture.job_level_label,
+      job_rythm: fixture.job_rythm,
+      delegations: fixture.delegations,
+      job_description: fixture.job_description,
+      job_employer_description: fixture.job_employer_description,
+      offer_title_custom: fixture.offer_title_custom,
+      to_applicant_questions: fixture.to_applicant_questions,
+    }
   }
 
   it("should insert a job", async () => {

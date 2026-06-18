@@ -1,15 +1,21 @@
+"use client"
+
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+import { useQueryClient } from "@tanstack/react-query"
 import dayjs from "dayjs"
 import Image from "next/image"
 import { useState } from "react"
-import type { IJobJson, IRecruiterJson } from "shared"
+import type { IJobJson, IRecruiterJson, JOB_START_TYPE } from "shared"
 import { JOB_STATUS } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/index"
 import Badge from "@/app/(espace-pro)/_components/Badge"
 import Table from "@/app/(espace-pro)/_components/Table"
+import { OffreProlongationModal } from "@/app/(espace-pro)/espace-pro/(connected)/_components/OffreProlongationModal"
+import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { sortReactTableDate } from "@/common/utils/dateUtils"
+import { extendOffre } from "@/utils/api"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import { OffresTabsMenu } from "./OffresTabsMenu"
 
@@ -60,6 +66,8 @@ const displayJobStatus = (status: JOB_STATUS, recruiter: IRecruiterJson) => {
   }
 }
 
+type LocalJob = Omit<IJobJson, "_id"> & { candidatures: number; geo_coordinates: string; _id: string }
+
 export const OffresTabs = ({
   caption,
   recruiter,
@@ -71,11 +79,18 @@ export const OffresTabs = ({
   showStats?: boolean
   buildOfferEditionUrl: (offerId: string) => string
 }) => {
-  const confirmationSuppression = useDisclosure()
-  const [currentOffre, setCurrentOffre] = useState()
-
   /* @ts-ignore TODO */
-  const jobs: (IJobJson & { candidatures: number; geo_coordinates: string })[] = recruiter?.jobs ?? []
+  const jobs: LocalJob[] = recruiter?.jobs ?? []
+  const searchParams = new URLSearchParams(window.location.search)
+  const jobId = searchParams.get("jobId")
+  const [currentOfferId, setCurrentOfferId] = useState<string>(jobId ?? null)
+
+  const currentOffre = jobs.find((job) => job._id === currentOfferId)
+
+  const confirmationSuppression = useDisclosure()
+  const offreProlongationModalControls = useDisclosure(Boolean(searchParams.get("action") === "prolonger" && currentOffre))
+  const toast = useToast()
+  const client = useQueryClient()
 
   if (jobs.length === 0) {
     return (
@@ -99,9 +114,37 @@ export const OffresTabs = ({
 
   const jobsWithGeoCoords = jobs.map((job) => ({ ...job, geo_coordinates: recruiter.geo_coordinates }))
 
-  const openSuppression = (row) => {
-    setCurrentOffre(row)
+  const openSuppression = (row: LocalJob) => {
+    setCurrentOfferId(row._id)
     confirmationSuppression.onOpen()
+  }
+
+  const onOffreProlongationSubmit = ({
+    job_start_date,
+    job_start_date_flexible,
+    job_start_type,
+  }: {
+    job_start_type: JOB_START_TYPE
+    job_start_date_flexible: boolean
+    job_start_date: string
+  }) => {
+    if (!currentOffre) {
+      return
+    }
+    const id = currentOffre._id
+    extendOffre(id, { job_start_date, job_start_date_flexible, job_start_type })
+      .then((job) => {
+        setCurrentOfferId(null)
+        offreProlongationModalControls.onClose()
+        toast({
+          title: `Offre mise à jour avec succès. Nouvelle date d’expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
+        })
+      })
+      .finally(async () => {
+        client.invalidateQueries({
+          queryKey: ["offre-liste"],
+        })
+      })
   }
 
   const commonColumns = [
@@ -181,7 +224,17 @@ export const OffresTabs = ({
       disableSortBy: true,
       // isSticky: true,
       accessor: (row) => {
-        return <OffresTabsMenu openSuppression={openSuppression} buildOfferEditionUrl={buildOfferEditionUrl} row={row} />
+        return (
+          <OffresTabsMenu
+            openSuppression={openSuppression}
+            buildOfferEditionUrl={buildOfferEditionUrl}
+            row={row}
+            onOffreProlongationClick={() => {
+              setCurrentOfferId(row._id)
+              offreProlongationModalControls.onOpen()
+            }}
+          />
+        )
       },
     },
     ...commonColumns,
@@ -190,6 +243,7 @@ export const OffresTabs = ({
 
   return (
     <>
+      <OffreProlongationModal modalControls={offreProlongationModalControls} onOffreProlongationSubmit={onOffreProlongationSubmit} />
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
       <Table caption={caption} columns={columns} data={jobsWithGeoCoords} />
     </>

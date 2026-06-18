@@ -633,8 +633,8 @@ const checkUserApplicationCountV2 = async (applicantId: ObjectId, LbaJob: IJobOr
 const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
   const { job, type } = lbaJob
 
-  // règle qui ne concerne que les offres LBA
-  if (type !== LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) {
+  // règle qui ne concerne que les offres LBA et partenaires
+  if (type === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     return
   }
 
@@ -644,7 +644,7 @@ const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
 
   if (applicationCount + 1 > MAX_APPLICATIONS_PER_OFFER) {
     await getDbCollection("jobs_partners").updateOne(
-      { _id: job._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA },
+      { _id: job._id, partner_label: job.partner_label },
       {
         $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
         $push: {
@@ -1272,6 +1272,7 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
   await getDbCollection("applications").updateOne(
     {
       _id: application._id,
+      company_feedback_send_status: { $ne: CompanyFeebackSendStatus.SENT },
     },
     {
       $set: {

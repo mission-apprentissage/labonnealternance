@@ -25,7 +25,7 @@ services:
       - /opt/app/data/smtp:/data
       - /opt/app/configs/mailpit/auth:/auth
     environment:
-      - MP_DATA_FILE=/data/mailpit.db
+      - MP_DATABASE=/data/mailpit.db
       - MP_UI_AUTH_FILE=/auth
       - MP_WEBROOT=/smtp/
     logging:
