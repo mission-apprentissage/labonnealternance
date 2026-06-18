@@ -2,12 +2,12 @@
 
 set -euo pipefail
 
-if [ -z "${SCRIPT_DIR:-}" ]; then
-  export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -z "${SCRIPTS_DIR:-}" ]; then
+  export SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
 if [ -z "${ROOT_DIR:-}" ]; then
-  export ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+  export ROOT_DIR="$(cd "${SCRIPTS_DIR}/../.." && pwd)"
 fi
 
 echo "Push les images docker de LBA sur le registry github (https://ghcr.io/mission-apprentissage/)"
@@ -112,6 +112,6 @@ esac
 echo "Création des images docker locales (docker build)"
 
 echo "Build ui:$NEXT_VERSION ..."
-"$ROOT_DIR"/.bin/mna-lba app:release $NEXT_VERSION push
+"$ROOT_DIR"/.bin/mna app:release $NEXT_VERSION push
 git tag -f "v$NEXT_VERSION"
 git push -f origin "v$NEXT_VERSION"
