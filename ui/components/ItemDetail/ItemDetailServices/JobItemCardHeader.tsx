@@ -33,7 +33,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
           </Typography>
           <Typography sx={{ fontWeight: 700 }} component="span" dangerouslySetInnerHTML={{ __html: companyName }} />
           <Typography component="span" sx={{ fontWeight: 400 }}>
-            &nbsp;propose actuellement cette offre dans le domaine suivant
+            &nbsp;{isGeiq ? "recherche un·e alternant·e pour le poste suivant" : "propose actuellement cette offre dans le domaine suivant"} :
           </Typography>
         </Typography>
       )
