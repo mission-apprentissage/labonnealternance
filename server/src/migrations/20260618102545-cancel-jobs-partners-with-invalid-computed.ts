@@ -30,12 +30,7 @@ export const up = async () => {
             {
               $match: {
                 $expr: {
-                  $and: [
-                    { $eq: ["$partner_label", "$$pl"] },
-                    { $eq: ["$partner_job_id", "$$pjid"] },
-                    { $eq: ["$validated", false] },
-                    { $ne: ["$business_error", null] },
-                  ],
+                  $and: [{ $eq: ["$partner_label", "$$pl"] }, { $eq: ["$partner_job_id", "$$pjid"] }, { $eq: ["$validated", false] }, { $ne: ["$business_error", null] }],
                 },
               },
             },
