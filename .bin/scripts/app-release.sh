@@ -2,12 +2,12 @@
 
 set -euo pipefail
 
-if [ -z "${SCRIPT_DIR:-}" ]; then
-  export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -z "${SCRIPTS_DIR:-}" ]; then
+  export SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
 if [ -z "${ROOT_DIR:-}" ]; then
-  export ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+  export ROOT_DIR="$(cd "${SCRIPTS_DIR}/../.." && pwd)"
 fi
 
 defaultMode=""
@@ -21,4 +21,4 @@ readonly next_version="${1}"
 readonly COMMIT_HASH="${2}"
 readonly mode=${3:-$defaultMode}
 
-"$ROOT_DIR"/.bin/mna-lba app:build $next_version $mode $COMMIT_HASH production
+"$ROOT_DIR"/.bin/mna app:build $next_version $mode $COMMIT_HASH production

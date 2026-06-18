@@ -8,7 +8,7 @@ import dayjs from "shared/helpers/dayjs"
 import { ZAdresseCFA } from "shared/models/address.model"
 import type { ICFA } from "shared/models/cfa.model"
 import { type IEntreprise, type IReferentielRome, JOB_STATUS_ENGLISH, ZAdresseV3 } from "shared/models/index"
-import { type IJobsPartnersOfferPrivate, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import { type IJobsPartnersOfferPrivate, type INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { pipeline, Readable, Transform } from "stream"
 import { fileURLToPath } from "url"
 import { promisify } from "util"
@@ -17,6 +17,7 @@ import { logger } from "@/common/logger"
 import { getDepartmentInfos } from "@/common/territoires"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { FTOffre } from "@/jobs/partenaireExport/FTExport.types"
 import { buildLbaUrl } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
@@ -24,6 +25,20 @@ import { buildLbaUrl } from "@/services/jobs/jobOpportunity/jobOpportunity.servi
 const pipelineAsync = promisify(pipeline)
 
 const formatDate = (date: Date | null) => (date ? dayjs(date).format("DD/MM/YYYY") : null)
+
+/**
+ * Correspondance niveau de diplôme visé (NIVEAUX_DIPLOMES_EUROPEENS) → qualification d'emploi France Travail (Qua_cle / Qua_libelle).
+ *
+ * Équivalence conventionnelle : les deux référentiels ne mesurent pas la même chose
+ * (niveau de formation vs niveau de poste), il n'existe pas de correspondance officielle 1:1.
+ */
+const DIPLOMA_TO_FT_QUALIFICATION: Record<INiveauDiplomeEuropeen, { cle: number; libelle: string }> = {
+  "3": { cle: 6, libelle: "Employé qualifié" }, // CAP, Infrabac
+  "4": { cle: 6, libelle: "Employé qualifié" }, // BP, Bac
+  "5": { cle: 7, libelle: "Technicien" }, // BTS, DEUST, Bac+2
+  "6": { cle: 8, libelle: "Agent de maîtrise" }, // Licence, Maîtrise, Bac+3 à Bac+4
+  "7": { cle: 9, libelle: "Cadre" }, // Master, ingénieur, Bac+5
+}
 
 type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
 
@@ -44,6 +59,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
   const companyLabel = offre.workplace_legal_name || offre.workplace_name || offre.workplace_brand
   const departmentInfos = workplace_address_zipcode ? getDepartmentInfos(workplace_address_zipcode) : null
   const cfaAddress = jobToCfaAddress(offre)
+  const qualification = offre.offer_target_diploma ? DIPLOMA_TO_FT_QUALIFICATION[offre.offer_target_diploma.european] : null
 
   const ftOffre: FTOffre = {
     Par_ref_offre: `${ntcCle}-${offre._id}`,
@@ -53,7 +69,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Code_rome: romeCode,
     Code_OGR: parseInt(appellation.code_ogr, 10),
     Libelle_metier_OGR: appellation.libelle,
-    Description: offre.offer_description,
+    Description: sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`),
     Off_experience_duree_min: null,
     Off_experience_duree_max: null,
     Exp_cle: "D",
@@ -61,8 +77,8 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Dur_cle_experience: null,
     Dur_libelle_experience: null,
     Off_experience_commentaire: null,
-    Qua_cle: null,
-    Qua_libelle: null,
+    Qua_cle: qualification?.cle ?? null,
+    Qua_libelle: qualification?.libelle ?? null,
     SCN_cle: offre.workplace_naf_code,
     SCN_libelle: offre.workplace_naf_label,
     Tfm_cle_1: null,
@@ -89,7 +105,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     NVL_libelle_2: null,
     Lan_exi_cle_2: null,
     Lan_exi_libelle_2: null,
-    TSA_cle: null,
+    TSA_cle: "X",
     TSA_libelle: null,
     Off_salaire_min: null,
     Off_salaire_max: null,
@@ -137,6 +153,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     PCO_exi_libelle_2: null,
     Off_date_creation: formatDate(offre.created_at),
     Off_date_modification: formatDate(offre.updated_at),
+    Off_date_fin_publication: formatDate(offre.offer_expiration),
     OST_poste_restant_nb: offre.offer_opening_count,
     Off_client_final_siret: offre.workplace_siret,
     Off_client_final_nom: undefined,
@@ -147,7 +164,9 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: offre.workplace_description?.slice(0, 450) || null,
+    Description_entreprise: offre.workplace_description
+      ? sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`) || null
+      : null,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -214,6 +233,7 @@ const getJobsToExport = async () => {
     offer_status: JOB_STATUS_ENGLISH.ACTIVE,
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     updated_at: { $gt: minDate },
+    offer_target_diploma: { $ne: null },
   }
   const jobs = (await getDbCollection("jobs_partners")
     .aggregate([

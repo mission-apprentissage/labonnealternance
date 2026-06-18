@@ -2,12 +2,12 @@
 
 set -euo pipefail
 
-if [ -z "${SCRIPT_DIR:-}" ]; then
-  export SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -z "${SCRIPTS_DIR:-}" ]; then
+  export SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
 if [ -z "${ROOT_DIR:-}" ]; then
-  export ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+  export ROOT_DIR="$(cd "${SCRIPTS_DIR}/../.." && pwd)"
 fi
 
 export VERSION="${1:?"Veuillez préciser la version"}"
@@ -36,7 +36,7 @@ get_channel() {
 }
 
 set +e
-docker buildx create --name mna-lba --driver docker-container --config "$SCRIPT_DIR/buildkitd.toml" 2> /dev/null
+docker buildx create --name mna-lba --driver docker-container --config "$SCRIPTS_DIR/buildkitd.toml" 2> /dev/null
 set -e
 
 if [[ ! -z "${CI:-}" ]]; then
