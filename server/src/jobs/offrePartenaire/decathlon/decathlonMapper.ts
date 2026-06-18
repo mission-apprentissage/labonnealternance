@@ -19,7 +19,7 @@ export const ZDecathlonJob = z
     published_at: z.string().nullish(),
     contract_duration: z
       .object({
-        min: z.string().nullish(),
+        min: z.number().nullish(),
       })
       .passthrough()
       .nullish(),
@@ -37,8 +37,8 @@ export const ZDecathlonJob = z
             formatted: z.string().nullish(),
             position: z
               .object({
-                lon: z.string().nullish(),
-                lat: z.string().nullish(),
+                lon: z.number().nullish(),
+                lat: z.number().nullish(),
               })
               .passthrough()
               .nullish(),
@@ -84,7 +84,7 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
     partner_job_id: reference,
     contract_type: contract_type === "Contrat d'alternance (pro, apprentissage)" ? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION] : undefined,
     contract_remote: null,
-    contract_duration: contract_duration?.min ? parseInt(contract_duration.min, 10) : null,
+    contract_duration: contract_duration?.min ?? null,
     offer_title: title,
     offer_description,
     offer_target_diploma: getDiplomaLevel(education_level),
@@ -102,14 +102,14 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
     workplace_name: brand?.name,
     workplace_description: brand?.description,
     workplace_address_label: address?.formatted,
-    workplace_address_zipcode: address?.parts?.zip,
-    workplace_address_city: address?.parts?.city,
-    workplace_address_street_label: address?.parts?.street,
+    workplace_address_zipcode: address?.parts?.zip || null,
+    workplace_address_city: address?.parts?.city || null,
+    workplace_address_street_label: address?.parts?.street || null,
     workplace_geopoint:
       lat && lon
         ? {
             type: "Point",
-            coordinates: [parseFloat(lon), parseFloat(lat)],
+            coordinates: [lon, lat],
           }
         : undefined,
     apply_url: formatApplyUrl(apply_url),
