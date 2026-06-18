@@ -85,24 +85,27 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
 const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
   logger.info(`début de detectDuplicateJobPartners groupé par le champ ${groupField}`)
   const projectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
-  return getDbCollection("computed_jobs_partners").aggregate([
-    { $match: computedJobPartnersFilter },
-    { $project: { ...projectFields, [groupField]: 1 } },
-    { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
-    { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
-    {
-      $project: {
-        _id: 1,
-        documents: {
-          $map: {
-            input: "$documents",
-            as: "document",
-            in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
+  return getDbCollection("computed_jobs_partners").aggregate(
+    [
+      { $match: computedJobPartnersFilter },
+      { $project: { ...projectFields, [groupField]: 1 } },
+      { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
+      { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
+      {
+        $project: {
+          _id: 1,
+          documents: {
+            $map: {
+              input: "$documents",
+              as: "document",
+              in: Object.fromEntries(fieldsRead.map((field) => [field, `$$document.${field}`])),
+            },
           },
         },
       },
-    },
-  ]) as AggregationCursor<AggregationResult>
+    ],
+    { allowDiskUse: true }
+  ) as AggregationCursor<AggregationResult>
 }
 
 const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
@@ -112,38 +115,41 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
 
   const commonProjectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
 
-  return getDbCollection("computed_jobs_partners").aggregate([
-    { $match: computedJobPartnersFilter },
-    {
-      $project: {
-        ...commonProjectFields,
-        [computedJobPartnerField]: 1,
+  return getDbCollection("computed_jobs_partners").aggregate(
+    [
+      { $match: computedJobPartnersFilter },
+      {
+        $project: {
+          ...commonProjectFields,
+          [computedJobPartnerField]: 1,
+        },
       },
-    },
-    { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
-    { $match: { _id: { $ne: null } } },
-    {
-      $lookup: {
-        from: jobPartnerCollection,
-        let: { localId: "$_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: { $eq: [`$${computedJobPartnerField}`, "$$localId"] },
+      { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
+      { $match: { _id: { $ne: null } } },
+      {
+        $lookup: {
+          from: jobPartnerCollection,
+          let: { localId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: [`$${computedJobPartnerField}`, "$$localId"] },
+              },
             },
-          },
-          {
-            $project: {
-              ...commonProjectFields,
-              [computedJobPartnerField]: 1,
-              offer_status: 1,
+            {
+              $project: {
+                ...commonProjectFields,
+                [computedJobPartnerField]: 1,
+                offer_status: 1,
+              },
             },
-          },
-        ],
-        as: "jobPartners",
+          ],
+          as: "jobPartners",
+        },
       },
-    },
-  ]) as AggregationCursor<AggregationResult>
+    ],
+    { allowDiskUse: true }
+  ) as AggregationCursor<AggregationResult>
 }
 
 const detectDuplicateJobPartnersFactory = async (groupField: keyof IComputedJobsPartners, documentStream: AggregationCursor<AggregationResult>) => {
