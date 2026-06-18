@@ -38,7 +38,7 @@ Aujourd’hui, le workflow preview fonctionne ainsi :
 2. le dépôt est checkouté sur le runner GitHub Actions
 3. Ansible est lancé vers le serveur preview
 4. [../../.infra/ansible/tasks/preview_pr.yml](../../.infra/ansible/tasks/preview_pr.yml) clone le dépôt sur la VM preview
-5. le build des images preview est exécuté localement sur la VM via `.bin/mna-lba app:build ... load ... preview`
+5. le build des images preview est exécuté localement sur la VM via `.bin/mna app:build ... load ... preview`
 6. la stack preview est ensuite démarrée localement avec Docker Compose
 
 Ce modèle a plusieurs défauts :
@@ -164,7 +164,7 @@ Exemple cible :
   uses: crazy-max/ghaction-github-runtime@v3
 
 - name: Build and push Docker images
-  run: .bin/mna-lba app:build "${{ github.event.issue.number }}" push commit-hash-temp preview
+  run: .bin/mna app:build "${{ github.event.issue.number }}" push commit-hash-temp preview
 ```
 
 ### Étape 2. Garder `docker-bake.json` comme source de vérité du build preview
@@ -197,7 +197,7 @@ Dans [../../.infra/ansible/tasks/preview_pr.yml](../../.infra/ansible/tasks/prev
 2. pruner les références Git
 3. cloner le dépôt
 4. mettre à jour le sous-module `.bin/shared`
-5. lancer `.bin/mna-lba app:build ... load ... preview`
+5. lancer `.bin/mna app:build ... load ... preview`
 
 Ces tâches doivent être remplacées par une étape de pull :
 
