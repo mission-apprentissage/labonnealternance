@@ -113,9 +113,9 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     UMO_libelle: null,
     Off_salaire_nb_mois: null,
     Off_salaire_cpt_commentaire: null,
-    Off_travail_hebdo_nb_hh: null,
-    Off_travail_hebdo_nb_mi: null,
-    THO_cle: null,
+    Off_travail_hebdo_nb_hh: 35,
+    Off_travail_hebdo_nb_mi: 420,
+    THO_cle: "HAN",
     THO_libelle: null,
     Off_THO_commentaire: null,
     NTC_cle: ntcCle,
@@ -226,7 +226,7 @@ const jobToFTOfferAddress = (job: DBJob): Partial<FTOffre> | null => {
   }
 }
 
-const getJobsToExport = async () => {
+const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = {}) => {
   const minDate = dayjs().subtract(60, "days").toDate()
 
   const jobPartnerFilter: Filter<IJobsPartnersOfferPrivate> = {
@@ -234,6 +234,7 @@ const getJobsToExport = async () => {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     updated_at: { $gt: minDate },
     offer_target_diploma: { $ne: null },
+    ft_support: ftSupport,
   }
   const jobs = (await getDbCollection("jobs_partners")
     .aggregate([
@@ -290,8 +291,7 @@ const generateCsvFile = async (csvPath: URL, jobs: DBJob[]) => {
 // phase de test : les 10 premières offres du flux principal sont utilisées.
 // À terme, filtrer sur un champ dédié dans jobs_partners (à créer).
 const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
-  const confieeJobs = jobs.slice(0, 10)
-  const source = Readable.from(confieeJobs)
+  const source = Readable.from(jobs)
   const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
   const destination = createWriteStream(csvPath)
   const transform = new Transform({
@@ -353,12 +353,13 @@ export const exportJobsToFranceTravail = async () => {
   const csvPathConfiee = new URL("./exportFTConfiee.csv", import.meta.url)
   try {
     const jobs = await getJobsToExport()
+    const jobsConfiee = await getJobsToExport({ ftSupport: true })
     await generateCsvFile(csvPath, jobs)
-    await generateCsvFileConfiee(csvPathConfiee, jobs)
+    await generateCsvFileConfiee(csvPathConfiee, jobsConfiee)
     await zipAndSendToFranceTravail(csvPath, csvPathConfiee)
     await notifyToSlack({
       subject: "EXPORT FRANCE TRAVAIL",
-      message: `${jobs.length} offres transmises à France Travail (dont 10 en flux confiée)`,
+      message: `${jobs.length} offres transmises à France Travail (dont ${jobsConfiee.length} en flux confiée)`,
     })
   } catch (err) {
     await notifyToSlack({
