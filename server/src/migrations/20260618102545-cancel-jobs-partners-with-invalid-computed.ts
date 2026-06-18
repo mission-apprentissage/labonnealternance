@@ -19,29 +19,37 @@ export const up = async () => {
   const now = new Date()
   const BATCH_SIZE = 500
 
-  const cursor = getDbCollection("jobs_partners").aggregate<{ _id: ObjectId }>([
-    { $match: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, partner_label: { $in: jobPartnersByFlux } } },
-    {
-      $lookup: {
-        from: "computed_jobs_partners",
-        let: { pl: "$partner_label", pjid: "$partner_job_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ["$partner_label", "$$pl"] }, { $eq: ["$partner_job_id", "$$pjid"] }, { $eq: ["$validated", false] }, { $ne: ["$business_error", null] }],
+  const cursor = getDbCollection("jobs_partners").aggregate<{ _id: ObjectId }>(
+    [
+      { $match: { offer_status: JOB_STATUS_ENGLISH.ACTIVE, partner_label: { $in: jobPartnersByFlux } } },
+      {
+        $lookup: {
+          from: "computed_jobs_partners",
+          let: { pl: "$partner_label", pjid: "$partner_job_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$partner_label", "$$pl"] },
+                    { $eq: ["$partner_job_id", "$$pjid"] },
+                    { $eq: ["$validated", false] },
+                    { $ne: ["$business_error", null] },
+                  ],
+                },
               },
             },
-          },
-          { $limit: 1 },
-          { $project: { _id: 1 } },
-        ],
-        as: "invalid_computed",
+            { $limit: 1 },
+            { $project: { _id: 1 } },
+          ],
+          as: "invalid_computed",
+        },
       },
-    },
-    { $match: { "invalid_computed.0": { $exists: true } } },
-    { $project: { _id: 1 } },
-  ])
+      { $match: { "invalid_computed.0": { $exists: true } } },
+      { $project: { _id: 1 } },
+    ],
+    { allowDiskUse: true }
+  )
 
   let batch: ObjectId[] = []
   let totalModified = 0
