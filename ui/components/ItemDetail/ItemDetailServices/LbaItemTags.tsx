@@ -1,5 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
+import { JOB_START_TYPE } from "shared"
 import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { isCfaEntreprise } from "shared/services/isCfaEntreprise"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
@@ -10,10 +11,18 @@ import { TagCfaDEntreprise } from "@/components/ItemDetail/TagCfaDEntreprise"
 import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
 import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
+import { TagRecrutementUrgent } from "@/components/ItemDetail/TagRecrutementUrgent"
 
-export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILbaItem, "ideaType" | "company" | "id">; displayTooltips?: boolean }) {
+export function LbaItemTags({
+  item,
+  displayTooltips = false,
+}: {
+  item: Pick<ILbaItem, "ideaType" | "company" | "id"> & { job?: { startType?: JOB_START_TYPE | null } }
+  displayTooltips?: boolean
+}) {
   const { ideaType, company } = item
   const tags: React.ReactNode[] = []
+  const isUrgentRecruitment = "job" in item && item?.job?.startType === JOB_START_TYPE.DES_QUE_POSSIBLE
 
   if (ideaType === LBA_ITEM_TYPE_OLD.LBA || ideaType === LBA_ITEM_TYPE.RECRUTEURS_LBA) {
     const tag = displayTooltips ? (
@@ -51,6 +60,10 @@ export function LbaItemTags({ item, displayTooltips = false }: { item: Pick<ILba
 
   if ("company" in item && item?.company?.elligibleHandicap) {
     tags.push(<LbaJobEngagementTag key="job engagement" />)
+  }
+
+  if (isUrgentRecruitment) {
+    tags.push(<TagRecrutementUrgent key="recrutement urgent" />)
   }
 
   return (

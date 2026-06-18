@@ -5,9 +5,12 @@ import nock from "nock"
 import { OPCOS_LABEL } from "shared/constants/index"
 import { generateCacheInfoSiretForSiret } from "shared/fixtures/cacheInfoSiret.fixture"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { COMPUTED_ERROR_SOURCE } from "shared/models/jobsPartnersComputed.model"
 import { entriesToTypedRecord } from "shared/utils/index"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { blockJobsPartnersFromCfaList } from "./blockJobsPartnersFromCfaList"
+import { detectClassificationJobsPartners } from "./detectClassificationJobsPartners"
 import { fillComputedJobsPartners } from "./fillComputedJobsPartners"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
@@ -58,6 +61,43 @@ describe("fillComputedJobsPartners", () => {
     // then
     expect.soft(await getDbCollection("computed_jobs_partners").countDocuments({ validated: false })).toEqual(1)
   }, 10_000)
+  describe("PARTNER_WHITELIST filtering for OPCO EP", () => {
+    it("should not apply BLOCK_CFA_NAME to a job with partner_label 'OPCO EP'", async () => {
+      // given: an "OPCO EP" job whose workplace_name contains a blocked CFA name
+      await givenSomeComputedJobPartners([
+        {
+          partner_label: "OPCO EP",
+          workplace_name: "13 EN FORM",
+          business_error: null,
+        },
+      ])
+      // when
+      await blockJobsPartnersFromCfaList({ shouldNotifySlack: false })
+      // then
+      const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+      expect.soft(job.business_error).toBeNull()
+      expect.soft(job.jobs_in_success).not.toContain(COMPUTED_ERROR_SOURCE.BLOCK_CFA_NAME)
+    })
+
+    it("should not apply CLASSIFICATION to a job with partner_label 'OPCO EP'", async () => {
+      // given: an "OPCO EP" job with content that would normally trigger classification
+      await givenSomeComputedJobPartners([
+        {
+          partner_label: "OPCO EP",
+          offer_title: "formateur CFA",
+          workplace_name: "école de formation",
+          business_error: null,
+        },
+      ])
+      // when — no lab API nock needed: OPCO EP is filtered out by the query so getData is never called
+      await detectClassificationJobsPartners({ shouldNotifySlack: false })
+      // then
+      const [job] = await getDbCollection("computed_jobs_partners").find({}).toArray()
+      expect.soft(job.business_error).toBeNull()
+      expect.soft(job.jobs_in_success).not.toContain(COMPUTED_ERROR_SOURCE.CLASSIFICATION)
+    })
+  })
+
   // TODO à activer quand tous les enrichissements sont implémentés
   it.skip("should enrich when siret is present", async () => {
     // given

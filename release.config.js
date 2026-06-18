@@ -8,7 +8,7 @@ module.exports = {
     [
       "@semantic-release/exec",
       {
-        prepareCmd: `.bin/mna-lba app:release \${nextRelease.version} \${nextRelease.gitHead} push`,
+        prepareCmd: `.bin/mna app:release \${nextRelease.version} \${nextRelease.gitHead} push`,
       },
     ],
     "@semantic-release/github",
@@ -17,7 +17,8 @@ module.exports = {
       {
         notifyOnSuccess: true,
         notifyOnFail: true,
-        markdownReleaseNotes: true,
+        // biome-ignore lint/style/noCommonJs: fonction injectée dans semantic-release-slack-bot
+        onSuccessFunction: require("./.github/scripts/slack-release-payload.cjs"),
       },
     ],
   ],

@@ -9,8 +9,8 @@ export DATABASE_NAME="lba"
 export BIN_DIR="$(dirname -- "$( readlink -f -- "$0"; )")"
 export BIN_SHARED_DIR="$BIN_DIR/shared"
 export ROOT_DIR="$(dirname "${BIN_DIR}")"
-export SCRIPT_DIR="$BIN_DIR/scripts"
-export SCRIPT_SHARED_DIR="$BIN_SHARED_DIR/scripts"
+export SCRIPTS_DIR="$BIN_DIR/scripts"
+export SCRIPTS_SHARED_DIR="$BIN_SHARED_DIR/scripts"
 
 . "${BIN_DIR}/commands.sh"
 
@@ -21,19 +21,12 @@ export SCRIPT_SHARED_DIR="$BIN_SHARED_DIR/scripts"
 ################################################################################
 
 readonly command=${1:-}
-if [ -z "$command" ]; then
-  _help
-fi
-shift
-
-if [[ `command -v $command` != $command ]]; then
-  echo "Err: Command '$command' not found"
-  echo
-  _help
-fi
 
 if [ -z "${CI:-}" ]; then
-  dev:dependencies:check
+  _dispatch "dev:dependencies:check"
 fi
 
-$command "$@"
+case "$command" in
+  ""|help|-h|--help) _help; exit 0 ;;
+  *) shift; _dispatch "$command" "${@:-}" ;;
+esac

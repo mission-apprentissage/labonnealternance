@@ -29,6 +29,7 @@
 *.jxr       binary
 *.pdf       binary
 *.png       binary
+*.PNG       binary
 *.psb       binary
 *.psd       binary
 *.svgz      binary

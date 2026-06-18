@@ -1,3 +1,4 @@
+import { CFA, type ENTREPRISE } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
@@ -28,6 +29,30 @@ export function createAuthMagicLinkToken(user: UserForAccessToken) {
 export function createAuthMagicLink(user: UserForAccessToken) {
   const token = createAuthMagicLinkToken(user)
   return `${config.publicUrl}/espace-pro/authentification?token=${encodeURIComponent(token)}`
+}
+
+export const createProlongerOffreLink = (
+  user: UserForAccessToken,
+  { establishment_id, jobId, userType }: { establishment_id: string; jobId: string; userType: typeof CFA | typeof ENTREPRISE }
+) => {
+  const token = generateAccessToken(
+    user,
+    [
+      generateScope({
+        schema: zRoutes.post["/login/verification"],
+        options: {
+          params: undefined,
+          querystring: undefined,
+        },
+      }),
+    ],
+    {
+      expiresIn: "30d",
+    }
+  )
+  const redirectPath =
+    userType === CFA ? `/espace-pro/cfa/entreprise/${establishment_id}?action=prolonger&jobId=${jobId}` : `/espace-pro/entreprise?action=prolonger&jobId=${jobId}`
+  return `${config.publicUrl}/espace-pro/authentification?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(redirectPath)}`
 }
 
 export function createValidationMagicLink(user: IUserWithAccountForAccessToken) {

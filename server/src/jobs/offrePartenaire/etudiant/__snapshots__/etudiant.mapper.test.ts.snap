@@ -25,7 +25,7 @@ exports[`etudiantJobToJobsPartners > maps a job to a computed job partner 1`] = 
   "offer_expiration": 2024-03-01T09:00:00.000Z,
   "offer_multicast": false,
   "offer_opening_count": 1,
-  "offer_origin": null,
+  "offer_origin": "Flux",
   "offer_rome_codes": null,
   "offer_status": "Active",
   "offer_target_diploma": null,

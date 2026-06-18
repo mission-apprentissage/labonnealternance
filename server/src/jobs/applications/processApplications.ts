@@ -53,7 +53,7 @@ export async function processApplications() {
 }
 
 const processApplicationGroup = async (applicationFilter: Filter<IApplication>, timeoutTs: number) => {
-  logger.info("start processing applications for filter", applicationFilter)
+  logger.info({ applicationFilter }, "start processing applications for filter")
   const applicationCount = await getDbCollection("applications").countDocuments(applicationFilter)
   const results: { success: number; error: number; total: number; virusDetected: number; ids_in_error: string[] } = {
     success: 0,
@@ -103,14 +103,13 @@ const processApplicationGroup = async (applicationFilter: Filter<IApplication>, 
     } catch (err) {
       results.error++
       results.ids_in_error.push(application._id.toString())
-      logger.error(`error while processing application with id=${application._id}`, err)
+      logger.error({ err }, `error while processing application with id=${application._id}`)
       sentryCaptureException(err, { data: { applicationId: application._id } })
     }
   })
   logger.info(
-    "done scanning applications for virus with filter",
-    applicationFilter,
-    `total=${applicationCount}, success=${results.success}, errors=${results.error}. virus detected=${results.virusDetected}`
+    { applicationFilter, total: applicationCount, success: results.success, errors: results.error, virusDetected: results.virusDetected },
+    "done scanning applications for virus with filter"
   )
   return results
 }

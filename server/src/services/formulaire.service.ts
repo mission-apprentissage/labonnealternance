@@ -15,17 +15,17 @@ import type {
   IUserRecruteur,
   zRoutes,
 } from "shared"
-import { assertUnreachable, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
+import { assertUnreachable, JOB_START_TYPE, JOB_STATUS, JOB_STATUS_ENGLISH, removeAccents } from "shared"
 import { EntrepriseErrorCodes } from "shared/constants/errorCodes"
 import { LBA_ITEM_TYPE, UNKNOWN_COMPANY } from "shared/constants/lbaitem"
-import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
+import { CFA, NIVEAUX_POUR_LBA, RECRUITER_STATUS, RECRUITER_USER_ORIGIN, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import dayjs from "shared/helpers/dayjs"
 import type { ICFA } from "shared/models/cfa.model"
 import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -138,7 +138,7 @@ export const createJob = async ({
     entreprise,
     user,
     status: newJobStatus,
-    origin: origin ?? "lba",
+    origin: origin ?? JOBS_PARTNERS_OFFER_ORIGIN.LBA,
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
@@ -360,7 +360,7 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
 }
 
 export const getFormulaireWithRomeDetail = async ({ establishment_id }: { establishment_id: string }): Promise<IRecruiter | null> => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const recruiter = await getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: false })
   recruiter?.jobs.forEach((job) => {
     // @ts-expect-error
@@ -376,7 +376,7 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
 }: {
   establishment_id: string
 }): Promise<IRecruiterWithRomeDetailAndApplicationCount | null> => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
@@ -521,7 +521,7 @@ const getRecruiterFromJobsPartnerFilter = async ({
  * @description Archive existing formulaire and cancel all its job offers
  */
 export const archiveFormulaireByEstablishmentId = async (id: string) => {
-  const { userId, siret } = await establishmentIdToUserIdAndSiret(id)
+  const { userId, siret } = establishmentIdToUserIdAndSiret(id)
   await archiveFormulaire(userId, siret)
 }
 
@@ -562,25 +562,37 @@ export const archiveDelegatedFormulaire = async (userId: ObjectId, cfaId: Object
 }
 
 type PatchOffreBody = z.output<(typeof zRoutes.put)["/formulaire/offre/:jobId"]["body"]>
+
+const resolveContractStartFromJob = (job: Pick<PatchOffreBody, "job_start_type" | "job_start_date">, fallbackDate: Date): Date => {
+  const startType = job.job_start_type
+  if (startType === JOB_START_TYPE.DES_QUE_POSSIBLE) {
+    return fallbackDate
+  }
+  return job.job_start_date
+}
+
 /**
  * @description Update specific field(s) in an existing job offer
  */
 export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise<void> => {
   await validateFieldsFromReferentielRome(payload)
 
-  const job = payload
-  const now = new Date()
-
-  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
   const existingJob = await getDbCollection("jobs_partners").findOne({ _id: id })
   if (!existingJob) {
     throw internal("Job not found")
   }
 
+  const job = payload
+  const now = new Date()
+
+  const romeDetails = await getRomeDetailsFromDB(job.rome_code[0])
+
   const jobPartnerUpdate: Partial<IJobsPartnersOfferPrivate> = {
     offer_opening_count: job.job_count ?? 1,
     offer_expiration: job.job_expiration_date,
-    contract_start: job.job_start_date ?? null,
+    contract_start: resolveContractStartFromJob(job, existingJob.created_at),
+    contract_start_type: job.job_start_type,
+    contract_start_is_flexible: job.job_start_type === JOB_START_TYPE.PRECISE_DATE ? Boolean(job.job_start_date_flexible) : false,
     offer_status: getOfferStatus(job.job_status, RECRUITER_STATUS.ACTIF),
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
     updated_at: now,
@@ -591,12 +603,15 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
       [],
     offer_to_be_acquired_skills: getSkillsFromRome(job.competences_rome?.savoir_faire, romeDetails?.competences?.savoir_faire),
     offer_to_be_acquired_knowledge: getSkillsFromRome(job.competences_rome?.savoirs, romeDetails?.competences?.savoirs),
+    offer_access_conditions: romeDetails?.acces_metier ? [romeDetails.acces_metier] : [],
+    offer_description: romeDetails?.definition,
     contract_duration: job.job_duration ?? null,
     offer_target_diploma: getDiplomaLevel(job.job_level_label) ?? null,
     offer_title: job.offer_title_custom ?? job.rome_appellation_label ?? existingJob.offer_title,
     offer_rome_appellation: job.rome_appellation_label,
     workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
     to_applicant_questions: job.to_applicant_questions,
+    contract_rythm: job.job_rythm,
   }
 
   await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
@@ -667,8 +682,22 @@ export const cancelOffreFromAdminInterface = async ({
 /**
  * @description Extends job duration by 1 month.
  */
-export const extendOffre = async (id: ObjectId): Promise<Date> => {
+export const extendOffre = async (id: ObjectId, jobFields: Pick<IJobCreate, "job_start_date" | "job_start_type" | "job_start_date_flexible">): Promise<Date> => {
   const now = new Date()
+  const { job_start_date_flexible, job_start_type } = jobFields
+  const contractStart = resolveContractStartFromJob(jobFields, now)
+  const isAsapStart = job_start_type === JOB_START_TYPE.DES_QUE_POSSIBLE
+  const jobPartnersFields: Partial<IJobsPartnersOfferPrivate> = {
+    offer_expiration: addExpirationPeriod(dayjs()).toDate(),
+    job_last_prolongation_date: now,
+    relance_mail_expiration_J7: null,
+    relance_mail_expiration_J1: null,
+    updated_at: now,
+    contract_start: contractStart,
+    contract_start_is_flexible: !isAsapStart && Boolean(job_start_date_flexible),
+    contract_start_type: job_start_type,
+  }
+
   const found = await getDbCollection("jobs_partners").findOneAndUpdate(
     {
       _id: id,
@@ -676,12 +705,8 @@ export const extendOffre = async (id: ObjectId): Promise<Date> => {
     [
       {
         $set: {
-          offer_expiration: addExpirationPeriod(dayjs()).toDate(),
-          job_last_prolongation_date: now,
           job_prolongation_count: { $add: [{ $ifNull: ["$job_prolongation_count", 0] }, 1] },
-          relance_mail_expiration_J7: null,
-          relance_mail_expiration_J1: null,
-          updated_at: now,
+          ...jobPartnersFields,
         },
       },
     ],
@@ -943,7 +968,7 @@ export const updateCfaManagedRecruiter = async (user: IUserWithAccount, establis
     throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${user._id}`)
   }
   const cfaId = new ObjectId(mainRole.authorized_id)
-  const { siret } = await establishmentIdToUserIdAndSiret(establishment_id)
+  const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error(`inattendu: entreprise non trouvée pour l'establishment_id=${establishment_id}`)
@@ -1126,6 +1151,8 @@ async function jobCreateToJobsPartner({
   const offer_title = job.offer_title_custom ?? job.rome_appellation_label ?? job.rome_label ?? "Offre"
   const newId = new ObjectId()
   const lbaUrl = buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, newId, siret, offer_title)
+  const contractStartDate = resolveContractStartFromJob(job, now)
+  const isAsapStart = job.job_start_type === JOB_START_TYPE.DES_QUE_POSSIBLE
 
   const jobPartner: IJobsPartnersOfferPrivate = {
     _id: newId,
@@ -1139,7 +1166,9 @@ async function jobCreateToJobsPartner({
     apply_url: lbaUrl,
     delegations: job?.delegations,
 
-    contract_start: job.job_start_date ?? null,
+    contract_start: contractStartDate,
+    contract_start_type: job.job_start_type,
+    contract_start_is_flexible: !isAsapStart && Boolean(job.job_start_date_flexible),
     contract_duration: job.job_duration ?? null,
     contract_type: job.job_type ?? [TRAINING_CONTRACT_TYPE.APPRENTISSAGE, TRAINING_CONTRACT_TYPE.PROFESSIONNALISATION],
 
@@ -1209,7 +1238,6 @@ async function jobCreateToJobsPartner({
     applicationCount: 0,
     duplicates: [],
     apply_recipient_id: newId.toString(),
-    establishment_id: buildEstablishmentId(user._id, entreprise.siret),
     to_applicant_questions: job.to_applicant_questions,
   }
   return jobPartner
@@ -1217,10 +1245,6 @@ async function jobCreateToJobsPartner({
 
 const isNiveauPourLbaLabel = (value: string | null | undefined): value is (typeof NIVEAUX_POUR_LBA)[keyof typeof NIVEAUX_POUR_LBA] => {
   return Boolean(value && Object.values(NIVEAUX_POUR_LBA).includes(value as (typeof NIVEAUX_POUR_LBA)[keyof typeof NIVEAUX_POUR_LBA]))
-}
-
-const isTrainingRythmLabel = (value: string | null | undefined): value is (typeof TRAINING_RYTHM)[keyof typeof TRAINING_RYTHM] => {
-  return Boolean(value && Object.values(TRAINING_RYTHM).includes(value as (typeof TRAINING_RYTHM)[keyof typeof TRAINING_RYTHM]))
 }
 
 const roleToRecruiterStatus = (role: IRoleManagement): RECRUITER_STATUS => {
@@ -1253,7 +1277,7 @@ export function jobPartnersToRecruiter(
   const recruiterJobs: IRecruiterWithRomeDetailAndApplicationCount["jobs"] = jobPartners.map((jobPartner) => {
     const jobLevelLabel = jobPartner.offer_target_diploma?.label
     const resolvedJobLevelLabel: IJob["job_level_label"] = isNiveauPourLbaLabel(jobLevelLabel) ? jobLevelLabel : null
-    const resolvedJobRythm: IJob["job_rythm"] = isTrainingRythmLabel(jobPartner.contract_rythm) ? jobPartner.contract_rythm : null
+    const resolvedJobRythm: IJob["job_rythm"] = jobPartner.contract_rythm
     const customTitle = jobPartner.offer_rome_appellation && jobPartner.offer_title !== jobPartner.offer_rome_appellation ? jobPartner.offer_title : null
 
     const ijob: IRecruiterWithRomeDetailAndApplicationCount["jobs"][number] = {
@@ -1261,6 +1285,8 @@ export function jobPartnersToRecruiter(
       rome_label: jobPartner.rome_detail?.rome.intitule ?? null,
       rome_appellation_label: jobPartner.offer_rome_appellation ?? null,
       job_level_label: resolvedJobLevelLabel,
+      job_start_type: jobPartner.contract_start_type ?? JOB_START_TYPE.PRECISE_DATE,
+      job_start_date_flexible: Boolean(jobPartner.contract_start_is_flexible),
       job_start_date: jobPartner.contract_start ?? jobPartner.offer_creation ?? jobPartner.created_at,
       job_description: jobPartner.offer_description,
       job_employer_description: jobPartner.workplace_description,

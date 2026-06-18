@@ -2,7 +2,7 @@ import { ObjectId } from "bson"
 import proj4 from "proj4"
 import { joinNonNullStrings } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import type { IRecruteursLbaRaw } from "shared/models/rawRecruteursLba.model"
 
 import { blankComputedJobPartner } from "@/jobs/offrePartenaire/fillComputedJobsPartners"
@@ -52,6 +52,7 @@ export const recruteursLbaToJobPartners = (recruteursLba: IRecruteursLbaRaw): IC
     offer_title: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_description: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
     offer_multicast: true,
+    offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.LBA,
   }
 }
 

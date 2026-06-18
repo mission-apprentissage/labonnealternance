@@ -8,11 +8,11 @@
     - [Pré-requis](#pré-requis)
     - [Clé OpenPGP](#clé-gpg)
   - [Développement](#développement)
-    - [Gettting started](#gettting-started)
+    - [Getting started](#getting-started)
     - [Détails des commandes globales](#détails-des-commandes-globales)
       - [Installation .env](#installation-env)
       - [Lancement de la stack compléte](#lancement-de-la-stack-compléte)
-      - [CLI mna-lba](#cli-mna-lba)
+      - [CLI mna](#cli-mna)
       - [Lancement de l'application](#lancement-de-lapplication)
       - [Gestion des services docker](#gestion-des-services-docker)
       - [Hydratation du projet en local](#hydratation-du-projet-en-local)
@@ -105,7 +105,7 @@ Voici les étapes pour créer votre clé OpenPGP :
 
 ## Développement
 
-### Gettting started
+### Getting started
 
 Avant de lancer l'application, assurez-vous d'avoir Docker actif et d'avoir installer toutes les dépendances nécessaires en exécutant la commande suivante :
 
@@ -130,7 +130,7 @@ yarn seed
 
 Vous pouvez maintenant accéder à l'application via l'URL [http://localhost:3000](http://localhost:3000)
 
-Vous pouvez maintenant accéder à l'API via l'URL [http://localhost:5001](http://localhost:5000)
+Vous pouvez maintenant accéder à l'API via l'URL [http://localhost:5001](http://localhost:5001)
 
 Vous pouvez maintenant accéder au SMTP via l'URL [http://localhost:8025](http://localhost:8025)
 
@@ -158,13 +158,13 @@ Lance la stack local de développement (server, ui, services)
 
 Cette commande démarre les containers définis dans le fichier `docker-compose.yml`.
 
-#### CLI mna-lba
+#### CLI mna
 
 ```bash
   yarn cli <command>
 ```
 
-commande pour lancer les commandes du cli mna-lba
+commande pour lancer les commandes du cli mna
 
 #### Lancement de l'application
 
@@ -302,11 +302,15 @@ git add $FILE
 
 #### Linter
 
-Lint global du projet
+Le projet utilise [Biome](https://biomejs.dev/) pour le lint et le formatage.
+
+Vérifier et corriger lint + formatage en une commande :
 
 ```bash
-  yarn lint
+  yarn check:fix
 ```
+
+> Le hook pre-commit applique cette vérification automatiquement sur les fichiers staged.
 
 #### Release depuis l'environnement local
 

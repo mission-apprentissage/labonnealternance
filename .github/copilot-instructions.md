@@ -55,35 +55,27 @@ yarn build
 ### Linting & Formatting - Required before PR
 
 ```bash
-# Lint (must pass in CI)
-yarn lint
+# Auto-fix lint + format (local dev)
+yarn check:fix
 
-# Auto-fix lint issues
-yarn lint:fix
-
-# Check formatting (runs in CI)
-yarn prettier:check
-
-# Auto-format code
-yarn prettier:fix
+# Lint + format check only, no fix (used in CI)
+yarn check:ci
 
 # Check dependency deduplication (runs in CI)
 yarn dedupe --check
 ```
 
-**ESLint configuration**:
+**Biome configuration**:
 
-- Uses flat config (`eslint.config.mjs`)
-- Separate rules for server (`server/**`), UI (`ui/**`), and shared
-- TypeScript strict rules enabled: `@typescript-eslint/no-floating-promises`, `switch-exhaustiveness-check`
-- Import alias required: `@` for server/ui source, enforced by `@dword-design/eslint-plugin-import-alias`
+- Uses `biome.json` at the root
+- Covers lint + format in a single tool (replaces ESLint + Prettier)
+- Pre-commit hook runs `biome check --write` on staged files automatically via lint-staged
 
-**Prettier configuration** (in `package.json`):
+**Biome formatter configuration** (in `biome.json`):
 
-- No semicolons (`semi: false`)
 - 2 spaces indentation
 - 180 char print width
-- ES5 trailing commas
+- LF line endings
 
 ### Testing - MongoDB dependency
 
@@ -128,12 +120,11 @@ yarn workspace shared build
 yarn typecheck
 ```
 
-**Issue: ESLint cache issues**
+**Issue: Biome lint/format errors**
 
 ```bash
-# Solution: Clear ESLint cache
-rm -rf .eslintcache
-yarn lint
+# Auto-fix all lint and format issues
+yarn check:fix
 ```
 
 **Issue: Next.js build fails with "icons not found"**
@@ -142,14 +133,6 @@ yarn lint
 # Solution: Icons are auto-generated during prebuild
 cd ui && yarn prebuild
 yarn build
-```
-
-**Issue: Prettier check fails**
-
-```bash
-# Some files may currently fail Prettier formatting checks.
-# To auto-fix formatting issues, run:
-yarn prettier:fix
 ```
 
 ## Project Structure & Key Locations
@@ -244,10 +227,9 @@ Steps executed in order:
    - `yarn install --immutable` (validate lockfile)
    - `yarn dedupe --check` (must pass)
    - `yarn typecheck`
-   - `yarn lint`
+   - `yarn check:ci`
    - MongoDB service start
    - `yarn test:ci`
-   - `yarn prettier:check`
    - Upload coverage to Codecov
 
 **Timeout**: 10 minutes for tests job. Note: CI does **not** run `yarn build`; it only validates typecheck, lint, tests, and formatting.
@@ -262,9 +244,9 @@ yarn gitleaks:check      # Gitleaks security scan
 
 **lint-staged** configuration (in `package.json`):
 
-- `*.{js,jsx,ts,tsx}`: ESLint fix + Prettier format
-- All files: Prettier format
-- `yarn.lock`: Run `yarn dedupe`
+- `*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc}`: `biome check --write --no-errors-on-unmatched`
+- All files: `biome check --no-errors-on-unmatched --files-ignore-unknown=true`
+- `yarn.lock`: `yarn dedupe`
 
 ### Other Workflows
 
@@ -302,16 +284,15 @@ yarn ui:dev           # UI on localhost:3000
 **Before making code changes**:
 
 1. Run `yarn typecheck` to establish baseline
-2. Run `yarn lint` to check for existing issues
+2. Run `yarn check` to check for existing issues
 3. Start MongoDB if tests needed: `docker compose up -d mongodb`
 
 **After making changes**:
 
 1. Run `yarn typecheck` (must pass)
-2. Run `yarn lint:fix` (auto-fix issues)
-3. Run `yarn prettier:fix` (format code)
-4. Run relevant tests: `yarn test <path>` or `yarn test:ci`
-5. Check git diff to ensure only intended files changed
+2. Run `yarn check:fix` (auto-fix lint + format)
+3. Run relevant tests: `yarn test <path>` or `yarn test:ci`
+4. Check git diff to ensure only intended files changed
 
 **Code style requirements**:
 
@@ -582,8 +563,7 @@ yarn seed:update          # Update seed from local DB
 | ------------- | ----------------------------------------------------------- | ----------------------------- |
 | Install       | `yarn install --immutable`                                  | Node, Yarn (see package.json) |
 | Typecheck     | `yarn typecheck`                                            | Dependencies installed        |
-| Lint          | `yarn lint`                                                 | -                             |
-| Format        | `yarn prettier:fix`                                         | -                             |
+| Lint + Format | `yarn check:fix`                                            | -                             |
 | Build         | `yarn build`                                                | Shared built first            |
 | Test          | `yarn test:ci`                                              | MongoDB running               |
 | Dev mode      | `yarn dev`                                                  | Docker running                |

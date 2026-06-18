@@ -4,7 +4,7 @@ import { addJob, startJobProcessor } from "job-processor"
 import HttpTerminator from "lil-http-terminator"
 
 import { closeMemoryCache } from "./common/apis/client"
-import { logger } from "./common/logger"
+import { logger, setRootContext } from "./common/logger"
 import { closeSentry } from "./common/sentry/sentry"
 import { closeMongodbConnection } from "./common/utils/mongodbUtils"
 import { notifyToSlack } from "./common/utils/slackUtils"
@@ -61,7 +61,7 @@ program
     const command = actionCommand.name()
     // on définit le module du logger en global pour distinguer les logs des jobs
     if (command !== "start") {
-      logger.fields.module = `cli:${command}`
+      setRootContext({ module: `cli:${command}` })
     }
     logger.info(`Starting command ${command}`)
   })

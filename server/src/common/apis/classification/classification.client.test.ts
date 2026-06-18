@@ -28,7 +28,7 @@ describe("getLabClassification - get batch classification", () => {
     offer_description: jobFixture.offer_description,
   }
   const apiPayload = {
-    id: jobFixture.partner_job_id,
+    id: "0",
     workplace_name: jobFixture.workplace_name ?? undefined,
     workplace_description: jobFixture.workplace_description ?? undefined,
     offer_title: jobFixture.offer_title ?? undefined,
@@ -36,7 +36,7 @@ describe("getLabClassification - get batch classification", () => {
   }
   const apiResponse: IClassificationLabBatchResponse = [
     {
-      id: jobFixture.partner_job_id,
+      id: "0",
       label: "unpublish",
       model: "model",
       scores: { publish: 0.4, unpublish: 0.5 },
@@ -79,19 +79,65 @@ describe("getLabClassification - get batch classification", () => {
 
     // The uncached job triggers the API call — only it is sent to the API
     const uncachedApiPayload = {
-      id: jobFixture.partner_job_id,
+      id: "1",
       workplace_name: jobFixture.workplace_name ?? undefined,
       workplace_description: jobFixture.workplace_description ?? undefined,
       offer_title: jobFixture.offer_title ?? undefined,
       offer_description: jobFixture.offer_description ?? undefined,
     }
-    nockLabClassification([uncachedApiPayload], apiResponse)
+    nockLabClassification([uncachedApiPayload], [{ ...apiResponse[0], id: "1" }])
 
     const result = await getClassificationFromLab([cachedPayload, payload])
     // cachedJob should return human_verification ("unpublish"), not classification ("publish")
     expect(result[0]).toBe("unpublish")
     // uncached job should return the API result
     expect(result[1]).toBe(apiResponse[0].label)
+  })
+
+  it("should map results by index when two jobs share the same partner identifiers", async () => {
+    const duplicatedPartnerJobId = `duplicate-${jobFixture.partner_job_id}`
+    const duplicatedPartnerLabel = `duplicate-${jobFixture.partner_label}`
+    const duplicatedPayloads: TJobClassification[] = [
+      {
+        ...payload,
+        partner_job_id: duplicatedPartnerJobId,
+        partner_label: duplicatedPartnerLabel,
+        offer_title: "First duplicated job",
+      },
+      {
+        ...payload,
+        partner_job_id: duplicatedPartnerJobId,
+        partner_label: duplicatedPartnerLabel,
+        offer_title: "Second duplicated job",
+      },
+    ]
+
+    nockLabClassification(
+      [
+        {
+          id: "0",
+          workplace_name: duplicatedPayloads[0].workplace_name ?? undefined,
+          workplace_description: duplicatedPayloads[0].workplace_description ?? undefined,
+          offer_title: duplicatedPayloads[0].offer_title ?? undefined,
+          offer_description: duplicatedPayloads[0].offer_description ?? undefined,
+        },
+        {
+          id: "1",
+          workplace_name: duplicatedPayloads[1].workplace_name ?? undefined,
+          workplace_description: duplicatedPayloads[1].workplace_description ?? undefined,
+          offer_title: duplicatedPayloads[1].offer_title ?? undefined,
+          offer_description: duplicatedPayloads[1].offer_description ?? undefined,
+        },
+      ],
+      [
+        { id: "0", label: "publish", model: "model", scores: { publish: 0.9, unpublish: 0.1 } },
+        { id: "1", label: "unpublish", model: "model", scores: { publish: 0.1, unpublish: 0.9 } },
+      ]
+    )
+
+    const result = await getClassificationFromLab(duplicatedPayloads)
+
+    expect(result).toEqual(["publish", "unpublish"])
   })
 
   it("should store model and created_at in cache when saving classification", async () => {

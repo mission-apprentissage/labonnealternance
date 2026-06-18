@@ -90,12 +90,12 @@ export async function deduplicateHellowork() {
     ])
     .toArray()) as AggregateResult[]
 
-  logger.info("duplicates", doublons.length)
+  logger.info({ count: doublons.length }, "duplicates")
   const doublonsASupprimer = doublons.filter(({ refBuddi, refHellowork }) => {
     const distance = stringDistance(refBuddi, refHellowork)
     const isValid = distance <= 10
     if (!isValid) {
-      logger.warn("detected high string distance between hellowork references", { refBuddi, refHellowork, distance })
+      logger.warn({ refBuddi, refHellowork, distance }, "detected high string distance between hellowork references")
     }
     return isValid
   })
@@ -103,7 +103,7 @@ export async function deduplicateHellowork() {
     const deleteResult = await getDbCollection("raw_hellowork").deleteMany({
       _id: { $in: doublonsASupprimer.map((x) => x.idHellowork) },
     })
-    logger.info("deleted", deleteResult.deletedCount, "offers in raw_hellowork")
+    logger.info({ deletedCount: deleteResult.deletedCount }, "deleted offers in raw_hellowork")
 
     const writeResult = await getDbCollection("raw_hellowork_buddi").bulkWrite(
       doublonsASupprimer.flatMap(({ _id, siret }) => {
@@ -127,7 +127,7 @@ export async function deduplicateHellowork() {
         ordered: false,
       }
     )
-    logger.info("updated", writeResult.modifiedCount, "sirets in raw_hellowork_buddi")
+    logger.info({ modifiedCount: writeResult.modifiedCount }, "updated sirets in raw_hellowork_buddi")
   }
 
   logger.info("end mergeHelloworkFlux")

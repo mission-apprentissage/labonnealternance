@@ -35,12 +35,12 @@ export const sendMistralMessages = async ({
     })
 
     if (!response.choices?.length || !response.choices[0].message) {
-      logger.info("No response from Mistral", response)
+      logger.info({ response }, "No response from Mistral")
       return null
     }
     const message = response.choices[0].message.content as string
     if (!message) {
-      logger.info("No content from Mistral", response)
+      logger.info({ response }, "No content from Mistral")
       return null
     }
     return message

@@ -3,13 +3,16 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import Select from "@codegouvfr/react-dsfr/Select"
 import { Box, FormControl, FormLabel, Link } from "@mui/material"
 import dayjs from "dayjs"
-import { useFormikContext } from "formik"
+import { useField, useFormikContext } from "formik"
 import { useParams } from "next/navigation"
+import type React from "react"
 import type { IAppellationsRomes } from "shared"
-import { TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "shared/constants/recruteur"
+import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { JOB_START_TYPE } from "shared/models/job.model"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
 import { DropdownCombobox } from "@/components/espace_pro"
@@ -125,37 +128,22 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         />
       </Box>
       <Select
+        style={{ marginBottom: 0 }}
         state={errors.job_level_label && touched.job_level_label ? "error" : "default"}
         stateRelatedMessage={errors.job_level_label as string}
-        label="Niveau visé en fin d'études"
-        nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label, onChange: handleChange }}
+        label="Niveau de formation visé en fin de contrat"
+        nativeSelectProps={{ name: "job_level_label", defaultValue: values.job_level_label || "", onChange: handleChange }}
       >
-        <option value="Indifférent">Indifférent</option>
+        <option value="" disabled hidden>
+          Sélectionnez un niveau de formation
+        </option>
         <option value="Cap, autres formations (Infrabac)">Cap, autres formations (Infrabac)</option>
         <option value="BP, Bac, autres formations (Bac)">BP, Bac, autres formations (Bac)</option>
         <option value="BTS, DEUST, autres formations (Bac+2)">BTS, DEUST, autres formations (Bac+2)</option>
         <option value="Licence, Maîtrise, autres formations (Bac+3 à Bac+4)">Licence, Maîtrise, autres formations (Bac+3 à Bac+4)</option>
         <option value="Master, titre ingénieur, autres formations (Bac+5)">Master, titre ingénieur, autres formations (Bac+5)</option>
       </Select>
-      <Box sx={{ mt: fr.spacing("4v") }}>
-        <Input
-          label="Date de début"
-          state={errors.job_start_date && touched.job_start_date ? "error" : "default"}
-          stateRelatedMessage={errors.job_start_date as string}
-          nativeInputProps={{
-            type: "date",
-            min: minStartDate.format(ISO_DATE_FORMAT),
-            max: maxStartDate.format(ISO_DATE_FORMAT),
-            name: "job_start_date",
-            value: values.job_start_date,
-            onChange: handleChange,
-          }}
-        />
-      </Box>
-      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }}>
-        <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
-      </FormControl>
-      <FormControl sx={{ mt: 2, width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
+      <FormControl sx={{ mt: fr.spacing("6v"), width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
         <FormLabel sx={{ mb: fr.spacing("2v") }}>Durée du contrat (mois)</FormLabel>
         <Input
           label=""
@@ -168,25 +156,165 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
           }}
         />
       </FormControl>
+      <Box sx={{ mt: fr.spacing("6v") }}>
+        <RadioInput
+          label="Date de début de contrat souhaitée"
+          name="job_start_type"
+          options={[
+            {
+              value: JOB_START_TYPE.DES_QUE_POSSIBLE,
+              label: "Démarrer dès que possible",
+              hintText: "Votre offre indiquera la mention “recrutement urgent”",
+            },
+            {
+              value: JOB_START_TYPE.PRECISE_DATE,
+              label: "Indiquer une date",
+            },
+          ]}
+          onChange={async ({ value }) => {
+            if (value === JOB_START_TYPE.DES_QUE_POSSIBLE) {
+              await setFieldValue("job_start_date", dayjs().format(ISO_DATE_FORMAT))
+              await setFieldValue("job_start_date_flexible", false, true)
+            }
+          }}
+        />
+      </Box>
+      {Boolean(values.job_start_type) && (
+        <Box sx={{ ml: "32px" }}>
+          <DateInput
+            disabled={values.job_start_type === JOB_START_TYPE.DES_QUE_POSSIBLE}
+            min={minStartDate.format(ISO_DATE_FORMAT)}
+            max={maxStartDate.format(ISO_DATE_FORMAT)}
+            name="job_start_date"
+            label="Date"
+          />
+          {values.job_start_type === JOB_START_TYPE.PRECISE_DATE && (
+            <Box sx={{ mt: fr.spacing("3v") }}>
+              <Checkbox
+                options={[
+                  {
+                    label: "Date flexible",
+                    nativeInputProps: {
+                      name: "job_start_date_flexible",
+                      checked: values.job_start_date_flexible,
+                      onChange: (e) => setFieldValue("job_start_date_flexible", e.target.checked),
+                    },
+                  },
+                ]}
+              />
+            </Box>
+          )}
+        </Box>
+      )}
+      <FormControl sx={{ mt: fr.spacing("6v"), width: "100%", maxWidth: { xs: "400px", sm: "100%" } }}>
+        <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} dataTestId="offre-job-count" />
+      </FormControl>
+
       {Boolean((user && user.type !== AUTHTYPE.ENTREPRISE) || (type && type !== AUTHTYPE.ENTREPRISE)) && (
-        <FormControl sx={{ mt: 2, width: "100%" }}>
-          <Select
-            state={errors.job_rythm && touched.job_rythm ? "error" : "default"}
-            stateRelatedMessage={errors.job_rythm as string}
-            label="Rythme de l’alternance école/entreprise (Facultatif)"
-            nativeSelectProps={{ name: "job_rythm", defaultValue: values.job_rythm, onChange: handleChange }}
-          >
-            <option value="" hidden>
-              Choisissez un rythme
-            </option>
-            {Object.values(TRAINING_RYTHM).map((value) => (
-              <option key={value} value={value}>
-                {value}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
+        <Box sx={{ mt: fr.spacing("6v") }}>
+          <TextInput
+            label={
+              <>
+                Rythme de l’alternance école/entreprise <span style={{ color: "#666666" }}>(Facultatif)</span>
+              </>
+            }
+            hintText="Ex: 1 semaine à l’école / 2 semaines en entreprise"
+            name="job_rythm"
+          />
+        </Box>
       )}
     </>
+  )
+}
+
+const RadioInput = <T extends { label: string; value: any; hintText?: string }>({
+  name,
+  options,
+  label,
+  onChange,
+}: {
+  name: string
+  options: T[]
+  label: string
+  onChange?: (item: T) => void
+}) => {
+  const [input, meta, helper] = useField(name)
+  const { value } = input
+  const { touched, error } = meta
+  const displayedErrorOpt = touched && error
+
+  return (
+    <RadioButtons
+      style={{
+        marginBottom: 0,
+      }}
+      name={name}
+      legend={label}
+      options={options.map((option) => ({
+        label: option.label,
+        hintText: option.hintText,
+        nativeInputProps: {
+          checked: value === option.value,
+          onChange: () => {
+            helper.setValue(option.value, true)
+            onChange?.(option)
+          },
+        },
+      }))}
+      state={displayedErrorOpt ? "error" : "default"}
+      stateRelatedMessage={displayedErrorOpt ? `${error}` : undefined}
+    />
+  )
+}
+
+const DateInput = ({ name, label, disabled, min, max }: { name: string; label: string; disabled?: boolean; min?: string; max?: string }) => {
+  const [input, meta] = useField(name)
+  const { value, onChange, onBlur } = input
+  const { touched, error } = meta
+  const displayedErrorOpt = touched && error
+
+  return (
+    <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
+      <Input
+        disabled={disabled}
+        label={label}
+        state={displayedErrorOpt ? "error" : "default"}
+        stateRelatedMessage={displayedErrorOpt}
+        nativeInputProps={{
+          type: "date",
+          min,
+          max,
+          name,
+          value,
+          onChange,
+          onBlur,
+        }}
+      />
+    </FormControl>
+  )
+}
+
+const TextInput = ({ name, label, hintText }: { name: string; label: React.ReactNode; hintText?: string }) => {
+  const [input, meta] = useField(name)
+  const { value, onChange, onBlur } = input
+  const { touched, error } = meta
+  const displayedErrorOpt = touched && error
+
+  return (
+    <FormControl error={Boolean(displayedErrorOpt)} fullWidth>
+      <Input
+        label={label}
+        hintText={hintText}
+        state={displayedErrorOpt ? "error" : "default"}
+        stateRelatedMessage={displayedErrorOpt}
+        nativeInputProps={{
+          value,
+          type: "text",
+          name,
+          onChange,
+          onBlur,
+        }}
+      />
+    </FormControl>
   )
 }
