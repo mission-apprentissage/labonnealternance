@@ -56,7 +56,12 @@ import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
 import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
-import { cancelRemovedJobsPartnersFlux, processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
+import {
+  cancelRemovedJobsPartnersFlux,
+  detectDuplicateJobPartnersFlux,
+  processComputedAndImportToJobPartners,
+  validateComputedJobPartnersFlux,
+} from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
@@ -409,6 +414,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: cancelRemovedJobsPartnersFlux,
     description: "Annule les offres des partenaires traités par flux absentes du flux source",
+  },
+  {
+    fct: detectDuplicateJobPartnersFlux,
+    description: "Détecte les doublons dans computed_jobs_partners pour les partenaires du flux",
+  },
+  {
+    fct: validateComputedJobPartnersFlux,
+    description: "Valide les computed_jobs_partners pour les partenaires du flux",
   },
   {
     fct: cancelRemovedJobsPartnersRecruteursLba,
