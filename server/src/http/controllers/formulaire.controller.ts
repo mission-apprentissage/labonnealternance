@@ -177,6 +177,8 @@ export default (server: Server) => {
         job_level_label,
         job_rythm,
         job_start_date,
+        job_start_type,
+        job_start_date_flexible,
         rome_appellation_label,
         rome_code,
         rome_label,
@@ -194,6 +196,8 @@ export default (server: Server) => {
           job_level_label,
           job_rythm,
           job_start_date,
+          job_start_type,
+          job_start_date_flexible,
           rome_appellation_label,
           rome_code,
           rome_label,
@@ -239,6 +243,8 @@ export default (server: Server) => {
         job_level_label,
         job_rythm,
         job_start_date,
+        job_start_type,
+        job_start_date_flexible,
         rome_appellation_label,
         rome_code,
         rome_label,
@@ -257,6 +263,8 @@ export default (server: Server) => {
           job_level_label,
           job_rythm,
           job_start_date,
+          job_start_type,
+          job_start_date_flexible,
           rome_appellation_label,
           rome_code,
           rome_label,
@@ -457,7 +465,9 @@ export default (server: Server) => {
       onRequest: [server.auth(zRoutes.put["/formulaire/offre/:jobId/extend"])],
     },
     async (req, res) => {
-      const newExpirationDate = await extendOffre(req.params.jobId)
+      const { jobId } = req.params
+      const jobFields = req.body
+      const newExpirationDate = await extendOffre(jobId, jobFields)
       return res.status(200).send({ job_expiration_date: newExpirationDate })
     }
   )
