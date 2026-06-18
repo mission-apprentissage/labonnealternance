@@ -10,12 +10,8 @@ export default function (server: Server) {
     {
       schema: zRoutes.post["/v2/application"],
       onRequest: server.auth(zRoutes.post["/v2/application"]),
-      config: {
-        rateLimit: {
-          max: 5,
-          timeWindow: "5s",
-        },
-      },
+      // Rate-limit posé côté api-apprentissage par consommateur (issue #4806).
+      // La route /v2/_private/application en revanche reste rate-limitée car appelée par le front LBA.
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
