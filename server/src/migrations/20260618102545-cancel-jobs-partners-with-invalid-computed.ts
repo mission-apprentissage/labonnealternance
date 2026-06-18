@@ -11,10 +11,9 @@ const GRANTED_BY = "20260618102545-cancel-jobs-partners-with-invalid-computed"
  * Annule les offres jobs_partners publiées par erreur.
  *
  * Cible : les jobs_partners avec offer_status Active dont le computed_jobs_partners
- * correspondant (même partner_label + partner_job_id) existe avec validated = false.
+ * correspondant (même partner_label + partner_job_id) existe avec validated = false et business_error != null.
  * Ces offres ont été importées avant que le pipeline de blocage (ex: CFA blacklist)
- * n'ait eu l'occasion de tourner, ou via processMissingRomeAndImportToJobPartners
- * qui ne vérifie pas les règles métier.
+ * n'ait eu l'occasion de tourner.
  */
 export const up = async () => {
   const now = new Date()
