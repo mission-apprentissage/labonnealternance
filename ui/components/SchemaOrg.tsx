@@ -25,7 +25,20 @@ type SchemaOrgProps = {
   omitBreadcrumb?: boolean
 }
 
-export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePublished, dateModified, faqItems, itemList, omitBreadcrumb }: SchemaOrgProps) => {
+export const SchemaOrg = ({
+  type,
+  title,
+  description,
+  url,
+  breadcrumbs,
+  datePublished,
+  dateModified,
+  faqItems,
+  keywords,
+  articleSection,
+  itemList,
+  omitBreadcrumb,
+}: SchemaOrgProps) => {
   const schemas: object[] = []
 
   if (!omitBreadcrumb) {
