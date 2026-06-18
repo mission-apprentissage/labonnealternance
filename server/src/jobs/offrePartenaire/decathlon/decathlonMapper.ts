@@ -37,8 +37,8 @@ export const ZDecathlonJob = z
             formatted: z.string().nullish(),
             position: z
               .object({
-                lon: z.number().nullish(),
-                lat: z.number().nullish(),
+                lon: z.coerce.number().nullish(),
+                lat: z.coerce.number().nullish(),
               })
               .passthrough()
               .nullish(),
