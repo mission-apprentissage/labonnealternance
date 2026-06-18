@@ -25,7 +25,7 @@ import type { IEntreprise } from "shared/models/entreprise.model"
 import { EntrepriseStatus } from "shared/models/entreprise.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
+import { type IComputedJobsPartners, JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
 import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
@@ -138,7 +138,7 @@ export const createJob = async ({
     entreprise,
     user,
     status: newJobStatus,
-    origin: origin ?? "lba",
+    origin: origin ?? JOBS_PARTNERS_OFFER_ORIGIN.LBA,
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
