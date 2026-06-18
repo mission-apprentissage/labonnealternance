@@ -19,11 +19,26 @@ type SchemaOrgProps = {
   datePublished?: string
   dateModified?: string
   faqItems?: { question: string; answer: string }[]
+  keywords?: string[]
+  articleSection?: string
   itemList?: ItemListEntry[]
   omitBreadcrumb?: boolean
 }
 
-export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePublished, dateModified, faqItems, itemList, omitBreadcrumb }: SchemaOrgProps) => {
+export const SchemaOrg = ({
+  type,
+  title,
+  description,
+  url,
+  breadcrumbs,
+  datePublished,
+  dateModified,
+  faqItems,
+  keywords,
+  articleSection,
+  itemList,
+  omitBreadcrumb,
+}: SchemaOrgProps) => {
   const schemas: object[] = []
 
   if (!omitBreadcrumb) {
@@ -112,6 +127,8 @@ export const SchemaOrg = ({ type, title, description, url, breadcrumbs, datePubl
       url: `${BASE_URL}${url}`,
       ...(datePublished && { datePublished }),
       ...(dateModified && { dateModified }),
+      ...(keywords && keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
+      ...(articleSection ? { articleSection } : {}),
       author: {
         "@type": "GovernmentOrganization",
         name: "La bonne alternance",
