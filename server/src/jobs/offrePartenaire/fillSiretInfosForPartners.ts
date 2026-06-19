@@ -38,7 +38,7 @@ export const fillSiretInfosForPartners = async ({ addedMatchFilter }: FillComput
       const response = await getSiretInfos(siret)
 
       if (!response) {
-        return [{ _id: document._id }] as Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id">[]
+        return []
       }
       if (isEnum(BusinessErrorCodes, response)) {
         return [{ _id: document._id, business_error: response }]

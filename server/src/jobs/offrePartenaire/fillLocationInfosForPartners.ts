@@ -31,7 +31,7 @@ export const fillLocationInfosForPartners = async ({ addedMatchFilter, shouldNot
       const [document] = documents
       const { workplace_address_label, workplace_geopoint, workplace_address_zipcode, workplace_address_city } = document
       if (!workplace_address_label) {
-        return [{ _id: document._id }] as Pick<IComputedJobsPartners, (typeof filledFields)[number] | "_id">[]
+        return []
       }
 
       let geolocation = await getGeolocationWithMinScore(workplace_address_label)

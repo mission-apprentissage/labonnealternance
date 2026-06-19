@@ -175,18 +175,6 @@ describe("detectDuplicateJobPartners", () => {
         offer_title: offerTitle,
         workplace_address_zipcode: "75007",
       },
-      {
-        partner_label: JOBPARTNERS_LABEL.HELLOWORK,
-        workplace_siret: "",
-        offer_title: offerTitle,
-        workplace_address_zipcode: "75007",
-      },
-      {
-        partner_label: JOBPARTNERS_LABEL.RH_ALTERNANCE,
-        workplace_siret: "",
-        offer_title: offerTitle,
-        workplace_address_zipcode: "75007",
-      },
     ])
     // when
     await detectDuplicateJobPartners()
@@ -201,12 +189,14 @@ describe("detectDuplicateJobPartners", () => {
     // given: 501 offers sharing the same siret from two partner labels – normally duplicates, but group is too large
     const helloworkCount = 251 // total = 501 (> 500 limit)
     const rhAlternanceCount = 250
+    let index = 0
     await givenSomeComputedJobPartners(
       Array.from({ length: helloworkCount }, () => ({
         partner_label: JOBPARTNERS_LABEL.HELLOWORK,
         workplace_siret: siret,
         offer_title: offerTitle,
         workplace_address_zipcode: "75007",
+        partner_job_id: JOBPARTNERS_LABEL.HELLOWORK + " " + index++,
       }))
     )
     await givenSomeComputedJobPartners(
@@ -215,6 +205,7 @@ describe("detectDuplicateJobPartners", () => {
         workplace_siret: siret,
         offer_title: offerTitle,
         workplace_address_zipcode: "75007",
+        partner_job_id: JOBPARTNERS_LABEL.RH_ALTERNANCE + " " + index++,
       }))
     )
     // when
