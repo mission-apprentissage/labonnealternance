@@ -13,8 +13,8 @@ const decathlonJob = {
   catch_phrase: "",
   contract_type: "Contrat d'alternance (pro, apprentissage)",
   contract_duration: {
-    min: "12",
-    max: "24",
+    min: 12,
+    max: 24,
   },
   contract_work_period: "Temps plein",
   service: "Manager Commerce",
@@ -54,8 +54,8 @@ const decathlonJob = {
     },
     formatted: "2 Avenue de l'Europe,  78140 Vélizy-Villacoublay, France",
     position: {
-      lon: "2.2201465",
-      lat: "48.7812805",
+      lon: 2.2201465,
+      lat: 48.7812805,
     },
   },
   entity: {
@@ -73,8 +73,8 @@ const decathlonJob = {
       },
       formatted: "2 Avenue de l'Europe,  78140 Vélizy-Villacoublay, France",
       position: {
-        lon: "2.2201465",
-        lat: "48.7812805",
+        lon: 2.2201465,
+        lat: 48.7812805,
       },
     },
     manager: {
