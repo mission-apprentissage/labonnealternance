@@ -88,9 +88,15 @@ const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners
   return getDbCollection("computed_jobs_partners").aggregate(
     [
       { $match: computedJobPartnersFilter },
+      // Exclure les valeurs nulles/vides : inutiles pour la détection de doublons
+      // et source de documents groupés > 16MB (BSONObjectTooLarge)
+      { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
       { $project: { ...projectFields, [groupField]: 1 } },
-      { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
+      // Compter d'abord sans embarquer les documents pour éviter le dépassement BSON
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $push: "$$ROOT" } } },
+      // Ne garder que les groupes avec au moins 2 offres (doublons potentiels)
+      // et limiter la taille maximale d'un groupe pour éviter le dépassement BSON
+      { $match: { count: { $gte: 2, $lte: 500 } } },
       {
         $project: {
           _id: 1,
@@ -124,8 +130,9 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
           [computedJobPartnerField]: 1,
         },
       },
-      { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null } } },
+      { $match: { [computedJobPartnerField]: { $exists: true, $nin: [null, ""] } } },
+      { $group: { _id: `$${computedJobPartnerField}`, count: { $sum: 1 }, documents: { $push: "$$ROOT" } } },
+      { $match: { _id: { $ne: null }, count: { $lte: 500 } } },
       {
         $lookup: {
           from: jobPartnerCollection,
