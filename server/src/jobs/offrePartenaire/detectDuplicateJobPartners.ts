@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node"
 import { groupBy } from "lodash-es"
 import type { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
@@ -8,7 +9,6 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import jobsPartnersComputedModel, { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { removeAccents } from "shared/utils/index"
 import * as stringSimilarity from "string-similarity"
-
 import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -57,6 +57,7 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
   const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
 
   await asyncForEach(jobPartnerFields, async (groupField) => {
+    await logOversizedGroups(groupField, computedJobPartnersFilter)
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
       groupField,
       computedJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
@@ -65,6 +66,7 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
     logger.info(message)
   })
   await asyncForEach(jobPartnerFields, async (groupField) => {
+    await logOversizedGroups(groupField, computedJobPartnersFilter)
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
       groupField,
       computedJobPartnerVsJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
@@ -78,6 +80,30 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
       subject: `Détection des offres en doublon`,
       message: `Temps d'exécution : ${executionDurationInSeconds} secondes`,
       error: true,
+    })
+  }
+}
+
+const logOversizedGroups = async (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
+  const oversizedGroups = await getDbCollection("computed_jobs_partners")
+    .aggregate([
+      { $match: computedJobPartnersFilter },
+      { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 } } },
+      { $match: { count: { $gt: 500 } } },
+    ])
+    .toArray()
+
+  if (oversizedGroups.length > 0) {
+    const sample = oversizedGroups
+      .slice(0, 10)
+      .map((g) => `${g._id}(${g.count})`)
+      .join(", ")
+    const suffix = oversizedGroups.length > 10 ? ` ... et ${oversizedGroups.length - 10} autres` : ""
+
+    logger.warn(`detectDuplicateJobPartners: ${oversizedGroups.length} groupes ignorés (count > 500) pour le champ ${groupField}: ${sample}${suffix}`)
+    Sentry.captureMessage(`detectDuplicateJobPartners: ${oversizedGroups.length} groupes ignorés (count > 500) pour le champ ${groupField}: ${sample}${suffix}`, {
+      level: "warning",
     })
   }
 }
