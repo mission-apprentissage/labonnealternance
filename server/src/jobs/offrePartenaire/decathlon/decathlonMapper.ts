@@ -19,7 +19,7 @@ export const ZDecathlonJob = z
     published_at: z.string().nullish(),
     contract_duration: z
       .object({
-        min: z.number().nullish(),
+        min: z.coerce.number().nullish(),
       })
       .passthrough()
       .nullish(),
@@ -37,8 +37,8 @@ export const ZDecathlonJob = z
             formatted: z.string().nullish(),
             position: z
               .object({
-                lon: z.number().nullish(),
-                lat: z.number().nullish(),
+                lon: z.coerce.number().nullish(),
+                lat: z.coerce.number().nullish(),
               })
               .passthrough()
               .nullish(),
@@ -106,7 +106,7 @@ export const decathlonJobToJobsPartners = (job: IDecathlonJob): IComputedJobsPar
     workplace_address_city: address?.parts?.city || null,
     workplace_address_street_label: address?.parts?.street || null,
     workplace_geopoint:
-      lat && lon
+      lat != null && lon != null
         ? {
             type: "Point",
             coordinates: [lon, lat],
