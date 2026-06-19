@@ -131,8 +131,8 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
         },
       },
       { $match: { [computedJobPartnerField]: { $exists: true, $nin: [null, ""] } } },
-      { $group: { _id: `$${computedJobPartnerField}`, count: { $sum: 1 }, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null }, count: { $lte: 500 } } },
+      { $group: { _id: `$${computedJobPartnerField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
+      { $match: { _id: { $ne: null }, count: { $lte: 500 } } }
       {
         $lookup: {
           from: jobPartnerCollection,
