@@ -284,6 +284,24 @@ function JobDetail({
                   )}
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
+
+                  {(selectedItem.company?.mandataire || selectedItem.company?.isGeiq) && selectedItem.contact?.hasEmail && (
+                    <Stack
+                      direction="row"
+                      sx={{
+                        alignItems: "center",
+                        mt: 0,
+                        mb: { xs: fr.spacing("2v"), md: 0 },
+                      }}
+                    >
+                      <Box component="span">
+                        <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
+                      </Box>
+                      <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
+                        Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement.
+                      </Typography>
+                    </Stack>
+                  )}
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <ShareLink item={selectedItem} />
@@ -299,23 +317,6 @@ function JobDetail({
                   )}
                 </Box>
               </Box>
-              {(selectedItem.company?.mandataire || selectedItem.company?.isGeiq) && selectedItem.contact?.hasEmail && (
-                <Stack
-                  direction="row"
-                  sx={{
-                    alignItems: "center",
-                    mt: 0,
-                    mb: { xs: fr.spacing("2v"), md: 0 },
-                  }}
-                >
-                  <Box component="span">
-                    <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
-                  </Box>
-                  <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
-                    Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement.
-                  </Typography>
-                </Stack>
-              )}
             </Box>
           </Box>
 
