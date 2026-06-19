@@ -96,7 +96,7 @@ const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners
       // sur les groupes pathologiquement volumineux (ils seront filtrés ensuite via count > 500)
       { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
       // Ne garder que les groupes avec au moins 2 offres (doublons potentiels) et ignorer les groupes trop larges
-      { $match: { count: { $gte: 2, $lte: 500 } } }
+      { $match: { count: { $gte: 2, $lte: 500 } } },
       {
         $project: {
           _id: 1,
@@ -132,7 +132,7 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
       },
       { $match: { [computedJobPartnerField]: { $exists: true, $nin: [null, ""] } } },
       { $group: { _id: `$${computedJobPartnerField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
-      { $match: { _id: { $ne: null }, count: { $lte: 500 } } }
+      { $match: { _id: { $ne: null }, count: { $lte: 500 } } },
       {
         $lookup: {
           from: jobPartnerCollection,
