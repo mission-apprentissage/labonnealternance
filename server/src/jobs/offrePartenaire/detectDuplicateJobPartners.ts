@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node"
 import { groupBy } from "lodash-es"
 import type { AggregationCursor, AnyBulkWriteOperation, Filter } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared/models/index"
@@ -8,7 +9,6 @@ import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.m
 import jobsPartnersComputedModel, { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { removeAccents } from "shared/utils/index"
 import * as stringSimilarity from "string-similarity"
-
 import { logger } from "@/common/logger"
 import { deduplicate, getPairs } from "@/common/utils/array"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -57,6 +57,7 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
   const jobPartnerFields: (keyof IComputedJobsPartners)[] = ["workplace_siret", "workplace_brand", "workplace_legal_name", "workplace_name"]
 
   await asyncForEach(jobPartnerFields, async (groupField) => {
+    await logOversizedGroups(groupField, computedJobPartnersFilter)
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
       groupField,
       computedJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
@@ -65,6 +66,7 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
     logger.info(message)
   })
   await asyncForEach(jobPartnerFields, async (groupField) => {
+    await logOversizedGroups(groupField, computedJobPartnersFilter)
     const { duplicateCount, maxOfferPairCount, offerPairCount } = await detectDuplicateJobPartnersFactory(
       groupField,
       computedJobPartnerVsJobPartnerStreamFactory(groupField, computedJobPartnersFilter)
@@ -82,15 +84,45 @@ export const detectDuplicateJobPartners = async ({ addedMatchFilter }: FillCompu
   }
 }
 
+const logOversizedGroups = async (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
+  const oversizedGroups = await getDbCollection("computed_jobs_partners")
+    .aggregate([
+      { $match: computedJobPartnersFilter },
+      { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 } } },
+      { $match: { count: { $gt: 500 } } },
+    ])
+    .toArray()
+
+  if (oversizedGroups.length > 0) {
+    const sample = oversizedGroups
+      .slice(0, 10)
+      .map((g) => `${g._id}(${g.count})`)
+      .join(", ")
+    const suffix = oversizedGroups.length > 10 ? ` ... et ${oversizedGroups.length - 10} autres` : ""
+
+    logger.warn(`detectDuplicateJobPartners: ${oversizedGroups.length} groupes ignorés (count > 500) pour le champ ${groupField}: ${sample}${suffix}`)
+    Sentry.captureMessage(`detectDuplicateJobPartners: ${oversizedGroups.length} groupes ignorés (count > 500) pour le champ ${groupField}: ${sample}${suffix}`, {
+      level: "warning",
+    })
+  }
+}
+
 const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners, computedJobPartnersFilter: Filter<IComputedJobsPartners>) => {
   logger.info(`début de detectDuplicateJobPartners groupé par le champ ${groupField}`)
   const projectFields = Object.fromEntries(fieldsRead.map((field) => [field, 1]))
   return getDbCollection("computed_jobs_partners").aggregate(
     [
       { $match: computedJobPartnersFilter },
+      // Exclure les valeurs nulles/vides : inutiles pour la détection de doublons
+      // et source de documents groupés > 16MB (BSONObjectTooLarge)
+      { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
       { $project: { ...projectFields, [groupField]: 1 } },
-      { $group: { _id: `$${groupField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null }, "documents.1": { $exists: true } } },
+      // Compter les documents et ne conserver que les 500 premiers pour éviter un dépassement BSON
+      // sur les groupes pathologiquement volumineux (ils seront filtrés ensuite via count > 500)
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
+      // Ne garder que les groupes avec au moins 2 offres (doublons potentiels) et ignorer les groupes trop larges
+      { $match: { count: { $gte: 2, $lte: 500 } } },
       {
         $project: {
           _id: 1,
@@ -124,8 +156,9 @@ const computedJobPartnerVsJobPartnerStreamFactory = (computedJobPartnerField: ke
           [computedJobPartnerField]: 1,
         },
       },
-      { $group: { _id: `$${computedJobPartnerField}`, documents: { $push: "$$ROOT" } } },
-      { $match: { _id: { $ne: null } } },
+      { $match: { [computedJobPartnerField]: { $exists: true, $nin: [null, ""] } } },
+      { $group: { _id: `$${computedJobPartnerField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
+      { $match: { _id: { $ne: null }, count: { $lte: 500 } } },
       {
         $lookup: {
           from: jobPartnerCollection,
