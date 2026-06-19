@@ -92,11 +92,11 @@ const computedJobPartnerStreamFactory = (groupField: keyof IComputedJobsPartners
       // et source de documents groupés > 16MB (BSONObjectTooLarge)
       { $match: { [groupField]: { $exists: true, $nin: [null, ""] } } },
       { $project: { ...projectFields, [groupField]: 1 } },
-      // Compter d'abord sans embarquer les documents pour éviter le dépassement BSON
-      { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $push: "$$ROOT" } } },
-      // Ne garder que les groupes avec au moins 2 offres (doublons potentiels)
-      // et limiter la taille maximale d'un groupe pour éviter le dépassement BSON
-      { $match: { count: { $gte: 2, $lte: 500 } } },
+      // Compter les documents et ne conserver que les 500 premiers pour éviter un dépassement BSON
+      // sur les groupes pathologiquement volumineux (ils seront filtrés ensuite via count > 500)
+      { $group: { _id: `$${groupField}`, count: { $sum: 1 }, documents: { $firstN: { input: "$$ROOT", n: 500 } } } },
+      // Ne garder que les groupes avec au moins 2 offres (doublons potentiels) et ignorer les groupes trop larges
+      { $match: { count: { $gte: 2, $lte: 500 } } }
       {
         $project: {
           _id: 1,
