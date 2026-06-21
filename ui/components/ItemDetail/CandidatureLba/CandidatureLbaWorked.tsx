@@ -22,15 +22,16 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
   const company = item.company?.name
   const ideaType = item.ideaType
   return (
-    <Box sx={{ px: fr.spacing("8v"), pb: fr.spacing("8v") }}>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", my: fr.spacing("8v") }}>
+    <Box sx={{ p: fr.spacing("4v"), pb: fr.spacing("8v") }}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
         <Box sx={{ ml: fr.spacing("4v") }}>
-          <Typography data-testid="application-success" variant="h2" sx={{ fontSize: "20px", fontWeight: 700 }}>
-            Votre candidature a bien été envoyée à{" "}
-            <Typography component="span" variant="h2">
-              {company}
-            </Typography>
+          <Typography
+            data-testid="application-success"
+            variant="h1"
+            sx={{ fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, fontWeight: 700 }}
+          >
+            Votre candidature a bien été envoyée à {company}
           </Typography>
         </Box>
       </Box>
@@ -40,16 +41,16 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
           {email}
         </Typography>
       </Typography>
-      <Typography sx={{ fontSize: "18px", mt: 4 }}>
+      <Typography sx={{ fontSize: "18px", mt: fr.spacing("4v") }}>
         Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
       </Typography>
       {ideaType !== LBA_ITEM_TYPE.RECRUTEURS_LBA && rechercheParams.romes.length > 0 && (
         <Box
           sx={{
             display: "flex",
-            gap: "24px",
-            marginTop: "24px",
-            padding: "24px",
+            gap: fr.spacing("6v"),
+            marginTop: fr.spacing("6v"),
+            padding: fr.spacing("6v"),
             backgroundColor: "#F5F5FE",
             flexDirection: {
               xs: "column",
@@ -61,7 +62,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
           <Box>
             <Typography
               sx={{
-                marginBottom: "24px",
+                marginBottom: fr.spacing("6v"),
                 fontSize: "18px",
                 lineHeight: "28px",
               }}
