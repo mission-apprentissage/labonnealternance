@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { BarberGuy } from "@/theme/components/icons"
+import { BarberGuy, CircleCheck } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
 export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appointmentId: string; token: string }) => {
@@ -21,9 +21,13 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
 
   return (
     <div>
-      <Box sx={{ mb: fr.spacing("6v"), display: "flex", alignItems: "center" }}>
-        <Box component="img" src="/images/paperplane2.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
-        <Typography variant="h4" data-testid="DemandeDeContactConfirmationTitle">
+      <Box sx={{ mb: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
+        <Box component="img" src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
+        <Typography
+          variant="h1"
+          data-testid="DemandeDeContactConfirmationTitle"
+          sx={{ fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px !important", md: "32px !important" } }}
+        >
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
         </Typography>
       </Box>

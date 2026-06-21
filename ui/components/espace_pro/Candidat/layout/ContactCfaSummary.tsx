@@ -7,28 +7,21 @@ type Props = {
   adresse: string
   codePostal: string
   ville: string
-  fromMail?: boolean
 }
 
 /**
  * Etablissement information.
  */
 export const ContactCfaSummary = (props: Props) => {
-  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule, fromMail = false } = props
+  const { adresse, codePostal, entrepriseRaisonSociale, ville, intitule } = props
 
   return (
     <Box sx={{ mb: fr.spacing("6v") }}>
       <Typography
         variant="h1"
-        sx={{ fontSize: fromMail ? "32px !important" : "24px !important", lineHeight: fromMail ? "40px !important" : "32px !important", mb: fr.spacing("6v") }}
+        sx={{ fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px !important", md: "32px !important" }, mb: fr.spacing("6v") }}
       >
-        Contacter l’établissement
-      </Typography>
-      <Typography
-        variant="h2"
-        sx={{ fontSize: fromMail ? "24px !important" : "22px !important", lineHeight: fromMail ? "32px !important" : "28px !important", mb: fr.spacing("2v") }}
-      >
-        {entrepriseRaisonSociale}
+        {`Contacter l’établissement ${entrepriseRaisonSociale}`}
       </Typography>
       <Typography sx={{ mb: fr.spacing("2v") }}>
         à propos de la formation : <strong>{intitule}</strong>
