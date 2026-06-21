@@ -111,7 +111,11 @@ export const CandidatureLbaModalBody = ({
               </Box>
             </>
           )}
-          <Typography variant="h1" sx={{ fontWeight: 700, fontSize: "32px", mb: fr.spacing("6v") }} data-testid="CandidatureSpontaneeTitle">
+          <Typography
+            variant="h1"
+            sx={{ fontWeight: 700, fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, mb: fr.spacing("4v") }}
+            data-testid="CandidatureSpontaneeTitle"
+          >
             {isOffre ? (
               <>
                 Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
@@ -123,7 +127,7 @@ export const CandidatureLbaModalBody = ({
 
           <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600", my: fr.spacing("2v") }}>Les champs marqués d’un astérisque (*) sont obligatoires.</Typography>
 
-          <Box sx={{ pt: fr.spacing("8v"), display: "flex", gap: fr.spacing("6v"), flexDirection: { xs: "column", md: "row" } }}>
+          <Box sx={{ pt: fr.spacing("3v"), display: "flex", gap: fr.spacing("6v"), flexDirection: { xs: "column", md: "row" } }}>
             <Box
               sx={(theme) => ({
                 height: "fit-content",
@@ -140,7 +144,10 @@ export const CandidatureLbaModalBody = ({
               <MaRechercheDAlternance formik={formik} />
             </Box>
             <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { sx: 0, md: fr.spacing("2v") } }}>
-              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
+              <Typography
+                variant="h2"
+                sx={{ fontWeight: 700, fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, my: fr.spacing("6v"), color: "#000091" }}
+              >
                 Mon message personnalisé
               </Typography>
               <TextareaInput
@@ -154,7 +161,16 @@ export const CandidatureLbaModalBody = ({
               </Box>
               {customQuestions.length > 0 && (
                 <>
-                  <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
+                  <Typography
+                    variant="h2"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: { xs: "22px !important", md: "24px !important" },
+                      lineHeight: { xs: "28px", md: "32px" },
+                      my: fr.spacing("6v"),
+                      color: "#000091",
+                    }}
+                  >
                     Mes réponses aux questions de l’entreprise
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
@@ -258,7 +274,7 @@ export const CandidatureLbaModalBody = ({
 const MesInformations = ({ formik }: { formik: FormikType }) => {
   return (
     <>
-      <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", mb: fr.spacing("6v") }}>
+      <Typography variant="h2" sx={{ fontWeight: 700, fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, mb: fr.spacing("6v") }}>
         Mes informations
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
@@ -289,7 +305,7 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
   return (
     <>
-      <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v") }}>
+      <Typography variant="h2" sx={{ fontWeight: 700, fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, my: fr.spacing("6v") }}>
         Ma recherche d'alternance
       </Typography>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
