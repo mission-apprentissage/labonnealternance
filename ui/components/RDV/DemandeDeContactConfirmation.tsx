@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { BarberGuy, CircleCheck } from "@/theme/components/icons"
+import { BarberGuy } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
 
 export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appointmentId: string; token: string }) => {
