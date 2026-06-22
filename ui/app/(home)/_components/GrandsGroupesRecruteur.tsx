@@ -1,10 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import Image from "next/image"
-import Link from "next/link"
 import { GrandsGroupes } from "@/app/(home)/_components/GrandsGroupes"
-import { ArrowRightLine } from "@/theme/components/icons"
-import { PAGES } from "@/utils/routes.utils"
+import { GrandsGroupesLink } from "@/app/(home)/_components/GrandsGroupesLink"
 
 export const GrandsGroupesRecruteur = () => (
   <Box>
@@ -44,11 +42,6 @@ export const GrandsGroupesRecruteur = () => (
         <Image src="/images/home_pics/logos_partenaires/veritone.svg" alt="Logo de Veritone" width={171} height={66} />
       </Box>
     </Box>
-    <Box sx={{ mt: fr.spacing("2v") }}>
-      <Link href={`${PAGES.static.aPropos.getPath()}#nos-partenaires`} className={fr.cx("fr-link")}>
-        Voir tous les partenaires{" "}
-        <ArrowRightLine sx={{ flexShrink: 0, fontSize: "12px", color: fr.colors.decisions.background.actionHigh.blueFrance.default, ml: fr.spacing("1v") }} />
-      </Link>
-    </Box>
+    <GrandsGroupesLink />
   </Box>
 )

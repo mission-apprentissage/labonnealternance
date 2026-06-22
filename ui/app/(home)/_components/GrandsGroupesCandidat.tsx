@@ -1,6 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Container, Typography } from "@mui/material"
 import { GrandsGroupes } from "@/app/(home)/_components/GrandsGroupes"
+import { GrandsGroupesLink } from "@/app/(home)/_components/GrandsGroupesLink"
 
 export const GrandsGroupesCandidat = () => (
   <Container sx={{ padding: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
@@ -21,5 +22,6 @@ export const GrandsGroupesCandidat = () => (
       <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
       <GrandsGroupes />
     </Box>
+    <GrandsGroupesLink />
   </Container>
 )
