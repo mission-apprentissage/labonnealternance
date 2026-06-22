@@ -21,7 +21,6 @@ import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemT
 import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/NavigationButtons"
 import { LbaJobCfaDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobCfaDetail"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
-import LbaJobReportTooltip from "@/components/ItemDetail/LbaJobComponents/LbaJobReportTooltip"
 import { GeiqJobDetail } from "@/components/ItemDetail/PartnerJobComponents/GeiqJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
@@ -218,7 +217,6 @@ function JobDetail({
                         type={kind as LBA_ITEM_TYPE}
                         linkLabelNotReported="Signaler l'offre"
                         linkLabelReported="Offre signalée"
-                        tooltip={<LbaJobReportTooltip />}
                         sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                       />
                     )}
@@ -291,7 +289,6 @@ function JobDetail({
                       type={kind as LBA_ITEM_TYPE}
                       linkLabelNotReported="Signaler l'offre"
                       linkLabelReported="Offre signalée"
-                      tooltip={<LbaJobReportTooltip />}
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}
