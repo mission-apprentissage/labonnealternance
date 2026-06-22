@@ -377,21 +377,6 @@ const JeSuisCFAPage = async () => {
           <AppreciationUsagers realm="cfa" />
         </DefaultContainer>
       </Box>
-      <DefaultContainer>
-        <Grid container sx={{ mt: fr.spacing("16v") }} spacing={fr.spacing("8v")}>
-          <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }} gap={fr.spacing("4v")}>
-            <Image fetchPriority="low" src={"/images/je-suis-cfa/illu-lba.svg"} alt="" width={212} height={145} unoptimized style={{ width: "100%" }} aria-hidden={true} />
-            <Typography component={"h2"} variant={"h4"} align="center">
-              La bonne alternance recense une liste d’outils et de liens utiles pour les organismes de formation qui accompagnent des jeunes dans leurs recherches de contrat.{" "}
-            </Typography>
-          </Grid>
-          <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }}>
-            <Button linkProps={{ href: PAGES.static.guideCfa.getPath() }} priority="secondary" style={{ margin: "auto" }}>
-              Découvrir toutes les ressources
-            </Button>
-          </Grid>
-        </Grid>
-      </DefaultContainer>
     </Box>
   )
 }
