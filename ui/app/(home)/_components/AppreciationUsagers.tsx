@@ -94,82 +94,81 @@ export const AppreciationUsagers = ({ realm }: Props) => {
   const testimonies = TESTIMONIES[realm]
 
   return (
-    <Container sx={{ paddingY: { xs: fr.spacing("6v"), lg: "0 !important" } }} maxWidth="xl" component="section">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: fr.spacing("10v"),
-        }}
-      >
-        <Typography id="home-content-container" variant="h1">
-          Apprécié
-          <br />
-          <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
-            de nos usagers
-          </Box>
-        </Typography>
-        <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
-        <Box>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", lg: "row" },
-              gap: fr.spacing("8v"),
-            }}
-          >
-            {testimonies.map((testimony, index) => (
-              <Box
-                key={index}
-                ref={index === 0 ? firstTestimonyRef : undefined}
-                sx={{
-                  flex: 1,
-                  borderRadius: "8px",
-                  display: index === 0 ? "flex" : { xs: expanded ? "flex" : "none", lg: "flex" },
-                  flexDirection: "column",
-                  alignItems: "center",
-                  backgroundColor: "#F5F5FE",
-                  py: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
-                  px: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
-                }}
-              >
-                <Image src={testimony.avatar} alt="" width={98} height={98} />
-                <Typography sx={{ textAlign: "center", fontSize: "14px", fontWeight: 700, lineHeight: "24px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>
-                  {testimony.name},
-                  <br />
-                  {testimony.role.split("\n").map((line, i) => (
-                    <span key={i}>
-                      {i > 0 && <br />}
-                      {line}
-                    </span>
-                  ))}
-                </Typography>
-                <Typography sx={{ textAlign: "center" }}>{testimony.quote}</Typography>
-              </Box>
-            ))}
-          </Box>
-          <Box sx={{ mt: fr.spacing("4v"), display: "flex", justifyContent: "flex-end" }}>
+    <Box
+      sx={{
+        paddingY: { xs: fr.spacing("6v"), lg: "0 !important" },
+        display: "flex",
+        flexDirection: "column",
+        gap: fr.spacing("10v"),
+      }}
+    >
+      <Typography id="home-content-container" variant="h1">
+        Apprécié
+        <br />
+        <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
+          de nos usagers
+        </Box>
+      </Typography>
+      <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+      <Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", lg: "row" },
+            gap: fr.spacing("8v"),
+          }}
+        >
+          {testimonies.map((testimony, index) => (
             <Box
-              component="button"
-              type="button"
-              onClick={toggle}
+              key={index}
+              ref={index === 0 ? firstTestimonyRef : undefined}
               sx={{
-                display: { xs: "block", lg: "none" },
-                alignSelf: "flex-end",
-                background: "none",
-                border: "none",
-                padding: 0,
-                cursor: "pointer",
-                color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-                fontSize: "14px",
-                textDecoration: "underline",
+                flex: 1,
+                borderRadius: "8px",
+                display: index === 0 ? "flex" : { xs: expanded ? "flex" : "none", lg: "flex" },
+                flexDirection: "column",
+                alignItems: "center",
+                backgroundColor: "#F5F5FE",
+                py: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
+                px: { xs: fr.spacing("4v"), md: fr.spacing("10v") },
               }}
             >
-              {expanded ? "- Voir moins de témoignages" : "+ Voir plus de témoignages"}
+              <Image src={testimony.avatar} alt="" width={98} height={98} />
+              <Typography sx={{ textAlign: "center", fontSize: "14px", fontWeight: 700, lineHeight: "24px", mt: fr.spacing("6v"), mb: fr.spacing("2v") }}>
+                {testimony.name},
+                <br />
+                {testimony.role.split("\n").map((line, i) => (
+                  <span key={i}>
+                    {i > 0 && <br />}
+                    {line}
+                  </span>
+                ))}
+              </Typography>
+              <Typography sx={{ textAlign: "center" }}>{testimony.quote}</Typography>
             </Box>
+          ))}
+        </Box>
+        <Box sx={{ mt: fr.spacing("4v"), display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            component="button"
+            type="button"
+            onClick={toggle}
+            sx={{
+              display: { xs: "block", lg: "none" },
+              alignSelf: "flex-end",
+              background: "none",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+              color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+              fontSize: "14px",
+              textDecoration: "underline",
+            }}
+          >
+            {expanded ? "- Voir moins de témoignages" : "+ Voir plus de témoignages"}
           </Box>
         </Box>
       </Box>
-    </Container>
+    </Box>
   )
 }

@@ -256,10 +256,10 @@ const JeSuisRecruteurPage = async () => {
             <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#161616" }}>* Données calculées sur l'année 2025</Typography>
           </Box>
 
-          <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+          <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") } }}>
             <GrandsGroupesRecruteur />
           </Box>
-          <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+          <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") } }}>
             <AppreciationUsagers realm="recruteur" />
           </Box>
 
