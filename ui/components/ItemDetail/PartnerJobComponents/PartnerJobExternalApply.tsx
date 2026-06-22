@@ -4,6 +4,7 @@ import { Box, Dialog, Typography } from "@mui/material"
 import type { ILbaItemPartnerJobJson } from "shared"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { notifyJobPostulerV3 } from "@/utils/api"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
@@ -122,10 +123,8 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
         <Box sx={{ display: "flex", alignSelf: "flex-end" }}>
           <ModalCloseButton onClose={() => closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_DISMISSED)} />
         </Box>
-        <Box sx={{ p: fr.spacing("6v"), pt: 0 }}>
-          <Typography variant="h2" sx={{ mb: fr.spacing("4v") }}>
-            Avez-vous postulé à l’offre de {job.title} ?
-          </Typography>
+        <Box sx={{ p: { xs: fr.spacing("4v"), md: fr.spacing("6v") }, pt: 0 }}>
+          <ModalTitle sx={{ mb: fr.spacing("4v") }}>Avez-vous postulé à l’offre de {job.title} ?</ModalTitle>
           <Typography>Nous veillons à ce que les offres proposées par nos partenaires vous aident dans vos recherches d’une alternance. </Typography>
         </Box>
         <Box
@@ -134,8 +133,8 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: { sm: "center" },
             gap: fr.spacing("2v"),
-            px: fr.spacing("6v"),
-            pb: fr.spacing("6v"),
+            px: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
+            pb: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
             "& > .fr-btn": {
               justifyContent: "center",
               width: { xs: "100%", sm: "auto" },
