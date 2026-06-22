@@ -373,7 +373,9 @@ const JeSuisCFAPage = async () => {
         </Grid>
       </DefaultContainer>
       <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
-        <AppreciationUsagers realm="cfa" />
+        <DefaultContainer>
+          <AppreciationUsagers realm="cfa" />
+        </DefaultContainer>
       </Box>
       <DefaultContainer>
         <Grid container sx={{ mt: fr.spacing("16v") }} spacing={fr.spacing("8v")}>
