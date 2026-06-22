@@ -14,10 +14,8 @@ const defaultSx = {
 } as const
 
 export const ModalTitle = ({ component = "h1", sx, children }: ModalTitleProps) => {
-  const componentStr = typeof component === "string" ? component : undefined
-
   return (
-    <Typography component={componentStr as React.ElementType} sx={[defaultSx ?? {}, ...(Array.isArray(sx) ? sx : [sx ?? {}])]}>
+    <Typography component={component} sx={[defaultSx, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}>
       {children}
     </Typography>
   )
