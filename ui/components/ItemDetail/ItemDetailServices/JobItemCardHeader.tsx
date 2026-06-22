@@ -25,7 +25,7 @@ export default function JobItemCardHeader({ selectedItem, kind, isMandataire, is
   const isGeiq = selectedItem?.company?.isGeiq
 
   if (!isCollapsedHeader) {
-    if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isMandataire || isGeiq)) {
+    if ((kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire) || isGeiq) {
       res = (
         <Typography component="p" sx={{ ...detailActivityProperties, my: fr.spacing("2v") }}>
           <Typography component="span" sx={{ fontWeight: 400 }}>
