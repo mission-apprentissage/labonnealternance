@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import React from "react"
 import type { ILbaItemLbaCompanyJson, ILbaItemLbaJobJson, ILbaItemPartnerJobJson } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
 import { PAGES } from "@/utils/routes.utils"
@@ -26,13 +26,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
         <Box sx={{ ml: fr.spacing("4v") }}>
-          <Typography
-            data-testid="application-success"
-            variant="h1"
-            sx={{ fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, fontWeight: 700 }}
-          >
-            Votre candidature a bien été envoyée à {company}
-          </Typography>
+          <ModalTitle>Votre candidature a bien été envoyée à {company}</ModalTitle>
         </Box>
       </Box>
       <Typography sx={{ fontSize: "18px" }}>
