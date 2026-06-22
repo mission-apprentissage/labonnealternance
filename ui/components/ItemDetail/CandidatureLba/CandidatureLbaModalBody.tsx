@@ -143,7 +143,7 @@ export const CandidatureLbaModalBody = ({
               <MesInformations formik={formik} />
               <MaRechercheDAlternance formik={formik} />
             </Box>
-            <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { sx: 0, md: fr.spacing("2v") } }}>
+            <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { xs: 0, md: fr.spacing("2v") } }}>
               <Typography
                 variant="h2"
                 sx={{ fontWeight: 700, fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px", md: "32px" }, my: fr.spacing("6v"), color: "#000091" }}
