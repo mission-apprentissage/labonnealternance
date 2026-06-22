@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
-
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { BarberGuy } from "@/theme/components/icons"
 import { apiGet } from "@/utils/api.utils"
@@ -23,13 +23,9 @@ export const DemandeDeContactConfirmation = ({ appointmentId, token }: { appoint
     <div>
       <Box sx={{ mb: fr.spacing("4v"), display: "flex", alignItems: "center" }}>
         <Box component="img" src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" sx={{ mr: fr.spacing("4v") }} />
-        <Typography
-          variant="h1"
-          data-testid="DemandeDeContactConfirmationTitle"
-          sx={{ fontSize: { xs: "22px !important", md: "24px !important" }, lineHeight: { xs: "28px !important", md: "32px !important" } }}
-        >
+        <ModalTitle>
           Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
-        </Typography>
+        </ModalTitle>
       </Box>
       <Box sx={{ mb: fr.spacing("6v") }}>
         <Typography sx={{ fontWeight: 700, color: "grey.750" }}>
