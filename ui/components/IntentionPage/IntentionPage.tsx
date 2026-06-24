@@ -85,14 +85,16 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
   return (
     <Box sx={{ maxWidth: "660px", margin: "auto" }}>
       <Box sx={{ my: fr.spacing("6v") }}>
-        <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
-          Voici votre réponse {positiveNegative} à {applicant_first_name} {applicant_last_name} :
-        </Typography>
+        {!isEditing && (
+          <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
+            Dans 30 minutes, sans modification de votre part, votre réponse sera envoyée à {applicant_first_name} {applicant_last_name} :
+          </Typography>
+        )}
         <Typography sx={{ fontSize: "12px", lineHeight: "20px" }}>
           {company_recruitment_intention === ApplicationIntention.ENTRETIEN ? (
-            <>Le candidat recevra le message suivant ainsi que vos coordonnées par courriel. Vérifiez vos coordonnées, afin que le candidat puisse vous recontacter.</>
+            <>Le candidat recevra le message suivant par e-mail. Vous serez en copie de l’e-mail.</>
           ) : (
-            <>Le candidat recevra le message suivant par courriel.</>
+            <>Le candidat recevra le message suivant par e-mail.</>
           )}
         </Typography>
       </Box>
@@ -138,13 +140,30 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         </Box>
       </Box>
 
-      {/* Buttons — outside the card border */}
+      {!isEditing && (
+        <Box sx={{ my: fr.spacing("6v"), px: fr.spacing("4v"), py: fr.spacing("2v"), backgroundColor: "#E1FEE8", color: "#18753C", width: "100%", display: "flex", gap: "10px" }}>
+          <SuccessCircle style={{ marginTop: "2px" }} width="20px" fillHexaColor="#18753C" />
+          <Typography>
+            <strong>Réponse programmée !</strong> sauf annulation de votre part, <strong>la réponse automatique ci-dessus va être envoyée</strong> au candidat dans 30 minutes.
+          </Typography>
+        </Box>
+      )}
+
       <Box sx={{ display: "flex", gap: fr.spacing("6v"), justifyContent: "flex-end", mt: fr.spacing("3v") }}>
         {isEditing ? (
           <>
-            <Button priority="secondary" aria-label="Annuler les modifications" type="button" onClick={() => setEditing(false)} disabled={formState.isSubmitting}>
-              <DsfrIcon name="fr-icon-arrow-go-back-line" size={16} />
-              Annuler les modifications
+            <Button
+              style={{ backgroundColor: "#E1000F", color: "#FFFFFF", border: "none", boxShadow: "none" }}
+              priority="secondary"
+              aria-label="Annuler l'envoi de ma réponse"
+              disabled={formState.isSubmitting}
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" })
+                cancelMutation.mutate()
+              }}
+            >
+              <DsfrIcon name="fr-icon-error-warning-line" size={16} />
+              Annuler l'envoi
             </Button>
             <Button
               aria-label="Envoyer le message au candidat"
@@ -186,14 +205,6 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
             </Button>
           </>
         )}
-      </Box>
-
-      <Box sx={{ my: fr.spacing("6v"), px: fr.spacing("4v"), py: fr.spacing("2v"), backgroundColor: "#E1FEE8", color: "#18753C", width: "100%", display: "flex", gap: "10px" }}>
-        <SuccessCircle style={{ marginTop: "2px" }} width="20px" fillHexaColor="#18753C" />
-        <Typography>
-          <strong>Réponse programmée ! Votre réponse {positiveNegative}</strong> sera <strong>automatiquement envoyée</strong> à 19h par email au candidat {applicant_first_name}{" "}
-          {applicant_last_name}.
-        </Typography>
       </Box>
     </Box>
   )

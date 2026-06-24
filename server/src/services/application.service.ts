@@ -1405,7 +1405,7 @@ export const processScheduledRecruiterIntentions = async () => {
   try {
     const stream = await getDbCollection("applications")
       .find({
-        company_recruitment_intention_date: { $lte: dayjs().subtract(3, "hours").toDate() },
+        company_recruitment_intention_date: { $lte: dayjs().subtract(30, "minutes").toDate() },
         company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
       })
       .stream()
