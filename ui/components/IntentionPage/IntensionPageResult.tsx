@@ -1,10 +1,11 @@
+import { fr } from "@codegouvfr/react-dsfr"
 import { Box, Typography } from "@mui/material"
 import { ApplicationIntention } from "shared/constants/application"
 
 export const IntensionPageResult = ({ intention, canceled = false }: { intention: ApplicationIntention; canceled?: boolean }) => {
   return (
     <Box
-      sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", pt: "80px", alignItems: "center", textAlign: "center" }}
+      sx={{ display: "flex", flexDirection: "column", width: "80%", maxWidth: "992px", margin: "auto", alignItems: "center", textAlign: "center" }}
       data-testid="IntentionFormConclusion"
     >
       {canceled ? (
@@ -12,7 +13,7 @@ export const IntensionPageResult = ({ intention, canceled = false }: { intention
           <Typography
             sx={{
               fontSize: "22px",
-              marginBottom: "24px",
+              marginBottom: fr.spacing("6v"),
               fontWeight: 700,
             }}
           >
@@ -34,9 +35,9 @@ export const IntensionPageResult = ({ intention, canceled = false }: { intention
             Merci beaucoup d’avoir pris le temps d’envoyer un commentaire au candidat.
           </Typography>
           {intention === ApplicationIntention.ENTRETIEN ? (
-            <Typography sx={{ fontSize: "18px", lineHeight: "28px", marginTop: "12px" }}>Il dispose désormais de vos coordonnées pour poursuivre l'échange.</Typography>
+            <Typography sx={{ fontSize: "18px", lineHeight: "28px", marginTop: fr.spacing("3v") }}>Il dispose désormais de vos coordonnées pour poursuivre l'échange.</Typography>
           ) : (
-            <Typography sx={{ fontSize: "18px", lineHeight: "28px", marginTop: "24px", maxWidth: "555px" }}>
+            <Typography sx={{ fontSize: "18px", lineHeight: "28px", marginTop: fr.spacing("6v"), maxWidth: "555px" }}>
               Cela permet aux futurs alternants de comprendre les raisons du refus, et de s’améliorer pour leurs prochaines candidatures.
             </Typography>
           )}
