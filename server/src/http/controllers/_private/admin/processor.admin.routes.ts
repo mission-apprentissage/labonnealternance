@@ -20,7 +20,13 @@ export function processorAdminRoutes(server: Server) {
     {
       schema: zRoutes.post["/_private/admin/processor/trigger"],
       onRequest: [server.auth(zRoutes.post["/_private/admin/processor/trigger"])],
-    },
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "10s",
+        },
+      },
+    }
     async (request, response) => {
       const { job } = request.body as { job: string }
       await addJob({ name: job, queued: true, payload: {} })
