@@ -11,6 +11,7 @@ import { generateReferentielRome } from "shared/fixtures/rome.fixture"
 import dayjs from "shared/helpers/dayjs"
 import type { IReferentielRome } from "shared/models/index"
 import { AccessEntityType, JOB_STATUS_ENGLISH } from "shared/models/index"
+import { JOB_START_TYPE } from "shared/models/job.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
@@ -34,6 +35,8 @@ const buildCreateJobDataFromReferentiel = (referentielRome: IReferentielRome) =>
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     job_count: 1,
     ft_support: false,
+    job_start_type: JOB_START_TYPE.PRECISE_DATE,
+    job_start_date_flexible: false,
   }
 }
 
@@ -51,6 +54,8 @@ function jobToJobPatch(job: IJob): OfferUpdateBody {
     offer_title_custom,
     rome_appellation_label,
     rome_label,
+    job_start_type,
+    job_start_date_flexible,
     job_start_date,
     job_expiration_date,
     ft_support,
@@ -69,6 +74,8 @@ function jobToJobPatch(job: IJob): OfferUpdateBody {
     offer_title_custom,
     rome_appellation_label,
     rome_label,
+    job_start_type: job_start_type!,
+    job_start_date_flexible: Boolean(job_start_date_flexible),
     job_start_date: job_start_date!,
     job_expiration_date: job_expiration_date!,
     ft_support,

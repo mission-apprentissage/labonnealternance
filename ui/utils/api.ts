@@ -16,7 +16,7 @@ import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
 import type { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
+import type { Jsonify } from "type-fest"
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
 const errorHandler = (error: any): undefined => {
@@ -56,7 +56,11 @@ export const providedPartnerJob = async (id: string, token: string) => apiPost("
 export const cancelOffre = async (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const cancelOffreFromAdmin = async (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
-export const extendOffre = async (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
+export const extendOffre = async (jobId: string, jobFields: Jsonify<IBody<IRoutes["put"]["/formulaire/offre/:jobId/extend"]>>) => {
+  // @ts-expect-error
+  const body: IBody<IRoutes["put"]["/formulaire/offre/:jobId/extend"]> = jobFields
+  return apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId }, body })
+}
 export const fillOffre = async (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = async (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {

@@ -8,8 +8,8 @@ import dayjs from "dayjs"
 import { Formik, useFormikContext } from "formik"
 import { useState } from "react"
 import type { IJob, IReferentielRomeForJob } from "shared"
-import { JOB_STATUS } from "shared/models/job.model"
-import { detectUrlAndEmails } from "shared/utils/detectUrlAndEmails"
+import { JOB_START_TYPE, JOB_STATUS } from "shared/models/job.model"
+import { detectUrlAndEmails, detectUrls } from "shared/utils/detectUrlAndEmails"
 import * as Yup from "yup"
 import { InfosDiffusionOffre } from "@/components/DepotOffre/InfosDiffusionOffre"
 import type { RomeCompetenceKey } from "@/components/DepotOffre/RomeDetail"
@@ -117,8 +117,10 @@ export const FormulaireEditionOffreStep1 = ({
   const finalSelectedCompetences = selectedCompetences ?? romeQuery?.data?.competences
 
   const localOnSubmit = (values) => {
+    const isPreciseDate = values.job_start_type === JOB_START_TYPE.PRECISE_DATE
     values = {
       ...values,
+      job_start_date_flexible: isPreciseDate ? Boolean(values.job_start_date_flexible) : false,
       competences_rome: finalSelectedCompetences,
       offer_title_custom: values.offer_title_custom || null,
       job_employer_description: values.job_employer_description || null,
@@ -138,7 +140,9 @@ export const FormulaireEditionOffreStep1 = ({
     rome_label: offre?.rome_label ?? "",
     rome_appellation_label: offre?.rome_appellation_label ?? "",
     rome_code: offre?.rome_code ?? [],
-    job_level_label: offre?.job_level_label ?? "Indifférent",
+    job_level_label: offre?.job_level_label ?? "",
+    job_start_type: offre?.job_start_type ?? (offre ? JOB_START_TYPE.PRECISE_DATE : ""),
+    job_start_date_flexible: offre?.job_start_date_flexible ?? false,
     job_start_date: offre?.job_start_date ? dayjs(offre.job_start_date).format(ISO_DATE_FORMAT) : "",
     job_creation_date: offre?.job_creation_date ?? dayjs().format(ISO_DATE_FORMAT),
     job_expiration_date: offre?.job_expiration_date ?? dayjs().add(2, "month").format(ISO_DATE_FORMAT),
@@ -147,7 +151,7 @@ export const FormulaireEditionOffreStep1 = ({
     delegations: offre?.delegations ?? undefined,
     job_count: offre?.job_count ?? 1,
     job_duration: offre?.job_duration ?? 12,
-    job_rythm: offre?.job_rythm ?? null,
+    job_rythm: offre?.job_rythm ?? "",
     offer_title_custom: offre?.offer_title_custom ?? "",
     job_employer_description: offre?.job_employer_description ?? "",
     ...formValues,
@@ -163,8 +167,13 @@ export const FormulaireEditionOffreStep1 = ({
         validationSchema={Yup.object().shape({
           rome_label: Yup.string().required("Champ obligatoire"),
           job_level_label: Yup.string().required("Champ obligatoire"),
+          job_start_type: Yup.mixed<JOB_START_TYPE>().oneOf([JOB_START_TYPE.DES_QUE_POSSIBLE, JOB_START_TYPE.PRECISE_DATE], "Champ obligatoire").required("Champ obligatoire"),
+          job_start_date_flexible: Yup.boolean().default(false),
           job_start_date: jobStartDateYup,
           job_type: Yup.array().required("Champ obligatoire"),
+          job_rythm: Yup.string()
+            .max(100)
+            .test("no-url", "Les urls sont interdites", (value) => !value || !value.split(/\s+/).some((token) => token && detectUrls(token).length > 0)),
           job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").required("Durée minimale du contrat : 6 mois"),
           offer_title_custom: Yup.string()
             .trim()
@@ -179,8 +188,9 @@ export const FormulaireEditionOffreStep1 = ({
         })}
         onSubmit={(values: any) => localOnSubmit(values)}
       >
-        {({ values }) => (
-          <div>
+        {({ values }) => {
+          return (
+            <div>
             <Typography
               component="h1"
               sx={(theme) => ({
@@ -205,79 +215,80 @@ export const FormulaireEditionOffreStep1 = ({
             <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
               Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
             </Typography>
-            <Box
-              sx={{
-                rowGap: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
-                columnGap: fr.spacing("8v"),
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", md: "1.4fr 2fr" },
-                gridTemplateRows: { xs: "auto", md: "1fr auto" },
-              }}
-            >
-              {/* Colonne gauche : Le contrat */}
               <Box
                 sx={{
-                  gridRow: { md: "1 / 3" },
-                  borderRadius: fr.spacing("1v"),
+                  rowGap: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+                  columnGap: fr.spacing("8v"),
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", md: "1.4fr 2fr" },
+                  gridTemplateRows: { xs: "auto", md: "1fr auto" },
                 }}
               >
+                {/* Colonne gauche : Le contrat */}
                 <Box
                   sx={{
-                    padding: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
-                    backgroundColor: fr.colors.decisions.background.alt.grey.default,
-                    border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+                    gridRow: { md: "1 / 3" },
+                    borderRadius: fr.spacing("1v"),
                   }}
                 >
-                  <Typography component="h2" sx={{ fontWeight: 700 }}>
-                    Le contrat
+                  <Box
+                    sx={{
+                      padding: { xs: fr.spacing("4v"), md: fr.spacing("6v") },
+                      backgroundColor: fr.colors.decisions.background.alt.grey.default,
+                      border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+                    }}
+                  >
+                    <Typography component="h2" sx={{ fontWeight: 700 }}>
+                      Le contrat
+                    </Typography>
+                    <Box sx={{ mt: fr.spacing("4v") }}>
+                      <FormulaireEditionOffreFields section="contract" />
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
+                <Box>
+                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
+                    La présentation de l'entreprise
                   </Typography>
                   <Box sx={{ mt: fr.spacing("4v") }}>
-                    <FormulaireEditionOffreFields section="contract" />
+                    <EmployerDescriptionField />
+                  </Box>
+
+                  <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
+                    La description de l'offre
+                  </Typography>
+                  <Box sx={{ mt: fr.spacing("4v") }}>
+                    <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
+                  </Box>
+
+                  <Box sx={{ mt: fr.spacing("4v") }}>
+                    {romeAndAppellation ? (
+                      <RomeDetailWithQuery
+                        selectedCompetences={{
+                          savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                          savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
+                          savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
+                        }}
+                        title={values.offer_title_custom || romeAndAppellation.appellation}
+                        rome={romeAndAppellation.rome}
+                        onChange={onSelectedCompetencesChange}
+                      />
+                    ) : (
+                      <Box sx={{ display: ["none", "block"] }}>
+                        <InfosDiffusionOffre />
+                      </Box>
+                    )}
                   </Box>
                 </Box>
               </Box>
-
-              {/* Colonne droite : présentation + description de l'offre + Rome/InfosDiffusion */}
-              <Box>
-                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default }}>
-                  La présentation de l'entreprise
-                </Typography>
-                <Box sx={{ mt: fr.spacing("4v") }}>
-                  <EmployerDescriptionField />
-                </Box>
-
-                <Typography variant="h4" sx={{ color: fr.colors.decisions.artwork.major.blueFrance.default, mt: fr.spacing("8v") }}>
-                  La description de l'offre
-                </Typography>
-                <Box sx={{ mt: fr.spacing("4v") }}>
-                  <FormulaireEditionOffreFields section="offer" onRomeChange={onRomeChange} />
-                </Box>
-
-                <Box sx={{ mt: fr.spacing("4v") }}>
-                  {romeAndAppellation ? (
-                    <RomeDetailWithQuery
-                      selectedCompetences={{
-                        savoirs: new Set((finalSelectedCompetences?.savoirs ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                        savoir_etre_professionnel: new Set((finalSelectedCompetences?.savoir_etre_professionnel ?? []).flatMap(({ libelle }) => (libelle ? [libelle] : []))),
-                        savoir_faire: new Set((finalSelectedCompetences?.savoir_faire ?? []).flatMap(({ items = [] }) => items.map((item) => item?.libelle))),
-                      }}
-                      title={values.offer_title_custom || romeAndAppellation.appellation}
-                      rome={romeAndAppellation.rome}
-                      onChange={onSelectedCompetencesChange}
-                    />
-                  ) : (
-                    <Box sx={{ display: ["none", "block"] }}>
-                      <InfosDiffusionOffre />
-                    </Box>
-                  )}
-                </Box>
+              <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
+                <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
               </Box>
-            </Box>
-            <Box sx={{ borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("8v") }}>
-              <FormulaireEditionOffreButtons offre={offre} competencesDirty={competencesDirty} />
-            </Box>
-          </div>
-        )}
+            </div>
+          )
+        }}
       </Formik>
     </>
   )

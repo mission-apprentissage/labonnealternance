@@ -48,6 +48,11 @@ export function getMainSitemapPageGroups(): SitemapPageGroup[] {
       priority: 0.9,
       pages: [
         { path: "/a-propos", label: "À propos", description: "Présentation de La bonne alternance, service public gratuit d'aide à l'alternance." },
+        {
+          path: "/barometre",
+          label: "Baromètre de l'alternance",
+          description: "Baromètre trimestriel de l'alternance : offres, candidatures, métiers et secteurs qui recrutent, tensions par région.",
+        },
         { path: "/contact", label: "Contact", description: "Contacter l'équipe de La bonne alternance." },
         { path: "/developpeurs", label: "Espace développeurs", description: "API publique et documentation technique pour réutiliser les données de La bonne alternance." },
         { path: "/faq", label: "Foire aux questions", description: "Réponses aux questions fréquentes des candidats, recruteurs et CFA." },

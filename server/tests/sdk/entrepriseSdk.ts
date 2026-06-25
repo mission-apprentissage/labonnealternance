@@ -3,10 +3,11 @@ import { mockApiBal } from "@tests/mocks/mockApiBal"
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
 import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import type { TestHttpClient } from "@tests/utils/server.test.utils"
-import type { IJobCreate, IUserWithAccount } from "shared"
+import { type IJobCreate, type IUserWithAccount, JOB_START_TYPE } from "shared"
 import { ENTREPRISE } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
+import dayjs from "shared/helpers/dayjs"
 import type { z } from "shared/helpers/zodWithOpenApi"
 import type { zRoutes } from "shared/routes/index"
 import { expect } from "vitest"
@@ -135,6 +136,11 @@ export const entrepriseSdk = (httpClient: TestHttpClient) => ({
       method: "PUT",
       path: `/api/formulaire/offre/${jobId}/extend`,
       cookies,
+      body: {
+        job_start_date: dayjs().format("YYYY-MM-DD"),
+        job_start_type: JOB_START_TYPE.PRECISE_DATE,
+        job_start_date_flexible: false,
+      },
     })
     return response
   },

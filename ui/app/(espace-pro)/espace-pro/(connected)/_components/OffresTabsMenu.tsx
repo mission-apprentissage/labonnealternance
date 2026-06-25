@@ -1,7 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import { Box } from "@mui/material"
-import { useQueryClient } from "@tanstack/react-query"
-import dayjs from "dayjs"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { JOB_STATUS } from "shared"
@@ -10,24 +8,22 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { buildJobUrlPath } from "shared/metier/lbaitemutils"
 import type { PopoverMenuAction } from "@/app/(espace-pro)/_components/PopoverMenu"
 import { PopoverMenu } from "@/app/(espace-pro)/_components/PopoverMenu"
-import { useToast } from "@/app/hooks/useToast"
 import { DsfrIcon } from "@/components/DsfrIcon"
 import { publicConfig } from "@/config.public"
 import { useAuth } from "@/context/UserContext"
-import { extendOffre } from "@/utils/api"
 
 export const OffresTabsMenu = ({
   row,
   openSuppression,
   buildOfferEditionUrl,
+  onOffreProlongationClick,
 }: {
   row: any
   openSuppression: (row: any) => any
   buildOfferEditionUrl: (offerId: string) => string
+  onOffreProlongationClick: (offerId: string) => void
 }) => {
   const router = useRouter()
-  const toast = useToast()
-  const client = useQueryClient()
   const { user } = useAuth()
   const [copied, setCopied] = useState(false)
 
@@ -62,17 +58,7 @@ export const OffresTabsMenu = ({
       label: "Prolonger l'offre",
       ariaLabel: `Prolonger l'offre ${offerTitle}`,
       onClick: () => {
-        extendOffre(row._id)
-          .then((job) =>
-            toast({
-              title: `Date d'expiration : ${dayjs(job.job_expiration_date).format("DD/MM/YYYY")}`,
-            })
-          )
-          .finally(async () =>
-            client.invalidateQueries({
-              queryKey: ["offre-liste"],
-            })
-          )
+        onOffreProlongationClick(row._id)
       },
       type: "button",
       icon: <DsfrIcon name="fr-icon-refresh-line" size={16} />,
