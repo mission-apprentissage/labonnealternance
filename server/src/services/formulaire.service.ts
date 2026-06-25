@@ -357,7 +357,7 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
     delete jobOpt.rome_detail._id
   }
   if (jobOpt) {
-    jobOpt.ft_support = jobPartner.ft_support
+    jobOpt.ft_support = jobPartner.ft_support ?? null
   }
   return jobOpt
 }

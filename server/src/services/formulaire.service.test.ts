@@ -85,6 +85,7 @@ describe("createJob", () => {
       job_employer_description: fixture.job_employer_description,
       offer_title_custom: fixture.offer_title_custom,
       to_applicant_questions: fixture.to_applicant_questions,
+      ft_support: fixture.ft_support ?? null,
     }
   }
 
