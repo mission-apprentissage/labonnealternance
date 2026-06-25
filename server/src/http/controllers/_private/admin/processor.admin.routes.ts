@@ -26,7 +26,7 @@ export function processorAdminRoutes(server: Server) {
           timeWindow: "10s",
         },
       },
-    }
+    },
     async (request, response) => {
       const { job } = request.body as { job: string }
       await addJob({ name: job, queued: true, payload: {} })
