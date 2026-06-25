@@ -191,30 +191,30 @@ export const FormulaireEditionOffreStep1 = ({
         {({ values }) => {
           return (
             <div>
-            <Typography
-              component="h1"
-              sx={(theme) => ({
-                fontWeight: 700,
-                color: "#000091",
-                mb: fr.spacing("6v"),
-                [theme.breakpoints.up("xs")]: {
-                  fontSize: "18px !important",
-                  lineHeight: "24px !important",
-                },
-                [theme.breakpoints.up("md")]: {
-                  fontSize: "20px !important",
-                  lineHeight: "28px !important",
-                },
-              })}
-            >
-              Étape 1/{totalSteps} : Description de l'offre
-            </Typography>
-            <Typography component="h2" sx={{ fontWeight: 700 }}>
-              Votre offre
-            </Typography>
-            <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
-              Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
-            </Typography>
+              <Typography
+                component="h1"
+                sx={(theme) => ({
+                  fontWeight: 700,
+                  color: "#000091",
+                  mb: fr.spacing("6v"),
+                  [theme.breakpoints.up("xs")]: {
+                    fontSize: "18px !important",
+                    lineHeight: "24px !important",
+                  },
+                  [theme.breakpoints.up("md")]: {
+                    fontSize: "20px !important",
+                    lineHeight: "28px !important",
+                  },
+                })}
+              >
+                Étape 1/{totalSteps} : Description de l'offre
+              </Typography>
+              <Typography component="h2" sx={{ fontWeight: 700 }}>
+                Votre offre
+              </Typography>
+              <Typography component="h6" sx={{ fontSize: "0.875rem", my: fr.spacing("4v"), color: fr.colors.decisions.text.default.grey.default }}>
+                Tous les champs sont obligatoires, sauf mention contraire "Facultatif".
+              </Typography>
               <Box
                 sx={{
                   rowGap: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
