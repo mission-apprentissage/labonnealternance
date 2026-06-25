@@ -42,7 +42,7 @@ function TriggerButton({ name, label }: { name: TriggerableJob; label: string })
       <Button priority="primary" size="small" disabled={cooldown || mutation.isPending} onClick={() => mutation.mutate()}>
         {label}
       </Button>
-      {mutation.isError && <Typography sx={{ fontSize: "12px", color: "#CE0500" }}>Erreur</Typography>}
+      {mutation.isError && <Typography sx={{ fontSize: "12px", color: "#CE0500" }}>Erreur lors du déclenchement du job</Typography>}
       {cooldown && <Typography sx={{ fontSize: "12px", color: "#18753C" }}>Ajouté en file d'attente</Typography>}
     </Box>
   )
