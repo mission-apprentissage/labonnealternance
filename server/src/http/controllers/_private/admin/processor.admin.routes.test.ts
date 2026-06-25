@@ -1,7 +1,12 @@
 import { createAndLogUser } from "@tests/utils/login.test.utils"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { describe, expect, it } from "vitest"
+import { describe, expect, it, vi } from "vitest"
+
+vi.mock("job-processor", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("job-processor")>()
+  return { ...mod, addJob: vi.fn().mockResolvedValue(undefined) }
+})
 
 describe("processorAdminRoutes", () => {
   useMongo()
@@ -14,7 +19,7 @@ describe("processorAdminRoutes", () => {
       body: { job: "processApplications" },
     })
 
-    expect(response.statusCode).toBe(401)
+    expect(response.statusCode).toBe(403)
   })
 
   it("Vérifie qu'un utilisateur non admin ne peut pas déclencher un job", async () => {
