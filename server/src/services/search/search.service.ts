@@ -374,3 +374,48 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
 
   return { hits, nbHits, page, nbPages, facets }
 }
+
+// Autocomplétion par préfixe : opérateur `autocomplete` sur les champs indexés en edgeGram
+// (title + rome_labels). Renvoie des intitulés dédupliqués pour alimenter la barre de recherche.
+export async function suggestAlgolia({ q, limit }: { q: string; limit: number }): Promise<{ suggestions: string[] }> {
+  const rows = await getDbCollection("algolia")
+    .aggregate<{ title: string; rome_labels: string[] | null }>([
+      {
+        $search: {
+          index: "algolia_search",
+          compound: {
+            should: [
+              { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
+              { autocomplete: { query: q, path: "rome_labels", fuzzy: { maxEdits: 1 } } },
+            ],
+            minimumShouldMatch: 1,
+          },
+        },
+      },
+      { $limit: limit * 5 },
+      { $project: { _id: 0, title: 1, rome_labels: 1 } },
+    ])
+    .toArray()
+
+  // Normalisation (minuscules + sans accents) pour le filtrage et la déduplication.
+  const diacritics = new RegExp("[\\u0300-\\u036f]", "g")
+  const normalize = (s: string) => s.normalize("NFD").replace(diacritics, "").toLowerCase().trim()
+  const normalizedQuery = normalize(q)
+
+  // On ne garde que les intitulés contenant réellement la saisie (évite le bruit fuzzy/indirect),
+  // dédupliqués en préservant l'ordre de pertinence.
+  const seen = new Set<string>()
+  const suggestions: string[] = []
+  for (const row of rows) {
+    for (const candidate of [row.title, ...(row.rome_labels ?? [])]) {
+      const value = candidate?.trim()
+      if (!value) continue
+      const normalized = normalize(value)
+      if (!normalized.includes(normalizedQuery) || seen.has(normalized)) continue
+      seen.add(normalized)
+      suggestions.push(value)
+      if (suggestions.length >= limit) return { suggestions }
+    }
+  }
+  return { suggestions }
+}
