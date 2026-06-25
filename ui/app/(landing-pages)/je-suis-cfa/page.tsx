@@ -6,6 +6,7 @@ import Image from "next/image"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
 import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
 import { cardSx } from "@/app/(landing-pages)/je-suis-recruteur/page"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -377,6 +378,9 @@ const JeSuisCFAPage = async () => {
           <AppreciationUsagers realm="cfa" />
         </DefaultContainer>
       </Box>
+      <DefaultContainer>
+        <FollowLinkedIn />
+      </DefaultContainer>
     </Box>
   )
 }
