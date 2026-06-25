@@ -1,7 +1,7 @@
 import { ApplicationIntention, RefusalReasons } from "../constants/application.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
-import { ZHelloworkApplication } from "../models/applications.model.js"
+import { CompanyFeebackSendStatus, ZHelloworkApplication } from "../models/applications.model.js"
 import { ZLbacError } from "../models/lbacError.model.js"
 
 import type { IRoutesDef } from "./common.routes.js"
@@ -113,7 +113,18 @@ export const zApplicationRoutes = {
             recruiter_phone: z.string(),
             applicant_first_name: z.string(),
             applicant_last_name: z.string(),
+            applicant_email: z.string(),
+            applicant_phone: z.string(),
             company_name: z.string(),
+            sent_intention: z
+              .object({
+                company_feedback_send_status: extensions.buildEnum(CompanyFeebackSendStatus),
+                company_feedback: z.string().nullable(),
+                company_feedback_reasons: z.array(extensions.buildEnum(RefusalReasons)).nullable(),
+                company_recruitment_intention_date: z.date().nullable(),
+                company_recruitment_intention: extensions.buildEnum(ApplicationIntention).nullable(),
+              })
+              .optional(),
           })
           .strict(),
       },

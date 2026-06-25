@@ -1283,12 +1283,26 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     }
   )
 
+  const sent_intention =
+    application.company_feedback_send_status === CompanyFeebackSendStatus.SENT
+      ? {
+          company_feedback_send_status: application.company_feedback_send_status,
+          company_feedback: application.company_feedback ?? null,
+          company_feedback_reasons: application.company_feedback_reasons ?? null,
+          company_recruitment_intention_date: application.company_recruitment_intention_date ?? null,
+          company_recruitment_intention: parseEnum(ApplicationIntention, application.company_recruitment_intention) ?? null,
+        }
+      : undefined
+
   return {
     recruiter_email: application.company_email,
     recruiter_phone,
     applicant_first_name: applicant.firstname,
     applicant_last_name: applicant.lastname,
+    applicant_email: applicant.email,
+    applicant_phone: applicant.phone,
     company_name,
+    sent_intention,
   }
 }
 
