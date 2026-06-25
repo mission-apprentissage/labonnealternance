@@ -30,7 +30,6 @@ fi
 # Shared commands
 ################################################################################
 
-_register "app:deploy"
 _register "app:deploy:log:encrypt"
 _register "app:deploy:log:decrypt"
 _register "dev:dependencies:check"
@@ -91,5 +90,24 @@ _register "preview:cleanup" "_local_preview_cleanup"
 
 function _local_preview_cleanup() {
   "${SCRIPTS_SHARED_DIR}/run-playbook.sh" "preview_cleanup.yml" "preview"
+}
+
+# Override POC mongodb82 : si un playbook dédié `preview_<PR>.yml` existe, on route la PR vers le
+# flow MongoDB 8.2 + mongot (conteneur par-PR) au lieu du flow standard `preview.yml`. Sinon,
+# fallback sur le déploiement preview partagé. À RE-VÉRIFIER après chaque merge de main (la version
+# main de ce fichier ne contient pas cet override → conflit/écrasement possible).
+_local_app_deploy__help="Deploy application to <env> (route les PR mongot vers preview_<PR>.yml)"
+_register "app:deploy" "_local_app_deploy"
+
+function _local_app_deploy() {
+  local env_filter="${1:-}"
+  if [[ "$env_filter" == "preview" ]]; then
+    local pr_number="${2:-}"
+    if [[ -f "${ROOT_DIR}/.infra/ansible/preview_${pr_number}.yml" ]]; then
+      "${SCRIPTS_SHARED_DIR}/run-playbook.sh" "preview_${pr_number}.yml" "$env_filter" --extra-var "pr_number=$pr_number"
+      return
+    fi
+  fi
+  "${SCRIPTS_SHARED_DIR}/app-deploy.sh" "$@"
 }
 
