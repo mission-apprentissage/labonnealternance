@@ -34,6 +34,7 @@ const buildCreateJobDataFromReferentiel = (referentielRome: IReferentielRome) =>
     competences_rome: referentielRome.competences,
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     job_count: 1,
+    ft_support: false,
     job_start_type: JOB_START_TYPE.PRECISE_DATE,
     job_start_date_flexible: false,
   }
@@ -57,6 +58,7 @@ function jobToJobPatch(job: IJob): OfferUpdateBody {
     job_start_date_flexible,
     job_start_date,
     job_expiration_date,
+    ft_support,
   } = job
 
   const body: OfferUpdateBody = {
@@ -76,6 +78,7 @@ function jobToJobPatch(job: IJob): OfferUpdateBody {
     job_start_date_flexible: Boolean(job_start_date_flexible),
     job_start_date: job_start_date!,
     job_expiration_date: job_expiration_date!,
+    ft_support,
   }
   return body
 }
