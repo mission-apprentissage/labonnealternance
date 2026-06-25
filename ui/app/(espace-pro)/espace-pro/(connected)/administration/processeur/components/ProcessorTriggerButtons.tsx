@@ -3,7 +3,7 @@
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, Typography } from "@mui/material"
 import { useMutation } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { apiPost } from "@/utils/api.utils"
 
@@ -20,12 +20,20 @@ const COOLDOWN_MS = 10_000
 
 function TriggerButton({ name, label }: { name: TriggerableJob; label: string }) {
   const [cooldown, setCooldown] = useState(false)
+  const cooldownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (cooldownTimeoutRef.current) clearTimeout(cooldownTimeoutRef.current)
+    }
+  }, [])
 
   const mutation = useMutation({
     mutationFn: () => apiPost("/_private/admin/processor/trigger", { body: { job: name } }),
     onSuccess: () => {
       setCooldown(true)
-      setTimeout(() => setCooldown(false), COOLDOWN_MS)
+      if (cooldownTimeoutRef.current) clearTimeout(cooldownTimeoutRef.current)
+      cooldownTimeoutRef.current = setTimeout(() => setCooldown(false), COOLDOWN_MS)
     },
   })
 
