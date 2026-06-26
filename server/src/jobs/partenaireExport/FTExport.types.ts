@@ -170,7 +170,11 @@ export const zFTOffre = z.object({
   Service: z.enum(["1", "2"]).nullable().optional().describe("Service (non utilisé) : 1 ou 2"),
   Mode_diffusion: z.enum(["N", "O"]).nullable().optional().describe("Consentement à la diffusion : O (oui) ou N (non)"),
   Rappel: z.enum(["1", "2"]).nullable().optional().describe("Rappel (non utilisé) : 1 ou 2"),
-  Mode_presentation: z.enum(["TEL", "MEL", "ECV", "PDE", "PEL"]).nullable().optional().describe("Mode de présentation des candidats (non utilisé) : TEL, MEL, ECV, PDE ou PEL"),
+  Mode_presentation: z
+    .enum(["TEL", "MEL", "ECV", "PDE", "PEL", "URL"])
+    .nullable()
+    .optional()
+    .describe("Mode de présentation des candidats (non utilisé) : TEL, MEL, ECV, PDE, PEL ou URL"),
   Emploi_metier_isco: z.string().max(4).nullable().optional().describe("Emploi métier ISCO (non utilisé)"),
 })
 
