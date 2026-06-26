@@ -10,6 +10,7 @@ import { useEffect } from "react"
 import QRCode from "react-qr-code"
 import { NIVEAUX_POUR_LBA } from "shared/constants/index"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { JOB_START_TYPE } from "shared/models/job.model"
 
 import { LoadingEmptySpace } from "@/components/espace_pro"
 import fetchLbaJobDetails from "@/services/fetchLbaJobDetails"
@@ -39,6 +40,8 @@ export default function PrintableJobPage() {
     return <LoadingEmptySpace label="Chargement en cours" />
   }
 
+  const isUrgentRecruitment = offre.job.startType === JOB_START_TYPE.DES_QUE_POSSIBLE
+
   return (
     <Box component="main" role="main" sx={{ maxWidth: "21cm", textAlign: "center", py: fr.spacing("6v"), px: fr.spacing("6v") }}>
       <Image style={{ margin: "auto" }} src="/images/espace_pro/images/illustration-impression.svg" width="209" height="95" alt="" aria-hidden={true} />
@@ -66,7 +69,7 @@ export default function PrintableJobPage() {
       </Typography>
       {((offre.target_diploma_level && offre.target_diploma_level !== NIVEAUX_POUR_LBA.INDIFFERENT) || offre.job.jobStartDate) && (
         <Box sx={{ ...printExactColor, backgroundColor: "#F6F6F6", maxWidth: "500px", mx: "auto", mt: 6, p: 6, textAlign: "center" }}>
-          {offre.job.jobStartDate && (
+          {(offre.job.jobStartDate || isUrgentRecruitment) && (
             <Typography
               sx={{
                 color: "#161616",
@@ -80,7 +83,7 @@ export default function PrintableJobPage() {
                   fontWeight: 700,
                 }}
               >
-                {dayjs(offre.job.jobStartDate).format("DD/MM/YYYY")}
+                {isUrgentRecruitment ? "Démarrage dès que possible" : dayjs(offre.job.jobStartDate).format("DD/MM/YYYY")}
               </Typography>
             </Typography>
           )}

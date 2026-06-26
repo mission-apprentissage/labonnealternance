@@ -4,18 +4,21 @@ import { ObjectId } from "bson"
 
 import { RECRUITER_STATUS, TRAINING_CONTRACT_TYPE } from "../constants/recruteur.js"
 import type { IJob } from "../models/job.model.js"
-import { JOB_STATUS } from "../models/job.model.js"
+import { JOB_START_TYPE, JOB_STATUS } from "../models/job.model.js"
 import type { IRecruiter } from "../models/recruiter.model.js"
 
 export function generateJobFixture(data: Partial<IJob> = {}): IJob {
   return {
     _id: new ObjectId(),
     job_start_date: new Date("2021-01-28T15:00:00.000Z"),
+    job_start_type: JOB_START_TYPE.PRECISE_DATE,
+    job_start_date_flexible: false,
     rome_code: ["M1602"], // linked by default to generateReferentielRome
     job_status: JOB_STATUS.ACTIVE,
     job_type: [TRAINING_CONTRACT_TYPE.APPRENTISSAGE],
     is_disabled_elligible: null,
     job_count: 1,
+    ft_support: false,
     ...data,
   }
 }
