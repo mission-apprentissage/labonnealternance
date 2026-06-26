@@ -1,12 +1,14 @@
+import { NIVEAU_DIPLOME_LABEL } from "shared/constants/recruteur"
+
 import { logger } from "@/common/logger"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 
 const LABEL_UPDATES: Array<{ oldLabel: string; newLabel: string }> = [
-  { oldLabel: "Cap, autres formations (Infrabac)", newLabel: "CAP, BEP (Infrabac)" },
-  { oldLabel: "BP, Bac, autres formations (Bac)", newLabel: "Bac, Bac Pro, BP (Bac)" },
-  { oldLabel: "BTS, DEUST, autres formations (Bac+2)", newLabel: "BTS, DEUST (Bac+2)" },
-  { oldLabel: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)", newLabel: "Licence, BUT, Licence Pro (Bac+3)" },
-  { oldLabel: "Master, titre ingénieur, autres formations (Bac+5)", newLabel: "Master, titre ingénieur, grande école (Bac+5)" },
+  { oldLabel: "Cap, autres formations (Infrabac)", newLabel: NIVEAU_DIPLOME_LABEL["3"] },
+  { oldLabel: "BP, Bac, autres formations (Bac)", newLabel: NIVEAU_DIPLOME_LABEL["4"] },
+  { oldLabel: "BTS, DEUST, autres formations (Bac+2)", newLabel: NIVEAU_DIPLOME_LABEL["5"] },
+  { oldLabel: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)", newLabel: NIVEAU_DIPLOME_LABEL["6"] },
+  { oldLabel: "Master, titre ingénieur, autres formations (Bac+5)", newLabel: NIVEAU_DIPLOME_LABEL["7"] },
 ]
 
 export const up = async () => {
