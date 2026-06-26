@@ -86,23 +86,23 @@ export const ZJobsPartnersRecruiterApi = z.object({
 export const NIVEAUX_DIPLOMES_EUROPEENS = [
   {
     value: "3",
-    label: "Cap, autres formations (Infrabac)",
+    label: "CAP, BEP (Infrabac)",
   },
   {
     value: "4",
-    label: "BP, Bac, autres formations (Bac)",
+    label: "Bac, Bac Pro, BP (Bac)",
   },
   {
     value: "5",
-    label: "BTS, DEUST, autres formations (Bac+2)",
+    label: "BTS, DEUST (Bac+2)",
   },
   {
     value: "6",
-    label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+    label: "Licence, BUT, Licence Pro (Bac+3)",
   },
   {
     value: "7",
-    label: "Master, titre ingénieur, autres formations (Bac+5)",
+    label: "Master, titre ingénieur, grande école (Bac+5)",
   },
 ] as const
 

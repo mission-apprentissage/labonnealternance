@@ -53,13 +53,13 @@ type DiplomaResult = { european: DiplomaEuropean; label: string } | null
 
 function parseDiploma(field): DiplomaResult {
   const diplomaMappings: { pattern: RegExp; european: DiplomaEuropean; label: string }[] = [
-    { pattern: /^CAP, BEP et équivalents$/, european: "3", label: "Cap, autres formations (Infrabac)" },
-    { pattern: /^3ème achevée ou Brevet$/, european: "3", label: "Cap, autres formations (Infrabac)" },
-    { pattern: /^Bac ou équivalent$/, european: "4", label: "BP, Bac, autres formations (Bac)" },
-    { pattern: /^2nd ou 1ère achevée$/, european: "3", label: "Cap, autres formations (Infrabac)" },
-    { pattern: /^Bac\+2 ou équivalents$/, european: "4", label: "BP, Bac, autres formations (Bac)" },
-    { pattern: /^Bac\+3, Bac\+4 ou équivalents$/, european: "6", label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)" },
-    { pattern: /^Bac\+5 et plus ou équivalents$/, european: "7", label: "Master, titre ingénieur, autres formations (Bac+5)" },
+    { pattern: /^CAP, BEP et équivalents$/, european: "3", label: "CAP, BEP (Infrabac)" },
+    { pattern: /^3ème achevée ou Brevet$/, european: "3", label: "CAP, BEP (Infrabac)" },
+    { pattern: /^Bac ou équivalent$/, european: "4", label: "Bac, Bac Pro, BP (Bac)" },
+    { pattern: /^2nd ou 1ère achevée$/, european: "3", label: "CAP, BEP (Infrabac)" },
+    { pattern: /^Bac\+2 ou équivalents$/, european: "4", label: "Bac, Bac Pro, BP (Bac)" },
+    { pattern: /^Bac\+3, Bac\+4 ou équivalents$/, european: "6", label: "Licence, BUT, Licence Pro (Bac+3)" },
+    { pattern: /^Bac\+5 et plus ou équivalents$/, european: "7", label: "Master, titre ingénieur, grande école (Bac+5)" },
   ]
 
   for (const { pattern, european, label } of diplomaMappings) {

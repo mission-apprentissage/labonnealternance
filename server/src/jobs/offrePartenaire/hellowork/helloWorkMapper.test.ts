@@ -76,7 +76,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_status: "Active",
       offer_target_diploma: {
         european: "6",
-        label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+        label: "Licence, BUT, Licence Pro (Bac+3)",
       },
       offer_desired_skills: ["profile"],
       offer_access_conditions: [],
