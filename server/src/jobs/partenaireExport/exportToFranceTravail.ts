@@ -17,7 +17,7 @@ import { logger } from "@/common/logger"
 import { getDepartmentInfos } from "@/common/territoires"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { removeLineBreaks, sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { FTOffre } from "@/jobs/partenaireExport/FTExport.types"
 import { buildLbaUrl } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
@@ -69,7 +69,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Code_rome: romeCode,
     Code_OGR: parseInt(appellation.code_ogr, 10),
     Libelle_metier_OGR: appellation.libelle,
-    Description: sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`),
+    Description: removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`)),
     Off_experience_duree_min: null,
     Off_experience_duree_max: null,
     Exp_cle: "D",
@@ -165,7 +165,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
     Description_entreprise: offre.workplace_description
-      ? sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`) || null
+      ? removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`)) || null
       : null,
     Id_recruteur: null,
     Civ_correspondant: null,
