@@ -45,24 +45,27 @@ export const ContratBlock = ({ job, showMandataireInfo }: { job: ILbaItemPartner
         <strong>Niveau de formation visé en fin de contrat :</strong>{" "}
         {job?.target_diploma_level ? (
           <Stack direction="row" sx={{ flexWrap: "wrap" }}>
-            {job?.target_diploma_level.split(", ").map((d, idx) => (
-              <Typography
-                component="span"
-                key={idx}
-                sx={{
-                  fontSize: "14px",
-                  textAlign: "center",
-                  color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-                  background: "#e3e3fd",
-                  px: fr.spacing("4v"),
-                  borderRadius: "40px",
-                  ml: fr.spacing("2v"),
-                  mb: fr.spacing("2v"),
-                }}
-              >
-                {d}
-              </Typography>
-            ))}
+            {job?.target_diploma_level
+              .substring(0, job?.target_diploma_level.indexOf("("))
+              .split(", ")
+              .map((d, idx) => (
+                <Typography
+                  component="span"
+                  key={idx}
+                  sx={{
+                    fontSize: "14px",
+                    textAlign: "center",
+                    color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+                    background: "#e3e3fd",
+                    px: fr.spacing("4v"),
+                    borderRadius: "40px",
+                    ml: fr.spacing("2v"),
+                    mb: fr.spacing("2v"),
+                  }}
+                >
+                  {d}
+                </Typography>
+              ))}
           </Stack>
         ) : (
           <Typography component="span" sx={{ ml: fr.spacing("2v"), mb: fr.spacing("2v") }}>
