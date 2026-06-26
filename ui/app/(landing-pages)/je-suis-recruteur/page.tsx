@@ -66,7 +66,7 @@ const JeSuisRecruteurPage = async () => {
               <Typography variant="body1" gutterBottom>
                 Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
               </Typography>
-              <Box display={"flex"} flexDirection={"row"} gap={fr.spacing("4v")}>
+              <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
                 <Button linkProps={{ href: ctaDepotHref }} priority="primary">
                   Déposer une offre
                 </Button>
@@ -75,7 +75,7 @@ const JeSuisRecruteurPage = async () => {
                 </Button>
               </Box>
             </Grid>
-            <Grid size={{ md: 6, xs: 12 }} display={"flex"} flexDirection={"column"} justifyContent={"center"}>
+            <Grid size={6} display={{ md: "flex", xs: "none" }} flexDirection={"column"} justifyContent={"center"}>
               <Image
                 fetchPriority="low"
                 src={"/images/je-suis-recruteur/illu-votre-besoin.svg"}
