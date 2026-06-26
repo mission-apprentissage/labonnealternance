@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import type { IDiplomaParam } from "../routes/_params.js"
 
@@ -84,26 +84,11 @@ export const ZJobsPartnersRecruiterApi = z.object({
 })
 
 export const NIVEAUX_DIPLOMES_EUROPEENS = [
-  {
-    value: "3",
-    label: "CAP, BEP (Infrabac)",
-  },
-  {
-    value: "4",
-    label: "Bac, Bac Pro, BP (Bac)",
-  },
-  {
-    value: "5",
-    label: "BTS, DEUST (Bac+2)",
-  },
-  {
-    value: "6",
-    label: "Licence, BUT, Licence Pro (Bac+3)",
-  },
-  {
-    value: "7",
-    label: "Master, titre ingénieur, grande école (Bac+5)",
-  },
+  { value: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  { value: "4", label: NIVEAU_DIPLOME_LABEL["4"] },
+  { value: "5", label: NIVEAU_DIPLOME_LABEL["5"] },
+  { value: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+  { value: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
 ] as const
 
 export const NIVEAUX_DIPLOMES_EUROPEENS_ENUM = Object.fromEntries(NIVEAUX_DIPLOMES_EUROPEENS.map((x) => [x.value, x.value]))

@@ -11,7 +11,7 @@ import { useField, useFormikContext } from "formik"
 import { useParams } from "next/navigation"
 import type React from "react"
 import type { IAppellationsRomes } from "shared"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/recruteur"
 import { JOB_START_TYPE } from "shared/models/job.model"
 import { AUTHTYPE } from "@/common/contants"
 import { debounce } from "@/common/utils/debounce"
@@ -137,11 +137,11 @@ export const FormulaireEditionOffreFields = ({ onRomeChange, section }: { onRome
         <option value="" disabled hidden>
           Sélectionnez un niveau de formation
         </option>
-        <option value="CAP, BEP (Infrabac)">CAP, BEP (Infrabac)</option>
-        <option value="Bac, Bac Pro, BP (Bac)">Bac, Bac Pro, BP (Bac)</option>
-        <option value="BTS, DEUST (Bac+2)">BTS, DEUST (Bac+2)</option>
-        <option value="Licence, BUT, Licence Pro (Bac+3)">Licence, BUT, Licence Pro (Bac+3)</option>
-        <option value="Master, titre ingénieur, grande école (Bac+5)">Master, titre ingénieur, grande école (Bac+5)</option>
+        <option value={NIVEAU_DIPLOME_LABEL["3"]}>{NIVEAU_DIPLOME_LABEL["3"]}</option>
+        <option value={NIVEAU_DIPLOME_LABEL["4"]}>{NIVEAU_DIPLOME_LABEL["4"]}</option>
+        <option value={NIVEAU_DIPLOME_LABEL["5"]}>{NIVEAU_DIPLOME_LABEL["5"]}</option>
+        <option value={NIVEAU_DIPLOME_LABEL["6"]}>{NIVEAU_DIPLOME_LABEL["6"]}</option>
+        <option value={NIVEAU_DIPLOME_LABEL["7"]}>{NIVEAU_DIPLOME_LABEL["7"]}</option>
       </Select>
       <FormControl sx={{ mt: fr.spacing("6v"), width: "100%", maxWidth: { xs: "400px", sm: "100%" } }} error={errors.job_duration ? true : false}>
         <FormLabel sx={{ mb: fr.spacing("2v") }}>Durée du contrat (mois)</FormLabel>
