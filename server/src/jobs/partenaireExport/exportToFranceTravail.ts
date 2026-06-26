@@ -17,7 +17,7 @@ import { logger } from "@/common/logger"
 import { getDepartmentInfos } from "@/common/territoires"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { removeLineBreaks, sanitizeTextField } from "@/common/utils/stringUtils"
 import config from "@/config"
 import type { FTOffre } from "@/jobs/partenaireExport/FTExport.types"
 import { buildLbaUrl } from "@/services/jobs/jobOpportunity/jobOpportunity.service"
@@ -41,6 +41,19 @@ const DIPLOMA_TO_FT_QUALIFICATION: Record<INiveauDiplomeEuropeen, { cle: number;
 }
 
 type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
+
+// Mention salaire portée par les descriptions (le champ FT Off_salaire_cpt_commentaire est limité à Alphanum(36),
+// il ne peut donc pas contenir cette URL). On l'ajoute en fin de Description et Description_entreprise.
+const SALAIRE_MENTION =
+  "Le salaire d'un apprenti est fixé par la réglementation en vigueur. Il dépend de plusieurs facteurs. Un simulateur à jour est disponible à l'adresse https://labonnealternance.apprentissage.beta.gouv.fr/salaire-alternant"
+
+// Concatène un corps de description (déjà nettoyé) avec la mention salaire en garantissant le respect de la longueur max FT.
+// Le corps est tronqué en priorité pour préserver la mention et son URL.
+const withSalaireMention = (body: string, maxLength: number): string => {
+  const suffix = ` ${SALAIRE_MENTION}`
+  const availableForBody = Math.max(0, maxLength - suffix.length)
+  return `${body.slice(0, availableForBody)}${suffix}`.trim()
+}
 
 export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
   const { referentielRome, workplace_address_zipcode, cfa } = offre
@@ -69,7 +82,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Code_rome: romeCode,
     Code_OGR: parseInt(appellation.code_ogr, 10),
     Libelle_metier_OGR: appellation.libelle,
-    Description: sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`),
+    Description: withSalaireMention(removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`)), 4000),
     Off_experience_duree_min: null,
     Off_experience_duree_max: null,
     Exp_cle: "D",
@@ -112,10 +125,11 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     UMO_cle: null,
     UMO_libelle: null,
     Off_salaire_nb_mois: null,
-    Off_salaire_cpt_commentaire: null,
-    Off_travail_hebdo_nb_hh: null,
-    Off_travail_hebdo_nb_mi: null,
-    THO_cle: null,
+    // Champ FT Alphanum(36) : pas d'URL ni d'accents possibles, on garde un libellé court
+    Off_salaire_cpt_commentaire: "Salaire selon barème légal apprenti",
+    Off_travail_hebdo_nb_hh: 35,
+    Off_travail_hebdo_nb_mi: 0,
+    THO_cle: "HAN",
     THO_libelle: null,
     Off_THO_commentaire: null,
     NTC_cle: ntcCle,
@@ -164,9 +178,10 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: offre.workplace_description
-      ? sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`) || null
-      : null,
+    Description_entreprise: withSalaireMention(
+      offre.workplace_description ? removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description}`)) : "",
+      500
+    ),
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -186,7 +201,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Service: null,
     Mode_diffusion: "O",
     Rappel: null,
-    Mode_presentation: null,
+    Mode_presentation: "URL",
     Emploi_metier_isco: null,
     ...addressPart,
     ...override,
@@ -226,7 +241,7 @@ const jobToFTOfferAddress = (job: DBJob): Partial<FTOffre> | null => {
   }
 }
 
-const getJobsToExport = async () => {
+const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = {}) => {
   const minDate = dayjs().subtract(60, "days").toDate()
 
   const jobPartnerFilter: Filter<IJobsPartnersOfferPrivate> = {
@@ -234,6 +249,7 @@ const getJobsToExport = async () => {
     partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
     updated_at: { $gt: minDate },
     offer_target_diploma: { $ne: null },
+    ft_support: ftSupport,
   }
   const jobs = (await getDbCollection("jobs_partners")
     .aggregate([
@@ -287,11 +303,10 @@ const generateCsvFile = async (csvPath: URL, jobs: DBJob[]) => {
   await pipelineAsync(source, transform, stringifier, destination)
 }
 
-// phase de test : les 10 premières offres du flux principal sont utilisées.
-// À terme, filtrer sur un champ dédié dans jobs_partners (à créer).
+// Flux "confiée" : export des offres filtrées via `ft_support` avec un identifiant partenaire dédié.
+// Le fichier contient l'ensemble des offres confiées retournées par `getJobsToExport({ ftSupport: true })`.
 const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
-  const confieeJobs = jobs.slice(0, 10)
-  const source = Readable.from(confieeJobs)
+  const source = Readable.from(jobs)
   const stringifier = stringify({ header: true, encoding: "utf8", delimiter: "|" })
   const destination = createWriteStream(csvPath)
   const transform = new Transform({
@@ -353,12 +368,13 @@ export const exportJobsToFranceTravail = async () => {
   const csvPathConfiee = new URL("./exportFTConfiee.csv", import.meta.url)
   try {
     const jobs = await getJobsToExport()
+    const jobsConfiee = await getJobsToExport({ ftSupport: true })
     await generateCsvFile(csvPath, jobs)
-    await generateCsvFileConfiee(csvPathConfiee, jobs)
+    await generateCsvFileConfiee(csvPathConfiee, jobsConfiee)
     await zipAndSendToFranceTravail(csvPath, csvPathConfiee)
     await notifyToSlack({
       subject: "EXPORT FRANCE TRAVAIL",
-      message: `${jobs.length} offres transmises à France Travail (dont 10 en flux confiée)`,
+      message: `${jobs.length} offres transmises à France Travail (dont ${jobsConfiee.length} en flux confiée)`,
     })
   } catch (err) {
     await notifyToSlack({
