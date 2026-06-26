@@ -42,6 +42,19 @@ const DIPLOMA_TO_FT_QUALIFICATION: Record<INiveauDiplomeEuropeen, { cle: number;
 
 type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
 
+// Mention salaire portée par les descriptions (le champ FT Off_salaire_cpt_commentaire est limité à Alphanum(36),
+// il ne peut donc pas contenir cette URL). On l'ajoute en fin de Description et Description_entreprise.
+const SALAIRE_MENTION =
+  "Le salaire d'un apprenti est fixé par la réglementation en vigueur. Il dépend de plusieurs facteurs. Un simulateur à jour est disponible à l'adresse https://labonnealternance.apprentissage.beta.gouv.fr/salaire-alternant"
+
+// Concatène un corps de description (déjà nettoyé) avec la mention salaire en garantissant le respect de la longueur max FT.
+// Le corps est tronqué en priorité pour préserver la mention et son URL.
+const withSalaireMention = (body: string, maxLength: number): string => {
+  const suffix = ` ${SALAIRE_MENTION}`
+  const availableForBody = Math.max(0, maxLength - suffix.length)
+  return `${body.slice(0, availableForBody)}${suffix}`.trim()
+}
+
 export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
   const { referentielRome, workplace_address_zipcode, cfa } = offre
   const addressPart = jobToFTOfferAddress(offre)
@@ -69,7 +82,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Code_rome: romeCode,
     Code_OGR: parseInt(appellation.code_ogr, 10),
     Libelle_metier_OGR: appellation.libelle,
-    Description: removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`)),
+    Description: withSalaireMention(removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.offer_description}`)), 4000),
     Off_experience_duree_min: null,
     Off_experience_duree_max: null,
     Exp_cle: "D",
@@ -112,7 +125,8 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     UMO_cle: null,
     UMO_libelle: null,
     Off_salaire_nb_mois: null,
-    Off_salaire_cpt_commentaire: "",
+    // Champ FT Alphanum(36) : pas d'URL ni d'accents possibles, on garde un libellé court
+    Off_salaire_cpt_commentaire: "Salaire selon barème légal apprenti",
     Off_travail_hebdo_nb_hh: 35,
     Off_travail_hebdo_nb_mi: 0,
     THO_cle: "HAN",
@@ -164,9 +178,10 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Type_mouvement: "C",
     Date_debut_contrat: formatDate(offre.contract_start),
     Motif_suppression: null,
-    Description_entreprise: offre.workplace_description
-      ? removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description.slice(0, 450)}`)) || null
-      : null,
+    Description_entreprise: withSalaireMention(
+      offre.workplace_description ? removeLineBreaks(sanitizeTextField(`Offre collectée par La bonne alternance : ${offre.workplace_description}`)) : "",
+      500
+    ),
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -186,7 +201,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     Service: null,
     Mode_diffusion: "O",
     Rappel: null,
-    Mode_presentation: null,
+    Mode_presentation: "URL",
     Emploi_metier_isco: null,
     ...addressPart,
     ...override,
