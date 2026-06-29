@@ -17,8 +17,12 @@ export const zApplicationRoutes = {
         .object({
           company_feedback: z.string().nonempty("Veuillez remplir le message"),
           company_recruitment_intention: z.literal(ApplicationIntention.ENTRETIEN),
-          email: z.string().email("Adresse e-mail invalide"),
-          phone: z.string().regex(/^[0-9]{10}$/, "Le numéro de téléphone doit avoir exactement 10 chiffres"),
+          email: z.string().email("Adresse e-mail invalide").or(z.literal("")).optional(),
+          phone: z
+            .string()
+            .regex(/^[0-9]{10}$/, "Le numéro de téléphone doit avoir exactement 10 chiffres")
+            .or(z.literal(""))
+            .optional(),
         })
         .passthrough()
         .or(

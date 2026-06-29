@@ -79,7 +79,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
     )
   }
 
-  const { applicant_first_name, applicant_last_name, applicant_email, applicant_phone, recruiter_email, recruiter_phone, company_name, sent_intention } = data
+  const { applicant_first_name, applicant_last_name, applicant_email, applicant_phone, recruiter_email, company_name, sent_intention } = data
   const alreadySent = Boolean(sent_intention)
 
   return (
@@ -141,7 +141,6 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
             <IntentionPageForm
               onSubmit={(formValues) => sendIntentionCommentMutation.mutate(formValues)}
               email={recruiter_email}
-              phone={recruiter_phone}
               company_recruitment_intention={company_recruitment_intention}
               onStateChange={setFormState}
             />
@@ -212,12 +211,12 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
                 Annuler l'envoi
               </Button>
               <Button
-                aria-label="Envoyer le message au candidat"
+                aria-label="Envoyer maintenant le message au candidat"
                 onClick={() => (document.getElementById("intention-form") as HTMLFormElement | null)?.requestSubmit()}
                 disabled={!formState.isValid || formState.isSubmitting}
               >
                 <DsfrIcon name="fr-icon-mail-send-line" size={16} />
-                Envoyer le message
+                Envoyer maintenant
               </Button>
             </>
           ) : (

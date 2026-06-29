@@ -96,15 +96,17 @@
               ✅ Suivez les instructions proposées par le recruteur pour poursuivre le processus de candidature.
               <br />
               ✅ Préparez-vous pour un éventuel entretien.
-              <br />
-
-              <br />
+              <br /><br />
+              
+              <% if(data.email) { %>
               Email :
               <br />
               <span style="font-weight: 700;">
                 <%= data.email %>
               </span>
               <br /><br />
+              <% } %>
+              
               <% if(data.phone) { %>
               Téléphone :
               <br />
@@ -112,10 +114,7 @@
                 <%= data.phone %>
               </span>
               <br /><br />
-              <% } %>
-
-
-              
+              <% } %>              
               
             </mj-text>
           </mj-column>

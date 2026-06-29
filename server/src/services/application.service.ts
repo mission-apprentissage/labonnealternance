@@ -685,8 +685,8 @@ export const sendMailToApplicant = async ({
 }: {
   application: IApplication
   applicant: IApplicant
-  email: string | null
-  phone: string | null
+  email: string | null | undefined
+  phone: string | null | undefined
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
   refusal_reasons: RefusalReasons[]
@@ -703,7 +703,7 @@ export const sendMailToApplicant = async ({
     case ApplicationIntention.ENTRETIEN: {
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
-        cc: email!,
+        cc: email || undefined,
         subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
@@ -713,7 +713,7 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: sanitizeTextField(removeUrlsFromText(phone)),
+          phone: phone ? sanitizeTextField(removeUrlsFromText(phone)) : null,
           comment: prepareMessageForMail(sanitizeTextField(company_feedback)),
         },
       })
@@ -1355,8 +1355,8 @@ export const sendRecruiterIntention = async ({
   application_id: ObjectId
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
-  email: string
-  phone: string
+  email: string | undefined
+  phone: string | undefined
   refusal_reasons: RefusalReasons[]
 }) => {
   const application = await getDbCollection("applications").findOne({ _id: application_id })
