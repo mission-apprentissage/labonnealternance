@@ -8,6 +8,12 @@ import type { CSSProperties } from "react"
 
 import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 
+// On ne compare que les champs fonctionnels : l'option de métier issue de l'autocomplete
+// porte une propriété `group` absente des initialValues reconstruits depuis l'URL, qui ne
+// doit pas être considérée comme une modification.
+const metierKey = (metier: IRechercheForm["metier"]) => (metier ? JSON.stringify({ type: metier.type, label: metier.label, romes: metier.romes }) : null)
+const lieuKey = (lieu: IRechercheForm["lieu"]) => (lieu ? JSON.stringify({ label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude }) : null)
+
 export function RechercheSubmitButton({ children, style, forceMobileStyle = false }: { children?: React.ReactNode; style?: CSSProperties; forceMobileStyle?: boolean }) {
   const { isSubmitting, errors, touched, values, initialValues } = useFormikContext<IRechercheForm>()
 
@@ -17,8 +23,7 @@ export function RechercheSubmitButton({ children, style, forceMobileStyle = fals
   // Les autres champs (rayon, diplôme, types d'emploi, handicap, catégories) filtrent
   // la vue / relancent l'API directement. On garde donc le bouton désactivé tant que
   // ni le métier ni le lieu n'ont été modifiés par rapport à la recherche courante.
-  const isModified =
-    JSON.stringify(values.metier ?? null) !== JSON.stringify(initialValues.metier ?? null) || JSON.stringify(values.lieu ?? null) !== JSON.stringify(initialValues.lieu ?? null)
+  const isModified = metierKey(values.metier) !== metierKey(initialValues.metier) || lieuKey(values.lieu) !== lieuKey(initialValues.lieu)
 
   return (
     <Box
