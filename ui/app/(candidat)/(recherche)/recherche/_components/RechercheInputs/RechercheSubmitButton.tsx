@@ -6,11 +6,19 @@ import { useFormikContext } from "formik"
 import type React from "react"
 import type { CSSProperties } from "react"
 
-export function RechercheSubmitButton({ children, style, forceMobileStyle = false }: { children?: React.ReactNode; style?: CSSProperties; forceMobileStyle?: boolean }) {
-  const formikContext = useFormikContext()
-  const { isSubmitting, errors, touched } = formikContext
+import type { IRechercheForm } from "@/app/_components/RechercheForm/RechercheForm"
 
-  const hasError = Object.values(errors as object).some(([key, value]) => Boolean(value) && touched[key])
+export function RechercheSubmitButton({ children, style, forceMobileStyle = false }: { children?: React.ReactNode; style?: CSSProperties; forceMobileStyle?: boolean }) {
+  const { isSubmitting, errors, touched, values, initialValues } = useFormikContext<IRechercheForm>()
+
+  const hasError = (Object.keys(errors) as (keyof IRechercheForm)[]).some((key) => Boolean(errors[key]) && Boolean(touched[key]))
+
+  // Seuls le métier et le lieu déclenchent une nouvelle recherche via le bouton.
+  // Les autres champs (rayon, diplôme, types d'emploi, handicap, catégories) filtrent
+  // la vue / relancent l'API directement. On garde donc le bouton désactivé tant que
+  // ni le métier ni le lieu n'ont été modifiés par rapport à la recherche courante.
+  const isModified =
+    JSON.stringify(values.metier ?? null) !== JSON.stringify(initialValues.metier ?? null) || JSON.stringify(values.lieu ?? null) !== JSON.stringify(initialValues.lieu ?? null)
 
   return (
     <Box
@@ -29,7 +37,7 @@ export function RechercheSubmitButton({ children, style, forceMobileStyle = fals
       }}
     >
       <Button
-        disabled={isSubmitting || hasError}
+        disabled={isSubmitting || hasError || !isModified}
         iconPosition="left"
         type="submit"
         iconId="fr-icon-search-line"
