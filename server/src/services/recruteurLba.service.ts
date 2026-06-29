@@ -1,4 +1,5 @@
 import { badRequest, internal, notFound } from "@hapi/boom"
+import { escapeRegExp } from "lodash-es"
 import type { Document, Filter } from "mongodb"
 import { ObjectId } from "mongodb"
 import type { IApplication, IRecruteurLbaUpdateEvent } from "shared"
@@ -7,7 +8,7 @@ import { LBA_ITEM_TYPE, LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { ILbaCompanyForContactUpdate } from "shared/routes/updateLbaCompany.routes"
+import type { ILbaCompanyForAdminSearch, ILbaCompanyForContactUpdate, ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
 import { encryptMailWithIV } from "@/common/utils/encryptString"
 import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
@@ -574,4 +575,54 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
     sentryCaptureException(error)
     throw internal("Erreur de chargement des informations de la société")
   }
+}
+
+/**
+ * Recherche ciblée des recruteurs issus de l'algo (collection jobs_partners, partner_label = RECRUTEURS_LBA)
+ * pour le back-office admin. Recherche sur un seul champ : égalité exacte pour le siret,
+ * sinon regex insensible à la casse. Résultats dédupliqués par siret.
+ */
+export const searchLbaCompaniesForAdmin = async ({ search, field }: { search: string; field: ILbaCompanySearchField }): Promise<ILbaCompanyForAdminSearch[]> => {
+  const fieldFilter = field === "workplace_siret" ? { workplace_siret: search } : { [field]: { $regex: escapeRegExp(search), $options: "i" } }
+  const documents = await getDbCollection("jobs_partners")
+    .aggregate<ILbaCompanyForAdminSearch>([
+      {
+        $match: {
+          partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+          ...fieldFilter,
+        },
+      },
+      { $sort: { created_at: -1 } },
+      {
+        $group: {
+          _id: "$workplace_siret",
+          siret: { $first: "$workplace_siret" },
+          raison_sociale: { $first: "$workplace_legal_name" },
+          enseigne: { $first: "$workplace_brand" },
+          opco: { $first: "$workplace_opco" },
+          address: { $first: "$workplace_address_label" },
+          email: { $first: "$apply_email" },
+          phone: { $first: "$apply_phone" },
+          created_at: { $first: "$created_at" },
+        },
+      },
+      { $sort: { raison_sociale: 1 } },
+      { $limit: 100 },
+      {
+        $project: {
+          _id: 0,
+          siret: 1,
+          raison_sociale: 1,
+          enseigne: 1,
+          opco: 1,
+          address: 1,
+          email: 1,
+          phone: 1,
+          created_at: 1,
+        },
+      },
+    ])
+    .toArray()
+
+  return documents
 }
