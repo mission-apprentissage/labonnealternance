@@ -148,19 +148,18 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               <Typography>
-                "<span dangerouslySetInnerHTML={{ __html: ApplicationIntentionDefaultText[company_recruitment_intention].replaceAll("\r\n", "<br />") }} />"
+                <span dangerouslySetInnerHTML={{ __html: ApplicationIntentionDefaultText[company_recruitment_intention].replaceAll("\r\n", "<br />") }} />
               </Typography>
               {company_recruitment_intention === ApplicationIntention.ENTRETIEN && (
                 <>
                   <Typography>
-                    Email :
+                    Votre e-mail :
                     <br />
-                    <strong>{recruiter_email}</strong>
-                  </Typography>
-                  <Typography>
-                    Téléphone :
+                    <Typography component="span" sx={{ fontSize: "12px", color: "#666" }}>
+                      Vous serez en copie de la réponse envoyée
+                    </Typography>
                     <br />
-                    <strong>{recruiter_phone}</strong>
+                    {recruiter_email}
                   </Typography>
                 </>
               )}
