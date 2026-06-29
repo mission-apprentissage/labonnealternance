@@ -6,6 +6,7 @@ exports[`partnerJob.service > should execute query with full data 1`] = `
     {
       "company": {
         "elligibleHandicap": false,
+        "isGeiq": false,
         "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {
@@ -87,6 +88,7 @@ exports[`partnerJob.service > should execute query with minimalData 1`] = `
     {
       "company": {
         "elligibleHandicap": false,
+        "isGeiq": false,
         "mandataire": false,
         "name": "Enseigne inconnue",
         "opco": {

@@ -106,6 +106,7 @@ const zRoutesPost3 = {
   ...zJobsRoutesV2.post,
   ...zReportedCompanyRoutes.post,
   ...zJobsRoutesV3.post,
+  ...zProcessorAdminRoutes.post,
 }
 
 const zRoutesPost = {

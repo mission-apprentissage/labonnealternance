@@ -1,4 +1,5 @@
 import { mockApiEntreprise } from "@tests/mocks/mockApiEntreprise"
+import { mockGeolocalisation } from "@tests/mocks/mockGeolocalisation"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { omit } from "lodash-es"
 import { ObjectId } from "mongodb"
@@ -24,6 +25,7 @@ describe("createJob", () => {
 
   beforeEach(async () => {
     const mockApiEntrepriseInstance = mockApiEntreprise.infosEntreprise()
+    const mockGeolocalisationInstance = mockGeolocalisation()
 
     const email = "entreprise@mail.fr"
     entreprise = generateEntrepriseFixture()
@@ -44,6 +46,7 @@ describe("createJob", () => {
 
     return async () => {
       mockApiEntrepriseInstance.persist(false)
+      mockGeolocalisationInstance.persist(false)
       await getDbCollection("userswithaccounts").deleteMany({})
       await getDbCollection("entreprises").deleteMany({})
       await getDbCollection("rolemanagements").deleteMany({})
@@ -82,6 +85,7 @@ describe("createJob", () => {
       job_employer_description: fixture.job_employer_description,
       offer_title_custom: fixture.offer_title_custom,
       to_applicant_questions: fixture.to_applicant_questions,
+      ft_support: fixture.ft_support ?? null,
     }
   }
 

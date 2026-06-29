@@ -356,6 +356,9 @@ export const getJobWithRomeDetail = async (id: string): Promise<IJobWithRomeDeta
     // @ts-expect-error
     delete jobOpt.rome_detail._id
   }
+  if (jobOpt) {
+    jobOpt.ft_support = jobPartner.ft_support ?? null
+  }
   return jobOpt
 }
 
@@ -612,6 +615,7 @@ export const patchOffre = async (id: ObjectId, payload: PatchOffreBody): Promise
     workplace_description: job.job_employer_description !== undefined ? sanitizeTextField(job.job_employer_description, true) || null : existingJob.workplace_description,
     to_applicant_questions: job.to_applicant_questions,
     contract_rythm: job.job_rythm,
+    ...(job.ft_support !== undefined && { ft_support: job.ft_support }),
   }
 
   await getDbCollection("jobs_partners").updateOne({ _id: id }, { $set: jobPartnerUpdate })
@@ -1239,6 +1243,7 @@ async function jobCreateToJobsPartner({
     duplicates: [],
     apply_recipient_id: newId.toString(),
     to_applicant_questions: job.to_applicant_questions,
+    ft_support: job.ft_support ?? false,
   }
   return jobPartner
 }
@@ -1318,6 +1323,7 @@ export function jobPartnersToRecruiter(
       offer_title_custom: customTitle,
       candidatures: jobPartner.application_count ?? 0,
       to_applicant_questions: jobPartner.to_applicant_questions,
+      ft_support: jobPartner.ft_support ?? false,
     }
     return ijob
   })
