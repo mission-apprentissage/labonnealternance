@@ -1,12 +1,12 @@
 import type { Jsonify } from "type-fest"
 import { zObjectId } from "zod-mongodb-schema"
 
-import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE, TRAINING_RYTHM } from "../constants/recruteur.js"
+import { NIVEAUX_POUR_LBA, TRAINING_CONTRACT_TYPE } from "../constants/recruteur.js"
 import dayjs from "../helpers/dayjs.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
 import { assertUnreachable } from "../utils/assertUnreachable.js"
-import { detectUrlAndEmails } from "../utils/detectUrlAndEmails.js"
+import { detectUrlAndEmails, detectUrls } from "../utils/detectUrlAndEmails.js"
 
 import { ZReferentielRomeForJob, ZRomeCompetence } from "./rome.model.js"
 
@@ -23,6 +23,13 @@ export enum JOB_STATUS_ENGLISH {
   ANNULEE = "Cancelled",
   EN_ATTENTE = "Pending",
 }
+
+export const JOB_START_TYPE = {
+  DES_QUE_POSSIBLE: "des_que_possible",
+  PRECISE_DATE: "precise_date",
+} as const
+
+export type JOB_START_TYPE = (typeof JOB_START_TYPE)[keyof typeof JOB_START_TYPE]
 
 export function translateJobStatus(status: JOB_STATUS): JOB_STATUS_ENGLISH | undefined {
   switch (status) {
@@ -72,6 +79,8 @@ export const ZJobFields = z
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
     job_level_label: extensions.buildEnum(NIVEAUX_POUR_LBA).nullish().describe("Niveau de formation visé en fin de stage"),
     job_start_date: z.coerce.date().describe("Date de début de l'alternance"),
+    job_start_type: extensions.buildEnum(JOB_START_TYPE).nullish().describe("Mode de démarrage du contrat"),
+    job_start_date_flexible: z.boolean().nullish().describe("Indique si la date de début est flexible"),
     job_description: z.string().nullish().describe("Description de l'offre d'alternance - minimum 30 charactères si rempli"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance - minimum 30 charactères si rempli"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
@@ -91,7 +100,12 @@ export const ZJobFields = z
     is_disabled_elligible: z.boolean().nullish().default(false).describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().default(1).describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().min(6).max(36).nullish().describe("Durée du contrat en mois"),
-    job_rythm: extensions.buildEnum(TRAINING_RYTHM).nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),
+    job_rythm: z
+      .string()
+      .max(100)
+      .refine((value) => detectUrls(value).length === 0, "Les URLs sont interdites")
+      .nullish()
+      .describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
     custom_job_title: z.string().nullish().describe("Titre personnalisée de l'offre"), // TODO: à supprimer
@@ -107,6 +121,7 @@ export const ZJobFields = z
       .refine((value: string | null | undefined) => (value ? detectUrlAndEmails(value).length === 0 : true), "Les urls et les emails sont interdits")
       .describe("Titre de l'offre saisi par le recruteur"),
     to_applicant_questions: z.array(z.string()).max(3, "Sélectionnez 3 questions au maximum").nullish().describe("Questions posées par le recruteur pour le candidat"),
+    ft_support: z.boolean().nullish().default(false).describe("Offre transmise à France Travail"),
   })
   .strict()
 
@@ -154,9 +169,13 @@ export const ZJobCreate = ZJobFields.pick({
   competences_rome: true,
   offer_title_custom: true,
   to_applicant_questions: true,
+  ft_support: true,
+  job_start_type: true,
+  job_start_date_flexible: true,
 })
   .extend({
     job_start_date: ZJobStartDateCreate(),
+    job_start_type: extensions.buildEnum(JOB_START_TYPE),
   })
   .strict()
 

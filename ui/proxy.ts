@@ -58,7 +58,9 @@ const verifyAuthentication = async (token: string, request: NextRequest) => {
 }
 
 const redirectAfterAuthentication = async (user: IUserRecruteurPublic, request: NextRequest) => {
-  const path = PAGES.dynamic.backHome({ userType: user.type }).getPath()
+  const redirectQueryParam = new URL(request.url).searchParams.get("redirect")
+  const isSafe = redirectQueryParam?.startsWith("/") && !redirectQueryParam.startsWith("//") && !redirectQueryParam.includes("\\")
+  const path = isSafe ? redirectQueryParam : PAGES.dynamic.backHome({ userType: user.type }).getPath()
   return NextResponse.redirect(new URL(path, request.url))
 }
 

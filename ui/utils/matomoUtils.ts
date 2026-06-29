@@ -19,6 +19,7 @@ export const MATOMO_EVENTS = {
   SMART_APPLY_CONFIRMED: "smart_apply_confirmed",
   JOB_CREATION_STARTED: "job_creation_started",
   JOB_CREATION_COMPLETED: "job_creation_completed",
+  JOB_CREATION_FT_PARTNERSHIP_STEP: "job_creation_ft_partnership_step",
 }
 
 export function getMatomoJobOfferType(ideaType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE | "non_renseigné" {

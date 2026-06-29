@@ -54,3 +54,10 @@ export const detectUrlAndEmails = (str: string): { index: number; length: number
   }
   return result
 }
+
+export const detectUrls = (str: string): { index: number; length: number }[] => {
+  return detectUrlAndEmails(str).filter(({ index, length }) => {
+    const matched = str.substring(index, index + length)
+    return !matched.includes("@") || matched.includes("://")
+  })
+}

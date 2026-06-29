@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { detectUrlAndEmails } from "./detectUrlAndEmails.js"
+import { detectUrlAndEmails, detectUrls } from "./detectUrlAndEmails.js"
 
 describe("detectUrlAndEmails", () => {
   const toBeDetected = [
@@ -35,5 +35,17 @@ describe("detectUrlAndEmails", () => {
   const notToBeDetected = ["coiffeur H/M", "coiffeur.se", "coiffeur.ses", "agriculteur.trice", "employé.es", "employé.e"]
   it.each(notToBeDetected)("should not be detected: %s", (str) => {
     expect(detectUrlAndEmails(str)).toEqual([])
+  })
+})
+
+describe("detectUrls", () => {
+  it("should detect urls only", () => {
+    const str = "website www.domain.fr and mail@mail.fr"
+    expect(detectUrls(str)).toEqual([{ index: 8, length: 13 }])
+  })
+
+  it("should not detect standalone emails", () => {
+    const str = "contact me at mail@mail.fr"
+    expect(detectUrls(str)).toEqual([])
   })
 })
