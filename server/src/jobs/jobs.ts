@@ -34,7 +34,7 @@ import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
-import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
+import { exportJobsToFranceTravail, exportJobsToFranceTravailCsvOnly } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
@@ -205,7 +205,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
+            handler: config.env === "production" ? async () => exportJobsToFranceTravailCsvOnly() : async () => Promise.resolve(0),
             tag: "main",
           },
           "export des offres LBA sur S3": {

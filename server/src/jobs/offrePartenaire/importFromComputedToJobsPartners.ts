@@ -101,6 +101,7 @@ export const importFromComputedToJobsPartners = async (addedMatchFilter?: Filter
               stats_detail_view: 0,
               stats_postuler: 0,
               stats_search_view: 0,
+              ft_support: false,
             },
           },
           { upsert: true }

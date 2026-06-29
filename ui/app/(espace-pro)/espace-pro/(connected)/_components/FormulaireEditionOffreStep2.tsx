@@ -25,7 +25,19 @@ const ZStep2Form = ZJobFields.pick({
 
 type IStep2Form = z.output<typeof ZStep2Form>
 
-export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { offre?: IJob; onSubmit?: (values: any) => void; onCancel: () => void }) => {
+export const FormulaireEditionOffreStep2 = ({
+  offre,
+  onSubmit,
+  onCancel,
+  isFtEligible = true,
+  totalSteps = 3,
+}: {
+  offre?: IJob
+  onSubmit?: (values: any) => void
+  onCancel: () => void
+  isFtEligible?: boolean
+  totalSteps?: number
+}) => {
   return (
     <Formik<IStep2Form>
       validateOnMount
@@ -40,36 +52,24 @@ export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { off
         <>
           <Typography
             component="h1"
-            sx={(theme) => ({
+            sx={{
               fontWeight: 700,
               color: "#000091",
               mb: fr.spacing("6v"),
-              [theme.breakpoints.up("xs")]: {
-                fontSize: "18px !important",
-                lineHeight: "24px !important",
-              },
-              [theme.breakpoints.up("md")]: {
-                fontSize: "20px !important",
-                lineHeight: "28px !important",
-              },
-            })}
+              fontSize: { xs: "18px !important", md: "20px !important" },
+              lineHeight: { xs: "24px !important", md: "28px !important" },
+            }}
           >
-            Étape 2/2 : Questions pour les candidats
+            Étape 2/{totalSteps} : Questions pour les candidats
           </Typography>
           <Typography
             component="h2"
-            sx={(theme) => ({
+            sx={{
               fontWeight: 700,
               mb: fr.spacing("6v"),
-              [theme.breakpoints.up("xs")]: {
-                fontSize: "22px !important",
-                lineHeight: "28px !important",
-              },
-              [theme.breakpoints.up("md")]: {
-                fontSize: "32px !important",
-                lineHeight: "40px !important",
-              },
-            })}
+              fontSize: { xs: "22px !important", md: "32px !important" },
+              lineHeight: { xs: "28px !important", md: "40px !important" },
+            }}
           >
             Vos questions pour les candidats (Facultatif)
           </Typography>
@@ -89,7 +89,7 @@ export const FormulaireEditionOffreStep2 = ({ offre, onSubmit, onCancel }: { off
           >
             Vous avez une question à suggérer ? Écrivez-nous à <a href="mailto:contact@labonnealternance.apprentissage.beta.fr">contact@labonnealternance.apprentissage.beta.fr</a>
           </Typography>
-          <Buttons offre={offre} onCancel={onCancel} />
+          <Buttons offre={offre} onCancel={onCancel} isFtEligible={isFtEligible} />
         </>
       )}
     </Formik>
@@ -143,7 +143,7 @@ const InfoText = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) => {
+const Buttons = ({ offre, onCancel, isFtEligible }: { offre?: IJob; onCancel: () => void; isFtEligible: boolean }) => {
   const { isValid, isSubmitting, submitForm } = useFormikContext<any>()
 
   return (
@@ -151,13 +151,19 @@ const Buttons = ({ offre, onCancel }: { offre?: IJob; onCancel: () => void }) =>
       sx={{ display: "flex", justifyContent: "flex-end", borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`, pt: fr.spacing("6v"), mt: fr.spacing("6v") }}
     >
       <Box sx={{ mr: fr.spacing("4v") }}>
-        <Button className="fr-btn--secondary" onClick={() => onCancel()}>
+        <Button aria-label="Retour vers l'étape 1 du formulaire de dépôt d'offre" className="fr-btn--secondary" onClick={() => onCancel()}>
           Retour
         </Button>
       </Box>
-      <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
-        {offre?._id ? "Mettre à jour" : "Créer l'offre"}
-      </Button>
+      {isFtEligible ? (
+        <Button disabled={!isValid || isSubmitting} aria-label="Continuer vers l'étape 3 du formulaire de dépôt d'offre" onClick={submitForm} data-testid="continuer-creer-offre">
+          Continuer
+        </Button>
+      ) : (
+        <Button disabled={!isValid || isSubmitting} onClick={submitForm} data-testid="creer-offre">
+          {offre?._id ? "Continuer et Mettre à jour l'offre" : "Continuer et Créer l'offre"}
+        </Button>
+      )}
     </Box>
   )
 }

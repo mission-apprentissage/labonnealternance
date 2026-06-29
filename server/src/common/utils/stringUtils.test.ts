@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { isNormalizedStringInSetOrArray, sanitizeTextField } from "./stringUtils"
+import { isNormalizedStringInSetOrArray, removeLineBreaks, sanitizeTextField } from "./stringUtils"
 
 describe("sanitizeTextField", () => {
   describe("Edge cases and null handling", () => {
@@ -243,6 +243,68 @@ describe("sanitizeTextField", () => {
     it("should handle numbers and special notation", () => {
       expect(sanitizeTextField("1 + 1 = 2", false)).toBe("1 + 1 = 2")
       expect(sanitizeTextField("x² + y² = z²", false)).toBe("x² + y² = z²")
+    })
+  })
+})
+
+describe("removeLineBreaks", () => {
+  describe("null/undefined/empty handling", () => {
+    it("should return empty string for null", () => {
+      expect(removeLineBreaks(null)).toBe("")
+    })
+    it("should return empty string for undefined", () => {
+      expect(removeLineBreaks(undefined)).toBe("")
+    })
+    it("should return empty string for empty string", () => {
+      expect(removeLineBreaks("")).toBe("")
+    })
+  })
+
+  describe("line break removal", () => {
+    it("should replace \\n with a single space", () => {
+      expect(removeLineBreaks("line1\nline2")).toBe("line1 line2")
+    })
+    it("should replace \\r\\n with a single space", () => {
+      expect(removeLineBreaks("line1\r\nline2")).toBe("line1 line2")
+    })
+    it("should replace lone \\r with a single space", () => {
+      expect(removeLineBreaks("line1\rline2")).toBe("line1 line2")
+    })
+    it("should collapse consecutive line breaks into a single space", () => {
+      expect(removeLineBreaks("line1\n\n\nline2")).toBe("line1 line2")
+      expect(removeLineBreaks("line1\r\n\r\nline2")).toBe("line1 line2")
+    })
+    it("should handle text with many lines (CSV-breaking content)", () => {
+      const multiline = "Poste à pourvoir :\n- Mission 1\n- Mission 2\n\nProfil recherché"
+      expect(removeLineBreaks(multiline)).toBe("Poste à pourvoir : - Mission 1 - Mission 2 Profil recherché")
+    })
+  })
+
+  describe("control & whitespace characters", () => {
+    it("should replace tabs and vertical whitespace with a single space", () => {
+      expect(removeLineBreaks("col1\tcol2\tcol3")).toBe("col1 col2 col3")
+      expect(removeLineBreaks("a\vb\fc")).toBe("a b c")
+    })
+    it("should strip non-printable control characters", () => {
+      expect(removeLineBreaks("text here")).toBe("text here")
+    })
+    it("should replace Unicode line/paragraph separators", () => {
+      expect(removeLineBreaks("line1 line2 line3")).toBe("line1 line2 line3")
+    })
+    it("should collapse non-breaking spaces and multiple spaces", () => {
+      expect(removeLineBreaks("a  b   c")).toBe("a b c")
+    })
+  })
+
+  describe("trimming and preservation", () => {
+    it("should trim leading/trailing whitespace and line breaks", () => {
+      expect(removeLineBreaks("\n\t  hello  \n\t")).toBe("hello")
+    })
+    it("should leave clean single-line text unchanged", () => {
+      expect(removeLineBreaks("Offre collectée par La bonne alternance")).toBe("Offre collectée par La bonne alternance")
+    })
+    it("should preserve accents and punctuation", () => {
+      expect(removeLineBreaks("Développeur·euse — CDI, 35h/semaine.")).toBe("Développeur·euse — CDI, 35h/semaine.")
     })
   })
 })
