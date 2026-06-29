@@ -41,7 +41,6 @@ import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/impor
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { processEtudiant } from "./offrePartenaire/etudiant/processEtudiant"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
-import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { fillLbaUrl, renewLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
@@ -59,6 +58,7 @@ import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStan
 import {
   cancelRemovedJobsPartnersFlux,
   detectDuplicateJobPartnersFlux,
+  fillComputedJobsPartnersFlux,
   processComputedAndImportToJobPartners,
   validateComputedJobPartnersFlux,
 } from "./offrePartenaire/processJobPartners"
@@ -272,8 +272,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
-    fct: fillComputedJobsPartners,
-    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
+    fct: fillComputedJobsPartnersFlux,
+    description: "Enrichit la collection computed_jobs_partners (partenaires du flux uniquement) avec les données provenant d'API externes",
   },
   // GLOBAL ENRICHMENT FLOW FOR JOBS PARTNERS
   {
