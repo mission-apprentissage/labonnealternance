@@ -19,7 +19,6 @@ import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { sessionStorageGet, sessionStorageSet } from "@/utils/localStorage"
 import { CandidatureLbaFileDropzone } from "./CandidatureLbaFileDropzone"
-import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
 import type { IApplicationSchemaInitValues } from "./services/getSchema"
 import { ApplicationFormikSchema, getInitialSchemaValues } from "./services/getSchema"
 
@@ -175,10 +174,6 @@ export const CandidatureLbaModalBody = ({
                   </Box>
                 </>
               )}
-
-              <Box sx={{ mt: fr.spacing("8v") }}>
-                <CandidatureLbaMandataireMessage item={item} />
-              </Box>
             </Box>
           </Box>
         </Box>

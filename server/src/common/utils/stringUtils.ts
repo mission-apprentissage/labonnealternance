@@ -13,6 +13,25 @@ export const sanitizeTextField = (text: string | null | undefined, keepFormat: b
   return sanitizeHtml(decodedText, sanitizeOptions)
 }
 
+/**
+ * Aplatit un texte sur une seule ligne : supprime sauts de ligne, tabulations et caractères de
+ * contrôle, puis normalise les espaces. À utiliser pour les champs exportés en CSV / flux à plat
+ * (ex: France Travail) afin que des retours à la ligne dans `description` / `description_entreprise`
+ * ne cassent pas le fichier généré.
+ */
+export const removeLineBreaks = (text: string | null | undefined): string => {
+  if (!text) return ""
+  return (
+    text
+      // caractères de contrôle C0/C1 + DEL (inclut \r \n \t \v \f) et séparateurs Unicode ligne/paragraphe (U+2028/U+2029)
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: suppression volontaire des caractères de contrôle pour les flux à plat (CSV France Travail)
+      .replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]+/g, " ")
+      // espaces multiples (y compris insécables U+00A0) -> un seul espace
+      .replace(/\s+/g, " ")
+      .trim()
+  )
+}
+
 export const isNormalizedStringInSetOrArray = (array: string[]) => {
   const getFct = getNormalizedStringInSetOrArray(array)
 
