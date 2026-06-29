@@ -1,12 +1,12 @@
 import { givenSomeComputedJobPartners } from "@tests/fixture/givenSomeComputedJobPartners"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import nock from "nock"
+import GEIQ_WHITELIST from "shared/constants/geiq"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { JOB_PARTNER_BUSINESS_ERROR } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { blockJobsPartnersFromCfaList, getBlockedCfaMention } from "./blockJobsPartnersFromCfaList"
-import { GEIQ_WHITELIST } from "./geiqWhitelist"
 
 describe("blockJobsPartnersFromCfaListTask", () => {
   useMongo()

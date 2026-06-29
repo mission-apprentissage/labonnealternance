@@ -81,8 +81,8 @@ export const zFTOffre = z.object({
   Off_salaire_cpt_commentaire: z.string().max(36).nullable().optional().describe("Complément de salaire"),
 
   // ── Horaire ─────────────────────────────────────────────────────────────────
-  Off_travail_hebdo_nb_hh: z.number().int().nonnegative().nullable().optional().describe("Durée hebdomadaire de travail — heures"),
-  Off_travail_hebdo_nb_mi: z.number().int().nonnegative().nullable().optional().describe("Durée hebdomadaire de travail — minutes"),
+  Off_travail_hebdo_nb_hh: z.number().int().min(0).max(35).describe("Durée hebdomadaire de travail — heures"),
+  Off_travail_hebdo_nb_mi: z.number().int().min(0).max(59).describe("Durée hebdomadaire de travail — minutes"),
   THO_cle: z.string().max(3).nullable().optional().describe("Type d'horaire de travail (clé)"),
   THO_libelle: z.string().max(100).nullable().optional().describe("Type d'horaire de travail (libellé)"),
   Off_THO_commentaire: z.string().max(36).nullable().optional().describe("Complément horaire de travail"),
@@ -170,7 +170,11 @@ export const zFTOffre = z.object({
   Service: z.enum(["1", "2"]).nullable().optional().describe("Service (non utilisé) : 1 ou 2"),
   Mode_diffusion: z.enum(["N", "O"]).nullable().optional().describe("Consentement à la diffusion : O (oui) ou N (non)"),
   Rappel: z.enum(["1", "2"]).nullable().optional().describe("Rappel (non utilisé) : 1 ou 2"),
-  Mode_presentation: z.enum(["TEL", "MEL", "ECV", "PDE", "PEL"]).nullable().optional().describe("Mode de présentation des candidats (non utilisé) : TEL, MEL, ECV, PDE ou PEL"),
+  Mode_presentation: z
+    .enum(["TEL", "MEL", "ECV", "PDE", "PEL", "URL"])
+    .nullable()
+    .optional()
+    .describe("Mode de présentation des candidats (non utilisé) : TEL, MEL, ECV, PDE, PEL ou URL"),
   Emploi_metier_isco: z.string().max(4).nullable().optional().describe("Emploi métier ISCO (non utilisé)"),
 })
 

@@ -52,7 +52,7 @@ export function LbaItemTags({
   } else if (ideaType === LBA_ITEM_TYPE_OLD.FORMATION) {
     const isCfa = isCfaEntreprise(company?.siret, company?.headquarter?.siret)
     tags.push(isCfa ? <TagCfaDEntreprise key="cfa d entreprise" /> : <TagFormation key="formation" />)
-  } else if (company?.mandataire) {
+  } else if (company?.mandataire || company?.isGeiq) {
     tags.push(<TagEmploiFormation key="tag emploi formation" />)
   } else {
     tags.push(<TagOffreEmploi key="offre emploi" />)
