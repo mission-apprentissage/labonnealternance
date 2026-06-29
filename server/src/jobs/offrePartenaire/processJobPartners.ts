@@ -17,6 +17,10 @@ export const cancelRemovedJobsPartnersFlux = async () => {
   await cancelRemovedJobsPartners({ partner_label: { $in: jobPartnersByFlux } })
 }
 
+export const fillComputedJobsPartnersFlux = async () => {
+  await fillComputedJobsPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } }, shouldNotifySlack: true })
+}
+
 export const detectDuplicateJobPartnersFlux = async () => {
   await detectDuplicateJobPartners({ addedMatchFilter: { partner_label: { $in: jobPartnersByFlux } }, shouldNotifySlack: true })
 }
