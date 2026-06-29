@@ -704,7 +704,7 @@ export const sendMailToApplicant = async ({
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
         cc: email || undefined,
-        subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
+        subject: `Objet : Suite donnée à votre candidature - ${application.company_name}${partner ? ` via ${partner}` : ""}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
