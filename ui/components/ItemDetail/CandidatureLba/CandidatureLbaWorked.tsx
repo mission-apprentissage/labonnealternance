@@ -22,7 +22,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
   const company = item.company?.name
   const ideaType = item.ideaType
   return (
-    <Box sx={{ p: fr.spacing("4v"), pb: fr.spacing("8v") }}>
+    <Box sx={{ p: fr.spacing("4v"), pb: fr.spacing("8v"), maxWidth: "708px" }}>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
         <Box sx={{ ml: fr.spacing("4v") }}>
@@ -31,7 +31,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
       </Box>
       <Typography sx={{ fontSize: "18px" }}>
         Un e-mail de confirmation vous a été envoyé sur votre boite e-mail{" "}
-        <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.artwork.minor.blueFrance.default }}>
+        <Typography component="span" sx={{ fontWeight: 700, color: fr.colors.decisions.text.default.info.default }}>
           {email}
         </Typography>
       </Typography>

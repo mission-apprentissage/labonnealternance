@@ -110,7 +110,7 @@ export const ReportJobLink = ({
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
-          <Box sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v") }, pb: fr.spacing("8v"), pt: fr.spacing("4v") }}>
+          <Box sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v") }, pb: fr.spacing("8v"), pt: fr.spacing("4v"), maxWidth: "708px" }}>
             <ModalTitle>{content.title}</ModalTitle>
             <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
             <Formik
@@ -180,7 +180,7 @@ export const ReportJobLink = ({
 
 const ReportedAcknowledgement = () => {
   return (
-    <Box sx={{ justifySelf: "center", p: fr.spacing("8v") }}>
+    <Box sx={{ justifySelf: "center", p: fr.spacing("8v"), maxWidth: "708px" }}>
       <Stack
         direction="row"
         spacing={fr.spacing("2v")}

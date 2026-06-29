@@ -34,7 +34,7 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
   }
 
   return (
-    <ModalReadOnly size="xl" isOpen={isOpen} onClose={onClose}>
+    <ModalReadOnly isOpen={isOpen} onClose={onClose}>
       <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
         <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
           Supprimer {establishment_raison_sociale ?? ""}

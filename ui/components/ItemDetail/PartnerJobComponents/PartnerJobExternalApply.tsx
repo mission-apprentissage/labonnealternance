@@ -96,7 +96,7 @@ export default function PartnerJobExternalApply({ job }: { job: ILbaItemPartnerJ
         onClose={() => {
           closeModalWithEvent(MATOMO_EVENTS.PARTNER_APPLY_POPIN_DISMISSED)
         }}
-        maxWidth="sm"
+        maxWidth="md"
         fullWidth
         sx={{
           "& .MuiDialog-container": {
