@@ -85,7 +85,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
   return (
     <Box sx={{ maxWidth: "660px", margin: "auto" }}>
       {/* Message avant la Card */}
-      <Box sx={{ my: fr.spacing("6v") }}>
+      <Box sx={{ mb: fr.spacing("6v") }}>
         {alreadySent ? (
           <>
             <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
@@ -194,7 +194,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
       ) : null}
 
       {!alreadySent && (
-        <Box sx={{ display: "flex", gap: fr.spacing("6v"), justifyContent: "flex-end", mt: fr.spacing("3v") }}>
+        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("6v"), justifyContent: "flex-end", mt: fr.spacing("3v") }}>
           {isEditing ? (
             <>
               <Button
@@ -261,7 +261,7 @@ export function IntentionPage(props: IntentionPageProps) {
   const [displayMode, setDisplayMode] = useState<"form" | "canceled" | "sent_now">("form")
 
   return (
-    <Box>
+    <Box sx={{ px: { xs: fr.spacing("4v"), md: 0 } }}>
       {displayMode === "form" && <IntentionPageContent {...props} onCancel={() => setDisplayMode("canceled")} onSentNow={() => setDisplayMode("sent_now")} />}
       {displayMode === "canceled" && <IntensionPageResult intention={company_recruitment_intention} canceled={true} />}
       {displayMode === "sent_now" && <IntensionPageResult intention={company_recruitment_intention} />}
