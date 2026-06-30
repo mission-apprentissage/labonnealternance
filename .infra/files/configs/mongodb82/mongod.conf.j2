@@ -1,0 +1,14 @@
+net:
+  bindIpAll: true
+
+replication:
+  replSetName: replica
+
+security:
+  keyFile: /tmp/mongo_keyfile
+
+setParameter:
+  searchIndexManagementHostAndPort: localhost:27028
+  mongotHost: localhost:27028
+  skipAuthenticationToSearchIndexManagementServer: true
+  useGrpcForSearch: true

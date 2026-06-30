@@ -305,6 +305,12 @@ program
   .description("Classification des offres de France Travail")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("francetravail:jobs:classify"))
+program
+  .command("algolia:apply-keywords-batch")
+  .description("Applique un fichier JSONL de sortie batch Mistral aux mots-clés de la collection algolia")
+  .requiredOption("-f, --file <path>", "Chemin du fichier JSONL de sortie téléchargé depuis Mistral")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("algolia:apply-keywords-batch"))
 
 /**
  *

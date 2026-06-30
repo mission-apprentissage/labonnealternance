@@ -1,4 +1,4 @@
-import type { HeaderProps } from "@codegouvfr/react-dsfr/Header"
+import { type HeaderProps, HeaderQuickAccessItem } from "@codegouvfr/react-dsfr/Header"
 import { HeaderNavigation } from "./HeaderNavigation"
 
 export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
@@ -20,6 +20,28 @@ export const DsfrHeaderProps: Omit<HeaderProps, "navigation"> = {
     orientation: "horizontal",
   },
   id: "header-links",
+  quickAccessItems: [
+    <HeaderQuickAccessItem
+      key="search-split"
+      quickAccessItem={{
+        iconId: "fr-icon-search-line",
+        text: "Recherche avancée",
+        linkProps: {
+          href: "/search/split",
+        },
+      }}
+    />,
+    <HeaderQuickAccessItem
+      key="search-filter-only"
+      quickAccessItem={{
+        iconId: "fr-icon-search-line",
+        text: "Recherche par filtres",
+        linkProps: {
+          href: "/search/filter-only",
+        },
+      }}
+    />,
+  ],
 }
 
 export const DsfrHeaderNavigation = HeaderNavigation

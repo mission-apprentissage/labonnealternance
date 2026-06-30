@@ -1,5 +1,5 @@
 import type { z } from "zod"
-
+import algoliaModel from "./algolia.model.js"
 import anonymizedApplicantModel from "./anonymizedApplicant.model.js"
 import anonymizedApplicationsModel from "./anonymizedApplications.model.js"
 import anonymizedAppointmentsModel from "./anonymizedAppointments.model.js"
@@ -67,6 +67,7 @@ import reportedCompanyModel from "./reportedCompany.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import searchSynonymsModel from "./searchSynonyms.model.js"
 import seoDiplomeModel from "./seoDiplome.model.js"
 import seoMetierModel from "./seoMetier.model.js"
 import seoVilleModel from "./seoVille.model.js"
@@ -79,6 +80,7 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 
 const modelDescriptorMap = {
+  [algoliaModel.collectionName]: algoliaModel,
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
   [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
   [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,
@@ -149,6 +151,7 @@ const modelDescriptorMap = {
   [rawFranceTravailCEGIDModel.collectionName]: rawFranceTravailCEGIDModel,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
+  [searchSynonymsModel.collectionName]: searchSynonymsModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,
   [recruiterModel.collectionName]: recruiterModel,
