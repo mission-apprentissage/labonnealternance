@@ -121,7 +121,7 @@ export function IntentionPageForm({
             </Box>
           )}
           {isRefusedState && (
-            <CustomFormControl label="Précisez la ou les raison(s) de votre refus :" required={false} name="refusal_reasons">
+            <CustomFormControl label="Précisez la ou les raison(s) de votre refus (facultatif) :" required={false} name="refusal_reasons">
               <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#666666", marginTop: "8px" }}>Les motifs sélectionnés seront partagés au candidat</Typography>
               <FormGroup>
                 <Stack

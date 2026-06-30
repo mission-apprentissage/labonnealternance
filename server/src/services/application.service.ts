@@ -1226,12 +1226,6 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
   }
 }
 
-const getPhoneForApplication = async (application: IApplication) => {
-  const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  const phone = jobOrCompany.job?.apply_phone
-  return phone
-}
-
 export const getApplicationDataForIntentionAndScheduleMessage = async (applicationId: string, intention: ApplicationIntention) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(applicationId) })
   if (!application) throw notFound("Candidature non trouvée")
@@ -1318,8 +1312,8 @@ export const processRecruiterIntention = async ({ application }: { application: 
   const sentMessageId = await sendMailToApplicant({
     application,
     applicant,
-    email: application.company_email,
-    phone: (await getPhoneForApplication(application)) ?? "",
+    email: "",
+    phone: "",
     company_recruitment_intention,
     company_feedback,
     refusal_reasons: [],
