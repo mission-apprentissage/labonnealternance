@@ -60,17 +60,13 @@ const JeSuisCFAPage = async () => {
             <Typography variant="body1" gutterBottom>
               Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.{" "}
             </Typography>
-            <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("4v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
-              <Box>
-                <Button linkProps={{ href: ctaDepotHref }} priority="primary">
-                  Créer mon espace dédié
-                </Button>
-              </Box>
-              <Box>
-                <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
-                  Me connecter
-                </Button>
-              </Box>
+            <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
+              <Button linkProps={{ href: ctaDepotHref }} priority="primary">
+                Créer mon espace dédié
+              </Button>
+              <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
+                Me connecter
+              </Button>
             </Box>
           </Grid>
           <Grid size={{ md: 6, xs: 0 }} display={"flex"} flexDirection={"column"} justifyContent={"center"}>

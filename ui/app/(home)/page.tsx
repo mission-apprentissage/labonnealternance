@@ -80,7 +80,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         </Grid>
 
         <GrandsGroupesCandidat />
-        <AppreciationUsagers realm="candidat" />
+
+        <Box sx={{ px: { xs: fr.spacing("6v"), lg: 0 } }}>
+          <AppreciationUsagers realm="candidat" />
+        </Box>
+
         <AlgoHome />
       </Container>
     </>
