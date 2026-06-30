@@ -1,6 +1,6 @@
 "use client"
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import Image from "next/image"
 import { useRef, useState } from "react"
 
