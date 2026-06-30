@@ -147,7 +147,7 @@ function JobDetail({
   useEffect(() => {
     const handleScroll = () => {
       if (!headerRef.current) return
-      const currentScrollY = window.scrollY
+      const currentScrollY = Math.max(0, window.scrollY)
       const scrollingDown = currentScrollY > prevScrollYRef.current
       prevScrollYRef.current = currentScrollY
 
