@@ -83,32 +83,28 @@ function TrainingDetailPage({
   }
 
   const headerRef = useRef<HTMLDivElement>(null)
-  const headerHeightRef = useRef(0)
+  const prevScrollYRef = useRef(0)
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const isCollapsed = isMobile && isCollapsedHeader
 
   useEffect(() => {
-    const updateHeaderHeight = () => {
-      if (headerRef.current) {
-        headerHeightRef.current = headerRef.current.offsetHeight
-      }
-    }
-    updateHeaderHeight()
-    window.addEventListener("resize", updateHeaderHeight)
-    return () => window.removeEventListener("resize", updateHeaderHeight)
-  }, [])
-
-  useEffect(() => {
     const handleScroll = () => {
-      if (headerHeightRef.current === 0) return
-      const currentScroll = window.scrollY || document.documentElement.scrollTop
-      if (!isCollapsedHeader && currentScroll > headerHeightRef.current) {
+      if (!headerRef.current) return
+      const currentScrollY = Math.max(0, window.scrollY)
+      const scrollingDown = currentScrollY > prevScrollYRef.current
+      prevScrollYRef.current = currentScrollY
+
+      const { top, bottom } = headerRef.current.getBoundingClientRect()
+      // Scroll bas : show sticky dès que le haut du header quitte le viewport
+      if (scrollingDown && !isCollapsedHeader && top < -100) {
         setIsCollapsedHeader(true)
-      } else if (isCollapsedHeader && currentScroll < headerHeightRef.current) {
+      }
+      // Scroll haut : hide sticky dès que le bas du header repasse le bord supérieur du viewport
+      else if (!scrollingDown && isCollapsedHeader && bottom >= 50) {
         setIsCollapsedHeader(false)
       }
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [isCollapsedHeader])
 
