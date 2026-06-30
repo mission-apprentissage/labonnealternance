@@ -828,12 +828,13 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
     return
   }
   const { email, last_name, first_name } = user
-  const { is_delegated, workplace_name, workplace_siret: siret } = job
-  const establishmentTitle = workplace_name ?? siret
+  const { is_delegated, workplace_name, workplace_siret, cfa_siret, cfa_legal_name, workplace_legal_name } = job
+  const raisonSocialeEntreprise = workplace_name || workplace_legal_name || ""
+  const establishmentTitle = workplace_name ?? workplace_siret
   // Send mail with action links to manage offers
   await mailer.sendEmail({
     to: email,
-    subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
+    subject: "Votre offre d'alternance est publiée",
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: { logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`, logoRf: `${config.publicUrl}/images/emails/logo_rf.png?raw=true` },
@@ -847,8 +848,12 @@ export async function sendMailNouvelleOffre(user: IUserWithAccount, job: IJobsPa
         job_level_label: job.offer_target_diploma?.label ?? "Indifférent",
         job_start_date: dayjs(job.contract_start).format("DD/MM/YY"),
         job_title: job.offer_title,
+        raisonSocialeEntreprise,
+        workplace_siret,
+        cfa_siret,
+        cfa_legal_name,
       },
-      lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, siret, job.offer_title),
+      lba_url: buildLbaUrl(LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA, job._id, workplace_siret, job.offer_title),
       publicEmail: config.publicEmail,
     },
   })
