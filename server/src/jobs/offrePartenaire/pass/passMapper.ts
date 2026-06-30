@@ -1,4 +1,5 @@
 import { ObjectId } from "bson"
+import { NIVEAU_DIPLOME_LABEL } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
@@ -144,11 +145,11 @@ function parseDiploma(field) {
   }
 
   const diplomaLabels = {
-    "Niveau 3": "Cap, autres formations (Infrabac)",
-    "Niveau 4": "BP, Bac, autres formations (Bac)",
-    "Niveau 5": "BTS, DEUST, autres formations (Bac+2)",
-    "Niveau 6": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
-    "Niveau 7": "Master, titre ingénieur, autres formations (Bac+5)",
+    "Niveau 3": NIVEAU_DIPLOME_LABEL["3"],
+    "Niveau 4": NIVEAU_DIPLOME_LABEL["4"],
+    "Niveau 5": NIVEAU_DIPLOME_LABEL["5"],
+    "Niveau 6": NIVEAU_DIPLOME_LABEL["6"],
+    "Niveau 7": NIVEAU_DIPLOME_LABEL["7"],
   }
 
   for (const pattern of Object.keys(diplomaLevels)) {
