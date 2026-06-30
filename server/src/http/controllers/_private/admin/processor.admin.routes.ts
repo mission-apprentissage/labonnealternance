@@ -1,7 +1,22 @@
-import { addJob, getProcessorStatus } from "job-processor"
+import { getProcessorStatus } from "job-processor"
 import { zRoutes } from "shared"
+import type { z } from "shared/helpers/zodWithOpenApi"
+import type { zTriggerableJobs } from "shared/routes/_private/admin/processor.admin.routes"
 
 import type { Server } from "@/http/server"
+import { processApplications } from "@/jobs/applications/processApplications"
+import { processRecruiterIntentions } from "@/jobs/applications/processRecruiterIntentions"
+import { importCatalogueFormationJob } from "@/jobs/formationsCatalogue/formationsCatalogue"
+import { processJobPartnersForApi } from "@/jobs/offrePartenaire/processJobPartnersForApi"
+
+type TriggerableJob = z.infer<typeof zTriggerableJobs>
+
+const jobHandlers: Record<TriggerableJob, () => Promise<unknown>> = {
+  processApplications,
+  processRecruiterIntentions,
+  processJobPartnersForApi,
+  importCatalogueFormationJob,
+}
 
 export function processorAdminRoutes(server: Server) {
   server.get(
@@ -28,8 +43,8 @@ export function processorAdminRoutes(server: Server) {
       },
     },
     async (request, response) => {
-      const { job } = request.body as { job: string }
-      await addJob({ name: job, queued: true, payload: {} })
+      const { job } = request.body as { job: TriggerableJob }
+      await jobHandlers[job]()
       return response.status(200).send({})
     }
   )
