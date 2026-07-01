@@ -48,14 +48,13 @@ const CustomInput = (props) => {
             <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
               <Typography className={fr.cx("fr-message--error")}>
                 {parse(meta.error || "")}
-{meta.error?.includes("a été refusé") && (
-  <Typography component="span" sx={{ color: `${fr.colors.decisions.text.actionHigh.blueFrance.default} !important` }}>
-    {" "}
-    <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Espace pro - Accès entreprise refusé")}`} external={true}>
-      {publicConfig.publicEmail}
-    </DsfrLink>
-  </Typography>
-)}
+                {meta.error?.includes("a été refusé") && (
+                  <Typography component="span" sx={{ color: `${fr.colors.decisions.text.actionHigh.blueFrance.default} !important` }}>
+                    {" "}
+                    <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Espace pro - Accès entreprise refusé")}`} external={true}>
+                      {publicConfig.publicEmail}
+                    </DsfrLink>
+                  </Typography>
                 )}
               </Typography>
               {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
