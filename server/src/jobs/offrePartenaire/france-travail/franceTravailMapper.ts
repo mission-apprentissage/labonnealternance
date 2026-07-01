@@ -1,6 +1,6 @@
 import { ObjectId } from "bson"
 import type { IFTJobRaw } from "shared"
-import { TRAINING_CONTRACT_TYPE } from "shared/constants/index"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE } from "shared/constants/index"
 import dayjs from "shared/helpers/dayjs"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { IComputedJobsPartners } from "shared/models/jobsPartnersComputed.model"
@@ -53,13 +53,13 @@ type DiplomaResult = { european: DiplomaEuropean; label: string } | null
 
 function parseDiploma(field): DiplomaResult {
   const diplomaMappings: { pattern: RegExp; european: DiplomaEuropean; label: string }[] = [
-    { pattern: /^CAP, BEP et équivalents$/, european: "3", label: "Cap, autres formations (Infrabac)" },
-    { pattern: /^3ème achevée ou Brevet$/, european: "3", label: "Cap, autres formations (Infrabac)" },
-    { pattern: /^Bac ou équivalent$/, european: "4", label: "BP, Bac, autres formations (Bac)" },
-    { pattern: /^2nd ou 1ère achevée$/, european: "3", label: "Cap, autres formations (Infrabac)" },
-    { pattern: /^Bac\+2 ou équivalents$/, european: "4", label: "BP, Bac, autres formations (Bac)" },
-    { pattern: /^Bac\+3, Bac\+4 ou équivalents$/, european: "6", label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)" },
-    { pattern: /^Bac\+5 et plus ou équivalents$/, european: "7", label: "Master, titre ingénieur, autres formations (Bac+5)" },
+    { pattern: /^CAP, BEP et équivalents$/, european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+    { pattern: /^3ème achevée ou Brevet$/, european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+    { pattern: /^Bac ou équivalent$/, european: "4", label: NIVEAU_DIPLOME_LABEL["4"] },
+    { pattern: /^2nd ou 1ère achevée$/, european: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+    { pattern: /^Bac\+2 ou équivalents$/, european: "4", label: NIVEAU_DIPLOME_LABEL["4"] },
+    { pattern: /^Bac\+3, Bac\+4 ou équivalents$/, european: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+    { pattern: /^Bac\+5 et plus ou équivalents$/, european: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
   ]
 
   for (const { pattern, european, label } of diplomaMappings) {

@@ -10,6 +10,7 @@ import { Warning } from "@/theme/components/icons"
 
 const CustomInput = (props) => {
   const [field, meta] = useField(props)
+  const hasError = Boolean(meta.error && meta.touched && (props.required !== false || field.value))
   return (
     <Box
       sx={[
@@ -19,8 +20,8 @@ const CustomInput = (props) => {
         props.sx ? { ...props.sx } : {},
       ]}
     >
-      <FormControl sx={{ width: "100%" }} error={meta.error && meta.touched} required={props.required ?? true}>
-        {props.label && <FormLabel error={meta.error && meta.touched}>{props.label}</FormLabel>}
+      <FormControl sx={{ width: "100%" }} error={hasError} required={props.required ?? true}>
+        {props.label && <FormLabel error={hasError}>{props.label}</FormLabel>}
         {props.info && (
           <Box className={fr.cx("fr-hint-text")} sx={{ pt: fr.spacing("2v") }}>
             {props.info}
@@ -28,8 +29,7 @@ const CustomInput = (props) => {
         )}
         <Input sx={{ mt: "8px !important" }} className={fr.cx("fr-input")} {...field} {...props} />
         {props.helper && <FormHelperText>{props.helper}</FormHelperText>}
-        {meta.error &&
-          meta.touched &&
+        {hasError &&
           (meta.error === BusinessErrorCodes.NON_DIFFUSIBLE ? (
             <Box
               sx={{
