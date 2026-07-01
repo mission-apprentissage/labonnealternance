@@ -16,6 +16,7 @@ import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
 import type { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import type { ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
 import type { Jsonify } from "type-fest"
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
@@ -211,6 +212,11 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
 
 export const getCompanyContactInfo = async (siret: string) => {
   const data = await apiGet("/lbacompany/:siret/contactInfo", { params: { siret } })
+  return data
+}
+
+export const searchLbaCompanies = async (search: string, field: ILbaCompanySearchField) => {
+  const data = await apiGet("/admin/lba-companies", { querystring: { search, field } })
   return data
 }
 
