@@ -44,7 +44,7 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
           viewTypeCheckboxs={<RechercheResultTypeCheckboxFormik canDisplayCounts={false} />}
           metierInput={<RechercheMetierAutocomplete />}
           lieuInput={<RechercheLieuAutocomplete />}
-          submitButton={<RechercheSubmitButton>C’est parti</RechercheSubmitButton>}
+          submitButton={<RechercheSubmitButton>Rechercher</RechercheSubmitButton>}
         />
       </RechercheForm>
     </Box>
