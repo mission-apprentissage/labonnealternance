@@ -224,7 +224,7 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
 
-export const checkEmailCreationAccess = async ({
+export const verifyRecruiterEmailInUse = async ({
   email,
   siret,
   entityType,
@@ -471,7 +471,7 @@ export const entrepriseOnboardingWorkflow = {
   ): Promise<IBusinessError | { formulaire: { establishment_id: string; opco: OPCOS_LABEL }; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
     const formatedEmail = email.toLocaleLowerCase()
-    const accessError = await checkEmailCreationAccess({ email: formatedEmail, siret, entityType: AccessEntityType.ENTREPRISE })
+    const accessError = await verifyRecruiterEmailInUse({ email: formatedEmail, siret, entityType: AccessEntityType.ENTREPRISE })
     if (accessError) return accessError
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     let isSiretInternalError = false

@@ -7,17 +7,15 @@ import { generateCfaFixture } from "shared/fixtures/cfa.fixture"
 import { generateEntrepriseFixture } from "shared/fixtures/entreprise.fixture"
 import { generateRoleManagementFixture } from "shared/fixtures/roleManagement.fixture"
 import { generateUserWithAccountFixture } from "shared/fixtures/userWithAccount.fixture"
-import { beforeEach, describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { checkEmailCreationAccess } from "./etablissement.service"
+import { verifyRecruiterEmailInUse } from "./etablissement.service"
 
 useMongo()
 
 describe("checkEmailCreationAccess", () => {
-  // useMongo() clearAllCollections() déjà toutes les collections avant chaque test
-
   it("returns null when user does not exist", async () => {
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "nonexistent@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -29,7 +27,7 @@ describe("checkEmailCreationAccess", () => {
     const user = generateUserWithAccountFixture({ email: "user@test.com" })
     await getDbCollection("userswithaccounts").insertOne(user)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "99999999900001",
       entityType: AccessEntityType.ENTREPRISE,
@@ -43,7 +41,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("userswithaccounts").insertOne(user)
     await getDbCollection("entreprises").insertOne(entreprise)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -68,7 +66,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("rolemanagements").insertOne(role)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -94,7 +92,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("rolemanagements").insertOne(role)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -116,7 +114,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("rolemanagements").insertOne(role)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -139,7 +137,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("rolemanagements").insertOne(role)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -169,7 +167,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("entreprises").insertOne(entreprise)
     await getDbCollection("rolemanagements").insertMany([deniedRole, activeRole])
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "42476141900045",
       entityType: AccessEntityType.ENTREPRISE,
@@ -191,7 +189,7 @@ describe("checkEmailCreationAccess", () => {
     await getDbCollection("cfas").insertOne(cfa)
     await getDbCollection("rolemanagements").insertOne(role)
 
-    const result = await checkEmailCreationAccess({
+    const result = await verifyRecruiterEmailInUse({
       email: "user@test.com",
       siret: "35306634300016",
       entityType: AccessEntityType.CFA,
