@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
 import { useMemo, useState } from "react"
 import type { ILbaCompanyForAdminSearchJSON, ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
+import { validateSIRET } from "shared/validators/siretValidator"
 import * as Yup from "yup"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import CustomInput from "@/app/_components/CustomInput"
@@ -169,7 +170,7 @@ export default function GestionEntreprises() {
   const [siret, setSiret] = useState<string>("")
 
   const isSiretField = submittedField === "workplace_siret"
-  const isEnabled = isSiretField ? /^\d{14}$/.test(submittedSearch) : submittedSearch.length >= 2
+  const isEnabled = isSiretField ? validateSIRET(submittedSearch) : submittedSearch.length >= 2
 
   const { data, isFetching } = useQuery({
     queryKey: ["/admin/lba-companies", submittedField, submittedSearch],

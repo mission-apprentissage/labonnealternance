@@ -9,6 +9,7 @@ import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IJobsPartnersOfferPrivate, IJobsPartnersOfferPrivateWithDistance, IJobsPartnersRecruteurAlgoPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import type { ILbaCompanyForAdminSearch, ILbaCompanyForContactUpdate, ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
+import { validateSIRET } from "shared/validators/siretValidator"
 import { encryptMailWithIV } from "@/common/utils/encryptString"
 import type { IApiError } from "@/common/utils/errorManager"
 import { manageApiError } from "@/common/utils/errorManager"
@@ -583,6 +584,9 @@ export const getCompanyContactInfo = async ({ siret }: { siret: string }): Promi
  * sinon regex insensible à la casse. Résultats dédupliqués par siret.
  */
 export const searchLbaCompaniesForAdmin = async ({ search, field }: { search: string; field: ILbaCompanySearchField }): Promise<ILbaCompanyForAdminSearch[]> => {
+  if (field === "workplace_siret" && !validateSIRET(search)) {
+    throw badRequest("Le SIRET fourni est invalide")
+  }
   const fieldFilter = field === "workplace_siret" ? { workplace_siret: search } : { [field]: { $regex: escapeRegExp(search), $options: "i" } }
   const documents = await getDbCollection("jobs_partners")
     .aggregate<ILbaCompanyForAdminSearch>([

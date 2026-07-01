@@ -16,17 +16,20 @@ export function getLbaCompaniesColumns({ onSelect }: { onSelect: (siret: string)
       cell: (info) => {
         const { siret, raison_sociale } = info.row.original
         return (
-          <PopoverMenu
-            title={`Actions sur la société ${raison_sociale ?? siret}`}
-            actions={[
-              {
-                label: "Éditer les coordonnées",
-                ariaLabel: `Éditer les coordonnées de la société ${raison_sociale ?? siret}`,
-                type: "button",
-                onClick: () => onSelect(siret),
-              },
-            ]}
-          />
+          // stopPropagation : évite que l'ouverture du menu déclenche aussi le onRowClick de la ligne
+          <Box onClick={(e) => e.stopPropagation()}>
+            <PopoverMenu
+              title={`Actions sur la société ${raison_sociale ?? siret}`}
+              actions={[
+                {
+                  label: "Éditer les coordonnées",
+                  ariaLabel: `Éditer les coordonnées de la société ${raison_sociale ?? siret}`,
+                  type: "button",
+                  onClick: () => onSelect(siret),
+                },
+              ]}
+            />
+          </Box>
         )
       },
     },
