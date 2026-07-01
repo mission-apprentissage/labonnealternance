@@ -44,7 +44,7 @@ type DBJob = IJobsPartnersOfferPrivate & {
   referentielRome: IReferentielRome
   entreprise: IEntreprise
   cfa?: ICFA
-  userWithAccount?: Pick<IUserWithAccount, "first_name" | "last_name">
+  userWithAccount?: Pick<IUserWithAccount, "first_name" | "last_name" | "email" | "phone">
 }
 
 // Mention salaire portée par les descriptions (le champ FT Off_salaire_cpt_commentaire est limité à Alphanum(36),
@@ -196,8 +196,8 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>, option
     Civ_correspondant: 0,
     Nom_correspondant: offre.userWithAccount?.last_name ?? null,
     Prenom_correspondant: offre.userWithAccount?.first_name ?? null,
-    Tel_correspondant: null,
-    Mail_correspondant: null,
+    Tel_correspondant: offre.userWithAccount?.phone ?? null,
+    Mail_correspondant: offre.userWithAccount?.email ?? null,
     Off_etab_enseigne: offre.is_delegated ? offre.cfa_legal_name : companyLabel,
     Off_etab_siret: offre.is_delegated ? offre.cfa_siret : offre.workplace_siret,
     Libelle_etab: cfa?.raison_sociale,
@@ -303,7 +303,7 @@ const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = 
           localField: "managed_by",
           foreignField: "_id",
           as: "userWithAccount",
-          pipeline: [{ $project: { _id: 0, first_name: 1, last_name: 1 } }],
+          pipeline: [{ $project: { _id: 0, first_name: 1, last_name: 1, email: 1, phone: 1 } }],
         },
       },
       {
