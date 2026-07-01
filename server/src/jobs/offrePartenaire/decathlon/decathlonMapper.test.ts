@@ -167,7 +167,7 @@ describe("decathlonMapper", () => {
       offer_status: "Active",
       offer_target_diploma: {
         european: "6",
-        label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+        label: "Licence, BUT, Licence Pro (Bac+3)",
       },
       offer_title: "ALTERNANCE Manager Commerce (H/F)",
       offer_to_be_acquired_knowledge: [],
