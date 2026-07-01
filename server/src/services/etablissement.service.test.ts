@@ -14,14 +14,7 @@ import { checkEmailCreationAccess } from "./etablissement.service"
 useMongo()
 
 describe("checkEmailCreationAccess", () => {
-  beforeEach(async () => {
-    return async () => {
-      await getDbCollection("userswithaccounts").deleteMany({})
-      await getDbCollection("rolemanagements").deleteMany({})
-      await getDbCollection("entreprises").deleteMany({})
-      await getDbCollection("cfas").deleteMany({})
-    }
-  })
+  // useMongo() clearAllCollections() déjà toutes les collections avant chaque test
 
   it("returns null when user does not exist", async () => {
     const result = await checkEmailCreationAccess({
