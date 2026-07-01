@@ -1,13 +1,11 @@
 import { badRequest, forbidden, internal, notFound } from "@hapi/boom"
 import { ObjectId } from "mongodb"
 import type { IEntreprise } from "shared"
-import { AccessEntityType, AccessStatus, assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
+import { AccessEntityType, assertUnreachable, TrafficType, toPublicUser, zRoutes } from "shared"
 import { BusinessErrorCodes } from "shared/constants/errorCodes"
 import { CFA, ENTREPRISE } from "shared/constants/index"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
-import dayjs from "shared/helpers/dayjs"
 import { EntrepriseEngagementSources } from "shared/models/referentielEngagementEntreprise.model"
-import { getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { getSourceFromCookies } from "@/common/utils/httpUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "@/common/utils/mailUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -20,6 +18,7 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
+  checkEmailCreationAccess,
   entrepriseOnboardingWorkflow,
   establishmentIdToUserIdAndSiret,
   etablissementUnsubscribeDemandeDelegation,
@@ -264,28 +263,8 @@ export default (server: Server) => {
           const { email, establishment_siret, first_name, last_name, phone } = req.body
           const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
-          const existingUser = await getUserWithAccountByEmail(formatedEmail)
-          if (existingUser) {
-            const [existingRoles, existingCfa] = await Promise.all([
-              getDbCollection("rolemanagements").find({ user_id: existingUser._id }).toArray(),
-              getDbCollection("cfas").findOne({ siret: establishment_siret }),
-            ])
-            if (existingCfa) {
-              const roleForSiret = existingRoles.find((role) => role.authorized_id === existingCfa._id.toString() && role.authorized_type === AccessEntityType.CFA)
-              const sortedEvents = getSortedStatusEvents(roleForSiret?.status ?? [])
-              const lastDeniedEvent = [...sortedEvents].reverse().find((e) => e.status === AccessStatus.DENIED)
-              if (lastDeniedEvent) {
-                const hasGrantedAfterDenied = sortedEvents.some((e) => e.status === AccessStatus.GRANTED && new Date(e.date ?? 0) > new Date(lastDeniedEvent.date ?? 0))
-                if (!hasGrantedAfterDenied) {
-                  const deniedDate = dayjs(lastDeniedEvent.date).format("DD/MM/YYYY")
-                  throw forbidden(`Votre accès à cet établissement a été refusé le ${deniedDate}.  Pour le débloquer, veuillez contacter le support à l'adresse`, {
-                    reason: BusinessErrorCodes.ROLE_DENIED,
-                  })
-                }
-              }
-            }
-            throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
-          }
+          const accessError = await checkEmailCreationAccess({ email: formatedEmail, siret: establishment_siret, entityType: AccessEntityType.CFA })
+          if (accessError) throw forbidden(accessError.message, { reason: accessError.errorCode })
 
           const isValid = await isCfaCreationValid(establishment_siret)
           if (!isValid) {
