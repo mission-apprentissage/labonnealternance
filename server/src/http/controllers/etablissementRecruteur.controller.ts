@@ -253,7 +253,7 @@ export default (server: Server) => {
           const opco = (req.body.opco as OPCOS_LABEL) || OPCOS_LABEL.UNKNOWN_OPCO
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, opco, siret, source: getSourceFromCookies(req) })
           if ("error" in result) {
-            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS || result.errorCode === BusinessErrorCodes.ROLE_DENIED) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
           }
           const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id)

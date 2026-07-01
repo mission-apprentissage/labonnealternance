@@ -45,11 +45,17 @@ const CustomInput = (props) => {
               </DsfrLink>
             </Box>
           ) : (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Box sx={{ display: "flex", ml: fr.spacing("2v") }}>
-                <Typography className={fr.cx("fr-message--error")}>{parse(meta.error || "")}</Typography>
-                {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
-              </Box>
+            <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-start" }}>
+              <Typography className={fr.cx("fr-message--error")}>
+                {parse(meta.error || "")}
+                {meta.error?.includes("a été refusé") && (
+                  <Typography component="span" sx={{ color: `${fr.colors.decisions.text.actionHigh.blueFrance.default} !important` }}>
+                    {" "}
+                    <a href={`mailto:${publicConfig.publicEmail}?subject=Espace%20pro%20-%20Acces%20entreprise%20refusé`}>{publicConfig.publicEmail}</a>
+                  </Typography>
+                )}
+              </Typography>
+              {meta.error?.includes("déjà associé") && <DsfrLink href="/espace-pro/authentification">Connexion</DsfrLink>}
             </Box>
           ))}
       </FormControl>
