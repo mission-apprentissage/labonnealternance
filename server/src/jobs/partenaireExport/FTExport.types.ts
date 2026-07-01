@@ -154,7 +154,11 @@ export const zFTOffre = z.object({
   Description_entreprise: z.string().max(500).nullable().optional().describe("Description de l'entreprise"),
   Off_etab_siret: z.string().nullable().optional().describe("Numéro SIRET de l'établissement ayant déposé l'offre (CFA si offre déléguée)"),
   Id_recruteur: z.string().max(10).nullable().optional().describe("Identifiant du recruteur"),
-  Civ_correspondant: z.string().max(1).nullable().optional().describe("Civilité du correspondant établissement pour l'offre"),
+  Civ_correspondant: z
+    .union([z.literal(0), z.literal(1), z.literal(2)])
+    .nullable()
+    .optional()
+    .describe("0: X, 1: Mr, 2: Mme - Civilité du correspondant établissement pour l'offre"),
   Nom_correspondant: z.string().max(25).nullable().optional().describe("Nom du correspondant établissement pour l'offre"),
   Prenom_correspondant: z.string().max(15).nullable().optional().describe("Prénom du correspondant établissement pour l'offre"),
   Tel_correspondant: z.string().max(15).nullable().optional().describe("N° téléphone du correspondant établissement pour l'offre"),

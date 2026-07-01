@@ -261,6 +261,8 @@ describe("POST /v2/application", () => {
     expect.soft(response.json()).toEqual({
       applicant_first_name: "applicant_firstname",
       applicant_last_name: "applicant_lastname",
+      applicant_email: "applicant@mail.fr",
+      applicant_phone: "0123456789",
       company_name: "ASSEMBLEE NATIONALE",
       recruiter_email: "faux_email@faux-domaine-compagnie.com",
       recruiter_phone: "0300000000",
@@ -315,6 +317,22 @@ describe("POST /v2/application", () => {
     })
 
     expect.soft(response.statusCode).toEqual(200)
+    expect.soft(response.json()).toEqual({
+      applicant_first_name: "applicant_firstname",
+      applicant_last_name: "applicant_lastname",
+      applicant_email: "applicant@mail.fr",
+      applicant_phone: "0123456789",
+      company_name: "ASSEMBLEE NATIONALE",
+      recruiter_email: "faux_email@faux-domaine-compagnie.com",
+      recruiter_phone: "0300000000",
+      sent_intention: {
+        company_feedback_send_status: CompanyFeebackSendStatus.SENT,
+        company_feedback: null,
+        company_feedback_reasons: null,
+        company_recruitment_intention_date: null,
+        company_recruitment_intention: ApplicationIntention.ENTRETIEN,
+      },
+    })
     const application = await getDbCollection("applications").findOne({ _id: new ObjectId("6081289803569600282e0001") })
     expect.soft(application).toMatchObject({
       company_feedback_send_status: CompanyFeebackSendStatus.SENT,
