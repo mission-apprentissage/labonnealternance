@@ -7,7 +7,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import dayjs from "shared/helpers/dayjs"
 import { ZAdresseCFA } from "shared/models/address.model"
 import type { ICFA } from "shared/models/cfa.model"
-import { type IEntreprise, type IReferentielRome, JOB_STATUS_ENGLISH, ZAdresseV3 } from "shared/models/index"
+import { type IEntreprise, type IReferentielRome, type IUserWithAccount, JOB_STATUS_ENGLISH, ZAdresseV3 } from "shared/models/index"
 import { type IJobsPartnersOfferPrivate, type INiveauDiplomeEuropeen, JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { pipeline, Readable, Transform } from "stream"
 import { fileURLToPath } from "url"
@@ -40,7 +40,12 @@ const DIPLOMA_TO_FT_QUALIFICATION: Record<INiveauDiplomeEuropeen, { cle: number;
   "7": { cle: 9, libelle: "Cadre" }, // Master, ingénieur, Bac+5
 }
 
-type DBJob = IJobsPartnersOfferPrivate & { referentielRome: IReferentielRome; entreprise: IEntreprise; cfa?: ICFA }
+type DBJob = IJobsPartnersOfferPrivate & {
+  referentielRome: IReferentielRome
+  entreprise: IEntreprise
+  cfa?: ICFA
+  userWithAccount?: Pick<IUserWithAccount, "first_name" | "last_name">
+}
 
 // Mention salaire portée par les descriptions (le champ FT Off_salaire_cpt_commentaire est limité à Alphanum(36),
 // il ne peut donc pas contenir cette URL). On l'ajoute en fin de Description et Description_entreprise.
@@ -55,7 +60,7 @@ const withSalaireMention = (body: string, maxLength: number): string => {
   return `${body.slice(0, availableForBody)}${suffix}`.trim()
 }
 
-export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
+export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>, options?: { capPublicationDateToJ30?: boolean }) => {
   const { referentielRome, workplace_address_zipcode, cfa } = offre
   const addressPart = jobToFTOfferAddress(offre)
   //Récupération de l'appellation dans le rome_detail pour identifier le code OGR
@@ -73,6 +78,11 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
   const departmentInfos = workplace_address_zipcode ? getDepartmentInfos(workplace_address_zipcode) : null
   const cfaAddress = jobToCfaAddress(offre)
   const qualification = offre.offer_target_diploma ? DIPLOMA_TO_FT_QUALIFICATION[offre.offer_target_diploma.european] : null
+
+  // Flux confiée : la date de fin de publication est plafonnée à J+30. Au-delà, on renvoie J+30 ; sinon la date d'expiration réelle.
+  const maxPublicationDate = dayjs().add(30, "days")
+  const publicationDate =
+    options?.capPublicationDateToJ30 && offre.offer_expiration && dayjs(offre.offer_expiration).isAfter(maxPublicationDate) ? maxPublicationDate.toDate() : offre.offer_expiration
 
   const ftOffre: FTOffre = {
     Par_ref_offre: `${ntcCle}-${offre._id}`,
@@ -167,7 +177,7 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
     PCO_exi_libelle_2: null,
     Off_date_creation: formatDate(offre.created_at),
     Off_date_modification: formatDate(offre.updated_at),
-    Off_date_fin_publication: formatDate(offre.offer_expiration),
+    Off_date_fin_publication: formatDate(publicationDate),
     OST_poste_restant_nb: offre.offer_opening_count,
     Off_client_final_siret: offre.workplace_siret,
     Off_client_final_nom: undefined,
@@ -183,9 +193,9 @@ export const offerToFTOffer = (offre: DBJob, override?: Partial<FTOffre>) => {
       500
     ),
     Id_recruteur: null,
-    Civ_correspondant: null,
-    Nom_correspondant: null,
-    Prenom_correspondant: null,
+    Civ_correspondant: 0,
+    Nom_correspondant: offre.userWithAccount?.last_name ?? null,
+    Prenom_correspondant: offre.userWithAccount?.first_name ?? null,
     Tel_correspondant: null,
     Mail_correspondant: null,
     Off_etab_enseigne: offre.is_delegated ? offre.cfa_legal_name : companyLabel,
@@ -251,35 +261,58 @@ const getJobsToExport = async ({ ftSupport = false }: { ftSupport?: boolean } = 
     offer_target_diploma: { $ne: null },
     ft_support: ftSupport,
   }
-  const jobs = (await getDbCollection("jobs_partners")
-    .aggregate([
-      {
-        $match: jobPartnerFilter,
+
+  // Flux confiée : on n'exporte que les offres dont l'expiration est strictement supérieure à J+4.
+  if (ftSupport) {
+    jobPartnerFilter.offer_expiration = { $gt: dayjs().add(4, "days").toDate() }
+  }
+  const pipelineStages: object[] = [
+    {
+      $match: jobPartnerFilter,
+    },
+    {
+      $lookup: {
+        from: "entreprises",
+        localField: "workplace_siret",
+        foreignField: "siret",
+        as: "entreprise",
       },
+    },
+    {
+      $unwind: "$entreprise",
+    },
+    {
+      $lookup: {
+        from: "referentielromes",
+        localField: "offer_rome_codes",
+        foreignField: "rome.code_rome",
+        as: "referentielRome",
+      },
+    },
+    {
+      $unwind: "$referentielRome",
+    },
+  ]
+
+  // Flux confiée : on joint le userwithaccount gestionnaire (managed_by) pour alimenter le correspondant FT.
+  if (ftSupport) {
+    pipelineStages.push(
       {
         $lookup: {
-          from: "entreprises",
-          localField: "workplace_siret",
-          foreignField: "siret",
-          as: "entreprise",
+          from: "userswithaccounts",
+          localField: "managed_by",
+          foreignField: "_id",
+          as: "userWithAccount",
+          pipeline: [{ $project: { _id: 0, first_name: 1, last_name: 1 } }],
         },
       },
       {
-        $unwind: "$entreprise",
-      },
-      {
-        $lookup: {
-          from: "referentielromes",
-          localField: "offer_rome_codes",
-          foreignField: "rome.code_rome",
-          as: "referentielRome",
-        },
-      },
-      {
-        $unwind: "$referentielRome",
-      },
-    ])
-    .toArray()) as DBJob[]
+        $unwind: { path: "$userWithAccount", preserveNullAndEmptyArrays: true },
+      }
+    )
+  }
+
+  const jobs = (await getDbCollection("jobs_partners").aggregate(pipelineStages).toArray()) as DBJob[]
 
   return jobs
 }
@@ -314,7 +347,7 @@ const generateCsvFileConfiee = async (csvPath: URL, jobs: DBJob[]) => {
     transform(chunk, _, callback) {
       try {
         const job = chunk as DBJob
-        const ftOffer = offerToFTOffer(job, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" })
+        const ftOffer = offerToFTOffer(job, { Par_cle: "LABONNEALTERNANCE_CONFIEE", Par_nom: "LABONNEALTERNANCE_CONFIEE" }, { capPublicationDateToJ30: true })
         callback(null, ftOffer)
       } catch (error: any) {
         callback(error)
