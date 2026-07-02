@@ -1,0 +1,13 @@
+# Creation rules SOPS — destinataires des fichiers chiffrés .infra/env.*.yml
+# Source unique de vérité des accès. Pour propager un changement dans la
+# métadonnée des fichiers existants : `yarn cli sops:updatekeys` (sops updatekeys).
+# Lu uniquement au chiffrement/re-chiffrement (jamais au déchiffrement).
+creation_rules:
+  - path_regex: \.infra/env\..*\.yml$
+    unencrypted_suffix: _unencrypted
+    pgp: >-
+      701FF2A032E8452B7429DDE56FAB9CEF073BC04A!,
+      B4CE11C753E8F4CE70612617278DEC30F942BD2C,
+      1BE4ACA42D290C747BE464436D46D2C330CCC5BD,
+      CE4D29B9B1A6EEAC005EED86CD6A12397AC7D68D,
+      238A951080ACC247E15C99D2096694D347AD79F0
