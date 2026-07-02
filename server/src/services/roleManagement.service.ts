@@ -18,7 +18,7 @@ import { archiveDelegatedFormulaire, archiveFormulaire, checkForJobActivations }
 import { sendEngagementHandicapEmailIfNeeded } from "./handiEngagement.service"
 import mailer from "./mailer.service"
 import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
-import { activateUser } from "./userWithAccount.service"
+import { activateUser, hasActiveRoleOnAnotherOrganization } from "./userWithAccount.service"
 
 export const modifyPermissionToUser = async (
   props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
@@ -358,6 +358,10 @@ export const deactivateUserRole = async ({
 export const activateUserRole = async ({ userId, organizationId, requestedBy }: { userId: ObjectId; organizationId: string; requestedBy: IUserWithAccount }) => {
   const user = await getDbCollection("userswithaccounts").findOne({ _id: userId })
   if (!user) throw badRequest()
+
+  if (await hasActiveRoleOnAnotherOrganization(userId, organizationId)) {
+    throw badRequest("Cet utilisateur a déjà un accès actif sur une autre organisation. La réactivation est impossible.")
+  }
 
   const updatedRole = await adminOrOpcoUpdatePermissionToUser({
     reason: "",
