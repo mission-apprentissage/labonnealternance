@@ -89,7 +89,8 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUserWithAccount
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
   const type = roleType ?? organismeType ?? null
   if (!type) throw internal("unexpected: no type found")
-  const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme ?? {}
+  const { siret, address, address_detail, geo_coordinates, raison_sociale, enseigne } = organisme ?? {}
+  const origin = organisme && "origin" in organisme ? organisme.origin : undefined
   let entrepriseFields: {
     idcc: number | null
     opco: OPCOS_LABEL | null
