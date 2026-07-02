@@ -360,7 +360,7 @@ export const activateUserRole = async ({ userId, organizationId, requestedBy }: 
   if (!user) throw badRequest()
 
   if (await hasActiveRoleOnAnotherOrganization(userId, organizationId)) {
-    throw badRequest("Cet utilisateur a déjà un accès actif sur une autre organisation. La réactivation est impossible.")
+    throw badRequest("Cet utilisateur a déjà un accès actif sur une autre organisation. L'activation est impossible.")
   }
 
   const updatedRole = await adminOrOpcoUpdatePermissionToUser({
