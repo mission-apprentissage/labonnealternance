@@ -80,7 +80,6 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
         adresse={data.lieu_formation_adresse}
         codePostal={data.code_postal}
         ville={data.localite}
-        fromMail={true}
       />
       <DemandeDeContactForm context={context} referrer={referrer ?? "lba"} onRdvSuccess={localOnSuccess} />
     </Box>
