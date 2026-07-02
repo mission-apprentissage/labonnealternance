@@ -1,15 +1,17 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container } from "@mui/material"
+import { Box, Container, Typography } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
+import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import ErrorMessage from "@/components/ErrorMessage/ErrorMessage"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
+import { publicConfig } from "@/config.public"
 import { getPrdvContext } from "@/utils/api"
 
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
@@ -70,7 +72,7 @@ const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, 
 
   if (!data) {
     return (
-      <Box sx={{ my: "5rem", textAlign: "center" }}>
+      <Box sx={{ my: fr.spacing("12v"), textAlign: "center" }}>
         <ErrorMessage
           message={
             hasTechnicalError
@@ -78,6 +80,10 @@ const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, 
               : "Un problème est survenu lors de l’accès au formulaire de demande au CFA"
           }
         />
+        <Typography sx={{ mt: fr.spacing("2v") }}>
+          Merci de réessayer ultérieurement. Si le problème persiste, contactez le support à l'adresse :{" "}
+          <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Erreur d'affichage formulaire RDVA")}`}>{publicConfig.publicEmail}?</DsfrLink>
+        </Typography>
       </Box>
     )
   }
