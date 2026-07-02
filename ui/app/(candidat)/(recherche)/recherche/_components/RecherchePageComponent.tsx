@@ -98,25 +98,37 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
 }
 
 function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRecherchePageParams }) {
-  const sentinelRef = useRef<HTMLDivElement>(null)
-  const [stuck, setStuck] = useState(false)
+  const headerRef = useRef<HTMLDivElement>(null)
+  const headerHeightRef = useRef(0)
+  const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const navigateToRecherchePage = useNavigateToRecherchePage(rechercheParams)
 
   useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
-    // Header "collé" (stuck) dès que la sentinelle placée juste avant lui sort du viewport par le haut.
-    // IntersectionObserver = hors main-thread : pas de scroll handler ni de reflow → animation fluide (Safari inclus).
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const next = !entry.isIntersecting
-        setStuck((prev) => (prev === next ? prev : next))
-      },
-      { threshold: 0 }
-    )
-    observer.observe(sentinel)
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        headerHeightRef.current = headerRef.current.offsetHeight
+      }
+    }
 
-    return () => observer.disconnect()
+    updateHeaderHeight()
+    window.addEventListener("resize", updateHeaderHeight)
+
+    return () => window.removeEventListener("resize", updateHeaderHeight)
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (headerHeightRef.current === 0) return
+
+      const currentScroll = window.scrollY || document.documentElement.scrollTop
+      const nextIsCollapsedHeader = currentScroll > headerHeightRef.current
+      setIsCollapsedHeader((previousIsCollapsedHeader) => (previousIsCollapsedHeader === nextIsCollapsedHeader ? previousIsCollapsedHeader : nextIsCollapsedHeader))
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll)
+
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
@@ -146,12 +158,10 @@ function RecherchePageHeader({ rechercheParams }: { rechercheParams: IRechercheP
         </Button>
       </Box>
 
-      {/* Desktop: titre + header en sticky permanent (pas de bascule static/fixed → aucun saut) */}
+      {/* Desktop: titre + header avec scroll collapse */}
       <RechercheTitle viewType={rechercheParams.viewType} />
-      {/* Sentinelle : détecte le collage du header sans scroll handler */}
-      <Box ref={sentinelRef} aria-hidden sx={{ display: { xs: "none", lg: "block" }, height: "1px" }} />
-      <Box sx={{ display: { xs: "none", lg: "block" }, position: "sticky", top: 0, zIndex: 10 }}>
-        <RechercheHeader rechercheParams={rechercheParams} stuck={stuck} />
+      <Box ref={headerRef} sx={{ display: { xs: "none", lg: "block" }, minHeight: isCollapsedHeader ? headerHeightRef.current : undefined }}>
+        <RechercheHeader rechercheParams={rechercheParams} fullWidth={isCollapsedHeader} />
       </Box>
     </>
   )
