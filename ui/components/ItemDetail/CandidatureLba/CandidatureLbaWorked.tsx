@@ -22,7 +22,7 @@ const CandidatureLbaWorked = ({ email, item }: { email: string; item: ILbaItemLb
   const company = item.company?.name
   const ideaType = item.ideaType
   return (
-    <Box sx={{ p: fr.spacing("4v"), pb: fr.spacing("8v"), maxWidth: "708px" }}>
+    <Box sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v") }, pt: fr.spacing("4v"), pb: fr.spacing("8v"), maxWidth: "708px" }}>
       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: fr.spacing("8v") }}>
         <Image src="/images/icons/coche_verte.svg" aria-hidden={true} alt="" width={23} height={23} />
         <Box sx={{ ml: fr.spacing("4v") }}>
