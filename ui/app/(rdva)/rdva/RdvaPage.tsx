@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
+import ErrorMessage from "@/components/ErrorMessage/ErrorMessage"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
@@ -15,6 +16,7 @@ type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
 
 type Props = {
   data: PrdvData | null
+  technicalError: boolean
   cleMinistereEducatif: string | null
   referrer: string | null
 }
@@ -22,15 +24,16 @@ type Props = {
 /**
  * Appointment form page.
  */
-export default function PriseDeRendezVous({ data, cleMinistereEducatif, referrer }: Props) {
-  return <PageContent data={data} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
+export default function PriseDeRendezVous({ data, technicalError, cleMinistereEducatif, referrer }: Props) {
+  return <PageContent data={data} technicalError={technicalError} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
 }
 
-const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Props) => {
+const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, referrer }: Props) => {
   // Rescue client-side : si le # n'était pas encodé dans l'URL, le navigateur l'a
   // interprété comme un fragment et le serveur n'a pas reçu la partie "#L01".
   // On détecte ce cas en comparant window.location.hash avec la clé reçue côté serveur.
   const [rescueCleMinistereEducatif, setRescueCleMinistereEducatif] = useState<string | null>(null)
+  const [rescueChecked, setRescueChecked] = useState(false)
 
   useEffect(() => {
     const hash = window.location.hash // ex: "#L01"
@@ -38,9 +41,14 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
       // Le hash ressemble à un suffixe de cleMinistereEducatif (ex: "#L01", "#L05")
       setRescueCleMinistereEducatif(`${cleMinistereEducatif}${hash}`)
     }
+    setRescueChecked(true)
   }, [cleMinistereEducatif, initialData])
 
-  const { data: rescuedData, isFetching: isRescueFetching } = useQuery({
+  const {
+    data: rescuedData,
+    error: rescueError,
+    isFetching: isRescueFetching,
+  } = useQuery({
     queryKey: ["getPrdvForm-rescue", rescueCleMinistereEducatif],
     queryFn: () => getPrdvContext(rescueCleMinistereEducatif!, referrer ?? "lba"),
     enabled: !!rescueCleMinistereEducatif,
@@ -48,19 +56,30 @@ const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Prop
   })
 
   const data = initialData ?? rescuedData ?? null
+  const hasTechnicalError = technicalError || !!rescueError
 
   // Utilise la clé depuis la réponse API (la plus fiable) ou la clé de rescue/url
   const trackingId = data?.cle_ministere_educatif ?? rescueCleMinistereEducatif ?? cleMinistereEducatif ?? ""
   const { setPrdvDone } = useFormationPrdvTracker(trackingId)
   const [confirmation, setConfirmation] = useState<{ appointmentId: string; token: string } | null>(null)
 
-  // Rescue en cours : ne pas afficher le message d'erreur tant que la requête n'est pas terminée
-  if (!data && (rescueCleMinistereEducatif === null || isRescueFetching)) {
+  // Rescue en cours : ne pas afficher le message d'erreur tant que la tentative n'est pas terminée
+  if (!data && (!rescueChecked || isRescueFetching)) {
     return null
   }
 
   if (!data) {
-    return <Box sx={{ my: "5rem", textAlign: "center" }}>La prise de rendez-vous n'est pas disponible pour cette formation.</Box>
+    return (
+      <Box sx={{ my: "5rem", textAlign: "center" }}>
+        <ErrorMessage
+          message={
+            hasTechnicalError
+              ? "Un problème technique est survenu lors de l’accès au formulaire de demande au CFA"
+              : "Un problème est survenu lors de l’accès au formulaire de demande au CFA"
+          }
+        />
+      </Box>
+    )
   }
 
   const context = { cle_ministere_educatif: data.cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale: data.etablissement_formateur_entreprise_raison_sociale }
