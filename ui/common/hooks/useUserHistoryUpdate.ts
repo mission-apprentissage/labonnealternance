@@ -11,20 +11,20 @@ export default function useUserHistoryUpdate() {
 
   return useCallback(
     async (status: AccessStatus, apiCall: () => Promise<unknown>) => {
-      await apiCall()
-        .then(() =>
-          ["user-list-opco", "user-list"].map(async (x) =>
-            client.invalidateQueries({
-              queryKey: [x],
-            })
-          )
-        )
-        .then(() => {
-          toast({
-            description: `Utilisateur ${getDescription(status)}`,
-            autoHideDuration: 4000,
-          })
+      try {
+        await apiCall()
+        await Promise.all(["user-list-opco", "user-list"].map((x) => client.invalidateQueries({ queryKey: [x] })))
+        toast({
+          description: `Utilisateur ${getDescription(status)}`,
+          autoHideDuration: 4000,
         })
+      } catch (error) {
+        toast({
+          variant: "error",
+          description: error instanceof Error ? error.message : "Une erreur est survenue",
+          autoHideDuration: 5000,
+        })
+      }
     },
     [client, toast]
   )
