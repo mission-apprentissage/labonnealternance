@@ -6,29 +6,23 @@ import { CandidatRechercheFilters } from "@/app/(candidat)/(recherche)/recherche
 import { CandidatRechercheForm } from "@/app/(candidat)/(recherche)/recherche/_components/CandidatRechercheForm"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
-export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; fullWidth?: boolean }) {
-  const { rechercheParams, fullWidth } = props
+export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; stuck?: boolean }) {
+  const { rechercheParams, stuck } = props
   return (
     <Box
       sx={{
-        ...(fullWidth
-          ? {
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              zIndex: 10,
-              backgroundColor: "white",
-              filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-              boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
-            }
-          : {}),
+        // Positionnement géré par le wrapper sticky parent ; ici on n'anime que l'apparence "collée" (ombre pleine largeur)
+        backgroundColor: stuck ? "white" : "transparent",
+        filter: stuck ? "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))" : "none",
+        boxShadow: stuck ? "0 4px 12px 0 rgba(0, 0, 18, 0.16)" : "none",
+        transition: "box-shadow .2s ease, background-color .2s ease, filter .2s ease",
+        willChange: "box-shadow",
       }}
     >
       <Container
         maxWidth="xl"
         sx={
-          fullWidth
+          stuck
             ? { px: fr.spacing("4v") }
             : {
                 maxWidth: "xl",
@@ -44,7 +38,8 @@ export function RechercheHeader(props: { rechercheParams: IRecherchePageParams; 
             gap: fr.spacing("16v"),
             alignItems: "center",
             backgroundColor: "white",
-            ...(fullWidth
+            transition: "box-shadow .2s ease, border-radius .2s ease, margin .2s ease",
+            ...(stuck
               ? {
                   padding: fr.spacing("4v"),
                 }
