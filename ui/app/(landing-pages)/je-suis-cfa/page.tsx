@@ -6,6 +6,9 @@ import Image from "next/image"
 import { AUTHTYPE } from "shared/constants/recruteur"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
+import { FollowLinkedIn } from "@/app/(espace-pro)/_components/FollowLinkedIn"
+import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
+import { cardSx } from "@/app/(landing-pages)/je-suis-recruteur/page"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { getDepotCtaHref } from "@/services/getDepotCtaHref"
@@ -57,17 +60,13 @@ const JeSuisCFAPage = async () => {
             <Typography variant="body1" gutterBottom>
               Créez le compte de votre CFA pour diffuser les offres de vos entreprises partenaires, et recevoir les candidatures.{" "}
             </Typography>
-            <Box display={"flex"} flexDirection={{ md: "row", xs: "column" }} gap={fr.spacing("4v")} justifyContent={{ md: "start", xs: "center" }} textAlign={"center"}>
-              <Box>
-                <Button linkProps={{ href: ctaDepotHref }} priority="primary">
-                  Créer mon espace dédié
-                </Button>
-              </Box>
-              <Box>
-                <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
-                  Me connecter
-                </Button>
-              </Box>
+            <Box display={"flex"} flexDirection={{ sm: "row", xs: "column" }} gap={fr.spacing("4v")}>
+              <Button linkProps={{ href: ctaDepotHref }} priority="primary">
+                Créer mon espace dédié
+              </Button>
+              <Button linkProps={{ href: PAGES.static.authentification.getPath() }} priority="secondary">
+                Me connecter
+              </Button>
             </Box>
           </Grid>
           <Grid size={{ md: 6, xs: 0 }} display={"flex"} flexDirection={"column"} justifyContent={"center"}>
@@ -88,7 +87,7 @@ const JeSuisCFAPage = async () => {
           sx={{
             mt: fr.spacing("16v"),
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
-            borderRadius: fr.spacing("5v"),
+            borderRadius: fr.spacing("2v"),
             padding: { md: fr.spacing("12v"), xs: fr.spacing("3v") },
           }}
         >
@@ -156,12 +155,81 @@ const JeSuisCFAPage = async () => {
             </Grid>
           </Grid>
         </Grid>
+
+        <Box
+          sx={{
+            mt: fr.spacing("10v"),
+            mb: fr.spacing("8v"),
+            py: fr.spacing("8v"),
+            px: { xs: fr.spacing("4v"), md: fr.spacing("8v") },
+            backgroundColor: fr.colors.decisions.background.default.grey.hover,
+            borderRadius: fr.spacing("2v"),
+            display: "flex",
+            flexDirection: "column",
+            gap: fr.spacing("10v"),
+          }}
+        >
+          <Typography component="h1" variant="h1">
+            Nos offres d’emploi en alternance
+            <br />
+            <Box component="span" sx={{ color: fr.colors.decisions.border.default.blueFrance.default }}>
+              en chiffres
+            </Box>
+          </Typography>
+          <Box sx={{ width: "13%", minWidth: "80px", height: "4px", background: fr.colors.decisions.border.default.blueFrance.default }} />
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "repeat(1, minmax(0, 1fr))", lg: "repeat(3, minmax(0, 1fr))" },
+              gap: fr.spacing("4v"),
+              alignItems: "stretch",
+              mt: fr.spacing("4v"),
+            }}
+          >
+            <Box sx={{ ...cardSx }}>
+              <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Image src="/images/home_pics/icons/file_eyes.svg" alt="" aria-hidden={true} width={80} height={80} />
+              </Typography>
+              <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>+ 60 000</Typography>
+              <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                formations exposées
+                <br />
+                sur La bonne alternance
+              </Typography>
+            </Box>
+            <Box sx={{ ...cardSx }}>
+              <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Image src="/images/home_pics/icons/envelop.svg" alt="" aria-hidden={true} width={80} height={80} />
+              </Typography>
+              <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>+ 100 000</Typography>
+              <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                demandes envoyées
+                <br />
+                par les candidats aux CFA
+              </Typography>
+            </Box>
+            <Box sx={{ ...cardSx }}>
+              <Typography sx={{ fontSize: "1.75rem", fontWeight: "bold", color: "#4B9F6C" }}>
+                <Image src="/images/home_pics/icons/ordi.svg" alt="" aria-hidden={true} width={80} height={80} />
+              </Typography>
+              <Typography sx={{ my: fr.spacing("2v"), fontSize: "40px", lineHeight: "48px", fontWeight: 700, color: "#0063CB" }}>20</Typography>
+              <Typography sx={{ fontSize: "20px", lineHeight: "28px", fontWeight: 700 }}>
+                demandes reçues en moyenne
+                <br />
+                par CFA sur une année
+              </Typography>
+            </Box>
+          </Box>
+
+          <Typography sx={{ fontSize: "12px", lineHeight: "20px", color: "#161616" }}>* Données calculées sur l'année 2025</Typography>
+        </Box>
+
         <Grid
           container
           sx={{
             mt: fr.spacing("16v"),
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
-            borderRadius: fr.spacing("5v"),
+            borderRadius: fr.spacing("2v"),
             padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
           }}
         >
@@ -248,7 +316,7 @@ const JeSuisCFAPage = async () => {
           sx={{
             mt: fr.spacing("16v"),
             backgroundColor: fr.colors.decisions.background.default.grey.hover,
-            borderRadius: fr.spacing("5v"),
+            borderRadius: fr.spacing("2v"),
             padding: { md: fr.spacing("12v"), xs: fr.spacing("4v") },
           }}
           spacing={fr.spacing("12v")}
@@ -300,19 +368,14 @@ const JeSuisCFAPage = async () => {
             </Box>
           </Grid>
         </Grid>
-        <Grid container sx={{ mt: fr.spacing("16v") }} spacing={fr.spacing("8v")}>
-          <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }} gap={fr.spacing("4v")}>
-            <Image fetchPriority="low" src={"/images/je-suis-cfa/illu-lba.svg"} alt="" width={212} height={145} unoptimized style={{ width: "100%" }} aria-hidden={true} />
-            <Typography component={"h2"} variant={"h4"} align="center">
-              La bonne alternance recense une liste d’outils et de liens utiles pour les organismes de formation qui accompagnent des jeunes dans leurs recherches de contrat.{" "}
-            </Typography>
-          </Grid>
-          <Grid size={12} sx={{ display: "flex", flexDirection: "column", my: "auto", justifyContent: "center" }}>
-            <Button linkProps={{ href: PAGES.static.guideCfa.getPath() }} priority="secondary" style={{ margin: "auto" }}>
-              Découvrir toutes les ressources
-            </Button>
-          </Grid>
-        </Grid>
+      </DefaultContainer>
+      <Box sx={{ mt: { xs: fr.spacing("6v"), md: fr.spacing("20v") }, px: { xs: 0, lg: fr.spacing("6v") } }}>
+        <DefaultContainer>
+          <AppreciationUsagers realm="cfa" />
+        </DefaultContainer>
+      </Box>
+      <DefaultContainer>
+        <FollowLinkedIn />
       </DefaultContainer>
     </Box>
   )

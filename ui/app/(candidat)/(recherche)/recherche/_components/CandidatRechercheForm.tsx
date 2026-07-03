@@ -117,7 +117,7 @@ export function CandidatRechercheForm({ rechercheParams }: { rechercheParams: IR
         }
         metierInput={<RechercheMetierAutocomplete />}
         lieuInput={<RechercheLieuAutocomplete />}
-        submitButton={<RechercheSubmitButton>C'est parti</RechercheSubmitButton>}
+        submitButton={<RechercheSubmitButton>Rechercher</RechercheSubmitButton>}
       />
     </RechercheForm>
   )

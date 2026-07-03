@@ -8,8 +8,22 @@ import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import j1s from "@/public/images/logosPartenaires/partenaire-1j1s.webp"
 import affelnet from "@/public/images/logosPartenaires/partenaire-affelnet.webp"
+import apec from "@/public/images/logosPartenaires/partenaire-apec.webp"
+import auchan from "@/public/images/logosPartenaires/partenaire-auchan.webp"
+import bpce from "@/public/images/logosPartenaires/partenaire-bpce.webp"
+import daher from "@/public/images/logosPartenaires/partenaire-daher.webp"
+import decathlon from "@/public/images/logosPartenaires/partenaire-decathlon.webp"
 import diagoriente from "@/public/images/logosPartenaires/partenaire-diagoriente.webp"
+import edf from "@/public/images/logosPartenaires/partenaire-edf.webp"
+import enedis from "@/public/images/logosPartenaires/partenaire-enedis.webp"
+import engie from "@/public/images/logosPartenaires/partenaire-engie.webp"
 import franceTravail from "@/public/images/logosPartenaires/partenaire-france-travail.webp"
+import hellowork from "@/public/images/logosPartenaires/partenaire-hellowork.webp"
+import institutPasteur from "@/public/images/logosPartenaires/partenaire-institut-pasteur.webp"
+import laposte from "@/public/images/logosPartenaires/partenaire-laposte.webp"
+import leboncoin from "@/public/images/logosPartenaires/partenaire-leboncoin.webp"
+import loreal from "@/public/images/logosPartenaires/partenaire-loreal.webp"
+import meteojob from "@/public/images/logosPartenaires/partenaire-meteojob.webp"
 import onisep from "@/public/images/logosPartenaires/partenaire-onisep.webp"
 import opco2i from "@/public/images/logosPartenaires/partenaire-opco-2i.webp"
 import afdas from "@/public/images/logosPartenaires/partenaire-opco-afdas.webp"
@@ -22,8 +36,15 @@ import ocapiat from "@/public/images/logosPartenaires/partenaire-opco-ocapiat.we
 import sante from "@/public/images/logosPartenaires/partenaire-opco-sante.webp"
 import uniformation from "@/public/images/logosPartenaires/partenaire-opco-uniformation.webp"
 import parcoursup from "@/public/images/logosPartenaires/partenaire-parcoursup.webp"
+import pass from "@/public/images/logosPartenaires/partenaire-pass.webp"
 import rco from "@/public/images/logosPartenaires/partenaire-rco.svg"
+import rhalternance from "@/public/images/logosPartenaires/partenaire-rh-alternance.webp"
+import taleez from "@/public/images/logosPartenaires/partenaire-taleez.webp"
+import talentplug from "@/public/images/logosPartenaires/partenaire-talentplug.webp"
 import tbd from "@/public/images/logosPartenaires/partenaire-tdb.webp"
+import toulouseMetropole from "@/public/images/logosPartenaires/partenaire-toulouse-metropole.webp"
+import veritone from "@/public/images/logosPartenaires/partenaire-veritone.webp"
+
 import { PAGES } from "@/utils/routes.utils"
 
 export const metadata: Metadata = {
@@ -197,8 +218,42 @@ export default function APropos() {
                   sx={{
                     mb: fr.spacing("4v"),
                   }}
+                  id="nos-partenaires"
                 >
                   Nos partenaires
+                </Typography>
+
+                <Typography>La bonne alternance expose les offres d'emploi en alternance de nombreuses entreprises, dont :</Typography>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gap: fr.spacing("4v"),
+                    mb: fr.spacing("8v"),
+                    mt: fr.spacing("4v"),
+                    gridTemplateColumns: {
+                      xs: "repeat(2, 1fr)",
+                      sm: "repeat(3, 1fr)",
+                      md: "repeat(4, 1fr)",
+                    },
+                  }}
+                >
+                  <Image src={decathlon} alt="Decathlon" style={{ width: "100%", height: "auto" }} />
+                  <Image src={loreal} alt="L'Oréal" style={{ width: "100%", height: "auto" }} />
+                  <Image src={engie} alt="Engie" style={{ width: "100%", height: "auto" }} />
+                  <Image src={laposte} alt="Groupe La Poste" style={{ width: "100%", height: "auto" }} />
+                  <Image src={bpce} alt="Groupe BPCE" style={{ width: "100%", height: "auto" }} />
+                  <Image src={auchan} alt="Auchan" style={{ width: "100%", height: "auto" }} />
+                  <Image src={institutPasteur} alt="Institut Pasteur" style={{ width: "100%", height: "auto" }} />
+                  <Image src={daher} alt="Daher" style={{ width: "100%", height: "auto" }} />
+                  <Image src={edf} alt="EDF" style={{ width: "100%", height: "auto" }} />
+                  <Image src={enedis} alt="Enedis" style={{ width: "100%", height: "auto" }} />
+                  <Image src={toulouseMetropole} alt="Toulouse Métropole" style={{ width: "100%", height: "auto" }} />
+                </Box>
+
+                <Typography>
+                  En plus des offres collectées directement auprès des recruteurs, La bonne alternance réunit sur un seul site les emplois en alternance issus de nombreux
+                  partenaires :
                 </Typography>
 
                 <Box
@@ -206,6 +261,7 @@ export default function APropos() {
                     display: "grid",
                     gap: fr.spacing("4v"),
                     mb: fr.spacing("8v"),
+                    mt: fr.spacing("4v"),
                     gridTemplateColumns: {
                       xs: "repeat(2, 1fr)",
                       sm: "repeat(3, 1fr)",
@@ -214,16 +270,42 @@ export default function APropos() {
                   }}
                 >
                   <Image src={franceTravail} alt="France Travail" style={{ width: "100%", height: "auto" }} />
+                  <Image src={j1s} alt="#1jeune1solution" style={{ width: "100%", height: "auto" }} />
+                  <Image src={pass} alt="PASS" style={{ width: "100%", height: "auto" }} />
+                  <Image src={ep} alt="OPCO EP" style={{ width: "100%", height: "auto" }} />
+                  <Image src={rhalternance} alt="RH Alternance" style={{ width: "100%", height: "auto" }} />
+                  <Image src={hellowork} alt="Hellowork" style={{ width: "100%", height: "auto" }} />
+                  <Image src={veritone} alt="Veritone" style={{ width: "100%", height: "auto" }} />
+                  <Image src={meteojob} alt="Météo Job" style={{ width: "100%", height: "auto" }} />
+                  <Image src={leboncoin} alt="Le Bon Coin" style={{ width: "100%", height: "auto" }} />
+                  <Image src={taleez} alt="Taleez" style={{ width: "100%", height: "auto" }} />
+                  <Image src={talentplug} alt="Talent Plug" style={{ width: "100%", height: "auto" }} />
+                  <Image src={apec} alt="Apec" style={{ width: "100%", height: "auto" }} />
+                </Box>
+
+                <Typography>La bonne alternance collabore également avec les acteurs publics suivants :</Typography>
+
+                <Box
+                  sx={{
+                    display: "grid",
+                    gap: fr.spacing("4v"),
+                    mt: fr.spacing("4v"),
+                    mb: fr.spacing("8v"),
+                    gridTemplateColumns: {
+                      xs: "repeat(2, 1fr)",
+                      sm: "repeat(3, 1fr)",
+                      md: "repeat(4, 1fr)",
+                    },
+                  }}
+                >
                   <Image src={parcoursup} alt="Parcoursup - Entrez dans l'enseignement supérieur" style={{ width: "100%", height: "auto" }} />
                   <Image src={onisep} alt="Onisep" style={{ width: "100%", height: "auto" }} />
-                  <Image src={j1s} alt="#1jeune1solution" style={{ width: "100%", height: "auto" }} />
                   <Image src={affelnet} alt="Choisir son affectation - Demander une formation et un établissement après la 3ème" style={{ width: "100%", height: "auto" }} />
                   <Image src={ocapiat} alt="OPCO Ocapiat" style={{ width: "100%", height: "auto" }} />
                   <Image src={opco2i} alt="OPCO 2i" style={{ width: "100%", height: "auto" }} />
                   <Image src={sante} alt="OPCO Santé" style={{ width: "100%", height: "auto" }} />
                   <Image src={atlas} alt="OPCO Atlas" style={{ width: "100%", height: "auto" }} />
                   <Image src={afdas} alt="OPCO Afdas - Demain sera formation" style={{ width: "100%", height: "auto" }} />
-                  <Image src={ep} alt="OPCO EP" style={{ width: "100%", height: "auto" }} />
                   <Image src={commerce} alt="L'opcommerce - opérateur de compétences" style={{ width: "100%", height: "auto" }} />
                   <Image src={constructys} alt="OPCO Constructys - votre partenaire compétences" style={{ width: "100%", height: "auto" }} />
                   <Image src={uniformation} alt="OPCO Uniformation" style={{ width: "100%", height: "auto" }} />

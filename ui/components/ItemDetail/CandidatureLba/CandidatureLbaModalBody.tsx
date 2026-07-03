@@ -15,6 +15,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter"
 import { MultiSelectField } from "@/app/_components/FormComponents/MultiSelectField"
 import { SelectField } from "@/app/_components/FormComponents/SelectField"
 import ModalCloseButton from "@/app/_components/ModalCloseButton"
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import InfoBanner from "@/components/InfoBanner/InfoBanner"
 import { sessionStorageGet, sessionStorageSet } from "@/utils/localStorage"
@@ -110,7 +111,7 @@ export const CandidatureLbaModalBody = ({
               </Box>
             </>
           )}
-          <Typography variant="h1" sx={{ fontWeight: 700, fontSize: "32px", mb: fr.spacing("6v") }} data-testid="CandidatureSpontaneeTitle">
+          <ModalTitle sx={{ mb: fr.spacing("4v") }}>
             {isOffre ? (
               <>
                 Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
@@ -118,11 +119,11 @@ export const CandidatureLbaModalBody = ({
             ) : (
               <>Candidature spontanée{fromWidget ? ` auprès de ${company}` : ""}</>
             )}
-          </Typography>
+          </ModalTitle>
 
           <Typography sx={{ mb: 2, fontSize: "14px", color: "grey.600", my: fr.spacing("2v") }}>Les champs marqués d’un astérisque (*) sont obligatoires.</Typography>
 
-          <Box sx={{ pt: fr.spacing("8v"), display: "flex", gap: fr.spacing("6v"), flexDirection: { xs: "column", md: "row" } }}>
+          <Box sx={{ pt: fr.spacing("3v"), display: "flex", gap: fr.spacing("6v"), flexDirection: { xs: "column", md: "row" } }}>
             <Box
               sx={(theme) => ({
                 height: "fit-content",
@@ -138,10 +139,10 @@ export const CandidatureLbaModalBody = ({
               <MesInformations formik={formik} />
               <MaRechercheDAlternance formik={formik} />
             </Box>
-            <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { sx: 0, md: fr.spacing("2v") } }}>
-              <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
+            <Box sx={{ flex: 1, px: fr.spacing("2v"), pt: { xs: 0, md: fr.spacing("2v") } }}>
+              <ModalTitle component="h2" sx={{ my: fr.spacing("6v"), color: "#000091" }}>
                 Mon message personnalisé
-              </Typography>
+              </ModalTitle>
               <TextareaInput
                 formik={formik}
                 name="applicant_message"
@@ -153,9 +154,15 @@ export const CandidatureLbaModalBody = ({
               </Box>
               {customQuestions.length > 0 && (
                 <>
-                  <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v"), color: "#000091" }}>
+                  <ModalTitle
+                    component="h2"
+                    sx={{
+                      my: fr.spacing("6v"),
+                      color: "#000091",
+                    }}
+                  >
                     Mes réponses aux questions de l’entreprise
-                  </Typography>
+                  </ModalTitle>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
                     {customQuestions.map((question, index) => (
                       <TextareaInput
@@ -253,9 +260,9 @@ export const CandidatureLbaModalBody = ({
 const MesInformations = ({ formik }: { formik: FormikType }) => {
   return (
     <>
-      <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", mb: fr.spacing("6v") }}>
+      <ModalTitle component="h2" sx={{ mb: fr.spacing("6v") }}>
         Mes informations
-      </Typography>
+      </ModalTitle>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
         <FormikInput name="applicant_last_name" label="Nom" formik={formik} required />
         <FormikInput name="applicant_first_name" label="Prénom" formik={formik} required />
@@ -284,9 +291,9 @@ const MaRechercheDAlternance = ({ formik }: { formik: FormikType }) => {
 
   return (
     <>
-      <Typography variant="h2" sx={{ fontWeight: 700, fontSize: "24px", lineHeight: "32px", my: fr.spacing("6v") }}>
+      <ModalTitle component="h2" sx={{ my: fr.spacing("6v") }}>
         Ma recherche d'alternance
-      </Typography>
+      </ModalTitle>
       <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("6v") }}>
         <RadioInput
           formik={formik}

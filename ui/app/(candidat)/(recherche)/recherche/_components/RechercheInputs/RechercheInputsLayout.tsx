@@ -40,6 +40,8 @@ export function RechercheInputsLayout({
         gap: fr.spacing("4v"),
       }}
     >
+      {metierInput && <Box sx={{ flex: 450 }}>{metierInput}</Box>}
+      {lieuInput && <Box sx={{ flex: 250 }}>{lieuInput}</Box>}
       {viewTypeCheckboxs && (
         <Box
           sx={{
@@ -49,8 +51,6 @@ export function RechercheInputsLayout({
           {viewTypeCheckboxs}
         </Box>
       )}
-      {metierInput && <Box sx={{ flex: 450 }}>{metierInput}</Box>}
-      {lieuInput && <Box sx={{ flex: 250 }}>{lieuInput}</Box>}
       {rayonSelect}
       {niveauSelect}
       {typesOffresEmploiSelect}

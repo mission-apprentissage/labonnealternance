@@ -39,8 +39,8 @@ export default function GestionDesAdministrateurs() {
 
   return (
     <>
-      <Breadcrumb pages={[PAGES.static.backAdminGestionDesAdministrateurs]} />
-      <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose} size="md">
+      <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesAdministrateurs]} />
+      <ModalReadOnly isOpen={newUser.isOpen} onClose={newUser.onClose}>
         <Box sx={{ pb: fr.spacing("4v"), px: fr.spacing("4v") }}>
           <Typography className={fr.cx("fr-text--xl", "fr-text--bold")} sx={{ mb: fr.spacing("2v") }} component="h2">
             Ajouter un nouvel utilisateur
