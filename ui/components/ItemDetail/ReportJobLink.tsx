@@ -9,9 +9,9 @@ import { z } from "zod"
 import { toFormikValidationSchema } from "zod-formik-adapter"
 import { CustomFormControl } from "@/app/_components/CustomFormControl"
 import { CustomRadio } from "@/app/_components/CustomRadio"
+import { ModalTitle } from "@/app/_components/Title/ModalTitle"
 import { useLocalStorage } from "@/app/hooks/useLocalStorage"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { InfoTooltipOrModal } from "@/components/InfoTooltipOrModal"
 import { ModalReadOnly } from "@/components/ModalReadOnly"
 import { reportLbaItem } from "@/utils/api"
 
@@ -66,7 +66,6 @@ type IFormValues = z.output<typeof ZFormValues>
 export const ReportJobLink = ({
   linkLabelNotReported,
   linkLabelReported,
-  tooltip,
   itemId,
   type,
   sx,
@@ -74,7 +73,6 @@ export const ReportJobLink = ({
   itemId: string
   linkLabelNotReported: string
   linkLabelReported: string
-  tooltip: React.ReactNode
   type: LBA_ITEM_TYPE
   sx?: React.ComponentProps<typeof Stack>["sx"]
 }) => {
@@ -112,10 +110,8 @@ export const ReportJobLink = ({
         {storedValue ? (
           <ReportedAcknowledgement />
         ) : (
-          <Box sx={{ p: fr.spacing("8v") }}>
-            <Typography variant="h1" sx={{ fontSize: "24px", fontWeight: 700 }}>
-              {content.title}
-            </Typography>
+          <Box sx={{ px: { xs: fr.spacing("4v"), md: fr.spacing("8v") }, pb: fr.spacing("8v"), pt: fr.spacing("4v"), maxWidth: "708px" }}>
+            <ModalTitle>{content.title}</ModalTitle>
             <Typography sx={{ my: 3, fontSize: "14px" }}>{content.introductionText}</Typography>
             <Formik
               initialValues={{ reason: "", reason_details: "" }}
@@ -184,17 +180,17 @@ export const ReportJobLink = ({
 
 const ReportedAcknowledgement = () => {
   return (
-    <Box sx={{ justifySelf: "center", p: fr.spacing("8v") }}>
+    <Box sx={{ justifySelf: "center", p: fr.spacing("8v"), maxWidth: "708px" }}>
       <Stack
         direction="row"
-        spacing={4}
+        spacing={fr.spacing("2v")}
         sx={{
           alignItems: "center",
           mb: fr.spacing("4v"),
         }}
       >
-        <Image width={56} height={56} src="/images/paperplane2.svg" alt="" />
-        <Typography variant="h2">Votre signalement a bien été envoyé à notre équipe.</Typography>
+        <Image width={23} height={23} src="/images/icons/coche_verte.svg" alt="" />
+        <ModalTitle>Votre signalement a bien été envoyé à notre équipe.</ModalTitle>
       </Stack>
       <Typography component="span">Merci de votre participation à l'amélioration du service La bonne alternance.</Typography>
     </Box>

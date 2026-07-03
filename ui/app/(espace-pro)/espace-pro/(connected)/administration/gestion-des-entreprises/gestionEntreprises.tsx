@@ -2,56 +2,32 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
+import Input from "@codegouvfr/react-dsfr/Input"
+import { Select } from "@codegouvfr/react-dsfr/Select"
 import { Box, CircularProgress, Typography } from "@mui/material"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { Form, Formik } from "formik"
-import { useState } from "react"
-import { extensions } from "shared/helpers/zodHelpers/zodPrimitives"
+import { useMemo, useState } from "react"
+import type { ILbaCompanyForAdminSearchJSON, ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
+import { validateSIRET } from "shared/validators/siretValidator"
 import * as Yup from "yup"
-import { z } from "zod"
-import { toFormikValidationSchema } from "zod-formik-adapter"
 import { Breadcrumb } from "@/app/_components/Breadcrumb"
-import CustomDSFRInput from "@/app/_components/CustomDSFRInput"
 import CustomInput from "@/app/_components/CustomInput"
+import { VirtualTable } from "@/app/(espace-pro)/_components/VirtualTable"
 import { phoneValidation } from "@/common/validation/fieldValidations"
-import { SearchLine } from "@/theme/components/icons"
-import { getCompanyContactInfo, putCompanyContactInfo } from "@/utils/api"
+import { getCompanyContactInfo, putCompanyContactInfo, searchLbaCompanies } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { getLbaCompaniesColumns } from "../_utils/lbaCompaniesColumns"
 
 const unreferencedLbaRecruteurWarning = "Seules les modifications / ajouts sont supportés dans le cas d'une société déréférencée"
 
-function FormulaireRechercheEntreprise({ onSiretChange }: { onSiretChange: (newSiret: string) => void }) {
-  const submitSearchForSiret = async ({ siret }: { siret: string }) => {
-    const formattedSiret = siret.replace(/[^0-9]/g, "")
-    onSiretChange(formattedSiret)
-  }
-
-  return (
-    <Formik
-      validateOnMount
-      initialValues={{ siret: undefined }}
-      validationSchema={toFormikValidationSchema(
-        z.object({
-          siret: extensions.siret,
-        })
-      )}
-      onSubmit={submitSearchForSiret}
-    >
-      {({ values, isValid, dirty }) => {
-        return (
-          <Form>
-            <CustomDSFRInput required={true} name="siret" label="SIRET de l'établissement" type="text" value={values.siret} />
-            <Box sx={{ display: "flex", mt: fr.spacing("2v"), justifyContent: "flex-start" }}>
-              <Button type="submit" data-testid="search_for_algo_company" disabled={!isValid || !dirty}>
-                <SearchLine sx={{ mr: fr.spacing("2v") }} /> Chercher
-              </Button>
-            </Box>
-          </Form>
-        )
-      }}
-    </Formik>
-  )
-}
+const SEARCH_FIELD_OPTIONS: { value: ILbaCompanySearchField; label: string }[] = [
+  { value: "workplace_legal_name", label: "Raison sociale" },
+  { value: "workplace_brand", label: "Enseigne" },
+  { value: "apply_email", label: "Email de contact" },
+  { value: "apply_phone", label: "Téléphone" },
+  { value: "workplace_siret", label: "SIRET" },
+]
 
 function FormulaireModificationEntreprise({ siret }: { siret: string }) {
   const {
@@ -109,11 +85,11 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
           <Alert severity="success" title="Succès" description={`Le SIRET ${currentCompany.siret} a été mis à jour.`} />
         </Box>
       )}
-      <Typography component="h2" sx={{ fontWeight: 700, my: fr.spacing("6v") }}>
+      <Typography component="h2" sx={{ fontWeight: 700, mt: 0, mb: fr.spacing("4v") }}>
         Mise à jour des coordonnées pour l’entreprise :
       </Typography>
 
-      <Box sx={{ borderColor: "#000091", borderWidth: "1px", p: fr.spacing("4v"), mb: fr.spacing("4v") }}>
+      <Box sx={{ borderColor: "#000091", borderWidth: "1px", mb: fr.spacing("4v") }}>
         <Formik
           validate={(values) => {
             if (!currentCompany.active && !values.email && !values.phone) return { email: unreferencedLbaRecruteurWarning, phone: unreferencedLbaRecruteurWarning }
@@ -162,18 +138,160 @@ function FormulaireModificationEntreprise({ siret }: { siret: string }) {
   )
 }
 
+function DetailPlaceholder() {
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        p: fr.spacing("6v"),
+        border: "1px solid var(--border-default-grey)",
+        color: "text.secondary",
+        backgroundColor: fr.colors.decisions.background.default.grey.active,
+      }}
+    >
+      <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("2v") }}>
+        Aucune entreprise sélectionnée
+      </Typography>
+      <Typography sx={{ fontSize: "14px" }}>Sélectionnez une entreprise dans la liste des résultats pour mettre à jour ses coordonnées.</Typography>
+    </Box>
+  )
+}
+
 export default function GestionEntreprises() {
+  const [searchInput, setSearchInput] = useState("")
+  const [searchField, setSearchField] = useState<ILbaCompanySearchField>("workplace_legal_name")
+  const [submittedSearch, setSubmittedSearch] = useState("")
+  const [submittedField, setSubmittedField] = useState<ILbaCompanySearchField>("workplace_legal_name")
   const [siret, setSiret] = useState<string>("")
+
+  const isSiretField = submittedField === "workplace_siret"
+  const isEnabled = isSiretField ? validateSIRET(submittedSearch) : submittedSearch.length >= 2
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["/admin/lba-companies", submittedField, submittedSearch],
+    queryFn: () => searchLbaCompanies(submittedSearch, submittedField),
+    enabled: isEnabled,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const companies = useMemo(() => (data as ILbaCompanyForAdminSearchJSON[]) ?? [], [data])
+  const columns = useMemo(() => getLbaCompaniesColumns({ onSelect: setSiret }), [])
+
+  const selectedFieldLabel = SEARCH_FIELD_OPTIONS.find((o) => o.value === searchField)?.label ?? ""
+  const helpText =
+    searchField === "workplace_siret"
+      ? "SIRET : correspondance exacte (14 chiffres)."
+      : `« ${selectedFieldLabel} » — recherche insensible à la casse (regex). Résultats limités à 100 entreprises. Cibler un autre champ peut réduire le nombre de résultats.`
+
+  const onSearch = () => {
+    setSiret("")
+    setSubmittedField(searchField)
+    setSubmittedSearch(searchInput.trim())
+  }
 
   return (
     <>
-      <Breadcrumb pages={[PAGES.static.backAdminHome, PAGES.static.backAdminGestionDesEntreprises]} />
-      <Box>
-        <Typography component="h2" sx={{ fontWeight: 700, mb: fr.spacing("4v") }}>
-          Entreprises de l'algorithme :
-        </Typography>
-        <FormulaireRechercheEntreprise onSiretChange={setSiret} />
-        <FormulaireModificationEntreprise siret={siret} />
+      <Breadcrumb pages={[PAGES.static.backAdminGestionDesEntreprises]} />
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", lg: "1.45fr 1fr" },
+          columnGap: "40px",
+          rowGap: 0,
+          alignItems: "stretch",
+        }}
+      >
+        {/* Ligne 1, colonne gauche : recherche + compteur */}
+        <Box sx={{ gridColumn: { lg: "1" }, gridRow: { lg: "1" }, minWidth: 0 }}>
+          <Box sx={{ display: "flex", gap: fr.spacing("2v"), alignItems: "flex-end" }}>
+            <Input
+              label="Rechercher"
+              nativeInputProps={{
+                value: searchInput,
+                placeholder: "Saisissez votre recherche...",
+                onChange: (e) => setSearchInput(e.target.value),
+                onKeyDown: (e) => {
+                  if (e.key === "Enter") onSearch()
+                },
+                style: { minWidth: "600px" },
+              }}
+            />
+            <Select
+              label="Cibler un champ"
+              nativeSelectProps={{
+                value: searchField,
+                onChange: (e) => {
+                  setSearchField(e.target.value as ILbaCompanySearchField)
+                  setSiret("")
+                },
+                style: { width: "240px" },
+              }}
+            >
+              {SEARCH_FIELD_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </Select>
+            <Button iconId="fr-icon-search-line" priority="primary" onClick={onSearch} data-testid="search_for_algo_company" style={{ marginBottom: "1.5rem" }}>
+              Rechercher
+            </Button>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: fr.spacing("1v"),
+              // mt: fr.spacing("1v"),
+              mb: fr.spacing("3v"),
+              fontSize: ".875rem",
+              color: "var(--text-mention-grey)",
+              "& .fr-icon-information-line::before": { "--icon-size": "1rem" },
+            }}
+          >
+            <span className="fr-icon-information-line fr-icon--sm" aria-hidden="true" />
+            <span>{helpText}</span>
+          </Box>
+        </Box>
+
+        {/* Ligne 2, colonne gauche : liste des résultats (pleine largeur tant qu'aucune recherche n'est lancée) */}
+        <Box sx={{ gridColumn: { lg: isEnabled ? "1" : "1 / -1" }, gridRow: { lg: "2" }, minWidth: 0 }}>
+          {!isEnabled ? (
+            <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>
+              {searchField === "workplace_siret" ? "Saisissez un SIRET (14 chiffres) pour rechercher." : "Saisissez au moins 2 caractères pour rechercher."}
+            </Box>
+          ) : isFetching ? (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+              <CircularProgress />
+            </Box>
+          ) : companies.length === 0 ? (
+            <Box sx={{ py: 6, textAlign: "center", color: "text.secondary" }}>Aucun résultat.</Box>
+          ) : (
+            <VirtualTable
+              caption={`Entreprises de l'algorithme (${companies.length})`}
+              columns={columns}
+              data={companies}
+              defaultSortBy={[{ id: "raison_sociale", desc: false }]}
+              hideSearch={true}
+              maxHeight="600px"
+              onRowClick={(row) => setSiret(row.siret)}
+              getRowStyle={(row) => (row.siret === siret ? { backgroundColor: "#eef0ff", boxShadow: "inset 3px 0 0 #000091" } : undefined)}
+            />
+          )}
+        </Box>
+
+        {/* Ligne 2, colonne droite : panneau de détail (aligné sur le haut de la liste) */}
+        {(siret || isEnabled) && (
+          <Box component="section" sx={{ gridColumn: { lg: "2" }, gridRow: { lg: "2" }, minWidth: 0, display: "flex", flexDirection: "column" }}>
+            {siret ? <FormulaireModificationEntreprise siret={siret} /> : <DetailPlaceholder />}
+          </Box>
+        )}
       </Box>
     </>
   )
