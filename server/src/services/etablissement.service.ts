@@ -250,7 +250,7 @@ export const verifyRecruiterEmailInUse = async ({
       const hasGrantedAfterDenied = sortedEvents.some((e) => e.status === AccessStatus.GRANTED && new Date(e.date ?? 0) > new Date(lastDeniedEvent.date ?? 0))
       if (!hasGrantedAfterDenied) {
         const deniedDate = dayjs(lastDeniedEvent.date).format("DD/MM/YYYY")
-        return errorFactory(`Votre accès à cet établissement a été refusé le ${deniedDate}.`, BusinessErrorCodes.ROLE_DENIED)
+        return errorFactory(`Votre accès à cet établissement a été refusé le ${deniedDate}. Pour le débloquer, contactez notre support à l'adresse`, BusinessErrorCodes.ROLE_DENIED)
       }
     }
   }
