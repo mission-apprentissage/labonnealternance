@@ -11,6 +11,7 @@ import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherch
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
+import { useIsWidget } from "@/app/hooks/useIsWidget"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
@@ -89,6 +90,7 @@ function JobDetail({
 }) {
   const router = useRouter()
   const theme = useTheme()
+  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
@@ -146,21 +148,28 @@ function JobDetail({
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title
 
   useEffect(() => {
+    let ticking = false
     const handleScroll = () => {
-      if (!headerRef.current) return
-      const currentScrollY = Math.max(0, window.scrollY)
-      const scrollingDown = currentScrollY > prevScrollYRef.current
-      prevScrollYRef.current = currentScrollY
+      if (ticking) return
+      ticking = true
+      // Throttle via requestAnimationFrame : évite le layout thrash (getBoundingClientRect + setState) à chaque event scroll (fluidité Safari)
+      requestAnimationFrame(() => {
+        ticking = false
+        if (!headerRef.current) return
+        const currentScrollY = Math.max(0, window.scrollY)
+        const scrollingDown = currentScrollY > prevScrollYRef.current
+        prevScrollYRef.current = currentScrollY
 
-      const { top, bottom } = headerRef.current.getBoundingClientRect()
-      // Scroll bas : show sticky dès que le haut du header quitte le viewport
-      if (scrollingDown && !isCollapsedHeader && top < -100) {
-        setIsCollapsedHeader(true)
-      }
-      // Scroll haut : hide sticky dès que le bas du header repasse le bord supérieur du viewport
-      else if (!scrollingDown && isCollapsedHeader && bottom >= 50) {
-        setIsCollapsedHeader(false)
-      }
+        const { top, bottom } = headerRef.current.getBoundingClientRect()
+        // Scroll bas : show sticky dès que le haut du header quitte le viewport
+        if (scrollingDown && !isCollapsedHeader && top < -100) {
+          setIsCollapsedHeader(true)
+        }
+        // Scroll haut : hide sticky dès que le bas du header repasse le bord supérieur du viewport
+        else if (!scrollingDown && isCollapsedHeader && bottom >= 50) {
+          setIsCollapsedHeader(false)
+        }
+      })
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
@@ -176,67 +185,75 @@ function JobDetail({
       }}
       {...swipeHandlers}
     >
-      {/* Header sticky pleine largeur — visible uniquement quand on a scrollé au-delà du header carte */}
-      {isCollapsedHeader && (
-        <Box
-          sx={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            backgroundColor: "white",
-            filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-            boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
-          }}
-        >
-          {isMobile ? (
-            <Box
-              sx={{
-                padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
-            >
-              <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-            </Box>
-          ) : (
-            <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
-              <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <LbaItemTags item={selectedItem} />
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+      {/* Header sticky pleine largeur — toujours monté, animé via transform/opacity pour un collapse fluide (Safari inclus) */}
+      <Box
+        aria-hidden={!isCollapsedHeader}
+        sx={{
+          // fixed (hors flux) : ne réserve pas d'espace quand la barre est cachée, tout en restant animable
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          backgroundColor: "white",
+          filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+          boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
+          transform: isCollapsedHeader ? "translateY(0)" : "translateY(-100%)",
+          opacity: isCollapsedHeader ? 1 : 0,
+          pointerEvents: isCollapsedHeader ? "auto" : "none",
+          visibility: isCollapsedHeader ? "visible" : "hidden",
+          transition: `transform .25s ease, opacity .2s ease, visibility 0s linear ${isCollapsedHeader ? "0s" : ".25s"}`,
+          willChange: "transform, opacity",
+        }}
+      >
+        {isMobile ? (
+          <Box
+            sx={{
+              padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+          </Box>
+        ) : (
+          <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
+            <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <LbaItemTags item={selectedItem} />
+                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+              </Box>
+              <Typography
+                variant={"h3"}
+                sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
+                dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
+              />
+              <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
+                <Box sx={{ mr: fr.spacing("4v") }}>
+                  {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
+                    <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
+                  )}
+                  {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
+                  {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                 </Box>
-                <Typography
-                  variant={"h3"}
-                  sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
-                  dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
-                />
-                <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
-                  <Box sx={{ mr: fr.spacing("4v") }}>
-                    {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-                      <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
-                    )}
-                    {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                    {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
-                  </Box>
-                  <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
-                    <ShareLink item={selectedItem} />
-                    {reportItemId && (
-                      <ReportJobLink
-                        itemId={reportItemId}
-                        type={kind as LBA_ITEM_TYPE}
-                        linkLabelNotReported="Signaler l'offre"
-                        linkLabelReported="Offre signalée"
-                        sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
-                      />
-                    )}
-                  </Box>
+                <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
+                  <ShareLink item={selectedItem} />
+                  {reportItemId && (
+                    <ReportJobLink
+                      itemId={reportItemId}
+                      type={kind as LBA_ITEM_TYPE}
+                      linkLabelNotReported="Signaler l'offre"
+                      linkLabelReported="Offre signalée"
+                      sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
+                    />
+                  )}
                 </Box>
               </Box>
-            </Container>
-          )}
-        </Box>
-      )}
+            </Box>
+          </Container>
+        )}
+      </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
         <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
@@ -357,7 +374,7 @@ function JobDetail({
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
       {!isMobile && <BackToTopButton />}
-      <Footer />
+      {!isWidget && <Footer />}
     </Box>
   )
 }
