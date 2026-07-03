@@ -1,24 +1,20 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box, Container, Typography } from "@mui/material"
+import { Box, Container } from "@mui/material"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
-import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import ErrorMessage from "@/components/ErrorMessage/ErrorMessage"
 import { ContactCfaSummary } from "@/components/espace_pro/Candidat/layout/ContactCfaSummary"
 import { DemandeDeContactConfirmation } from "@/components/RDV/DemandeDeContactConfirmation"
 import { DemandeDeContactForm } from "@/components/RDV/DemandeDeContactForm"
-import { publicConfig } from "@/config.public"
 import { getPrdvContext } from "@/utils/api"
 
 type PrdvData = NonNullable<Awaited<ReturnType<typeof getPrdvContext>>>
 
 type Props = {
   data: PrdvData | null
-  technicalError: boolean
   cleMinistereEducatif: string | null
   referrer: string | null
 }
@@ -26,11 +22,11 @@ type Props = {
 /**
  * Appointment form page.
  */
-export default function PriseDeRendezVous({ data, technicalError, cleMinistereEducatif, referrer }: Props) {
-  return <PageContent data={data} technicalError={technicalError} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
+export default function PriseDeRendezVous({ data, cleMinistereEducatif, referrer }: Props) {
+  return <PageContent data={data} cleMinistereEducatif={cleMinistereEducatif} referrer={referrer} />
 }
 
-const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, referrer }: Props) => {
+const PageContent = ({ data: initialData, cleMinistereEducatif, referrer }: Props) => {
   // Rescue client-side : si le # n'était pas encodé dans l'URL, le navigateur l'a
   // interprété comme un fragment et le serveur n'a pas reçu la partie "#L01".
   // On détecte ce cas en comparant window.location.hash avec la clé reçue côté serveur.
@@ -46,11 +42,7 @@ const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, 
     setRescueChecked(true)
   }, [cleMinistereEducatif, initialData])
 
-  const {
-    data: rescuedData,
-    error: rescueError,
-    isFetching: isRescueFetching,
-  } = useQuery({
+  const { data: rescuedData, isFetching: isRescueFetching } = useQuery({
     queryKey: ["getPrdvForm-rescue", rescueCleMinistereEducatif],
     queryFn: () => getPrdvContext(rescueCleMinistereEducatif!, referrer ?? "lba"),
     enabled: !!rescueCleMinistereEducatif,
@@ -58,7 +50,6 @@ const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, 
   })
 
   const data = initialData ?? rescuedData ?? null
-  const hasTechnicalError = technicalError || !!rescueError
 
   // Utilise la clé depuis la réponse API (la plus fiable) ou la clé de rescue/url
   const trackingId = data?.cle_ministere_educatif ?? rescueCleMinistereEducatif ?? cleMinistereEducatif ?? ""
@@ -71,21 +62,7 @@ const PageContent = ({ data: initialData, technicalError, cleMinistereEducatif, 
   }
 
   if (!data) {
-    return (
-      <Box sx={{ my: fr.spacing("12v"), textAlign: "center" }}>
-        <ErrorMessage
-          message={
-            hasTechnicalError
-              ? "Un problème technique est survenu lors de l’accès au formulaire de demande au CFA"
-              : "Un problème est survenu lors de l’accès au formulaire de demande au CFA"
-          }
-        />
-        <Typography sx={{ mt: fr.spacing("2v") }}>
-          Merci de réessayer ultérieurement. Si le problème persiste, contactez le support à l'adresse :{" "}
-          <DsfrLink href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Erreur d'affichage formulaire RDVA")}`}>{publicConfig.publicEmail}?</DsfrLink>
-        </Typography>
-      </Box>
-    )
+    throw new Error(`Un problème est survenu lors de l’accès au formulaire de demande au CFA - cleMinistereEducatif: ${cleMinistereEducatif}, referrer: ${referrer}`)
   }
 
   const context = { cle_ministere_educatif: data.cle_ministere_educatif, etablissement_formateur_entreprise_raison_sociale: data.etablissement_formateur_entreprise_raison_sociale }

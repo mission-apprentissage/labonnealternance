@@ -13,15 +13,10 @@ type SearchParams = Promise<{ cleMinistereEducatif?: string; referrer?: string }
 const Page = async ({ searchParams }: { searchParams: SearchParams }) => {
   const { cleMinistereEducatif, referrer } = await searchParams
   let data = null
-  let technicalError = false
   if (cleMinistereEducatif) {
-    try {
-      data = (await getPrdvContext(cleMinistereEducatif, referrer ?? "lba")) ?? null
-    } catch {
-      technicalError = true
-    }
+    data = (await getPrdvContext(cleMinistereEducatif, referrer ?? "lba")) ?? null
   }
-  return <RdvaPage data={data} technicalError={technicalError} cleMinistereEducatif={cleMinistereEducatif ?? null} referrer={referrer ?? null} />
+  return <RdvaPage data={data} cleMinistereEducatif={cleMinistereEducatif ?? null} referrer={referrer ?? null} />
 }
 
 export default Page
