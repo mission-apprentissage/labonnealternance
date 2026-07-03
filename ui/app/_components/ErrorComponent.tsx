@@ -90,7 +90,9 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
           }}
         >
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h1">Erreur</Typography>
+            <Typography tabIndex={-1} id="content-container" variant="h1">
+              Erreur
+            </Typography>
 
             <Typography variant="h2">Un problème technique est survenu</Typography>
 
