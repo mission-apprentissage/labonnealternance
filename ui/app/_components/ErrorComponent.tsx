@@ -81,43 +81,53 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
       <Box>
         <Box
           sx={{
-            p: fr.spacing("3v"),
+            py: fr.spacing("6v"),
             display: "flex",
             justifyContent: "center",
-            flexDirection: "column",
+            flexDirection: { xs: "column", md: "row" },
             margin: "auto",
-            textAlign: "center",
+            gap: fr.spacing("8v"),
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Image src="/images/error_solid.png" alt="" width={558} height={303} />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h1">Erreur</Typography>
+
+            <Typography variant="h2">Un problème technique est survenu</Typography>
+
+            <Typography
+              sx={{
+                mt: fr.spacing("4v"),
+              }}
+            >
+              Merci de réesayer ultérieurement.
+            </Typography>
+            <Typography
+              sx={{
+                mt: fr.spacing("4v"),
+              }}
+            >
+              Si le problème persiste, contactez le support à l’adresse{" "}
+              <DsfrLink
+                href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Signalement d'un problème technique sur La bonne alternance")}`}
+                external
+                aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
+              >
+                {publicConfig.publicEmail}
+              </DsfrLink>{" "}
+              en décrivant votre erreur pour que nous puissions vous répondre.
+            </Typography>
+
+            <Typography
+              sx={{
+                mt: fr.spacing("8v"),
+              }}
+            >
+              {details && <Typography>Message de l'erreur : {details}</Typography>}
+            </Typography>
           </Box>
 
-          <Box>
-            <Typography variant="h1" gutterBottom>
-              Une erreur est survenue
-            </Typography>
-            {details && <Typography gutterBottom>{details}</Typography>}
-
-            <Box
-              sx={{
-                mt: fr.spacing("4v"),
-              }}
-            >
-              <Button onClick={() => reset()} type="button">
-                Essayer à nouveau
-              </Button>
-            </Box>
-
-            <Box
-              sx={{
-                mt: fr.spacing("4v"),
-              }}
-            >
-              <DsfrLink href="/" locale="fr">
-                Retourner à la page d'accueil
-              </DsfrLink>
-            </Box>
+          <Box sx={{ textAlign: "center", flex: 1, justifyContent: "center" }}>
+            <Image src="/images/error_solid.png" alt="" width={279} height={151} />
           </Box>
         </Box>
       </Box>
