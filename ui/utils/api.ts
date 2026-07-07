@@ -204,9 +204,11 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
     return data
   } catch (error) {
     const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
-    if (!isExpectedError) {
-      captureException(error)
+    if (isExpectedError) {
+      return null
     }
+    captureException(error)
+    throw error
   }
 }
 
