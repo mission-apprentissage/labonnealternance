@@ -1,11 +1,11 @@
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import { PublicHeaderStatic } from "@/app/_components/PublicHeader"
+import { WidgetAwareHeader } from "@/app/_components/WidgetAwareHeader"
 import ItemDetailLoading from "@/components/ItemDetail/ItemDetailLoading"
 
 export default function FormationDetailLoading() {
   return (
     <>
-      <PublicHeaderStatic />
+      <WidgetAwareHeader />
       <ItemDetailLoading type={LBA_ITEM_TYPE.FORMATION} />
     </>
   )

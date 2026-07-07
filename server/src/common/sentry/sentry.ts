@@ -71,15 +71,8 @@ function getOptions(): Sentry.NodeOptions {
   }
 }
 
-// Sentry temporairement désactivé : migration du serveur Sentry en cours.
-// `enabled: false` force le SDK à ne créer aucun client actif : tous les appels
-// unitaires (captureException, startSpan, captureMessage, setUser…) deviennent des
-// no-op silencieux, sans appel réseau. Rien d'autre à toucher dans le code.
-// TODO: repasser à true (retirer ce flag) une fois la migration terminée.
-const SENTRY_ENABLED = false
-
 export function initSentry(): void {
-  Sentry.init({ ...getOptions(), enabled: SENTRY_ENABLED })
+  Sentry.init({ ...getOptions() })
 }
 
 export async function closeSentry(): Promise<void> {
