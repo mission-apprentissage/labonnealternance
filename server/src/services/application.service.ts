@@ -1443,12 +1443,6 @@ export const processScheduledRecruiterIntentions = async () => {
     })
 
     await pipeline(stream, transform)
-
-    await notifyToSlack({
-      subject: "Envoi des intentions des recruteurs",
-      message: `${counters.total} intentions traitrées. ${counters.total - counters.error} intentions envoyées. ${counters.entretien} proposition(s) d'entretien. ${counters.error} erreurs.`,
-      error: false,
-    })
   } catch (err) {
     await notifyToSlack({
       subject: "Envoi des intentions des recruteurs",
