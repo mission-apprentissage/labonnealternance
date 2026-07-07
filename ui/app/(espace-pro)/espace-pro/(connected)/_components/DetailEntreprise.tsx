@@ -170,7 +170,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
         )}
       </Box>
       <Box sx={{ px: fr.spacing("4v") }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
+        <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
           {user.type !== "CFA" && (
             <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
               <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
