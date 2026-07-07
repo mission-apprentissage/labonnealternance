@@ -45,14 +45,12 @@ function getErrorDescription(error: unknown): string | null {
     return error.context.statusCode < 500 || publicConfig.env === "local" ? error.context.message : null
   }
 
-  if (publicConfig.env === "local") {
-    if (error instanceof Error) {
-      return error.message
-    }
+  if (error instanceof Error) {
+    return error.message
+  }
 
-    if (typeof error === "string") {
-      return error
-    }
+  if (typeof error === "string") {
+    return error
   }
 
   return null
