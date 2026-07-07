@@ -272,7 +272,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
     // Verify the application was created in the database
     const savedApplication = await getDbCollection("applications").findOne({ _id: new ObjectId(result.atsApplicationId) })
     expect(savedApplication).toBeTruthy()
-    expect(savedApplication?.caller).toBe("Hellowork")
+    expect(savedApplication?.caller).toBe("hellowork-api")
     expect(savedApplication?.foreign_application_id).toBe("hw_app_123")
     expect(savedApplication?.foreign_application_status_url).toBe("https://api.hellowork.com/status/hw_app_123")
     expect(omit(savedApplication, ["_id", "applicant_id", "created_at", "last_update_at"])).toMatchSnapshot()
@@ -527,7 +527,7 @@ describe("buildApplicationFromHelloworkAndSaveToDb", () => {
         applicant_id: new ObjectId(),
         job_id: new ObjectId(),
         company_siret: "98765432109876",
-        caller: "Hellowork",
+        caller: "hellowork-api",
         applicant_message_to_company: "Test application",
         created_at: new Date(),
         last_update_at: new Date(),
