@@ -131,23 +131,27 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} userRecruteur={userRecruteur} onUpdate={() => onChange?.({})} />
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
           borderBottom: "1px solid #E3E3FD",
-          pb: fr.spacing("4v"),
           mb: fr.spacing("4v"),
           px: fr.spacing("4v"),
         }}
       >
         {user.type !== "CFA" && (
-          <>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: fr.spacing("4v"),
+              px: fr.spacing("4v"),
+            }}
+          >
             <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, wordBreak: "break-word" }}>
               {establishmentLabel}
             </Typography>
 
             <Box>{getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}</Box>
-          </>
+          </Box>
         )}
         {user.type === "CFA" && (
           <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
@@ -168,44 +172,48 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       </Box>
       <Box sx={{ px: fr.spacing("4v") }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
-            <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
-              Statut:{" "}
-            </Typography>
-            {getUserBadge(lastUserState)}
-          </Box>
-          <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
-            {userRecruteur.establishment_siret && (
-              <a
-                href={`https://annuaire-entreprises.data.gouv.fr/etablissement/${userRecruteur.establishment_siret}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
-              >
-                Annuaire entreprises
-              </a>
-            )}
-            {userRecruteur.email && (
-              <a
-                href={`https://www.google.com/search?q=${encodeURIComponent(userRecruteur.email)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
-              >
-                Rechercher l&apos;email
-              </a>
-            )}
-            {(userRecruteur.establishment_raison_sociale || userRecruteur.establishment_enseigne) && userRecruteur.address && (
-              <a
-                href={`https://www.google.com/maps/search/${encodeURIComponent(`${userRecruteur.establishment_enseigne ?? userRecruteur.establishment_raison_sociale} ${userRecruteur.address}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
-              >
-                Google Maps
-              </a>
-            )}
-          </Box>
+          {user.type !== "CFA" && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
+              <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
+                Statut:{" "}
+              </Typography>
+              {getUserBadge(lastUserState)}
+            </Box>
+          )}
+          {user.type !== "CFA" && (
+            <Box sx={{ display: "flex", gap: fr.spacing("3v"), flexWrap: "wrap" }}>
+              {userRecruteur.establishment_siret && (
+                <a
+                  href={`https://annuaire-entreprises.data.gouv.fr/etablissement/${userRecruteur.establishment_siret}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
+                >
+                  Annuaire entreprises
+                </a>
+              )}
+              {userRecruteur.email && (
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(userRecruteur.email)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
+                >
+                  Rechercher l&apos;email
+                </a>
+              )}
+              {(userRecruteur.establishment_raison_sociale || userRecruteur.establishment_enseigne) && userRecruteur.address && (
+                <a
+                  href={`https://www.google.com/maps/search/${encodeURIComponent(`${userRecruteur.establishment_enseigne ?? userRecruteur.establishment_raison_sociale} ${userRecruteur.address}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="fr-link fr-link--sm fr-link--icon-right fr-icon-external-link-line"
+                >
+                  Google Maps
+                </a>
+              )}
+            </Box>
+          )}
         </Box>
         <Formik
           validateOnMount={true}
