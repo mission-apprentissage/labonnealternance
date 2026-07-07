@@ -116,13 +116,15 @@ export function ErrorComponent({ error }: ErrorProps) {
               en décrivant votre erreur pour que nous puissions vous répondre.
             </Typography>
 
-            <Typography
-              sx={{
-                mt: fr.spacing("8v"),
-              }}
-            >
-              {details && <Typography>Message de l'erreur : {details}</Typography>}
-            </Typography>
+            {details && (
+              <Typography
+                sx={{
+                  mt: fr.spacing("8v"),
+                }}
+              >
+                Message de l'erreur : {details}
+              </Typography>
+            )}
           </Box>
 
           <Box sx={{ textAlign: "center", flex: 1, justifyContent: "center" }}>
