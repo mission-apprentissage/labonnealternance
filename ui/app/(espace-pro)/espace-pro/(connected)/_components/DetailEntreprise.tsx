@@ -143,7 +143,6 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
               justifyContent: "space-between",
               alignItems: "center",
               mb: fr.spacing("4v"),
-              px: fr.spacing("4v"),
             }}
           >
             <Typography component="h2" sx={{ fontSize: "32px", fontWeight: 700, wordBreak: "break-word" }}>
