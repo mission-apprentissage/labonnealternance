@@ -18,7 +18,6 @@ import { getUserFromRequest } from "@/security/authenticationService"
 import { generateCfaCreationToken, generateDepotSimplifieToken } from "@/services/appLinks.service"
 import { getNearEtablissementsFromRomes } from "@/services/catalogue.service"
 import {
-  buildEstablishmentId,
   entrepriseOnboardingWorkflow,
   establishmentIdToUserIdAndSiret,
   etablissementUnsubscribeDemandeDelegation,
@@ -29,6 +28,7 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
   validateEligibiliteCfa,
+  verifyRecruiterEmailInUse,
 } from "@/services/etablissement.service"
 import { getFormulairesForCfaManagedEnterprises, jobPartnersToRecruiter } from "@/services/formulaire.service"
 import { sendEngagementHandicapEmailIfNeeded } from "@/services/handiEngagement.service"
@@ -253,7 +253,7 @@ export default (server: Server) => {
           const opco = (req.body.opco as OPCOS_LABEL) || OPCOS_LABEL.UNKNOWN_OPCO
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, opco, siret, source: getSourceFromCookies(req) })
           if ("error" in result) {
-            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw forbidden(result.message, result)
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS || result.errorCode === BusinessErrorCodes.ROLE_DENIED) throw forbidden(result.message, result)
             else throw badRequest(result.message, result)
           }
           const token = generateDepotSimplifieToken(userWithAccountToUserForToken(result.user), result.formulaire.establishment_id)
@@ -263,9 +263,10 @@ export default (server: Server) => {
           const { email, establishment_siret, first_name, last_name, phone } = req.body
           const origin = req.body.origin ?? "formulaire public de création"
           const formatedEmail = email.toLocaleLowerCase()
-          // check if user already exist
+          const accessError = await verifyRecruiterEmailInUse({ email: formatedEmail, siret: establishment_siret, entityType: AccessEntityType.CFA })
+          if (accessError) throw forbidden(accessError.message, { reason: accessError.errorCode })
           if (await getUserWithAccountByEmail(formatedEmail)) {
-            throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
+            throw forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.", { reason: BusinessErrorCodes.ALREADY_EXISTS })
           }
 
           const isValid = await isCfaCreationValid(establishment_siret)
