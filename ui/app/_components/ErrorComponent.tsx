@@ -1,7 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
@@ -59,9 +58,9 @@ function getErrorDescription(error: unknown): string | null {
   return null
 }
 
-export type ErrorProps = { error: unknown; reset: () => void }
+export type ErrorProps = { error: unknown }
 
-export function ErrorComponent({ error, reset }: ErrorProps) {
+export function ErrorComponent({ error }: ErrorProps) {
   useEffect(() => {
     // ChunkLoadError : un chunk JS n'existe plus après un déploiement.
     // On recharge la page silencieusement pour récupérer les nouveaux chunks,
@@ -89,10 +88,8 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
             gap: fr.spacing("8v"),
           }}
         >
-          <Box sx={{ flex: 1 }}>
-            <Typography tabIndex={-1} id="content-container" variant="h1">
-              Erreur
-            </Typography>
+          <Box tabIndex={-1} id="content-container" role="main" sx={{ flex: 1 }}>
+            <Typography variant="h1">Erreur</Typography>
 
             <Typography variant="h2">Un problème technique est survenu</Typography>
 
@@ -137,10 +134,10 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
   )
 }
 
-const fallbackRender: Sentry.FallbackRender = ({ error, resetError }) => {
+const fallbackRender: Sentry.FallbackRender = ({ error }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <ErrorComponent error={error} reset={resetError} />
+      <ErrorComponent error={error} />
     </Box>
   )
 }
