@@ -17,6 +17,7 @@ import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hoo
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
+import { useIsWidget } from "@/app/hooks/useIsWidget"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
@@ -69,6 +70,7 @@ function TrainingDetailPage({
 
   const router = useRouter()
   const theme = useTheme()
+  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
   const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false })
@@ -88,21 +90,28 @@ function TrainingDetailPage({
   const isCollapsed = isMobile && isCollapsedHeader
 
   useEffect(() => {
+    let ticking = false
     const handleScroll = () => {
-      if (!headerRef.current) return
-      const currentScrollY = Math.max(0, window.scrollY)
-      const scrollingDown = currentScrollY > prevScrollYRef.current
-      prevScrollYRef.current = currentScrollY
+      if (ticking) return
+      ticking = true
+      // Throttle via requestAnimationFrame : évite le layout thrash (getBoundingClientRect + setState) à chaque event scroll (fluidité Safari)
+      requestAnimationFrame(() => {
+        ticking = false
+        if (!headerRef.current) return
+        const currentScrollY = Math.max(0, window.scrollY)
+        const scrollingDown = currentScrollY > prevScrollYRef.current
+        prevScrollYRef.current = currentScrollY
 
-      const { top, bottom } = headerRef.current.getBoundingClientRect()
-      // Scroll bas : show sticky dès que le haut du header quitte le viewport
-      if (scrollingDown && !isCollapsedHeader && top < -100) {
-        setIsCollapsedHeader(true)
-      }
-      // Scroll haut : hide sticky dès que le bas du header repasse le bord supérieur du viewport
-      else if (!scrollingDown && isCollapsedHeader && bottom >= 50) {
-        setIsCollapsedHeader(false)
-      }
+        const { top, bottom } = headerRef.current.getBoundingClientRect()
+        // Scroll bas : show sticky dès que le haut du header quitte le viewport
+        if (scrollingDown && !isCollapsedHeader && top < -100) {
+          setIsCollapsedHeader(true)
+        }
+        // Scroll haut : hide sticky dès que le bas du header repasse le bord supérieur du viewport
+        else if (!scrollingDown && isCollapsedHeader && bottom >= 50) {
+          setIsCollapsedHeader(false)
+        }
+      })
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
@@ -120,52 +129,60 @@ function TrainingDetailPage({
       }}
       {...swipeHandlers}
     >
-      {/* Header sticky pleine largeur — visible uniquement quand on a scrollé au-delà du header carte */}
-      {isCollapsedHeader && (
-        <Box
-          sx={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            backgroundColor: "white",
-            filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-            boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
-          }}
-        >
-          {isMobile ? (
-            <Box
-              sx={{
-                padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
-            >
-              <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-            </Box>
-          ) : (
-            <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
-              <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-                </Box>
-                <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
-                  {actualTitle}
-                </Typography>
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
-                  <Box sx={{ flex: 1 }}>
-                    {elligibleForAppointment && (
-                      <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
-                    )}
-                  </Box>
-                  <ShareLink item={selectedItem} />
-                </Box>
+      {/* Header sticky pleine largeur — toujours monté, animé via transform/opacity pour un collapse fluide (Safari inclus) */}
+      <Box
+        aria-hidden={!isCollapsedHeader}
+        sx={{
+          // fixed (hors flux) : ne réserve pas d'espace quand la barre est cachée, tout en restant animable
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          backgroundColor: "white",
+          filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+          boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
+          transform: isCollapsedHeader ? "translateY(0)" : "translateY(-100%)",
+          opacity: isCollapsedHeader ? 1 : 0,
+          pointerEvents: isCollapsedHeader ? "auto" : "none",
+          visibility: isCollapsedHeader ? "visible" : "hidden",
+          transition: `transform .25s ease, opacity .2s ease, visibility 0s linear ${isCollapsedHeader ? "0s" : ".25s"}`,
+          willChange: "transform, opacity",
+        }}
+      >
+        {isMobile ? (
+          <Box
+            sx={{
+              padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+          </Box>
+        ) : (
+          <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
+            <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <LbaItemTags item={{ ...selectedItem, ideaType: LBA_ITEM_TYPE_OLD.FORMATION }} />
+                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
               </Box>
-            </Container>
-          )}
-        </Box>
-      )}
+              <Typography variant="h3" sx={{ color: fr.colors.decisions.border.default.greenEmeraude.default }}>
+                {actualTitle}
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("4v") }}>
+                <Box sx={{ flex: 1 }}>
+                  {elligibleForAppointment && (
+                    <DemandeDeContact hideButton={Boolean(appliedDate)} isCollapsedHeader={isCollapsedHeader} context={contextPRDV} referrer="LBA" onRdvSuccess={onRdvSuccess} />
+                  )}
+                </Box>
+                <ShareLink item={selectedItem} />
+              </Box>
+            </Box>
+          </Container>
+        )}
+      </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
         <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
@@ -268,7 +285,7 @@ function TrainingDetailPage({
         </Box>
       )}
       {!isMobile && <BackToTopButton />}
-      <Footer />
+      {!isWidget && <Footer />}
     </Box>
   )
 }

@@ -1480,7 +1480,7 @@ export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHellowo
       foreign_application_id: payload.applicationId,
       foreign_application_status_url: statusApiUrl,
     },
-    caller: "Hellowork",
+    caller: "hellowork-api",
   })
 
   return {
