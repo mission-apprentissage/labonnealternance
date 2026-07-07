@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node"
 
-export const sentryCaptureException = (error: any, options?: object): void => {
+export const sentryCaptureException = (error: any, options?: Parameters<typeof Sentry.captureException>[1]): void => {
   Sentry.captureException(error, options)
 }
 
