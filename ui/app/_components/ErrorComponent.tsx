@@ -101,7 +101,7 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
                 mt: fr.spacing("4v"),
               }}
             >
-              Merci de réesayer ultérieurement.
+              Merci de réessayer ultérieurement.
             </Typography>
             <Typography
               sx={{
