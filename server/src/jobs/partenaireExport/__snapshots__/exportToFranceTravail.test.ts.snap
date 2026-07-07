@@ -7,7 +7,7 @@ exports[`offerToFTOffer > should convert a job to an exported offer for FT 1`] =
   "CON_cle": null,
   "CON_libelle": null,
   "CPO_cle": null,
-  "Civ_correspondant": null,
+  "Civ_correspondant": 0,
   "Code_OGR": 11235,
   "Code_commune_etab": "Montpellier",
   "Code_postal_etab": "34000",
