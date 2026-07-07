@@ -349,7 +349,9 @@ function JobDetail({
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !isCfaEntreprise && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !isCfaEntreprise && !isGeiq && (
+              <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />
+            )}
 
             <AideApprentissage />
 
