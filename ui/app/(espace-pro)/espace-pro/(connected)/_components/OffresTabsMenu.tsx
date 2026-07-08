@@ -80,7 +80,7 @@ export const OffresTabsMenu = ({
         }
       : null,
     {
-      label: copied ? <Box color={copied ? "#18753C" : undefined}>Lien copié</Box> : "Partager l'offre",
+      label: copied ? <Box color={copied ? "#18753C" : undefined}>Lien copié</Box> : "Copier le lien de l'offre",
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -98,7 +98,7 @@ export const OffresTabsMenu = ({
     },
     user.type !== AUTHTYPE.CFA
       ? ({
-          label: "Voir les centres de formation",
+          label: "Partager aux CFA à proximité",
           link: cfaOptionParams.link,
           type: cfaOptionParams.type,
           ariaLabel: cfaOptionParams.ariaLabel,
