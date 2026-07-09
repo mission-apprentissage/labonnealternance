@@ -80,7 +80,7 @@ export const OffresTabsMenu = ({
         }
       : null,
     {
-      label: copied ? <Box color={copied ? "#18753C" : undefined}>Lien copié</Box> : "Copier le lien de l'offre",
+      label: copied ? <Box color={fr.colors.decisions.text.default.success.default}>Lien copié</Box> : "Copier le lien de l'offre",
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
