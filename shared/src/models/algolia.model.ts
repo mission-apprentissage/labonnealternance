@@ -51,10 +51,17 @@ export default {
         mappings: {
           dynamic: false,
           fields: {
-            title: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            // title et rome_labels indexés aussi en `autocomplete` (préfixes) pour les suggestions de saisie.
+            title: [
+              { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+              { type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true },
+            ],
             description: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
             keywords: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
-            rome_labels: { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+            rome_labels: [
+              { type: "string", analyzer: "lucene.french", multi: { standard: { type: "string", analyzer: "lucene.standard" } } },
+              { type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true },
+            ],
             // organization_name : nom d'organisme (CFA / entreprise), jamais à raciniser → analyzer dédié sans stemming.
             organization_name: [{ type: "string", analyzer: "lba_company", multi: { standard: { type: "string", analyzer: "lucene.standard" } } }, { type: "token" }],
             type: { type: "token" },

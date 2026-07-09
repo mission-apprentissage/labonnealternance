@@ -110,6 +110,33 @@ Les facettes (`$searchMeta`) comptent les documents (pas de score) → le boosti
 
 Déclenché par le job `recreateIndexes` (après `createIndexes` + `seedSearchSynonyms`).
 
+---
+
+## 6. Autocomplétion (Phase 3 — branche `feat/lba-3249-search-autocomplete`)
+
+Suggestions de saisie par **préfixe**, en plus de la recherche full-text.
+
+### Index
+`title` et `rome_labels` reçoivent un type **`autocomplete`** supplémentaire (en plus du type `string`) :
+```js
+{ type: "autocomplete", tokenization: "edgeGram", minGrams: 3, maxGrams: 15, foldDiacritics: true }
+```
+`foldDiacritics: true` → `"dev"` matche `"Développeur"`.
+
+### Endpoint
+`GET /api/v1/search/suggest?q=<≥3 car.>&limit=<≤20>` → `{ suggestions: string[] }`.
+
+- Service `suggestAlgolia` (`search.service.ts`) : opérateur `autocomplete` sur `title` (boost ×2) + `rome_labels`, fuzzy `maxEdits:1`.
+- Filtrage : seuls les intitulés **contenant réellement** la saisie (normalisée sans accents) sont renvoyés, dédupliqués, ordre de pertinence préservé.
+- Rate-limit dédié (60/s).
+
+### Front
+`SearchBar.tsx` (champ métier) appelle `/v1/search/suggest` (debounce 300 ms, déclenché à ≥3 caractères) au lieu de réutiliser `/v1/search`.
+
+> ⚠️ L'ajout du type `autocomplete` modifie la définition d'index → nécessite `updateSearchIndex` (géré par `createSearchIndexes`). Re-lancer `recreateIndexes` après déploiement.
+
+---
+
 ### Procédure de mise à jour complète
 
 ```
