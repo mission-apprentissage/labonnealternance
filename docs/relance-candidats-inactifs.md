@@ -1,7 +1,6 @@
 # Relance des candidats inactifs (J+7) — note pour la relecture de la PR
 
 > Document à l'intention du·de la développeur·euse qui relit et finalise cette PR.
-> Plan d'implémentation détaillé (TDD, étape par étape) : `docs/superpowers/plans/2026-07-09-relance-candidats-inactifs.md`.
 
 ## Pourquoi
 
