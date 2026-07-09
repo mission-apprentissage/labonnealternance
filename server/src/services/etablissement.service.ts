@@ -14,7 +14,7 @@ import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
 import { AccessEntityType, AccessStatus } from "shared/models/roleManagement.model"
 import type { IUserWithAccount } from "shared/models/userWithAccount.model"
-import { getLastStatusEvent } from "shared/utils/getLastStatusEvent"
+import { getLastStatusEvent, getSortedStatusEvents } from "shared/utils/getLastStatusEvent"
 import { getEtablissementFromGouvSafe } from "@/common/apis/apiEntreprise/apiEntreprise.client"
 import { FCGetOpcoInfos } from "@/common/apis/franceCompetences/franceCompetencesClient"
 import { logger } from "@/common/logger"
@@ -42,7 +42,7 @@ import { updateEntrepriseOpco, upsertEntrepriseData } from "./organization.servi
 import { modifyPermissionToUser } from "./roleManagement.service"
 import { saveUserTrafficSourceIfAny } from "./trafficSource.service"
 import { autoValidateUser as authorizeUserOnEntreprise, createOrganizationUser, setUserHasToBeManuallyValidated } from "./userRecruteur.service"
-import { emailHasActiveRole, isUserEmailChecked } from "./userWithAccount.service"
+import { getUserWithAccountByEmail, isUserEmailChecked } from "./userWithAccount.service"
 
 const effectifMapping: Record<NonNullable<IEtablissementGouvData["data"]["unite_legale"]["tranche_effectif_salarie"]["code"]>, string | null> = {
   "00": "0 salarié",
@@ -223,6 +223,45 @@ const isCompanyValid = async (props: UserAndOrganization): Promise<{ isValid: bo
 }
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes): IBusinessError => ({ error: true, message, errorCode })
+
+export const verifyRecruiterEmailInUse = async ({
+  email,
+  siret,
+  entityType,
+}: {
+  email: string
+  siret: string
+  entityType: AccessEntityType.ENTREPRISE | AccessEntityType.CFA
+}): Promise<IBusinessError | null> => {
+  const existingUser = await getUserWithAccountByEmail(email)
+  if (!existingUser) return null
+
+  const entityCollection = entityType === AccessEntityType.ENTREPRISE ? "entreprises" : "cfas"
+  const [existingRoles, existingEntity] = await Promise.all([
+    getDbCollection("rolemanagements").find({ user_id: existingUser._id }).toArray(),
+    getDbCollection(entityCollection).findOne({ siret }),
+  ])
+
+  if (existingEntity) {
+    const roleForSiret = existingRoles.find((role) => role.authorized_id === existingEntity._id.toString() && role.authorized_type === entityType)
+    const sortedEvents = getSortedStatusEvents(roleForSiret?.status ?? [])
+    const lastDeniedEvent = [...sortedEvents].reverse().find((e) => e.status === AccessStatus.DENIED)
+    if (lastDeniedEvent) {
+      const hasGrantedAfterDenied = sortedEvents.some((e) => e.status === AccessStatus.GRANTED && new Date(e.date ?? 0) > new Date(lastDeniedEvent.date ?? 0))
+      if (!hasGrantedAfterDenied) {
+        const deniedDate = dayjs(lastDeniedEvent.date).format("DD/MM/YYYY")
+        return errorFactory(`Votre accès à cet établissement a été refusé le ${deniedDate}. Pour le débloquer, contactez notre support à l'adresse`, BusinessErrorCodes.ROLE_DENIED)
+      }
+    }
+  }
+
+  const activeStatuses = [AccessStatus.GRANTED, AccessStatus.AWAITING_VALIDATION]
+  if (existingRoles.some((role) => activeStatuses.includes(getLastStatusEvent(role.status)?.status as AccessStatus))) {
+    return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
+  }
+
+  return null
+}
 
 const getOpcoFromFranceCompetences = async (siret: string): Promise<{ opco: string; idcc: null } | undefined> => {
   const opcoOpt = await FCGetOpcoInfos(siret)
@@ -432,9 +471,8 @@ export const entrepriseOnboardingWorkflow = {
   ): Promise<IBusinessError | { formulaire: { establishment_id: string; opco: OPCOS_LABEL }; user: IUserWithAccount; validated: boolean }> => {
     origin = origin ?? ""
     const formatedEmail = email.toLocaleLowerCase()
-    if (await emailHasActiveRole(formatedEmail)) {
-      return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
-    }
+    const accessError = await verifyRecruiterEmailInUse({ email: formatedEmail, siret, entityType: AccessEntityType.ENTREPRISE })
+    if (accessError) return accessError
     let siretResponse: Awaited<ReturnType<typeof getEntrepriseDataFromSiret>>
     let isSiretInternalError = false
     try {

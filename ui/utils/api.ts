@@ -103,13 +103,13 @@ export const getUserStatusByToken = async (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 
 export const activateUserRole = async (userId: string, organizationId: string) =>
-  apiPost("/user/:userId/organization/:organizationId/activate", { params: { userId, organizationId } }).catch(errorHandler)
+  apiPost("/user/:userId/organization/:organizationId/activate", { params: { userId, organizationId } })
 
 export const deactivateUserRole = async (userId: string, organizationId: string, reason: string) =>
-  apiPost("/user/:userId/organization/:organizationId/deactivate", { params: { userId, organizationId }, body: { reason } }).catch(errorHandler)
+  apiPost("/user/:userId/organization/:organizationId/deactivate", { params: { userId, organizationId }, body: { reason } })
 
 export const notifyNotMyOpcoUserRole = async (userId: string, organizationId: string, reason: string) =>
-  apiPost("/user/:userId/organization/:organizationId/not-my-opco", { params: { userId, organizationId }, body: { reason } }).catch(errorHandler)
+  apiPost("/user/:userId/organization/:organizationId/not-my-opco", { params: { userId, organizationId }, body: { reason } })
 
 export const createSuperUser = async (user: INewSuperUser) => apiPost("/admin/users", { body: user })
 
@@ -204,9 +204,11 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
     return data
   } catch (error) {
     const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
-    if (!isExpectedError) {
-      captureException(error)
+    if (isExpectedError) {
+      return null
     }
+    captureException(error)
+    throw error
   }
 }
 

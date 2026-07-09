@@ -205,7 +205,7 @@ export async function setupJobProcessor() {
           },
           "Envoi des offres à France Travail": {
             cron_string: "30 5 * * *",
-            handler: config.env === "production" ? async () => exportJobsToFranceTravailCsvOnly() : async () => Promise.resolve(0),
+            handler: config.env === "production" ? async () => exportJobsToFranceTravail() : async () => Promise.resolve(0),
             tag: "main",
           },
           "export des offres LBA sur S3": {

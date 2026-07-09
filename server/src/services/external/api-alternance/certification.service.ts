@@ -16,7 +16,7 @@ const getFirstCertificationFromAPIApprentissage = async (rncp: string, throwOnEr
 
     return data[0]
   } catch (error: any) {
-    sentryCaptureException(error, { responseData: error.response?.data })
+    sentryCaptureException(error, { extra: { responseData: error.response?.data } })
 
     if (throwOnError) {
       const err = internal("Erreur lors de la récupération des informations de certification", {
