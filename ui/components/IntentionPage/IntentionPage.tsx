@@ -81,6 +81,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
 
   const { applicant_first_name, applicant_last_name, applicant_email, applicant_phone, recruiter_email, company_name, sent_intention } = data
   const alreadySent = Boolean(sent_intention)
+  const actualIntention = alreadySent ? sent_intention!.company_recruitment_intention : company_recruitment_intention
 
   return (
     <Box sx={{ maxWidth: "660px", margin: "auto" }}>
@@ -89,7 +90,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         {alreadySent ? (
           <>
             <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
-              {`✅ Votre réponse a bien été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
+              {`✅ Votre réponse a déjà été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
             </Typography>
             <Typography sx={{ fontSize: "12px", lineHeight: "20px" }}>Le candidat a reçu le message suivant par e-mail.</Typography>
           </>
@@ -116,7 +117,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         {/* Card title */}
         <Box sx={{ ...cardTitleSx, ...(isEditing ? { backgroundColor: "#F5F5FE", color: "#000091", borderColor: "transparent" } : {}) }}>
           <DsfrIcon name="fr-icon-mail-unread-fill" size={24} /> Objet :{" "}
-          {company_recruitment_intention === ApplicationIntention.ENTRETIEN ? "Suite donnée à votre candidature -" : "Réponse négative de l’entreprise"} {company_name}
+          {actualIntention === ApplicationIntention.ENTRETIEN ? "Suite donnée à votre candidature -" : "Réponse négative de l’entreprise"} {company_name}
         </Box>
 
         {/* Card body */}

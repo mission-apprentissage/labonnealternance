@@ -99,15 +99,14 @@ const Formulaire = ({
                     }
                   />
                   <Box
+                    className={fr.cx("fr-messages-group")}
                     sx={{
-                      mb: fr.spacing("4v"),
+                      my: fr.spacing("4v"),
                     }}
                   >
-                    <Box className={fr.cx("fr-messages-group")}>
-                      <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
-                        Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
-                        email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
-                      </Box>
+                    <Box sx={{ fontSize: "0.75rem", lineHeight: "1.25rem", mt: "0 !important", display: "block !important" }} className="fr-info-text">
+                      Pour faciliter la vérification de votre compte par nos équipes, et accélérer la mise en ligne de votre offre, nous vous conseillons d’utiliser une adresse
+                      email comportant <span style={{ fontWeight: "bold" }}>le nom de domaine de votre établissement.</span>
                     </Box>
                   </Box>
                   {shouldSelectOpco && (

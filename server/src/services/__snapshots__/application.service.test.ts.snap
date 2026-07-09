@@ -13,7 +13,7 @@ exports[`buildApplicationFromHelloworkAndSaveToDb > Should successfully create a
   "applicant_message_to_company": "I am very interested in this position",
   "applicant_rythm_description": "",
   "application_url": null,
-  "caller": "Hellowork",
+  "caller": "hellowork-api",
   "company_address": "126 RUE DE L'UNIVERSITE 75007 PARIS",
   "company_email": "employer@test.fr",
   "company_feedback": null,

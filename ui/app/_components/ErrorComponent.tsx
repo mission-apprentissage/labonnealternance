@@ -1,7 +1,6 @@
 "use client"
 
 import { fr } from "@codegouvfr/react-dsfr"
-import { Button } from "@codegouvfr/react-dsfr/Button"
 import { Box, Container, Typography } from "@mui/material"
 import * as Sentry from "@sentry/nextjs"
 import Image from "next/image"
@@ -46,22 +45,20 @@ function getErrorDescription(error: unknown): string | null {
     return error.context.statusCode < 500 || publicConfig.env === "local" ? error.context.message : null
   }
 
-  if (publicConfig.env === "local") {
-    if (error instanceof Error) {
-      return error.message
-    }
+  if (error instanceof Error) {
+    return error.message
+  }
 
-    if (typeof error === "string") {
-      return error
-    }
+  if (typeof error === "string") {
+    return error
   }
 
   return null
 }
 
-export type ErrorProps = { error: unknown; reset: () => void }
+export type ErrorProps = { error: unknown }
 
-export function ErrorComponent({ error, reset }: ErrorProps) {
+export function ErrorComponent({ error }: ErrorProps) {
   useEffect(() => {
     // ChunkLoadError : un chunk JS n'existe plus après un déploiement.
     // On recharge la page silencieusement pour récupérer les nouveaux chunks,
@@ -81,43 +78,55 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
       <Box>
         <Box
           sx={{
-            p: fr.spacing("3v"),
+            py: fr.spacing("6v"),
             display: "flex",
             justifyContent: "center",
-            flexDirection: "column",
+            flexDirection: { xs: "column", md: "row" },
             margin: "auto",
-            textAlign: "center",
+            gap: fr.spacing("8v"),
           }}
         >
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Image src="/images/error_solid.png" alt="" width={558} height={303} />
+          <Box tabIndex={-1} id="content-container" role="main" sx={{ flex: 1 }}>
+            <Typography variant="h1">Erreur</Typography>
+
+            <Typography variant="h2">Un problème technique est survenu</Typography>
+
+            <Typography
+              sx={{
+                mt: fr.spacing("4v"),
+              }}
+            >
+              Merci de réessayer ultérieurement.
+            </Typography>
+            <Typography
+              sx={{
+                mt: fr.spacing("4v"),
+              }}
+            >
+              Si le problème persiste, contactez le support à l’adresse{" "}
+              <DsfrLink
+                href={`mailto:${publicConfig.publicEmail}?subject=${encodeURIComponent("Signalement d'un problème technique sur La bonne alternance")}`}
+                external
+                aria-label="Contact de l'équipe La bonne alternance par email - nouvelle fenêtre"
+              >
+                {publicConfig.publicEmail}
+              </DsfrLink>{" "}
+              en décrivant votre erreur pour que nous puissions vous répondre.
+            </Typography>
+
+            {details && (
+              <Typography
+                sx={{
+                  mt: fr.spacing("8v"),
+                }}
+              >
+                Message de l'erreur : {details}
+              </Typography>
+            )}
           </Box>
 
-          <Box>
-            <Typography variant="h1" gutterBottom>
-              Une erreur est survenue
-            </Typography>
-            {details && <Typography gutterBottom>{details}</Typography>}
-
-            <Box
-              sx={{
-                mt: fr.spacing("4v"),
-              }}
-            >
-              <Button onClick={() => reset()} type="button">
-                Essayer à nouveau
-              </Button>
-            </Box>
-
-            <Box
-              sx={{
-                mt: fr.spacing("4v"),
-              }}
-            >
-              <DsfrLink href="/" locale="fr">
-                Retourner à la page d'accueil
-              </DsfrLink>
-            </Box>
+          <Box sx={{ textAlign: "center", flex: 1, justifyContent: "center" }}>
+            <Image src="/images/error_solid.png" alt="" width={279} height={151} />
           </Box>
         </Box>
       </Box>
@@ -125,10 +134,10 @@ export function ErrorComponent({ error, reset }: ErrorProps) {
   )
 }
 
-const fallbackRender: Sentry.FallbackRender = ({ error, resetError }) => {
+const fallbackRender: Sentry.FallbackRender = ({ error }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <ErrorComponent error={error} reset={resetError} />
+      <ErrorComponent error={error} />
     </Box>
   )
 }
