@@ -1418,20 +1418,12 @@ export const processScheduledRecruiterIntentions = async () => {
       })
       .stream()
 
-    const counters = { total: 0, entretien: 0, error: 0 }
-
     const transform = new Transform({
       objectMode: true,
       async transform(application: IApplication, _, callback: (error?: Error | null, data?: any) => void) {
-        counters.total++
         try {
           await processRecruiterIntention({ application })
-
-          if (application.company_recruitment_intention === ApplicationIntention.ENTRETIEN) {
-            counters.entretien++
-          }
         } catch (intentionErr) {
-          counters.error++
           await getDbCollection("applications").updateOne(
             { _id: application._id },
             { $set: { company_feedback_send_status: CompanyFeebackSendStatus.ERROR, company_feedback_date: new Date() } }
