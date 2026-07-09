@@ -90,7 +90,7 @@ const IntentionPageContent = ({ company_recruitment_intention, id, token, onCanc
         {alreadySent ? (
           <>
             <Typography sx={{ fontSize: "16px", lineHeight: "24px", fontWeight: 700 }}>
-              {`✅ Votre réponse a déjà bien été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
+              {`✅ Votre réponse a déjà été envoyée au candidat ${applicant_first_name} ${applicant_last_name} le ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })} à ${new Date(sent_intention!.company_recruitment_intention_date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
             </Typography>
             <Typography sx={{ fontSize: "12px", lineHeight: "20px" }}>Le candidat a reçu le message suivant par e-mail.</Typography>
           </>
