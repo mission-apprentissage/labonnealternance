@@ -11,6 +11,7 @@ import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherch
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
+import { useIsWidget } from "@/app/hooks/useIsWidget"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { CandidatureLba } from "@/components/ItemDetail/CandidatureLba/CandidatureLba"
@@ -21,7 +22,6 @@ import { LbaItemTags } from "@/components/ItemDetail/ItemDetailServices/LbaItemT
 import { NavigationButtons } from "@/components/ItemDetail/ItemDetailServices/NavigationButtons"
 import { LbaJobCfaDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobCfaDetail"
 import { LbaJobDetail } from "@/components/ItemDetail/LbaJobComponents/LbaJobDetail"
-import LbaJobReportTooltip from "@/components/ItemDetail/LbaJobComponents/LbaJobReportTooltip"
 import { GeiqJobDetail } from "@/components/ItemDetail/PartnerJobComponents/GeiqJobDetail"
 import { PartnerJobDetail } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobDetail"
 import { PartnerJobPostuler } from "@/components/ItemDetail/PartnerJobComponents/PartnerJobPostuler"
@@ -90,10 +90,12 @@ function JobDetail({
 }) {
   const router = useRouter()
   const theme = useTheme()
+  const isWidget = useIsWidget()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
   const [isCollapsedHeader, setIsCollapsedHeader] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
   const headerHeightRef = useRef(0)
+  const prevScrollYRef = useRef(0)
   const isCollapsed = isMobile && isCollapsedHeader
   const lastTrackedItemIdRef = useRef<string | undefined>(undefined)
 
@@ -133,6 +135,8 @@ function JobDetail({
   const kind = selectedItem.ideaType
   const isMandataire = Boolean(selectedItem?.company?.mandataire)
   const isCfaEntreprise = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).job?.isCfaEntreprise)
+  const isGeiq = Boolean((selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson).company?.isGeiq)
+
   const reportItemId = (() => {
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA) return (selectedItem as ILbaItemLbaJobJson).job?.id ?? null
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) return (selectedItem as ILbaItemPartnerJobJson).id
@@ -144,16 +148,30 @@ function JobDetail({
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title
 
   useEffect(() => {
+    let ticking = false
     const handleScroll = () => {
-      if (headerHeightRef.current === 0) return
-      const currentScroll = window.scrollY || document.documentElement.scrollTop
-      if (!isCollapsedHeader && currentScroll > headerHeightRef.current) {
-        setIsCollapsedHeader(true)
-      } else if (isCollapsedHeader && currentScroll < headerHeightRef.current) {
-        setIsCollapsedHeader(false)
-      }
+      if (ticking) return
+      ticking = true
+      // Throttle via requestAnimationFrame : évite le layout thrash (getBoundingClientRect + setState) à chaque event scroll (fluidité Safari)
+      requestAnimationFrame(() => {
+        ticking = false
+        if (!headerRef.current) return
+        const currentScrollY = Math.max(0, window.scrollY)
+        const scrollingDown = currentScrollY > prevScrollYRef.current
+        prevScrollYRef.current = currentScrollY
+
+        const { top, bottom } = headerRef.current.getBoundingClientRect()
+        // Scroll bas : show sticky dès que le haut du header quitte le viewport
+        if (scrollingDown && !isCollapsedHeader && top < -100) {
+          setIsCollapsedHeader(true)
+        }
+        // Scroll haut : hide sticky dès que le bas du header repasse le bord supérieur du viewport
+        else if (!scrollingDown && isCollapsedHeader && bottom >= 50) {
+          setIsCollapsedHeader(false)
+        }
+      })
     }
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [isCollapsedHeader])
 
@@ -167,68 +185,75 @@ function JobDetail({
       }}
       {...swipeHandlers}
     >
-      {/* Header sticky pleine largeur — visible uniquement quand on a scrollé au-delà du header carte */}
-      {isCollapsedHeader && (
-        <Box
-          sx={{
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
-            backgroundColor: "white",
-            filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
-            boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
-          }}
-        >
-          {isMobile ? (
-            <Box
-              sx={{
-                padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
-                display: "flex",
-                justifyContent: "flex-end",
-                alignItems: "center",
-              }}
-            >
-              <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
-            </Box>
-          ) : (
-            <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
-              <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <LbaItemTags item={selectedItem} />
-                  <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+      {/* Header sticky pleine largeur — toujours monté, animé via transform/opacity pour un collapse fluide (Safari inclus) */}
+      <Box
+        aria-hidden={!isCollapsedHeader}
+        sx={{
+          // fixed (hors flux) : ne réserve pas d'espace quand la barre est cachée, tout en restant animable
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          backgroundColor: "white",
+          filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+          boxShadow: "0 4px 12px 0 rgba(0, 0, 18, 0.16)",
+          transform: isCollapsedHeader ? "translateY(0)" : "translateY(-100%)",
+          opacity: isCollapsedHeader ? 1 : 0,
+          pointerEvents: isCollapsedHeader ? "auto" : "none",
+          visibility: isCollapsedHeader ? "visible" : "hidden",
+          transition: `transform .25s ease, opacity .2s ease, visibility 0s linear ${isCollapsedHeader ? "0s" : ".25s"}`,
+          willChange: "transform, opacity",
+        }}
+      >
+        {isMobile ? (
+          <Box
+            sx={{
+              padding: `${fr.spacing("2v")} ${fr.spacing("4v")}`,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+          </Box>
+        ) : (
+          <Container maxWidth="xl" sx={{ px: { xs: 0, lg: "auto" } }}>
+            <Box sx={{ padding: "10px 20px 0px 20px", pb: fr.spacing("2v") }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <LbaItemTags item={selectedItem} />
+                <NavigationButtons goPrev={goPrev} goNext={goNext} handleClose={handleClose} />
+              </Box>
+              <Typography
+                variant={"h3"}
+                sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
+                dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
+              />
+              <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
+                <Box sx={{ mr: fr.spacing("4v") }}>
+                  {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
+                    <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
+                  )}
+                  {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
+                  {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
                 </Box>
-                <Typography
-                  variant={"h3"}
-                  sx={{ color: kind === LBA_ITEM_TYPE.RECRUTEURS_LBA ? "#716043" : fr.colors.decisions.border.default.blueCumulus.default }}
-                  dangerouslySetInnerHTML={{ __html: actualTitle ?? "" }}
-                />
-                <Box sx={{ display: "flex", flexWrap: "wrap", flexDirection: "row", gap: { xs: 0, md: fr.spacing("4v") }, alignItems: "center" }}>
-                  <Box sx={{ mr: fr.spacing("4v") }}>
-                    {(kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA || kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) && selectedItem.contact?.hasEmail && (
-                      <CandidatureLba item={selectedItem as ILbaItemLbaJobJson | ILbaItemPartnerJobJson} />
-                    )}
-                    {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
-                    {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
-                  </Box>
-                  <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
-                    <ShareLink item={selectedItem} />
-                    {reportItemId && (
-                      <ReportJobLink
-                        itemId={reportItemId}
-                        type={kind as LBA_ITEM_TYPE}
-                        linkLabelNotReported="Signaler l'offre"
-                        linkLabelReported="Offre signalée"
-                        tooltip={<LbaJobReportTooltip />}
-                        sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
-                      />
-                    )}
-                  </Box>
+                <Box sx={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "flex-end", gap: fr.spacing("4v"), alignItems: "center" }}>
+                  <ShareLink item={selectedItem} />
+                  {reportItemId && (
+                    <ReportJobLink
+                      itemId={reportItemId}
+                      type={kind as LBA_ITEM_TYPE}
+                      linkLabelNotReported="Signaler l'offre"
+                      linkLabelReported="Offre signalée"
+                      sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
+                    />
+                  )}
                 </Box>
               </Box>
-            </Container>
-          )}
-        </Box>
-      )}
+            </Box>
+          </Container>
+        )}
+      </Box>
 
       <Container maxWidth="xl" sx={{ position: "relative", zIndex: 1, py: { xs: 0, lg: fr.spacing("6v") }, px: { xs: 0, lg: "auto" } }}>
         <Box role="main" component="main" sx={{ mb: fr.spacing("12v") }}>
@@ -282,6 +307,24 @@ function JobDetail({
                   )}
                   {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaCandidater item={selectedItem as ILbaItemLbaCompanyJson} />}
                   {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !selectedItem.contact?.hasEmail && <PartnerJobPostuler job={selectedItem} />}
+
+                  {(selectedItem.company?.mandataire || selectedItem.company?.isGeiq) && selectedItem.contact?.hasEmail && (
+                    <Stack
+                      direction="row"
+                      sx={{
+                        alignItems: "center",
+                        mt: 0,
+                        mb: { xs: fr.spacing("2v"), md: 0 },
+                      }}
+                    >
+                      <Box component="span">
+                        <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
+                      </Box>
+                      <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
+                        Formation incluse : Votre candidature sera transmise à l'école ou à l'organisme qui gère ce recrutement.
+                      </Typography>
+                    </Stack>
+                  )}
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <ShareLink item={selectedItem} />
@@ -291,40 +334,24 @@ function JobDetail({
                       type={kind as LBA_ITEM_TYPE}
                       linkLabelNotReported="Signaler l'offre"
                       linkLabelReported="Offre signalée"
-                      tooltip={<LbaJobReportTooltip />}
                       sx={{ color: "error.main", "& .fr-btn": { color: "inherit" } }}
                     />
                   )}
                 </Box>
               </Box>
-              {selectedItem.company?.mandataire && selectedItem.contact?.hasEmail && (
-                <Stack
-                  direction="row"
-                  sx={{
-                    alignItems: "center",
-                    mt: 0,
-                    mb: { xs: fr.spacing("2v"), md: 0 },
-                  }}
-                >
-                  <Box component="span">
-                    <Image width={16} height={16} src="/images/icons/small_info.svg" aria-hidden="true" alt="" />
-                  </Box>
-                  <Typography component="span" variant="body2" sx={{ ml: fr.spacing("2v"), fontSize: "12px", fontStyle: "italic" }}>
-                    Votre candidature sera envoyée à l'organisme en charge du recrutement pour le compte de l'entreprise.{" "}
-                  </Typography>
-                </Stack>
-              )}
             </Box>
           </Box>
 
           <Box id="detail-content-container" />
           <Box sx={{ mx: { md: 0, lg: fr.spacing("6v") } }}>
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isMandataire && <LbaJobCfaDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && isCfaEntreprise && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA && !isMandataire && !isCfaEntreprise && <LbaJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
             {kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && <RecruteurLbaDetail recruteurLba={selectedItem as ILbaItemLbaCompanyJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && isCfaEntreprise && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
-            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !isCfaEntreprise && <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && (isCfaEntreprise || isGeiq) && <GeiqJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />}
+            {kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES && !isCfaEntreprise && !isGeiq && (
+              <PartnerJobDetail title={actualTitle} job={selectedItem as ILbaItemPartnerJobJson} />
+            )}
 
             <AideApprentissage />
 
@@ -349,7 +376,7 @@ function JobDetail({
       </Container>
       {isCollapsed && <CandidatureStickyBar selectedItem={selectedItem} />}
       {!isMobile && <BackToTopButton />}
-      <Footer />
+      {!isWidget && <Footer />}
     </Box>
   )
 }

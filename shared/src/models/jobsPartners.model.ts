@@ -1,14 +1,14 @@
 import { z } from "zod"
 
 import { LBA_ITEM_TYPE } from "../constants/lbaitem.js"
-import { TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
+import { NIVEAU_DIPLOME_LABEL, TRAINING_CONTRACT_TYPE, TRAINING_REMOTE_TYPE } from "../constants/recruteur.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import type { IDiplomaParam } from "../routes/_params.js"
 
 import { ZPointGeometry } from "./address.model.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
-import { JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
+import { JOB_START_TYPE, JOB_STATUS_ENGLISH, ZDelegation } from "./job.model.js"
 import { ZComputedJobPartnersDuplicateRef } from "./jobPartnersDuplicateRef.js"
 import { zOpcoLabel } from "./opco.model.js"
 
@@ -84,26 +84,11 @@ export const ZJobsPartnersRecruiterApi = z.object({
 })
 
 export const NIVEAUX_DIPLOMES_EUROPEENS = [
-  {
-    value: "3",
-    label: "Cap, autres formations (Infrabac)",
-  },
-  {
-    value: "4",
-    label: "BP, Bac, autres formations (Bac)",
-  },
-  {
-    value: "5",
-    label: "BTS, DEUST, autres formations (Bac+2)",
-  },
-  {
-    value: "6",
-    label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
-  },
-  {
-    value: "7",
-    label: "Master, titre ingénieur, autres formations (Bac+5)",
-  },
+  { value: "3", label: NIVEAU_DIPLOME_LABEL["3"] },
+  { value: "4", label: NIVEAU_DIPLOME_LABEL["4"] },
+  { value: "5", label: NIVEAU_DIPLOME_LABEL["5"] },
+  { value: "6", label: NIVEAU_DIPLOME_LABEL["6"] },
+  { value: "7", label: NIVEAU_DIPLOME_LABEL["7"] },
 ] as const
 
 export const NIVEAUX_DIPLOMES_EUROPEENS_ENUM = Object.fromEntries(NIVEAUX_DIPLOMES_EUROPEENS.map((x) => [x.value, x.value]))
@@ -135,6 +120,8 @@ export const ZJobsPartnersOfferApi = ZJobsPartnersRecruiterApi.omit({
   partner_job_id: z.string().describe("Identifiant d'origine de l'offre provenant du partenaire"),
 
   contract_start: z.date().nullable().describe("Date de début de contrat"),
+  contract_start_type: extensions.buildEnum(JOB_START_TYPE).nullish().describe("Mode de démarrage du contrat"),
+  contract_start_is_flexible: z.boolean().nullish().describe("Indique si la date de démarrage est flexible"),
   contract_duration: z.number().int().min(0).nullable().describe("Durée du contrat en mois"),
   contract_type: z.array(extensions.buildEnum(TRAINING_CONTRACT_TYPE)).describe("type de contrat, formaté à l'insertion"),
   contract_remote: extensions.buildEnum(TRAINING_REMOTE_TYPE).nullable().describe("Format de travail de l'offre"),
@@ -179,6 +166,7 @@ const ZJobsPartnersRecruiterPrivateFields = z.object({
   cfa_apply_phone: z.string().nullish().describe("Numéro de téléphone du CFA si offre déléguée"),
   cfa_apply_email: z.string().email().nullish().describe("Email de contact du CFA si offre déléguée"),
   cfa_address_label: z.string().nullish().describe("Adresse du CFA si offre déléguée"),
+  ft_support: z.boolean().nullish().describe("Indique si le créateur de l'offre a demandé un accompagnement par France Travail"),
   job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
   job_delegation_count: z.number().nullish().describe("Nombre de délégations"),
   delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),

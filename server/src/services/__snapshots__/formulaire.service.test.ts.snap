@@ -15,11 +15,14 @@ exports[`createJob > should insert a job 1`] = `
   "contract_remote": null,
   "contract_rythm": null,
   "contract_start": 2021-01-28T15:00:00.000Z,
+  "contract_start_is_flexible": false,
+  "contract_start_type": "precise_date",
   "contract_type": [
     "Apprentissage",
   ],
   "delegations": undefined,
   "duplicates": [],
+  "ft_support": false,
   "is_delegated": false,
   "job_delegation_count": 0,
   "job_last_prolongation_date": null,
@@ -35,7 +38,7 @@ exports[`createJob > should insert a job 1`] = `
   ],
   "offer_multicast": true,
   "offer_opening_count": 1,
-  "offer_origin": "lba",
+  "offer_origin": "La bonne alternance",
   "offer_rome_appellation": "Agent administratif / Agente administrative",
   "offer_rome_codes": [
     "M1602",

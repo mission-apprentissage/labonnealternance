@@ -7,7 +7,6 @@ import { processDecathlon } from "./decathlon/importDecathlon"
 import { processEdf } from "./edf/processEdf"
 import { processEmploiInclusion } from "./emploi-inclusion/importEmploiInclusion"
 import { processEnedis } from "./enedis/processEnedis"
-// import { processEngagementJeunes } from "./engagementJeunes/importEngagementJeunes"
 import { processFranceTravail } from "./france-travail/processFranceTravail"
 import { processFranceTravailCEGID } from "./france-travail-CEGID/importFranceTravailCEGID"
 import { processHellowork } from "./hellowork-merge/processHellowork"
@@ -18,13 +17,13 @@ import { processLaposte } from "./laposte/processLaposte"
 import { processLeboncoin } from "./leboncoin/processLeboncoin"
 import { processPass } from "./pass/processPass"
 import { processComputedAndImportToJobPartners } from "./processJobPartners"
-//import { processMissingRomeAndImportToJobPartners } from "./processMissingRomeAndImportToJobPartners"
+import { processMissingRomeAndImportToJobPartners } from "./processMissingRomeAndImportToJobPartners"
 import { processRhAlternance } from "./rh-alternance/processRhAlternance"
 
 const timings = {
   import_source: "0 0 * * *",
   process_computed: "1 0 * * *",
-  process_missing_rome: "*/15 * * * *",
+  process_missing_rome: "*/15 6-22 * * *",
 }
 
 export const importers: Record<string, CronDef> = {
@@ -170,15 +169,14 @@ export const importers: Record<string, CronDef> = {
     checkinMargin: 350,
     maxRuntimeInMinutes: 120,
   },
-  // TODO: restore after fixing side effects
-  // "Process missing Rome and import to Jobs Partners": {
-  //   cron_string: timings.process_missing_rome,
-  //   handler: processMissingRomeAndImportToJobPartners,
-  //   checkinMargin: 350,
-  //   maxRuntimeInMinutes: 15,
-  //   tag: "slave",
-  //   resumable: true,
-  // },
+  "Process missing Rome and import to Jobs Partners": {
+    cron_string: timings.process_missing_rome,
+    handler: processMissingRomeAndImportToJobPartners,
+    checkinMargin: 350,
+    maxRuntimeInMinutes: 15,
+    tag: "slave",
+    resumable: true,
+  },
 
   // Keep at the end
   "Process computed and import to Jobs Partners": {

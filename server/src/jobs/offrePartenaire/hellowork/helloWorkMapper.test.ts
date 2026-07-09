@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
+import { JOBS_PARTNERS_OFFER_ORIGIN } from "shared/models/jobsPartnersComputed.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
-
 import { helloWorkJobToJobsPartners } from "./helloWorkMapper"
 
 const now = new Date("2024-07-21T04:49:06.000+02:00")
@@ -76,7 +76,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_status: "Active",
       offer_target_diploma: {
         european: "6",
-        label: "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
+        label: "Licence, BUT, Licence Pro (Bac+3)",
       },
       offer_desired_skills: ["profile"],
       offer_access_conditions: [],
@@ -85,7 +85,7 @@ describe("helloWorkJobToJobsPartners", () => {
       offer_rome_codes: ["M1203"],
       offer_creation: new Date("2024-07-05T22:14:56.000+02:00"),
       offer_expiration: new Date("2024-09-05T20:14:56.000Z"),
-      offer_origin: null,
+      offer_origin: JOBS_PARTNERS_OFFER_ORIGIN.FLUX,
       offer_opening_count: 1,
       offer_multicast: false,
       workplace_siret: "39837261500128",

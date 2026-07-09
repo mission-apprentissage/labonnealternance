@@ -67,6 +67,20 @@ export default function (server: Server) {
     }
   )
 
+  server.get(
+    "/application/intention/schedule/:id",
+    {
+      schema: zRoutes.get["/application/intention/schedule/:id"],
+      onRequest: server.auth(zRoutes.get["/application/intention/schedule/:id"]),
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const { intention } = req.query
+      const data = await getApplicationDataForIntentionAndScheduleMessage(id, intention)
+      return res.status(200).send(data)
+    }
+  )
+
   server.post(
     "/application/intention/cancel/:id",
     {
@@ -92,20 +106,6 @@ export default function (server: Server) {
       const { token } = req.query
       const company_email = await getCompanyEmailFromToken(token)
       return res.status(200).send({ company_email })
-    }
-  )
-
-  server.get(
-    "/application/intention/schedule/:id",
-    {
-      schema: zRoutes.get["/application/intention/schedule/:id"],
-      onRequest: server.auth(zRoutes.get["/application/intention/schedule/:id"]),
-    },
-    async (req, res) => {
-      const { id } = req.params
-      const { intention } = req.query
-      const data = await getApplicationDataForIntentionAndScheduleMessage(id, intention)
-      return res.status(200).send(data)
     }
   )
 

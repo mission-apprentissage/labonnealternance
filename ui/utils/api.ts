@@ -16,7 +16,8 @@ import { removeUndefinedFields } from "shared"
 import type { ApplicationIntention } from "shared/constants/application"
 import type { BusinessErrorCodes } from "shared/constants/errorCodes"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-
+import type { ILbaCompanySearchField } from "shared/routes/updateLbaCompany.routes"
+import type { Jsonify } from "type-fest"
 import { ApiError, apiDelete, apiGet, apiPatch, apiPost, apiPut } from "./api.utils"
 
 const errorHandler = (error: any): undefined => {
@@ -56,7 +57,11 @@ export const providedPartnerJob = async (id: string, token: string) => apiPost("
 export const cancelOffre = async (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/cancel`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const cancelOffreFromAdmin = async (jobId: string, data: IRoutes["put"]["/formulaire/offre/f/:jobId/cancel"]["body"]["_input"]) =>
   apiPut("/formulaire/offre/f/:jobId/cancel", { params: { jobId }, body: data })
-export const extendOffre = async (jobId: string) => apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId } })
+export const extendOffre = async (jobId: string, jobFields: Jsonify<IBody<IRoutes["put"]["/formulaire/offre/:jobId/extend"]>>) => {
+  // @ts-expect-error
+  const body: IBody<IRoutes["put"]["/formulaire/offre/:jobId/extend"]> = jobFields
+  return apiPut(`/formulaire/offre/:jobId/extend`, { params: { jobId }, body })
+}
 export const fillOffre = async (jobId: string, token: string) => apiPut(`/formulaire/offre/:jobId/provided`, { params: { jobId }, headers: { authorization: `Bearer ${token}` } })
 export const notifyLbaJobDetailView = async (jobId: string) => await apiPost("/v1/jobs/matcha/:id/stats/view-details", { params: { id: jobId } })
 export const notifyJobDetailViewV3 = async (job: ILbaItemLbaJobJson | ILbaItemLbaCompanyJson | ILbaItemPartnerJobJson) => {
@@ -98,13 +103,13 @@ export const getUserStatusByToken = async (userId: string, token: string) =>
   apiGet("/user/status/:userId/by-token", { params: { userId }, headers: { authorization: `Bearer ${token}` } })
 
 export const activateUserRole = async (userId: string, organizationId: string) =>
-  apiPost("/user/:userId/organization/:organizationId/activate", { params: { userId, organizationId } }).catch(errorHandler)
+  apiPost("/user/:userId/organization/:organizationId/activate", { params: { userId, organizationId } })
 
 export const deactivateUserRole = async (userId: string, organizationId: string, reason: string) =>
-  apiPost("/user/:userId/organization/:organizationId/deactivate", { params: { userId, organizationId }, body: { reason } }).catch(errorHandler)
+  apiPost("/user/:userId/organization/:organizationId/deactivate", { params: { userId, organizationId }, body: { reason } })
 
 export const notifyNotMyOpcoUserRole = async (userId: string, organizationId: string, reason: string) =>
-  apiPost("/user/:userId/organization/:organizationId/not-my-opco", { params: { userId, organizationId }, body: { reason } }).catch(errorHandler)
+  apiPost("/user/:userId/organization/:organizationId/not-my-opco", { params: { userId, organizationId }, body: { reason } })
 
 export const createSuperUser = async (user: INewSuperUser) => apiPost("/admin/users", { body: user })
 
@@ -199,14 +204,21 @@ export const getPrdvContext = async (cleMinistereEducatif: string, referrer: str
     return data
   } catch (error) {
     const isExpectedError = error instanceof ApiError && error.context.statusCode >= 400 && error.context.statusCode < 500
-    if (!isExpectedError) {
-      captureException(error)
+    if (isExpectedError) {
+      return null
     }
+    captureException(error)
+    throw error
   }
 }
 
 export const getCompanyContactInfo = async (siret: string) => {
   const data = await apiGet("/lbacompany/:siret/contactInfo", { params: { siret } })
+  return data
+}
+
+export const searchLbaCompanies = async (search: string, field: ILbaCompanySearchField) => {
+  const data = await apiGet("/admin/lba-companies", { querystring: { search, field } })
   return data
 }
 

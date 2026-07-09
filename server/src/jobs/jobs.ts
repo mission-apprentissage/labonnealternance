@@ -34,7 +34,7 @@ import { sendContactsToBrevo } from "./partenaireExport/exportContactsToBrevo"
 import { exportLbaJobsToS3 } from "./partenaireExport/exportJobsToS3"
 import { exportJobsToS3V2 } from "./partenaireExport/exportJobsToS3V2"
 import { exportRecruteursToBrevo } from "./partenaireExport/exportRecrutersToBrevo"
-import { exportJobsToFranceTravail } from "./partenaireExport/exportToFranceTravail"
+import { exportJobsToFranceTravail, exportJobsToFranceTravailCsvOnly } from "./partenaireExport/exportToFranceTravail"
 import { activateOptoutOnEtablissementAndUpdateReferrersOnETFA } from "./rdv/activateOptoutOnEtablissementAndUpdateReferrersOnETFA"
 import { importReferentielOnisep } from "./rdv/importReferentielOnisep"
 import { inviteEtablissementAffelnetToPremium } from "./rdv/inviteEtablissementAffelnetToPremium"
@@ -269,7 +269,7 @@ export async function setupJobProcessor() {
             tag: "main",
           },
           "Emission des intentions des recruteurs": {
-            cron_string: "0 19 * * *",
+            cron_string: "*/10 * * * *",
             handler: processRecruiterIntentions,
             tag: "main",
           },

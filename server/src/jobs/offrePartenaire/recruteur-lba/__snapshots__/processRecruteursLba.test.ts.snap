@@ -18,6 +18,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "contract_type": [],
     "created_at": 2024-07-21T02:49:06.000Z,
     "duplicates": null,
+    "ft_support": false,
     "lba_url": "http://localhost:3000/emploi/recruteurs_lba/13002526500013/commerce-de-gros-commerce-interentreprises-de-bois-et-de-matériaux-de-construction",
     "offer_access_conditions": [],
     "offer_creation": 2024-07-21T02:49:06.000Z,
@@ -26,7 +27,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "offer_expiration": null,
     "offer_multicast": true,
     "offer_opening_count": 1,
-    "offer_origin": null,
+    "offer_origin": "La bonne alternance",
     "offer_rome_codes": [
       "M1607",
       "M1203",
@@ -82,6 +83,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "contract_type": [],
     "created_at": 2024-07-21T02:49:06.000Z,
     "duplicates": null,
+    "ft_support": false,
     "lba_url": "http://localhost:3000/emploi/recruteurs_lba/80841382700011/hôtels-et-hébergement-similaire",
     "offer_access_conditions": [],
     "offer_creation": 2024-07-21T02:49:06.000Z,
@@ -90,7 +92,7 @@ exports[`importRecruteursLbaRaw > should process all recruteurs 1`] = `
     "offer_expiration": null,
     "offer_multicast": true,
     "offer_opening_count": 1,
-    "offer_origin": null,
+    "offer_origin": "La bonne alternance",
     "offer_rome_codes": [
       "D1208",
       "I1203",

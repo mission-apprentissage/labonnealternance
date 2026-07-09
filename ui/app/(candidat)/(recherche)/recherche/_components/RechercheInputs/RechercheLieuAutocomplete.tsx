@@ -23,7 +23,8 @@ export function RechercheLieuAutocomplete() {
       fetchOptions={fetchLieuOptions}
       getOptionKey={(option) => option.label}
       getOptionLabel={(option) => option.label}
-      placeholder="À quel endroit ?"
+      placeholder="France entière"
+      iconIdWithPlaceholder="fr-icon-close-line"
     />
   )
 }

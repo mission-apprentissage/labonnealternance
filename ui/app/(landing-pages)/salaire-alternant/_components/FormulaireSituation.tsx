@@ -62,14 +62,14 @@ const typeContratOptions = [
 ]
 
 const niveauDiplomeOptions = [
-  { value: 1, label: "Niveau 1 (aucun diplôme ou titre professionnel)" },
-  { value: 2, label: "Niveau 2 (brevet, certificat de formation générale)" },
-  { value: 3, label: "Niveau 3 (CAP, BEP, etc.)" },
-  { value: 4, label: "Niveau 4 (baccalauréat, etc.)" },
-  { value: 5, label: "Niveau 5 (BTS, etc.)" },
-  { value: 6, label: "Niveau 6 (licence, 1ère année de master, BUT, etc.)" },
-  { value: 7, label: "Niveau 7 (master, diplôme d'école de commerce, diplôme d'ingénieur, etc.)" },
-  { value: 8, label: "Niveau 8 (doctorat)" },
+  { value: 1, label: "Aucun diplôme ou titre professionnel (Niveau 1)" },
+  { value: 2, label: "Brevet, certificat de formation générale (Niveau 2)" },
+  { value: 3, label: "CAP, BEP (Niveau 3)" },
+  { value: 4, label: "Baccalauréat, BP (Niveau 4)" },
+  { value: 5, label: "BTS, DEUST (Niveau 5)" },
+  { value: 6, label: "Licence, BUT, Licence Pro, Maîtrise (Niveau 6)" },
+  { value: 7, label: "Master, titre ingénieur, grande école (Niveau 7)" },
+  { value: 8, label: "Doctorat (Niveau 8)" },
 ]
 
 const isDateDebutContratConnueOptions = [

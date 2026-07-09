@@ -72,7 +72,7 @@ function getOptions(): Sentry.NodeOptions {
 }
 
 export function initSentry(): void {
-  Sentry.init(getOptions())
+  Sentry.init({ ...getOptions() })
 }
 
 export async function closeSentry(): Promise<void> {

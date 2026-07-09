@@ -1,0 +1,49 @@
+name: Epic
+description: Cadrer un chantier stratégique regroupant plusieurs user stories
+title: "[Epic] "
+type: Epic
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte et enjeu
+      description: Pourquoi ce chantier ? Quel problème ou opportunité adresse-t-il ?
+      placeholder: "Ex : Les TPE/PME représentent 3/4 des recrutements en alternance mais leurs offres sont peu visibles au sein de l'écosystème"
+    validations:
+      required: true
+
+  - type: textarea
+    id: kpi
+    attributes:
+      label: KPI cibles
+      description: Ce que cette Epic doit changer pour les utilisateurs ou pour le produit
+      placeholder: "Ex : Augmenter le nombre d'offres publiées par des TPE/PME de X% en passant de X% à X% d'ici XX"
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: Détail du périmètre envisagé
+      description: Grandes briques fonctionnelles pressenties (seront détaillées en user stories)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Périmètre équipe
+      description: Personnes intervenant sur cette Epic
+      multiple: true
+      options:
+        - Métier
+        - UX
+        - Support
+        - Bizdev
+        - Growth
+        - Data
+        - DevSecOps
+        - Dev
+        - Com
+    validations:
+      required: false

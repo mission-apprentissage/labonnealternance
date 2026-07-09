@@ -65,26 +65,26 @@ export enum OPCOS_LABEL {
   MULTIPLE_OPCO = "OPCO multiple",
 }
 
+export const NIVEAU_DIPLOME_LABEL = {
+  "3": "CAP, BEP (Infrabac)",
+  "4": "Bac, Bac Pro, BP (Bac)",
+  "5": "BTS, DEUST (Bac+2)",
+  "6": "Licence, BUT, Licence Pro (Bac+3)",
+  "7": "Master, titre ingénieur, grande école (Bac+5)",
+} as const
+
 export const NIVEAUX_POUR_LBA = {
   INDIFFERENT: "Indifférent",
-  "3 (CAP...)": "Cap, autres formations (Infrabac)",
-  "4 (BAC...)": "BP, Bac, autres formations (Bac)",
-  "5 (BTS, DEUST...)": "BTS, DEUST, autres formations (Bac+2)",
-  "6 (Licence, BUT...)": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
-  "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations (Bac+5)",
+  "3 (CAP...)": NIVEAU_DIPLOME_LABEL["3"],
+  "4 (BAC...)": NIVEAU_DIPLOME_LABEL["4"],
+  "5 (BTS, DEUST...)": NIVEAU_DIPLOME_LABEL["5"],
+  "6 (Licence, BUT...)": NIVEAU_DIPLOME_LABEL["6"],
+  "7 (Master, titre ingénieur...)": NIVEAU_DIPLOME_LABEL["7"],
 } as const
 
 export type INiveauPourLbaKey = keyof typeof NIVEAUX_POUR_LBA
 
 export type INiveauPourLbaLabel = (typeof NIVEAUX_POUR_LBA)[INiveauPourLbaKey]
-
-export const NIVEAU_DIPLOME_LABEL = {
-  "3": "Cap, autres formations (Infrabac)",
-  "4": "BP, Bac, autres formations (Bac)",
-  "5": "BTS, DEUST, autres formations (Bac+2)",
-  "6": "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)",
-  "7": "Master, titre ingénieur, autres formations (Bac+5)",
-} as const
 
 // Note: notre moteur de recherche demande le niveau visé ce qui matche avec les offres lba.
 // en revanche pour l'api offres de France Travail le filtre sur le niveau est le niveau
@@ -105,15 +105,6 @@ export const UNSUBSCRIBE_EMAIL_ERRORS = {
 export const TRAINING_CONTRACT_TYPE = {
   APPRENTISSAGE: "Apprentissage",
   PROFESSIONNALISATION: "Professionnalisation",
-} as const
-
-export const TRAINING_RYTHM = {
-  INDIFFERENT: "Indifférent",
-  "1J4J": "1 jour / 4 jours",
-  "2J3J": "2 jours / 3 jours",
-  "1S1S": "1 semaine / 1 semaine",
-  "2S3S": "2 semaines / 3 semaines",
-  "6S6S": "6 semaines / 6 semaines",
 } as const
 
 export enum TRAINING_REMOTE_TYPE {

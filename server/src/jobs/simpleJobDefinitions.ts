@@ -41,7 +41,6 @@ import { processEmploiInclusion } from "./offrePartenaire/emploi-inclusion/impor
 import { processEngagementJeunes } from "./offrePartenaire/engagementJeunes/importEngagementJeunes"
 import { processEtudiant } from "./offrePartenaire/etudiant/processEtudiant"
 import { expireJobsPartners } from "./offrePartenaire/expireJobsPartners"
-import { fillComputedJobsPartners } from "./offrePartenaire/fillComputedJobsPartners"
 import { fillEntrepriseEngagementJobsPartners } from "./offrePartenaire/fillEntrepriseEngagementJobsPartners"
 import { fillLbaUrl, renewLbaUrl } from "./offrePartenaire/fillLbaUrl"
 import { processFranceTravail } from "./offrePartenaire/france-travail/processFranceTravail"
@@ -56,7 +55,13 @@ import { processLaposte } from "./offrePartenaire/laposte/processLaposte"
 import { processLeboncoin } from "./offrePartenaire/leboncoin/processLeboncoin"
 import { processPass } from "./offrePartenaire/pass/processPass"
 import { processFillRomeStandalone } from "./offrePartenaire/processFillRomeStandalone"
-import { cancelRemovedJobsPartnersFlux, processComputedAndImportToJobPartners } from "./offrePartenaire/processJobPartners"
+import {
+  cancelRemovedJobsPartnersFlux,
+  detectDuplicateJobPartnersFlux,
+  fillComputedJobsPartnersFlux,
+  processComputedAndImportToJobPartners,
+  validateComputedJobPartnersFlux,
+} from "./offrePartenaire/processJobPartners"
 import { processJobPartnersForApi } from "./offrePartenaire/processJobPartnersForApi"
 import { removeMissingRecruteursLbaFromComputedJobPartners } from "./offrePartenaire/recruteur-lba/importRecruteursLbaRaw"
 import { cancelRemovedJobsPartnersRecruteursLba, processRecruteursLba, processRecruteursLbaRawToEnd } from "./offrePartenaire/recruteur-lba/processRecruteursLba"
@@ -267,8 +272,8 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   },
   // ENRICHIT COMPUTED JOBS PARTNERS
   {
-    fct: fillComputedJobsPartners,
-    description: "Enrichit la collection computed_jobs_partners avec les données provenant d'API externes",
+    fct: fillComputedJobsPartnersFlux,
+    description: "Enrichit la collection computed_jobs_partners (partenaires du flux uniquement) avec les données provenant d'API externes",
   },
   // GLOBAL ENRICHMENT FLOW FOR JOBS PARTNERS
   {
@@ -409,6 +414,14 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: cancelRemovedJobsPartnersFlux,
     description: "Annule les offres des partenaires traités par flux absentes du flux source",
+  },
+  {
+    fct: detectDuplicateJobPartnersFlux,
+    description: "Détecte les doublons dans computed_jobs_partners pour les partenaires du flux",
+  },
+  {
+    fct: validateComputedJobPartnersFlux,
+    description: "Valide les computed_jobs_partners pour les partenaires du flux",
   },
   {
     fct: cancelRemovedJobsPartnersRecruteursLba,

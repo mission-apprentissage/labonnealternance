@@ -685,8 +685,8 @@ export const sendMailToApplicant = async ({
 }: {
   application: IApplication
   applicant: IApplicant
-  email: string | null
-  phone: string | null
+  email: string | null | undefined
+  phone: string | null | undefined
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
   refusal_reasons: RefusalReasons[]
@@ -703,8 +703,8 @@ export const sendMailToApplicant = async ({
     case ApplicationIntention.ENTRETIEN: {
       sentMessageId = await mailer.sendEmail({
         to: applicantEmail,
-        cc: email!,
-        subject: `Réponse positive de ${application.company_name} à la candidature${partner ? ` ${partner}` : ""} de ${applicant.firstname} ${applicant.lastname}`,
+        cc: email || undefined,
+        subject: `Objet : Suite donnée à votre candidature - ${application.company_name}${partner ? ` via ${partner}` : ""}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: {
           ...sanitizeApplicationForEmail(application),
@@ -713,7 +713,7 @@ export const sendMailToApplicant = async ({
           partner,
           ...images,
           email,
-          phone: sanitizeTextField(removeUrlsFromText(phone)),
+          phone: phone ? sanitizeTextField(removeUrlsFromText(phone)) : null,
           comment: prepareMessageForMail(sanitizeTextField(company_feedback)),
         },
       })
@@ -1226,12 +1226,6 @@ const getJobOrCompanyFromApplication = async (application: IApplication) => {
   }
 }
 
-const getPhoneForApplication = async (application: IApplication) => {
-  const jobOrCompany = await getJobOrCompanyFromApplication(application)
-  const phone = jobOrCompany.job?.apply_phone
-  return phone
-}
-
 export const getApplicationDataForIntentionAndScheduleMessage = async (applicationId: string, intention: ApplicationIntention) => {
   const application = await getDbCollection("applications").findOne({ _id: new ObjectId(applicationId) })
   if (!application) throw notFound("Candidature non trouvée")
@@ -1283,12 +1277,26 @@ export const getApplicationDataForIntentionAndScheduleMessage = async (applicati
     }
   )
 
+  const sent_intention =
+    application.company_feedback_send_status === CompanyFeebackSendStatus.SENT
+      ? {
+          company_feedback_send_status: application.company_feedback_send_status,
+          company_feedback: application.company_feedback ?? null,
+          company_feedback_reasons: application.company_feedback_reasons ?? null,
+          company_recruitment_intention_date: application.company_recruitment_intention_date ?? null,
+          company_recruitment_intention: parseEnum(ApplicationIntention, application.company_recruitment_intention) ?? null,
+        }
+      : undefined
+
   return {
     recruiter_email: application.company_email,
     recruiter_phone,
     applicant_first_name: applicant.firstname,
     applicant_last_name: applicant.lastname,
+    applicant_email: applicant.email,
+    applicant_phone: applicant.phone,
     company_name,
+    sent_intention,
   }
 }
 
@@ -1304,8 +1312,8 @@ export const processRecruiterIntention = async ({ application }: { application: 
   const sentMessageId = await sendMailToApplicant({
     application,
     applicant,
-    email: application.company_email,
-    phone: (await getPhoneForApplication(application)) ?? "",
+    email: "",
+    phone: "",
     company_recruitment_intention,
     company_feedback,
     refusal_reasons: [],
@@ -1341,8 +1349,8 @@ export const sendRecruiterIntention = async ({
   application_id: ObjectId
   company_recruitment_intention: ApplicationIntention
   company_feedback: string
-  email: string
-  phone: string
+  email: string | undefined
+  phone: string | undefined
   refusal_reasons: RefusalReasons[]
 }) => {
   const application = await getDbCollection("applications").findOne({ _id: application_id })
@@ -1405,7 +1413,7 @@ export const processScheduledRecruiterIntentions = async () => {
   try {
     const stream = await getDbCollection("applications")
       .find({
-        company_recruitment_intention_date: { $lte: dayjs().subtract(3, "hours").toDate() },
+        company_recruitment_intention_date: { $lte: dayjs().subtract(30, "minutes").toDate() },
         company_feedback_send_status: CompanyFeebackSendStatus.SCHEDULED,
       })
       .stream()
@@ -1433,19 +1441,12 @@ export const processScheduledRecruiterIntentions = async () => {
         callback(null)
       },
     })
-
     await pipeline(stream, transform)
-
-    await notifyToSlack({
-      subject: "Envoi des intentions des recruteurs",
-      message: `${counters.total} intentions traitrées. ${counters.total - counters.error} intentions envoyées. ${counters.entretien} proposition(s) d'entretien. ${counters.error} erreurs.`,
-      error: false,
-    })
   } catch (err) {
-    await notifyToSlack({
-      subject: "Envoi des intentions des recruteurs",
-      message: "Erreur technique dans le traitement des intentions des recruteurs",
-      error: true,
+    sentryCaptureException(err, {
+      extra: {
+        message: "Erreur technique dans le traitement des intentions des recruteurs",
+      },
     })
     throw err
   }
@@ -1472,7 +1473,7 @@ export const buildApplicationFromHelloworkAndSaveToDb = async (payload: IHellowo
       foreign_application_id: payload.applicationId,
       foreign_application_status_url: statusApiUrl,
     },
-    caller: "Hellowork",
+    caller: "hellowork-api",
   })
 
   return {

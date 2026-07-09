@@ -104,33 +104,14 @@ export default function EspaceDeveloppeurs() {
 
               <Typography
                 sx={{
-                  mb: fr.spacing("4v"),
-                }}
-              >
-                Documentation des différentes routes API
-              </Typography>
-
-              <Box
-                component="ul"
-                sx={{
                   mb: fr.spacing("8v"),
-                  pl: fr.spacing("4v"),
-                  listStyle: "disc",
-                  "& > li": {
-                    mb: fr.spacing("3v"), // ou `mb: 2` si tu veux plus d'espacement
-                  },
                 }}
               >
-                <li>
-                  Recherche d'opportunités d'emploi en alternance :{" "}
-                  <DsfrLink aria-label="Accès au site api.apprentissage - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr/fr/explorer/recherche-offre">
-                    https://api.apprentissage.beta.gouv.fr/fr/explorer/recherche-offre
-                  </DsfrLink>
-                </li>
-                <li>Recherche d'opportunités de formation en alternance : à venir</li>
-                <li>Envoi de candidatures à une opportunités d'emploi : à venir</li>
-                <li>Envoi de prise de contact à une opportunité de formation : à venir</li>
-              </Box>
+                La documentation des différentes routes API est à disposition :{" "}
+                <DsfrLink aria-label="Accès à la documentation des routes API - nouvelle fenêtre" href="https://api.apprentissage.beta.gouv.fr/fr/explorer">
+                  https://api.apprentissage.beta.gouv.fr/fr/explorer
+                </DsfrLink>
+              </Typography>
               <Typography
                 sx={{
                   mb: fr.spacing("4v"),

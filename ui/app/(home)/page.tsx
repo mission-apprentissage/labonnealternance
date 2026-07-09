@@ -3,6 +3,8 @@ import { Box, Container, Grid } from "@mui/material"
 
 import type { Metadata } from "next"
 import { IRechercheMode, parseRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { AppreciationUsagers } from "@/app/(home)/_components/AppreciationUsagers"
+import { GrandsGroupesCandidat } from "@/app/(home)/_components/GrandsGroupesCandidat"
 import { SchemaOrg } from "@/components/SchemaOrg"
 import { PAGES } from "@/utils/routes.utils"
 import { AlgoHome } from "./_components/AlgoHome"
@@ -76,6 +78,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <CalculRemuneration />
           </Grid>
         </Grid>
+
+        <GrandsGroupesCandidat />
+
+        <Box sx={{ px: { xs: fr.spacing("6v"), lg: 0 } }}>
+          <AppreciationUsagers realm="candidat" />
+        </Box>
 
         <AlgoHome />
       </Container>

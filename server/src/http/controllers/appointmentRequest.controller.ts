@@ -74,10 +74,6 @@ export default (server: Server) => {
         }
       }
 
-      if (!eligibleTrainingsForAppointment.lieu_formation_email) {
-        throw internal("Le lieu de formation n'a aucun email")
-      }
-
       const [createdAppointement, etablissement] = await Promise.all([
         appointmentService.createAppointment({
           applicant_id: user._id,
