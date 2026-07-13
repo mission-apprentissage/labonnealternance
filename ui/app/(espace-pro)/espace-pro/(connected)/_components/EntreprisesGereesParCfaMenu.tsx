@@ -7,11 +7,13 @@ import { PAGES } from "@/utils/routes.utils"
 export const EntreprisesGereesParCfaMenu = ({
   row,
   userId,
+  cfaId,
   setCurrentEntreprise,
   confirmationSuppression,
 }: {
   row: IRecruiterJson
   userId: string
+  cfaId: string
   setCurrentEntreprise: (entreprise: IRecruiterJson | null) => void
   confirmationSuppression: { onOpen: () => void }
 }) => {
@@ -19,7 +21,7 @@ export const EntreprisesGereesParCfaMenu = ({
     {
       label: "Voir les informations",
       ariaLabel: `Voir les informations de l'entreprise ${row.establishment_raison_sociale}`,
-      link: PAGES.dynamic.backAdminUserCfa({ user_id: userId }).getPath(),
+      link: `${PAGES.dynamic.backAdminUserCfaEntreprise({ user_id: userId, establishment_id: row.establishment_id }).getPath()}?cfaId=${cfaId}`,
       type: "link",
       icon: <DsfrIcon name="fr-icon-eye-line" size={16} />,
     },

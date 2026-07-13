@@ -34,7 +34,7 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
       maxWidth: "48",
       disableSortBy: true,
       accessor: (row: IRecruiterJson) => {
-        return <EntreprisesGereesParCfaMenu row={row} userId={userId} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
+        return <EntreprisesGereesParCfaMenu row={row} userId={userId} cfaId={cfaId} confirmationSuppression={confirmationSuppression} setCurrentEntreprise={setCurrentEntreprise} />
       },
       srOnly: "Actions sur l'entreprise",
     },

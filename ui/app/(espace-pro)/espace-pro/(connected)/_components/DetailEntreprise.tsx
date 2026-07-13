@@ -29,7 +29,21 @@ import { OffresTabs } from "./OffresTabs"
 
 type Variables = { userId: string; values: INewSuperUser; siret: string; setFieldError: (field: string, message: string) => void }
 
-export default function DetailEntreprise({ userRecruteur, recruiter, onChange }: { userRecruteur: any; recruiter?: any; onChange?: (props: { opco?: OPCOS_LABEL }) => void }) {
+export default function DetailEntreprise({
+  userRecruteur,
+  recruiter,
+  onChange,
+  isCfaManagedEntreprise = false,
+  cfaUserId,
+  onDeleteEntreprisePartenaire,
+}: {
+  userRecruteur: any
+  recruiter?: any
+  onChange?: (props: { opco?: OPCOS_LABEL }) => void
+  isCfaManagedEntreprise?: boolean
+  cfaUserId?: string
+  onDeleteEntreprisePartenaire?: () => void
+}) {
   const router = useRouter()
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
@@ -38,6 +52,9 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
   const { user } = useConnectedSessionClient()
   const isDeclarationExactField = user.type === AUTHTYPE.CFA ? { isDeclarationExact: true } : {}
   const isDeclarationExactValidation = user.type === AUTHTYPE.CFA ? { isDeclarationExact: Yup.boolean().oneOf([true], "Vous devez certifier l'exactitude des informations") } : {}
+  // Une entreprise gérée par un CFA n'a pas de compte utilisateur propre : ses informations de contact,
+  // son statut et son historique proviennent en réalité du CFA gestionnaire, pas de l'entreprise elle-même.
+  const showAccountLifecycle = user.type !== AUTHTYPE.CFA && !isCfaManagedEntreprise
 
   const ActivateUserButton = ({ userId, organizationId }: { userId: string; organizationId: string }) => {
     const { activate } = useUserPermissionsActions(userId, organizationId)
@@ -101,7 +118,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
       const { type, ...value } = values
 
       try {
-        if (user.type === AUTHTYPE.CFA) {
+        if (user.type === AUTHTYPE.CFA || isCfaManagedEntreprise) {
           const { email, first_name, last_name, phone } = values
           await updateEntrepriseCFA(userRecruteur.establishment_id, { email, first_name, last_name, phone })
         } else {
@@ -136,7 +153,7 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
           px: fr.spacing("4v"),
         }}
       >
-        {user.type !== "CFA" && (
+        {showAccountLifecycle && (
           <Box
             sx={{
               display: "flex",
@@ -152,26 +169,32 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
             <Box>{getActionButtons(lastUserState, userRecruteur._id, userRecruteur.organizationId)}</Box>
           </Box>
         )}
-        {user.type === "CFA" && (
+        {!showAccountLifecycle && (
           <Box sx={{ mb: fr.spacing("5v"), display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: fr.spacing("2v") }}>
             <Typography sx={{ fontSize: "32px", fontWeight: 700, ml: 0, mr: fr.spacing("8v"), wordBreak: "break-word" }} component="h2">
               {establishmentLabel}
             </Typography>
 
-            <Button
-              priority="secondary"
-              iconId="fr-icon-close-line"
-              type="button"
-              onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}
-            >
-              Fermer
-            </Button>
+            {isCfaManagedEntreprise ? (
+              <Button priority="secondary" iconId="fr-icon-delete-line" type="button" onClick={() => onDeleteEntreprisePartenaire?.()}>
+                Supprimer l'entreprise partenaire
+              </Button>
+            ) : (
+              <Button
+                priority="secondary"
+                iconId="fr-icon-close-line"
+                type="button"
+                onClick={() => router.push(PAGES.dynamic.backCfaPageEntreprise(userRecruteur.establishment_id).getPath())}
+              >
+                Fermer
+              </Button>
+            )}
           </Box>
         )}
       </Box>
       <Box sx={{ px: fr.spacing("4v") }}>
         <Box sx={{ display: user.type !== "CFA" ? "flex" : "none", alignItems: "center", gap: fr.spacing("6v"), mb: fr.spacing("6v"), flexWrap: "wrap" }}>
-          {user.type !== "CFA" && (
+          {showAccountLifecycle && (
             <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
               <Typography component="h2" sx={{ fontWeight: 700, fontSize: "1.25rem" }}>
                 Statut:{" "}
@@ -362,13 +385,14 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         <OffresTabs
                           caption="Offres de recrutement en alternance"
                           recruiter={recruiter}
+                          hideCfaShareAction={isCfaManagedEntreprise}
                           buildOfferEditionUrl={(offerId) => {
                             return PAGES.dynamic
                               .offreUpsert({
                                 offerId,
                                 establishment_id: userRecruteur.establishment_id,
                                 userType: user.type,
-                                userId: userRecruteur._id,
+                                userId: isCfaManagedEntreprise ? cfaUserId : userRecruteur._id,
                                 raison_sociale: establishmentLabel,
                               })
                               .getPath()
@@ -376,13 +400,15 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         />
                       )}
                     </Box>
-                    <Box
-                      sx={{
-                        mb: fr.spacing("24v"),
-                      }}
-                    >
-                      <UserValidationHistory histories={userRecruteur.status} />
-                    </Box>
+                    {!isCfaManagedEntreprise && (
+                      <Box
+                        sx={{
+                          mb: fr.spacing("24v"),
+                        }}
+                      >
+                        <UserValidationHistory histories={userRecruteur.status} />
+                      </Box>
+                    )}
                   </>
                 )}
               </>

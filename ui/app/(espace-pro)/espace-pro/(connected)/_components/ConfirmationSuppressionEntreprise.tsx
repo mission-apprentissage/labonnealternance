@@ -10,10 +10,11 @@ interface ConfirmationSuppressionEntrepriseProps {
   onClose: () => void
   establishment_raison_sociale?: string
   establishment_id: string
+  onSuccess?: () => void
 }
 
 export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppressionEntrepriseProps) {
-  const { isOpen, onClose, establishment_raison_sociale, establishment_id } = props
+  const { isOpen, onClose, establishment_raison_sociale, establishment_id, onSuccess } = props
   const toast = useToast()
 
   const SupprimerFormulaire = () => {
@@ -26,9 +27,13 @@ export function ConfirmationSuppressionEntreprise(props: ConfirmationSuppression
         })
       })
       .finally(() => {
-        setTimeout(() => {
-          window.location.reload()
-        }, 1000)
+        if (onSuccess) {
+          setTimeout(onSuccess, 1000)
+        } else {
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000)
+        }
       })
     onClose()
   }

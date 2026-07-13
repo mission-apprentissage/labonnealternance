@@ -867,8 +867,8 @@ export const PAGES = {
         title: `${user_label ?? "Entreprise"} - La bonne alternance`,
       }),
     }),
-    backAdminUserCfa: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
-      getPath: () => `/espace-pro/administration/users/${user_id}/cfa` as string,
+    backAdminUserCfaEntreprise: ({ user_id, establishment_id, user_label }: { user_id: string; establishment_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}/cfa/${establishment_id}` as string,
       title: user_label ?? "Entreprise",
       getMetadata: () => ({
         title: `${user_label ?? "Entreprise"} - La bonne alternance`,
