@@ -383,13 +383,15 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
-export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId): Promise<IRecruiter[]> => {
-  const [mainRole, entreprisesManagedByCfa, cfa, user] = await Promise.all([
+export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId, isAdmin: boolean = false): Promise<IRecruiter[]> => {
+  const [ownRole, entreprisesManagedByCfa, cfa] = await Promise.all([
     getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
     getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray(),
     getDbCollection("cfas").findOne({ _id: cfaId }),
-    getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
+  // Un admin n'a pas nécessairement de role CFA sur ce cfaId : on retombe sur le compte CFA
+  // propriétaire de l'organisation pour construire les establishment_id et filtrer les offres.
+  const mainRole = ownRole ?? (isAdmin ? await getDbCollection("rolemanagements").findOne({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }) : null)
   if (!mainRole) {
     throw internal(`inattendu: mainRole vide pour userId=${userId}`)
   }
@@ -399,8 +401,10 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   if (!cfa) {
     throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
   }
+  const cfaUserId = mainRole.user_id
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: cfaUserId })
   if (!user) {
-    throw internal(`inattendu: user vide pour userId=${userId}`)
+    throw internal(`inattendu: user vide pour userId=${cfaUserId}`)
   }
   const entrepriseIds = entreprisesManagedByCfa.map(({ entreprise_id }) => entreprise_id)
   const entreprises = await getDbCollection("entreprises")
@@ -417,7 +421,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
         $match: {
           partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           workplace_siret: { $in: sirets },
-          managed_by: userId,
+          managed_by: cfaUserId,
         },
       },
       ...romeDetailJoin,
