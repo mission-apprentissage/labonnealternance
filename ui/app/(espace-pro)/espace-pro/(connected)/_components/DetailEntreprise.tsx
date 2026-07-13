@@ -20,10 +20,10 @@ import { useToast } from "@/app/hooks/useToast"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
 import { useUserPermissionsActions } from "@/common/hooks/useUserPermissionsActions"
 import { AnimationContainer, ConfirmationDesactivationUtilisateur, ConfirmationModificationOpco, UserValidationHistory } from "@/components/espace_pro"
-import { webkitLineClamp } from "@/styles/webkitLineClamp"
 import { ArrowRightLine } from "@/theme/components/icons"
 import { updateEntrepriseAdmin, updateEntrepriseCFA } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
+import { EntreprisesGereesParCfa } from "./EntreprisesGereesParCfa"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
 import { OffresTabs } from "./OffresTabs"
 
@@ -356,21 +356,25 @@ export default function DetailEntreprise({ userRecruteur, recruiter, onChange }:
                         my: fr.spacing("12v"),
                       }}
                     >
-                      <OffresTabs
-                        caption="Offres de recrutement en alternance"
-                        recruiter={recruiter}
-                        buildOfferEditionUrl={(offerId) => {
-                          return PAGES.dynamic
-                            .offreUpsert({
-                              offerId,
-                              establishment_id: userRecruteur.establishment_id,
-                              userType: user.type,
-                              userId: userRecruteur._id,
-                              raison_sociale: establishmentLabel,
-                            })
-                            .getPath()
-                        }}
-                      />
+                      {user.type === AUTHTYPE.ADMIN && userRecruteur.type === AUTHTYPE.CFA ? (
+                        <EntreprisesGereesParCfa cfaId={userRecruteur.organizationId} userId={userRecruteur._id} />
+                      ) : (
+                        <OffresTabs
+                          caption="Offres de recrutement en alternance"
+                          recruiter={recruiter}
+                          buildOfferEditionUrl={(offerId) => {
+                            return PAGES.dynamic
+                              .offreUpsert({
+                                offerId,
+                                establishment_id: userRecruteur.establishment_id,
+                                userType: user.type,
+                                userId: userRecruteur._id,
+                                raison_sociale: establishmentLabel,
+                              })
+                              .getPath()
+                          }}
+                        />
+                      )}
                     </Box>
                     <Box
                       sx={{

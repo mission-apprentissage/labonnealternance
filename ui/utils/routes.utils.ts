@@ -867,6 +867,13 @@ export const PAGES = {
         title: `${user_label ?? "Entreprise"} - La bonne alternance`,
       }),
     }),
+    backAdminUserCfa: ({ user_id, user_label }: { user_id: string; user_label?: string }): IPage => ({
+      getPath: () => `/espace-pro/administration/users/${user_id}/cfa` as string,
+      title: user_label ?? "Entreprise",
+      getMetadata: () => ({
+        title: `${user_label ?? "Entreprise"} - La bonne alternance`,
+      }),
+    }),
     backEntrepriseEditionOffre: ({ job_id }: { job_id: string }): IPage => ({
       getPath: () => `/espace-pro/entreprise/offre/${job_id}` as string,
       title: job_id ? "Edition d'une offre" : "Création d'une offre",
