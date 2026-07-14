@@ -1,4 +1,4 @@
-FROM mongodb/mongodb-community-search:0.60.1
+FROM mongodb/mongodb-community-search:1.70.1
 
 # Create secrets directory
 RUN mkdir -p /etc/mongot/secrets

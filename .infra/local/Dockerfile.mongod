@@ -1,4 +1,4 @@
-FROM mongodb/mongodb-community-server:8.2.3-ubuntu2204
+FROM mongodb/mongodb-community-server:8.3.4-ubuntu2204
 
 COPY --chown=mongodb:mongodb ./mongo_keyfile /tmp/mongo_keyfile
 COPY --chown=mongodb:mongodb ./mongod.conf /etc/mongod.conf

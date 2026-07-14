@@ -9,7 +9,10 @@ services:
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
-      - lba_mongodb_data:/data
+      # ⚠️ Monter précisément /data/db (dbPath par défaut) : l'image déclare VOLUME /data/db,
+      # un montage sur /data laissait les données partir dans un volume ANONYME à chaque
+      # recréation du conteneur (volumes orphelins + données "perdues" au changement d'image).
+      - lba_mongodb_data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
       interval: 10s
