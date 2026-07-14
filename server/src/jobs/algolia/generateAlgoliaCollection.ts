@@ -76,6 +76,53 @@ const resolveRomeLabels = (codes: (string | null | undefined)[] | null | undefin
   return [...new Set(labels)]
 }
 
+/**
+ * Canonicalisation de casse des champs de facette (organization_name, activity_sector) :
+ * les sources partenaires livrent des casses différentes ("CARREFOUR"/"Carrefour",
+ * "PROGRAMMATION INFORMATIQUE"/"Programmation informatique") → chaque variante devient une
+ * option distincte dans les filtres (type `token`, match exact). Toutes les variantes d'un
+ * même libellé (comparaison insensible à la casse) convergent vers UNE forme canonique :
+ * la plus "propre" (ni tout-majuscules ni tout-minuscules) déjà en base, sinon la plus
+ * fréquente — on préserve ainsi "SNCF Voyageurs" ou "… PVC" au lieu de réécrire la casse.
+ */
+const pickCanonicalVariant = (variants: { v: string; c: number }[]): string => {
+  let best = variants[0].v
+  let bestScore = -1
+  for (const { v, c } of variants) {
+    const isAllUpper = v === v.toUpperCase()
+    const isAllLower = v === v.toLowerCase()
+    const score = (isAllUpper || isAllLower ? 0 : 1_000_000) + c
+    if (score > bestScore) {
+      bestScore = score
+      best = v
+    }
+  }
+  return best
+}
+
+const buildCanonicalCaseMap = async (field: "organization_name" | "activity_sector"): Promise<Map<string, string>> => {
+  const rows = await getDbCollection("algolia")
+    .aggregate<{ _id: string; variants: { v: string; c: number }[] }>([
+      { $match: { [field]: { $nin: [null, ""] } } },
+      { $group: { _id: { lower: { $toLower: `$${field}` }, exact: `$${field}` }, count: { $sum: 1 } } },
+      { $group: { _id: "$_id.lower", variants: { $push: { v: "$_id.exact", c: "$count" } } } },
+    ])
+    .toArray()
+  return new Map(rows.map((row) => [row._id, pickCanonicalVariant(row.variants)]))
+}
+
+/** Applique la forme canonique ; une valeur inédite devient la référence de son groupe (cohérence intra-run). */
+const canonicalizeCase = (map: Map<string, string>, value: string): string => {
+  if (!value) return value
+  const key = value.toLowerCase()
+  const canonical = map.get(key)
+  if (!canonical) {
+    map.set(key, value)
+    return value
+  }
+  return canonical
+}
+
 const convertFormationNiveauDiplome = (niveau: string) => {
   switch (niveau) {
     case "3 (CAP...)":
@@ -332,6 +379,9 @@ export const fillAlgoliaCollection = async () => {
   ])
 
   const romeLabelByCode = await loadRomeLabelByCode()
+  // Cartes de canonicalisation de casse (facettes) — construites sur l'existant pour que les
+  // nouveaux docs convergent vers les formes déjà en base.
+  const [organizationCaseMap, sectorCaseMap] = await Promise.all([buildCanonicalCaseMap("organization_name"), buildCanonicalCaseMap("activity_sector")])
 
   const processedIds = new Set<string>()
   const algoliaCollection = getDbCollection("algolia")
@@ -362,7 +412,7 @@ export const fillAlgoliaCollection = async () => {
         type: "Point",
         coordinates: [formation.lieu_formation_geopoint!.coordinates[0], formation.lieu_formation_geopoint!.coordinates[1]],
       },
-      organization_name: formation.etablissement_formateur_entreprise_raison_sociale || "",
+      organization_name: canonicalizeCase(organizationCaseMap, formation.etablissement_formateur_entreprise_raison_sociale || ""),
       level: convertFormationNiveauDiplome(formation.niveau || ""),
       activity_sector: null,
       keywords: null,
@@ -400,9 +450,9 @@ export const fillAlgoliaCollection = async () => {
         type: "Point",
         coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
       },
-      organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
+      organization_name: canonicalizeCase(organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
       level: job.offer_target_diploma?.label || "",
-      activity_sector: job.workplace_naf_label,
+      activity_sector: job.workplace_naf_label ? canonicalizeCase(sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
       keywords: null,
       rome_labels: resolveRomeLabels(job.offer_rome_codes, romeLabelByCode),
     }
@@ -431,7 +481,8 @@ export const fillAlgoliaCollection = async () => {
       publication_date: job.offer_creation ?? null,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
-      title: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
+      // title des recruteurs = nom d'entreprise → même canonicalisation que organization_name.
+      title: canonicalizeCase(organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
       // Pas une offre d'emploi → pas de vraie description. Le signal métier vit dans rome_labels.
       description: "",
       address: job.workplace_address_label || "",
@@ -439,9 +490,9 @@ export const fillAlgoliaCollection = async () => {
         type: "Point",
         coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
       },
-      organization_name: job.workplace_name || job.workplace_brand || job.workplace_legal_name || "",
+      organization_name: canonicalizeCase(organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
       level: job.offer_target_diploma?.label || "",
-      activity_sector: job.workplace_naf_label,
+      activity_sector: job.workplace_naf_label ? canonicalizeCase(sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
       keywords: null,
       rome_labels: resolveRomeLabels(job.rome_codes, romeLabelByCode),
     }
