@@ -174,7 +174,7 @@ const QUERY_STOPWORDS = new Set([
 ])
 
 const QUERY_DIACRITICS = /[̀-ͯ]/g
-const normalizeTerm = (s: string) => s.normalize("NFD").replace(QUERY_DIACRITICS, "").toLowerCase()
+export const normalizeTerm = (s: string) => s.normalize("NFD").replace(QUERY_DIACRITICS, "").toLowerCase()
 
 // Clé de déduplication : replie les variantes plurielles et masculin/féminin des intitulés
 // ROME ("Cuisinier / Cuisinière", "Moniteur éducateur / Monitrice éducatrice") sur une même

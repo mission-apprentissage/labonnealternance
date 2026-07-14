@@ -35,6 +35,7 @@ export const zSearchRoutes = {
           radius: ZRadiusParam.default(30),
           page: z.coerce.number().min(0).default(0).describe("Index de page (0-based)"),
           hitsPerPage: z.coerce.number().min(1).max(100).default(20).describe("Nombre de résultats par page (max 100)"),
+          source: z.enum(["suggestion", "free_text"]).optional().describe("Origine de la requête côté UI (télémétrie autocomplete, sans effet sur les résultats)"),
         })
         .strict(),
       headers: z.object({ referer: z.string().optional() }).passthrough(),

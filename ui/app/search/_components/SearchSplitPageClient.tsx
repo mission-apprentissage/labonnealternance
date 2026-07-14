@@ -56,8 +56,8 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
     (params.activity_sector?.length ?? 0) +
     (params.organization_name ? 1 : 0)
 
-  function handleSearch(q: string) {
-    navigateSilent({ ...params, q: q || undefined, page: 0, selected: undefined })
+  function handleSearch(q: string, source: "suggestion" | "free_text") {
+    navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0, selected: undefined })
   }
 
   function handleLieuChange(lieu: { label: string; latitude: number; longitude: number } | null) {

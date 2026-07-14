@@ -10,6 +10,8 @@ function paramsToQuerystring(params: ISearchPageParams) {
     hitsPerPage: params.hitsPerPage,
   }
   if (params.q) qs.q = params.q
+  // Télémétrie moteur de suggestion : origine de q (suggestion sélectionnée vs texte libre)
+  if (params.q && params.q_source) qs.source = params.q_source
   if (params.type_filter_label?.length) qs.type_filter_label = params.type_filter_label
   if (params.contract_type?.length) qs.contract_type = params.contract_type
   if (params.level?.length) qs.level = params.level

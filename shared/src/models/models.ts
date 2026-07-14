@@ -67,6 +67,7 @@ import reportedCompanyModel from "./reportedCompany.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import searchQueriesModel from "./searchQueries.model.js"
 import searchSynonymsModel from "./searchSynonyms.model.js"
 import seoDiplomeModel from "./seoDiplome.model.js"
 import seoMetierModel from "./seoMetier.model.js"
@@ -151,6 +152,7 @@ const modelDescriptorMap = {
   [rawFranceTravailCEGIDModel.collectionName]: rawFranceTravailCEGIDModel,
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
+  [searchQueriesModel.collectionName]: searchQueriesModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,

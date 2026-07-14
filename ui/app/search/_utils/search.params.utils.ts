@@ -3,6 +3,7 @@ import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 
 export interface ISearchPageParams {
   q?: string
+  q_source?: QSource // origine de q : suggestion d'autocomplete sélectionnée vs texte libre (télémétrie)
   lieu_label?: string // label affiché dans le champ lieu (ex: "Paris 75001")
   type_filter_label?: string[] // filtre par libellé de type (ex: "Offre d'emploi en alternance")
   contract_type?: string[]
@@ -21,6 +22,9 @@ export interface ISearchPageParams {
 export type SortOption = "proximity" | "smart_apply" | "date"
 const SORT_OPTIONS: SortOption[] = ["proximity", "smart_apply", "date"]
 
+export type QSource = "suggestion" | "free_text"
+const Q_SOURCES: QSource[] = ["suggestion", "free_text"]
+
 /**
  * Les filtres multi-valeurs utilisent des paramètres répétés dans l'URL :
  *   ?contract_type=Apprentissage&contract_type=Professionnalisation
@@ -36,6 +40,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
 
   return {
     q: search.get("q") || undefined,
+    q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
     type_filter_label: getMulti("type_filter_label"),
     contract_type: getMulti("contract_type"),
@@ -56,6 +61,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/search/sp
   const query = new URLSearchParams()
 
   if (params.q) query.set("q", params.q)
+  if (params.q && params.q_source) query.set("source", params.q_source)
   if (params.lieu_label) query.set("lieu_label", params.lieu_label)
 
   for (const val of params.type_filter_label ?? []) query.append("type_filter_label", val)

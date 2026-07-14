@@ -51,7 +51,8 @@ type LieuOption = { label: string; latitude: number; longitude: number }
 interface SearchBarProps {
   initialQ?: string
   initialLieuLabel?: string
-  onSubmit: (q: string) => void
+  /** source : "suggestion" si l'utilisateur a sélectionné une option d'autocomplete, "free_text" sinon (télémétrie moteur de suggestion). */
+  onSubmit: (q: string, source: "suggestion" | "free_text") => void
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number } | null) => void
   /** "row" : barre desktop ; "column" : panneau mobile (sans bouton, géré par le footer). */
   layout?: "row" | "column"
@@ -100,8 +101,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   }))
 
   const handleSubmit = useCallback(
-    (value: string) => {
-      onSubmit(value)
+    (value: string, source: "suggestion" | "free_text") => {
+      onSubmit(value, source)
     },
     [onSubmit]
   )
@@ -124,11 +125,12 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           inputValue={inputValue}
           onInputChange={(_e, value) => {
             setInputValue(value)
-            if (value === "") handleSubmit("")
+            if (value === "") handleSubmit("", "free_text")
           }}
           onChange={(_e, value) => {
+            // onChange de l'Autocomplete = sélection d'une option de la liste → source "suggestion"
             if (typeof value === "string" && value) {
-              handleSubmit(value)
+              handleSubmit(value, "suggestion")
             }
           }}
           renderInput={(params) => (
@@ -140,7 +142,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               fullWidth
               sx={dsfrFieldSx(inputValue.trim().length > 0)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSubmit(inputValue)
+                if (e.key === "Enter") handleSubmit(inputValue, "free_text")
               }}
               InputProps={{
                 ...params.InputProps,
