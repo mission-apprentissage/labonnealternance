@@ -4,7 +4,7 @@ import { processMissingRomeAndImportToJobPartners } from "@/jobs/offrePartenaire
 import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
-import { fillAlgoliaCollection } from "./algolia/generateAlgoliaCollection"
+import { fillAlgoliaCollection, fillMissingAlgoliaKeywords } from "./algolia/generateAlgoliaCollection"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
@@ -371,6 +371,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillAlgoliaCollection,
     description: "Génère/met à jour la collection algolia (formations, jobs, recruteurs) pour MongoDB Search",
+  },
+  {
+    fct: fillMissingAlgoliaKeywords,
+    description: "Génère les mots-clés (batch Mistral) des offres de la collection algolia qui n'en ont pas",
   },
   {
     fct: analyzeClosedCompanies,

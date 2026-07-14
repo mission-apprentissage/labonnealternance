@@ -12,7 +12,7 @@ import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Message } from "@/services/mistralai/mistralai.service"
-import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
+import { submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
 // Taille de tranche par job batch Mistral (mode fichier, jusqu'à 1M req / 512 Mo).
 // On borne pour limiter la mémoire du JSONL et le wall-clock de polling par job.
@@ -93,7 +93,7 @@ const convertFormationNiveauDiplome = (niveau: string) => {
   }
 }
 
-const getTypeFilterLabel = (partner_label: string, fromCfa?: boolean) => {
+const getTypeFilterLabel = (partner_label: JOBPARTNERS_LABEL, fromCfa?: boolean) => {
   if (fromCfa) return "Offres d'emploi postées par des écoles"
   switch (partner_label) {
     case "offres_emploi_lba":
@@ -173,35 +173,47 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
 }
 
 /**
- * Génère les mots-clés (batch Mistral) pour toutes les offres de la collection `algolia`
- * qui n'en ont pas encore — indépendamment de la façon dont elles ont été insérées.
- * Les formations sont exclues (pas de mots-clés). Découpé en tranches (un job/fichier par tranche).
+ * Soumet à Mistral (API Batch, fire-and-forget) la génération des mots-clés pour toutes les
+ * offres de la collection `algolia` qui n'en ont pas encore — indépendamment de la façon dont
+ * elles ont été insérées. Les formations sont exclues (pas de mots-clés). Découpé en tranches
+ * (un job/fichier par tranche), PAS de polling : le script soumet tous les jobs et se termine.
+ * Récupération : télécharger le JSONL de sortie de chaque job (console Mistral ou API) puis
+ * l'appliquer via `yarn cli algolia:apply-keywords-batch --file <sortie.jsonl>`.
+ * Exécutable seul via `yarn cli fillMissingAlgoliaKeywords` (simpleJobDefinitions).
  */
-const _fillMissingKeywords = async () => {
+export const fillMissingAlgoliaKeywords = async () => {
   const algoliaCollection = getDbCollection("algolia")
   const docs = await algoliaCollection
-    .find({ type: "offre", $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, description: 1, rome_labels: 1 } })
+    .find({ type: "offre", $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, title: 1, description: 1, rome_labels: 1 } })
     .toArray()
 
-  // Texte source : la description (offres), à défaut les intitulés ROME (recruteurs, description vide).
-  const withText = docs.map((doc) => ({ id: doc._id, text: (doc.description?.trim() ? doc.description : (doc.rome_labels ?? []).join(", ")).trim() })).filter((d) => d.text)
+  // Texte source : titre + description (le titre porte souvent la forme la plus canonique du
+  // métier), à défaut les intitulés ROME (recruteurs, description vide — leur title = nom
+  // d'entreprise, sans valeur pour les mots-clés).
+  const withText = docs
+    .map((doc) => ({
+      id: doc._id,
+      text: (doc.description?.trim() ? [doc.title?.trim(), doc.description.trim()].filter(Boolean).join("\n") : (doc.rome_labels ?? []).join(", ")).trim(),
+    }))
+    .filter((d) => d.text)
 
+  const jobIds: string[] = []
   for (let i = 0; i < withText.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
     const chunk = withText.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
-    const contentByCustomId = await sendMistralBatch({
+    const jobId = await submitMistralBatch({
       requests: chunk.map((doc) => ({ customId: doc.id.toString(), messages: buildKeywordsMessages(doc.text) })),
       model: "mistral-small-latest",
       maxTokens: 200,
+      inputFileName: `keywords_batch_input_${i / KEYWORDS_BATCH_CHUNK_SIZE + 1}.jsonl`,
     })
-
-    await asyncForEach(chunk, async (doc) => {
-      const content = contentByCustomId.get(doc.id.toString())
-      const keywords = content ? parseKeywords(content) : null
-      if (keywords && keywords.length > 0) {
-        await algoliaCollection.updateOne({ _id: doc.id }, { $set: { keywords } })
-      }
-    })
+    if (jobId) jobIds.push(jobId)
+    else logger.error(`fillMissingAlgoliaKeywords: échec de soumission de la tranche ${i / KEYWORDS_BATCH_CHUNK_SIZE + 1} (${chunk.length} requêtes)`)
   }
+
+  logger.info(
+    `fillMissingAlgoliaKeywords: ${withText.length} offres sans keywords, ${jobIds.length} job(s) batch Mistral soumis : ${jobIds.join(", ")}. ` +
+      `Une fois terminés, appliquer chaque sortie via \`yarn cli algolia:apply-keywords-batch --file <sortie.jsonl>\`.`
+  )
 }
 
 export const fillAlgoliaCollection = async () => {
@@ -246,7 +258,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(100_000)
+      // .limit(100_000) // limite levée : import complet des offres actives
       .toArray(),
     getDbCollection("jobs_partners")
       .aggregate([
@@ -272,20 +284,33 @@ export const fillAlgoliaCollection = async () => {
           },
         },
         {
+          // rome_codes : priorité au classement de raw_recruteurslba (codes ordonnés par
+          // pertinence par l'algo), fallback sur offer_rome_codes de jobs_partners si la
+          // collection raw est vide/absente (cas local ou raw purgée) — sinon rome_labels
+          // resterait vide pour tous les recruteurs.
           $addFields: {
             rome_codes: {
-              $slice: [
-                {
-                  $map: {
-                    input: {
-                      $ifNull: [{ $first: "$rawR.rome_codes" }, []],
+              $let: {
+                vars: {
+                  fromRaw: {
+                    $map: {
+                      input: {
+                        $ifNull: [{ $first: "$rawR.rome_codes" }, []],
+                      },
+                      as: "rc",
+                      in: "$$rc.rome_code",
                     },
-                    as: "rc",
-                    in: "$$rc.rome_code",
                   },
                 },
-                6,
-              ],
+                in: {
+                  $slice: [
+                    {
+                      $cond: [{ $gt: [{ $size: "$$fromRaw" }, 0] }, "$$fromRaw", { $ifNull: ["$offer_rome_codes", []] }],
+                    },
+                    6,
+                  ],
+                },
+              },
             },
             application_count: {
               $size: "$applications",
@@ -302,7 +327,7 @@ export const fillAlgoliaCollection = async () => {
           },
         },
       ])
-      .limit(80_000)
+      // .limit(80_000) // limite levée : import complet des recruteurs
       .toArray(),
   ])
 
@@ -434,5 +459,5 @@ export const fillAlgoliaCollection = async () => {
   }
 
   // Seconde passe : génération des mots-clés pour toutes les offres qui n'en ont pas.
-  // await fillMissingKeywords()
+  // Non lancée ici (wall-clock batch Mistral) → job dédié : `yarn cli fillMissingAlgoliaKeywords`.
 }
