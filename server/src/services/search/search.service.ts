@@ -135,21 +135,139 @@ const SYNONYM_MULTI_PATHS = [
   { value: "organization_name", multi: "standard" },
 ]
 
-function buildTextClauses(q?: string): object[] {
-  // Champs homogènes cross-type (offre / formation / recruteur) → boosting par champ correct.
-  // rome_labels : signal métier déterministe (dérivé des rome_codes), présent pour les 3 types.
-  // Une clause `text` par champ avec un poids dédié, + une clause synonymes (expansion d'abréviations).
-  const fuzzy = { maxEdits: 1, prefixLength: 1 }
-  return q
-    ? [
-        { text: { query: q, path: "rome_labels", fuzzy, score: { boost: { value: 8 } } } },
-        { text: { query: q, path: "title", fuzzy, score: { boost: { value: 7 } } } },
-        { text: { query: q, path: "keywords", fuzzy, score: { boost: { value: 5 } } } },
-        { text: { query: q, path: "organization_name", fuzzy, score: { boost: { value: 3 } } } },
-        { text: { query: q, path: "description", fuzzy, score: { boost: { value: 2 } } } },
-        { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms" } },
-      ]
-    : []
+// ─── Tokenisation de la requête (couverture par terme) ─────────────────────────────────────
+// Mots vides : grammaticaux FR courts + marqueurs génériques du domaine (apprenti, alternance,
+// h/f) présents dans quasi toutes les offres → aucun pouvoir discriminant, mais ils gonflent
+// le compte de termes exigés par minimumShouldMatch.
+const QUERY_STOPWORDS = new Set([
+  "a",
+  "au",
+  "aux",
+  "avec",
+  "ce",
+  "ces",
+  "chez",
+  "d",
+  "dans",
+  "de",
+  "des",
+  "du",
+  "en",
+  "et",
+  "f",
+  "h",
+  "hf",
+  "l",
+  "la",
+  "le",
+  "les",
+  "ou",
+  "par",
+  "pour",
+  "sur",
+  "un",
+  "une",
+  "apprenti",
+  "alternant",
+  "alternance",
+  "apprentissage",
+])
+
+const QUERY_DIACRITICS = /[̀-ͯ]/g
+const normalizeTerm = (s: string) => s.normalize("NFD").replace(QUERY_DIACRITICS, "").toLowerCase()
+
+// Clé de déduplication : replie les variantes plurielles et masculin/féminin des intitulés
+// ROME ("Cuisinier / Cuisinière", "Moniteur éducateur / Monitrice éducatrice") sur une même
+// clé. Heuristique volontairement simple — la clé ne sert QUE à comparer les termes d'une
+// même requête, jamais au matching (le terme original part tel quel vers l'analyzer).
+const dedupKey = (normalized: string): string => {
+  let t = normalized
+  if (t.length > 3 && t.endsWith("s")) t = t.slice(0, -1)
+  t = t
+    .replace(/trice$/, "teur")
+    .replace(/euse$/, "eur")
+    .replace(/elle$/, "el")
+    .replace(/enne$/, "en")
+    .replace(/iere$/, "ier")
+    .replace(/ere$/, "er")
+  if (t.length > 3 && t.endsWith("e")) t = t.slice(0, -1)
+  return t
+}
+
+/** Découpe la requête en termes utiles : minuscules, split non-alphanumérique, stopwords, dédup M/F. */
+export function tokenizeQuery(q: string): string[] {
+  const seen = new Set<string>()
+  const terms: string[] = []
+  for (const raw of q.toLowerCase().split(/[^\p{L}\p{N}]+/u)) {
+    if (!raw) continue
+    const normalized = normalizeTerm(raw)
+    const key = dedupKey(normalized)
+    if (QUERY_STOPWORDS.has(normalized) || QUERY_STOPWORDS.has(key) || seen.has(key)) continue
+    seen.add(key)
+    terms.push(raw)
+  }
+  return terms
+}
+
+// Fuzzy par longueur de terme : pas de fuzzy sur les termes courts (un acronyme comme "esf" ne
+// doit pas matcher "ESG" à 1 edit), préfixe protégé plus long sur les termes moyens.
+const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | undefined => {
+  if (term.length <= 4) return undefined
+  if (term.length <= 7) return { maxEdits: 1, prefixLength: 2 }
+  return { maxEdits: 1, prefixLength: 1 }
+}
+
+// Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
+const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0.75 * n))
+
+// Clause de couverture d'UN terme : le terme est cherché sur tous les champs pondérés
+// (boosting par champ), + l'index autocomplete (edgeGram) pour les abréviations/troncatures
+// ("compta" → "comptable"). Un doc "couvre" le terme s'il matche au moins un champ.
+function buildTermCoverageClause(term: string): object {
+  const fuzzy = fuzzyFor(term)
+  const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
+  return {
+    compound: {
+      should: [
+        text("rome_labels", 8),
+        text("title", 7),
+        text("organization_name", 6),
+        text("keywords", 5),
+        text("description", 1),
+        { autocomplete: { query: term, path: "title", score: { boost: { value: 3 } } } },
+        { autocomplete: { query: term, path: "rome_labels", score: { boost: { value: 3 } } } },
+      ],
+      minimumShouldMatch: 1,
+    },
+  }
+}
+
+/**
+ * Porte de pertinence (bloc `must`) : structure « une clause de couverture par terme » +
+ * minimumShouldMatch dynamique. Un doc n'entre dans le result set que s'il couvre assez de
+ * termes — OU s'il matche la requête ENTIÈRE via la collection de synonymes (les groupes sont
+ * multi-mots : "mco" ↔ "management commercial opérationnel" ; la clause synonymes sert donc
+ * d'alternative de couverture, avec un boost aligné sur les matchs directs).
+ * NB $search : `synonyms` et `fuzzy` sont mutuellement exclusifs sur une même clause `text` —
+ * la structure les sépare (fuzzy dans les clauses par terme, synonymes sur la requête entière).
+ */
+function buildTextGate(q?: string): object | null {
+  if (!q?.trim()) return null
+  const terms = tokenizeQuery(q)
+  const coverage = terms.length ? [{ compound: { should: terms.map(buildTermCoverageClause), minimumShouldMatch: msmFor(terms.length) } }] : []
+  const synonyms = { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", score: { boost: { value: 6 } } } }
+  return { compound: { should: [...coverage, synonyms], minimumShouldMatch: 1 } }
+}
+
+// Bonus de score (bloc `should`, n'élargit pas le result set) : adjacence/ordre des termes.
+// phrase sur title/rome_labels départage "Product Manager" des docs aux termes épars ; phrase
+// sur organization_name fait dominer le match employeur sur les mentions en description.
+function buildTextBonusClauses(q?: string): object[] {
+  if (!q?.trim()) return []
+  return [
+    { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } },
+    { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } },
+  ]
 }
 
 function buildCompoundOperator(filters: ISearchFilters) {
@@ -157,7 +275,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
 
-  const textClauses = buildTextClauses(q)
+  const gate = buildTextGate(q)
 
   const filter: object[] = []
 
@@ -176,11 +294,11 @@ function buildCompoundOperator(filters: ISearchFilters) {
     })
   }
 
-  // Tri par proximité : le texte devient un filtre (must), et le score provient
+  // Tri par proximité : la porte de pertinence devient un filtre, et le score provient
   // de l'opérateur `near` (plus c'est proche, plus le score est élevé). Le tri
   // par score restitue donc les résultats du plus proche au plus lointain.
   if (proximity) {
-    if (textClauses.length) filter.push({ compound: { should: textClauses, minimumShouldMatch: 1 } })
+    if (gate) filter.push(gate)
     // `near` en `must` : matche tous les docs et donne un score décroissant avec la
     // distance. pivot = 1 km → score très sensible à la distance (tri ~ proche d'abord).
     const near = { near: { path: "location", origin: { type: "Point", coordinates: [longitude, latitude] }, pivot: 1000 } }
@@ -188,12 +306,14 @@ function buildCompoundOperator(filters: ISearchFilters) {
     return { must: [near], filter }
   }
 
-  // minimumShouldMatch: 1 garantit qu'au moins une clause texte matche (logique OR)
-  if (!textClauses.length && !filter.length) {
+  if (!gate && !filter.length) {
     filter.push({ exists: { path: "type" } })
   }
 
-  return { ...(textClauses.length ? { should: textClauses, minimumShouldMatch: 1 } : {}), filter }
+  // Porte de pertinence en `must` (gate le result set — vaut pour TOUS les tris, y compris
+  // date : un doc trop peu couvrant n'apparaît plus, quel que soit l'ordre) ; bonus phrase
+  // en `should` pur (score uniquement, n'élargit pas les résultats).
+  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter }
 }
 
 // Étape de tri du $search selon l'option choisie (défaut : pertinence + tie-breaks).
@@ -243,7 +363,8 @@ function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolea
 function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null) {
   const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, latitude, longitude, radius } = filters
   const hasGeo = latitude !== undefined && longitude !== undefined
-  const textClauses = buildTextClauses(q)
+  // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
+  const gate = buildTextGate(q)
   const filter: object[] = []
 
   if (type) filter.push({ equals: { path: "type", value: type } })
@@ -254,8 +375,8 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (exclude !== "organization_name" && organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
   if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
 
-  if (!textClauses.length && !filter.length) filter.push({ exists: { path: "type" } })
-  return { ...(textClauses.length ? { should: textClauses, minimumShouldMatch: 1 } : {}), filter }
+  if (!gate && !filter.length) filter.push({ exists: { path: "type" } })
+  return { ...(gate ? { must: [gate] } : {}), filter }
 }
 
 type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }

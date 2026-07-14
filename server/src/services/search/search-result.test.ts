@@ -17,10 +17,11 @@ import { searchAlgolia, suggestAlgolia } from "@/services/search/search.service"
  * Le fichier est découpé en deux sections :
  *  1. "non-régression" : comportements validés OK en recette → ils doivent RESTER verts
  *     après toute modification du moteur (boosts, analyzers, synonymes, index...).
- *  2. "cibles d'amélioration" : comportements jugés KO / Mitigé en recette. Les tests
- *     décrivent le comportement CIBLE et sont marqués `it.fails` : ils sont verts tant
- *     que le défaut existe, et passent au rouge dès qu'une modification du moteur corrige
- *     le cas → il faut alors retirer le `.fails` pour promouvoir le test en non-régression.
+ *  2. "corrigés par la refonte Phase 1" : ex-KO/Mitigé de la recette, corrigés par la porte
+ *     de pertinence (couverture par terme + minimumShouldMatch dynamique) et promus en
+ *     non-régression. Convention pour les futures cibles : les écrire en `it.fails`
+ *     (le test décrit le comportement CIBLE, il est vert tant que le défaut existe, et
+ *     passe au rouge quand une modif le corrige → retirer alors le `.fails`).
  *
  * ⚠️ Ces tests nécessitent mongot (sidecar MongoDB Search) : ils tournent contre la stack
  * Docker locale (`yarn dev` / `yarn services:start`), PAS en CI. Ils sont donc gated :
@@ -473,33 +474,35 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   })
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 2. CIBLES D'AMÉLIORATION — KO / Mitigé en recette.
-  // `it.fails` = le test décrit le comportement CIBLE et échoue aujourd'hui.
-  // Quand une modification du moteur corrige le cas, vitest signale le test :
-  // retirer alors le `.fails` pour le promouvoir en non-régression.
+  // 2. Ex-CIBLES D'AMÉLIORATION — KO / Mitigé en recette, CORRIGÉS par la refonte
+  // Phase 1 (porte de pertinence : une clause de couverture par terme +
+  // minimumShouldMatch dynamique + fuzzy par longueur + autocomplete en recherche
+  // + bonus phrase). Promus de `it.fails` en `it` → désormais non-régression.
+  // Pour toute nouvelle cible KO : ajouter un test `it.fails` décrivant le
+  // comportement CIBLE ; quand une modif le corrige, retirer le `.fails`.
   // ──────────────────────────────────────────────────────────────────────────
-  describe("cibles d'amélioration (KO / Mitigé en recette)", () => {
-    it.fails("couverture multi-termes : 'product manager' ne remonte pas les docs ne matchant qu'un seul terme [Marion, KO]", async () => {
+  describe("corrigés par la refonte Phase 1 (ex-KO/Mitigé en recette)", () => {
+    it("couverture multi-termes : 'product manager' ne remonte pas les docs ne matchant qu'un seul terme [Marion, KO]", async () => {
       const result = await search({ q: "product manager" })
 
-      // Aujourd'hui : minimumShouldMatch=1 → 'Product Designer' et 'Assistant manager'
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : minimumShouldMatch=1 → 'Product Designer' et 'Assistant manager'
       // polluent les résultats. Cible : quand un document matche tous les termes,
       // les documents 1-terme ne doivent pas remonter (ou nettement après).
       expect(ids(result)).not.toContain("offre-product-designer")
       expect(ids(result)).not.toContain("offre-assistant-manager")
     })
 
-    it.fails("couverture multi-termes : 'chargé de déploiement' ne remonte pas les autres 'chargé de …' [Marion, KO]", async () => {
+    it("couverture multi-termes : 'chargé de déploiement' ne remonte pas les autres 'chargé de …' [Marion, KO]", async () => {
       const result = await search({ q: "chargé de déploiement" })
 
       expect(ids(result)).not.toContain("offre-charge-recrutement")
       expect(ids(result)).not.toContain("offre-charge-communication")
     })
 
-    it.fails("nom d'entreprise : l'offre de l'employeur avant les offres qui le mentionnent en description [Marion]", async () => {
+    it("nom d'entreprise : l'offre de l'employeur avant les offres qui le mentionnent en description [Marion]", async () => {
       const result = await search({ q: "sncf" })
 
-      // Aujourd'hui : la mention en description (boost 2, mais champ court → TF/IDF fort)
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : la mention en description (boost 2, mais champ court → TF/IDF fort)
       // passe devant le match employeur (organization_name, boost 3). Cible : le match
       // sur l'employeur doit dominer les simples mentions.
       const employeur = rankOf(result, "offre-sncf")
@@ -508,10 +511,10 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(mention === -1 || employeur < mention).toBe(true)
     })
 
-    it.fails("acronyme ambigu : 'esf' privilégie le synonyme exact (économie sociale et familiale) sur le fuzzy 'ESG' [Claire, KO]", async () => {
+    it("acronyme ambigu : 'esf' privilégie le synonyme exact (économie sociale et familiale) sur le fuzzy 'ESG' [Claire, KO]", async () => {
       const result = await search({ q: "esf" })
 
-      // Aujourd'hui : le fuzzy (maxEdits 1) sur le titre 'Analyste ESG' (boost 7) écrase
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le fuzzy (maxEdits 1) sur le titre 'Analyste ESG' (boost 7) écrase
       // la clause synonymes (boost 1). Cible : le match par synonyme exact doit dominer.
       const esf = rankOf(result, "offre-esf")
       const esg = rankOf(result, "offre-esg")
@@ -519,48 +522,48 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(esg === -1 || esf < esg).toBe(true)
     })
 
-    it.fails("abréviation / mot incomplet : 'compta' trouve les offres comptables (comme l'autocomplétion) [Marion, KO]", async () => {
+    it("abréviation / mot incomplet : 'compta' trouve les offres comptables (comme l'autocomplétion) [Marion, KO]", async () => {
       const result = await search({ q: "compta" })
 
-      // Aujourd'hui : 'compta' → 'comptable' dépasse maxEdits=1 et l'opérateur text
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'compta' → 'comptable' dépasse maxEdits=1 et l'opérateur text
       // ne fait pas de préfixe → 0 résultat pertinent. Cible : aligner la recherche
       // sur le comportement préfixe de l'autocomplétion (ou synonymes d'abréviations).
       expect(ids(result)).toContain("offre-comptable")
     })
 
-    it.fails("tri par date filtré par pertinence : 'assistant ressources humaines' + sort=date ne remonte pas 'Apprenti Boucher' en tête [Fadoua, KO]", async () => {
+    it("tri par date filtré par pertinence : 'assistant ressources humaines' + sort=date ne remonte pas 'Apprenti Boucher' en tête [Fadoua, KO]", async () => {
       const result = await search({ q: "assistant ressources humaines", sort: "date" })
 
-      // Aujourd'hui : le tri par date s'applique à TOUS les docs matchant au moins
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le tri par date s'applique à TOUS les docs matchant au moins
       // une clause ('ressources' dans la description du boucher suffit) → l'offre la
       // plus récente gagne quel que soit son score. Cible : ne trier par date que des
       // résultats suffisamment pertinents.
       expect(ids(result)[0]).toBe("offre-rh")
     })
 
-    it.fails("zéro résultat honnête : une requête sans document pertinent renvoie 0 hit plutôt que du bruit [Fadoua, KO]", async () => {
+    it("zéro résultat honnête : une requête sans document pertinent renvoie 0 hit plutôt que du bruit [Fadoua, KO]", async () => {
       const result = await search({ q: "imagerie médicale et radiologie thérapeutique" })
 
-      // Aujourd'hui : 'médicale' matche (stemming) la description "Dispositifs médicaux…"
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'médicale' matche (stemming) la description "Dispositifs médicaux…"
       // → des résultats non pertinents remontent. Cible : en dessous d'un seuil de
       // couverture des termes, préférer 0 résultat (question produit ouverte en recette).
       expect(result.nbHits).toBe(0)
     })
 
-    it.fails("sélection d'autocomplete : 'Cuisinier / Cuisinière à domicile' ne remonte pas les docs ne matchant que 'domicile' [Aurélie, KO]", async () => {
+    it("sélection d'autocomplete : 'Cuisinier / Cuisinière à domicile' ne remonte pas les docs ne matchant que 'domicile' [Aurélie, KO]", async () => {
       const result = await search({ q: "Cuisinier / Cuisinière à domicile" })
 
-      // Aujourd'hui : le doublet masculin/féminin des intitulés ROME gonfle le nombre de
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : le doublet masculin/féminin des intitulés ROME gonfle le nombre de
       // termes et 'domicile' seul suffit à matcher (minimumShouldMatch=1) → conducteurs PL,
       // aides à domicile... Cible : dédupliquer les termes normalisés (cuisinier ≈ cuisinière)
       // et exiger la couverture du terme métier.
       expect(ids(result)).not.toContain("offre-aide-domicile")
     })
 
-    it.fails("requête spécifique multi-domaines : 'monteur vidéo' privilégie l'audiovisuel sur le BTP/élec [Jérémy, KO]", async () => {
+    it("requête spécifique multi-domaines : 'monteur vidéo' privilégie l'audiovisuel sur le BTP/élec [Jérémy, KO]", async () => {
       const result = await search({ q: "monteur vidéo" })
 
-      // Aujourd'hui : 'Monteur réseaux électriques' matche 'monteur' (titre, boost 7)
+      // Avant la refonte Phase 1 (minimumShouldMatch:1, clauses par champ) : 'Monteur réseaux électriques' matche 'monteur' (titre, boost 7)
       // et concurrence le doc full-match. Cible : la couverture des deux termes doit
       // l'emporter nettement.
       expect(rankOf(result, "offre-cadreur")).toBe(0)
