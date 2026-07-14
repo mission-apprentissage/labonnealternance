@@ -2,7 +2,8 @@ name: "lba_preview_{{pr_number}}"
 
 services:
   mongodb:
-    image: mongodb/mongodb-community-server:8.2-ubuntu2204
+    # Version pinnée (le tag flottant 8.2-ubuntu2204 changeait au gré des deploys).
+    image: mongodb/mongodb-community-server:8.3.4-ubuntu2204
     container_name: lba_{{pr_number}}_mongodb
     hostname: lba_{{pr_number}}_mongodb
     command: ["mongod", "--config", "/etc/mongod/mongod.conf"]
@@ -29,7 +30,8 @@ services:
       - autoheal=true
 
   mongot:
-    image: mongodb/mongodb-community-search:0.60.1
+    # ⚠️ mongot 1.x exige le nouveau format de config (scramAuth) — cf. mongot.yml.j2.
+    image: mongodb/mongodb-community-search:1.70.1
     container_name: lba_{{pr_number}}_mongot
     network_mode: "service:mongodb"
     environment:
