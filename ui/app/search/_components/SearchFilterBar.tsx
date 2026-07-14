@@ -97,7 +97,6 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
   const typeGroups = useMemo(() => buildTypeGroups(typeOptions), [typeOptions])
   const contractOptions = useMemo(() => buildOptions(facets?.contract_type, params.contract_type), [facets?.contract_type, params.contract_type])
   const levelOptions = useMemo(() => buildOptions(facets?.level, params.level), [facets?.level, params.level])
-  const sectorOptions = useMemo(() => buildOptions(facets?.activity_sector, params.activity_sector), [facets?.activity_sector, params.activity_sector])
   const entrepriseOptions = useMemo(() => Object.keys(facets?.organization_name ?? {}), [facets?.organization_name])
 
   const _moreCount = (params.activity_sector?.length ?? 0) + (params.organization_name ? 1 : 0)
@@ -211,14 +210,8 @@ export function SearchFilterBar({ params, facets, onNavigate }: SearchFilterBarP
             borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
           }}
         >
-          <SearchMultiSelectField
-            id="filter-sector"
-            label="Secteur"
-            topLabel="Secteur d'activité"
-            options={sectorOptions}
-            value={params.activity_sector ?? []}
-            onChange={setMulti("activity_sector")}
-          />
+          {/* Filtre "Secteur" retiré de l'UI (doublons de libellés NAF en cours de traitement) —
+              le paramètre API activity_sector reste fonctionnel (URLs existantes). */}
           <Box>
             <SearchEntrepriseAutocomplete
               options={entrepriseOptions}

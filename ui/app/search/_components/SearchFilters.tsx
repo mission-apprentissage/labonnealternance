@@ -110,7 +110,6 @@ export function SearchFilters({ params, facets, onNavigate, variant = "bar" }: S
   const typeGroups = useMemo(() => buildTypeGroups(typeOptions), [typeOptions])
   const contractOptions = useMemo(() => buildOptions(facets?.contract_type, params.contract_type), [facets?.contract_type, params.contract_type])
   const levelOptions = useMemo(() => buildOptions(facets?.level, params.level), [facets?.level, params.level])
-  const sectorOptions = useMemo(() => buildOptions(facets?.activity_sector, params.activity_sector), [facets?.activity_sector, params.activity_sector])
   const entrepriseOptions = useMemo(() => Object.keys(facets?.organization_name ?? {}), [facets?.organization_name])
 
   const setMulti = (key: "type_filter_label" | "contract_type" | "level" | "activity_sector") => (vals: string[]) =>
@@ -124,7 +123,8 @@ export function SearchFilters({ params, facets, onNavigate, variant = "bar" }: S
         <CheckboxSection title="Type" groups={typeGroups} value={params.type_filter_label ?? []} onChange={setMulti("type_filter_label")} />
         <CheckboxSection title="Contrat" options={contractOptions} value={params.contract_type ?? []} onChange={setMulti("contract_type")} />
         <CheckboxSection title="Niveau" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
-        <CheckboxSection title="Secteur" options={sectorOptions} value={params.activity_sector ?? []} onChange={setMulti("activity_sector")} />
+        {/* Filtre "Secteur" retiré de l'UI (doublons de libellés NAF en cours de traitement) —
+            le paramètre API activity_sector reste fonctionnel (URLs existantes). */}
         <Box sx={{ py: fr.spacing("2v") }}>
           <Box component="h3" className={fr.cx("fr-h6")} sx={{ margin: 0, mb: fr.spacing("2v") }}>
             Entreprise
@@ -154,14 +154,7 @@ export function SearchFilters({ params, facets, onNavigate, variant = "bar" }: S
         onChange={setMulti("contract_type")}
       />
       <SearchMultiSelectField id="filter-level" label="Niveau" topLabel="Niveau de formation" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
-      <SearchMultiSelectField
-        id="filter-sector"
-        label="Secteur"
-        topLabel="Secteur d'activité"
-        options={sectorOptions}
-        value={params.activity_sector ?? []}
-        onChange={setMulti("activity_sector")}
-      />
+      {/* Filtre "Secteur" retiré de l'UI (doublons de libellés NAF en cours de traitement). */}
       <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} topLabel="Entreprise / organisme" />
     </Box>
   )
