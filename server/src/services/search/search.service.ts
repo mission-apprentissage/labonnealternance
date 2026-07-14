@@ -220,6 +220,12 @@ const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | un
 // Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
 const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0.75 * n))
 
+// Sémantique INCLUSIVE du filtre niveau : un doc sans niveau précisé ("" — recruteurs et
+// offres sans diplôme cible, ~83 % du corpus) ou "Indifférent" (fallback formations) est
+// compatible avec tout niveau sélectionné — il n'est pas incompatible, il est indifférent.
+const LEVEL_AGNOSTIC_VALUES = ["", "Indifférent"]
+const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [...level, ...LEVEL_AGNOSTIC_VALUES] } })
+
 // Clause de couverture d'UN terme : le terme est cherché sur tous les champs pondérés
 // (boosting par champ), + l'index autocomplete (edgeGram) pour les abréviations/troncatures
 // ("compta" → "comptable"). Un doc "couvre" le terme s'il matche au moins un champ.
@@ -282,7 +288,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   if (type) filter.push({ equals: { path: "type", value: type } })
   if (type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
   if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
-  if (level?.length) filter.push({ in: { path: "level", value: level } })
+  if (level?.length) filter.push(buildLevelFilter(level))
   if (activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
   if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
   if (hasGeo) {
@@ -370,7 +376,7 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (type) filter.push({ equals: { path: "type", value: type } })
   if (exclude !== "type_filter_label" && type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
   if (exclude !== "contract_type" && contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
-  if (exclude !== "level" && level?.length) filter.push({ in: { path: "level", value: level } })
+  if (exclude !== "level" && level?.length) filter.push(buildLevelFilter(level))
   if (exclude !== "activity_sector" && activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
   if (exclude !== "organization_name" && organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
   if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })

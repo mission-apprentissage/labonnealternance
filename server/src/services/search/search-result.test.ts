@@ -280,6 +280,17 @@ const CORPUS = [
     rome_labels: ["Services domestiques"],
     organization_name: "DomiServices",
   }),
+  // — filtre niveau inclusif : un doc SANS niveau précisé ("" — recruteurs, offres partenaires
+  //   sans diplôme cible, ~83 % du corpus réel) doit remonter quel que soit le niveau coché
+  generateAlgoliaFixture({
+    url_id: "offre-sans-niveau",
+    title: "Agent polyvalent de restauration",
+    description: "Polyvalence en restauration collective.",
+    keywords: null,
+    rome_labels: ["Personnel polyvalent en restauration"],
+    organization_name: "CollectivRest",
+    level: "",
+  }),
   // — géo : tri par proximité (Aurélie : offres IDF avant Paris) et rayon
   generateAlgoliaFixture({
     url_id: "offre-versailles",
@@ -300,6 +311,8 @@ const CORPUS = [
     organization_name: "RestoSud",
     address: "Marseille",
     location: { type: "Point", coordinates: [5.405, 43.282] },
+    // Contre-exemple du filtre niveau inclusif : niveau 3, ne doit PAS remonter sur niveau 6.
+    level: "3",
   }),
 ]
 
@@ -468,6 +481,14 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       const result = await search({ q: "commerce", type: "formation" })
 
       expect(ids(result)).toEqual(["formation-mco"])
+    })
+
+    it("filtre niveau inclusif : les docs sans niveau précisé remontent quel que soit le niveau coché", async () => {
+      const result = await search({ level: ["6"] })
+
+      expect(ids(result)).toContain("offre-plombier") // niveau 6 déclaré
+      expect(ids(result)).toContain("offre-sans-niveau") // niveau non précisé = indifférent
+      expect(ids(result)).not.toContain("offre-marseille") // niveau 3 ≠ 6 → exclu
     })
 
     it("filtre géo (rayon) : recherche à Paris rayon 30 km exclut Marseille et garde Versailles", async () => {
