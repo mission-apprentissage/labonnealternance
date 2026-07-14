@@ -123,19 +123,23 @@ const canonicalizeCase = (map: Map<string, string>, value: string): string => {
   return canonical
 }
 
+// Vocabulaire de niveau UNIFIÉ avec celui des offres (offer_target_diploma.label, référentiel
+// standard de jobs_partners) : sinon la facette Niveau affiche deux libellés quasi-identiques
+// par niveau (un côté formations, un côté offres) et cocher l'un ne remonte pas l'autre.
 const convertFormationNiveauDiplome = (niveau: string) => {
   switch (niveau) {
     case "3 (CAP...)":
-      return "Cap, autres formations (Infrabac)"
+      return "CAP, BEP (Infrabac)"
     case "4 (BAC...)":
-      return "BP, Bac, autres formations (Bac)"
+      return "Bac, Bac Pro, BP (Bac)"
     case "5 (BTS, DEUST...)":
-      return "BTS, DEUST, autres formations (Bac+2)"
+      return "BTS, DEUST (Bac+2)"
     case "6 (Licence, BUT...)":
-      return "Licence, Maîtrise, autres formations (Bac+3 à Bac+4)"
+      return "Licence, BUT, Licence Pro (Bac+3)"
     case "7 (Master, titre ingénieur...)":
-      return "Master, titre ingénieur, autres formations (Bac+5)"
+      return "Master, titre ingénieur, grande école (Bac+5)"
     default:
+      // Niveau inconnu = indifférent — remonte quel que soit le niveau coché (filtre inclusif).
       return "Indifférent"
   }
 }
