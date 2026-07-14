@@ -92,6 +92,7 @@ import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndForm
 import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
+import { analyzeSearchQueries } from "./search/analyzeSearchQueries"
 import { updateSEO } from "./seo/updateSEO"
 
 type SimpleJobDefinition = {
@@ -375,6 +376,10 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
   {
     fct: fillMissingAlgoliaKeywords,
     description: "Génère les mots-clés (batch Mistral) des offres de la collection algolia qui n'en ont pas",
+  },
+  {
+    fct: analyzeSearchQueries,
+    description: "Analyse les recherches utilisateurs (search_queries) et enrichit suggestions & synonymes (critères + Mistral)",
   },
   {
     fct: analyzeClosedCompanies,

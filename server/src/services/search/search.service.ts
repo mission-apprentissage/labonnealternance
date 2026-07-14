@@ -496,9 +496,8 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
   return { hits, nbHits, page, nbPages, facets }
 }
 
-// Autocomplétion par préfixe : opérateur `autocomplete` sur les champs indexés en edgeGram
-// (title + rome_labels). Renvoie des intitulés dédupliqués pour alimenter la barre de recherche.
-export async function suggestAlgolia({ q, limit }: { q: string; limit: number }): Promise<{ suggestions: string[] }> {
+// Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).
+async function suggestFromAlgolia(q: string, limit: number): Promise<string[]> {
   const rows = await getDbCollection("algolia")
     .aggregate<{ title: string; rome_labels: string[] | null }>([
       {
@@ -517,6 +516,43 @@ export async function suggestAlgolia({ q, limit }: { q: string; limit: number })
       { $project: { _id: 0, title: 1, rome_labels: 1 } },
     ])
     .toArray()
+  return rows.flatMap((row) => [row.title, ...(row.rome_labels ?? [])])
+}
+
+// Autocomplétion sur les suggestions issues des recherches utilisateurs (collection
+// `search_suggestions`, alimentée par le job analyzeSearchQueries — seuls les termes
+// `active` sont servis ; kill-switch : passer origin user_queries en disabled).
+async function suggestFromUserSuggestions(q: string, limit: number): Promise<string[]> {
+  const rows = await getDbCollection("search_suggestions")
+    .aggregate<{ term: string }>([
+      {
+        $search: {
+          index: "search_suggestions_index",
+          compound: {
+            must: [{ autocomplete: { query: q, path: "term", fuzzy: { maxEdits: 1 } } }],
+            filter: [{ equals: { path: "status", value: "active" } }],
+          },
+        },
+      },
+      { $limit: limit },
+      { $project: { _id: 0, term: 1 } },
+    ])
+    .toArray()
+  return rows.map((row) => row.term)
+}
+
+/**
+ * Autocomplétion par préfixe pour la barre de recherche : fusionne le contenu réellement
+ * indexé (title/rome_labels — prioritaire) et les suggestions apprises des recherches
+ * utilisateurs (en complément jusqu'à `limit`). Les deux requêtes $search partent en
+ * parallèle ; la déduplication et le filtre anti-bruit fuzzy s'appliquent aux deux listes.
+ */
+export async function suggestAlgolia({ q, limit }: { q: string; limit: number }): Promise<{ suggestions: string[] }> {
+  const [algoliaCandidates, userCandidates] = await Promise.all([
+    suggestFromAlgolia(q, limit),
+    // La collection peut ne pas exister / index absent (env de test) → dégradation silencieuse.
+    suggestFromUserSuggestions(q, limit).catch(() => [] as string[]),
+  ])
 
   // Normalisation (minuscules + sans accents) pour le filtrage et la déduplication.
   const diacritics = new RegExp("[\\u0300-\\u036f]", "g")
@@ -524,19 +560,17 @@ export async function suggestAlgolia({ q, limit }: { q: string; limit: number })
   const normalizedQuery = normalize(q)
 
   // On ne garde que les intitulés contenant réellement la saisie (évite le bruit fuzzy/indirect),
-  // dédupliqués en préservant l'ordre de pertinence.
+  // dédupliqués en préservant l'ordre de pertinence — contenu indexé d'abord.
   const seen = new Set<string>()
   const suggestions: string[] = []
-  for (const row of rows) {
-    for (const candidate of [row.title, ...(row.rome_labels ?? [])]) {
-      const value = candidate?.trim()
-      if (!value) continue
-      const normalized = normalize(value)
-      if (!normalized.includes(normalizedQuery) || seen.has(normalized)) continue
-      seen.add(normalized)
-      suggestions.push(value)
-      if (suggestions.length >= limit) return { suggestions }
-    }
+  for (const candidate of [...algoliaCandidates, ...userCandidates]) {
+    const value = candidate?.trim()
+    if (!value) continue
+    const normalized = normalize(value)
+    if (!normalized.includes(normalizedQuery) || seen.has(normalized)) continue
+    seen.add(normalized)
+    suggestions.push(value)
+    if (suggestions.length >= limit) return { suggestions }
   }
   return { suggestions }
 }

@@ -55,6 +55,7 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOfferExpirationReminderJob"
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
+import { rollbackSearchSuggestions } from "./search/analyzeSearchQueries"
 import { updateSEO } from "./seo/updateSEO"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
@@ -392,6 +393,9 @@ export async function setupJobProcessor() {
       },
       "algolia:apply-keywords-batch": {
         handler: async (job) => applyKeywordsBatchFile(job.payload as any),
+      },
+      "search:suggestions:rollback": {
+        handler: async (job) => rollbackSearchSuggestions(job.payload as any),
       },
       ...Object.fromEntries(
         simpleJobDefinitions.map((jobDef) => {

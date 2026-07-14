@@ -311,9 +311,34 @@ const SYNONYMS = [
   { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["économie sociale et familiale", "esf"] },
 ]
 
+// Suggestions issues des recherches utilisateurs (job analyzeSearchQueries) : une active
+// (doit être servie), une disabled (ne doit jamais l'être), une dupliquée d'un title du
+// corpus (la dédup doit la fusionner). Requête de test : préfixe "boulanger".
+const suggestionFixture = (term: string, status: "active" | "disabled") => ({
+  _id: new ObjectId(),
+  term,
+  normalized: term.toLowerCase(),
+  origin: "user_queries" as const,
+  status,
+  rejection_reason: null,
+  category: "metier" as const,
+  counters: { total_30d: 25, days_seen_30d: 8, zero_hits_30d: 1, free_text_30d: 20, median_nb_hits: 40 },
+  confidence: 0.9,
+  run_id: "test-run",
+  created_at: new Date("2026-07-01T00:00:00.000Z"),
+  last_seen_at: new Date("2026-07-10T00:00:00.000Z"),
+})
+
+const USER_SUGGESTIONS = [
+  suggestionFixture("Boulangerie artisanale", "active"),
+  suggestionFixture("Boulangerie industrielle", "disabled"),
+  suggestionFixture("Vendeur en boulangerie", "active"),
+]
+
 async function seedCorpus() {
   await getDbCollection("algolia").insertMany(CORPUS)
   await getDbCollection("search_synonyms").insertMany(SYNONYMS)
+  await getDbCollection("search_suggestions").insertMany(USER_SUGGESTIONS)
 }
 
 // L'indexation mongot est asynchrone : on attend que le corpus complet soit visible
@@ -329,6 +354,23 @@ async function waitForSearchIndexSync(expected: number, timeoutMs = 120_000) {
     }
     if (Date.now() - start > timeoutMs) {
       throw new Error(`mongot n'a pas indexé les ${expected} documents du corpus en ${timeoutMs}ms — la stack locale (mongodb + mongot) tourne-t-elle ?`)
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
+  }
+}
+
+// Attend que l'index search de `search_suggestions` serve la suggestion active du seed.
+async function waitForSuggestionIndexSync(timeoutMs = 120_000) {
+  const start = Date.now()
+  for (;;) {
+    try {
+      const { suggestions } = await suggestAlgolia({ q: "boulangerie artisanale", limit: 5 })
+      if (suggestions.includes("Boulangerie artisanale")) return
+    } catch {
+      // index pas encore créé côté mongot → on réessaie
+    }
+    if (Date.now() - start > timeoutMs) {
+      throw new Error(`mongot n'a pas indexé search_suggestions en ${timeoutMs}ms`)
     }
     await new Promise((resolve) => setTimeout(resolve, 1_000))
   }
@@ -351,6 +393,7 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   beforeAll(async () => {
     await createSearchIndexes()
     await waitForSearchIndexSync(CORPUS.length)
+    await waitForSuggestionIndexSync()
   }, 150_000)
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -568,6 +611,41 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       // l'emporter nettement.
       expect(rankOf(result, "offre-cadreur")).toBe(0)
       expect(ids(result)).not.toContain("offre-monteur-reseaux")
+    })
+  })
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 3. SUGGESTIONS APPRISES — fusion de `search_suggestions` (recherches
+  // utilisateurs validées par analyzeSearchQueries) dans l'autocomplétion.
+  // ──────────────────────────────────────────────────────────────────────────
+  describe("suggestions apprises des recherches utilisateurs", () => {
+    it("sert les suggestions actives en complément du contenu indexé", async () => {
+      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+
+      expect(suggestions).toContain("Boulangerie artisanale")
+    })
+
+    it("n'expose jamais une suggestion désactivée (kill-switch unitaire)", async () => {
+      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+
+      expect(suggestions).not.toContain("Boulangerie industrielle")
+    })
+
+    it("priorise le contenu réellement indexé (title/rome_labels) sur les suggestions apprises", async () => {
+      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+
+      const fromAlgolia = suggestions.indexOf("Vendeur en boulangerie") // title du corpus
+      const fromUsers = suggestions.indexOf("Boulangerie artisanale")
+      expect(fromAlgolia).toBeGreaterThanOrEqual(0)
+      expect(fromUsers).toBeGreaterThan(fromAlgolia)
+    })
+
+    it("déduplique une suggestion apprise identique à un intitulé indexé", async () => {
+      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+
+      // "Vendeur en boulangerie" existe à la fois comme title (corpus) et comme
+      // suggestion active → une seule occurrence.
+      expect(suggestions.filter((s) => s === "Vendeur en boulangerie")).toHaveLength(1)
     })
   })
 })

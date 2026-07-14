@@ -68,6 +68,7 @@ import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
 import searchQueriesModel from "./searchQueries.model.js"
+import searchSuggestionsModel from "./searchSuggestions.model.js"
 import searchSynonymsModel from "./searchSynonyms.model.js"
 import seoDiplomeModel from "./seoDiplome.model.js"
 import seoMetierModel from "./seoMetier.model.js"
@@ -153,6 +154,7 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [searchQueriesModel.collectionName]: searchQueriesModel,
+  [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
   [seoVilleModel.collectionName]: seoVilleModel,
   [entreprisesManagedByCfaModel.collectionName]: entreprisesManagedByCfaModel,

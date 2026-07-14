@@ -311,6 +311,12 @@ program
   .requiredOption("-f, --file <path>", "Chemin du fichier JSONL de sortie téléchargé depuis Mistral")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("algolia:apply-keywords-batch"))
+program
+  .command("search:suggestions:rollback")
+  .description("Supprime les suggestions et synonymes insérés par un run de analyzeSearchQueries")
+  .requiredOption("--runId <runId>", "Identifiant du run (cf. rapport Slack)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("search:suggestions:rollback"))
 
 /**
  *

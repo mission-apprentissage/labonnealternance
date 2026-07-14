@@ -13,9 +13,12 @@ export const seedSearchSynonyms = async () => {
     _id: new ObjectId(),
     mappingType: "equivalent" as const,
     synonyms: synonyms.map((s) => s.trim()).filter(Boolean),
+    origin: "seed" as const,
   }))
 
-  await getDbCollection("search_synonyms").deleteMany({})
+  // Ne remplace QUE les groupes du seed : les groupes issus des recherches utilisateurs
+  // (origin "user_queries", insérés par analyzeSearchQueries) doivent survivre au re-seed.
+  await getDbCollection("search_synonyms").deleteMany({ origin: { $ne: "user_queries" } })
   await getDbCollection("search_synonyms").insertMany(docs)
   logger.info(`${docs.length} synonymes importés dans search_synonyms`)
 }
