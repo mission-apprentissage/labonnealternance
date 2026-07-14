@@ -70,6 +70,9 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
+  // Libellé du lieu réellement APPLIQUÉ à la recherche — source de vérité pour la
+  // restauration au blur (le champ ne doit jamais afficher un texte ≠ critère actif).
+  const [appliedLieuLabel, setAppliedLieuLabel] = useState(initialLieuLabel ?? "")
 
   const debouncedInput = useThrottle(inputValue, 300)
   const debouncedLieu = useThrottle(lieuInput, 300)
@@ -106,6 +109,28 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     },
     [onSubmit]
   )
+
+  const normalizeLieu = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim()
+
+  const selectLieu = (lieu: LieuOption) => {
+    setLieuValue(lieu)
+    setLieuInput(lieu.label)
+    setAppliedLieuLabel(lieu.label)
+    onLieuChange(lieu)
+  }
+
+  // Sortie du champ lieu sans sélection : le texte tapé n'est pas une valeur (pas de géo sans
+  // sélection BAN). Tolérance : s'il correspond exactement à une suggestion, on la sélectionne ;
+  // sinon on RESTAURE le libellé du lieu appliqué — jamais de texte fantôme (affiché ≠ appliqué).
+  const handleLieuBlur = () => {
+    if (lieuInput.trim() === appliedLieuLabel.trim()) return
+    const exact = lieuSuggestions.find((option) => normalizeLieu(option.label) === normalizeLieu(lieuInput))
+    if (exact) {
+      selectLieu(exact)
+      return
+    }
+    setLieuInput(appliedLieuLabel)
+  }
 
   return (
     <Box
@@ -162,24 +187,28 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
         <FieldLabel>Lieu</FieldLabel>
         <Autocomplete
           freeSolo
+          // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
+          // (au lieu de laisser un texte non validé).
+          autoHighlight
           options={lieuSuggestions}
           getOptionLabel={(o) => (typeof o === "string" ? o : o.label)}
           isOptionEqualToValue={(o, v) => (typeof v === "string" ? o.label === v : o.label === v.label)}
           inputValue={lieuInput}
           value={lieuValue}
+          onBlur={handleLieuBlur}
           onInputChange={(_e, value, reason) => {
             setLieuInput(value)
             // "clear" = clic sur la croix MUI — on retire le lieu des params
             // "reset" peut se déclencher à l'hydration, on l'ignore volontairement
             if (reason === "clear") {
               setLieuValue(null)
+              setAppliedLieuLabel("")
               onLieuChange(null)
             }
           }}
           onChange={(_e, value) => {
             if (value && typeof value !== "string") {
-              setLieuValue(value)
-              onLieuChange(value)
+              selectLieu(value)
             }
           }}
           renderInput={(params) => (
