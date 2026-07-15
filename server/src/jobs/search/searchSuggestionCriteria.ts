@@ -20,9 +20,11 @@ export const CRITERIA = {
   SUGGESTION_MAX_ZERO_HITS_RATE: 0.3,
   /** S5 — le candidat idéal est une requête que l'autocomplete ne proposait PAS. */
   SUGGESTION_MIN_FREE_TEXT_RATE: 0.6,
-  /** S6 — forme : longueur et nombre de tokens. */
+  /** S6 — forme : longueur et nombre de tokens. Max 80 : couvre le p95 des intitulés ROME
+   * réels (71 car., max 103) qu'un utilisateur peut retaper à la main, tout en coupant les
+   * collages de titres d'offres complets (typiquement 90-150 car. avec H/F, ville…). */
   SUGGESTION_MIN_LENGTH: 3,
-  SUGGESTION_MAX_LENGTH: 60,
+  SUGGESTION_MAX_LENGTH: 80,
   SUGGESTION_MAX_TOKENS: 6,
   /** S6 — part minimale de caractères "texte" (lettres/espaces/tirets/apostrophes). */
   SUGGESTION_MIN_LETTER_RATE: 0.8,
