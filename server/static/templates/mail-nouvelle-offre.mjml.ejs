@@ -83,26 +83,22 @@
               Félicitations! Votre offre d'alternance a bien été publiée.
               <br />
               <br />
+                Entreprise :
+                <br />
+                <span style="font-weight: 700;"><%= data.entreprise.raisonSocialeEntreprise %></span>
+                SIRET :
+                <br />
+                <span style="font-weight: 700;"><%= data.entreprise.workplace_siret %></span>
+                <br /><br />
               <% if (data.mandataire) { %>
                 Organisme de formation :
                 <br />
                 <span style="font-weight: 700;"><%= data.cfa.cfa_legal_name %></span>
-                <br /><br />
-
                 SIRET :
                 <br />
                 <span style="font-weight: 700;"><%= data.cfa.cfa_siret %></span>
                 <br /><br />
               <% } %>
-                Entreprise :
-                <br />
-                <span style="font-weight: 700;"><%= data.entreprise.raisonSocialeEntreprise %></span>
-                <br /><br />
-
-                SIRET :
-                <br />
-                <span style="font-weight: 700;"><%= data.entreprise.workplace_siret %></span>
-                <br /><br />
               Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, Affelnet, Parcoursup, Mon Master et bien d'autres.
             </mj-text>
           </mj-column>
