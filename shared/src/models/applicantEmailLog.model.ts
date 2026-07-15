@@ -28,6 +28,6 @@ export type IApplicantEmailLog = z.output<typeof ZApplicantEmailLog>
 
 export default {
   zod: ZApplicantEmailLog,
-  indexes: [],
+  indexes: [[{ applicant_id: 1, type: 1 }, {}]],
   collectionName,
 } as const satisfies IModelDescriptor

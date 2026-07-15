@@ -40,6 +40,14 @@ describe("buildRelanceSearchUrl", () => {
     expect(buildRelanceSearchUrl(undefined)).toBeNull()
     expect(buildRelanceSearchUrl("pas-une-url")).toBeNull()
   })
+
+  it("retire aussi utm_content et utm_term capturés dans l'URL d'origine", () => {
+    const result = buildRelanceSearchUrl(`${BASE_URL}/recherche?romes=E1401&utm_content=abc&utm_term=xyz`)
+    const url = new URL(result as string)
+    expect(url.searchParams.has("utm_content")).toBe(false)
+    expect(url.searchParams.has("utm_term")).toBe(false)
+    expect(url.searchParams.get("utm_campaign")).toBe("relance-candidat-inactif")
+  })
 })
 
 const makeApplicant = (over: Parameters<typeof generateApplicantFixture>[0] = {}) =>
@@ -69,10 +77,10 @@ describe("relanceCandidatsInactifs", () => {
   })
 
   it("pousse les candidats de la fenêtre J+7 vers Brevo et logue la relance", async () => {
-    // dernière candidature il y a ~7,4 jours → dans la fenêtre [J-8, J-7)
-    const inWindow = makeApplicant({ last_connection: new Date("2026-07-01T18:00:00Z"), firstname: "Inès" })
+    // dernière candidature le jour calendaire J-7 (heure de Paris) → dans la fenêtre
+    const inWindow = makeApplicant({ last_connection: new Date("2026-07-02T12:00:00Z"), firstname: "Inès" })
     await getDbCollection("applicants").insertOne(inWindow)
-    await getDbCollection("applications").insertOne(makeApplication(inWindow._id, { created_at: new Date("2026-07-01T18:00:00Z") }))
+    await getDbCollection("applications").insertOne(makeApplication(inWindow._id, { created_at: new Date("2026-07-02T12:00:00Z") }))
 
     await relanceCandidatsInactifs()
 
@@ -98,9 +106,9 @@ describe("relanceCandidatsInactifs", () => {
     await getDbCollection("applications").insertOne(makeApplication(tooRecent._id, { created_at: new Date("2026-07-08T09:00:00Z") }))
 
     // dans la fenêtre mais déjà relancé
-    const alreadyRelaunched = makeApplicant({ last_connection: new Date("2026-07-01T18:00:00Z") })
+    const alreadyRelaunched = makeApplicant({ last_connection: new Date("2026-07-02T12:00:00Z") })
     await getDbCollection("applicants").insertOne(alreadyRelaunched)
-    await getDbCollection("applications").insertOne(makeApplication(alreadyRelaunched._id, { created_at: new Date("2026-07-01T18:00:00Z") }))
+    await getDbCollection("applications").insertOne(makeApplication(alreadyRelaunched._id, { created_at: new Date("2026-07-02T12:00:00Z") }))
     await getDbCollection("applicants_email_logs").insertOne({
       _id: new ObjectId(),
       applicant_id: alreadyRelaunched._id,
@@ -116,9 +124,9 @@ describe("relanceCandidatsInactifs", () => {
   })
 
   it("laisse LIEN_RECHERCHE vide quand l'URL n'est pas exploitable (CTA générique)", async () => {
-    const generic = makeApplicant({ last_connection: new Date("2026-07-01T18:00:00Z") })
+    const generic = makeApplicant({ last_connection: new Date("2026-07-02T12:00:00Z") })
     await getDbCollection("applicants").insertOne(generic)
-    await getDbCollection("applications").insertOne(makeApplication(generic._id, { created_at: new Date("2026-07-01T18:00:00Z"), application_url: null }))
+    await getDbCollection("applications").insertOne(makeApplication(generic._id, { created_at: new Date("2026-07-02T12:00:00Z"), application_url: null }))
 
     await relanceCandidatsInactifs()
 

@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb"
+import dayjs from "shared/helpers/dayjs"
 import { EMAIL_LOG_TYPE } from "shared/models/applicantEmailLog.model"
 
 import { logger } from "@/common/logger"
@@ -8,10 +9,10 @@ import config from "@/config"
 import { uploadContactListToBrevo } from "@/services/brevo.service"
 
 const RELANCE_INACTIVITE_UTM_CAMPAIGN = "relance-candidat-inactif"
-const DAY_MS = 24 * 60 * 60 * 1000
-// Fenêtre J+7 : dernière candidature entre 8 et 7 jours avant maintenant (tranche de 24 h, cron quotidien)
-const INACTIVITY_WINDOW_START_DAYS = 8
-const INACTIVITY_WINDOW_END_DAYS = 7
+const TIMEZONE = "Europe/Paris"
+// Relance 7 jours après la dernière candidature. La fenêtre cible le jour calendaire d'il y a 7 jours (heure de Paris) :
+// comme le cron tourne chaque jour, chaque candidat n'est ciblé qu'une seule fois.
+const INACTIVITY_DAYS = 7
 
 type RelanceCandidatRow = {
   email: string
@@ -46,9 +47,10 @@ export const buildRelanceSearchUrl = (application_url: string | null | undefined
   if (!url.searchParams.get("romes") && !url.searchParams.get("rncp")) {
     return null
   }
-  url.searchParams.delete("utm_source")
-  url.searchParams.delete("utm_medium")
-  url.searchParams.delete("utm_campaign")
+  // On retire tous les UTM éventuellement capturés dans l'URL d'origine avant de poser les nôtres
+  for (const utmParam of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]) {
+    url.searchParams.delete(utmParam)
+  }
   url.searchParams.set("utm_source", "lba-brevo")
   url.searchParams.set("utm_medium", "email")
   url.searchParams.set("utm_campaign", RELANCE_INACTIVITE_UTM_CAMPAIGN)
@@ -62,9 +64,9 @@ export const relanceCandidatsInactifs = async () => {
     return
   }
 
-  const now = new Date()
-  const windowStart = new Date(now.getTime() - INACTIVITY_WINDOW_START_DAYS * DAY_MS)
-  const windowEnd = new Date(now.getTime() - INACTIVITY_WINDOW_END_DAYS * DAY_MS)
+  const startOfTodayParis = dayjs().tz(TIMEZONE).startOf("day")
+  const windowStart = startOfTodayParis.subtract(INACTIVITY_DAYS, "day").toDate()
+  const windowEnd = startOfTodayParis.subtract(INACTIVITY_DAYS - 1, "day").toDate()
 
   const candidates = await getDbCollection("applicants")
     .aggregate<CandidateAggregate>([
@@ -112,18 +114,9 @@ export const relanceCandidatsInactifs = async () => {
     metier: candidate.job_searched_by_user ?? candidate.job_title ?? "",
   }))
 
-  await uploadContactListToBrevo(
-    "MARKETING",
-    rows,
-    [
-      { key: "email", header: "EMAIL" },
-      { key: "firstname", header: "PRENOM" },
-      { key: "lien_recherche", header: "LIEN_RECHERCHE" },
-      { key: "metier", header: "METIER" },
-    ],
-    listId
-  )
-
+  // On trace la relance AVANT l'envoi : en cas de crash entre les deux, on préfère rater une relance
+  // plutôt que d'en envoyer deux (garantie "une seule relance par candidat").
+  const now = new Date()
   await getDbCollection("applicants_email_logs").insertMany(
     candidates.map((candidate) => ({
       _id: new ObjectId(),
@@ -131,9 +124,30 @@ export const relanceCandidatsInactifs = async () => {
       application_id: null,
       type: EMAIL_LOG_TYPE.RELANCE_INACTIVITE,
       message_id: null,
-      createdAt: new Date(),
+      createdAt: now,
     }))
   )
+
+  try {
+    await uploadContactListToBrevo(
+      "MARKETING",
+      rows,
+      [
+        { key: "email", header: "EMAIL" },
+        { key: "firstname", header: "PRENOM" },
+        { key: "lien_recherche", header: "LIEN_RECHERCHE" },
+        { key: "metier", header: "METIER" },
+      ],
+      listId
+    )
+  } catch (error) {
+    await notifyToSlack({
+      subject: "RELANCE CANDIDATS INACTIFS",
+      message: `Échec de l'envoi vers Brevo pour ${rows.length} candidat(s) (déjà tracés, ils ne seront pas relancés)`,
+      error: true,
+    })
+    throw error
+  }
 
   await notifyToSlack({ subject: "RELANCE CANDIDATS INACTIFS", message: `${rows.length} candidat(s) poussé(s) vers la liste Brevo de relance`, error: false })
   logger.info(`relanceCandidatsInactifs: ${rows.length} candidat(s) relancé(s)`)
