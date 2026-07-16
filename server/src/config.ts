@@ -43,6 +43,7 @@ const config = {
     brevoMarketingApiKey: env.get("LBA_BREVO_MARKETING_API_KEY").required().asString(),
     brevoMarketingContactListId: env.get("LBA_BREVO_MARKETING_CONTACT_LIST_ID").asString(),
     brevoRelanceCandidatsListId: env.get("LBA_BREVO_RELANCE_CANDIDATS_LIST_ID").asString(),
+    brevoRelanceSpontaneeListId: env.get("LBA_BREVO_RELANCE_SPONTANEE_LIST_ID").asString(),
   },
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").required().asInt(),

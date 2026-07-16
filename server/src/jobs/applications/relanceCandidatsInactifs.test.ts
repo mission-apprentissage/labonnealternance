@@ -1,5 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateApplicantFixture, generateApplicationFixture } from "shared/fixtures/application.fixture"
 import { EMAIL_LOG_TYPE } from "shared/models/applicantEmailLog.model"
 import { beforeEach, describe, expect, it, vi } from "vitest"
@@ -132,5 +133,15 @@ describe("relanceCandidatsInactifs", () => {
 
     const [, rows] = vi.mocked(uploadContactListToBrevo).mock.calls[0]
     expect(rows[0].lien_recherche).toBe("")
+  })
+
+  it("exclut les inactifs qui n'ont jamais fait de candidature spontanée (pris en charge par la liste B)", async () => {
+    const onlyOffers = makeApplicant({ last_connection: new Date("2026-07-02T12:00:00Z") })
+    await getDbCollection("applicants").insertOne(onlyOffers)
+    await getDbCollection("applications").insertOne(makeApplication(onlyOffers._id, { created_at: new Date("2026-07-02T12:00:00Z"), job_origin: LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA }))
+
+    await relanceCandidatsInactifs()
+
+    expect(uploadContactListToBrevo).not.toHaveBeenCalled()
   })
 })
