@@ -8,7 +8,7 @@ import LoadingEmptySpace from "@/app/(espace-pro)/_components/LoadingEmptySpace"
 import { ConfirmationSuppressionEntreprise } from "@/app/(espace-pro)/espace-pro/(connected)/_components/ConfirmationSuppressionEntreprise"
 import DetailEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/DetailEntreprise"
 import { useDisclosure } from "@/common/hooks/useDisclosure"
-import { getEntrepriseManagedByCfa, getFormulaire } from "@/utils/api"
+import { getEntrepriseManagedByCfa, getFormulaire, getUser } from "@/utils/api"
 import { PAGES } from "@/utils/routes.utils"
 import { useSearchParamsRecord } from "@/utils/useSearchParamsRecord"
 
@@ -29,6 +29,12 @@ export default function AdminUserCfaEntreprisePage() {
     queryFn: () => getEntrepriseManagedByCfa(cfaId, establishment_id),
   })
 
+  const { data: cfaUser, isLoading: cfaUserLoading } = useQuery({
+    queryKey: ["user", userId],
+    enabled: Boolean(userId),
+    queryFn: () => getUser(userId),
+  })
+
   // Même queryKey que ListeOffres : les offres de recrutement en alternance sont utilisées pour
   // que les invalidations internes à OffresTabs (prolongation, suppression d'offre) rafraîchissent cette page.
   const { data: recruiter, isLoading: recruiterLoading } = useQuery({
@@ -37,15 +43,16 @@ export default function AdminUserCfaEntreprisePage() {
     queryFn: () => getFormulaire(establishment_id),
   })
 
-  if (contactLoading || recruiterLoading) {
+  if (contactLoading || recruiterLoading || cfaUserLoading) {
     return <LoadingEmptySpace />
   }
 
-  if (!contact || !recruiter) {
+  if (!contact || !recruiter || !cfaUser) {
     throw new Error(`Impossible de charger l'entreprise gérée par le CFA - userId: ${userId}, cfaId: ${cfaId}, establishment_id: ${establishment_id}`)
   }
 
   const establishmentLabel = contact.establishment_raison_sociale ?? contact.establishment_siret
+  const cfaLabel = cfaUser.establishment_raison_sociale ?? cfaUser.establishment_siret
 
   return (
     <Box sx={{ maxWidth: 1200, marginX: "auto" }}>
@@ -59,7 +66,7 @@ export default function AdminUserCfaEntreprisePage() {
       <Breadcrumb
         pages={[
           PAGES.static.backAdminHome,
-          PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId }),
+          PAGES.dynamic.backAdminRecruteurOffres({ user_id: userId, user_label: cfaLabel }),
           PAGES.dynamic.backAdminUserCfaEntreprise({ user_id: userId, establishment_id, user_label: establishmentLabel }),
         ]}
       />
