@@ -103,13 +103,13 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
       id: "date_creation_offre",
       disableSortBy: true,
       width: "225",
-      accessor: ({ jobs }: IRecruiter /* should be IRecruiterJson but jobs is not typed properly */) => {
-        if (jobs.length > 0) {
-          const last = jobs.pop()
-          return dayjs(last.job_creation_date).format("DD/MM/YYYY")
-        } else {
-          return ""
-        }
+      accessor: ({ jobs }: IRecruiterJson) => {
+        const lastJob = jobs.reduce<(typeof jobs)[number] | null>((acc, job) => {
+          if (!job?.job_creation_date) return acc
+          if (!acc) return job
+          return dayjs(job.job_creation_date).isAfter(acc.job_creation_date) ? job : acc
+        }, null)
+        return lastJob?.job_creation_date ? dayjs(lastJob.job_creation_date).format("DD/MM/YYYY") : ""
       },
     },
   ]
