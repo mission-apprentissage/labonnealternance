@@ -201,7 +201,7 @@ export async function setupJobProcessor() {
           },
           "Relance des candidats inactifs (J+7 sans nouvelle candidature)": {
             cron_string: "0 7 * * *",
-            handler: relanceCandidatsInactifs,
+            handler: config.env === "production" ? async () => relanceCandidatsInactifs() : async () => Promise.resolve(0),
           },
           "Synchronise les dates des etablissements eligible à la prise de rendez-vous": {
             cron_string: "0 5 * * *",
