@@ -66,7 +66,7 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
       id: "contact_entreprise",
       width: "350",
       maxWidth: "350",
-      accessor: "contact_entreprise",
+      accessor: ({ last_name, first_name, email, phone }: IRecruiterJson) => [last_name, first_name, email, phone].filter(Boolean).join(" "),
       sortType: (a, b) => sortReactTableString(`${a.original.last_name} ${a.original.first_name}`, `${b.original.last_name} ${b.original.first_name}`),
       Cell: ({
         data,
