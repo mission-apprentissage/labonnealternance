@@ -1,8 +1,10 @@
+import { getConnectedInfos } from "@tests/fixture/connectedUser.fixture"
 import type { CreationBody, CreationResponse } from "@tests/sdk/entrepriseSdk"
 import { entrepriseSdk } from "@tests/sdk/entrepriseSdk"
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { saveUserWithAccount } from "@tests/utils/user.test.utils"
+import { saveAdminUserTest, saveCfaUserTest, saveUserWithAccount, validatedUserStatus } from "@tests/utils/user.test.utils"
+import { ObjectId } from "bson"
 import { omit } from "lodash-es"
 import nock from "nock"
 import { CFA, ENTREPRISE, OPCOS_LABEL } from "shared/constants/index"
@@ -186,5 +188,65 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(403)
       expect.soft(response.json().message).toBe("L'adresse mail est déjà associée à un compte La bonne alternance.")
     })
+  })
+})
+
+describe("GET /etablissement/cfa/:cfaId/entreprises", () => {
+  useMongo()
+  const httpClient = useServer()
+
+  it("permet à un CFA de lister les entreprises qu'il gère", async () => {
+    // given
+    const { user, cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(user.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfa._id}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    const entreprises = response.json()
+    expect.soft(entreprises).toHaveLength(1)
+    expect.soft(entreprises[0].establishment_siret).toBe(entreprise.siret)
+  })
+
+  it("permet à un admin de lister les entreprises gérées par un CFA", async () => {
+    // given
+    const { cfa, entreprise } = await saveCfaUserTest({ status: validatedUserStatus })
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${cfa._id}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(200)
+    const entreprises = response.json()
+    expect.soft(entreprises).toHaveLength(1)
+    expect.soft(entreprises[0].establishment_siret).toBe(entreprise.siret)
+  })
+
+  it("renvoie une erreur si aucun compte CFA n'existe pour l'id donné, même pour un admin", async () => {
+    // given
+    const { user: adminUser } = await saveAdminUserTest({ status: validatedUserStatus })
+    const { cookies } = await getConnectedInfos(adminUser.email)
+
+    // when
+    const response = await httpClient().inject({
+      method: "GET",
+      path: `/api/etablissement/cfa/${new ObjectId()}/entreprises`,
+      cookies,
+    })
+
+    // then
+    expect.soft(response.statusCode).toBe(500)
   })
 })
