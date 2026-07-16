@@ -970,13 +970,15 @@ export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | I
 }
 
 type UpdateCfaManagedBody = z.output<(typeof zRoutes.post)["/formulaire/:establishment_id/informations"]["body"]>
-export const updateCfaManagedRecruiter = async (user: IUserWithAccount, establishment_id: string, payload: UpdateCfaManagedBody) => {
-  const mainRole = await getMainRoleManagement(user._id)
+export const updateCfaManagedRecruiter = async (establishment_id: string, payload: UpdateCfaManagedBody) => {
+  // Le compte CFA gestionnaire est celui encodé dans establishment_id, pas nécessairement l'appelant
+  // (un admin peut modifier ces informations pour le compte du CFA).
+  const { userId: cfaUserId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
+  const mainRole = await getMainRoleManagement(cfaUserId)
   if (mainRole?.authorized_type !== AccessEntityType.CFA) {
-    throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${user._id}`)
+    throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${cfaUserId}`)
   }
   const cfaId = new ObjectId(mainRole.authorized_id)
-  const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error(`inattendu: entreprise non trouvée pour l'establishment_id=${establishment_id}`)

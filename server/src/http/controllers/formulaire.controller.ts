@@ -319,20 +319,27 @@ export default (server: Server) => {
   )
 
   server.post(
-    // this route is for CFA only
+    // this route updates the contact info of an entreprise managed by a CFA. It is called either by the
+    // CFA itself or by an admin acting on its behalf, so the CFA account is resolved from establishment_id
+    // rather than from the caller's identity.
     "/formulaire/:establishment_id/informations",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/informations"],
       onRequest: [server.auth(zRoutes.post["/formulaire/:establishment_id/informations"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/formulaire/:establishment_id/informations"]).value
       const { establishment_id } = req.params
       const { email, phone } = req.body
 
-      validateDelegatedCompanyPhoneAndEmail(user, phone, email)
+      const { userId: cfaUserId } = establishmentIdToUserIdAndSiret(establishment_id)
+      const cfaUser = await getDbCollection("userswithaccounts").findOne({ _id: cfaUserId })
+      if (!cfaUser) {
+        throw internal(`inattendu: aucun utilisateur CFA trouvé pour establishment_id=${establishment_id}`)
+      }
 
-      await updateCfaManagedRecruiter(user, establishment_id, req.body)
+      validateDelegatedCompanyPhoneAndEmail(cfaUser, phone, email)
+
+      await updateCfaManagedRecruiter(establishment_id, req.body)
 
       return res.status(200).send({ ok: true })
     }
