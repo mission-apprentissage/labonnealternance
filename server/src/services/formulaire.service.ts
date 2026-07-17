@@ -391,7 +391,15 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   ])
   // Un admin n'a pas nécessairement de role CFA sur ce cfaId : on retombe sur le compte CFA
   // propriétaire de l'organisation pour construire les establishment_id et filtrer les offres.
-  const mainRole = ownRole ?? (isAdmin ? await getDbCollection("rolemanagements").findOne({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }) : null)
+  const mainRole =
+    ownRole ??
+    (isAdmin
+      ? ((await getDbCollection("rolemanagements")
+          .find({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() })
+          .toArray())
+          .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null)
+      : null)
   if (!mainRole) {
     throw internal(`inattendu: mainRole vide pour userId=${userId}`)
   }
