@@ -1,5 +1,6 @@
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
+import type { JOB_START_TYPE } from "shared/models/job.model"
 
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -106,6 +107,9 @@ interface ISearchFilters {
   level?: string[]
   activity_sector?: string[]
   organization_name?: string
+  is_disabled_elligible?: boolean
+  start_type?: JOB_START_TYPE
+  start_date?: Date
   sort?: SortOption
   latitude?: number
   longitude?: number
@@ -285,7 +289,8 @@ function buildTextBonusClauses(q?: string): object[] {
 }
 
 function buildCompoundOperator(filters: ISearchFilters) {
-  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, sort, latitude, longitude, radius } = filters
+  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, is_disabled_elligible, start_type, start_date, sort, latitude, longitude, radius } =
+    filters
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
 
@@ -299,6 +304,11 @@ function buildCompoundOperator(filters: ISearchFilters) {
   if (level?.length) filter.push(buildLevelFilter(level))
   if (activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
   if (organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
+  // Filtre opt-in : seul `true` restreint (aux offres éligibles handicap) ; false/absent = tout.
+  if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
+  if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
+  // Démarrage à partir de cette date — écarte aussi les docs sans start_date (null non indexé).
+  if (start_date) filter.push({ range: { path: "start_date", gte: start_date } })
   if (hasGeo) {
     filter.push({
       geoWithin: {
@@ -385,7 +395,8 @@ function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolea
 // SAUF `exclude`. Ainsi une facette ne masque pas ses propres options en multi-sélection,
 // mais reflète bien les restrictions imposées par les AUTRES filtres (filtres synchronisés).
 function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null) {
-  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, latitude, longitude, radius } = filters
+  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, is_disabled_elligible, start_type, start_date, latitude, longitude, radius } =
+    filters
   const hasGeo = latitude !== undefined && longitude !== undefined
   // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
   const gate = buildTextGate(q)
@@ -397,6 +408,10 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (exclude !== "level" && level?.length) filter.push(buildLevelFilter(level))
   if (exclude !== "activity_sector" && activity_sector?.length) filter.push({ in: { path: "activity_sector", value: activity_sector } })
   if (exclude !== "organization_name" && organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
+  // Pas des dimensions de facette (jamais exclues) : ils restreignent toujours les counts.
+  if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
+  if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
+  if (start_date) filter.push({ range: { path: "start_date", gte: start_date } })
   if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
 
   // Même exclusion qu'en recherche pour le tri par date → les counts de facettes reflètent le result set réel.

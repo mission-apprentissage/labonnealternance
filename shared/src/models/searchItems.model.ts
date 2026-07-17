@@ -1,7 +1,9 @@
 import { z } from "zod"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
+import { JOB_START_TYPE } from "./job.model.js"
 
 const collectionName = "search_items" as const
 
@@ -20,6 +22,9 @@ export const ZSearchItem = z.object({
   sub_type: z.string().describe("Sous-type du résultat"),
   contract_type: z.array(z.string()).nullable().describe("Types de contrat"),
   publication_date: z.date().nullable().describe("Date de publication"),
+  is_disabled_elligible: z.boolean().nullable().describe("Offre éligible aux personnes en situation de handicap (null pour les formations)"),
+  start_date: z.date().nullable().describe("Date de début de contrat (offres uniquement)"),
+  start_type: extensions.buildEnum(JOB_START_TYPE).nullable().describe("Mode de démarrage du contrat (offres uniquement)"),
   smart_apply: z.boolean().nullable().describe("Indique si la candidature rapide est disponible"),
   application_count: z.number().nullable().describe("Nombre de candidatures reçues"),
   title: z.string().describe("Titre de l'offre"),
@@ -71,6 +76,9 @@ export default {
             smart_apply: { type: "boolean" },
             application_count: { type: "number" },
             publication_date: { type: "date" },
+            is_disabled_elligible: { type: "boolean" },
+            start_date: { type: "date" },
+            start_type: { type: "token" },
             location: { type: "geo" },
           },
         },

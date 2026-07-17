@@ -1,4 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi.js"
+import { JOB_START_TYPE } from "../models/job.model.js"
 import { ZSearchItem } from "../models/searchItems.model.js"
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
@@ -29,6 +30,13 @@ export const zSearchRoutes = {
             .optional()
             .describe("Secteur d'activité (peut être passé plusieurs fois)"),
           organization_name: z.string().optional().describe("Filtre par nom d'entreprise (exact)"),
+          is_disabled_elligible: z
+            .enum(["true", "false"])
+            .transform((v) => v === "true")
+            .optional()
+            .describe("true : ne renvoie que les offres éligibles aux personnes en situation de handicap"),
+          start_type: z.nativeEnum(JOB_START_TYPE).optional().describe("Mode de démarrage du contrat (des_que_possible | precise_date)"),
+          start_date: z.coerce.date().optional().describe("Ne renvoie que les offres dont la date de début de contrat est ≥ à cette date (ISO 8601)"),
           sort: z.enum(["proximity", "smart_apply", "date"]).optional().describe("Tri : proximité (géo), candidature simplifiée, ou date de publication. Par défaut : pertinence."),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,

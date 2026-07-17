@@ -19,6 +19,9 @@ GET /api/v1/search
 | `level` | `string` | — | Niveau européen de diplôme : `"3"` à `"7"` |
 | `activity_sector` | `string` | — | Secteur d'activité |
 | `organization_name` | `string` | — | Filtre par nom d'entreprise (exact) |
+| `is_disabled_elligible` | `"true" \| "false"` | — | `true` : uniquement les offres éligibles aux personnes en situation de handicap |
+| `start_type` | `string` | — | Mode de démarrage du contrat : `des_que_possible` ou `precise_date` |
+| `start_date` | `Date` (ISO 8601) | — | Uniquement les offres démarrant à partir de cette date (`$gte`, borne incluse) — écarte les docs sans date de démarrage |
 | `sort` | `string` | — | Tri : `proximity` (géo), `smart_apply`, `date`. Défaut : pertinence (cf. `current-behavior.md` §1) |
 | `latitude` | `number` | — | Latitude WGS84 |
 | `longitude` | `number` | — | Longitude WGS84 |
@@ -49,13 +52,15 @@ GET /api/v1/search
 
 | Champ | Type | Description |
 |---|---|---|
-| `objectID` | `string` | Identifiant unique |
 | `url_id` | `string` | Slug pour construire l'URL de détail |
 | `type` | `string` | `"offre"` ou `"formation"` |
 | `type_filter_label` | `string` | Label lisible pour l'affichage des filtres |
 | `sub_type` | `string` | Sous-catégorie |
 | `contract_type` | `string[]` | Types de contrat |
 | `publication_date` | `Date` (ISO 8601) | Date de publication |
+| `is_disabled_elligible` | `boolean \| null` | Offre éligible aux personnes en situation de handicap (`null` pour les formations) |
+| `start_date` | `Date \| null` | Date de début de contrat (offres uniquement, `null` pour recruteurs/formations) |
+| `start_type` | `string \| null` | Mode de démarrage : `des_que_possible` ou `precise_date` (offres uniquement) |
 | `smart_apply` | `boolean` | `true` si la candidature rapide est disponible |
 | `application_count` | `number` | Nombre de candidatures déjà reçues |
 | `title` | `string` | Titre de l'offre ou de la formation |
@@ -129,6 +134,6 @@ Composant [`SearchBar.tsx`](../../ui/app/search/_components/SearchBar.tsx) :
 - **Collection** : `search_items` (MongoDB)
 - **Index de recherche** : `search_items_index` (mongot / Lucene)
 - **Champs full-text** : `title`, `description`, `keywords`, `organization_name` (analyseur `lucene.french`)
-- **Champs filtrables** : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`, `organization_name`
+- **Champs filtrables** : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`, `organization_name`, `is_disabled_elligible`, `start_type`, `start_date` (range `gte`)
 - **Géosearch** : champ `location` (GeoJSON Point), rayon en mètres dans l'opérateur `geoWithin`
 - **Facettes** : calculées via `$searchMeta` en parallèle de la requête principale

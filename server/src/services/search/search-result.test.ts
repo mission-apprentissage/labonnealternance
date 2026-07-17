@@ -361,6 +361,30 @@ const CORPUS = [
     rome_labels: ["Marketing"],
     organization_name: "RetailCorp",
   }),
+  // — champs contrat (issus de jobs_partners) : une offre éligible handicap avec date de
+  //   démarrage précise, face à offre-conducteur-travaux (même métier, false/null par défaut).
+  generateSearchItemFixture({
+    url_id: "offre-travaux-handi",
+    title: "Assistant conducteur de travaux",
+    description: "Suivi de chantiers, poste ouvert aux personnes en situation de handicap.",
+    keywords: ["chantier", "btp"],
+    rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
+    organization_name: "BTP Inclusif",
+    is_disabled_elligible: true,
+    start_date: new Date("2026-09-01T00:00:00.000Z"),
+    start_type: "precise_date",
+  }),
+  // Même métier, démarrage plus tôt : borne du filtre start_date ($gte).
+  generateSearchItemFixture({
+    url_id: "offre-travaux-aout",
+    title: "Conducteur de travaux junior",
+    description: "Encadrement de chantiers, démarrage en août.",
+    keywords: ["chantier", "btp"],
+    rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
+    organization_name: "BTP Rapide",
+    start_date: new Date("2026-08-01T00:00:00.000Z"),
+    start_type: "precise_date",
+  }),
 ]
 
 // Groupes de synonymes minimaux pour reproduire les cas "acronymes" de la recette.
@@ -729,6 +753,56 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(ids(result)).toContain("recruteur-travaux")
       expect(ids(result)).toContain("offre-conducteur-travaux")
+    })
+  })
+
+  describe("filtres contrat (champs jobs_partners)", () => {
+    it("is_disabled_elligible=true ne renvoie que les offres éligibles handicap", async () => {
+      const result = await search({ q: "conducteur de travaux", is_disabled_elligible: true })
+
+      expect(ids(result)).toContain("offre-travaux-handi")
+      expect(ids(result)).not.toContain("offre-conducteur-travaux")
+    })
+
+    it("sans le filtre, éligibles et non éligibles remontent ensemble", async () => {
+      const result = await search({ q: "conducteur de travaux" })
+
+      expect(ids(result)).toContain("offre-travaux-handi")
+      expect(ids(result)).toContain("offre-conducteur-travaux")
+    })
+
+    it("start_type filtre sur le mode de démarrage (les docs à start_type null sortent)", async () => {
+      const result = await search({ q: "conducteur de travaux", start_type: "precise_date" })
+
+      expect(ids(result)).toContain("offre-travaux-handi")
+      expect(ids(result)).not.toContain("offre-conducteur-travaux")
+    })
+
+    it("start_date : ne renvoie que les offres démarrant à partir de la date ($gte)", async () => {
+      const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-08-15T00:00:00.000Z") })
+
+      expect(ids(result)).toContain("offre-travaux-handi") // démarre le 01/09
+      expect(ids(result)).not.toContain("offre-travaux-aout") // démarre le 01/08, avant la date
+    })
+
+    it("start_date : la borne est inclusive (démarrage le jour même)", async () => {
+      const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-08-01T00:00:00.000Z") })
+
+      expect(ids(result)).toContain("offre-travaux-aout")
+      expect(ids(result)).toContain("offre-travaux-handi")
+    })
+
+    it("start_date : les docs sans date de démarrage sortent du result set", async () => {
+      const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-01-01T00:00:00.000Z") })
+
+      expect(ids(result)).not.toContain("offre-conducteur-travaux") // start_date null
+      expect(ids(result)).not.toContain("recruteur-travaux") // candidature spontanée, jamais de start_date
+    })
+
+    it("les filtres contrat se cumulent : handicap + démarrage à partir d'une date", async () => {
+      const result = await search({ q: "conducteur de travaux", is_disabled_elligible: true, start_date: new Date("2026-08-01T00:00:00.000Z") })
+
+      expect(ids(result)).toEqual(["offre-travaux-handi"])
     })
   })
 

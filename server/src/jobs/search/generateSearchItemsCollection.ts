@@ -51,6 +51,9 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   apply_email: 1,
   is_delegated: 1,
   contract_type: 1,
+  contract_start: 1,
+  contract_start_type: 1,
+  contract_is_disabled_elligible: 1,
 }
 
 /**
@@ -392,8 +395,10 @@ export const fillSearchItemsCollection = async () => {
 
   // Process formations and insert immediately
   await asyncForEach(formations, async (formation) => {
-    // Déjà en base → on conserve tel quel (marqué traité pour ne pas le supprimer).
+    // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
+    // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(formation._id.toString())) {
+      await searchItemsCollection.updateOne({ _id: formation._id }, { $set: { is_disabled_elligible: null, start_date: null, start_type: null } })
       processedIds.add(formation._id.toString())
       return
     }
@@ -406,6 +411,9 @@ export const fillSearchItemsCollection = async () => {
       sub_type: LBA_ITEM_TYPE.FORMATION,
       contract_type: null,
       publication_date: null,
+      is_disabled_elligible: null,
+      start_date: null,
+      start_type: null,
       smart_apply: null,
       application_count: null,
       title: formation.intitule_rco || "",
@@ -429,8 +437,13 @@ export const fillSearchItemsCollection = async () => {
   // Process jobs and insert immediately
   await asyncForEach(jobs, async (job) => {
     const jobId = job._id.toString()
-    // Déjà en base → on conserve tel quel (marqué traité pour ne pas le supprimer).
+    // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
+    // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(jobId)) {
+      await searchItemsCollection.updateOne(
+        { _id: job._id },
+        { $set: { is_disabled_elligible: job.contract_is_disabled_elligible ?? false, start_date: job.contract_start ?? null, start_type: job.contract_start_type ?? null } }
+      )
       processedIds.add(jobId)
       return
     }
@@ -443,6 +456,9 @@ export const fillSearchItemsCollection = async () => {
       sub_type: getJobType(job.partner_label),
       contract_type: job.contract_type,
       publication_date: job.offer_creation ?? null,
+      is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
+      start_date: job.contract_start ?? null,
+      start_type: job.contract_start_type ?? null,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       title: job.offer_title || "",
@@ -466,8 +482,10 @@ export const fillSearchItemsCollection = async () => {
   // Process recruteurs and insert immediately
   await asyncForEach(recruteur, async (job) => {
     const jobId = job._id.toString()
-    // Déjà en base → on conserve tel quel (marqué traité pour ne pas le supprimer).
+    // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
+    // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(jobId)) {
+      await searchItemsCollection.updateOne({ _id: job._id }, { $set: { is_disabled_elligible: job.contract_is_disabled_elligible ?? false, start_date: null, start_type: null } })
       processedIds.add(jobId)
       return
     }
@@ -480,6 +498,10 @@ export const fillSearchItemsCollection = async () => {
       sub_type: getJobType(job.partner_label),
       contract_type: ["Apprentissage", "Professionnalisation"],
       publication_date: job.offer_creation ?? null,
+      is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
+      // Candidature spontanée, pas une offre : aucune date/mode de démarrage de contrat.
+      start_date: null,
+      start_type: null,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       // title des recruteurs = nom d'entreprise → même canonicalisation que organization_name.
