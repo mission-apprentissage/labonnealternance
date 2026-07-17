@@ -314,6 +314,53 @@ const CORPUS = [
     // Contre-exemple du filtre niveau inclusif : niveau 3, ne doit PAS remonter sur niveau 6.
     level: "3",
   }),
+  // — recette #2 : fuzzy sur nom d'entreprise ("vigile" remontait VIGIER, VIRGILE, VIEILLE…).
+  //   Recruteur à 1 édition de "vigile", sans lien avec la sécurité → ne doit jamais matcher.
+  generateSearchItemFixture({
+    url_id: "recruteur-vigier",
+    type: "recruteur",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "Plomberie générale",
+    description: "",
+    keywords: ["plomberie"],
+    rome_labels: ["Installation d'équipements sanitaires et thermiques"],
+    organization_name: "VIGIER PLOMBERIE",
+    publication_date: new Date("2026-07-12T08:14:04.000Z"),
+  }),
+  // — recette #2 : tri par date pollué par les recruteurs (publication_date = date d'import,
+  //   plus récente que toutes les offres) [Fadoua, "Assistant RH" et "Prothèses" en tri date].
+  generateSearchItemFixture({
+    url_id: "recruteur-travaux",
+    type: "recruteur",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "Conduite de travaux",
+    description: "",
+    keywords: ["chantier"],
+    rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
+    organization_name: "TRAVAUX EXPRESS",
+    publication_date: new Date("2026-07-12T08:14:04.000Z"),
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-conducteur-travaux",
+    title: "Conducteur de travaux",
+    description: "Pilotage de chantiers de construction.",
+    keywords: ["chantier", "btp"],
+    rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
+    organization_name: "BTP Construction",
+    publication_date: new Date("2026-05-01T00:00:00.000Z"),
+  }),
+  // — recette #2 : la couverture par description suffisait à passer la porte → traîne
+  //   d'incohérents ["chargé de déploiement" remontait du cross-marketing, Marion].
+  generateSearchItemFixture({
+    url_id: "offre-marketing-deploiement-desc",
+    title: "Chargé de mission marketing",
+    description: "Participation au déploiement de la stratégie marketing en magasin.",
+    keywords: ["marketing"],
+    rome_labels: ["Marketing"],
+    organization_name: "RetailCorp",
+  }),
 ]
 
 // Groupes de synonymes minimaux pour reproduire les cas "acronymes" de la recette.
@@ -322,6 +369,8 @@ const CORPUS = [
 const SYNONYMS = [
   { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["management commercial", "mco"] },
   { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["économie sociale et familiale", "esf"] },
+  // recette #2 : synonyme métier absent du référentiel (présent aussi dans le seed docs/mongodb/search-synonyms.json)
+  { _id: new ObjectId(), mappingType: "equivalent" as const, synonyms: ["vigile", "agent de sécurité", "agente de sécurité"] },
 ]
 
 // Suggestions issues des recherches utilisateurs (job analyzeSearchQueries) : une active
@@ -632,6 +681,54 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       // l'emporter nettement.
       expect(rankOf(result, "offre-cadreur")).toBe(0)
       expect(ids(result)).not.toContain("offre-monteur-reseaux")
+    })
+  })
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 2bis. CORRIGÉS PAR LA RECETTE #2 — fuzzy sur noms d'entreprise, couverture
+  // par description, tri par date pollué par les recruteurs, synonyme métier.
+  // ──────────────────────────────────────────────────────────────────────────
+  describe("corrigés par la recette #2", () => {
+    it("pas de fuzzy sur les noms d'entreprise : 'vigile' ne remonte pas VIGIER [Marion, KO]", async () => {
+      const result = await search({ q: "vigile" })
+
+      expect(ids(result)).not.toContain("recruteur-vigier")
+      // Le vrai match (keywords + synonyme) reste en tête.
+      expect(rankOf(result, "offre-securite")).toBe(0)
+    })
+
+    it("synonyme métier : 'vigile' couvre 'agent de sécurité' via la collection de synonymes", async () => {
+      const result = await search({ q: "vigile" })
+
+      expect(ids(result)).toContain("offre-securite")
+    })
+
+    it("le nom d'entreprise exact matche toujours sans fuzzy : 'vigier plomberie' → le recruteur remonte", async () => {
+      const result = await search({ q: "vigier plomberie" })
+
+      expect(ids(result)).toContain("recruteur-vigier")
+    })
+
+    it("la description seule ne fait plus entrer un doc : 'chargé de déploiement' exclut la mention marketing [Marion, KO]", async () => {
+      const result = await search({ q: "chargé de déploiement" })
+
+      // "chargé" est couvert par le titre mais "déploiement" ne l'est que par la description
+      // → couverture insuffisante, le doc sort du result set.
+      expect(ids(result)).not.toContain("offre-marketing-deploiement-desc")
+    })
+
+    it("tri par date : les recruteurs (date d'import) n'apparaissent plus [Fadoua, KO]", async () => {
+      const result = await search({ q: "conduite de travaux", sort: "date" })
+
+      expect(ids(result)).not.toContain("recruteur-travaux")
+      expect(ids(result)).toContain("offre-conducteur-travaux")
+    })
+
+    it("tri par pertinence : les recruteurs restent présents (statu quo hors tri date)", async () => {
+      const result = await search({ q: "conduite de travaux" })
+
+      expect(ids(result)).toContain("recruteur-travaux")
+      expect(ids(result)).toContain("offre-conducteur-travaux")
     })
   })
 

@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
 
 import { getDistanceInKm } from "@/common/utils/geolib"
@@ -237,9 +238,13 @@ function buildTermCoverageClause(term: string): object {
       should: [
         text("rome_labels", 8),
         text("title", 7),
-        text("organization_name", 6),
+        // organization_name SANS fuzzy : sur des noms propres, l'édition à 1 caractère produit
+        // des faux positifs massifs ("vigile" → VIRGILE, VIGIER, VIEILLE…). L'analyzer
+        // lba_company gère déjà casse et accents ; description exclue de la couverture (bonus
+        // de score seulement, cf. buildTextBonusClauses) : un terme mentionné uniquement dans
+        // la description ne suffit pas à faire entrer le doc dans le result set.
+        { text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } },
         text("keywords", 5),
-        text("description", 1),
         { autocomplete: { query: term, path: "title", score: { boost: { value: 3 } } } },
         { autocomplete: { query: term, path: "rome_labels", score: { boost: { value: 3 } } } },
       ],
@@ -267,12 +272,15 @@ function buildTextGate(q?: string): object | null {
 
 // Bonus de score (bloc `should`, n'élargit pas le result set) : adjacence/ordre des termes.
 // phrase sur title/rome_labels départage "Product Manager" des docs aux termes épars ; phrase
-// sur organization_name fait dominer le match employeur sur les mentions en description.
+// sur organization_name fait dominer le match employeur sur les mentions en description ;
+// text sur description départage les docs qui couvrent aussi le sujet dans leur descriptif
+// (le champ n'est plus une voie d'entrée dans le result set, seulement un signal de classement).
 function buildTextBonusClauses(q?: string): object[] {
   if (!q?.trim()) return []
   return [
     { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } },
     { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } },
+    { text: { query: q, path: "description", score: { boost: { value: 1 } } } },
   ]
 }
 
@@ -300,6 +308,16 @@ function buildCompoundOperator(filters: ISearchFilters) {
     })
   }
 
+  // Tri par date : la publication_date des recruteurs_lba est une date d'IMPORT (souvent plus
+  // récente que toutes les offres) — une candidature spontanée n'a pas de date de publication
+  // réelle, elle monopoliserait la tête du tri. On l'exclut, ainsi que les docs sans date
+  // indexée (formations sans publication_date : null n'est pas indexé → exists les écarte).
+  const mustNot: object[] = []
+  if (sort === "date") {
+    mustNot.push({ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } })
+    filter.push({ exists: { path: "publication_date" } })
+  }
+
   // Tri par proximité : la porte de pertinence devient un filtre, et le score provient
   // de l'opérateur `near` (plus c'est proche, plus le score est élevé). Le tri
   // par score restitue donc les résultats du plus proche au plus lointain.
@@ -319,7 +337,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   // Porte de pertinence en `must` (gate le result set — vaut pour TOUS les tris, y compris
   // date : un doc trop peu couvrant n'apparaît plus, quel que soit l'ordre) ; bonus phrase
   // en `should` pur (score uniquement, n'élargit pas les résultats).
-  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter }
+  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter, ...(mustNot.length ? { mustNot } : {}) }
 }
 
 // Étape de tri du $search selon l'option choisie (défaut : pertinence + tie-breaks).
@@ -381,8 +399,15 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (exclude !== "organization_name" && organization_name) filter.push({ equals: { path: "organization_name", value: organization_name } })
   if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
 
+  // Même exclusion qu'en recherche pour le tri par date → les counts de facettes reflètent le result set réel.
+  const mustNot: object[] = []
+  if (filters.sort === "date") {
+    mustNot.push({ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } })
+    filter.push({ exists: { path: "publication_date" } })
+  }
+
   if (!gate && !filter.length) filter.push({ exists: { path: "type" } })
-  return { ...(gate ? { must: [gate] } : {}), filter }
+  return { ...(gate ? { must: [gate] } : {}), filter, ...(mustNot.length ? { mustNot } : {}) }
 }
 
 type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
