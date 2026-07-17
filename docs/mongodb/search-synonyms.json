@@ -19,25 +19,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TECHNICIEN SON",
-      "ts",
-      "ts"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "EXPERT EN CYBERSECURITE ET SECURITE INFORMATIQUE",
       "ecsi",
       "eecesi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "EDUCATEUR CANIN",
-      "ec",
-      "ec"
     ]
   },
   {
@@ -83,16 +67,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MONTEUR TRUQUISTE",
-      "mt",
-      "mt"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TAILLEUR DE PIERRE",
-      "tp",
       "tdp"
     ]
   },
@@ -124,7 +99,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DE L'IMMOBILIER",
-      "di",
       "ddli"
     ]
   },
@@ -140,7 +114,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "REPARATION DES CARROSSERIES",
-      "rc",
       "rdc"
     ]
   },
@@ -156,7 +129,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE QUALITE SECURITE ENVIRONNEMENT",
-      "rqse",
       "rqse"
     ]
   },
@@ -166,7 +138,6 @@
       "FUMISTE",
       "OPTION RAMONEUR",
       "OPTION POELIER-ATRIER",
-      "foropa",
       "foropa"
     ]
   },
@@ -190,7 +161,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA CHIMIE",
-      "mc",
       "mdlc"
     ]
   },
@@ -198,32 +168,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ETALAGISTE DECORATEUR MARCHANDISEUR",
-      "edm",
       "edm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AERONAUTIQUE",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "REGLEUR-DECOLLETEUR",
-      "rd",
-      "rd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MENUISIER FABRICANT",
-      "mf",
-      "mf"
     ]
   },
   {
@@ -248,22 +193,6 @@
       "MAINTENANCE ET TECHNOLOGIE : SYSTEMES PLURITECHNIQUES",
       "mtsp",
       "metsp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BRODERIE",
-      "b",
-      "b"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ASSURANCE",
-      "a",
-      "a"
     ]
   },
   {
@@ -360,7 +289,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIPLOME GRADE MASTER NEOMA",
-      "dgmn",
       "dgmn"
     ]
   },
@@ -376,24 +304,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "LANGUES ETRANGERES APPLIQUEES",
-      "lea",
       "lea"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TRAVAUX FORESTIERS",
-      "tf",
-      "tf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DIAGNOSTIQUEUR/EUSE IMMOBILIER",
-      "di",
-      "di"
     ]
   },
   {
@@ -410,14 +321,6 @@
       "MAQUETTE NUMERIQUE POUR LE BTP",
       "mnpb",
       "mnplb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DROIT",
-      "d",
-      "d"
     ]
   },
   {
@@ -499,7 +402,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE LOISIRS TOURISME",
-      "rlt",
       "rlt"
     ]
   },
@@ -540,7 +442,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MENUISIER EN SIEGES",
-      "ms",
       "mes"
     ]
   },
@@ -563,25 +464,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SERIGRAPHIE INDUSTRIELLE",
-      "si",
-      "si"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE DU MARKETING ET DU DEVELOPPEMENT COMMERCIAL",
       "rmdc",
       "rdmeddc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MANAGEMENT SECTORIEL",
-      "ms",
-      "ms"
     ]
   },
   {
@@ -597,16 +482,13 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INFORMATION",
-      "DOCUMENTATION",
-      "id",
-      "id"
+      "DOCUMENTATION"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
       "CARROSSIER PEINTRE AUTOMOBILE",
-      "cpa",
       "cpa"
     ]
   },
@@ -638,7 +520,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SERVEUR EN RESTAURATION",
-      "sr",
       "ser"
     ]
   },
@@ -719,7 +600,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DU VIVANT",
-      "sv",
       "sdv"
     ]
   },
@@ -752,7 +632,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE VISUEL MERCHANDISER",
-      "rvm",
       "rvm"
     ]
   },
@@ -776,7 +655,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ESTHETIQUE COSMETIQUE PARFUMERIE",
-      "ecp",
       "ecp"
     ]
   },
@@ -784,7 +662,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGENT TRANSPORT EXPLOITATION FERROVIAIRE",
-      "atef",
       "atef"
     ]
   },
@@ -815,14 +692,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GEOPOLITIQUE",
-      "g",
-      "g"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INSTALLATEUR TERMIQUE ET SANITAIRE",
       "its",
       "ites"
@@ -840,7 +709,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DEVELOPPEUR FULL STACK BIG DATA",
-      "dfsbd",
       "dfsbd"
     ]
   },
@@ -879,22 +747,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CHIMIE",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BIOLOGIE VEGETALE",
-      "bv",
-      "bv"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE MARKETING DIGITAL STRATEGIQUE ET OPERATIONNEL",
       "rmdso",
       "rmdseo"
@@ -903,25 +755,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "FINANCES PUBLIQUES",
-      "fp",
-      "fp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN GEOMETRE-TOPOGRAPHE",
-      "tgt",
       "tgt"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MARECHAL-FERRANT",
-      "mf",
-      "mf"
     ]
   },
   {
@@ -946,7 +781,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA FORME",
-      "mf",
       "mdlf"
     ]
   },
@@ -970,16 +804,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE TECHNICO-COMMERCIAL",
-      "rtc",
       "rtc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COUVREUR",
-      "c",
-      "c"
     ]
   },
   {
@@ -1027,7 +852,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGENT DE SECURITE",
-      "as",
       "ads"
     ]
   },
@@ -1037,14 +861,6 @@
       "DIPLOME D'ETUDES SUPERIEURES EN COMMUNICATION ET MEDIAS - SCIENCESCOM AUDENCIA",
       "descmsa",
       "ddesecemsa"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ELECTRICIEN",
-      "e",
-      "e"
     ]
   },
   {
@@ -1076,7 +892,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE L'ENTREPRENEURIAT",
-      "me",
       "mdle"
     ]
   },
@@ -1092,7 +907,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PEINTURE EN CARROSSERIE",
-      "pc",
       "pec"
     ]
   },
@@ -1100,16 +914,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "POISSONNIER-ECAILLER-TRAITEUR",
-      "pet",
       "pet"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "FLEURISTE",
-      "f",
-      "f"
     ]
   },
   {
@@ -1151,14 +956,6 @@
       "BACHELOR EN MANAGEMENT DE L'EDC PARIS",
       "bmep",
       "bemdlep"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SECRETAIRE COMPTABLE",
-      "sc",
-      "sc"
     ]
   },
   {
@@ -1306,25 +1103,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SOLIER MOQUETTISTE",
-      "sm",
-      "sm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DIPLOME DE L'INSTITUT D'ECONOMIE SCIENTIFIQUE ET DE GESTION DE LILLE",
       "diesgl",
       "ddlidesedgdl"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TECHNICO-COMMERCIAL",
-      "tc",
-      "tc"
     ]
   },
   {
@@ -1404,22 +1185,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SCIENCES COGNITIVES",
-      "sc",
-      "sc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DIRIGEANT ENTREPRENEUR",
-      "de",
-      "de"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DE L'ECOLE SUPERIEURE D'INGENIEURS DE RECHERCHE EN MATERIAUX DE L'UNIVERSITE DE DIJON",
       "SPECIALITE ROBOTIQUE",
       "idesirmudsr",
@@ -1429,41 +1194,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TAPISSIER GARNISSEUR",
-      "tg",
-      "tg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DIRECTEUR ARTISTIQUE",
-      "da",
-      "da"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "AGENT POLYVALENT DE GESTION ET DE VALORISATION DES DECHETS",
       "apgvd",
       "apdgedvdd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "JOURNALISME",
-      "j",
-      "j"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "HUMANITES NUMERIQUES",
-      "hn",
-      "hn"
     ]
   },
   {
@@ -1479,19 +1212,10 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SOCIOLOGIE",
-      "s",
-      "s"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHIMIE ANALYTIQUE",
       "CONTROLE",
       "QUALITE",
       "ENVIRONNEMENT",
-      "cacqe",
       "cacqe"
     ]
   },
@@ -1499,7 +1223,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DEMENAGEUR SUR VEHICULE UTILITAIRE LEGER",
-      "dsvul",
       "dsvul"
     ]
   },
@@ -1523,7 +1246,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DE LA VIE",
-      "sv",
       "sdlv"
     ]
   },
@@ -1572,7 +1294,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MONTEUR AUDIOVISUEL CINEMA",
-      "mac",
       "mac"
     ]
   },
@@ -1596,7 +1317,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN",
-      "tl",
       "tdl"
     ]
   },
@@ -1637,14 +1357,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "FACADIER-PEINTRE",
-      "fp",
-      "fp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "COORDINATEUR DE PROJETS ALTERNATIFS ET SOLIDAIRES",
       "cpas",
       "cdpaes"
@@ -1654,7 +1366,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "HISTOIRE DE L'ART",
-      "ha",
       "hdla"
     ]
   },
@@ -1669,16 +1380,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DROIT PUBLIC",
-      "dp",
-      "dp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER EN BIOTECHNOLOGIES",
-      "mb",
       "meb"
     ]
   },
@@ -1686,7 +1388,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DESSINATEUR PROJETEUR BIM",
-      "dpb",
       "dpb"
     ]
   },
@@ -1695,7 +1396,6 @@
     "synonyms": [
       "MUSEOLOGIE",
       "MUSEO-EXPOGRAPHIE",
-      "mme",
       "mme"
     ]
   },
@@ -1767,7 +1467,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "JURISTE D'AFFAIRES",
-      "ja",
       "jda"
     ]
   },
@@ -1817,7 +1516,6 @@
     "synonyms": [
       "SPECIALITE EDUCATEUR SPORTIF",
       "MENTION BASKET BALL",
-      "sesmbb",
       "sesmbb"
     ]
   },
@@ -1866,16 +1564,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DU BOIS",
-      "mb",
       "mdb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AGENCEMENT",
-      "a",
-      "a"
     ]
   },
   {
@@ -1915,7 +1604,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA QUALITE",
-      "mq",
       "mdlq"
     ]
   },
@@ -1963,7 +1651,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GUIDE NATURE MULTILINGUE",
-      "gnm",
       "gnm"
     ]
   },
@@ -1987,7 +1674,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ACCOMPAGNANT EDUCATIF PETITE ENFANCE",
-      "aepe",
       "aepe"
     ]
   },
@@ -1995,7 +1681,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER DE LA COMMUNICATION",
-      "mc",
       "mdlc"
     ]
   },
@@ -2044,7 +1729,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONDUCTEUR ROUTIER MARCHANDISES",
-      "crm",
       "crm"
     ]
   },
@@ -2084,7 +1768,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONSEILLER TECHNIQUE CYCLES",
-      "ctc",
       "ctc"
     ]
   },
@@ -2126,14 +1809,6 @@
       "ARTS GRAPHIQUES OPTION A : SIGNALETIQUE",
       "agos",
       "agoas"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ESTHETICIEN-COSMETICIEN",
-      "ec",
-      "ec"
     ]
   },
   {
@@ -2196,14 +1871,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GEMMOLOGUE",
-      "g",
-      "g"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DECLARANT",
       "ddc",
       "dedec"
@@ -2213,7 +1880,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA COIFFURE",
-      "mc",
       "mdlc"
     ]
   },
@@ -2223,14 +1889,6 @@
       "METIERS DE L'AMENAGEMENT DU TERRITOIRE ET DE L'URBANISME",
       "matu",
       "mdladtedlu"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BANQUE",
-      "b",
-      "b"
     ]
   },
   {
@@ -2310,14 +1968,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DESIGN",
-      "d",
-      "d"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "LANGUES",
       "LITTERATURES ET CIVILISATIONS ETRANGERES ET REGIONALES",
       "llcer",
@@ -2359,18 +2009,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CHIMIE MOLECULAIRE",
-      "cm",
-      "cm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ELECTRONIQUE",
       "ENERGIE ELECTRIQUE",
       "AUTOMATIQUE",
-      "eeea",
       "eeea"
     ]
   },
@@ -2396,14 +2037,6 @@
       "CHEF DE PROJET MULTIMEDIA",
       "cpm",
       "cdpm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BOULANGERIE SPECIALISEE",
-      "bs",
-      "bs"
     ]
   },
   {
@@ -2499,14 +2132,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "UX DESIGNER",
-      "ud",
-      "ud"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHARGE DU MARKETING ET DE LA COMMUNICATION",
       "cmc",
       "cdmedlc"
@@ -2587,16 +2212,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INTELLIGENCE ARTIFICIELLE",
-      "ia",
-      "ia"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE DU DEVELOPPEMENT",
-      "rd",
       "rdd"
     ]
   },
@@ -2621,7 +2237,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE L'ACCUEIL",
-      "ma",
       "mdla"
     ]
   },
@@ -2629,7 +2244,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE COMMERCIAL RETAIL",
-      "rcr",
       "rcr"
     ]
   },
@@ -2702,7 +2316,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN MENUISIER AGENCEUR",
-      "tma",
       "tma"
     ]
   },
@@ -2710,7 +2323,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCE DES DONNEES",
-      "sd",
       "sdd"
     ]
   },
@@ -2726,7 +2338,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PEINTRE EN CARROSSERIE",
-      "pc",
       "pec"
     ]
   },
@@ -2745,14 +2356,6 @@
       "MAINTENANCE DES MATERIELS OPTION A MATERIELS AGRICOLES",
       "mmoma",
       "mdmoama"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MENUISIER",
-      "m",
-      "m"
     ]
   },
   {
@@ -2855,14 +2458,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ACHETEUR",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DEVELOPPEMENT",
       "ANIMATION DES TERRITOIRES RURAUX",
       "datr",
@@ -2912,25 +2507,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "JOAILLERIE",
-      "j",
-      "j"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN D'ETUDES EN AGENCEMENT INTERIEUR",
       "teai",
       "tdeeai"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PRODUCTIONS AQUACOLES",
-      "pa",
-      "pa"
     ]
   },
   {
@@ -2953,7 +2532,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGENT DE RESTAURATION",
-      "ar",
       "adr"
     ]
   },
@@ -3009,7 +2587,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIDACTIQUE DES LANGUES",
-      "dl",
       "ddl"
     ]
   },
@@ -3041,14 +2618,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SPECIALITE ANIMATEUR",
-      "sa",
-      "sa"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GESTION ADMINISTRATIVE ET COMMERCIALE DES ORGANISATIONS : MANAGEMENT DES ACTIVITES CULTURELLES",
       "ARTISTIQUES",
       "SPORTIVES ET DE TOURISME",
@@ -3062,22 +2631,6 @@
       "EMPLOYE",
       "epcd",
       "epdcedld"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "HORLOGER",
-      "h",
-      "h"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MACON",
-      "m",
-      "m"
     ]
   },
   {
@@ -3167,16 +2720,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SERVICES A LA PERSONNE",
-      "sp",
       "salp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BATIMENT",
-      "b",
-      "b"
     ]
   },
   {
@@ -3185,14 +2729,6 @@
       "MANAGER DE PROJETS COMMUNICATION",
       "mpc",
       "mdpc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GEOMATIQUE",
-      "g",
-      "g"
     ]
   },
   {
@@ -3216,7 +2752,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIDACTIQUE DES SCIENCES",
-      "ds",
       "dds"
     ]
   },
@@ -3224,7 +2759,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONSEILLER EN ASSURANCE",
-      "ca",
       "cea"
     ]
   },
@@ -3321,14 +2855,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SCIENCES SOCIALES",
-      "ss",
-      "ss"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "OPERATEUR EN INDUSTRIES AGROALIMENTAIRES SPE TRANSFORMATION DE PRODUITS ALIMENTAIRES",
       "oiastpa",
       "oeiastdpa"
@@ -3346,7 +2872,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER MARKETING COMMUNICATION",
-      "mmc",
       "mmc"
     ]
   },
@@ -3354,7 +2879,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "NEGOCIATEUR TECHNICO-COMMERCIAL",
-      "ntc",
       "ntc"
     ]
   },
@@ -3362,7 +2886,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIPLOME MANAGEMENT RELATION CLIENTS",
-      "dmrc",
       "dmrc"
     ]
   },
@@ -3377,33 +2900,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "RESPONSABLE PAIE",
-      "rp",
-      "rp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GESTIONNAIRE COMPTABLE ET FINANCIER",
       "gcf",
       "gcef"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TECHNICIEN GAZ",
-      "tg",
-      "tg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "EDITEUR MULTISUPPORT",
-      "em",
-      "em"
     ]
   },
   {
@@ -3544,7 +3043,6 @@
       "BANQUE",
       "FINANCE",
       "ASSURANCE",
-      "mbfa",
       "mbfa"
     ]
   },
@@ -3585,14 +3083,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "RESPONSABLE ACHATS",
-      "ra",
-      "ra"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GENIE DES PROCEDES ET BIOPROCEDES INDUSTRIELS",
       "gpbi",
       "gdpebi"
@@ -3611,7 +3101,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE L'AGRICULTURE",
-      "ma",
       "mdla"
     ]
   },
@@ -3643,14 +3132,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SECRETAIRE MEDICAL",
-      "sm",
-      "sm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "BUREAUTIQUE ET COMMUNICATION MULTIMEDIA",
       "bcm",
       "becm"
@@ -3675,14 +3156,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TOILETTEUR",
-      "tc",
-      "tc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DES ARTS CULINAIRES ET DES ARTS DE LA TABLE",
       "macat",
       "mdacedadlt"
@@ -3700,16 +3173,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DES AFFAIRES",
-      "da",
       "dda"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BIOLOGIE",
-      "b",
-      "b"
     ]
   },
   {
@@ -3742,14 +3206,6 @@
       "VENDEUR-CONSEIL EN ALIMENTATION",
       "vca",
       "vcea"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GOUVERNANTE",
-      "g",
-      "g"
     ]
   },
   {
@@ -3789,7 +3245,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT IMPORT-EXPORT",
-      "aie",
       "aie"
     ]
   },
@@ -3845,7 +3300,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONCEPTEUR DEVELOPPEUR FULL STACK",
-      "cdfs",
       "cdfs"
     ]
   },
@@ -3892,14 +3346,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MAROQUINERIE",
-      "m",
-      "m"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DE COMMERCE ET DE CENTRE DE PROFIT",
       "mccp",
       "mdcedcdp"
@@ -3924,14 +3370,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "EDITION",
-      "e",
-      "e"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ANALYSE",
       "CONDUITE ET STRATEGIE DE L'ENTREPRISE AGRICOLE",
       "acsea",
@@ -3950,7 +3388,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN PERFORMANCE INDUSTRIELLE",
-      "tpi",
       "tpi"
     ]
   },
@@ -3999,7 +3436,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIEUR D'AFFAIRES",
-      "ia",
       "ida"
     ]
   },
@@ -4007,7 +3443,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "LANGUES ET SOCIETES",
-      "ls",
       "les"
     ]
   },
@@ -4015,7 +3450,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INFOGRAPHISTE-DESIGNER WEB",
-      "idw",
       "idw"
     ]
   },
@@ -4128,14 +3562,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BIOLOGIE-SANTE",
-      "bs",
-      "bs"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DU MARKETING ET DE LA PERFORMANCE COMMERCIALE",
       "mmpc",
       "mdmedlpc"
@@ -4189,22 +3615,6 @@
       "VENDEUR CONSEIL EN EQUIPEMENT DE LA MAISON CONNECTEE",
       "vcemc",
       "vceedlmc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TONNELIER",
-      "t",
-      "t"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MENUISIER AGENCEUR",
-      "ma",
-      "ma"
     ]
   },
   {
@@ -4279,14 +3689,6 @@
       "RESPONSABLE AUDIT ET GESTION",
       "rag",
       "raeg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ADMINISTRATION PUBLIQUE",
-      "ap",
-      "ap"
     ]
   },
   {
@@ -4370,14 +3772,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MECANICIEN CYCLES",
-      "mc",
-      "mc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DE LA TRANSITION ET DE L'EFFICACITE ENERGETIQUES : EXPLOITATION DES INSTALLATIONS ENERGETIQUES POUR LE BATIMENT ET L'INDUSTRIE",
       "mteeeiepbi",
       "mdltedleeedieplbeli"
@@ -4389,14 +3783,6 @@
       "AGENT TECHNIQUE PROTHESISTE ET ORTHESISTE",
       "atpo",
       "atpeo"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TAXIDERMISTE",
-      "t",
-      "t"
     ]
   },
   {
@@ -4444,7 +3830,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMMERCIALISATION DES VINS",
-      "cv",
       "cdv"
     ]
   },
@@ -4468,7 +3853,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGEMENT COMMERCIAL OPERATIONNEL",
-      "mco",
       "mco"
     ]
   },
@@ -4478,14 +3862,6 @@
       "DIPLOME EN COMMUNICATION DIGITALE ET E-BUSINESS DE L'ESC CLERMONT",
       "dcdebec",
       "decdeebdlec"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "INDUSTRIES CULTURELLES",
-      "ic",
-      "ic"
     ]
   },
   {
@@ -4502,14 +3878,6 @@
       "GESTIONNAIRE ADMINISTRATION DES VENTES",
       "gav",
       "gadv"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CARRELEUR - CHAPISTE",
-      "cc",
-      "cc"
     ]
   },
   {
@@ -4550,14 +3918,6 @@
       "INFORMATION-COMMUNICATION : METIERS DU LIVRE ET DU PATRIMOINE",
       "icmlp",
       "icmdledp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DATA ENGINEER",
-      "de",
-      "de"
     ]
   },
   {
@@ -4622,7 +3982,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SOLIER / IERE",
-      "s/i",
       "s/i"
     ]
   },
@@ -4712,7 +4071,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE PERFORMANCE INDUSTRIELLE",
-      "rpi",
       "rpi"
     ]
   },
@@ -4751,16 +4109,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ECONOMIE APPLIQUEE",
-      "ea",
-      "ea"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DE LA MESURE",
-      "mm",
       "mdlm"
     ]
   },
@@ -4776,16 +4125,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RISQUES ET ENVIRONNEMENT",
-      "re",
       "ree"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TAPISSIER DECORATEUR",
-      "td",
-      "td"
     ]
   },
   {
@@ -4815,14 +4155,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "HYDRAULIQUE AGRICOLE",
-      "ha",
-      "ha"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DE L'INDUSTRIE : INDUSTRIE AERONAUTIQUE",
       "miia",
       "mdliia"
@@ -4840,7 +4172,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GRAPHISTE MOTION DESIGNER",
-      "gmd",
       "gmd"
     ]
   },
@@ -4856,7 +4187,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INNOVATION TEXTILE OPTION B TRAITEMENTS",
-      "itobt",
       "itobt"
     ]
   },
@@ -4888,7 +4218,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER SECURITE ENVIRONNEMEN",
-      "mse",
       "mse"
     ]
   },
@@ -4921,22 +4250,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PROTHESISTE ORTHESISTE",
-      "po",
-      "po"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "REFLEXOLOGUE",
-      "r",
-      "r"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE COMMUNICATION ET EVENEMENTIEL",
       "rce",
       "rcee"
@@ -4946,7 +4259,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DEVELOPPEUR INTELLIGENCE ARTIFICIELLE",
-      "dia",
       "dia"
     ]
   },
@@ -4969,14 +4281,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ENCADREUR",
-      "e",
-      "e"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "SOUFFLEUR DE VERRE OPTION ENSEIGNE LUMINEUSE",
       "svoel",
       "sdvoel"
@@ -4986,7 +4290,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GENIE CIVIL - CONSTRUCTION DURABLE",
-      "gccd",
       "gccd"
     ]
   },
@@ -4994,7 +4297,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN",
-      "tt",
       "tet"
     ]
   },
@@ -5036,7 +4338,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DE L'ENTREPRISE",
-      "de",
       "ddle"
     ]
   },
@@ -5093,7 +4394,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGENT DE LOISIRS",
-      "al",
       "adl"
     ]
   },
@@ -5110,16 +4410,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RECEPTIONNISTE EN HOTELLERIE",
-      "rh",
       "reh"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "INTELLIGENCE ECONOMIQUE",
-      "ie",
-      "ie"
     ]
   },
   {
@@ -5183,7 +4474,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "NEGOCIATEUR GESTIONNAIRE IMMOBILIER",
-      "ngi",
       "ngi"
     ]
   },
@@ -5207,7 +4497,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN DE CAVE",
-      "tc",
       "tdc"
     ]
   },
@@ -5223,25 +4512,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CORDONNERIE MULTISERVICE",
-      "cm",
-      "cm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DROIT DU NUMERIQUE",
-      "dn",
       "ddn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "OPTICIEN LUNETIER",
-      "ol",
-      "ol"
     ]
   },
   {
@@ -5272,7 +4544,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AERONAUTIQUE OPTION STRUCTURES",
-      "aos",
       "aos"
     ]
   },
@@ -5328,14 +4599,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AIDE-SOIGNANT",
-      "as",
-      "as"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TOURISME VERT ACCUEIL ET ANIMATION EN MILIEU RURAL",
       "tvaamr",
       "tvaeaemr"
@@ -5353,7 +4616,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AUXILIAIRE SPECIALISE VETERINAIRE",
-      "asv",
       "asv"
     ]
   },
@@ -5363,14 +4625,6 @@
       "CARRIERES SOCIALES : VILLES ET TERRITOIRES DURABLES",
       "csvtd",
       "csvetd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COMMERCE INTERNATIONAL",
-      "ci",
-      "ci"
     ]
   },
   {
@@ -5441,16 +4695,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INGENIERIE NUCLAIRE",
-      "in",
-      "in"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GESTIONNAIRE DE PAIE",
-      "gp",
       "gdp"
     ]
   },
@@ -5483,7 +4728,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN SUPERIEUR METHODES PRODUIT PROCESS",
-      "tsmpp",
       "tsmpp"
     ]
   },
@@ -5491,7 +4735,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GRAVURE SUR PIERRE",
-      "gsp",
       "gsp"
     ]
   },
@@ -5499,7 +4742,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "BOUCHER CHARCUTIER TRAITEUR",
-      "bct",
       "bct"
     ]
   },
@@ -5507,7 +4749,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MOTORISATIONS TOUTES ENERGIES",
-      "mte",
       "mte"
     ]
   },
@@ -5534,7 +4775,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CARISTE D'ENTREPOT",
-      "ce",
       "cde"
     ]
   },
@@ -5557,14 +4797,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MONTEUR",
-      "m",
-      "m"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DU CONSERVATOIRE NATIONAL DES ARTS ET METIERS SPECIALITE GENIE INDUSTRIEL",
       "idcnamsgi",
       "iddcndaemsgi"
@@ -5574,16 +4806,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DU NOTARIAT",
-      "mn",
       "mdn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MAINTENANCE",
-      "m",
-      "m"
     ]
   },
   {
@@ -5592,14 +4815,6 @@
       "AGENT D'ACCUEIL DES PUBLICS DE L'EDUCATION ARTISTIQUE ET CULTURELLE",
       "aapeac",
       "adadpdleaec"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CARROSSIER AUTOMOBILE",
-      "ca",
-      "ca"
     ]
   },
   {
@@ -5645,22 +4860,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PHYSIQUE",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "HISTOIRE",
-      "h",
-      "h"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "PHOTONIQUE : TECHNOLOGIES ET SCIENCES DE LA LUMIERE",
       "ptsl",
       "ptesdll"
@@ -5672,14 +4871,6 @@
       "RESPONSABLE DE PRODUCTION TRANSPORT DE PERSONNE",
       "rptp",
       "rdptdp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CONSTRUCTIONS PAYSAGERES",
-      "cp",
-      "cp"
     ]
   },
   {
@@ -5750,14 +4941,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INDUSTRIES ALIMENTAIRES",
-      "ia",
-      "ia"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE DU DEVELOPPEMENT ET DU PILOTAGE COMMERCIAL",
       "rdpc",
       "rddedpc"
@@ -5811,7 +4994,6 @@
     "synonyms": [
       "EBENISTE OPTION CONCEPTION/FABRICATION",
       "OPTION RESTAURATION",
-      "eocor",
       "eocor"
     ]
   },
@@ -5867,25 +5049,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PATISSIER",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ANIMATEUR TOURISME LOISIRS",
-      "atl",
       "atl"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PRIMEUR",
-      "p",
-      "p"
     ]
   },
   {
@@ -5923,14 +5088,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DESIGNER GRAPHISTE",
-      "dg",
-      "dg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MONTEUR EN INSTALLATIONS THERMIQUES",
       "mit",
       "meit"
@@ -5956,7 +5113,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DE LA VISION",
-      "sv",
       "sdlv"
     ]
   },
@@ -5964,7 +5120,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "EXPERT EN AUTOMOBILE",
-      "ea",
       "eea"
     ]
   },
@@ -5998,14 +5153,6 @@
       "INGENIEUR DIPLOME DE L'ECOLE NATIONALE SUPERIEURE D'ELECTRICITE ET DE MECANIQUE DE L'UNIVERSITE DE LORRAINE",
       "idensemul",
       "iddlensdeedmdludl"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MOTION DESIGNER",
-      "md",
-      "md"
     ]
   },
   {
@@ -6045,7 +5192,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DE L'ECONOMIE",
-      "de",
       "ddle"
     ]
   },
@@ -6079,14 +5225,6 @@
       "FRAISEUR D'OUTILLAGE EN USINAGE CONVENTIONNEL ET NUMERIQUE",
       "foucn",
       "fdoeucen"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DROIT NOTARIAL",
-      "dn",
-      "dn"
     ]
   },
   {
@@ -6151,7 +5289,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN ELECTROMECANICIEN AUTOMOBILE",
-      "tea",
       "tea"
     ]
   },
@@ -6176,16 +5313,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AGRONOMIE- PRODUCTIONS VEGETALES",
-      "apv",
       "apv"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BIOTECHNOLOGIES",
-      "b",
-      "b"
     ]
   },
   {
@@ -6202,22 +5330,6 @@
       "METIERS DE L'AUDIOVISUEL OPTION METIERS DU SON",
       "maoms",
       "mdlaomds"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MECATRONIQUE NAVALE",
-      "mn",
-      "mn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DOMOTIQUE",
-      "d",
-      "d"
     ]
   },
   {
@@ -6257,7 +5369,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SPECIALITE ACTIVITES GYMNIQUES",
-      "sag",
       "sag"
     ]
   },
@@ -6321,33 +5432,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "STYLISTE DESIGNER",
-      "sd",
-      "sd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ASSISTANT DENTAIRE",
-      "ad",
-      "ad"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN INTEGRATEUR WEB",
-      "tiw",
       "tiw"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ASSISTANT COMMERCIAL",
-      "ac",
-      "ac"
     ]
   },
   {
@@ -6378,7 +5464,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHARGE DE CLIENTELE",
-      "cc",
       "cdc"
     ]
   },
@@ -6401,33 +5486,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ZINGUEUR FERBLANTIER",
-      "zf",
-      "zf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "BRONZIER OPTION B : CISELEUR SUR BRONZE",
-      "bobcsb",
       "bobcsb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PLAQUISTE",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TUYAUTEUR INDUSTRIEL",
-      "ti",
-      "ti"
     ]
   },
   {
@@ -6489,14 +5549,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GENIE INDUSTRIEL",
-      "gi",
-      "gi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "OUVRAGES DU BATIMENT : METALLERIE",
       "obm",
       "odbm"
@@ -6514,7 +5566,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ACOUSTIQUE ET VIBRATIONS",
-      "av",
       "aev"
     ]
   },
@@ -6545,26 +5596,10 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AMBULANCIER",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DE L'INSTITUT SUPERIEUR DE L'AUTOMOBILE ET DES TRANSPORTS DE NEVERS DE L'UNIVERSITE DE DIJON",
       "SPECIALITE GENIE INDUSTRIEL",
       "idisatnudsgi",
       "iddlisdlaedtdndluddsgi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "STAFFEUR ORNEMANISTE",
-      "so",
-      "so"
     ]
   },
   {
@@ -6581,7 +5616,6 @@
       "INSTRUMENTATION",
       "MESURE",
       "METROLOGIE",
-      "imm",
       "imm"
     ]
   },
@@ -6606,7 +5640,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANTE DE DIRECTION",
-      "ad",
       "add"
     ]
   },
@@ -6632,7 +5665,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHARGE DE RECOUVREMENT",
-      "cr",
       "cdr"
     ]
   },
@@ -6640,32 +5672,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AERONAUTIQUE OPTION SYSTEMES",
-      "aos",
       "aos"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MAINTENANCE AERONAUTIQUE",
-      "ma",
-      "ma"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DESIGNER NUMERIQUE",
-      "dn",
-      "dn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SCIENCE POLITIQUE",
-      "sp",
-      "sp"
     ]
   },
   {
@@ -6674,14 +5681,6 @@
       "METIERS DU DECISIONNEL ET DE LA STATISTIQUE",
       "mds",
       "mddedls"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ANTHROPOLOGIE",
-      "a",
-      "a"
     ]
   },
   {
@@ -6712,14 +5711,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASSISTANT",
-      "aw",
-      "aw"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNIQUES DU VIDE ET MATERIAUX",
       "tvm",
       "tdvem"
@@ -6736,14 +5727,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MANAGEMENT",
-      "m",
-      "m"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CERTFICAT D'APTITUDE AUX FONCTIONS D'ENCADREMENT ET DE RESPONSABLE D'UNITE D'INTERVENTION SOCIALE",
       "caferuis",
       "cdaafdeedrdudis"
@@ -6753,7 +5736,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN DU SON",
-      "ts",
       "tds"
     ]
   },
@@ -6779,14 +5761,6 @@
       "METIERS DE LA RADIOPROTECTION ET DE LA SECURITE NUCLEAIRE",
       "mrsn",
       "mdlredlsn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SELLIER GARNISSEUR",
-      "sg",
-      "sg"
     ]
   },
   {
@@ -6833,18 +5807,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ENERGIE",
-      "e",
-      "e"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "QUALITE",
       "HYGIENE",
       "SECURITE",
-      "qhs",
       "qhs"
     ]
   },
@@ -6854,14 +5819,6 @@
       "COACH FITNESS DANS L'EAU",
       "cfde",
       "cfdle"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "JOURNALISTE",
-      "j",
-      "j"
     ]
   },
   {
@@ -6893,7 +5850,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ECONOMIE DES ORGANISATIONS",
-      "eo",
       "edo"
     ]
   },
@@ -6903,14 +5859,6 @@
       "GENIE ELECTRIQUE ET INFORMATIQUE INDUSTRIELLE : ELECTRONIQUE ET SYSTEMES EMBARQUES",
       "geiiese",
       "geeiieese"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ZINGUEUR",
-      "z",
-      "z"
     ]
   },
   {
@@ -6927,14 +5875,6 @@
       "METIERS DE LA MODE-CHAUSSURE ET MAROQUINERIE",
       "mmcm",
       "mdlmcem"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DEVELOPPEUR WEB",
-      "dw",
-      "dw"
     ]
   },
   {
@@ -6965,7 +5905,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ARTS DU SPECTACLE",
-      "as",
       "ads"
     ]
   },
@@ -6973,16 +5912,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GARDIEN D'IMMEUBLE",
-      "gi",
       "gdi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "WEB DESIGNER",
-      "wd",
-      "wd"
     ]
   },
   {
@@ -7022,7 +5952,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "VENDEUR CONSEILLER SPORT",
-      "vcs",
       "vcs"
     ]
   },
@@ -7047,16 +5976,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INFORMATIQUE",
-      "i",
-      "i"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "VENDEUR CONSEIL OMNICANAL",
-      "vco",
       "vco"
     ]
   },
@@ -7071,14 +5991,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PEINTRE DECORATEUR",
-      "pd",
-      "pd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INSTRUMENTS COUPANTS ET DE CHIRURGIE",
       "icc",
       "icedc"
@@ -7087,18 +5999,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SANTE PUBLIQUE",
-      "sp",
-      "sp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "AMENAGEMENT PAYSAGER : CONCEPTION",
       "GESTION",
       "ENTRETIEN",
-      "apcge",
       "apcge"
     ]
   },
@@ -7137,25 +6040,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SOMMELIER",
-      "s",
-      "s"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR PROJET CONSTRUCTION",
-      "ipc",
       "ipc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "REALISATEUR 3D",
-      "r3",
-      "r3"
     ]
   },
   {
@@ -7242,9 +6128,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "BIOLOGIE",
-      "AGROSCIENCES",
-      "ba",
-      "ba"
+      "AGROSCIENCES"
     ]
   },
   {
@@ -7315,7 +6199,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER OPTION RETAIL OU WHOLESALE",
-      "morow",
       "morow"
     ]
   },
@@ -7339,7 +6222,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PATRIMOINE ET MUSEES",
-      "pm",
       "pem"
     ]
   },
@@ -7355,7 +6237,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ACCORDEUR DE PIANO",
-      "ap",
       "adp"
     ]
   },
@@ -7397,25 +6278,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AUDIOPROTHESISTE",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DE L'ASSURANCE",
-      "ma",
       "mdla"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GROOM EQUIN",
-      "ge",
-      "ge"
     ]
   },
   {
@@ -7593,7 +6457,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MATHEMATIQUES ET APPLICATIONS",
-      "ma",
       "mea"
     ]
   },
@@ -7601,23 +6464,13 @@
     "mappingType": "equivalent",
     "synonyms": [
       "NANOSCIENCES ET NANOTECHNOLOGIES",
-      "nn",
       "nen"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SELLERIE GENERALE",
-      "sg",
-      "sg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "AERONAUTIQUE OPTION AVIONIQUE",
-      "aoa",
       "aoa"
     ]
   },
@@ -7633,7 +6486,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHEF OPERATEUR SON",
-      "cos",
       "cos"
     ]
   },
@@ -7681,16 +6533,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONCHYLICULTURE",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DES ORGANISATIONS",
-      "mo",
       "mdo"
     ]
   },
@@ -7709,14 +6552,6 @@
       "SPECIALITE BATIMENT",
       "idepusucsb",
       "iddlepudsdludcsb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SANTE",
-      "s",
-      "s"
     ]
   },
   {
@@ -7742,14 +6577,6 @@
       "SPECIALITE GENIE INDUSTRIEL",
       "idensisaumsgi",
       "iddlensdisadludmsgi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "FINANCE",
-      "f",
-      "f"
     ]
   },
   {
@@ -7788,14 +6615,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ERGOTHERAPEUTE",
-      "e",
-      "e"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DU LIVRE : DOCUMENTATION ET BIBLIOTHEQUES",
       "mldb",
       "mdldeb"
@@ -7821,28 +6640,11 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "OPTIQUE PROFESSIONNELLE",
-      "op",
-      "op"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MANAGEMENT PUBLIC",
-      "mp",
-      "mp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "QUALITE",
       "HYGIENE",
       "SECURITE",
       "SANTE",
       "ENVIRONNEMENT",
-      "qhsse",
       "qhsse"
     ]
   },
@@ -7891,7 +6693,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AERONAUTIQUE OPTION STRUCTURE",
-      "aos",
       "aos"
     ]
   },
@@ -7907,7 +6708,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RECEPTIONNAIRE APRES-VENTE VEHICULES LEGERS",
-      "ravvl",
       "ravvl"
     ]
   },
@@ -7922,25 +6722,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CHOCOLATIER CONFISEUR",
-      "cc",
-      "cc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ANIMATEUR QUALITE SECURITE ENVIRONNEMENT",
-      "aqse",
       "aqse"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "EFFICACITE ENERGETIQUE",
-      "ee",
-      "ee"
     ]
   },
   {
@@ -7996,14 +6779,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DROIT PRIVE",
-      "dp",
-      "dp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DE LA QUALITE ET DE LA PERFORMANCE DURABLE DE L'ENTREPRISE",
       "mqpde",
       "mdlqedlpddle"
@@ -8013,7 +6788,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ECONOMIE DU DEVELOPPEMENT",
-      "ed",
       "edd"
     ]
   },
@@ -8028,14 +6802,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONSTRUCTEUR BOIS",
-      "cb",
-      "cb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "SERVICES INFORMATIQUES AUX ORGANISATIONS OPTION B SOLUTIONS LOGICIELLES ET APPLICATIONS METIERS",
       "sioobslam",
       "siaoobsleam"
@@ -8045,16 +6811,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN CONSTRUCTEUR BOIS",
-      "tcb",
       "tcb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CORDONNIER MULTISERVICES",
-      "cm",
-      "cm"
     ]
   },
   {
@@ -8283,7 +7040,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COIFFURE COUPE COULEUR",
-      "ccc",
       "ccc"
     ]
   },
@@ -8340,16 +7096,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER COMMERCE RETAIL",
-      "mcr",
       "mcr"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ARCHIVES",
-      "a",
-      "a"
     ]
   },
   {
@@ -8358,22 +7105,6 @@
       "RESPONSABLE EN GESTION D'ACTIVITE OPERATIONNELLE",
       "rgao",
       "regdao"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ECONOMIE INTERNATIONALE",
-      "ei",
-      "ei"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GEOLOGIE APPLIQUEE",
-      "ga",
-      "ga"
     ]
   },
   {
@@ -8388,7 +7119,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DE L'EDUCATION",
-      "se",
       "sdle"
     ]
   },
@@ -8406,14 +7136,6 @@
       "INGENIEUR DIPLOME DU CONSERVATOIRE NATIONAL DES ARTS ET METIERS SPECIALITE SYSTEMES ELECTRONIQUES",
       "idcnamsse",
       "iddcndaemsse"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CHOCOLATIER-CONFISEUR",
-      "cc",
-      "cc"
     ]
   },
   {
@@ -8491,14 +7213,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ARMURERIE",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DE L'INSTITUT CATHOLIQUE D'ARTS ET METIERS",
       "SPECIALITE MECANIQUE ET AUTOMATIQUE",
       "idicamsma",
@@ -8517,7 +7231,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DU DESIGN",
-      "md",
       "mdd"
     ]
   },
@@ -8541,7 +7254,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA PISCINE",
-      "mp",
       "mdlp"
     ]
   },
@@ -8549,7 +7261,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "HUMANITES ET MANAGEMENT",
-      "hm",
       "hem"
     ]
   },
@@ -8557,7 +7268,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SPECIALITE ACTIVITES SPORTS COLLECTIFS",
-      "sasc",
       "sasc"
     ]
   },
@@ -8573,7 +7283,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DECORATEUR D'INTERIEUR",
-      "di",
       "ddi"
     ]
   },
@@ -8604,25 +7313,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AGENT THERMAL",
-      "at",
-      "at"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GENIE MECANIQUE ET PRODUCTIQUE : INNOVATION POUR L'INDUSTRIE",
       "gmpipi",
       "gmepipli"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CHIMIE : FORMULATION",
-      "cf",
-      "cf"
     ]
   },
   {
@@ -8644,24 +7337,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ECO-ENERGETICIEN",
-      "ee",
-      "ee"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CUISINE",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "URBANISME ET AMENAGEMENT",
-      "ua",
       "uea"
     ]
   },
@@ -8671,14 +7347,6 @@
       "GENIE BIOLOGIQUE : BIOLOGIE MEDICALE ET BIOTECHNOLOGIE",
       "gbbmb",
       "gbbmeb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ELECTROTECHNIQUE",
-      "e",
-      "e"
     ]
   },
   {
@@ -8760,7 +7428,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCAPHANDRIER TRAVAUX PUBLICS",
-      "stp",
       "stp"
     ]
   },
@@ -8768,9 +7435,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AUTOMATIQUE",
-      "ROBOTIQUE",
-      "ar",
-      "ar"
+      "ROBOTIQUE"
     ]
   },
   {
@@ -8792,14 +7457,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONSEILLER COMMERCIAL",
-      "cc",
-      "cc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONTROLE INDUSTRIEL ET REGULATION AUTOMATIQUE",
       "cira",
       "ciera"
@@ -8809,7 +7466,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MONITEUR DE PADEL",
-      "mp",
       "mdp"
     ]
   },
@@ -8835,14 +7491,6 @@
       "CONDUCTEUR AGENT D'ACCUEIL EN AUTOBUS ET AUTOCAR",
       "caaaa",
       "cadaeaea"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ERGONOMIE",
-      "e",
-      "e"
     ]
   },
   {
@@ -8890,14 +7538,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PHOTOGRAPHIE",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONDUITE DE PRODUCTIONS HORTICOLES",
       "cph",
       "cdph"
@@ -8914,24 +7554,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PSYCHOMOTRICIEN",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PALEFRENIER SOIGNEUR",
-      "ps",
-      "ps"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "BOUCHER-CHARCUTIER-TRAITEUR",
-      "bct",
       "bct"
     ]
   },
@@ -8954,16 +7577,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ECO-EPIDEMIOLOGIE",
-      "ee",
-      "ee"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CULTURE ET COMMUNICATION",
-      "cc",
       "cec"
     ]
   },
@@ -8987,7 +7601,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ANIMATEUR D'EQUITATION",
-      "ae",
       "ade"
     ]
   },
@@ -8995,7 +7608,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DE LA SANTE",
-      "ds",
       "ddls"
     ]
   },
@@ -9019,7 +7631,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE RESSOURCES HUMAINES",
-      "rrh",
       "rrh"
     ]
   },
@@ -9027,7 +7638,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ANIMATEUR EN GERONTOLOGIE",
-      "ag",
       "aeg"
     ]
   },
@@ -9035,7 +7645,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DU LANGAGE",
-      "sl",
       "sdl"
     ]
   },
@@ -9043,7 +7652,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DU FOOTBALL",
-      "mf",
       "mdf"
     ]
   },
@@ -9083,23 +7691,13 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TOURNAGE EN CERAMIQUE",
-      "tc",
       "tec"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PEINTRE AUTOMOBILE",
-      "pa",
-      "pa"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ARTS DE LA RELIURE",
-      "ar",
       "adlr"
     ]
   },
@@ -9115,7 +7713,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AIDE A DOMICILE",
-      "ad",
       "aad"
     ]
   },
@@ -9156,7 +7753,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT MANAGER LOISIRS HEBERGEMENT RESTAURATION",
-      "amlhr",
       "amlhr"
     ]
   },
@@ -9172,16 +7768,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMPTABLE D'ENTREPRISE",
-      "ce",
       "cde"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CULTURES MARINES",
-      "cm",
-      "cm"
     ]
   },
   {
@@ -9198,16 +7785,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN CONSEIL VENTE UNIVERS JARDINERIE",
-      "tcvuj",
       "tcvuj"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "METALLIER",
-      "m",
-      "m"
     ]
   },
   {
@@ -9221,25 +7799,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BIOQUALITE",
-      "b",
-      "b"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MESURES PHYSIQUES : TECHNIQUES D'INSTRUMENTATION",
       "mpti",
       "mptdi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ACCUEIL-RECEPTION",
-      "ar",
-      "ar"
     ]
   },
   {
@@ -9253,25 +7815,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GESTION",
-      "g",
-      "g"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHARGE D'ACCUEIL TOURISTIQUE ET DE LOISIRS",
       "catl",
       "cdatedl"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "JARDINIER PAYSAGISTE",
-      "jp",
-      "jp"
     ]
   },
   {
@@ -9286,16 +7832,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DECLARANT EN DOUANE",
-      "dd",
       "ded"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "EMPLOYE BARMAN",
-      "eb",
-      "eb"
     ]
   },
   {
@@ -9319,16 +7856,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RENTRAYEUR OPTION B : TAPISSERIE",
-      "robt",
       "robt"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BOUCHER",
-      "b",
-      "b"
     ]
   },
   {
@@ -9345,7 +7873,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DEVELOPPEUR WEB FULL STACK",
-      "dwfs",
       "dwfs"
     ]
   },
@@ -9360,16 +7887,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TOURISME",
-      "t",
-      "t"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN",
-      "ts",
       "tes"
     ]
   },
@@ -9379,30 +7897,6 @@
       "CONDUITE ET GESTION DE L'ENTREPRISE HIPPIQUE",
       "cgeh",
       "cegdleh"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DROIT INTERNATIONAL",
-      "di",
-      "di"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TRAVAUX PUBLICS",
-      "tp",
-      "tp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TECHNICIEN LUMIERE",
-      "tl",
-      "tl"
     ]
   },
   {
@@ -9448,14 +7942,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PRODUCTION CIDRICOLE",
-      "pc",
-      "pc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONDUCTEUR DE GRUE A TOUR",
       "cgt",
       "cdgat"
@@ -9493,14 +7979,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "COMPTABLE ASSISTANT",
-      "ca",
-      "ca"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DU CONSERVATOIRE NATIONAL DES ARTS ET METIERS SPECIALITE INFORMATIQUE",
       "idcnamsi",
       "iddcndaemsi"
@@ -9509,16 +7987,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASSISTANT JURIDIQUE",
-      "aj",
-      "aj"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ENERGIE ET PROPULSION",
-      "ep",
       "eep"
     ]
   },
@@ -9533,14 +8002,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CYBERSECURITE",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ART ET TECHNIQUES DE LA BIJOUTERIE-JOAILLERIE OPTION BIJOUTERIE-SERTISSAGE",
       "atbjobs",
       "aetdlbjobs"
@@ -9550,7 +8011,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PROGRAMME GRANDE ECOLE - PGE KEDGE BUSINESS SCHOOL",
-      "pgepkbs",
       "pgepkbs"
     ]
   },
@@ -9560,7 +8020,6 @@
       "AUDIOVISUEL",
       "MEDIAS INTERACTIFS NUMERIQUES",
       "JEUX",
-      "aminj",
       "aminj"
     ]
   },
@@ -9578,7 +8037,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GENIE CIVIL - CONSTRUCTION DURABLE : TRAVAUX BATIMENT",
-      "gccdtb",
       "gccdtb"
     ]
   },
@@ -9586,7 +8044,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PREPARATEUR EN PHARMACIE",
-      "pp",
       "pep"
     ]
   },
@@ -9684,16 +8141,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHEF DE PRODUIT",
-      "cp",
       "cdp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MARECHAL FERRANT",
-      "mf",
-      "mf"
     ]
   },
   {
@@ -9709,7 +8157,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMMIS DE CUISINE",
-      "cc",
       "cdc"
     ]
   },
@@ -9765,14 +8212,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "HORLOGERIE",
-      "h",
-      "h"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ASSISTANT STYLISTE DE MODE",
       "asm",
       "asdm"
@@ -9791,7 +8230,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE DES ACHATS",
-      "ra",
       "rda"
     ]
   },
@@ -9866,7 +8304,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CARRIERES SOCIALES : EDUCATION SPECIALISEE",
-      "cses",
       "cses"
     ]
   },
@@ -9989,16 +8426,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMMERCIALISATION ECO-RSPONSABLE",
-      "cer",
       "cer"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MARITIME",
-      "m",
-      "m"
     ]
   },
   {
@@ -10013,23 +8441,13 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ANIMATEUR LOISIR TOURISME",
-      "alt",
       "alt"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MASSEUR-KINESITHERAPEUTE",
-      "mk",
-      "mk"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "SCIENCES DU BOIS",
-      "sb",
       "sdb"
     ]
   },
@@ -10037,7 +8455,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ARTS DE LA CUISINE",
-      "ac",
       "adlc"
     ]
   },
@@ -10052,18 +8469,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DIETETIQUE",
-      "d",
-      "d"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INFORMATION",
-      "COMMUNICATION",
-      "ic",
-      "ic"
+      "COMMUNICATION"
     ]
   },
   {
@@ -10095,7 +8502,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "BIOANALYSES ET CONTROLE",
-      "bc",
       "bec"
     ]
   },
@@ -10111,7 +8517,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "VETEMENT SUR MESURE OPTION TAILLEUR HOMME",
-      "vsmoth",
       "vsmoth"
     ]
   },
@@ -10127,7 +8532,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ENCADREMENT SECTEUR SPORTIF OPTION ACTIVITES PHYSIQUES POUR TOUS",
-      "essoappt",
       "essoappt"
     ]
   },
@@ -10151,7 +8555,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "AUXILIAIRE DE PUERICULTURE",
-      "ap",
       "adp"
     ]
   },
@@ -10161,7 +8564,6 @@
       "TRANSPORT",
       "MOBILITE",
       "RESEAUX",
-      "tmr",
       "tmr"
     ]
   },
@@ -10185,7 +8587,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES ET TECHNOLOGIES",
-      "st",
       "set"
     ]
   },
@@ -10225,14 +8626,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CHARPENTIER BOIS",
-      "cb",
-      "cb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INFOGRAPHE EN IMAGE DE SYNTHESE 3D",
       "iis3",
       "ieids3"
@@ -10267,14 +8660,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TECHNICIEN",
-      "ta",
-      "ta"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "PREPARATEUR / TECHNICIEN EN PHARMACIE",
       "p/tp",
       "p/tep"
@@ -10294,7 +8679,6 @@
       "RESPONSABLE QUALITE",
       "SANTE",
       "SECURITE ENVIRONNEMENT",
-      "rqsse",
       "rqsse"
     ]
   },
@@ -10350,7 +8734,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT DE DIRECTION",
-      "ad",
       "add"
     ]
   },
@@ -10376,14 +8759,6 @@
       "PROPRETE DE L'ENVIRONNEMENT URBAIN - COLLECTE ET RECYCLAGE",
       "peucr",
       "pdleucer"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PHOTOGRAPHE",
-      "p",
-      "p"
     ]
   },
   {
@@ -10465,14 +8840,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "SOMMELLERIE",
-      "s",
-      "s"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DU CONSERVATOIRE NATIONAL DES ARTS ET METIERS",
       "SPECIALITE BATIMENT ET TRAVAUX PUBLICS",
       "idcnamsbtp",
@@ -10483,7 +8850,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "REGISSEUR DU SPECTACLE",
-      "rs",
       "rds"
     ]
   },
@@ -10491,7 +8857,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "OPERATEUR EN CYBERSECURITE",
-      "oc",
       "oec"
     ]
   },
@@ -10515,7 +8880,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COLLABORATEUR JURISTE NOTARIAL",
-      "cjn",
       "cjn"
     ]
   },
@@ -10525,14 +8889,6 @@
       "TECHNIQUES DE COMMERCIALISATION : BUSINESS INTERNATIONAL : ACHAT ET VENTE",
       "tcbiav",
       "tdcbiaev"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GUIDE CONFERENCIER",
-      "gc",
-      "gc"
     ]
   },
   {
@@ -10580,7 +8936,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PATISSIER CONFISEUR GLACIER TRAITEUR",
-      "pcgt",
       "pcgt"
     ]
   },
@@ -10611,14 +8966,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "WEBDESIGNER",
-      "w",
-      "w"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DIPLOME D'ETAT SUPERIEUR DE LA JEUNESSE",
       "DE L'EDUCATION POPULAIRE ET DU SPORT SPE ANIMATION SOCIO-EDUCATIVE OU CULTURELLE",
       "desjepssaseoc",
@@ -10642,7 +8989,6 @@
       "TERRITOIRES",
       "PAYSAGE",
       "FORET",
-      "aetpf",
       "aetpf"
     ]
   },
@@ -10657,16 +9003,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DIRECTEUR ARTISTIQUEPLURIMEDIA",
-      "da",
-      "da"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DECORATION EN CERAMIQUE",
-      "dc",
       "dec"
     ]
   },
@@ -10683,7 +9020,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SPECIALITE EDUCATEUR SPORTIF",
-      "ses",
       "ses"
     ]
   },
@@ -10691,7 +9027,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT INTEGRATEUR WEB",
-      "aiw",
       "aiw"
     ]
   },
@@ -10715,7 +9050,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GEOGRAPHIE ET AMENAGEMENT",
-      "ga",
       "gea"
     ]
   },
@@ -10749,7 +9083,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "EXPERT EN CYBERSECURITE",
-      "ec",
       "eec"
     ]
   },
@@ -10765,7 +9098,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIERIE DE CONCEPTION",
-      "ic",
       "idc"
     ]
   },
@@ -10773,7 +9105,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SOLS SPORTIFS ENGAZONNES",
-      "sse",
       "sse"
     ]
   },
@@ -10805,23 +9136,13 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PILOTAGES DE PROCEDES",
-      "pp",
       "pdp"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONSEILLER FINANCIER",
-      "cf",
-      "cf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONCEPTEUR DESIGNER GRAPHIQUE",
-      "cdg",
       "cdg"
     ]
   },
@@ -10829,7 +9150,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ACTIVITES JURIDIQUES : ASSISTANT JURIDIQUE",
-      "ajaj",
       "ajaj"
     ]
   },
@@ -10846,7 +9166,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SECRETAIRE MEDICAL - SECRETAIRE MEDICO-SOCIAL",
-      "smsms",
       "smsms"
     ]
   },
@@ -10857,14 +9176,6 @@
       "BIERES ET SPIRITUEUX",
       "tcsvbs",
       "tcsvbes"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MAQUILLEUR ARTISTIQUE",
-      "ma",
-      "ma"
     ]
   },
   {
@@ -10881,7 +9192,6 @@
     "synonyms": [
       "MATHEMATIQUES APPLIQUEES",
       "STATISTIQUE",
-      "mas",
       "mas"
     ]
   },
@@ -10904,14 +9214,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONCEPTEUR WEBDESIGNER",
-      "cw",
-      "cw"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE TECHNICO COMMERCIAL  EN AGROEQUIPEMENT",
       "rtca",
       "rtcea"
@@ -10929,16 +9231,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DEVELOPPEUR INFORMATIQUE",
-      "di",
-      "di"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GESTION DE LA PME",
-      "gp",
       "gdlp"
     ]
   },
@@ -10961,14 +9254,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BOULANGER-P?TISSIER",
-      "bp",
-      "bp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHEF DE PROJET DESIGN D'ESPACE ET PRODUIT",
       "cpdep",
       "cdpddeep"
@@ -10978,7 +9263,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN EN GEOMATIQUE",
-      "tg",
       "teg"
     ]
   },
@@ -11002,7 +9286,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "VETEMENT SUR MESURE OPTION COUTURE FLOU",
-      "vsmocf",
       "vsmocf"
     ]
   },
@@ -11025,14 +9308,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "FONDERIE",
-      "f",
-      "f"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER TRANSPORT LOGISTIQUE ET COMMERCE INTERNATIONAL",
       "mtlci",
       "mtleci"
@@ -11044,14 +9319,6 @@
       "DIPLOME GRADE MASTER DE PARIS DAUPHINE : GESTION DE PATRIMOINE",
       "dgmpdgp",
       "dgmdpdgdp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AGRO-EQUIPEMENT",
-      "ae",
-      "ae"
     ]
   },
   {
@@ -11077,14 +9344,6 @@
       "ALIMENTATION",
       "msna",
       "mdlsna"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AVIATION GENERALE",
-      "ag",
-      "ag"
     ]
   },
   {
@@ -11131,14 +9390,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INFOGRAPHISTE",
-      "i",
-      "i"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ACTION",
       "COMMERCIALISATION DES SERVICES SPORTIFS",
       "acss",
@@ -11151,14 +9402,6 @@
       "DROIT PENAL ET SCIENCES CRIMINELLES",
       "dpsc",
       "dpesc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PODO-ORTHESISTE",
-      "po",
-      "po"
     ]
   },
   {
@@ -11214,22 +9457,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PLUMASSIERE",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CREMIER-FROMAGER",
-      "cf",
-      "cf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DU DEVELOPPEMENT INTERNATIONAL",
       "mdi",
       "mddi"
@@ -11247,7 +9474,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ADMINISTRATEUR SYSTEME DEVOPS",
-      "asd",
       "asd"
     ]
   },
@@ -11257,14 +9483,6 @@
       "MANAGER EN STRATEGIE ET DEVELOPPEMENT D'AFFAIRES",
       "msda",
       "mesedda"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "INTERVENTION SOCIALE",
-      "is",
-      "is"
     ]
   },
   {
@@ -11286,25 +9504,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "COIFFEUR",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN DE SCIERIE",
-      "ts",
       "tds"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DEMOGRAPHIE",
-      "d",
-      "d"
     ]
   },
   {
@@ -11318,25 +9519,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DROIT SOCIAL",
-      "ds",
-      "ds"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DEVELOPPEMENT ET REALISATION BOIS",
       "drb",
       "derb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DROIT EUROPEEN",
-      "de",
-      "de"
     ]
   },
   {
@@ -11350,28 +9535,12 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "OPERATEUR/OPERATRICE LOGISTIQUE",
-      "ol",
-      "ol"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CYBERSECURITE",
       "INFORMATIQUE ET RESEAUX",
       "ELECTRONIQUE",
       "OPTION B ELECTRONIQUE ET RESEAUX",
       "cireober",
       "ciereobeer"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SOMMELIER - CAVISTE",
-      "sc",
-      "sc"
     ]
   },
   {
@@ -11402,7 +9571,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "VISUEL MERCHANDISER RETAIL",
-      "vmr",
       "vmr"
     ]
   },
@@ -11426,7 +9594,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "VETEMENT SUR MESURE OPTION TAILLEUR DAME",
-      "vsmotd",
       "vsmotd"
     ]
   },
@@ -11441,14 +9608,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CHARCUTIER-TRAITEUR",
-      "ct",
-      "ct"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DE L'ELECTRICITE ET DE SES ENVIRONNEMENTS CONNECTES",
       "mesec",
       "mdleedsec"
@@ -11458,7 +9617,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MAQUETTES ET PROTOTYPES",
-      "mp",
       "mep"
     ]
   },
@@ -11473,25 +9631,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "REALISATEUR MONTEUR",
-      "rm",
-      "rm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "LOGISTIQUE ET SYSTEMES D'INFORMATION",
       "lsi",
       "lesdi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COFFREUR BANCHEUR",
-      "cb",
-      "cb"
     ]
   },
   {
@@ -11506,7 +9648,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMPTABILITE ET GESTION",
-      "cg",
       "ceg"
     ]
   },
@@ -11612,14 +9753,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ECONOMIE",
-      "e",
-      "e"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MANAGER DU DEVELOPPEMENT DURABLE",
       "mdd",
       "mddd"
@@ -11629,24 +9762,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SCIENCES DE L'EAU",
-      "se",
       "sdle"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AGENT",
-      "am",
-      "am"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GENIE MECANIQUE",
-      "gm",
-      "gm"
     ]
   },
   {
@@ -11685,7 +9801,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA PIERRE",
-      "mp",
       "mdlp"
     ]
   },
@@ -11703,7 +9818,6 @@
       "HISTOIRE",
       "CIVILISATIONS",
       "PATRIMOINE",
-      "hcp",
       "hcp"
     ]
   },
@@ -11745,7 +9859,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PATISSIER-CHOCOLATIER-CONFISEUR-GLACIER-TRAITEUR",
-      "pccgt",
       "pccgt"
     ]
   },
@@ -11763,14 +9876,6 @@
       "CHARGE D'AFFAIRES DU BATIMENTS",
       "cab",
       "cdadb"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "OUVRIER PAYSAGISTE",
-      "op",
-      "op"
     ]
   },
   {
@@ -11819,7 +9924,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONSEILLER DE VENTE",
-      "cv",
       "cdv"
     ]
   },
@@ -11835,7 +9939,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "BRONZIER OPTION C : TOURNEUR SUR BRONZE",
-      "boctsb",
       "boctsb"
     ]
   },
@@ -11859,23 +9962,13 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SECRETAIRE ASSISTANT MEDICO-SOCIAL",
-      "sams",
       "sams"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "EBENISTE",
-      "e",
-      "e"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN VITICULTURE OENOLOGIE",
-      "tvo",
       "tvo"
     ]
   },
@@ -11899,7 +9992,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE DE LA COMMUNICATION",
-      "rc",
       "rdlc"
     ]
   },
@@ -11931,7 +10023,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ADMINISTRATION DE LA SANTE",
-      "as",
       "adls"
     ]
   },
@@ -11939,7 +10030,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SONDEUR EN GEOTECHNIQUE",
-      "sg",
       "seg"
     ]
   },
@@ -11947,7 +10037,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER QUALITE HYGIENE SECURITE ENVIRONNEMENT",
-      "mqhse",
       "mqhse"
     ]
   },
@@ -11957,14 +10046,6 @@
       "CONCEPTEUR TECHNIQUE DE L'IIMAGE ANIMEE ET DES EFFETS SPECIAUX",
       "ctiaes",
       "ctdliaedes"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MODELISTE CONCEPTEUR",
-      "mc",
-      "mc"
     ]
   },
   {
@@ -12010,14 +10091,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MUSICIEN INTERVENANT",
-      "mi",
-      "mi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ASSURANCE",
       "BANQUE",
       "FINANCE : CHARGE DE CLIENTELE",
@@ -12055,14 +10128,6 @@
       "MANAGER LOGISTIQUE ET ACHATS INDUSTRIELS",
       "mlai",
       "mleai"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COIFFURE",
-      "c",
-      "c"
     ]
   },
   {
@@ -12147,14 +10212,6 @@
       "SPECIALITE MECANIQUE",
       "idensmmsm",
       "iddlensdmedmsm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MANAGEMENT STRATEGIQUE",
-      "ms",
-      "ms"
     ]
   },
   {
@@ -12283,32 +10340,14 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GENIE CIVIL",
-      "gc",
-      "gc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CINEMA ET AUDIOVISUEL",
-      "ca",
       "cea"
     ]
   },
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DESIGNER GRAPHIQUE",
-      "dg",
-      "dg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "VETEMENT DE PEAU",
-      "vp",
       "vdp"
     ]
   },
@@ -12326,14 +10365,6 @@
       "CHARGE DE TRAVAUX EN RESEAUX ELECTRIQUES AERIENS ET SOUTERRAINS",
       "ctreas",
       "cdtereaes"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GLACIER FABRICANT",
-      "gf",
-      "gf"
     ]
   },
   {
@@ -12372,7 +10403,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESEAUX ET TELECOMMUNICATION",
-      "rt",
       "ret"
     ]
   },
@@ -12390,22 +10420,6 @@
       "RESPONSABLE MARKETING ET COMMUNICATION",
       "rmc",
       "rmec"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "EMPLOYE COMMERCIAL",
-      "ec",
-      "ec"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SELLIER HARNACHEUR",
-      "sh",
-      "sh"
     ]
   },
   {
@@ -12445,14 +10459,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PLATRIER",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "AGENT VERIFICATEUR D'APPAREILS EXTINCTEURS",
       "avae",
       "avdae"
@@ -12470,7 +10476,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GOUVERNANT EN HOTELLERIE",
-      "gh",
       "geh"
     ]
   },
@@ -12534,9 +10539,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MARKETING",
-      "VENTE",
-      "mv",
-      "mv"
+      "VENTE"
     ]
   },
   {
@@ -12674,14 +10677,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "DROIT CIVIL",
-      "dc",
-      "dc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "LAD CAVALIER D'ENTRAINEMENT",
       "lce",
       "lcde"
@@ -12715,7 +10710,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE DE FORMATION",
-      "rf",
       "rdf"
     ]
   },
@@ -12755,7 +10749,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MENUISIER ALUMINIUM-VERRE",
-      "mav",
       "mav"
     ]
   },
@@ -12795,7 +10788,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE ANIMATION CLUB-ENFANTS",
-      "race",
       "race"
     ]
   },
@@ -12805,14 +10797,6 @@
       "MAINTENANCE DES VEHICULES OPTION A VOITURES PARTICULIERES",
       "mvovp",
       "mdvoavp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GENIE URBAIN",
-      "gu",
-      "gu"
     ]
   },
   {
@@ -12845,14 +10829,6 @@
       "DELEGUE A LA PROTECTION DES DONNEES",
       "dpd",
       "dalpdd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COMMUNITY MANAGER",
-      "cm",
-      "cm"
     ]
   },
   {
@@ -12907,16 +10883,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MAINTENANCE NAUTIQUE",
-      "mn",
-      "mn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "FERRONNIER D'ART",
-      "fa",
       "fda"
     ]
   },
@@ -12963,14 +10930,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ARBORISTE ELAGUEUR",
-      "ae",
-      "ae"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CARRIERES JURIDIQUES : ENTREPRISE ET ASSOCIATION",
       "cjea",
       "cjeea"
@@ -12982,14 +10941,6 @@
       "CHARGE D'INDEMNISATION EN ASSURANCE",
       "cia",
       "cdiea"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MATHEMATIQUES",
-      "m",
-      "m"
     ]
   },
   {
@@ -13023,7 +10974,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "EDUCATEUR TECHNIQUE SPECIALISE",
-      "ets",
       "ets"
     ]
   },
@@ -13064,16 +11014,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MENUISIER INSTALLATEUR",
-      "mi",
-      "mi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "SOUDEUR TIG ELECTRODE ENROBEE",
-      "stee",
       "stee"
     ]
   },
@@ -13097,14 +11038,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BARMAN",
-      "b",
-      "b"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHARGE D'ETUDES DE RESEAUX DE TELECOMMUNICATION",
       "cert",
       "cdedrdt"
@@ -13121,32 +11054,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "BIO-INFORMATIQUE",
-      "bi",
-      "bi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COUTURIER RETOUCHEUR",
-      "cr",
-      "cr"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "POLITIQUES PUBLIQUES",
-      "pp",
-      "pp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN EN CHAUDRONNERIE",
-      "tc",
       "tec"
     ]
   },
@@ -13162,7 +11070,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNIQUES DE COMMERCIALISATION",
-      "tc",
       "tdc"
     ]
   },
@@ -13179,7 +11086,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INFIRMIER OU INFIRMIERE",
-      "ioi",
       "ioi"
     ]
   },
@@ -13187,16 +11093,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "BOIS ET AMEUBLEMENT",
-      "ba",
       "bea"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "POISSONNIER ECAILLER",
-      "pe",
-      "pe"
     ]
   },
   {
@@ -13237,14 +11134,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "LOGISTIQUE",
-      "l",
-      "l"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "BIOLOGIE INTEGRATIVE ET PHYSIOLOGIE",
       "bip",
       "biep"
@@ -13270,7 +11159,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MONTEUR DEPANNEUR FRIGORISTE",
-      "mdf",
       "mdf"
     ]
   },
@@ -13286,7 +11174,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMPTABILITE-CONTROLE-AUDIT",
-      "cca",
       "cca"
     ]
   },
@@ -13294,7 +11181,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIRECTEUR ARTISTIQUE MULTIMEDIA",
-      "dam",
       "dam"
     ]
   },
@@ -13315,22 +11201,6 @@
       "OPTION A INFORMATIQUE ET RESEAUX",
       "cireoir",
       "ciereoaier"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GESTION FORESTIERE",
-      "gf",
-      "gf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COMMUNICATION",
-      "c",
-      "c"
     ]
   },
   {
@@ -13379,7 +11249,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN EXPERT APRES VENTE AUTOMOBILE",
-      "teava",
       "teava"
     ]
   },
@@ -13421,14 +11290,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ENVIRONNEMENT NUCLEAIRE",
-      "en",
-      "en"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DE LA GESTION ET DE LA COMPTABILITE : COMPTABILITE ET GESTION DES ENTITES AGRICOLES",
       "mgccgea",
       "mdlgedlccegdea"
@@ -13454,7 +11315,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "FRANCAIS LANGUE ETRANGERE",
-      "fle",
       "fle"
     ]
   },
@@ -13465,14 +11325,6 @@
       "SPECIALITE MATERIAUX",
       "idesirmudsm",
       "iddlesdidremdluddsm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "THEATRE",
-      "t",
-      "t"
     ]
   },
   {
@@ -13494,25 +11346,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PROFESSIONS IMMOBILIERES",
-      "pi",
-      "pi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "SOUFFLEUR DE VERRE OPTION VERRERIE SCIENTIFIQUE",
       "svovs",
       "sdvovs"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TECHNICIEN MODELEUR",
-      "tm",
-      "tm"
     ]
   },
   {
@@ -13535,7 +11371,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER EN SANTE",
-      "ms",
       "mes"
     ]
   },
@@ -13559,7 +11394,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHARGE DE COMMUNICATION",
-      "cc",
       "cdc"
     ]
   },
@@ -13610,14 +11444,6 @@
       "EMPLOYE DE VENTE POLYVALENT EN MAGASIN",
       "evpm",
       "edvpem"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "RESTAURATION COLLECTIVE",
-      "rc",
-      "rc"
     ]
   },
   {
@@ -13681,7 +11507,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT COMMUNICATION DIGITALE",
-      "acd",
       "acd"
     ]
   },
@@ -13731,7 +11556,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "LABORATOIRE CONTROLE QUALITE",
-      "lcq",
       "lcq"
     ]
   },
@@ -13763,24 +11587,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GENIE CIVIL - CONSTRUCTION DURABLE : TRAVAUX PUBLICS",
-      "gccdtp",
       "gccdtp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CHIMIE : SYNTHESE",
-      "cs",
-      "cs"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MONITEUR-EDUCATEUR",
-      "me",
-      "me"
     ]
   },
   {
@@ -13794,18 +11601,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GEOGRAPHIE",
-      "g",
-      "g"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "HYGIENE",
       "PROPRETE",
       "STERILISATION",
-      "hps",
       "hps"
     ]
   },
@@ -13815,14 +11613,6 @@
       "MANAGEMENT DES ACTIVITES COMMERCIALES",
       "mac",
       "mdac"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AGRONOMIE",
-      "a",
-      "a"
     ]
   },
   {
@@ -13854,14 +11644,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MAREYAGE",
-      "m",
-      "m"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONSULTANT EN BUSINESS ANALYSE",
       "cba",
       "ceba"
@@ -13878,22 +11660,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PEINTURE DECORATION",
-      "pd",
-      "pd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "LETTRES",
-      "l",
-      "l"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INSTALLATEUR DE SYSTEMES DE PRODUCTION PHOTOVOLTAIQUE",
       "ispp",
       "idsdpp"
@@ -13904,7 +11670,6 @@
     "synonyms": [
       "CALCUL HAUTE PERFORMANCE",
       "SIMULATION",
-      "chps",
       "chps"
     ]
   },
@@ -13912,7 +11677,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DU PATRIMOINE",
-      "dp",
       "ddp"
     ]
   },
@@ -13985,7 +11749,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MENUISERIE ALUMINIUM-VERRE",
-      "mav",
       "mav"
     ]
   },
@@ -14011,30 +11774,6 @@
       "GENIE MECANIQUE ET PRODUCTIQUE : CHARGE D'AFFAIRES INDUSTRIELLES",
       "gmpcai",
       "gmepcdai"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CARRELEUR MOSAISTE",
-      "cm",
-      "cm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "VITICULTURE OENOLOGIE",
-      "vo",
-      "vo"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CANALISATEUR",
-      "c",
-      "c"
     ]
   },
   {
@@ -14066,32 +11805,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONCEPTEUR 3D ANIMATION VFX JEUX VIDEO",
-      "c3avjv",
       "c3avjv"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COMPTABLE",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "AMENAGEMENTS PAYSAGERS",
-      "ap",
-      "ap"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "RELATIONS INTERNATIONALES",
-      "ri",
-      "ri"
     ]
   },
   {
@@ -14131,7 +11845,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE SYSTEME QUALITE HYGIENE SECURITE ENVIRONNEMENT",
-      "rsqhse",
       "rsqhse"
     ]
   },
@@ -14164,17 +11877,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "TECHNICIEN CYNEGETIQUE",
-      "tc",
-      "tc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "BIOCHIMIE",
       "BIOLOGIE MOLECULAIRE",
-      "bbm",
       "bbm"
     ]
   },
@@ -14190,16 +11894,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONCEPTEUR REALISATEUR WEB DIGITAL",
-      "crwd",
       "crwd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "OUVRIER ARCHETIER",
-      "oa",
-      "oa"
     ]
   },
   {
@@ -14223,7 +11918,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ADMINISTRATEUR RESEAU NETOPS",
-      "arn",
       "arn"
     ]
   },
@@ -14239,14 +11933,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "FORGE",
-      "f",
-      "f"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "METIERS DU MULTIMEDIA ET DE L'INTERNET : CREATION NUMERIQUE",
       "mmicn",
       "mdmedlicn"
@@ -14256,7 +11942,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SECURITE DU NUMERIQUE",
-      "sn",
       "sdn"
     ]
   },
@@ -14303,25 +11988,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "COUVREUR-ZINGUEUR",
-      "cz",
-      "cz"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ASSISTANT PME/TPE D'ADMINISTRATION ET DE COMMUNICATION COMMERCIALES",
       "apacc",
       "apdaedcc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "DROIT FISCAL",
-      "df",
-      "df"
     ]
   },
   {
@@ -14336,7 +12005,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONDUCTEUR TRANSPORT ROUTIER MARCHANDISES",
-      "ctrm",
       "ctrm"
     ]
   },
@@ -14344,7 +12012,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "PEINTRE EN BATIMENT",
-      "pb",
       "peb"
     ]
   },
@@ -14352,7 +12019,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INGENIERIE DE LA SANTE",
-      "is",
       "idls"
     ]
   },
@@ -14417,7 +12083,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA MODE",
-      "mm",
       "mdlm"
     ]
   },
@@ -14448,14 +12113,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PROTHESISTE DENTAIRE",
-      "pd",
-      "pd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "DIPLOME D'AUDENCIA - ECOLE DE MANAGEMENT DE NANTES - PGE",
       "daemnp",
       "ddaedmdnp"
@@ -14467,14 +12124,6 @@
       "SYSTEMES CONSTRUCTIFS BOIS ET HABITAT",
       "scbh",
       "scbeh"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ELEVEUR",
-      "e",
-      "e"
     ]
   },
   {
@@ -14496,16 +12145,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "COLLABORATEUR PAIE",
-      "cp",
-      "cp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHIMIE DE SYNTHESE",
-      "cs",
       "cds"
     ]
   },
@@ -14513,7 +12153,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DES ASSURANCES",
-      "da",
       "dda"
     ]
   },
@@ -14529,9 +12168,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ECONOMETRIE",
-      "STATISTIQUES",
-      "es",
-      "es"
+      "STATISTIQUES"
     ]
   },
   {
@@ -14563,17 +12200,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PERRUQUIER POSTICHEUR",
-      "pp",
-      "pp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "COMPOSITES",
       "PLASTIQUES CHAUDRONNES",
-      "cpc",
       "cpc"
     ]
   },
@@ -14593,22 +12221,6 @@
       "SPECIALITE TRAVAUX PUBLICS",
       "idensamstp",
       "iddlensdaemstp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "LIBRAIRE",
-      "l",
-      "l"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CORDONNIER BOTTIER",
-      "cb",
-      "cb"
     ]
   },
   {
@@ -14650,14 +12262,6 @@
       "SPECIALITE SYSTEMES NUMERIQUES",
       "iderlbssn",
       "iddlerldbssn"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "INDUSTRIES CERAMIQUES",
-      "ic",
-      "ic"
     ]
   },
   {
@@ -14752,14 +12356,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "INFORMATION-COMMUNICATION",
-      "ic",
-      "ic"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "REGISSEUR DE SPECTACLE ET D'EVENEMENT",
       "SPECIALISATION LUMIERE",
       "PLATEAU/SCENE",
@@ -14772,7 +12368,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DROIT DE L'ENVIRONNEMENT",
-      "de",
       "ddle"
     ]
   },
@@ -14787,22 +12382,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "NEGOCIATEUR IMMOBILIER",
-      "ni",
-      "ni"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MECANIQUE",
-      "m",
-      "m"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CHARGE D'ACCOMPAGNEMENT SOCIAL ET PROFESSIONNEL",
       "casp",
       "cdasep"
@@ -14811,16 +12390,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GLACIER-FABRICANT",
-      "gf",
-      "gf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONSTRUCTION DES CARROSSERIES",
-      "cc",
       "cdc"
     ]
   },
@@ -14869,7 +12439,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGEMENT DE L'INNOVATION",
-      "mi",
       "mdli"
     ]
   },
@@ -14877,7 +12446,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "MANAGER D'AFFAIRES",
-      "ma",
       "mda"
     ]
   },
@@ -14909,7 +12477,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE L'EAU",
-      "me",
       "mdle"
     ]
   },
@@ -14925,7 +12492,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONCEPTEUR DESIGNER UI",
-      "cdu",
       "cdu"
     ]
   },
@@ -14942,7 +12508,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INFORMATION-COMMUNICATION : PUBLICITE",
-      "icp",
       "icp"
     ]
   },
@@ -14994,7 +12559,6 @@
       "CHIMIE : ANALYSE",
       "CONTROLE-QUALITE",
       "ENVIRONNEMENT",
-      "cacqe",
       "cacqe"
     ]
   },
@@ -15050,7 +12614,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "INTERVENTION SOCIALE : ACCOMPAGNEMENT SOCIAL",
-      "isas",
       "isas"
     ]
   },
@@ -15058,7 +12621,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN AUDIOVISUEL MULTITECHNIQUE",
-      "tam",
       "tam"
     ]
   },
@@ -15073,14 +12635,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PSYCHOLOGIE",
-      "p",
-      "p"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "PEINTRE APPLICATEUR DE REVETEMENTS",
       "par",
       "padr"
@@ -15089,16 +12643,7 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CHIMIE INDUSTRIELLE",
-      "ci",
-      "ci"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ORGANISATEUR DE RECEPTION",
-      "or",
       "odr"
     ]
   },
@@ -15106,16 +12651,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMMERCE ET DISTRIBUTION",
-      "cd",
       "ced"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CORDONNIER",
-      "c",
-      "c"
     ]
   },
   {
@@ -15185,14 +12721,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASSISTANT COMPTABLE",
-      "ac",
-      "ac"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIEUR DIPLOME DU CONSERVATOIRE NATIONAL DES ARTS ET METIERS SPECIALITE GESTION DES RISQUES",
       "idcnamsgr",
       "iddcndaemsgdr"
@@ -15204,14 +12732,6 @@
       "BACHELOR EN SCIENCES ET INGENIERIE - COMMUNICATION GLOBALE ET DESIGN DIGITAL",
       "bsicgdd",
       "beseicgedd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "APICULTURE",
-      "a",
-      "a"
     ]
   },
   {
@@ -15319,7 +12839,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "COMMUNICATION DES ORGANISATIONS",
-      "co",
       "cdo"
     ]
   },
@@ -15327,7 +12846,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHIMIE : CHIMIE INDUSTRIELLE",
-      "cci",
       "cci"
     ]
   },
@@ -15382,14 +12900,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PRODUCTIONS ANIMALES",
-      "pa",
-      "pa"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GESTION DES ENTREPRISES ET DES ADMINISTRATIONS : GESTION COMPTABLE",
       "FISCALE ET FINANCIERE",
       "geagcff",
@@ -15439,14 +12949,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ETUDES CULTURELLES",
-      "ec",
-      "ec"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "INGENIERIE DES SYSTEMES COMPLEXES",
       "isc",
       "idsc"
@@ -15464,7 +12966,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DIRECTEUR DE LA CREATION",
-      "dc",
       "ddlc"
     ]
   },
@@ -15522,7 +13023,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONDUCTEUR LIVREUR SUR VEHICULE UTILITAIRE LEGER",
-      "clsvul",
       "clsvul"
     ]
   },
@@ -15554,7 +13054,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ARTS DE LA BRODERIE",
-      "ab",
       "adlb"
     ]
   },
@@ -15564,14 +13063,6 @@
       "METIERS DU LIVRE : EDITION ET COMMERCE DU LIVRE",
       "mlecl",
       "mdleecdl"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "BOULANGER",
-      "b",
-      "b"
     ]
   },
   {
@@ -15609,14 +13100,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "EDUCATEUR SPECIALISE",
-      "es",
-      "es"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MAINTENANCE DES SYSTEMES INDUSTRIELS",
       "DE PRODUCTION ET D'ENERGIE",
       "msipe",
@@ -15636,7 +13119,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHARPENTIER DE MARINE",
-      "cm",
       "cdm"
     ]
   },
@@ -15655,7 +13137,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ENTRAINEUR DE HANDBALL",
-      "eh",
       "edh"
     ]
   },
@@ -15704,18 +13185,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CONSTRUCTIONS  PAYSAGERES",
-      "cp",
-      "cp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "ASSURANCE",
       "BANQUE",
       "FINANCE : SUPPORTS OPERATIONNELS",
-      "abfso",
       "abfso"
     ]
   },
@@ -15747,16 +13219,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ENTRAINEUR DE FOOTBALL",
-      "ef",
       "edf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "FORET",
-      "f",
-      "f"
     ]
   },
   {
@@ -15765,22 +13228,6 @@
       "MANAGER ENTREPRENEURIAL DE PROJET NUMERIQUE ET STRATEGIE DIGITALE",
       "mepnsd",
       "medpnesd"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "TRANSPORT FLUVIAL",
-      "tf",
-      "tf"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CREATION NUMERIQUE",
-      "cn",
-      "cn"
     ]
   },
   {
@@ -15803,7 +13250,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GESTION DE PATRIMOINE",
-      "gp",
       "gdp"
     ]
   },
@@ -15859,14 +13305,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "PRODUCTION HORTICOLE",
-      "ph",
-      "ph"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "PACKAGING",
       "EMBALLAGE ET CONDITIONNEMENT : ECO-CONCEPTION ET INDUSTRIALISATION",
       "pececi",
@@ -15887,14 +13325,6 @@
       "TECHNICIEN SYSTEMES ET RESEAUX",
       "tsr",
       "tser"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "RESPONSABLE LOGISTIQUE",
-      "rl",
-      "rl"
     ]
   },
   {
@@ -15924,33 +13354,8 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MECANICIEN AUTOMOBILE",
-      "ma",
-      "ma"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "PLASTIQUES ET COMPOSITES",
-      "pc",
       "pec"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "OFFICE MANAGER",
-      "om",
-      "om"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "SECRETAIRE ASSISTANT",
-      "sa",
-      "sa"
     ]
   },
   {
@@ -15981,7 +13386,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONTROLEUR DE GESTION",
-      "cg",
       "cdg"
     ]
   },
@@ -16013,14 +13417,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "AQUACULTURE",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN SPECIALISE EN BIOPRODUCTION INDUSTRIELLE",
       "tsbi",
       "tsebi"
@@ -16030,16 +13426,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CHARGE DE RECRUTEMENT",
-      "cr",
       "cdr"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CARROSSIER REPARATEUR",
-      "cr",
-      "cr"
     ]
   },
   {
@@ -16064,14 +13451,6 @@
       "RESPONSABLE EXPORT DES VINS ET SPIRITUEUX",
       "revs",
       "redves"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "VENDEUR AUTOMOBILE",
-      "va",
-      "va"
     ]
   },
   {
@@ -16144,7 +13523,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE DE COMMUNICATION",
-      "rc",
       "rdc"
     ]
   },
@@ -16160,7 +13538,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE EN LOGISTIQUE",
-      "rl",
       "rel"
     ]
   },
@@ -16168,7 +13545,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GESTION DE L'ENVIRONNEMENT",
-      "ge",
       "gdle"
     ]
   },
@@ -16176,7 +13552,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT RESSOURCES HUMAINES",
-      "arh",
       "arh"
     ]
   },
@@ -16217,7 +13592,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ENTREPRENEUR DE LA TPE",
-      "et",
       "edlt"
     ]
   },
@@ -16325,7 +13699,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "DEVELOPPEUR INTEGRATEUR WEB",
-      "diw",
       "diw"
     ]
   },
@@ -16333,7 +13706,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "CONSEILLER EN SOMMELLERIE",
-      "cs",
       "ces"
     ]
   },
@@ -16389,7 +13761,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "GENIE BIOLOGIQUE : AGRONOMIE",
-      "gba",
       "gba"
     ]
   },
@@ -16423,14 +13794,6 @@
       "MESURES PHYSIQUES : MESURES ET ANALYSES ENVIRONNEMENTALES",
       "mpmae",
       "mpmeae"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "EXPERT FINANCIER",
-      "ef",
-      "ef"
     ]
   },
   {
@@ -16513,7 +13876,6 @@
       "GEORESSOURCES",
       "GEORISQUES",
       "GEOTECHNIQUE",
-      "ggg",
       "ggg"
     ]
   },
@@ -16537,14 +13899,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "CUISINIER",
-      "c",
-      "c"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "EXPERT EN ARCHITECTURE DES SYSTEMES-RESEAUX ET EN SECURITE INFORMATIQUE",
       "easrsi",
       "eeadsreesi"
@@ -16554,7 +13908,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TECHNICIEN-VENDEUR CYCLES",
-      "tvc",
       "tvc"
     ]
   },
@@ -16577,14 +13930,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ASSISTANT IMMMOBILIER",
-      "ai",
-      "ai"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "MAINTENICIEN INFORMATIQUE SYSTEMES ET RESEAUX",
       "misr",
       "miser"
@@ -16594,7 +13939,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "METIERS DE LA SECURITE",
-      "ms",
       "mdls"
     ]
   },
@@ -16626,22 +13970,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MANAGER IMMOBILIER",
-      "mi",
-      "mi"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "PRODUCTIONS VEGETALES",
-      "pv",
-      "pv"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "GESTION ET MAITRISE DE L'EAU",
       "gme",
       "gemdle"
@@ -16651,24 +13979,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT DESIGNER GRAPHIQUE MULTIMEDIA",
-      "adgm",
       "adgm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ACTUARIAT",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MONTEUR AUDIOVISUEL",
-      "ma",
-      "ma"
     ]
   },
   {
@@ -16691,7 +14002,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "SOUDEUR ASSEMBLEUR INDUSTRIEL",
-      "sai",
       "sai"
     ]
   },
@@ -16699,7 +14009,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ASSISTANT D'ARCHITECTE",
-      "aa",
       "ada"
     ]
   },
@@ -16732,22 +14041,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "MICROTECHNIQUES",
-      "m",
-      "m"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ATTACHE COMMERCIAL",
-      "ac",
-      "ac"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "BATIMENT ET TRAVAUX PUBLICS",
       "btp",
       "betp"
@@ -16765,7 +14058,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ECONOMIE ET GESTION",
-      "eg",
       "eeg"
     ]
   },
@@ -16783,14 +14075,6 @@
       "CONDUCTEUR LIVREUR DE MARCHANDISES",
       "clm",
       "cldm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "GRAPHISTE CONCEPTEUR",
-      "gc",
-      "gc"
     ]
   },
   {
@@ -16830,16 +14114,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ESSAYAGE-RETOUCHE-VENTE",
-      "erv",
       "erv"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "ZYTHOLOGUE",
-      "z",
-      "z"
     ]
   },
   {
@@ -16871,24 +14146,7 @@
     "mappingType": "equivalent",
     "synonyms": [
       "ENTREPRENEUR DE LA COIFFURE",
-      "ec",
       "edlc"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "OPTIQUE LUNETTERIE",
-      "ol",
-      "ol"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CERAMIQUE",
-      "c",
-      "c"
     ]
   },
   {
@@ -17027,14 +14285,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "ACOUSTIQUE",
-      "a",
-      "a"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "TECHNICIEN D'EQUIPEMENT ET DE MAINTENANCE DE PISCINES",
       "temp",
       "tdeedmdp"
@@ -17068,7 +14318,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "LETTRES ET HUMANITES",
-      "lh",
       "leh"
     ]
   },
@@ -17094,25 +14343,9 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "EMPLOYE TRAITEUR",
-      "et",
-      "et"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "CONCEPTION DES PROCESSUS DE REALISATION DE PRODUITS OPTION B PRODUCTION SERIELLE",
       "cprpobps",
       "cdpdrdpobps"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "MODELISTE",
-      "m",
-      "m"
     ]
   },
   {
@@ -17160,7 +14393,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "TRADUCTION ET INTERPRETATION",
-      "ti",
       "tei"
     ]
   },
@@ -17219,7 +14451,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE MARKETING OPERATIONNEL",
-      "rmo",
       "rmo"
     ]
   },
@@ -17261,14 +14492,6 @@
       "EXPERT EN AUDIT INTERNE ET CONTROLE DE GESTION",
       "eaicg",
       "eeaiecdg"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "COLLABORATEUR COMPTABLE",
-      "cc",
-      "cc"
     ]
   },
   {
@@ -17323,22 +14546,6 @@
   {
     "mappingType": "equivalent",
     "synonyms": [
-      "GRAPHISTE MULTIMEDIA",
-      "gm",
-      "gm"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
-      "CARROSSIER PEINTRE",
-      "cp",
-      "cp"
-    ]
-  },
-  {
-    "mappingType": "equivalent",
-    "synonyms": [
       "RESPONSABLE D'ESPACE DE MEDIATION NUMERIQUE",
       "remn",
       "rdedmn"
@@ -17348,7 +14555,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "STYLISTE DE DE MODE",
-      "sm",
       "sddm"
     ]
   },
@@ -17356,7 +14562,6 @@
     "mappingType": "equivalent",
     "synonyms": [
       "RESPONSABLE PROJET COMMUNICATION",
-      "rpc",
       "rpc"
     ]
   },
