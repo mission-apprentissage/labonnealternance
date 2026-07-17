@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
+import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Skeleton } from "@mui/material"
-import { useEffect, useRef } from "react"
 import type { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import type { Hit } from "./SearchHitCard"
@@ -18,23 +18,6 @@ interface SearchResultsListProps {
 
 export function SearchResultsList({ result, params, selectedHitId, onHitSelect }: SearchResultsListProps) {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
-
-  const sentinelRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = sentinelRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage()
-        }
-      },
-      { threshold: 0.1 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   if (isLoading) {
     return (
@@ -74,10 +57,19 @@ export function SearchResultsList({ result, params, selectedHitId, onHitSelect }
         ))}
       </Box>
 
-      {/* Sentinel pour l'infinite scroll */}
-      <Box ref={sentinelRef} sx={{ height: 48, display: "flex", justifyContent: "center", alignItems: "center", mt: fr.spacing("4v") }}>
-        {isFetchingNextPage && <CircularProgress size={24} />}
-      </Box>
+      {/* RGAA : chargement à la demande (CTA), pas de scroll infini — le chargement doit
+          rester déclenchable au clavier et ne pas se produire sans action de l'utilisateur. */}
+      {hasNextPage && (
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: fr.spacing("4v") }}>
+          {isFetchingNextPage ? (
+            <CircularProgress size={24} />
+          ) : (
+            <Button priority="secondary" onClick={() => fetchNextPage()}>
+              Voir plus de résultats
+            </Button>
+          )}
+        </Box>
+      )}
     </Box>
   )
 }

@@ -14,6 +14,8 @@ export function generateSearchItemFixture(data: Partial<ISearchItem> = {}): ISea
     is_disabled_elligible: false,
     start_date: null,
     start_type: null,
+    is_start_flexible: null,
+    is_algo_company: false,
     smart_apply: false,
     application_count: 3,
     title: "Développeur web",

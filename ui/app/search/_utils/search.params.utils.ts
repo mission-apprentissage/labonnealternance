@@ -19,8 +19,8 @@ export interface ISearchPageParams {
   selected?: string // url_id du hit sélectionné dans le split layout
 }
 
-export type SortOption = "proximity" | "smart_apply" | "date"
-const SORT_OPTIONS: SortOption[] = ["proximity", "smart_apply", "date"]
+export type SortOption = "proximity" | "smart_apply" | "date" | "applications"
+const SORT_OPTIONS: SortOption[] = ["proximity", "smart_apply", "date", "applications"]
 
 export type QSource = "suggestion" | "free_text"
 const Q_SOURCES: QSource[] = ["suggestion", "free_text"]

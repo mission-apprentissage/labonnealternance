@@ -11,6 +11,7 @@ import type { ISearchItem } from "shared/models/searchItems.model"
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
+import { sanitizeTextField } from "@/common/utils/stringUtils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
@@ -53,6 +54,7 @@ const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
   contract_type: 1,
   contract_start: 1,
   contract_start_type: 1,
+  contract_start_is_flexible: 1,
   contract_is_disabled_elligible: 1,
 }
 
@@ -147,13 +149,27 @@ const convertFormationNiveauDiplome = (niveau: string) => {
   }
 }
 
+/**
+ * Descriptions en texte brut : les sources livrent du HTML (balises + entités) qui s'affiche
+ * tel quel dans les previews et pollue l'index (tokens parasites p/li/ul, cf. bug synonymes
+ * "plaquiste"). Les fins de blocs deviennent des sauts de ligne pour ne pas coller les mots.
+ */
+const stripHtmlToText = (text: string | null | undefined): string => {
+  if (!text) return ""
+  const withBreaks = text.replace(/<\/(p|li|ul|ol|div|h[1-6])>|<br\s*\/?>/gi, "\n")
+  return sanitizeTextField(withBreaks)
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+}
+
 const getTypeFilterLabel = (partner_label: JOBPARTNERS_LABEL, fromCfa?: boolean) => {
   if (fromCfa) return "Offres d'emploi postées par des écoles"
   switch (partner_label) {
     case "offres_emploi_lba":
       return "Offres d'emploi La bonne alternance"
     case "recruteurs_lba":
-      return "Candidatures spontannées"
+      return "Candidatures spontanées"
     default:
       return "Offres d'emploi partenaires"
   }
@@ -257,7 +273,9 @@ export const fillMissingSearchItemsKeywords = async () => {
     const jobId = await submitMistralBatch({
       requests: chunk.map((doc) => ({ customId: doc.id.toString(), messages: buildKeywordsMessages(doc.text) })),
       model: "mistral-small-latest",
-      maxTokens: 200,
+      // 400 : à 200, ~36 % des réponses étaient tronquées en plein JSON (15 mots-clés longs
+      // ne tiennent pas) → lignes ignorées à l'application du batch.
+      maxTokens: 400,
       inputFileName: `keywords_batch_input_${i / KEYWORDS_BATCH_CHUNK_SIZE + 1}.jsonl`,
     })
     if (jobId) jobIds.push(jobId)
@@ -398,7 +416,19 @@ export const fillSearchItemsCollection = async () => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(formation._id.toString())) {
-      await searchItemsCollection.updateOne({ _id: formation._id }, { $set: { is_disabled_elligible: null, start_date: null, start_type: null } })
+      await searchItemsCollection.updateOne(
+        { _id: formation._id },
+        {
+          $set: {
+            is_disabled_elligible: null,
+            start_date: null,
+            start_type: null,
+            is_start_flexible: null,
+            is_algo_company: false,
+            description: stripHtmlToText(formation.contenu),
+          },
+        }
+      )
       processedIds.add(formation._id.toString())
       return
     }
@@ -414,10 +444,12 @@ export const fillSearchItemsCollection = async () => {
       is_disabled_elligible: null,
       start_date: null,
       start_type: null,
+      is_start_flexible: null,
+      is_algo_company: false,
       smart_apply: null,
       application_count: null,
       title: formation.intitule_rco || "",
-      description: formation.contenu || "",
+      description: stripHtmlToText(formation.contenu),
       address: [formation.lieu_formation_adresse, formation.code_postal, formation.localite].filter(Boolean).join(" "),
       location: {
         type: "Point",
@@ -442,7 +474,16 @@ export const fillSearchItemsCollection = async () => {
     if (existingIds.has(jobId)) {
       await searchItemsCollection.updateOne(
         { _id: job._id },
-        { $set: { is_disabled_elligible: job.contract_is_disabled_elligible ?? false, start_date: job.contract_start ?? null, start_type: job.contract_start_type ?? null } }
+        {
+          $set: {
+            is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
+            start_date: job.contract_start ?? null,
+            start_type: job.contract_start_type ?? null,
+            is_start_flexible: job.contract_start_is_flexible ?? null,
+            is_algo_company: false,
+            description: stripHtmlToText(job.offer_description),
+          },
+        }
       )
       processedIds.add(jobId)
       return
@@ -459,10 +500,12 @@ export const fillSearchItemsCollection = async () => {
       is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
       start_date: job.contract_start ?? null,
       start_type: job.contract_start_type ?? null,
+      is_start_flexible: job.contract_start_is_flexible ?? null,
+      is_algo_company: false,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       title: job.offer_title || "",
-      description: job.offer_description || "",
+      description: stripHtmlToText(job.offer_description),
       address: job.workplace_address_label || "",
       location: {
         type: "Point",
@@ -485,7 +528,10 @@ export const fillSearchItemsCollection = async () => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(jobId)) {
-      await searchItemsCollection.updateOne({ _id: job._id }, { $set: { is_disabled_elligible: job.contract_is_disabled_elligible ?? false, start_date: null, start_type: null } })
+      await searchItemsCollection.updateOne(
+        { _id: job._id },
+        { $set: { is_disabled_elligible: job.contract_is_disabled_elligible ?? false, start_date: null, start_type: null, is_start_flexible: null, is_algo_company: true } }
+      )
       processedIds.add(jobId)
       return
     }
@@ -502,6 +548,8 @@ export const fillSearchItemsCollection = async () => {
       // Candidature spontanée, pas une offre : aucune date/mode de démarrage de contrat.
       start_date: null,
       start_type: null,
+      is_start_flexible: null,
+      is_algo_company: true,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       // title des recruteurs = nom d'entreprise → même canonicalisation que organization_name.

@@ -1,4 +1,3 @@
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
 import type { JOB_START_TYPE } from "shared/models/job.model"
 
@@ -97,7 +96,7 @@ export function buildSearchMatchWords(highlights: Highlight[]): Array<{ word: st
   return result.sort((a, b) => b.count - a.count)
 }
 
-type SortOption = "proximity" | "smart_apply" | "date"
+type SortOption = "proximity" | "smart_apply" | "date" | "applications"
 
 interface ISearchFilters {
   q?: string
@@ -225,6 +224,31 @@ const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | un
 // Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
 const msmFor = (n: number): number => (n <= 2 ? n : n <= 4 ? n - 1 : Math.ceil(0.75 * n))
 
+// Filtre « date de début de contrat » (spec ticket Contract start) : l'utilisateur indique
+// quand il veut démarrer → on montre tout ce qui est compatible, c'est-à-dire les offres qui
+// démarrent AVANT OU À cette date ($lte), celles à date flexible, et les docs SANS date de
+// démarrage (candidatures spontanées de l'algo, formations) qui ne sont pas concernés par le
+// critère — ils conservent ainsi leur ordre de pertinence, comme si le filtre n'existait pas.
+// « A une vraie date de démarrage » : seule une valeur date indexée matche un range (null ne
+// matche pas). NB : `exists` est inutilisable ici — il matche aussi les champs à valeur null
+// (le champ est présent dans le document), donc tous les docs.
+const HAS_START_DATE = { range: { path: "start_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
+const HAS_PUBLICATION_DATE = { range: { path: "publication_date", gte: new Date("1900-01-01T00:00:00.000Z") } }
+const HAS_APPLICATION_COUNT = { range: { path: "application_count", gte: 0 } }
+
+const buildStartDateFilter = (start_date: Date) => ({
+  compound: {
+    should: [
+      { range: { path: "start_date", lte: start_date } },
+      { equals: { path: "is_start_flexible", value: true } },
+      // Un compound purement négatif ne matche rien (Lucene) → clause positive d'ancrage
+      // (`type` est indexé sur tous les docs).
+      { compound: { must: [{ exists: { path: "type" } }], mustNot: [HAS_START_DATE] } },
+    ],
+    minimumShouldMatch: 1,
+  },
+})
+
 // Sémantique INCLUSIVE du filtre niveau : un doc sans niveau précisé ("" — recruteurs et
 // offres sans diplôme cible, ~83 % du corpus) ou "Indifférent" (fallback formations) est
 // compatible avec tout niveau sélectionné — il n'est pas incompatible, il est indifférent.
@@ -307,8 +331,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   // Filtre opt-in : seul `true` restreint (aux offres éligibles handicap) ; false/absent = tout.
   if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
   if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
-  // Démarrage à partir de cette date — écarte aussi les docs sans start_date (null non indexé).
-  if (start_date) filter.push({ range: { path: "start_date", gte: start_date } })
+  if (start_date) filter.push(buildStartDateFilter(start_date))
   if (hasGeo) {
     filter.push({
       geoWithin: {
@@ -318,14 +341,18 @@ function buildCompoundOperator(filters: ISearchFilters) {
     })
   }
 
-  // Tri par date : la publication_date des recruteurs_lba est une date d'IMPORT (souvent plus
-  // récente que toutes les offres) — une candidature spontanée n'a pas de date de publication
-  // réelle, elle monopoliserait la tête du tri. On l'exclut, ainsi que les docs sans date
-  // indexée (formations sans publication_date : null n'est pas indexé → exists les écarte).
-  const mustNot: object[] = []
+  // Tri par date : on écarte les docs sans vraie date de publication (formations à
+  // publication_date null — un range ne matche que les valeurs date indexées, contrairement à
+  // `exists` qui matche aussi null). Les recruteurs_lba restent présents mais sont RELÉGUÉS en
+  // fin de liste par la clé de tri is_algo_company (leur publication_date est une date
+  // d'IMPORT, pas une vraie date de publication — cf. buildSortStage).
   if (sort === "date") {
-    mustNot.push({ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } })
-    filter.push({ exists: { path: "publication_date" } })
+    filter.push(HAS_PUBLICATION_DATE)
+  }
+  // Tri par nb de candidatures : les docs sans compteur (formations) trieraient en tête
+  // (valeur manquante avant 0 en ordre croissant) → on les écarte, comme le tri date.
+  if (sort === "applications") {
+    filter.push(HAS_APPLICATION_COUNT)
   }
 
   // Tri par proximité : la porte de pertinence devient un filtre, et le score provient
@@ -347,7 +374,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   // Porte de pertinence en `must` (gate le result set — vaut pour TOUS les tris, y compris
   // date : un doc trop peu couvrant n'apparaît plus, quel que soit l'ordre) ; bonus phrase
   // en `should` pur (score uniquement, n'élargit pas les résultats).
-  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter, ...(mustNot.length ? { mustNot } : {}) }
+  return { ...(gate ? { must: [gate], should: buildTextBonusClauses(q) } : {}), filter }
 }
 
 // Étape de tri du $search selon l'option choisie (défaut : pertinence + tie-breaks).
@@ -355,10 +382,17 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
   const hasGeo = filters.latitude !== undefined && filters.longitude !== undefined
 
   if (filters.sort === "date") {
-    return { publication_date: { order: -1 } }
+    // Recruteurs algo en DERNIER : leur publication_date est une date d'import, pas une vraie
+    // date de publication — ils suivraient sinon en tête de tri (spec : affichés en fin).
+    return { is_algo_company: { order: 1 }, publication_date: { order: -1 } }
   }
   if (filters.sort === "smart_apply") {
     return { smart_apply: { order: -1 }, score: { $meta: "searchScore", order: -1 }, application_count: { order: 1 } }
+  }
+  if (filters.sort === "applications") {
+    // Moins de candidatures d'abord : maximise les chances du candidat et répartit les
+    // candidatures (même philosophie que le tie-break du tri par défaut).
+    return { application_count: { order: 1 }, score: { $meta: "searchScore", order: -1 } }
   }
   if (filters.sort === "proximity" && hasGeo) {
     return { score: { $meta: "searchScore", order: -1 } }
@@ -411,18 +445,19 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   // Pas des dimensions de facette (jamais exclues) : ils restreignent toujours les counts.
   if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
   if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
-  if (start_date) filter.push({ range: { path: "start_date", gte: start_date } })
+  if (start_date) filter.push(buildStartDateFilter(start_date))
   if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
 
-  // Même exclusion qu'en recherche pour le tri par date → les counts de facettes reflètent le result set réel.
-  const mustNot: object[] = []
+  // Mêmes restrictions qu'en recherche pour les tris → les counts de facettes reflètent le result set réel.
   if (filters.sort === "date") {
-    mustNot.push({ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } })
-    filter.push({ exists: { path: "publication_date" } })
+    filter.push(HAS_PUBLICATION_DATE)
+  }
+  if (filters.sort === "applications") {
+    filter.push(HAS_APPLICATION_COUNT)
   }
 
   if (!gate && !filter.length) filter.push({ exists: { path: "type" } })
-  return { ...(gate ? { must: [gate] } : {}), filter, ...(mustNot.length ? { mustNot } : {}) }
+  return { ...(gate ? { must: [gate] } : {}), filter }
 }
 
 type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }

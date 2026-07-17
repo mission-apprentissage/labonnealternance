@@ -10,7 +10,7 @@ export const TYPE_GROUP_EMPLOI = "Offre d'emploi"
 const TYPE_FILTER_GROUPS: Record<string, string> = {
   "Formation en présentiel": TYPE_GROUP_FORMATION,
   "Formation à distance": TYPE_GROUP_FORMATION,
-  "Candidatures spontannées": TYPE_GROUP_EMPLOI,
+  "Candidatures spontanées": TYPE_GROUP_EMPLOI,
   "Offres d'emploi partenaires": TYPE_GROUP_EMPLOI,
   "Offres d'emploi postées par des écoles": TYPE_GROUP_EMPLOI,
   "Offres d'emploi La bonne alternance": TYPE_GROUP_EMPLOI,

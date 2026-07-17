@@ -36,8 +36,14 @@ export const zSearchRoutes = {
             .optional()
             .describe("true : ne renvoie que les offres éligibles aux personnes en situation de handicap"),
           start_type: z.nativeEnum(JOB_START_TYPE).optional().describe("Mode de démarrage du contrat (des_que_possible | precise_date)"),
-          start_date: z.coerce.date().optional().describe("Ne renvoie que les offres dont la date de début de contrat est ≥ à cette date (ISO 8601)"),
-          sort: z.enum(["proximity", "smart_apply", "date"]).optional().describe("Tri : proximité (géo), candidature simplifiée, ou date de publication. Par défaut : pertinence."),
+          start_date: z.coerce
+            .date()
+            .optional()
+            .describe("Date de début de contrat souhaitée : renvoie les offres démarrant avant ou à cette date (≤), à date flexible, ou sans date de démarrage (ISO 8601)"),
+          sort: z
+            .enum(["proximity", "smart_apply", "date", "applications"])
+            .optional()
+            .describe("Tri : proximité (géo), candidature simplifiée, date de publication, ou nb de candidatures (croissant). Par défaut : pertinence."),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam.default(30),

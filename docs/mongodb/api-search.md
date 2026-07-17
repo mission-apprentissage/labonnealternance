@@ -21,8 +21,8 @@ GET /api/v1/search
 | `organization_name` | `string` | — | Filtre par nom d'entreprise (exact) |
 | `is_disabled_elligible` | `"true" \| "false"` | — | `true` : uniquement les offres éligibles aux personnes en situation de handicap |
 | `start_type` | `string` | — | Mode de démarrage du contrat : `des_que_possible` ou `precise_date` |
-| `start_date` | `Date` (ISO 8601) | — | Uniquement les offres démarrant à partir de cette date (`$gte`, borne incluse) — écarte les docs sans date de démarrage |
-| `sort` | `string` | — | Tri : `proximity` (géo), `smart_apply`, `date`. Défaut : pertinence (cf. `current-behavior.md` §1) |
+| `start_date` | `Date` (ISO 8601) | — | Date de début souhaitée : offres démarrant avant ou à cette date (`$lte`, borne incluse), OU à date flexible (`is_start_flexible`), OU sans date de démarrage (candidatures spontanées, offres sans date — non impactées, ordre de pertinence conservé) |
+| `sort` | `string` | — | Tri : `proximity` (géo), `smart_apply`, `date`, `applications` (nb de candidatures croissant). Défaut : pertinence (cf. `current-behavior.md` §1) |
 | `latitude` | `number` | — | Latitude WGS84 |
 | `longitude` | `number` | — | Longitude WGS84 |
 | `radius` | `number` | `30` | Rayon de recherche en km |
@@ -61,6 +61,8 @@ GET /api/v1/search
 | `is_disabled_elligible` | `boolean \| null` | Offre éligible aux personnes en situation de handicap (`null` pour les formations) |
 | `start_date` | `Date \| null` | Date de début de contrat (offres uniquement, `null` pour recruteurs/formations) |
 | `start_type` | `string \| null` | Mode de démarrage : `des_que_possible` ou `precise_date` (offres uniquement) |
+| `is_start_flexible` | `boolean \| null` | Date de démarrage flexible (offres uniquement) |
+| `is_algo_company` | `boolean \| null` | Candidature spontanée issue de l'algo recruteurs — reléguée en fin de tri par date |
 | `smart_apply` | `boolean` | `true` si la candidature rapide est disponible |
 | `application_count` | `number` | Nombre de candidatures déjà reçues |
 | `title` | `string` | Titre de l'offre ou de la formation |

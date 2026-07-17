@@ -327,6 +327,7 @@ const CORPUS = [
     rome_labels: ["Installation d'équipements sanitaires et thermiques"],
     organization_name: "VIGIER PLOMBERIE",
     publication_date: new Date("2026-07-12T08:14:04.000Z"),
+    is_algo_company: true,
   }),
   // — recette #2 : tri par date pollué par les recruteurs (publication_date = date d'import,
   //   plus récente que toutes les offres) [Fadoua, "Assistant RH" et "Prothèses" en tri date].
@@ -341,6 +342,7 @@ const CORPUS = [
     rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
     organization_name: "TRAVAUX EXPRESS",
     publication_date: new Date("2026-07-12T08:14:04.000Z"),
+    is_algo_company: true,
   }),
   generateSearchItemFixture({
     url_id: "offre-conducteur-travaux",
@@ -374,7 +376,7 @@ const CORPUS = [
     start_date: new Date("2026-09-01T00:00:00.000Z"),
     start_type: "precise_date",
   }),
-  // Même métier, démarrage plus tôt : borne du filtre start_date ($gte).
+  // Même métier, démarrage plus tôt : borne du filtre start_date ($lte).
   generateSearchItemFixture({
     url_id: "offre-travaux-aout",
     title: "Conducteur de travaux junior",
@@ -384,6 +386,20 @@ const CORPUS = [
     organization_name: "BTP Rapide",
     start_date: new Date("2026-08-01T00:00:00.000Z"),
     start_type: "precise_date",
+    application_count: 0,
+  }),
+  // Date de démarrage lointaine mais FLEXIBLE : toujours affichée quel que soit le filtre date.
+  generateSearchItemFixture({
+    url_id: "offre-travaux-flexible",
+    title: "Conducteur de travaux principal",
+    description: "Gestion de chantiers, date de démarrage flexible.",
+    keywords: ["chantier", "btp"],
+    rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
+    organization_name: "BTP Souple",
+    start_date: new Date("2026-12-01T00:00:00.000Z"),
+    start_type: "precise_date",
+    is_start_flexible: true,
+    application_count: 12,
   }),
 ]
 
@@ -741,11 +757,14 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(ids(result)).not.toContain("offre-marketing-deploiement-desc")
     })
 
-    it("tri par date : les recruteurs (date d'import) n'apparaissent plus [Fadoua, KO]", async () => {
+    it("tri par date : les recruteurs (date d'import) sont relégués en fin de liste [Fadoua, KO + ticket algo]", async () => {
       const result = await search({ q: "conduite de travaux", sort: "date" })
 
-      expect(ids(result)).not.toContain("recruteur-travaux")
-      expect(ids(result)).toContain("offre-conducteur-travaux")
+      // Présents (spec : affichés en dernier, plus exclus) mais APRÈS toutes les offres,
+      // malgré leur date d'import plus récente que toutes les dates de publication.
+      expect(ids(result)).toContain("recruteur-travaux")
+      expect(rankOf(result, "recruteur-travaux")).toBeGreaterThan(rankOf(result, "offre-conducteur-travaux"))
+      expect(rankOf(result, "recruteur-travaux")).toBe(result.hits.length - 1)
     })
 
     it("tri par pertinence : les recruteurs restent présents (statu quo hors tri date)", async () => {
@@ -778,31 +797,46 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(ids(result)).not.toContain("offre-conducteur-travaux")
     })
 
-    it("start_date : ne renvoie que les offres démarrant à partir de la date ($gte)", async () => {
-      const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-08-15T00:00:00.000Z") })
-
-      expect(ids(result)).toContain("offre-travaux-handi") // démarre le 01/09
-      expect(ids(result)).not.toContain("offre-travaux-aout") // démarre le 01/08, avant la date
-    })
-
-    it("start_date : la borne est inclusive (démarrage le jour même)", async () => {
+    it("start_date : renvoie les offres démarrant avant ou à la date choisie ($lte, borne incluse)", async () => {
       const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-08-01T00:00:00.000Z") })
 
-      expect(ids(result)).toContain("offre-travaux-aout")
-      expect(ids(result)).toContain("offre-travaux-handi")
+      expect(ids(result)).toContain("offre-travaux-aout") // démarre le 01/08 (borne incluse)
+      expect(ids(result)).not.toContain("offre-travaux-handi") // démarre le 01/09, après la date souhaitée
     })
 
-    it("start_date : les docs sans date de démarrage sortent du result set", async () => {
-      const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-01-01T00:00:00.000Z") })
+    it("start_date : une offre à date flexible est toujours affichée, même si sa date dépasse", async () => {
+      const result = await search({ q: "conducteur de travaux", start_date: new Date("2026-08-01T00:00:00.000Z") })
 
-      expect(ids(result)).not.toContain("offre-conducteur-travaux") // start_date null
-      expect(ids(result)).not.toContain("recruteur-travaux") // candidature spontanée, jamais de start_date
+      expect(ids(result)).toContain("offre-travaux-flexible") // démarre le 01/12 mais is_start_flexible
     })
 
-    it("les filtres contrat se cumulent : handicap + démarrage à partir d'une date", async () => {
-      const result = await search({ q: "conducteur de travaux", is_disabled_elligible: true, start_date: new Date("2026-08-01T00:00:00.000Z") })
+    it("start_date : les docs sans date de démarrage (algo, offres sans date) restent affichés à leur rang de pertinence", async () => {
+      const avec = await search({ q: "conduite de travaux", start_date: new Date("2026-08-01T00:00:00.000Z") })
+      const sans = await search({ q: "conduite de travaux" })
 
-      expect(ids(result)).toEqual(["offre-travaux-handi"])
+      // Hypothèse technique du ticket validée : un doc exempt de la donnée filtrée n'est pas
+      // impacté — même présence et même ordre relatif que sans le filtre.
+      expect(ids(avec)).toContain("recruteur-travaux")
+      expect(ids(avec)).toContain("offre-conducteur-travaux")
+      const relatif = (r: SearchResult) => rankOf(r, "recruteur-travaux") - rankOf(r, "offre-conducteur-travaux") > 0
+      expect(relatif(avec)).toBe(relatif(sans))
+    })
+
+    it("les filtres contrat se cumulent : handicap + date de démarrage souhaitée", async () => {
+      const result = await search({ q: "conducteur de travaux junior", is_disabled_elligible: true, start_date: new Date("2026-09-01T00:00:00.000Z") })
+
+      expect(ids(result)).toContain("offre-travaux-handi") // éligible + démarre le 01/09 (≤)
+      expect(ids(result)).not.toContain("offre-travaux-aout") // démarre avant mais non éligible handicap
+    })
+
+    it("sort=applications : moins de candidatures d'abord, docs sans compteur (formations) écartés", async () => {
+      const result = await search({ q: "conducteur de travaux", sort: "applications" })
+
+      // aout (0 candidature) < conducteur (3, défaut fixture) < flexible (12)
+      expect(rankOf(result, "offre-travaux-aout")).toBeLessThan(rankOf(result, "offre-conducteur-travaux"))
+      expect(rankOf(result, "offre-conducteur-travaux")).toBeLessThan(rankOf(result, "offre-travaux-flexible"))
+      // Sans compteur, un doc trierait en tête (valeur manquante < 0) → exclu de ce tri.
+      for (const hit of result.hits) expect(hit.application_count).not.toBeNull()
     })
   })
 

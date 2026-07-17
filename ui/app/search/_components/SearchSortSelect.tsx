@@ -5,10 +5,13 @@ import { Box, FormControl, MenuItem, Select } from "@mui/material"
 
 import type { ISearchPageParams, SortOption } from "../_utils/search.params.utils"
 
-const SORT_LABELS: { value: SortOption; label: string }[] = [
+// "" = tri par défaut (pertinence) : permet de RETIRER un tri actif.
+const SORT_LABELS: { value: SortOption | ""; label: string }[] = [
+  { value: "", label: "Pertinence" },
   { value: "proximity", label: "Proximité" },
   { value: "smart_apply", label: "Candidature simplifiée" },
   { value: "date", label: "Date de publication" },
+  { value: "applications", label: "Nombre de candidatures" },
 ]
 
 /**
@@ -26,7 +29,8 @@ export function SearchSortSelect({ params, onNavigate }: { params: ISearchPagePa
         value={params.sort ?? ""}
         onChange={(e) => onNavigate({ ...params, sort: (e.target.value as SortOption) || undefined, page: 0 })}
         renderValue={(value) => {
-          const selected = SORT_LABELS.find((o) => o.value === value)
+          // Sans tri actif on affiche le placeholder « Trier par », pas « Pertinence ».
+          const selected = value ? SORT_LABELS.find((o) => o.value === value) : undefined
           return (
             <Box
               component="span"
