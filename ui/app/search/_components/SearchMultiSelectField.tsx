@@ -50,7 +50,7 @@ export function SearchMultiSelectField({
   const disabled = !hasOptions && value.length === 0
 
   // Restylage DSFR (fond gris contrasté + bordure basse bleue si actif), activé uniquement
-  // en mode `topLabel` (barre /search/filter-only) — le split garde le rendu MUI standard.
+  // en mode `topLabel` (panneau de filtres) — sinon rendu MUI standard.
   const dsfr = Boolean(topLabel)
   const active = value.length > 0
   const dsfrSelectSx = dsfr

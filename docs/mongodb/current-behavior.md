@@ -1,7 +1,7 @@
 # Comportement actuel — `/v1/search` & pages POC `/search/*`
 
 > État du POC de recherche MongoDB Search (mongot) au-dessus de la collection `search_items`.
-> Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement des pages **`/search/split`** et **`/search/filter-only`**.
+> Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement de la page **`/search/split`**.
 
 ---
 
@@ -20,7 +20,7 @@ Le tri est **configurable** via le paramètre `sort` (`buildSortStage` / `buildC
 
 ### ⚠️ Tri par défaut sans texte (`q` absent)
 
-Quand il n'y a **pas de `q`** (cas fréquent de `/search/filter-only`, et de `/search/split` tant qu'aucun métier n'est saisi) **et** que le tri reste au défaut, le `compound` ne contient que des clauses **`filter`** qui **ne contribuent pas au score** → `searchScore` est **constant**. Le tri se résume alors à `smart_apply` puis `application_count`. Les tris explicites `date` et `proximity` restent eux pleinement opérants.
+Quand il n'y a **pas de `q`** (cas de `/search/split` tant qu'aucun métier n'est saisi) **et** que le tri reste au défaut, le `compound` ne contient que des clauses **`filter`** qui **ne contribuent pas au score** → `searchScore` est **constant**. Le tri se résume alors à `smart_apply` puis `application_count`. Les tris explicites `date` et `proximity` restent eux pleinement opérants.
 
 ---
 
@@ -62,10 +62,10 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 | Route | Vue | Statut |
 |---|---|---|
 | `/search/split` | Vue scindée (liste gauche + détail droite) avec barre recherche + filtres | POC actif |
-| `/search/filter-only` | Variante « une ligne » (Lieu · Type · Contrat · Niveau · + de filtres), même split | POC actif |
+| ~~`/search/filter-only`~~ | Variante « une ligne » sans champ Métier | **Supprimée** (non retenue) |
 | ~~`/search`~~ | Ancienne page non scindée | **Supprimée** |
 
-### Plomberie commune (réutilisée par les deux)
+### Plomberie
 
 - **État piloté par l'URL** : `ISearchPageParams` + `buildSearchUrl`/`parseSearchPageParams` ([`search.params.utils.ts`](../../ui/app/search/_utils/search.params.utils.ts)). `buildSearchUrl` pointe par défaut vers `/search/split`.
 - **Données + scroll infini** : `useSearchResults` ([`useSearchResults.ts`](../../ui/app/search/_hooks/useSearchResults.ts)) — TanStack `useInfiniteQuery`, pagination par `pageParam`, chargement via **`IntersectionObserver` sentinel** ([`SearchResultsList.tsx`](../../ui/app/search/_components/SearchResultsList.tsx)). Pas de virtualizer.
@@ -83,13 +83,7 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 - Barre : **Métier** (texte libre `q`) + **Lieu**, puis ligne de filtres (`SearchFilters`) + tags. **Pas de bouton de soumission** : la recherche se déclenche sur Entrée, sélection d'une suggestion métier, ou sélection d'un lieu.
 - Layout desktop : conteneur `DefaultContainer` (xl, 1536px) ; split liste 480px / détail en **carte blanche sur fond gris**.
 
-### Spécifique `/search/filter-only`
-
-- Barre **« une ligne »** : `[Lieu + bouton Rechercher intégré]` · séparateur · `Type` · `Contrat` · `Niveau` · `[+ Plus de filtres]` → déplie `Secteur` + `Entreprise`.
-- **Pas de champ Métier** (`q` non utilisé) → recherche pilotée par lieu + filtres (cf. §1, conséquence sur le tri par défaut).
-- Champ Lieu : recherche déclenchée par la sélection d'une adresse ; **croix native de réinitialisation** (Autocomplete clearable) qui vide le champ et retire le filtre géo.
-
-### Rayon automatique (les deux vues)
+### Rayon automatique
 
 - **Le champ rayon/distance est retiré de l'UI.**
 - Défaut `radius = 20` km. À chaque **nouveau lieu**, on repart de **20**.
@@ -102,7 +96,6 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 - **Tri par défaut sans `q`** (cf. §1) : ni « plus proche » ni « plus récent » d'abord. Les tris explicites `proximity` et `date` lèvent cette limite, mais ne sont appliqués que si l'utilisateur les sélectionne.
 - Le `radius` par défaut de l'API reste `30` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts)) ; côté front les vues forcent `20` et l'auto-élargissement.
 - Données legacy : un document sans `location` (non régénéré par `fillSearchItemsCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).
-- Mobile : barre + panneaux **dupliqués** dans le client `filter-only` (vue de test, pas d'extraction partagée).
 - **Local — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD`** : le `createUser mongotUser` d'[`env-init.sh`](../../.bin/scripts/env-init.sh) ne synchronise pas le mot de passe si un `mongotUser` existe déjà dans le volume MongoDB persistant (le `dropUser` préalable peut échouer / l'ancien user survit). Symptôme : mongot en boucle de redémarrage. Correctif manuel : re-jouer le bloc `dropUser`/`createUser` d'env-init avec la valeur courante de `.infra/local/mongot_password`, puis `docker compose restart mongot`. Réinitialiser le volume (`yarn services:clean`) repart d'un état propre.
 - **Preview — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD` au vault** : même cause côté serveur. Le `createUser` du playbook ([`preview_pr_mongodb82.yml`](../../.infra/ansible/tasks/preview_pr_mongodb82.yml)) est un resync idempotent qui lit **le même fichier** que mongot — sur un deploy complet et propre il ne peut pas diverger. Mais si un **redeploy réécrit le fichier mot de passe (nouvelle valeur) sans atteindre le `createUser`** (échec entre les deux tâches) **et que le volume mongo `*_mongodb82` survit** (le `down --volumes` de la tâche « Stop existing application » porte `ignore_errors: true`), la base garde l'ancien `mongotUser` alors que mongot lit la nouvelle valeur → boucle de redémarrage. Correctif manuel sur le serveur (PR `N`) :
   ```bash

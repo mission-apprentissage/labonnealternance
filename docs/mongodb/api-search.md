@@ -123,7 +123,6 @@ Composant [`SearchBar.tsx`](../../ui/app/search/_components/SearchBar.tsx) :
 - **Champ texte libre** (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
 - **Suggestions** : titres distincts (`title`) des **5 premiers hits** de `/v1/search?q=<saisie>&hitsPerPage=5&radius=30`, avec *throttle* ~300 ms, déclenchées à partir de **2 caractères**. → l'autocomplétion **réutilise le moteur de recherche**, il n'y a pas d'endpoint de suggestion dédié.
 - **Déclenchement de la recherche** (pas de bouton de soumission) : touche **Entrée**, **sélection d'une suggestion**, ou **vidage** du champ (retire `q`).
-- La vue `/search/filter-only` n'a **pas de champ Métier** (`q` non utilisé) : recherche pilotée par lieu + filtres.
 
 ## Architecture technique
 
