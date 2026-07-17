@@ -306,11 +306,11 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("francetravail:jobs:classify"))
 program
-  .command("algolia:apply-keywords-batch")
-  .description("Applique un fichier JSONL de sortie batch Mistral aux mots-clés de la collection algolia")
+  .command("search:apply-keywords-batch")
+  .description("Applique un fichier JSONL de sortie batch Mistral aux mots-clés de la collection search_items")
   .requiredOption("-f, --file <path>", "Chemin du fichier JSONL de sortie téléchargé depuis Mistral")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("algolia:apply-keywords-batch"))
+  .action(createJobAction("search:apply-keywords-batch"))
 program
   .command("search:suggestions:rollback")
   .description("Supprime les suggestions et synonymes insérés par un run de analyzeSearchQueries")

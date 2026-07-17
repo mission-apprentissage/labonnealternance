@@ -1,11 +1,10 @@
 import { ObjectId } from "bson"
 
-import type { IAlgolia } from "../models/algolia.model.js"
+import type { ISearchItem } from "../models/searchItems.model.js"
 
-export function generateAlgoliaFixture(data: Partial<IAlgolia> = {}): IAlgolia {
+export function generateSearchItemFixture(data: Partial<ISearchItem> = {}): ISearchItem {
   return {
     _id: new ObjectId(),
-    objectID: new ObjectId().toString(),
     url_id: "offre-developpeur-web-paris",
     type: "offre",
     type_filter_label: "Offre d'emploi en alternance",

@@ -1,6 +1,6 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { useServer } from "@tests/utils/server.test.utils"
-import { generateAlgoliaFixture } from "shared/fixtures/algolia.fixture"
+import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
 import { describe, expect, it } from "vitest"
 
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -103,8 +103,8 @@ describe.skip("search.controller", () => {
       })
 
       it("accepte tous les paramètres de filtre sans erreur", async () => {
-        const doc = generateAlgoliaFixture()
-        await getDbCollection("algolia").insertOne(doc)
+        const doc = generateSearchItemFixture()
+        await getDbCollection("search_items").insertOne(doc)
 
         const response = await httpClient().inject({
           method: "GET",

@@ -1,6 +1,6 @@
 # Comportement actuel — `/v1/search` & pages POC `/search/*`
 
-> État du POC de recherche MongoDB Search (mongot) au-dessus de la collection `algolia`.
+> État du POC de recherche MongoDB Search (mongot) au-dessus de la collection `search_items`.
 > Couvre : le **tri** des résultats, le champ **distance**, la **géo**, et le fonctionnement des pages **`/search/split`** et **`/search/filter-only`**.
 
 ---
@@ -36,10 +36,10 @@ Ajouté à la réponse `/v1/search` ([`search.routes.ts`](../../shared/src/route
 
 ## 3. Géo : le champ `location` doit être peuplé
 
-- Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans l'index `algolia_search`). Le tri par proximité utilise `near` sur ce même champ (cf. §1).
-- **`location` est le seul champ géo** du modèle ([`algolia.model.ts`](../../shared/src/models/algolia.model.ts)). L'ancien champ Algolia `_geoloc { lat, lng }` a été **supprimé**, ainsi que le job de backfill `OneTimeJob_AddLocationToAlgolia`.
+- Le filtre géo utilise l'opérateur Atlas Search **`geoWithin`** (cercle, rayon en mètres) sur le champ **`location`** (GeoJSON `Point [lng, lat]`, mappé `type: "geo"` dans l'index `search_items_index`). Le tri par proximité utilise `near` sur ce même champ (cf. §1).
+- **`location` est le seul champ géo** du modèle ([`searchItems.model.ts`](../../shared/src/models/searchItems.model.ts)). L'ancien champ Algolia `_geoloc { lat, lng }` a été **supprimé**, ainsi que le job de backfill `OneTimeJob_AddLocationToAlgolia`.
 - **Si `location` est absent/`null`, toute recherche géo renvoie `0` résultat** (le `geoWithin` ne matche rien) — alors que la recherche globale fonctionne.
-- Alimentation : le job [`fillAlgoliaCollection`](../../server/src/jobs/algolia/generateAlgoliaCollection.ts) écrit `location` **à la source** pour chaque document (formations, jobs, recruteurs) — aucun backfill nécessaire sur les données régénérées.
+- Alimentation : le job [`fillSearchItemsCollection`](../../server/src/jobs/search/generateSearchItemsCollection.ts) écrit `location` **à la source** pour chaque document (formations, jobs, recruteurs) — aucun backfill nécessaire sur les données régénérées.
 
 ---
 
@@ -101,7 +101,7 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 
 - **Tri par défaut sans `q`** (cf. §1) : ni « plus proche » ni « plus récent » d'abord. Les tris explicites `proximity` et `date` lèvent cette limite, mais ne sont appliqués que si l'utilisateur les sélectionne.
 - Le `radius` par défaut de l'API reste `30` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts)) ; côté front les vues forcent `20` et l'auto-élargissement.
-- Données legacy : un document sans `location` (non régénéré par `fillAlgoliaCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).
+- Données legacy : un document sans `location` (non régénéré par `fillSearchItemsCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).
 - Mobile : barre + panneaux **dupliqués** dans le client `filter-only` (vue de test, pas d'extraction partagée).
 - **Local — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD`** : le `createUser mongotUser` d'[`env-init.sh`](../../.bin/scripts/env-init.sh) ne synchronise pas le mot de passe si un `mongotUser` existe déjà dans le volume MongoDB persistant (le `dropUser` préalable peut échouer / l'ancien user survit). Symptôme : mongot en boucle de redémarrage. Correctif manuel : re-jouer le bloc `dropUser`/`createUser` d'env-init avec la valeur courante de `.infra/local/mongot_password`, puis `docker compose restart mongot`. Réinitialiser le volume (`yarn services:clean`) repart d'un état propre.
 - **Preview — mongot `AuthenticationFailed` après changement de `MONGOT_PASSWORD` au vault** : même cause côté serveur. Le `createUser` du playbook ([`preview_pr_mongodb82.yml`](../../.infra/ansible/tasks/preview_pr_mongodb82.yml)) est un resync idempotent qui lit **le même fichier** que mongot — sur un deploy complet et propre il ne peut pas diverger. Mais si un **redeploy réécrit le fichier mot de passe (nouvelle valeur) sans atteindre le `createUser`** (échec entre les deux tâches) **et que le volume mongo `*_mongodb82` survit** (le `down --volumes` de la tâche « Stop existing application » porte `ignore_errors: true`), la base garde l'ancien `mongotUser` alors que mongot lit la nouvelle valeur → boucle de redémarrage. Correctif manuel sur le serveur (PR `N`) :

@@ -59,9 +59,9 @@ fi
 $MONGOSH "$MONGO_URI" --quiet --eval '
 const searchIndexes = [
   {
-    collection: "algolia",
+    collection: "search_items",
     index: {
-      name: "algolia_search",
+      name: "search_items_index",
       definition: {
         mappings: {
           dynamic: false,

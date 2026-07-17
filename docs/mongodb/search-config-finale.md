@@ -1,14 +1,14 @@
 # Configuration finale du moteur de recherche (MongoDB Search)
 
 > Source de vérité unique de la configuration de recherche de La Bonne Alternance.
-> Alignée sur le code : `shared/src/models/algolia.model.ts`, `server/src/jobs/algolia/generateAlgoliaCollection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodbUtils.ts`.
+> Alignée sur le code : `shared/src/models/searchItems.model.ts`, `server/src/jobs/search/generateSearchItemsCollection.ts`, `server/src/services/search/search.service.ts`, `server/src/common/utils/mongodbUtils.ts`.
 > Pour le contexte de la décision (pourquoi cette architecture), voir [analyse-search-analyzers.md](./analyse-search-analyzers.md).
 
 ---
 
 ## 1. Principe : matching ≠ affichage
 
-La collection `algolia` agrège **3 types de documents** dans un index unique (`algolia_search`), classés par **un seul score**, affichés dans **une liste flat** côté front :
+La collection `search_items` agrège **3 types de documents** dans un index unique (`search_items_index`), classés par **un seul score**, affichés dans **une liste flat** côté front :
 
 - `formation` (sub_type `formation`)
 - `offre` (sub_type `offres_emploi_lba` / `offres_emploi_partenaires`)
@@ -31,7 +31,7 @@ Pour que le classement soit correct sur cet ensemble hétérogène, les champs *
 Champs de filtrage / facette (`token`) : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`.
 Autres : `location` (geo), `smart_apply` (boolean), `application_count` (number), `publication_date` (date).
 
-`rome_labels` (`string[]`) est résolu **déterministiquement** depuis les codes ROME via une `Map<code_rome, intitulé>` chargée une fois du référentiel `referentielromes` (`resolveRomeLabels` / `loadRomeLabelByCode` dans `generateAlgoliaCollection.ts`). Le recall métier ne dépend donc **plus** de Mistral.
+`rome_labels` (`string[]`) est résolu **déterministiquement** depuis les codes ROME via une `Map<code_rome, intitulé>` chargée une fois du référentiel `referentielromes` (`resolveRomeLabels` / `loadRomeLabelByCode` dans `generateSearchItemsCollection.ts`). Le recall métier ne dépend donc **plus** de Mistral.
 
 ---
 
@@ -93,14 +93,14 @@ Les facettes (`$searchMeta`) comptent les documents (pas de score) → le boosti
 
 ## 5. Génération & réindexation
 
-### Génération de la collection (`fillAlgoliaCollection`)
+### Génération de la collection (`fillSearchItemsCollection`)
 
 1. Charge `Map<code_rome, intitulé>` (`loadRomeLabelByCode`) une fois.
-2. Formations / offres / recruteurs → mapping `IAlgolia` avec `rome_labels` résolu côté JS.
+2. Formations / offres / recruteurs → mapping `ISearchItem` avec `rome_labels` résolu côté JS.
 3. Suppression des docs absents des sources.
 4. 2e passe `fillMissingKeywords` (Mistral) : source = `description`, à défaut `rome_labels` (recruteurs).
 
-> ⚠️ Le job **conserve les docs déjà présents** (`if (existingIds.has(id)) return`). Un re-run ne backfill **pas** les nouveaux champs. Pour appliquer un changement de schéma (ex. `rome_labels`, `description` recruteur vidée) : **drop la collection `algolia`** avant régénération.
+> ⚠️ Le job **conserve les docs déjà présents** (`if (existingIds.has(id)) return`). Un re-run ne backfill **pas** les nouveaux champs. Pour appliquer un changement de schéma (ex. `rome_labels`, `description` recruteur vidée) : **drop la collection `search_items`** avant régénération.
 
 ### Index de recherche (`createSearchIndexes`)
 
@@ -126,7 +126,7 @@ Suggestions de saisie par **préfixe**, en plus de la recherche full-text.
 ### Endpoint
 `GET /api/v1/search/suggest?q=<≥3 car.>&limit=<≤20>` → `{ suggestions: string[] }`.
 
-- Service `suggestAlgolia` (`search.service.ts`) : opérateur `autocomplete` sur `title` (boost ×2) + `rome_labels`, fuzzy `maxEdits:1`.
+- Service `suggestSearchTerms` (`search.service.ts`) : opérateur `autocomplete` sur `title` (boost ×2) + `rome_labels`, fuzzy `maxEdits:1`.
 - Filtrage : seuls les intitulés **contenant réellement** la saisie (normalisée sans accents) sont renvoyés, dédupliqués, ordre de pertinence préservé.
 - Rate-limit dédié (60/s).
 
@@ -141,8 +141,8 @@ Suggestions de saisie par **préfixe**, en plus de la recherche full-text.
 
 ```
 1. Déployer le code (modèle + job + service).
-2. Drop la collection `algolia`.
-3. Lancer fillAlgoliaCollection (régénère avec rome_labels, description recruteur vide).
+2. Drop la collection `search_items`.
+3. Lancer fillSearchItemsCollection (régénère avec rome_labels, description recruteur vide).
 4. Lancer recreateIndexes (ou createSearchIndexes) → updateSearchIndex applique lba_company + rome_labels.
 5. Vérifier : listSearchIndexes contient lba_company et le champ rome_labels.
 ```

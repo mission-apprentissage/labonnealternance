@@ -1,6 +1,6 @@
 # Tests des analyzers & du boosting de recherche
 
-> Ce dossier documente les **expériences** menées sur le moteur de recherche (`GET /api/v1/search`, index `algolia_search`) pour mesurer l'effet des analyzers et du boosting sur la pertinence.
+> Ce dossier documente les **expériences** menées sur le moteur de recherche (`GET /api/v1/search`, index `search_items_index`) pour mesurer l'effet des analyzers et du boosting sur la pertinence.
 > Chaque expérience est datée et reproductible. Les données brutes (JSON de réponse) restent dans `_temp/search-baseline/` (non versionnées) ; seules les synthèses sont ici.
 
 ## Index des expériences

@@ -4,9 +4,9 @@ import { ObjectId } from "bson"
 import type { IFormationCatalogue } from "shared"
 import { JOB_STATUS_ENGLISH } from "shared"
 import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import type { IAlgolia } from "shared/models/algolia.model"
 import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
+import type { ISearchItem } from "shared/models/searchItems.model"
 
 import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
@@ -101,7 +101,7 @@ const pickCanonicalVariant = (variants: { v: string; c: number }[]): string => {
 }
 
 const buildCanonicalCaseMap = async (field: "organization_name" | "activity_sector"): Promise<Map<string, string>> => {
-  const rows = await getDbCollection("algolia")
+  const rows = await getDbCollection("search_items")
     .aggregate<{ _id: string; variants: { v: string; c: number }[] }>([
       { $match: { [field]: { $nin: [null, ""] } } },
       { $group: { _id: { lower: { $toLower: `$${field}` }, exact: `$${field}` }, count: { $sum: 1 } } },
@@ -190,7 +190,7 @@ const parseKeywords = (content: string): string[] | null => {
 
 /**
  * Applique un fichier JSONL de sortie d'un batch Mistral (téléchargé manuellement depuis
- * la console, ou via l'API) aux mots-clés de la collection `algolia`. Chaque ligne :
+ * la console, ou via l'API) aux mots-clés de la collection `search_items`. Chaque ligne :
  * `{ custom_id, response: { body: { choices: [{ message: { content } }] } } }`.
  * Utile pour rattraper un batch finalisé après l'expiration du polling.
  */
@@ -198,7 +198,7 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
   const file = payload?.file
   if (!file) throw new Error("Paramètre --file requis (chemin du JSONL de sortie Mistral)")
 
-  const algoliaCollection = getDbCollection("algolia")
+  const searchItemsCollection = getDbCollection("search_items")
   const text = await readFile(file, "utf8")
 
   let updated = 0
@@ -210,7 +210,7 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
       const content = parsed?.response?.body?.choices?.[0]?.message?.content
       const keywords = typeof content === "string" ? parseKeywords(content) : null
       if (parsed.custom_id && keywords && keywords.length > 0) {
-        await algoliaCollection.updateOne({ _id: new ObjectId(parsed.custom_id) }, { $set: { keywords } })
+        await searchItemsCollection.updateOne({ _id: new ObjectId(parsed.custom_id) }, { $set: { keywords } })
         updated++
       } else {
         skipped++
@@ -225,16 +225,16 @@ export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
 
 /**
  * Soumet à Mistral (API Batch, fire-and-forget) la génération des mots-clés pour toutes les
- * offres de la collection `algolia` qui n'en ont pas encore — indépendamment de la façon dont
+ * offres de la collection `search_items` qui n'en ont pas encore — indépendamment de la façon dont
  * elles ont été insérées. Les formations sont exclues (pas de mots-clés). Découpé en tranches
  * (un job/fichier par tranche), PAS de polling : le script soumet tous les jobs et se termine.
  * Récupération : télécharger le JSONL de sortie de chaque job (console Mistral ou API) puis
- * l'appliquer via `yarn cli algolia:apply-keywords-batch --file <sortie.jsonl>`.
- * Exécutable seul via `yarn cli fillMissingAlgoliaKeywords` (simpleJobDefinitions).
+ * l'appliquer via `yarn cli search:apply-keywords-batch --file <sortie.jsonl>`.
+ * Exécutable seul via `yarn cli fillMissingSearchItemsKeywords` (simpleJobDefinitions).
  */
-export const fillMissingAlgoliaKeywords = async () => {
-  const algoliaCollection = getDbCollection("algolia")
-  const docs = await algoliaCollection
+export const fillMissingSearchItemsKeywords = async () => {
+  const searchItemsCollection = getDbCollection("search_items")
+  const docs = await searchItemsCollection
     .find({ type: "offre", $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, title: 1, description: 1, rome_labels: 1 } })
     .toArray()
 
@@ -258,18 +258,18 @@ export const fillMissingAlgoliaKeywords = async () => {
       inputFileName: `keywords_batch_input_${i / KEYWORDS_BATCH_CHUNK_SIZE + 1}.jsonl`,
     })
     if (jobId) jobIds.push(jobId)
-    else logger.error(`fillMissingAlgoliaKeywords: échec de soumission de la tranche ${i / KEYWORDS_BATCH_CHUNK_SIZE + 1} (${chunk.length} requêtes)`)
+    else logger.error(`fillMissingSearchItemsKeywords: échec de soumission de la tranche ${i / KEYWORDS_BATCH_CHUNK_SIZE + 1} (${chunk.length} requêtes)`)
   }
 
   logger.info(
-    `fillMissingAlgoliaKeywords: ${withText.length} offres sans keywords, ${jobIds.length} job(s) batch Mistral soumis : ${jobIds.join(", ")}. ` +
-      `Une fois terminés, appliquer chaque sortie via \`yarn cli algolia:apply-keywords-batch --file <sortie.jsonl>\`.`
+    `fillMissingSearchItemsKeywords: ${withText.length} offres sans keywords, ${jobIds.length} job(s) batch Mistral soumis : ${jobIds.join(", ")}. ` +
+      `Une fois terminés, appliquer chaque sortie via \`yarn cli search:apply-keywords-batch --file <sortie.jsonl>\`.`
   )
 }
 
-export const fillAlgoliaCollection = async () => {
+export const fillSearchItemsCollection = async () => {
   // Récupérer les _id existants : on saute les docs déjà présents et on identifie les suppressions.
-  const existingDocs = await getDbCollection("algolia")
+  const existingDocs = await getDbCollection("search_items")
     .find({}, { projection: { _id: 1 } })
     .toArray()
   const existingIds = new Set(existingDocs.map((doc) => doc._id.toString()))
@@ -388,7 +388,7 @@ export const fillAlgoliaCollection = async () => {
   const [organizationCaseMap, sectorCaseMap] = await Promise.all([buildCanonicalCaseMap("organization_name"), buildCanonicalCaseMap("activity_sector")])
 
   const processedIds = new Set<string>()
-  const algoliaCollection = getDbCollection("algolia")
+  const searchItemsCollection = getDbCollection("search_items")
 
   // Process formations and insert immediately
   await asyncForEach(formations, async (formation) => {
@@ -398,9 +398,8 @@ export const fillAlgoliaCollection = async () => {
       return
     }
 
-    const formationDoc: IAlgolia = {
+    const formationDoc: ISearchItem = {
       _id: formation._id,
-      objectID: formation._id.toString(),
       url_id: formation.cle_ministere_educatif,
       type: "formation",
       type_filter_label: formation.entierement_a_distance ? "Formation à distance" : "Formation en présentiel",
@@ -423,7 +422,7 @@ export const fillAlgoliaCollection = async () => {
       rome_labels: resolveRomeLabels(formation.rome_codes, romeLabelByCode),
     }
 
-    await algoliaCollection.replaceOne({ _id: formationDoc._id }, formationDoc, { upsert: true })
+    await searchItemsCollection.replaceOne({ _id: formationDoc._id }, formationDoc, { upsert: true })
     processedIds.add(formationDoc._id.toString())
   })
 
@@ -436,9 +435,8 @@ export const fillAlgoliaCollection = async () => {
       return
     }
 
-    const jobDoc: IAlgolia = {
+    const jobDoc: ISearchItem = {
       _id: job._id,
-      objectID: job._id.toString(),
       url_id: job._id.toString(),
       type: "offre",
       type_filter_label: getTypeFilterLabel(job.partner_label, job.is_delegated),
@@ -461,7 +459,7 @@ export const fillAlgoliaCollection = async () => {
       rome_labels: resolveRomeLabels(job.offer_rome_codes, romeLabelByCode),
     }
 
-    await algoliaCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
+    await searchItemsCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
     processedIds.add(jobDoc._id.toString())
   })
 
@@ -474,9 +472,8 @@ export const fillAlgoliaCollection = async () => {
       return
     }
 
-    const recruteurDoc: IAlgolia = {
+    const recruteurDoc: ISearchItem = {
       _id: job._id,
-      objectID: job._id.toString(),
       url_id: job.workplace_siret,
       type: "offre",
       type_filter_label: getTypeFilterLabel(job.partner_label),
@@ -501,18 +498,18 @@ export const fillAlgoliaCollection = async () => {
       rome_labels: resolveRomeLabels(job.rome_codes, romeLabelByCode),
     }
 
-    await algoliaCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
+    await searchItemsCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
     processedIds.add(recruteurDoc._id.toString())
   })
 
   // Delete documents that are no longer in the sources
   const idsToDelete = [...existingIds].filter((id) => !processedIds.has(id))
   if (idsToDelete.length > 0) {
-    await algoliaCollection.deleteMany({
+    await searchItemsCollection.deleteMany({
       _id: { $in: idsToDelete.map((id) => new ObjectId(id)) },
     })
   }
 
   // Seconde passe : génération des mots-clés pour toutes les offres qui n'en ont pas.
-  // Non lancée ici (wall-clock batch Mistral) → job dédié : `yarn cli fillMissingAlgoliaKeywords`.
+  // Non lancée ici (wall-clock batch Mistral) → job dédié : `yarn cli fillMissingSearchItemsKeywords`.
 }

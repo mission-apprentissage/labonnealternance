@@ -1,4 +1,4 @@
-import type { IAlgolia } from "shared/models/index"
+import type { ISearchItem } from "shared/models/index"
 
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -122,7 +122,7 @@ interface ISearchFacets {
   organization_name: Record<string, number>
 }
 
-type SearchRow = IAlgolia & {
+type SearchRow = ISearchItem & {
   highlights: Highlight[]
   _meta: { count: { total: number } }
 }
@@ -399,13 +399,13 @@ function buildFacetGroups(filters: ISearchFilters): { keys: string[]; compound: 
   return groups
 }
 
-export type SearchHit = IAlgolia & {
+export type SearchHit = ISearchItem & {
   preview: PreviewItem[]
   matched_words: Array<{ word: string; count: number }>
   distance: number | null
 }
 
-export async function searchAlgolia(params: ISearchFilters): Promise<{
+export async function searchItems(params: ISearchFilters): Promise<{
   hits: SearchHit[]
   nbHits: number
   page: number
@@ -417,11 +417,11 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
   const facetGroups = buildFacetGroups(params)
 
   const [rows, ...metaArrays] = await Promise.all([
-    getDbCollection("algolia")
+    getDbCollection("search_items")
       .aggregate<SearchRow>([
         {
           $search: {
-            index: "algolia_search",
+            index: "search_items_index",
             compound,
             sort: buildSortStage(params),
             highlight: {
@@ -445,11 +445,11 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
 
     // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
     ...facetGroups.map((group) =>
-      getDbCollection("algolia")
+      getDbCollection("search_items")
         .aggregate<FacetMetaRow>([
           {
             $searchMeta: {
-              index: "algolia_search",
+              index: "search_items_index",
               facet: {
                 operator: { compound: group.compound },
                 facets: Object.fromEntries(group.keys.map((key) => [key, FACET_FIELD_DEFS[key]])),
@@ -467,21 +467,21 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
   const hasGeo = latitude !== undefined && longitude !== undefined
 
   const hits: SearchHit[] = rows.map(({ highlights, _meta: _m, ...doc }) => {
-    const algoliaDoc = doc as IAlgolia
+    const itemDoc = doc as ISearchItem
     const distance =
-      hasGeo && algoliaDoc.location
+      hasGeo && itemDoc.location
         ? getDistanceInKm({
             origin: { latitude, longitude },
-            destination: { latitude: algoliaDoc.location.coordinates[1], longitude: algoliaDoc.location.coordinates[0] },
+            destination: { latitude: itemDoc.location.coordinates[1], longitude: itemDoc.location.coordinates[0] },
           })
         : null
     return {
-      ...algoliaDoc,
+      ...itemDoc,
       // Champs d'enrichissement ajoutés après coup (rome_labels, keywords) : absents des docs
       // seedés antérieurs → on force la clé à null pour satisfaire le schéma `.nullable()`
       // (sinon `undefined` → erreur de sérialisation Zod → 500).
-      keywords: algoliaDoc.keywords ?? null,
-      rome_labels: algoliaDoc.rome_labels ?? null,
+      keywords: itemDoc.keywords ?? null,
+      rome_labels: itemDoc.rome_labels ?? null,
       preview: buildPreviewText(highlights ?? []),
       matched_words: buildSearchMatchWords(highlights ?? []),
       distance,
@@ -503,12 +503,12 @@ export async function searchAlgolia(params: ISearchFilters): Promise<{
 }
 
 // Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).
-async function suggestFromAlgolia(q: string, limit: number): Promise<string[]> {
-  const rows = await getDbCollection("algolia")
+async function suggestFromItems(q: string, limit: number): Promise<string[]> {
+  const rows = await getDbCollection("search_items")
     .aggregate<{ title: string; rome_labels: string[] | null }>([
       {
         $search: {
-          index: "algolia_search",
+          index: "search_items_index",
           compound: {
             should: [
               { autocomplete: { query: q, path: "title", fuzzy: { maxEdits: 1 }, score: { boost: { value: 2 } } } },
@@ -553,9 +553,9 @@ async function suggestFromUserSuggestions(q: string, limit: number): Promise<str
  * utilisateurs (en complément jusqu'à `limit`). Les deux requêtes $search partent en
  * parallèle ; la déduplication et le filtre anti-bruit fuzzy s'appliquent aux deux listes.
  */
-export async function suggestAlgolia({ q, limit }: { q: string; limit: number }): Promise<{ suggestions: string[] }> {
-  const [algoliaCandidates, userCandidates] = await Promise.all([
-    suggestFromAlgolia(q, limit),
+export async function suggestSearchTerms({ q, limit }: { q: string; limit: number }): Promise<{ suggestions: string[] }> {
+  const [itemCandidates, userCandidates] = await Promise.all([
+    suggestFromItems(q, limit),
     // La collection peut ne pas exister / index absent (env de test) → dégradation silencieuse.
     suggestFromUserSuggestions(q, limit).catch(() => [] as string[]),
   ])
@@ -569,7 +569,7 @@ export async function suggestAlgolia({ q, limit }: { q: string; limit: number })
   // dédupliqués en préservant l'ordre de pertinence — contenu indexé d'abord.
   const seen = new Set<string>()
   const suggestions: string[] = []
-  for (const candidate of [...algoliaCandidates, ...userCandidates]) {
+  for (const candidate of [...itemCandidates, ...userCandidates]) {
     const value = candidate?.trim()
     if (!value) continue
     const normalized = normalize(value)

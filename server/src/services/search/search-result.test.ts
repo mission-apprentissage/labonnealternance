@@ -1,9 +1,9 @@
 import { useMongo } from "@tests/utils/mongo.test.utils"
 import { ObjectId } from "mongodb"
-import { generateAlgoliaFixture } from "shared/fixtures/algolia.fixture"
+import { generateSearchItemFixture } from "shared/fixtures/searchItems.fixture"
 import { beforeAll, describe, expect, it } from "vitest"
 import { createSearchIndexes, getDbCollection } from "@/common/utils/mongodbUtils"
-import { searchAlgolia, suggestAlgolia } from "@/services/search/search.service"
+import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
 
 /**
  * Tests de pertinence du moteur de recherche MongoDB Search ($search).
@@ -41,7 +41,7 @@ const PARIS = { latitude: 48.8566, longitude: 2.3522 }
 // Corpus contrôlé — url_id = clé stable utilisée dans les assertions.
 const CORPUS = [
   // — maintenance : cible de la recherche avec faute "maintenace" (Marion, OK)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-maintenance",
     title: "Technicien de maintenance industrielle",
     description: "Interventions de maintenance préventive et corrective sur les lignes de production.",
@@ -50,7 +50,7 @@ const CORPUS = [
     organization_name: "Industria",
   }),
   // — multi-mots "product manager" (Marion, KO) : le doc full-match...
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-product-manager",
     title: "Product Manager",
     description: "Gestion de la roadmap produit et des priorités.",
@@ -59,7 +59,7 @@ const CORPUS = [
     organization_name: "StartupTech",
   }),
   // ...et ses pièges 1-terme ("product" seul / "manager" seul)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-product-designer",
     title: "Product Designer",
     description: "Conception d'interfaces utilisateur.",
@@ -67,7 +67,7 @@ const CORPUS = [
     rome_labels: ["Design d'interfaces"],
     organization_name: "StudioX",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-assistant-manager",
     title: "Assistant manager de rayon",
     description: "Encadrement d'équipe en grande distribution.",
@@ -78,7 +78,7 @@ const CORPUS = [
   }),
   // — priorité titre > description : "commerce" (Marion, Mitigé — un poste de dev
   //   pour un site e-commerce remontait en 1er devant les postes de commerce)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-conseiller-commerce",
     title: "Conseiller de vente en commerce",
     description: "Accueil et conseil client en boutique.",
@@ -86,7 +86,7 @@ const CORPUS = [
     rome_labels: ["Vente en habillement et accessoires de la personne"],
     organization_name: "ModeStore",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-dev-ecommerce",
     title: "Développeur web",
     description: "Développement d'un site de e-commerce pour un grand retailer.",
@@ -95,7 +95,7 @@ const CORPUS = [
     organization_name: "WebAgency",
   }),
   // — acronyme couvert par la collection de synonymes : "mco" (Marion, OK)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "formation-mco",
     type: "formation",
     type_filter_label: "Formations",
@@ -106,7 +106,7 @@ const CORPUS = [
     organization_name: "CFA Commerce",
   }),
   // — acronyme ambigu "esf" (Claire, KO — le fuzzy remontait des offres d'analyste ESG)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-esf",
     title: "Conseiller en économie sociale et familiale",
     description: "Accompagnement social des familles.",
@@ -114,7 +114,7 @@ const CORPUS = [
     rome_labels: ["Action sociale"],
     organization_name: "AssoSociale",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-esg",
     title: "Analyste ESG",
     description: "Analyse extra-financière pour une banque.",
@@ -123,7 +123,7 @@ const CORPUS = [
     organization_name: "BigBank",
   }),
   // — nom d'entreprise : "sncf" (Marion, OK) + piège mention en description
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-sncf",
     title: "Technicien signalisation ferroviaire",
     description: "Entretien des installations de signalisation.",
@@ -131,7 +131,7 @@ const CORPUS = [
     rome_labels: ["Signalisation ferroviaire"],
     organization_name: "SNCF Voyageurs",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-mention-sncf",
     title: "Chargé de partenariats",
     description: "Développement de partenariats avec la SNCF.",
@@ -141,7 +141,7 @@ const CORPUS = [
   }),
   // — métier simple : "plombier" (Claire, OK) + piège hors-sujet (Aurélie voyait des
   //   fleuristes remonter sur "plomberie au Mans")
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-plombier",
     title: "Plombier / Plombière sanitaire",
     description: "Installation et dépannage sanitaire.",
@@ -149,7 +149,7 @@ const CORPUS = [
     rome_labels: ["Installation d'équipements sanitaires et thermiques"],
     organization_name: "PlombExpress",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-fleuriste",
     title: "Fleuriste",
     description: "Composition florale en boutique.",
@@ -158,7 +158,7 @@ const CORPUS = [
     organization_name: "FloraShop",
   }),
   // — intitulé métier multi-mots exact (Fadoua, OK)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-animateur",
     title: "Animateur socioculturel / Animatrice socioculturelle",
     description: "Animation d'ateliers pour un public jeune.",
@@ -168,7 +168,7 @@ const CORPUS = [
   }),
   // — tri par date vs pertinence (Fadoua, KO — "assistant ressources humaines" + tri date
   //   remontait "Apprenti Boucher" en tête)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-rh",
     title: "Assistant ressources humaines",
     description: "Gestion administrative du personnel.",
@@ -177,7 +177,7 @@ const CORPUS = [
     organization_name: "PeopleCorp",
     publication_date: new Date("2025-01-10T10:00:00.000Z"),
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-boucher",
     title: "Apprenti Boucher",
     description: "Préparation des viandes et gestion des ressources du magasin.",
@@ -187,7 +187,7 @@ const CORPUS = [
     publication_date: new Date("2025-06-01T10:00:00.000Z"),
   }),
   // — mot incomplet / abréviation : "compta" (Marion, KO), "elec" (Aurélie, Mitigé)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-comptable",
     title: "Assistant comptable",
     description: "Saisie comptable et rapprochements bancaires.",
@@ -198,7 +198,7 @@ const CORPUS = [
   }),
   // — nom de poste hors libellés d'offres : "vigile" (Marion, KO en prod — le mécanisme
   //   keywords doit permettre de le couvrir)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-securite",
     title: "Agent de sécurité",
     description: "Surveillance de site industriel.",
@@ -207,7 +207,7 @@ const CORPUS = [
     organization_name: "SecuriGard",
   }),
   // — intitulé exact long (Jérémy, KO : "Apprenti cadreur / Monteur H/F") + piège "monteur"
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-cadreur",
     title: "Apprenti cadreur / Monteur H/F",
     description: "Tournage et montage vidéo.",
@@ -215,7 +215,7 @@ const CORPUS = [
     rome_labels: ["Image cinématographique et télévisuelle"],
     organization_name: "ProdVideo",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-monteur-reseaux",
     title: "Monteur réseaux électriques",
     description: "Raccordements et travaux électriques.",
@@ -225,7 +225,7 @@ const CORPUS = [
   }),
   // — multi-mots "chargé de déploiement" (Marion, KO — remontait "chargé de recrutement",
   //   "chargée de communication", "chargé d'accueil"...)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-deploiement",
     title: "Chargé de déploiement",
     description: "Déploiement d'outils informatiques chez les clients.",
@@ -233,7 +233,7 @@ const CORPUS = [
     rome_labels: ["Déploiement de solutions informatiques"],
     organization_name: "ITServices",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-charge-recrutement",
     title: "Chargé de recrutement",
     description: "Sourcing et entretiens candidats.",
@@ -241,7 +241,7 @@ const CORPUS = [
     rome_labels: ["Recrutement"],
     organization_name: "TalentHunt",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-charge-communication",
     title: "Chargée de communication",
     description: "Communication interne et externe.",
@@ -251,7 +251,7 @@ const CORPUS = [
   }),
   // — "zéro résultat honnête" (Fadoua, KO : "IMAGERIE MEDICALE ET RADIOLOGIE THERAPEUTIQUE"
   //   remontait des offres réglementaires / communication au lieu de 0 résultat)
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-dispositifs-medicaux",
     title: "Assistant affaires réglementaires",
     description: "Dispositifs médicaux de diagnostic in vitro.",
@@ -264,7 +264,7 @@ const CORPUS = [
   //   masculin/féminin (Aurélie, KO — "Cuisinier / Cuisinière à domicile" remontait des
   //   conducteurs PL ; même pattern : "Moniteur éducateur / Monitrice éducatrice",
   //   "Alternant Charpentier / Charpentière")
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-cuisinier-domicile",
     title: "Cuisinier / Cuisinière à domicile",
     description: "Préparation de repas au domicile des clients.",
@@ -272,7 +272,7 @@ const CORPUS = [
     rome_labels: ["Personnel polyvalent en restauration"],
     organization_name: "ChefChezVous",
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-aide-domicile",
     title: "Aide à domicile",
     description: "Accompagnement de personnes âgées à leur domicile.",
@@ -282,7 +282,7 @@ const CORPUS = [
   }),
   // — filtre niveau inclusif : un doc SANS niveau précisé ("" — recruteurs, offres partenaires
   //   sans diplôme cible, ~83 % du corpus réel) doit remonter quel que soit le niveau coché
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-sans-niveau",
     title: "Agent polyvalent de restauration",
     description: "Polyvalence en restauration collective.",
@@ -292,7 +292,7 @@ const CORPUS = [
     level: "",
   }),
   // — géo : tri par proximité (Aurélie : offres IDF avant Paris) et rayon
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-versailles",
     title: "Vendeur en boulangerie",
     description: "Vente en boutique.",
@@ -302,7 +302,7 @@ const CORPUS = [
     address: "Versailles",
     location: { type: "Point", coordinates: [2.1301, 48.8044] },
   }),
-  generateAlgoliaFixture({
+  generateSearchItemFixture({
     url_id: "offre-marseille",
     title: "Serveur en restauration",
     description: "Service en salle.",
@@ -349,7 +349,7 @@ const USER_SUGGESTIONS = [
 ]
 
 async function seedCorpus() {
-  await getDbCollection("algolia").insertMany(CORPUS)
+  await getDbCollection("search_items").insertMany(CORPUS)
   await getDbCollection("search_synonyms").insertMany(SYNONYMS)
   await getDbCollection("search_suggestions").insertMany(USER_SUGGESTIONS)
 }
@@ -377,7 +377,7 @@ async function waitForSuggestionIndexSync(timeoutMs = 120_000) {
   const start = Date.now()
   for (;;) {
     try {
-      const { suggestions } = await suggestAlgolia({ q: "boulangerie artisanale", limit: 5 })
+      const { suggestions } = await suggestSearchTerms({ q: "boulangerie artisanale", limit: 5 })
       if (suggestions.includes("Boulangerie artisanale")) return
     } catch {
       // index pas encore créé côté mongot → on réessaie
@@ -389,13 +389,13 @@ async function waitForSuggestionIndexSync(timeoutMs = 120_000) {
   }
 }
 
-type SearchParams = Parameters<typeof searchAlgolia>[0]
+type SearchParams = Parameters<typeof searchItems>[0]
 
 function search(params: Partial<SearchParams> = {}) {
-  return searchAlgolia({ radius: 30, page: 0, hitsPerPage: 50, ...params })
+  return searchItems({ radius: 30, page: 0, hitsPerPage: 50, ...params })
 }
 
-type SearchResult = Awaited<ReturnType<typeof searchAlgolia>>
+type SearchResult = Awaited<ReturnType<typeof searchItems>>
 
 const ids = (result: SearchResult) => result.hits.map((h) => h.url_id)
 const rankOf = (result: SearchResult, urlId: string) => ids(result).indexOf(urlId)
@@ -525,13 +525,13 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
     })
 
     it("autocomplétion : 'compta' suggère l'intitulé comptable [Aurélie — suggestions jugées pertinentes]", async () => {
-      const { suggestions } = await suggestAlgolia({ q: "compta", limit: 5 })
+      const { suggestions } = await suggestSearchTerms({ q: "compta", limit: 5 })
 
       expect(suggestions.some((s) => s.toLowerCase().includes("comptab"))).toBe(true)
     })
 
     it("autocomplétion : insensible aux accents ('develo' → Développeur web)", async () => {
-      const { suggestions } = await suggestAlgolia({ q: "develo", limit: 5 })
+      const { suggestions } = await suggestSearchTerms({ q: "develo", limit: 5 })
 
       expect(suggestions.some((s) => s.toLowerCase().includes("développeur"))).toBe(true)
     })
@@ -641,28 +641,28 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
   // ──────────────────────────────────────────────────────────────────────────
   describe("suggestions apprises des recherches utilisateurs", () => {
     it("sert les suggestions actives en complément du contenu indexé", async () => {
-      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+      const { suggestions } = await suggestSearchTerms({ q: "boulanger", limit: 8 })
 
       expect(suggestions).toContain("Boulangerie artisanale")
     })
 
     it("n'expose jamais une suggestion désactivée (kill-switch unitaire)", async () => {
-      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+      const { suggestions } = await suggestSearchTerms({ q: "boulanger", limit: 8 })
 
       expect(suggestions).not.toContain("Boulangerie industrielle")
     })
 
     it("priorise le contenu réellement indexé (title/rome_labels) sur les suggestions apprises", async () => {
-      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+      const { suggestions } = await suggestSearchTerms({ q: "boulanger", limit: 8 })
 
-      const fromAlgolia = suggestions.indexOf("Vendeur en boulangerie") // title du corpus
+      const fromItems = suggestions.indexOf("Vendeur en boulangerie") // title du corpus
       const fromUsers = suggestions.indexOf("Boulangerie artisanale")
-      expect(fromAlgolia).toBeGreaterThanOrEqual(0)
-      expect(fromUsers).toBeGreaterThan(fromAlgolia)
+      expect(fromItems).toBeGreaterThanOrEqual(0)
+      expect(fromUsers).toBeGreaterThan(fromItems)
     })
 
     it("déduplique une suggestion apprise identique à un intitulé indexé", async () => {
-      const { suggestions } = await suggestAlgolia({ q: "boulanger", limit: 8 })
+      const { suggestions } = await suggestSearchTerms({ q: "boulanger", limit: 8 })
 
       // "Vendeur en boulangerie" existe à la fois comme title (corpus) et comme
       // suggestion active → une seule occurrence.

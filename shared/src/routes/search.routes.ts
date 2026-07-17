@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi.js"
-import { ZAlgolia } from "../models/algolia.model.js"
+import { ZSearchItem } from "../models/searchItems.model.js"
 import { ZLatitudeParam, ZLongitudeParam, ZRadiusParam } from "./_params.js"
 import type { IRoutesDef } from "./common.routes.js"
 
@@ -42,7 +42,7 @@ export const zSearchRoutes = {
       response: {
         "200": z.object({
           hits: z.array(
-            ZAlgolia.and(
+            ZSearchItem.and(
               z.object({
                 preview: z.array(z.object({ type: z.enum(["hit", "text"]), value: z.string() })),
                 matched_words: z.array(z.object({ word: z.string(), count: z.number() })),

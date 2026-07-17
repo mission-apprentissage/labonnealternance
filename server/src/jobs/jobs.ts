@@ -6,7 +6,6 @@ import { getDatabase } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { updateReferentielCommune } from "@/services/referentiel/commune/commune.referentiel.service"
 import { generateSitemap } from "@/services/sitemap.service"
-import { applyKeywordsBatchFile } from "./algolia/generateAlgoliaCollection"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeApplications } from "./anonymization/anonymizeApplications"
@@ -56,6 +55,7 @@ import { recruiterOfferExpirationReminderJob } from "./recruiters/recruiterOffer
 import { resetApiKey } from "./recruiters/resetApiKey"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { rollbackSearchSuggestions } from "./search/analyzeSearchQueries"
+import { applyKeywordsBatchFile } from "./search/generateSearchItemsCollection"
 import { updateSEO } from "./seo/updateSEO"
 import { SimpleJobDefinition, simpleJobDefinitions } from "./simpleJobDefinitions"
 import { updateBrevoBlockedEmails } from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
@@ -391,7 +391,7 @@ export async function setupJobProcessor() {
       "referentiel:commune:import": {
         handler: updateReferentielCommune,
       },
-      "algolia:apply-keywords-batch": {
+      "search:apply-keywords-batch": {
         handler: async (job) => applyKeywordsBatchFile(job.payload as any),
       },
       "search:suggestions:rollback": {

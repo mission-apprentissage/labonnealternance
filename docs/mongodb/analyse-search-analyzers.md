@@ -7,7 +7,7 @@
 
 ## 1. Architecture de recherche
 
-Index Atlas Search `algolia_search` sur la collection `algolia`, alimentée par `formation.model.ts` + `jobsPartners.model.ts` via le job `generateAlgoliaCollection.ts`. La collection agrège **3 types de documents** classés par **un seul score** et affichés dans **une liste flat** côté front (`SearchResultsList.tsx`, pas de filtre `sub_type`) :
+Index Atlas Search `search_items_index` sur la collection `search_items`, alimentée par `formation.model.ts` + `jobsPartners.model.ts` via le job `generateSearchItemsCollection.ts`. La collection agrège **3 types de documents** classés par **un seul score** et affichés dans **une liste flat** côté front (`SearchResultsList.tsx`, pas de filtre `sub_type`) :
 
 - `formation`
 - `offre` (vraies offres : LBA + partenaires)

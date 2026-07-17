@@ -4,7 +4,6 @@ import { processMissingRomeAndImportToJobPartners } from "@/jobs/offrePartenaire
 import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
 import { generateSitemap } from "@/services/sitemap.service"
-import { fillAlgoliaCollection, fillMissingAlgoliaKeywords } from "./algolia/generateAlgoliaCollection"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
 import { anonymizeReportedReasons } from "./anonymization/anonymizeReportedReasons"
@@ -93,6 +92,7 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { analyzeSearchQueries } from "./search/analyzeSearchQueries"
+import { fillMissingSearchItemsKeywords, fillSearchItemsCollection } from "./search/generateSearchItemsCollection"
 import { updateSEO } from "./seo/updateSEO"
 
 type SimpleJobDefinition = {
@@ -370,12 +370,12 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Envoi les mails de validation de compte",
   },
   {
-    fct: fillAlgoliaCollection,
-    description: "Génère/met à jour la collection algolia (formations, jobs, recruteurs) pour MongoDB Search",
+    fct: fillSearchItemsCollection,
+    description: "Génère/met à jour la collection search_items (formations, jobs, recruteurs) pour MongoDB Search",
   },
   {
-    fct: fillMissingAlgoliaKeywords,
-    description: "Génère les mots-clés (batch Mistral) des offres de la collection algolia qui n'en ont pas",
+    fct: fillMissingSearchItemsKeywords,
+    description: "Génère les mots-clés (batch Mistral) des offres de la collection search_items qui n'en ont pas",
   },
   {
     fct: analyzeSearchQueries,

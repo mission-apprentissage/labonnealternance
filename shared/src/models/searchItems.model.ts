@@ -3,18 +3,17 @@ import { z } from "zod"
 import type { IModelDescriptor } from "./common.js"
 import { zObjectId } from "./common.js"
 
-const collectionName = "algolia" as const
+const collectionName = "search_items" as const
 
-export const ZAlgoliaLocation = z
+export const ZSearchItemLocation = z
   .object({
     type: z.literal("Point"),
     coordinates: z.tuple([z.number(), z.number()]),
   })
   .describe("GeoJSON Point [lng, lat] pour MongoDB Search")
 
-export const ZAlgolia = z.object({
+export const ZSearchItem = z.object({
   _id: zObjectId,
-  objectID: z.string().describe("Identifiant Algolia"),
   url_id: z.string().describe("Identifiant utilisé dans l'URL"),
   type: z.string().describe("Type de résultat (ex: offre, formation)"),
   type_filter_label: z.string().describe("Libellé du filtre de type"),
@@ -26,7 +25,7 @@ export const ZAlgolia = z.object({
   title: z.string().describe("Titre de l'offre"),
   description: z.string().describe("Description de l'offre"),
   address: z.string().describe("Adresse complète"),
-  location: ZAlgoliaLocation.optional().describe("GeoJSON Point pour MongoDB Search"),
+  location: ZSearchItemLocation.optional().describe("GeoJSON Point pour MongoDB Search"),
   organization_name: z.string().describe("Nom de l'entreprise"),
   level: z.string().nullable().describe("Niveau de diplôme visé"),
   activity_sector: z.string().nullable().describe("Secteur d'activité"),
@@ -34,19 +33,18 @@ export const ZAlgolia = z.object({
   rome_labels: z.array(z.string()).nullable().describe("Intitulés ROME associés (signal métier déterministe, dérivé des rome_codes)"),
 })
 
-export type IAlgolia = z.output<typeof ZAlgolia>
+export type ISearchItem = z.output<typeof ZSearchItem>
 
 export default {
-  zod: ZAlgolia,
+  zod: ZSearchItem,
   indexes: [
-    [{ objectID: 1 }, { unique: true }],
     [{ type: 1, sub_type: 1 }, {}],
     [{ publication_date: -1 }, {}],
     [{ location: "2dsphere" }, {}],
   ],
   searchIndexes: [
     {
-      name: "algolia_search",
+      name: "search_items_index",
       definition: {
         mappings: {
           dynamic: false,

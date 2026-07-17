@@ -20,7 +20,7 @@ Questions évaluées :
 | Élément | Valeur |
 |---|---|
 | Endpoint | `GET /api/v1/search` (serveur local, `:5001`) |
-| Index | `algolia_search` (collection `algolia`, régénérée avec `rome_labels`) |
+| Index | `search_items_index` (collection `search_items`, régénérée avec `rome_labels`) |
 | Paramètres | `page=0`, `hitsPerPage=20`, **sans** filtre ni géo |
 | Analyzers | `lucene.french` (title/description/rome_labels/keywords) + multi `standard` ; `lba_company` (organization_name) |
 | Synonymes | `lba_synonyms` (collection `search_synonyms`) |

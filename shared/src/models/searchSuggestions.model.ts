@@ -8,7 +8,7 @@ const collectionName = "search_suggestions" as const
 /**
  * Suggestions d'autocomplétion issues des recherches utilisateurs (collection `search_queries`),
  * validées par le job `analyzeSearchQueries` (critères quantitatifs + classification Mistral).
- * Interrogée par suggestAlgolia en complément de l'index `algolia` (title/rome_labels).
+ * Interrogée par suggestSearchTerms en complément de l'index `search_items` (title/rome_labels).
  * Les candidats REJETÉS sont conservés (status "rejected" + motif) : dédup entre runs, audit,
  * et requalification manuelle possible. Réversibilité : par run (run_id), unitaire (status
  * "disabled") ou globale (updateMany origin → disabled) — hot-reload mongot ~5 s.

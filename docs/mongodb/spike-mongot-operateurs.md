@@ -1,7 +1,7 @@
 # Spike — validation des opérateurs $search sur mongot community 0.60.1
 
 Phase 0 du plan d'amélioration de la pertinence (14/07/2026). Tests exécutés contre la stack
-Docker locale (MongoDB 8.2 + mongot community 0.60.1, index `algolia_search`, ~370k docs).
+Docker locale (MongoDB 8.2 + mongot community 0.60.1, index `search_items_index`, ~370k docs).
 
 | Opérateur / feature | Résultat | Détail |
 |---|---|---|

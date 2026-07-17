@@ -1,6 +1,6 @@
 # API Search — Référence d'intégration
 
-Endpoint de recherche unifié utilisant **MongoDB Search** (mongot / Lucene) sur la collection `algolia`.
+Endpoint de recherche unifié utilisant **MongoDB Search** (mongot / Lucene) sur la collection `search_items`.
 
 ## Endpoint
 
@@ -30,7 +30,7 @@ GET /api/v1/search
 
 ```json
 {
-  "hits": [ /* tableau de résultats IAlgolia */ ],
+  "hits": [ /* tableau de résultats ISearchItem */ ],
   "nbHits": 142,
   "page": 0,
   "nbPages": 8,
@@ -45,7 +45,7 @@ GET /api/v1/search
 }
 ```
 
-## Champs d'un résultat (`IAlgolia`)
+## Champs d'un résultat (`ISearchItem`)
 
 | Champ | Type | Description |
 |---|---|---|
@@ -66,7 +66,7 @@ GET /api/v1/search
 | `level` | `string \| null` | Niveau de diplôme visé |
 | `activity_sector` | `string \| null` | Secteur d'activité |
 | `keywords` | `string[]` | Mots-clés indexés |
-| `distance` | `number \| null` | Distance en km au lieu recherché (`null` si pas de géo) — ajouté à la réponse, hors `IAlgolia` |
+| `distance` | `number \| null` | Distance en km au lieu recherché (`null` si pas de géo) — ajouté à la réponse, hors `ISearchItem` |
 
 ## Exemples d'appels
 
@@ -127,8 +127,8 @@ Composant [`SearchBar.tsx`](../../ui/app/search/_components/SearchBar.tsx) :
 
 ## Architecture technique
 
-- **Collection** : `algolia` (MongoDB)
-- **Index de recherche** : `algolia_search` (mongot / Lucene)
+- **Collection** : `search_items` (MongoDB)
+- **Index de recherche** : `search_items_index` (mongot / Lucene)
 - **Champs full-text** : `title`, `description`, `keywords`, `organization_name` (analyseur `lucene.french`)
 - **Champs filtrables** : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`, `organization_name`
 - **Géosearch** : champ `location` (GeoJSON Point), rayon en mètres dans l'opérateur `geoWithin`

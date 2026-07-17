@@ -6,7 +6,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { notifyToSlack } from "@/common/utils/slackUtils"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { sendMistralBatch } from "@/services/mistralai/mistralai.service"
-import { searchAlgolia, suggestAlgolia } from "@/services/search/search.service"
+import { searchItems, suggestSearchTerms } from "@/services/search/search.service"
 import { normalizeQuery } from "@/services/search/searchQueryLog.service"
 
 import type { IQueryAnalysis, IQueryStats } from "./searchSuggestionCriteria"
@@ -96,7 +96,7 @@ async function aggregateQueryStats(): Promise<IQueryStats[]> {
 
 /** Le candidat est-il déjà couvert par l'autocomplete existant (title/rome_labels + suggestions actives) ? */
 async function isAlreadySuggested(stats: IQueryStats): Promise<boolean> {
-  const { suggestions } = await suggestAlgolia({ q: stats.top_raw_q, limit: 5 })
+  const { suggestions } = await suggestSearchTerms({ q: stats.top_raw_q, limit: 5 })
   return suggestions.some((s) => {
     const normalized = normalizeQuery(s)
     return normalized === stats.q_normalized || normalized.startsWith(`${stats.q_normalized} `) || stats.q_normalized.startsWith(`${normalized} `)
@@ -200,7 +200,7 @@ export const analyzeSearchQueries = async () => {
     if (synonymVerdict.verdict === "pass" && insertedSynonyms.length < CRITERIA.MAX_SYNONYM_GROUPS_PER_RUN) {
       const target = parsed.synonym_of!.trim()
       // Y4 — vérification empirique : la forme cible doit réellement produire des résultats.
-      const control = await searchAlgolia({ q: target, radius: 30, page: 0, hitsPerPage: 1 })
+      const control = await searchItems({ q: target, radius: 30, page: 0, hitsPerPage: 1 })
       if (control.nbHits === 0) {
         countReason("synonym_target_no_hits")
         await persistDecision(stats, parsed, "rejected", "synonym_target_no_hits", runId, now)

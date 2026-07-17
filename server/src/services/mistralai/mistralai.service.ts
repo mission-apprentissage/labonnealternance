@@ -59,7 +59,7 @@ const BATCH_TERMINAL_STATUSES = new Set(["SUCCESS", "FAILED", "TIMEOUT_EXCEEDED"
  * Soumet un job batch Mistral SANS attendre son résultat (fire-and-forget) : construit le
  * JSONL, l'upload (purpose `batch`) et crée le job. Retourne l'id du job (null si échec).
  * Récupération des résultats : console Mistral ou API (download de l'outputFile), puis
- * application via le job dédié (ex. `algolia:apply-keywords-batch --file <jsonl>`).
+ * application via le job dédié (ex. `search:apply-keywords-batch --file <jsonl>`).
  */
 export const submitMistralBatch = async ({
   requests,

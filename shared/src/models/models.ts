@@ -1,5 +1,4 @@
 import type { z } from "zod"
-import algoliaModel from "./algolia.model.js"
 import anonymizedApplicantModel from "./anonymizedApplicant.model.js"
 import anonymizedApplicationsModel from "./anonymizedApplications.model.js"
 import anonymizedAppointmentsModel from "./anonymizedAppointments.model.js"
@@ -67,6 +66,7 @@ import reportedCompanyModel from "./reportedCompany.model.js"
 import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
+import searchItemsModel from "./searchItems.model.js"
 import searchQueriesModel from "./searchQueries.model.js"
 import searchSuggestionsModel from "./searchSuggestions.model.js"
 import searchSynonymsModel from "./searchSynonyms.model.js"
@@ -82,7 +82,7 @@ import userModel from "./user.model.js"
 import userWithAccountModel from "./userWithAccount.model.js"
 
 const modelDescriptorMap = {
-  [algoliaModel.collectionName]: algoliaModel,
+  [searchItemsModel.collectionName]: searchItemsModel,
   [anonymizedApplicantModel.collectionName]: anonymizedApplicantModel,
   [anonymizedApplicationsModel.collectionName]: anonymizedApplicationsModel,
   [anonymizedAppointmentsModel.collectionName]: anonymizedAppointmentsModel,
