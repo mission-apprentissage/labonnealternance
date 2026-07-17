@@ -174,7 +174,7 @@ services:
       LETSENCRYPT_HOST: "metabase.{{dns_name}}"
       LETSENCRYPT_EMAIL: misson.apprentissage.devops@gmail.com
     volumes:
-      - metabase:/metabase-data
+      - metabase:/metabase.db
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
       interval: 15s
