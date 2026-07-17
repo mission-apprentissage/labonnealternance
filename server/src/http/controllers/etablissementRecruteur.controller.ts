@@ -302,13 +302,13 @@ export default (server: Server) => {
           const userAndOrganization: UserAndOrganization = { user: userCfa, organization }
           if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            await setUserHasToBeManuallyValidated(userAndOrganization, origin)
+            await setUserHasToBeManuallyValidated(userAndOrganization)
             await notifyToSlack(slackNotification)
             return res.status(200).send({ user: userCfa, validated: false, token })
           }
           if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
-            await autoValidateUser(userAndOrganization, origin, "l'email correspond à un contact")
+            await autoValidateUser(userAndOrganization, "l'email correspond à un contact")
             await sendUserConfirmationEmail(userCfa)
             // Keep the same structure as ENTREPRISE
             return res.status(200).send({ user: userCfa, validated: true, token })
@@ -318,14 +318,14 @@ export default (server: Server) => {
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              await autoValidateUser(userAndOrganization, origin, "le nom de domaine de l'email correspond à celui d'un contact")
+              await autoValidateUser(userAndOrganization, "le nom de domaine de l'email correspond à celui d'un contact")
               await sendUserConfirmationEmail(userCfa)
               // Keep the same structure as ENTREPRISE
               return res.status(200).send({ user: userCfa, validated: true, token })
             }
           }
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          await setUserHasToBeManuallyValidated(userAndOrganization, origin)
+          await setUserHasToBeManuallyValidated(userAndOrganization)
           await notifyToSlack(slackNotification)
           // Keep the same structure as ENTREPRISE
           return res.status(200).send({ user: userCfa, validated: false, token })

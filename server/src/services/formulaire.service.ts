@@ -1344,7 +1344,7 @@ export function jobPartnersToRecruiter(
     phone: user.phone,
     email: user.email,
     jobs: recruiterJobs,
-    origin: role.origin,
+    origin: user.origin,
     opco: entreprise.opco,
     idcc: entreprise.idcc,
     status: roleToRecruiterStatus(role),
