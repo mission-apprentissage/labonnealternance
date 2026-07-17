@@ -261,7 +261,7 @@ export default (server: Server) => {
         }
         case CFA: {
           const { email, establishment_siret, first_name, last_name, phone } = req.body
-          const origin = req.body.origin ?? "formulaire public de création"
+          const origin = req.body.origin ?? "Labonnealternance"
           const formatedEmail = email.toLocaleLowerCase()
           const accessError = await verifyRecruiterEmailInUse({ email: formatedEmail, siret: establishment_siret, entityType: AccessEntityType.CFA })
           if (accessError) throw forbidden(accessError.message, { reason: accessError.errorCode })
