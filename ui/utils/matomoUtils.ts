@@ -24,7 +24,7 @@ export const MATOMO_EVENTS = {
 }
 
 // Identifiants de moteur de recherche pour la télémétrie de bascule (dimension
-// `search_engine`) : legacy /recherche vs nouveau moteur /search/split (versionné).
+// `search_engine`) : legacy /recherche vs nouveau moteur /beta/recherche (versionné).
 export const SEARCH_ENGINES = {
   PRODUCTION: "production",
   BETA: "beta-v1",

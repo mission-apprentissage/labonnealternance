@@ -130,9 +130,9 @@ Définie par `buildTextClauses` ([`search.service.ts`](../../server/src/services
 - En tri `sort=proximity`, ces deux clauses **basculent en `filter`** (elles ne scorent plus) ; le score provient alors de l'opérateur `near`.
 - `q` est **optionnel** : sans `q`, aucune clause texte n'est ajoutée (la recherche repose sur la géo et les filtres).
 
-### Côté front — champ « Métier » (`/search/split`)
+### Côté front — champ « Métier » (`/beta/recherche`)
 
-Composant [`SearchBar.tsx`](../../ui/app/search/_components/SearchBar.tsx) :
+Composant [`SearchBar.tsx`](../../ui/app/beta/_components/SearchBar.tsx) :
 
 - **Champ texte libre** « Que recherchez-vous ? » (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
 - **Suggestions** : endpoint dédié `/v1/search/suggest?q=<saisie>&limit=8` (contenu indexé + suggestions apprises), *throttle* ~300 ms, à partir de **3 caractères**. Dropdown : 1ʳᵉ ligne « Rechercher : {saisie} » (recherche texte libre) + groupe « Suggestions » avec la sous-chaîne matchée en gras.

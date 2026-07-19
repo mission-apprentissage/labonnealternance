@@ -2,7 +2,7 @@
 
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
-import { useNewSearchOptIn } from "@/app/search/_hooks/useNewSearchOptIn"
+import { useNewSearchOptIn } from "@/app/beta/_hooks/useNewSearchOptIn"
 import { PAGES } from "@/utils/routes.utils"
 
 type NavLink = {
@@ -77,7 +77,7 @@ function isMenuActive(pathname: string, menuLinks: NavLink[]): boolean {
 }
 
 const RECHERCHE_LEGACY_HREF = PAGES.dynamic.recherche({}).getPath()
-const RECHERCHE_NEW_HREF = "/search/split"
+const RECHERCHE_NEW_HREF = "/beta/recherche"
 
 export function HeaderNavigation() {
   const pathname = usePathname()

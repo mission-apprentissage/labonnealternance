@@ -19,7 +19,7 @@ type Lieu = { label: string; latitude: number; longitude: number }
 /**
  * Formulaire du nouveau moteur affiché sur la page d'accueil pour les utilisateurs ayant
  * opté pour la nouvelle version : champs + type de recherche, SANS filtres (cf. Figma).
- * State local — la recherche ne part vers /search/split qu'au submit (bouton, Entrée ou
+ * State local — la recherche ne part vers /beta/recherche qu'au submit (bouton, Entrée ou
  * sélection d'une suggestion).
  */
 export function SearchHomeForm() {

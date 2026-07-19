@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import { SearchSplitPageClient } from "../_components/SearchSplitPageClient"
+import { SearchPageClient } from "../_components/SearchPageClient"
 import { parseSearchPageParams } from "../_utils/search.params.utils"
 
 type Props = {
@@ -11,13 +11,13 @@ export const metadata: Metadata = {
   title: "Recherche — La Bonne Alternance",
 }
 
-export default async function SearchSplitPage({ searchParams }: Props) {
+export default async function BetaRecherchePage({ searchParams }: Props) {
   const urlSearchParams = new URLSearchParams(await searchParams)
   const params = parseSearchPageParams(urlSearchParams)
 
   return (
     <Suspense>
-      <SearchSplitPageClient initialParams={params} />
+      <SearchPageClient initialParams={params} />
     </Suspense>
   )
 }

@@ -9,7 +9,7 @@ import { useNewSearchOptIn } from "../_hooks/useNewSearchOptIn"
 /**
  * Encart d'invitation au nouveau moteur (home + page de résultats legacy) : box à fond bleu
  * contrasté, contenu centré. « Tester → » active l'opt-in ; avec `navigateToNewSearch`, il
- * ouvre en plus `/search/split` VIERGE (recherche réinitialisée à chaque bascule).
+ * ouvre en plus `/beta/recherche` VIERGE (recherche réinitialisée à chaque bascule).
  */
 export function NewSearchOptInBanner({ navigateToNewSearch = false }: { navigateToNewSearch?: boolean }) {
   const router = useRouter()
@@ -17,7 +17,7 @@ export function NewSearchOptInBanner({ navigateToNewSearch = false }: { navigate
 
   const handleOptIn = () => {
     optIn()
-    if (navigateToNewSearch) router.push("/search/split")
+    if (navigateToNewSearch) router.push("/beta/recherche")
   }
 
   return (

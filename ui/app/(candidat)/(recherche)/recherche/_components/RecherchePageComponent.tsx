@@ -13,7 +13,7 @@ import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hoo
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
-import { NewSearchOptInBanner } from "@/app/search/_components/NewSearchOptInBanner"
+import { NewSearchOptInBanner } from "@/app/beta/_components/NewSearchOptInBanner"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"

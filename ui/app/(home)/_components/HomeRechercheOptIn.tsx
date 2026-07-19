@@ -1,9 +1,9 @@
 "use client"
 
 import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { NewSearchOptInBanner } from "@/app/search/_components/NewSearchOptInBanner"
-import { SearchHomeForm } from "@/app/search/_components/SearchHomeForm"
-import { useNewSearchOptIn } from "@/app/search/_hooks/useNewSearchOptIn"
+import { NewSearchOptInBanner } from "@/app/beta/_components/NewSearchOptInBanner"
+import { SearchHomeForm } from "@/app/beta/_components/SearchHomeForm"
+import { useNewSearchOptIn } from "@/app/beta/_hooks/useNewSearchOptIn"
 
 import { HomeRechercheForm } from "./HomeRechercheForm"
 

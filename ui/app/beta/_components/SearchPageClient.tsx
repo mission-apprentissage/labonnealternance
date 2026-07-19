@@ -24,13 +24,13 @@ import { SearchResultsList } from "./SearchResultsList"
 import { SearchSortSelect } from "./SearchSortSelect"
 import { SEARCH_MODE_OPTIONS, SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
 
-interface SearchSplitPageClientProps {
+interface SearchPageClientProps {
   initialParams: ISearchPageParams
 }
 
 type MobilePanel = null | "search" | "filters" | "tri"
 
-export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientProps) {
+export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const rawSearchParams = useSearchParams()
   const params = rawSearchParams ? parseSearchPageParams(new URLSearchParams(rawSearchParams.toString())) : initialParams
 
@@ -41,7 +41,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
 
   const navigateSilent = useCallback(
     (newParams: ISearchPageParams) => {
-      router.replace(buildSearchUrl(newParams, "/search/split"))
+      router.replace(buildSearchUrl(newParams, "/beta/recherche"))
     },
     [router]
   )
