@@ -274,7 +274,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
                 key={option.value}
                 sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}
               >
-                {highlightMatch(option.value, inputValue)}
+                {/* Span unique : le li MUI est en display:flex — des fragments texte séparés y perdent leurs espaces de bord. */}
+                <Box component="span">{highlightMatch(option.value, inputValue)}</Box>
               </Box>
             )
           }

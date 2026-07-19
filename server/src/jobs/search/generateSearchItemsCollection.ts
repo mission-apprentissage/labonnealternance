@@ -178,6 +178,18 @@ const getTypeFilterLabel = (partner_label: JOBPARTNERS_LABEL, fromCfa?: boolean)
 
 const GEIQ_SIRETS = new Set(GEIQ_WHITELIST)
 
+// Certains intitulés sources arrivent dupliqués (« BTS bâtiment BTS bâtiment » — formations
+// catalogue comme offres partenaires) : on ne garde qu'une occurrence, sinon le doublon
+// pollue les suggestions d'autocomplétion et les titres affichés.
+const dedupeRepeatedTitle = (title: string): string => {
+  const trimmed = title.trim()
+  if (trimmed.length <= 6) return trimmed
+  const half = Math.floor(trimmed.length / 2)
+  const first = trimmed.slice(0, half).trim()
+  const second = trimmed.slice(half).trim()
+  return first.toLowerCase() === second.toLowerCase() ? first : trimmed
+}
+
 // contract_start à l'epoch (01/01/1970) = date manquante mal encodée côté source partenaire →
 // null (sinon ces offres passent tous les filtres start_date $lte et trient en tête du tri
 // par date de début).
@@ -441,6 +453,7 @@ export const fillSearchItemsCollection = async () => {
             is_start_flexible: null,
             is_algo_company: false,
             is_formation_included: null,
+            title: dedupeRepeatedTitle(formation.intitule_rco || ""),
             description: stripHtmlToText(formation.contenu),
           },
         }
@@ -465,7 +478,7 @@ export const fillSearchItemsCollection = async () => {
       is_formation_included: null,
       smart_apply: null,
       application_count: null,
-      title: formation.intitule_rco || "",
+      title: dedupeRepeatedTitle(formation.intitule_rco || ""),
       description: stripHtmlToText(formation.contenu),
       address: [formation.lieu_formation_adresse, formation.code_postal, formation.localite].filter(Boolean).join(" "),
       location: {
@@ -499,6 +512,7 @@ export const fillSearchItemsCollection = async () => {
             is_start_flexible: job.contract_start_is_flexible ?? null,
             is_algo_company: false,
             is_formation_included: isFormationIncluded(job),
+            title: dedupeRepeatedTitle(job.offer_title || ""),
             description: stripHtmlToText(job.offer_description),
           },
         }
@@ -523,7 +537,7 @@ export const fillSearchItemsCollection = async () => {
       is_formation_included: isFormationIncluded(job),
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
-      title: job.offer_title || "",
+      title: dedupeRepeatedTitle(job.offer_title || ""),
       description: stripHtmlToText(job.offer_description),
       address: job.workplace_address_label || "",
       location: {
