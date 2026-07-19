@@ -12,11 +12,18 @@ function paramsToQuerystring(params: ISearchPageParams) {
   if (params.q) qs.q = params.q
   // Télémétrie moteur de suggestion : origine de q (suggestion sélectionnée vs texte libre)
   if (params.q && params.q_source) qs.source = params.q_source
+  // Toujours envoyé : le mode par défaut « emplois » exclut les formations et les offres CFA/GEIQ côté API
+  qs.mode = params.mode
   if (params.type_filter_label?.length) qs.type_filter_label = params.type_filter_label
   if (params.contract_type?.length) qs.contract_type = params.contract_type
   if (params.level?.length) qs.level = params.level
   if (params.activity_sector?.length) qs.activity_sector = params.activity_sector
   if (params.organization_name) qs.organization_name = params.organization_name
+  if (params.start_date) qs.start_date = params.start_date
+  if (params.urgent) qs.start_type = "des_que_possible"
+  if (params.handi) qs.is_disabled_elligible = "true"
+  if (params.smart_apply) qs.smart_apply = "true"
+  if (params.is_algo_company !== undefined) qs.is_algo_company = params.is_algo_company.toString()
   if (params.sort) qs.sort = params.sort
   if (params.latitude !== undefined) qs.latitude = params.latitude
   if (params.longitude !== undefined) qs.longitude = params.longitude

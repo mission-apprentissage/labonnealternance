@@ -5,11 +5,17 @@ export interface ISearchPageParams {
   q?: string
   q_source?: QSource // origine de q : suggestion d'autocomplete sélectionnée vs texte libre (télémétrie)
   lieu_label?: string // label affiché dans le champ lieu (ex: "Paris 75001")
-  type_filter_label?: string[] // filtre par libellé de type (ex: "Offre d'emploi en alternance")
+  mode: SearchMode // type de recherche (défaut : emplois uniquement)
+  type_filter_label?: string[] // filtre par libellé de type (ex: "Formation à distance")
   contract_type?: string[]
   level?: string[]
   activity_sector?: string[]
   organization_name?: string
+  start_date?: string // date de début de contrat souhaitée (YYYY-MM-DD)
+  urgent?: boolean // recrutement urgent (start_type=des_que_possible)
+  handi?: boolean // employeur handi-accueillant (is_disabled_elligible=true)
+  smart_apply?: boolean // candidature simplifiée disponible
+  is_algo_company?: boolean // type d'offres : true = entreprises à contacter, false = offres d'emploi, absent = les deux
   sort?: SortOption // tri des résultats (défaut : pertinence)
   latitude?: number
   longitude?: number
@@ -19,8 +25,12 @@ export interface ISearchPageParams {
   selected?: string // url_id du hit sélectionné dans le split layout
 }
 
-export type SortOption = "proximity" | "smart_apply" | "date" | "applications"
-const SORT_OPTIONS: SortOption[] = ["proximity", "smart_apply", "date", "applications"]
+export type SearchMode = "emplois" | "formations" | "emplois_formation"
+export const SEARCH_MODES: SearchMode[] = ["emplois", "formations", "emplois_formation"]
+export const DEFAULT_SEARCH_MODE: SearchMode = "emplois"
+
+export type SortOption = "proximity" | "date" | "applications" | "start_date"
+const SORT_OPTIONS: SortOption[] = ["proximity", "date", "applications", "start_date"]
 
 export type QSource = "suggestion" | "free_text"
 const Q_SOURCES: QSource[] = ["suggestion", "free_text"]
@@ -38,15 +48,28 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     return vals.length ? vals : undefined
   }
 
+  function getBool(key: string): boolean | undefined {
+    const val = search.get(key)
+    if (val === "true") return true
+    if (val === "false") return false
+    return undefined
+  }
+
   return {
     q: search.get("q") || undefined,
     q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
     lieu_label: search.get("lieu_label") || undefined,
+    mode: SEARCH_MODES.includes(search.get("mode") as SearchMode) ? (search.get("mode") as SearchMode) : DEFAULT_SEARCH_MODE,
     type_filter_label: getMulti("type_filter_label"),
     contract_type: getMulti("contract_type"),
     level: getMulti("level"),
     activity_sector: getMulti("activity_sector"),
     organization_name: search.get("organization_name") || undefined,
+    start_date: search.get("start_date") || undefined,
+    urgent: getBool("urgent"),
+    handi: getBool("handi"),
+    smart_apply: getBool("smart_apply"),
+    is_algo_company: getBool("is_algo_company"),
     sort: SORT_OPTIONS.includes(search.get("sort") as SortOption) ? (search.get("sort") as SortOption) : undefined,
     latitude: search.get("latitude") ? parseFloat(search.get("latitude")!) : undefined,
     longitude: search.get("longitude") ? parseFloat(search.get("longitude")!) : undefined,
@@ -63,6 +86,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/search/sp
   if (params.q) query.set("q", params.q)
   if (params.q && params.q_source) query.set("source", params.q_source)
   if (params.lieu_label) query.set("lieu_label", params.lieu_label)
+  if (params.mode !== DEFAULT_SEARCH_MODE) query.set("mode", params.mode)
 
   for (const val of params.type_filter_label ?? []) query.append("type_filter_label", val)
   for (const val of params.contract_type ?? []) query.append("contract_type", val)
@@ -70,6 +94,11 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/search/sp
   for (const val of params.activity_sector ?? []) query.append("activity_sector", val)
 
   if (params.organization_name) query.set("organization_name", params.organization_name)
+  if (params.start_date) query.set("start_date", params.start_date)
+  if (params.urgent !== undefined) query.set("urgent", params.urgent.toString())
+  if (params.handi !== undefined) query.set("handi", params.handi.toString())
+  if (params.smart_apply !== undefined) query.set("smart_apply", params.smart_apply.toString())
+  if (params.is_algo_company !== undefined) query.set("is_algo_company", params.is_algo_company.toString())
   if (params.sort) query.set("sort", params.sort)
   if (params.latitude !== undefined) query.set("latitude", params.latitude.toString())
   if (params.longitude !== undefined) query.set("longitude", params.longitude.toString())

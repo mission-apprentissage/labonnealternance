@@ -7,11 +7,11 @@ import type { ISearchPageParams, SortOption } from "../_utils/search.params.util
 
 // "" = tri par défaut (pertinence) : permet de RETIRER un tri actif.
 const SORT_LABELS: { value: SortOption | ""; label: string }[] = [
-  { value: "", label: "Pertinence" },
-  { value: "proximity", label: "Proximité" },
-  { value: "smart_apply", label: "Candidature simplifiée" },
-  { value: "date", label: "Date de publication" },
-  { value: "applications", label: "Nombre de candidatures" },
+  { value: "", label: "Les plus pertinentes" },
+  { value: "proximity", label: "Proximité avec le lieu de recherche" },
+  { value: "date", label: "Les offres les plus récentes" },
+  { value: "applications", label: "Les offres avec le moins de candidatures" },
+  { value: "start_date", label: "Date de début de contrat" },
 ]
 
 /**
