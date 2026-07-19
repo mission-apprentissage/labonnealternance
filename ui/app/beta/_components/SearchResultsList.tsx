@@ -63,8 +63,8 @@ export function SearchResultsList({ result, params }: SearchResultsListProps) {
   return (
     <Box>
       <Box>
-        {allHits.map((hit) => (
-          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} />
+        {allHits.map((hit, index) => (
+          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} position={index + 1} />
         ))}
       </Box>
 

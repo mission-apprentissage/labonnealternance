@@ -16,6 +16,7 @@ import { TagFormation } from "@/components/ItemDetail/TagFormation"
 import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
 import { TagRecrutementUrgent } from "@/components/ItemDetail/TagRecrutementUrgent"
 import { getDaysSinceDate } from "@/utils/dateUtils"
+import { getMatomoJobOfferType, MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildHitDetailUrl, buildSearchUrl } from "../_utils/search.params.utils"
@@ -26,6 +27,8 @@ export type Hit = SearchResponse["hits"][number]
 interface SearchHitCardProps {
   hit: Hit
   currentParams: ISearchPageParams
+  /** Position 1-based dans la liste de résultats (télémétrie). */
+  position: number
 }
 
 const isAlgoCompany = (hit: Hit) => hit.is_algo_company === true
@@ -80,9 +83,28 @@ function CandidatureCount({ hit }: { hit: Hit }) {
   )
 }
 
-export function SearchHitCard({ hit, currentParams }: SearchHitCardProps) {
+export function SearchHitCard({ hit, currentParams, position }: SearchHitCardProps) {
   const currentSearchUrl = buildSearchUrl(currentParams)
   const detailUrl = buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)
+
+  // Même événement que la carte legacy (formations exclues, comme en legacy), enrichi de la
+  // dimension search_engine pour comparer les parcours des deux moteurs.
+  const trackClick = isFormation(hit)
+    ? undefined
+    : () => {
+        pushMatomoEvent({
+          event: MATOMO_EVENTS.JOB_OFFER_CLICKED,
+          job_offer_id: hit.url_id,
+          job_offer_type: getMatomoJobOfferType(hit.sub_type as LBA_ITEM_TYPE),
+          job_offer_company: hit.organization_name || "non_renseigné",
+          job_offer_name: hit.title || "non_renseigné",
+          position_in_list: position,
+          has_contact: hit.smart_apply === true,
+          search_job_name: currentParams.q || "non_renseigné",
+          search_address: currentParams.lieu_label || "non_renseigné",
+          search_engine: SEARCH_ENGINES.BETA,
+        })
+      }
 
   // Encart « déjà postulé » legacy réutilisé tel quel : il ne consomme que ideaType, id et
   // contact.hasEmail — reconstruits depuis le hit (mêmes clés localStorage que le legacy →
@@ -104,7 +126,7 @@ export function SearchHitCard({ hit, currentParams }: SearchHitCardProps) {
           shadow
           enlargeLink
           horizontal
-          linkProps={{ href: detailUrl, prefetch: false }}
+          linkProps={{ href: detailUrl, prefetch: false, onClick: trackClick }}
           start={<HitTags hit={hit} />}
           title={
             <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>

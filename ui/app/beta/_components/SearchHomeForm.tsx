@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { RechercheFormTitle } from "@/app/_components/RechercheForm/RechercheFormTitle"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
 
 import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"
@@ -29,6 +30,17 @@ export function SearchHomeForm() {
   const [mode, setMode] = useState<SearchMode>(DEFAULT_SEARCH_MODE)
 
   const launchSearch = (query: string, source: QSource) => {
+    // Même événement que le formulaire home legacy, enrichi de search_engine.
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.SEARCH_LAUNCHED,
+      search_job_name: query.trim() || "non_renseigné",
+      search_address: lieu?.label || "non_renseigné",
+      search_radius: 20,
+      search_diploma: "indifferent",
+      search_origin: "page_accueil",
+      search_engine: SEARCH_ENGINES.BETA,
+      q_source: source,
+    })
     router.push(
       buildSearchUrl({
         q: query.trim() || undefined,

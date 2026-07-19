@@ -5,10 +5,11 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
 
 import { useAutoRadius } from "../_hooks/useAutoRadius"
 import { useSearchResults } from "../_hooks/useSearchResults"
@@ -50,6 +51,28 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const facets = result.data?.pages[0]?.facets
   const handiCount = result.data?.pages[0]?.counts?.is_disabled_elligible
 
+  // search_results_displayed : une fois par recherche distincte (q/lieu/mode/filtres/tri),
+  // pas à chaque page chargée via « Voir plus » — même événement que le legacy, enrichi de
+  // search_engine. Les compteurs par type viennent de la facette `type` du result set.
+  const lastTrackedSearchKeyRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!result.data) return
+    const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = params
+    const searchKey = JSON.stringify(trackedParams)
+    if (lastTrackedSearchKeyRef.current === searchKey) return
+    lastTrackedSearchKeyRef.current = searchKey
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.SEARCH_RESULTS_DISPLAYED,
+      total_results: result.data.pages.at(-1)?.nbHits ?? 0,
+      count_alternance: facets?.type?.offre ?? 0,
+      count_formation: facets?.type?.formation ?? 0,
+      search_job_name: params.q || "non_renseigné",
+      search_address: params.lieu_label || "non_renseigné",
+      search_diploma: params.level?.[0] ?? "indifferent",
+      search_engine: SEARCH_ENGINES.BETA,
+    })
+  }, [result.data, params, facets])
+
   const activeFilterCount =
     (params.type_filter_label?.length ?? 0) +
     (params.contract_type?.length ?? 0) +
@@ -61,6 +84,18 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     (params.smart_apply ? 1 : 0)
 
   function handleSearch(q: string, source: "suggestion" | "free_text") {
+    // Même événement que les formulaires legacy, enrichi de search_engine et de l'origine
+    // de la saisie (suggestion d'autocomplétion vs texte libre).
+    pushMatomoEvent({
+      event: MATOMO_EVENTS.SEARCH_LAUNCHED,
+      search_job_name: q || "non_renseigné",
+      search_address: params.lieu_label || "non_renseigné",
+      search_radius: params.radius,
+      search_diploma: params.level?.[0] ?? "indifferent",
+      search_origin: "page_resultat",
+      search_engine: SEARCH_ENGINES.BETA,
+      q_source: source,
+    })
     navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0 })
   }
 
