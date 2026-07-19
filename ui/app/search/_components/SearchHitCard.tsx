@@ -6,6 +6,7 @@ import { JOB_START_TYPE } from "shared"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { newItemTypeToOldItemType } from "shared/constants/lbaitem"
 
+import { CardStyling } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/CardStyling"
 import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
 import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagementTag"
@@ -92,55 +93,59 @@ export function SearchHitCard({ hit, currentParams }: SearchHitCardProps) {
     contact: { hasEmail: hit.smart_apply === true },
   } as unknown as ILbaItem
 
+  // Même composition que LbaItemCard (legacy) : wrapper zIndex + CardStyling (padding de
+  // contenu 16px) + Card DSFR — hauteur et padding identiques aux cartes de /recherche.
   return (
-    <Box sx={{ mb: fr.spacing("3v"), ".fr-card__title a::before": { zIndex: "unset" } }}>
-      <Card
-        background
-        style={{ paddingBottom: fr.spacing("1v") }}
-        shadow
-        enlargeLink
-        horizontal
-        linkProps={{ href: detailUrl, prefetch: false }}
-        start={<HitTags hit={hit} />}
-        title={
-          <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>
-            {hit.title ?? ""}
-          </Typography>
-        }
-        desc={
-          <Box component="span" sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
-            <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
-              <CompanyLine hit={hit} />
+    <Box sx={{ my: fr.spacing("2v"), ".fr-card__title a::before": { zIndex: "unset" } }}>
+      <CardStyling>
+        <Card
+          background
+          style={{ paddingBottom: fr.spacing("1v") }}
+          shadow
+          enlargeLink
+          horizontal
+          linkProps={{ href: detailUrl, prefetch: false }}
+          start={<HitTags hit={hit} />}
+          title={
+            <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>
+              {hit.title ?? ""}
             </Typography>
-            <Typography component="span" sx={{ color: fr.colors.decisions.text.title.grey.default }} className={fr.cx("fr-text--xs")}>
-              {hit.address}
-              {hit.distance != null && (
-                <>
-                  <br />
-                  <Typography component="span" sx={{ my: 0, fontWeight: 400, color: fr.colors.decisions.text.mention.grey.default }} className={fr.cx("fr-text--xs")}>
-                    {hit.distance} km(s) du lieu de recherche
-                  </Typography>
-                </>
-              )}
-            </Typography>
+          }
+          desc={
+            <Box component="span" sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
+              <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
+                <CompanyLine hit={hit} />
+              </Typography>
+              <Typography component="span" sx={{ color: fr.colors.decisions.text.title.grey.default }} className={fr.cx("fr-text--xs")}>
+                {hit.address}
+                {hit.distance != null && (
+                  <>
+                    <br />
+                    <Typography component="span" sx={{ my: 0, fontWeight: 400, color: fr.colors.decisions.text.mention.grey.default }} className={fr.cx("fr-text--xs")}>
+                      {hit.distance} km(s) du lieu de recherche
+                    </Typography>
+                  </>
+                )}
+              </Typography>
 
-            <Box
-              component="span"
-              sx={{
-                alignItems: { xs: "left", sm: "left", md: "center" },
-                gap: { xs: fr.spacing("2v"), md: fr.spacing("1v") },
-                display: "flex",
-                flexDirection: { xs: "column", md: "row" },
-              }}
-            >
-              <DatePublication hit={hit} />
-              <CandidatureCount hit={hit} />
-              <ItemDetailApplicationsStatus item={applicationStatusItem} />
+              <Box
+                component="span"
+                sx={{
+                  alignItems: { xs: "left", sm: "left", md: "center" },
+                  gap: { xs: fr.spacing("2v"), md: fr.spacing("1v") },
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                }}
+              >
+                <DatePublication hit={hit} />
+                <CandidatureCount hit={hit} />
+                <ItemDetailApplicationsStatus item={applicationStatusItem} />
+              </Box>
             </Box>
-          </Box>
-        }
-        size="medium"
-      />
+          }
+          size="medium"
+        />
+      </CardStyling>
     </Box>
   )
 }
