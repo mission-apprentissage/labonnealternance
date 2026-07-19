@@ -298,7 +298,14 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
       )}
 
       {hasActiveFilters(params) && (
-        <Box component="button" type="button" className={fr.cx("fr-link", "fr-link--sm")} onClick={() => onNavigate(clearedFilters(params))} sx={{ ml: fr.spacing("2v") }}>
+        <Box
+          component="button"
+          type="button"
+          className={fr.cx("fr-link", "fr-link--sm")}
+          onClick={() => onNavigate(clearedFilters(params))}
+          // Souligné en permanence (le soulignement DSFR par background-image ne s'applique qu'aux <a>).
+          sx={{ ml: fr.spacing("2v"), textDecoration: "underline", textUnderlineOffset: "4px" }}
+        >
           Réinitialiser les filtres
         </Box>
       )}
