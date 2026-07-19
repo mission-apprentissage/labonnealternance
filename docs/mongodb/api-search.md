@@ -14,6 +14,7 @@ GET /api/v1/search
 |---|---|---|---|
 | `q` | `string` | — | Texte libre (fuzzy, analyse française, 1 typo toléré) |
 | `type` | `string` | — | `"offre"` ou `"formation"` |
+| `mode` | `string` | — | Type de recherche : `emplois` (offres hors CFA/GEIQ), `formations`, ou `emplois_formation` (offres CFA/GEIQ uniquement, cf. `is_formation_included`) |
 | `type_filter_label` | `string` | — | Libellé de type pour l'affichage des filtres |
 | `contract_type` | `string \| string[]` | — | Ex: `"Apprentissage"` ou `["Apprentissage","Contrat pro"]` |
 | `level` | `string` | — | Niveau européen de diplôme : `"3"` à `"7"` |
@@ -22,7 +23,9 @@ GET /api/v1/search
 | `is_disabled_elligible` | `"true" \| "false"` | — | `true` : uniquement les offres éligibles aux personnes en situation de handicap |
 | `start_type` | `string` | — | Mode de démarrage du contrat : `des_que_possible` ou `precise_date` |
 | `start_date` | `Date` (ISO 8601) | — | Date de début souhaitée : offres démarrant avant ou à cette date (`$lte`, borne incluse), OU à date flexible (`is_start_flexible`), OU sans date de démarrage (candidatures spontanées, offres sans date — non impactées, ordre de pertinence conservé) |
-| `sort` | `string` | — | Tri : `proximity` (géo), `smart_apply`, `date`, `applications` (nb de candidatures croissant). Défaut : pertinence (cf. `current-behavior.md` §1) |
+| `smart_apply` | `"true" \| "false"` | — | `true` : uniquement les offres avec candidature simplifiée |
+| `is_algo_company` | `"true" \| "false"` | — | `true` : entreprises à contacter (candidatures spontanées) ; `false` : offres d'emploi ; absent : les deux |
+| `sort` | `string` | — | Tri : `proximity` (géo), `date`, `applications` (nb de candidatures croissant), `start_date` (date de début croissante, docs sans date écartés). Défaut : pertinence (cf. `current-behavior.md` §1) |
 | `latitude` | `number` | — | Latitude WGS84 |
 | `longitude` | `number` | — | Longitude WGS84 |
 | `radius` | `number` | `30` | Rayon de recherche en km |
@@ -44,9 +47,12 @@ GET /api/v1/search
     "level": { "3": 40, "4": 35, "5": 30, "6": 20, "7": 17 },
     "activity_sector": { "Informatique": 35, "BTP": 28 },
     "organization_name": { "SNCF": 12, "Orange": 8 }
-  }
+  },
+  "counts": { "is_disabled_elligible": 115 }
 }
 ```
+
+- **`counts.is_disabled_elligible`** : nombre d'offres éligibles handicap dans le result set (compteur de la chip « Employeur handi-accueillant »). Disjonctif : le filtre handi lui-même est exclu de son calcul (le compteur ne retombe pas quand on l'active). Les facettes mongot ne supportant pas les booleans, il est calculé via un `$searchMeta` dédié.
 
 ## Champs d'un résultat (`ISearchItem`)
 
@@ -63,6 +69,7 @@ GET /api/v1/search
 | `start_type` | `string \| null` | Mode de démarrage : `des_que_possible` ou `precise_date` (offres uniquement) |
 | `is_start_flexible` | `boolean \| null` | Date de démarrage flexible (offres uniquement) |
 | `is_algo_company` | `boolean \| null` | Candidature spontanée issue de l'algo recruteurs — reléguée en fin de tri par date |
+| `is_formation_included` | `boolean \| null` | Offre émise par un CFA (`is_delegated`) ou un GEIQ (whitelist SIRET) : « emploi avec formation incluse » (`null` pour les formations) |
 | `smart_apply` | `boolean` | `true` si la candidature rapide est disponible |
 | `application_count` | `number` | Nombre de candidatures déjà reçues |
 | `title` | `string` | Titre de l'offre ou de la formation |
@@ -105,7 +112,7 @@ GET /api/v1/search?q=web&page=2&hitsPerPage=10
 - **Géo** : les paramètres `latitude`, `longitude` et `radius` sont indépendants du texte — entièrement combinables
 - **Lien de détail** : construire l'URL depuis `url_id` et `type` (ex: `/offre/{url_id}`)
 - **`smart_apply`** : afficher le badge "Postuler rapidement" lorsque `true`
-- **Tri** : configurable via `sort` (`proximity` / `smart_apply` / `date`). Par défaut : pertinence, avec `smart_apply` puis `application_count` (moins candidatées d'abord) en tie-break. Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
+- **Tri** : configurable via `sort` (`proximity` / `date` / `applications` / `start_date`). Par défaut : pertinence, avec `smart_apply` puis `application_count` (moins candidatées d'abord) en tie-break. Le tri `smart_apply` a été retiré (« Candidature simplifiée » est un filtre). Détail des étapes dans [`current-behavior.md`](./current-behavior.md) §1.
 
 ## Recherche textuelle « Métier » (`q`)
 
@@ -127,15 +134,15 @@ Définie par `buildTextClauses` ([`search.service.ts`](../../server/src/services
 
 Composant [`SearchBar.tsx`](../../ui/app/search/_components/SearchBar.tsx) :
 
-- **Champ texte libre** (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
-- **Suggestions** : titres distincts (`title`) des **5 premiers hits** de `/v1/search?q=<saisie>&hitsPerPage=5&radius=30`, avec *throttle* ~300 ms, déclenchées à partir de **2 caractères**. → l'autocomplétion **réutilise le moteur de recherche**, il n'y a pas d'endpoint de suggestion dédié.
-- **Déclenchement de la recherche** (pas de bouton de soumission) : touche **Entrée**, **sélection d'une suggestion**, ou **vidage** du champ (retire `q`).
+- **Champ texte libre** « Que recherchez-vous ? » (`Autocomplete` freeSolo) — **aucun référentiel métier imposé** (pas de liste ROME fermée).
+- **Suggestions** : endpoint dédié `/v1/search/suggest?q=<saisie>&limit=8` (contenu indexé + suggestions apprises), *throttle* ~300 ms, à partir de **3 caractères**. Dropdown : 1ʳᵉ ligne « Rechercher : {saisie} » (recherche texte libre) + groupe « Suggestions » avec la sous-chaîne matchée en gras.
+- **Déclenchement de la recherche** (pas de bouton de soumission sur la page résultats) : touche **Entrée**, **sélection d'une suggestion** ou de la ligne « Rechercher : … », ou **vidage** du champ (retire `q`).
 
 ## Architecture technique
 
 - **Collection** : `search_items` (MongoDB)
 - **Index de recherche** : `search_items_index` (mongot / Lucene)
 - **Champs full-text** : `title`, `description`, `keywords`, `organization_name` (analyseur `lucene.french`)
-- **Champs filtrables** : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`, `organization_name`, `is_disabled_elligible`, `start_type`, `start_date` (range `gte`)
+- **Champs filtrables** : `type`, `type_filter_label`, `sub_type`, `contract_type`, `level`, `activity_sector`, `organization_name`, `is_disabled_elligible`, `start_type`, `start_date` (range), `smart_apply`, `is_algo_company`, `is_formation_included`
 - **Géosearch** : champ `location` (GeoJSON Point), rayon en mètres dans l'opérateur `geoWithin`
 - **Facettes** : calculées via `$searchMeta` en parallèle de la requête principale
