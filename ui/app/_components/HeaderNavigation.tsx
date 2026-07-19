@@ -2,7 +2,6 @@
 
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
 import { useNewSearchOptIn } from "@/app/search/_hooks/useNewSearchOptIn"
 import { PAGES } from "@/utils/routes.utils"
 
@@ -83,12 +82,10 @@ const RECHERCHE_NEW_HREF = "/search/split"
 export function HeaderNavigation() {
   const pathname = usePathname()
 
-  // « Je recherche une alternance » suit l'opt-in au nouveau moteur. Le flag localStorage
-  // n'est lu qu'après le mount : le SSR rend toujours le href legacy (pas de mismatch).
+  // « Je recherche une alternance » suit l'opt-in au nouveau moteur (le SSR rend le href
+  // legacy — snapshot serveur du hook — et la valeur client s'applique après l'hydratation).
   const { optedIn } = useNewSearchOptIn()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const rechercheHref = mounted && optedIn ? RECHERCHE_NEW_HREF : RECHERCHE_LEGACY_HREF
+  const rechercheHref = optedIn ? RECHERCHE_NEW_HREF : RECHERCHE_LEGACY_HREF
 
   const items = NAV_ITEMS.map((item) => ({
     text: item.text,
