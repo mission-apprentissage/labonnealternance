@@ -100,26 +100,32 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         {/* Desktop : bandeau de recherche + liste mono-colonne (affichage piloté par CSS pour éviter le flash d'hydratation) */}
         <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1 }}>
           <DefaultContainer sx={{ py: fr.spacing("4v") }}>
-            {/* Bandeau : champs + chips, panneau blanc arrondi comme le design */}
-            <Box
-              sx={{
-                backgroundColor: fr.colors.decisions.background.default.grey.default,
-                borderRadius: "8px",
-                p: fr.spacing("6v"),
-                boxShadow: "0 2px 6px rgba(0,0,18,0.08)",
-              }}
-            >
-              <Box sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
-                <Box sx={{ flex: 1 }}>
-                  <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+            {/* Bandeau : champs + chips, panneau blanc arrondi comme le design — sticky au scroll */}
+            <Box sx={{ position: "sticky", top: 0, zIndex: 30 }}>
+              {/* Cache derrière les coins arrondis : couleur du fond de page, invisible au repos,
+                  masque les résultats qui défileraient dans les encoches une fois le bandeau collé. */}
+              <Box aria-hidden="true" sx={{ position: "absolute", top: 0, left: 0, right: 0, height: "8px", backgroundColor: fr.colors.decisions.background.alt.grey.default }} />
+              <Box
+                sx={{
+                  position: "relative",
+                  backgroundColor: fr.colors.decisions.background.default.grey.default,
+                  borderRadius: "8px",
+                  p: fr.spacing("6v"),
+                  boxShadow: "0 2px 6px rgba(0,0,18,0.08)",
+                }}
+              >
+                <Box sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+                  <Box sx={{ flex: 1 }}>
+                    <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+                  </Box>
+                  <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
                 </Box>
-                <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
-              </Box>
-              <Box sx={{ display: "flex", alignItems: "flex-end", gap: fr.spacing("3v"), pt: fr.spacing("4v") }}>
-                <Box sx={{ flex: 1 }}>
-                  <SearchFilters params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
+                <Box sx={{ display: "flex", alignItems: "flex-end", gap: fr.spacing("3v"), pt: fr.spacing("4v") }}>
+                  <Box sx={{ flex: 1 }}>
+                    <SearchFilters params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
+                  </Box>
+                  <ExitNewSearchLink />
                 </Box>
-                <ExitNewSearchLink />
               </Box>
             </Box>
 
