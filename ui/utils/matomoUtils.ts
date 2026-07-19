@@ -19,6 +19,15 @@ export const MATOMO_EVENTS = {
   SMART_APPLY_CONFIRMED: "smart_apply_confirmed",
   JOB_CREATION_STARTED: "job_creation_started",
   JOB_CREATION_COMPLETED: "job_creation_completed",
+  NEW_SEARCH_OPTIN: "new_search_optin",
+  NEW_SEARCH_OPTOUT: "new_search_optout",
+}
+
+// Identifiants de moteur de recherche pour la télémétrie de bascule (dimension
+// `search_engine`) : legacy /recherche vs nouveau moteur /search/split (versionné).
+export const SEARCH_ENGINES = {
+  PRODUCTION: "production",
+  BETA: "beta-v1",
 }
 
 export function getMatomoJobOfferType(ideaType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE | "non_renseigné" {

@@ -91,8 +91,10 @@ interface SearchBarProps {
   /** source : "suggestion" si l'utilisateur a sélectionné une option d'autocomplete, "free_text" sinon (télémétrie moteur de suggestion). */
   onSubmit: (q: string, source: "suggestion" | "free_text") => void
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number } | null) => void
-  /** "row" : barre desktop ; "column" : panneau mobile (sans bouton, géré par le footer). */
-  layout?: "row" | "column"
+  /** Saisie courante du champ métier (formulaire home : le bouton Rechercher lit la valeur non validée). */
+  onQChange?: (q: string) => void
+  /** "row" : barre desktop ; "column" : panneau mobile ; "responsive" : colonne en xs, rangée en md+ (home). */
+  layout?: "row" | "column" | "responsive"
   /** Message d'erreur DSFR sous le champ métier (label + stroke passent en rouge). */
   qError?: string
   /** Message d'erreur DSFR sous le champ lieu. */
@@ -125,7 +127,7 @@ function FieldError({ children }: { children: ReactNode }) {
   )
 }
 
-export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, layout = "row", qError, lieuError }: SearchBarProps) {
+export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, onQChange, layout = "row", qError, lieuError }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -137,6 +139,16 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
   const debouncedLieu = useThrottle(lieuInput, 300)
 
   const isColumn = layout === "column"
+  // Valeurs sx par layout : "responsive" = colonne en xs, rangée en md+ (formulaire home).
+  const responsive = layout === "responsive"
+  const rowSx = {
+    direction: isColumn ? "column" : responsive ? { xs: "column", md: "row" } : "row",
+    gap: isColumn ? fr.spacing("4v") : responsive ? { xs: fr.spacing("4v"), md: fr.spacing("3v") } : fr.spacing("3v"),
+    align: isColumn ? "stretch" : responsive ? { xs: "stretch", md: "flex-end" } : "flex-end",
+    metierFlex: isColumn ? "none" : responsive ? { xs: "none", md: 2 } : 2,
+    lieuFlex: isColumn ? "none" : responsive ? { xs: "none", md: "0 0 320px" } : "0 0 320px",
+    fieldWidth: isColumn ? "100%" : responsive ? { xs: "100%", md: "auto" } : undefined,
+  } as const
 
   // Suggestions pour le champ métier — autocomplétion par préfixe (endpoint dédié, min 3 caractères)
   const { data: suggestionData } = useQuery({
@@ -200,13 +212,13 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     <Box
       sx={{
         display: "flex",
-        flexDirection: isColumn ? "column" : "row",
-        gap: isColumn ? fr.spacing("4v") : fr.spacing("3v"),
-        alignItems: isColumn ? "stretch" : "flex-end",
+        flexDirection: rowSx.direction,
+        gap: rowSx.gap,
+        alignItems: rowSx.align,
       }}
     >
       {/* Champ métier */}
-      <Box sx={{ flex: isColumn ? "none" : 2, width: isColumn ? "100%" : undefined }}>
+      <Box sx={{ flex: rowSx.metierFlex, width: rowSx.fieldWidth }}>
         <FieldLabel error={Boolean(qError)}>Que recherchez-vous ?</FieldLabel>
         <Autocomplete
           freeSolo
@@ -218,6 +230,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
             // avec le libellé de la ligne « Rechercher : … ».
             if (reason === "reset") return
             setInputValue(value)
+            onQChange?.(value)
             if (value === "") handleSubmit("", "free_text")
           }}
           onChange={(_e, value) => {
@@ -295,7 +308,7 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
       </Box>
 
       {/* Champ lieu */}
-      <Box sx={{ flex: isColumn ? "none" : "0 0 320px", width: isColumn ? "100%" : undefined }}>
+      <Box sx={{ flex: rowSx.lieuFlex, width: rowSx.fieldWidth }}>
         <FieldLabel error={Boolean(lieuError)}>Lieu</FieldLabel>
         <Autocomplete
           freeSolo

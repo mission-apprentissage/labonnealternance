@@ -15,7 +15,7 @@ import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherc
 import type { WithRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { MATOMO_EVENTS, pushMatomoEvent } from "@/utils/matomoUtils"
 
-function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void }) {
+function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void; footer?: React.ReactNode }) {
   return (
     <Box
       sx={{
@@ -47,15 +47,17 @@ function HomeRechercheFormUI(props: { onSubmit: (values: IRechercheForm) => void
           submitButton={<RechercheSubmitButton>C’est parti</RechercheSubmitButton>}
         />
       </RechercheForm>
+      {props.footer}
     </Box>
   )
 }
 
-function HomeRechercheFormComponent(props: WithRecherchePageParams) {
+function HomeRechercheFormComponent(props: WithRecherchePageParams & { footer?: React.ReactNode }) {
   const onSubmit = useNavigateToRecherchePage(props.rechercheParams)
 
   return (
     <HomeRechercheFormUI
+      footer={props.footer}
       onSubmit={(rechercheForm) => {
         pushMatomoEvent({
           event: MATOMO_EVENTS.SEARCH_LAUNCHED,
@@ -71,10 +73,10 @@ function HomeRechercheFormComponent(props: WithRecherchePageParams) {
   )
 }
 
-export function HomeRechercheForm(props: WithRecherchePageParams) {
+export function HomeRechercheForm(props: WithRecherchePageParams & { footer?: React.ReactNode }) {
   return (
     <Suspense fallback={<HomeRechercheFormUI onSubmit={null} />}>
-      <HomeRechercheFormComponent rechercheParams={props.rechercheParams} />
+      <HomeRechercheFormComponent rechercheParams={props.rechercheParams} footer={props.footer} />
     </Suspense>
   )
 }

@@ -8,7 +8,7 @@ import { PAGES } from "@/utils/routes.utils"
 import { AlgoHome } from "./_components/AlgoHome"
 import { CalculRemuneration } from "./_components/CalculRemuneration"
 import { HomeCircleImageDecoration } from "./_components/HomeCircleImageDecoration"
-import { HomeRechercheForm } from "./_components/HomeRechercheForm"
+import { HomeRechercheOptIn } from "./_components/HomeRechercheOptIn"
 import { HowTo } from "./_components/HowTo"
 import { InformationsAlternance } from "./_components/InformationsAlternance"
 
@@ -64,7 +64,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <HomeCircleImageDecoration size="high" />
           </Box>
           <Box sx={{ position: "relative", display: "grid", padding: { xs: 0, md: fr.spacing("12v") }, gap: fr.spacing("8v"), gridTemplateColumns: "1fr" }}>
-            <HomeRechercheForm rechercheParams={rechercheParams} />
+            <HomeRechercheOptIn rechercheParams={rechercheParams} />
             <HowTo />
           </Box>
         </Box>

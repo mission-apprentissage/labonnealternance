@@ -14,6 +14,7 @@ import { useAutoRadius } from "../_hooks/useAutoRadius"
 import { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
+import { ExitNewSearchLink } from "./ExitNewSearchLink"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
 import { SearchMobilePanel } from "./SearchMobilePanel"
@@ -28,15 +29,6 @@ interface SearchSplitPageClientProps {
 }
 
 type MobilePanel = null | "search" | "filters" | "tri"
-
-/** Lien « Sortir du nouveau moteur de recherche » → legacy /recherche VIERGE (aucune traduction de params). */
-function ExitNewSearchLink() {
-  return (
-    <Box component="a" href="/recherche" className={fr.cx("fr-link", "fr-link--sm", "fr-icon-arrow-go-back-line", "fr-link--icon-left")} sx={{ whiteSpace: "nowrap" }}>
-      Sortir du nouveau moteur de recherche
-    </Box>
-  )
-}
 
 export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientProps) {
   const rawSearchParams = useSearchParams()

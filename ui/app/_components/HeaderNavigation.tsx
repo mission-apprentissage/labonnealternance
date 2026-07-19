@@ -2,6 +2,8 @@
 
 import MainNavigation from "@codegouvfr/react-dsfr/MainNavigation"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useNewSearchOptIn } from "@/app/search/_hooks/useNewSearchOptIn"
 import { PAGES } from "@/utils/routes.utils"
 
 type NavLink = {
@@ -75,19 +77,30 @@ function isMenuActive(pathname: string, menuLinks: NavLink[]): boolean {
   return menuLinks.some((link) => isLinkActive(pathname, link.href))
 }
 
+const RECHERCHE_LEGACY_HREF = PAGES.dynamic.recherche({}).getPath()
+const RECHERCHE_NEW_HREF = "/search/split"
+
 export function HeaderNavigation() {
   const pathname = usePathname()
+
+  // « Je recherche une alternance » suit l'opt-in au nouveau moteur. Le flag localStorage
+  // n'est lu qu'après le mount : le SSR rend toujours le href legacy (pas de mismatch).
+  const { optedIn } = useNewSearchOptIn()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const rechercheHref = mounted && optedIn ? RECHERCHE_NEW_HREF : RECHERCHE_LEGACY_HREF
 
   const items = NAV_ITEMS.map((item) => ({
     text: item.text,
     isActive: isMenuActive(pathname, item.menuLinks),
-    menuLinks: item.menuLinks.map((link) => ({
-      text: link.text,
-      isActive: isLinkActive(pathname, link.href),
-      linkProps: {
-        href: link.href,
-      },
-    })),
+    menuLinks: item.menuLinks.map((link) => {
+      const href = link.href === RECHERCHE_LEGACY_HREF ? rechercheHref : link.href
+      return {
+        text: link.text,
+        isActive: isLinkActive(pathname, href),
+        linkProps: { href },
+      }
+    }),
   }))
 
   return <MainNavigation items={items} />
