@@ -75,9 +75,20 @@ export function SearchHomeForm() {
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={setMode} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
-        <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, "free_text")} style={{ height: 48, justifyContent: "center" }}>
-          Rechercher
-        </Button>
+        <Box>{rechercherButton}</Box>
+      </Box>
+
+      {/* Mobile : champs factices → modale de saisie plein écran */}
+      <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: fr.spacing("4v") }}>
+        <MobileFakeField
+          label="Que recherchez-vous ?"
+          value={q}
+          placeholder="Recherche par mot clé (métier, formation, entreprise, compétence,...)"
+          onOpen={() => setMobilePanelOpen(true)}
+        />
+        <MobileFakeField label="Lieu" value={lieu?.label} placeholder="France entière" onOpen={() => setMobilePanelOpen(true)} />
+        <SearchTypeRechercheSelect value={mode} onChange={setMode} fullWidth />
+        {rechercherButton}
       </Box>
       <Box sx={{ display: "flex", justifyContent: { xs: "center", md: "flex-end" } }}>
         <ExitNewSearchLink navigateToLegacy={false} />
