@@ -2,9 +2,10 @@ import { fr } from "@codegouvfr/react-dsfr"
 import Alert from "@codegouvfr/react-dsfr/Alert"
 import Button from "@codegouvfr/react-dsfr/Button"
 import { Box, CircularProgress, Skeleton } from "@mui/material"
+import Image from "next/image"
+import { RADIUS_MAX } from "../_hooks/useAutoRadius"
 import type { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams } from "../_utils/search.params.utils"
-import type { Hit } from "./SearchHitCard"
 import { SearchHitCard } from "./SearchHitCard"
 
 type InfiniteResult = ReturnType<typeof useSearchResults>
@@ -12,22 +13,22 @@ type InfiniteResult = ReturnType<typeof useSearchResults>
 interface SearchResultsListProps {
   result: InfiniteResult
   params: ISearchPageParams
-  selectedHitId?: string
-  onHitSelect?: (hit: Hit) => void
 }
 
-export function SearchResultsList({ result, params, selectedHitId, onHitSelect }: SearchResultsListProps) {
+function LoadingSkeletons() {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
+      {[0, 1, 2].map((i) => (
+        <Skeleton key={i} variant="rectangular" height={120} sx={{ borderRadius: "4px" }} />
+      ))}
+    </Box>
+  )
+}
+
+export function SearchResultsList({ result, params }: SearchResultsListProps) {
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = result
 
-  if (isLoading) {
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v"), mt: fr.spacing("4v") }}>
-        {[0, 1, 2].map((i) => (
-          <Skeleton key={i} variant="rectangular" height={120} sx={{ borderRadius: "4px" }} />
-        ))}
-      </Box>
-    )
-  }
+  if (isLoading) return <LoadingSkeletons />
 
   if (isError) {
     return (
@@ -42,9 +43,19 @@ export function SearchResultsList({ result, params, selectedHitId, onHitSelect }
   const allHits = data.pages.flatMap((p) => p.hits)
 
   if (allHits.length === 0) {
+    // L'élargissement automatique du rayon (useAutoRadius) est encore en cours : l'état vide
+    // ne s'affiche qu'une fois tous les paliers épuisés (100 km).
+    const stillWidening = params.latitude !== undefined && params.longitude !== undefined && params.radius < RADIUS_MAX
+    if (stillWidening) return <LoadingSkeletons />
+
     return (
-      <Box sx={{ mt: fr.spacing("4v"), textAlign: "center", color: fr.colors.decisions.text.mention.grey.default }}>
-        <p>Aucun résultat pour votre recherche.</p>
+      <Box sx={{ mt: fr.spacing("8v"), textAlign: "center" }}>
+        {/* Illustration legacy réutilisée (pas d'export Figma pour cet état). */}
+        <Image src="/images/dosearch.svg" alt="" width={266} height={190} />
+        <Box sx={{ mt: fr.spacing("4v"), fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }}>Aucun résultat trouvé pour votre recherche.</Box>
+        <Box sx={{ mt: fr.spacing("2v"), color: fr.colors.decisions.text.mention.grey.default }}>
+          Nous vous conseillons de modifier vos critères : mots-clés, zone géographique, engagement handicap, etc.
+        </Box>
       </Box>
     )
   }
@@ -53,7 +64,7 @@ export function SearchResultsList({ result, params, selectedHitId, onHitSelect }
     <Box>
       <Box>
         {allHits.map((hit) => (
-          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} isSelected={selectedHitId !== undefined && hit.url_id === selectedHitId} onSelect={onHitSelect} />
+          <SearchHitCard key={String(hit._id)} hit={hit} currentParams={params} />
         ))}
       </Box>
 

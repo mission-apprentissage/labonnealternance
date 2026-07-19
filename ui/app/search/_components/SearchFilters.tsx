@@ -2,14 +2,12 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
+import Input from "@codegouvfr/react-dsfr/Input"
 import { Box } from "@mui/material"
 import { useMemo } from "react"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
-import { buildTypeGroups } from "../_utils/search.type-groups"
-import { SearchEntrepriseAutocomplete } from "./SearchEntrepriseAutocomplete"
-import type { MultiSelectGroup, MultiSelectOption } from "./SearchMultiSelectField"
-import { SearchMultiSelectField } from "./SearchMultiSelectField"
+import { SearchChipOptionRow, SearchFilterChip } from "./SearchFilterChip"
 
 interface FacetCounts {
   type?: Record<string, number>
@@ -23,40 +21,80 @@ interface FacetCounts {
 interface SearchFiltersProps {
   params: ISearchPageParams
   facets?: FacetCounts
+  /** Compteur d'offres handi-accueillantes (counts.is_disabled_elligible de l'API) — seul filtre avec compteur. */
+  handiCount?: number
   onNavigate: (newParams: ISearchPageParams) => void
-  /** "bar" : barre desktop (dropdowns) ; "sections" : panneau mobile (cases empilées). */
+  /** "bar" : rangée de chips desktop ; "sections" : panneau mobile (cases empilées). */
   variant?: "bar" | "sections"
 }
 
-/** Construit les options (valeur/label/compteur) en incluant toujours les valeurs sélectionnées. */
-function buildOptions(counts?: Record<string, number>, selected: string[] = []): MultiSelectOption[] {
-  const map = new Map<string, number | undefined>()
-  for (const [value, count] of Object.entries(counts ?? {})) map.set(value, count)
-  for (const value of selected) if (!map.has(value)) map.set(value, undefined)
-  return [...map.entries()].map(([value, count]) => ({ value, label: value, count }))
+// Valeurs de niveau « indifférentes » (toujours incluses côté API) : pas des options de filtre.
+const LEVEL_AGNOSTIC_VALUES = new Set(["", "Indifférent"])
+
+// Ordre pédagogique Cap → Bac+5 (l'ordre alphabétique mélange les niveaux).
+const levelRank = (label: string): number => {
+  if (/infrabac/i.test(label)) return 1
+  if (/\(bac\)/i.test(label)) return 2
+  if (/bac\+2/i.test(label)) return 3
+  if (/bac\+3/i.test(label)) return 4
+  if (/bac\+5/i.test(label)) return 5
+  return 99
 }
 
-function sortAlpha(options: MultiSelectOption[]): MultiSelectOption[] {
-  return [...options].sort((a, b) => a.label.localeCompare(b.label, "fr"))
+/** Options d'un filtre : valeurs des facettes + valeurs sélectionnées (toujours démontables). */
+function buildOptionValues(counts?: Record<string, number>, selected: string[] = []): string[] {
+  return [...new Set([...Object.keys(counts ?? {}), ...selected])]
 }
 
-/** Section de cases à cocher inline (panneau mobile), avec sous-groupes optionnels. */
-function CheckboxSection({
-  title,
-  options,
-  groups,
-  value,
-  onChange,
-}: {
-  title: string
-  options?: MultiSelectOption[]
-  groups?: MultiSelectGroup[]
-  value: string[]
-  onChange: (vals: string[]) => void
-}) {
-  const renderGroups: MultiSelectGroup[] = groups ? groups.map((g) => ({ label: g.label, options: sortAlpha(g.options) })) : [{ label: "", options: sortAlpha(options ?? []) }]
-  const isEmpty = renderGroups.every((g) => g.options.length === 0)
+/** Libellé de chip multi-valeurs : « Apprentissage, +1 ». */
+const multiLabel = (values: string[]): string => (values.length > 1 ? `${values[0]}, +${values.length - 1}` : values[0])
 
+const formatDateFr = (isoDate: string): string => isoDate.split("-").reverse().join("/")
+
+const isFutureDate = (isoDate?: string): boolean => {
+  if (!isoDate) return false
+  const today = new Date()
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
+  return isoDate > todayIso
+}
+
+const TYPE_FILTER_LABEL_DISTANCE = "Formation à distance"
+
+/** Les filtres remis à zéro par « Réinitialiser les filtres » (q, lieu, mode et tri conservés). */
+export function clearedFilters(params: ISearchPageParams): ISearchPageParams {
+  return {
+    ...params,
+    type_filter_label: undefined,
+    contract_type: undefined,
+    level: undefined,
+    activity_sector: undefined,
+    organization_name: undefined,
+    start_date: undefined,
+    urgent: undefined,
+    handi: undefined,
+    smart_apply: undefined,
+    is_algo_company: undefined,
+    page: 0,
+  }
+}
+
+export function hasActiveFilters(params: ISearchPageParams): boolean {
+  return Boolean(
+    params.type_filter_label?.length ||
+      params.contract_type?.length ||
+      params.level?.length ||
+      params.activity_sector?.length ||
+      params.organization_name ||
+      params.start_date ||
+      params.urgent !== undefined ||
+      params.handi !== undefined ||
+      params.smart_apply !== undefined ||
+      params.is_algo_company !== undefined
+  )
+}
+
+/** Section de cases à cocher inline (panneau mobile — refonte complète au lot mobile). */
+function CheckboxSection({ title, options, value, onChange }: { title: string; options: string[]; value: string[]; onChange: (vals: string[]) => void }) {
   const toggle = (optionValue: string) => {
     onChange(value.includes(optionValue) ? value.filter((v) => v !== optionValue) : [...value, optionValue])
   }
@@ -66,96 +104,194 @@ function CheckboxSection({
       <Box component="h3" className={fr.cx("fr-h6")} sx={{ margin: 0, mb: fr.spacing("2v") }}>
         {title}
       </Box>
-      {isEmpty && <Box sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>}
-      {renderGroups.map((group) => (
-        <Box key={group.label || "__flat__"}>
-          {group.label && (
-            <Box
-              sx={{
-                pt: fr.spacing("1v"),
-                pb: fr.spacing("1v"),
-                fontSize: "0.6875rem",
-                fontWeight: 700,
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                color: fr.colors.decisions.text.mention.grey.default,
-              }}
-            >
-              {group.label}
-            </Box>
-          )}
-          {group.options.length > 0 && (
-            <Checkbox
-              small
-              options={group.options.map((option) => ({
-                label: option.label,
-                nativeInputProps: {
-                  checked: value.includes(option.value),
-                  onChange: () => toggle(option.value),
-                },
-              }))}
-            />
-          )}
-        </Box>
-      ))}
+      {options.length === 0 && <Box sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>}
+      {options.length > 0 && (
+        <Checkbox
+          small
+          options={options.map((option) => ({
+            label: option,
+            nativeInputProps: { checked: value.includes(option), onChange: () => toggle(option) },
+          }))}
+        />
+      )}
     </Box>
   )
 }
 
-export function SearchFilters({ params, facets, onNavigate, variant = "bar" }: SearchFiltersProps) {
-  // Facettes dynamiques/synchronisées : on utilise directement les compteurs renvoyés par
-  // l'API (faceting disjonctif). Les options indisponibles n'apparaissent plus ; les valeurs
-  // sélectionnées sont toujours incluses (pour pouvoir les retirer).
-  const typeOptions = useMemo(() => buildOptions(facets?.type_filter_label, params.type_filter_label), [facets?.type_filter_label, params.type_filter_label])
-  const typeGroups = useMemo(() => buildTypeGroups(typeOptions), [typeOptions])
-  const contractOptions = useMemo(() => buildOptions(facets?.contract_type, params.contract_type), [facets?.contract_type, params.contract_type])
-  const levelOptions = useMemo(() => buildOptions(facets?.level, params.level), [facets?.level, params.level])
-  const entrepriseOptions = useMemo(() => Object.keys(facets?.organization_name ?? {}), [facets?.organization_name])
+export function SearchFilters({ params, facets, handiCount, onNavigate, variant = "bar" }: SearchFiltersProps) {
+  const navigate = (patch: Partial<ISearchPageParams>) => onNavigate({ ...params, ...patch, page: 0 })
 
-  const setMulti = (key: "type_filter_label" | "contract_type" | "level" | "activity_sector") => (vals: string[]) =>
-    onNavigate({ ...params, [key]: vals.length ? vals : undefined, page: 0 })
-
-  const setEntreprise = (name: string | null) => onNavigate({ ...params, organization_name: name ?? undefined, page: 0 })
+  const contractOptions = useMemo(
+    () => buildOptionValues(facets?.contract_type, params.contract_type).sort((a, b) => a.localeCompare(b, "fr")),
+    [facets?.contract_type, params.contract_type]
+  )
+  const levelOptions = useMemo(
+    () =>
+      buildOptionValues(facets?.level, params.level)
+        .filter((v) => !LEVEL_AGNOSTIC_VALUES.has(v))
+        .sort((a, b) => levelRank(a) - levelRank(b)),
+    [facets?.level, params.level]
+  )
 
   if (variant === "sections") {
     return (
       <Box>
-        <CheckboxSection title="Type" groups={typeGroups} value={params.type_filter_label ?? []} onChange={setMulti("type_filter_label")} />
-        <CheckboxSection title="Contrat" options={contractOptions} value={params.contract_type ?? []} onChange={setMulti("contract_type")} />
-        <CheckboxSection title="Niveau" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
-        {/* Filtre "Secteur" retiré de l'UI (doublons de libellés NAF en cours de traitement) —
-            le paramètre API activity_sector reste fonctionnel (URLs existantes). */}
-        <Box sx={{ py: fr.spacing("2v") }}>
-          <Box component="h3" className={fr.cx("fr-h6")} sx={{ margin: 0, mb: fr.spacing("2v") }}>
-            Entreprise
-          </Box>
-          <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} fullWidth />
-        </Box>
+        <CheckboxSection
+          title="Contrat"
+          options={contractOptions}
+          value={params.contract_type ?? []}
+          onChange={(vals) => navigate({ contract_type: vals.length ? vals : undefined })}
+        />
+        <CheckboxSection title="Niveau" options={levelOptions} value={params.level ?? []} onChange={(vals) => navigate({ level: vals.length ? vals : undefined })} />
       </Box>
     )
   }
 
+  const isFormations = params.mode === "formations"
+  const selectedLevel = params.level?.[0]
+  const futureStartDate = isFutureDate(params.start_date)
+
+  // Type d'offres : 2 cases dérivées du param is_algo_company (false = offres, true =
+  // entreprises à contacter). Cocher la seconde case = retirer le filtre (les deux ensemble
+  // équivalent à « tout »).
+  const offresChecked = params.is_algo_company === false
+  const entreprisesChecked = params.is_algo_company === true
+  const toggleOfferKind = (kind: "offres" | "entreprises") => {
+    const target = kind === "offres" ? false : true
+    navigate({ is_algo_company: params.is_algo_company === target ? undefined : params.is_algo_company === undefined ? target : undefined })
+  }
+
+  const distanceActive = params.type_filter_label?.includes(TYPE_FILTER_LABEL_DISTANCE) ?? false
+
   return (
-    <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
-      <SearchMultiSelectField
-        id="filter-type"
-        label="Type"
-        topLabel="Type d'offres ou formations"
-        groups={typeGroups}
-        value={params.type_filter_label ?? []}
-        onChange={setMulti("type_filter_label")}
+    <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v"), alignItems: "center" }}>
+      {!isFormations && params.mode === "emplois" && (
+        <SearchFilterChip
+          label="Type d'offres d'emploi"
+          activeLabel={offresChecked ? "Offres d'emploi en alternance" : "Entreprises à contacter"}
+          active={params.is_algo_company !== undefined}
+          popperContent={
+            <Box sx={{ px: "16px", pt: "8px", "& .fr-fieldset__element:last-child": { mb: 0 } }}>
+              <Checkbox
+                small
+                options={[
+                  {
+                    label: "Offres d'emploi en alternance",
+                    nativeInputProps: { checked: offresChecked, onChange: () => toggleOfferKind("offres") },
+                  },
+                  {
+                    label: "Entreprises à contacter",
+                    hintText: "Vous pouvez leur adresser vos candidatures spontanées",
+                    nativeInputProps: { checked: entreprisesChecked, onChange: () => toggleOfferKind("entreprises") },
+                  },
+                ]}
+              />
+            </Box>
+          }
+        />
+      )}
+
+      {!isFormations && (
+        <SearchFilterChip
+          label="Date de début de contrat"
+          activeLabel={params.start_date ? `À partir du ${formatDateFr(params.start_date)}` : undefined}
+          active={Boolean(params.start_date)}
+          popperContent={
+            <Box sx={{ px: "16px", pt: "8px" }}>
+              <Input
+                label="À partir du"
+                nativeInputProps={{
+                  type: "date",
+                  value: params.start_date ?? "",
+                  onChange: (e) => {
+                    const value = e.target.value || undefined
+                    // Date future : « Recrutement urgent » (dès que possible) n'a plus de sens → retiré.
+                    navigate({ start_date: value, urgent: isFutureDate(value) ? undefined : params.urgent })
+                  },
+                }}
+              />
+            </Box>
+          }
+        />
+      )}
+
+      <SearchFilterChip
+        label="Niveau d'études visé"
+        activeLabel={selectedLevel}
+        active={Boolean(selectedLevel)}
+        popperContent={
+          <Box>
+            {levelOptions.map((option) => (
+              <SearchChipOptionRow
+                key={option}
+                label={option}
+                selected={option === selectedLevel}
+                onSelect={() => navigate({ level: option === selectedLevel ? undefined : [option] })}
+              />
+            ))}
+            {levelOptions.length === 0 && (
+              <Box sx={{ px: "16px", py: "8px", fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>
+            )}
+          </Box>
+        }
       />
-      <SearchMultiSelectField
-        id="filter-contract"
-        label="Contrat"
-        topLabel="Type de contrat"
-        options={contractOptions}
-        value={params.contract_type ?? []}
-        onChange={setMulti("contract_type")}
-      />
-      <SearchMultiSelectField id="filter-level" label="Niveau" topLabel="Niveau de formation" options={levelOptions} value={params.level ?? []} onChange={setMulti("level")} />
-      {/* Filtre "Secteur" retiré de l'UI (doublons de libellés NAF en cours de traitement). */}
-      <SearchEntrepriseAutocomplete options={entrepriseOptions} value={params.organization_name} onChange={setEntreprise} topLabel="Entreprise / organisme" />
+
+      {!isFormations && (
+        <SearchFilterChip
+          label="Type de contrat"
+          activeLabel={params.contract_type?.length ? multiLabel(params.contract_type) : undefined}
+          active={Boolean(params.contract_type?.length)}
+          popperContent={
+            <Box sx={{ px: "16px", pt: "8px", "& .fr-fieldset__element:last-child": { mb: 0 } }}>
+              <Checkbox
+                small
+                options={contractOptions.map((option) => ({
+                  label: option,
+                  nativeInputProps: {
+                    checked: params.contract_type?.includes(option) ?? false,
+                    onChange: () => {
+                      const current = params.contract_type ?? []
+                      const next = current.includes(option) ? current.filter((v) => v !== option) : [...current, option]
+                      navigate({ contract_type: next.length ? next : undefined })
+                    },
+                  },
+                }))}
+              />
+            </Box>
+          }
+        />
+      )}
+
+      {!isFormations && (
+        <>
+          <SearchFilterChip
+            label={`Employeur handi-accueillant${handiCount !== undefined ? ` (${handiCount})` : ""}`}
+            active={params.handi === true}
+            onToggle={() => navigate({ handi: params.handi ? undefined : true })}
+          />
+          <SearchFilterChip
+            label="Recrutement urgent"
+            active={params.urgent === true}
+            disabled={futureStartDate}
+            onToggle={() => navigate({ urgent: params.urgent ? undefined : true })}
+          />
+          <SearchFilterChip label="Candidature simplifiée" active={params.smart_apply === true} onToggle={() => navigate({ smart_apply: params.smart_apply ? undefined : true })} />
+        </>
+      )}
+
+      {isFormations && (
+        <SearchFilterChip
+          label="Formations à distance"
+          active={distanceActive}
+          onToggle={() => navigate({ type_filter_label: distanceActive ? undefined : [TYPE_FILTER_LABEL_DISTANCE] })}
+        />
+      )}
+
+      {hasActiveFilters(params) && (
+        <Box component="button" type="button" className={fr.cx("fr-link", "fr-link--sm")} onClick={() => onNavigate(clearedFilters(params))} sx={{ ml: fr.spacing("2v") }}>
+          Réinitialiser les filtres
+        </Box>
+      )}
     </Box>
   )
 }

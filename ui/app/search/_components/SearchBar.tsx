@@ -4,6 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr"
 import { Box, TextField } from "@mui/material"
 import Autocomplete from "@mui/material/Autocomplete"
 import { useQuery } from "@tanstack/react-query"
+import type { ReactNode } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { searchAddress } from "@/services/baseAdresse"
 import { apiGet } from "@/utils/api.utils"
@@ -29,24 +30,60 @@ function useThrottle(value: string, delay: number) {
   return debouncedValue
 }
 
-// Taille de police commune à toute la barre (Métier/Lieu), alignée sur les filtres.
-const FIELD_FONT_SIZE = "0.875rem"
-const INPUT_SX = { ".MuiInputBase-input": { fontSize: FIELD_FONT_SIZE } }
-
-// Restylage DSFR des champs : fond gris contrasté + bordure basse (bleue si rempli), sans contour MUI.
-const dsfrFieldSx = (active: boolean) => ({
-  ...INPUT_SX,
+// Champs du design « Nouvelle recherche » : blancs, 48px, stroke 1px, radius 4 — plus de fond
+// gris contrasté ni de bordure basse ni d'icône dans le champ.
+const fieldSx = (error?: boolean) => ({
+  ".MuiInputBase-input": { fontSize: "1rem" },
   ".MuiOutlinedInput-root": {
-    backgroundColor: active ? fr.colors.decisions.background.contrast.info.default : fr.colors.decisions.background.contrast.grey.default,
-    borderRadius: "4px 4px 0 0",
-    borderBottom: `2px solid ${active ? fr.colors.decisions.border.actionHigh.blueFrance.default : fr.colors.decisions.border.plain.grey.default}`,
+    minHeight: 48,
+    backgroundColor: "#FFFFFF",
+    borderRadius: "4px",
   },
-  ".MuiOutlinedInput-notchedOutline": { border: "none" },
-  ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": { border: "none" },
-  ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": { border: "none" },
+  ".MuiOutlinedInput-notchedOutline": {
+    border: `1px solid ${error ? fr.colors.decisions.border.plain.error.default : fr.colors.decisions.border.default.grey.default}`,
+  },
+  ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+    border: `1px solid ${error ? fr.colors.decisions.border.plain.error.default : fr.colors.decisions.border.default.grey.default}`,
+  },
+  ".MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+    border: "2px solid #0a76f6",
+  },
 })
 
+// Panneau flottant des autocompletes (ombre + radius du design).
+const POPPER_PAPER_SX = { mt: "4px", borderRadius: "4px", py: "8px", boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }
+
+/**
+ * Sous-chaîne matchée en gras dans les suggestions ("La **Coiff**erie"), insensible à la
+ * casse et aux accents. Le mapping des index reste 1:1 : chaque code point est normalisé
+ * individuellement (on ne garde que le caractère de base).
+ */
+export function highlightMatch(label: string, input: string): ReactNode {
+  const query = input.trim()
+  if (!query) return label
+  const normalizeChar = (c: string) => c.normalize("NFD")[0].toLowerCase()
+  const labelChars = [...label]
+  const normalized = labelChars.map(normalizeChar).join("")
+  const needle = [...query].map(normalizeChar).join("")
+  const start = normalized.indexOf(needle)
+  if (start < 0) return label
+  const end = start + [...query].length
+  return (
+    <>
+      {labelChars.slice(0, start).join("")}
+      <Box component="span" sx={{ fontWeight: 700 }}>
+        {labelChars.slice(start, end).join("")}
+      </Box>
+      {labelChars.slice(end).join("")}
+    </>
+  )
+}
+
 type LieuOption = { label: string; latitude: number; longitude: number }
+
+// Option du dropdown métier : la 1ʳᵉ ligne relance la recherche en texte libre, les
+// suivantes sont les suggestions de l'endpoint suggest.
+type MetierOption = { kind: "free_text"; value: string } | { kind: "suggestion"; value: string }
 
 interface SearchBarProps {
   initialQ?: string
@@ -56,17 +93,39 @@ interface SearchBarProps {
   onLieuChange: (lieu: { label: string; latitude: number; longitude: number } | null) => void
   /** "row" : barre desktop ; "column" : panneau mobile (sans bouton, géré par le footer). */
   layout?: "row" | "column"
+  /** Message d'erreur DSFR sous le champ métier (label + stroke passent en rouge). */
+  qError?: string
+  /** Message d'erreur DSFR sous le champ lieu. */
+  lieuError?: string
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
+function FieldLabel({ children, error }: { children: ReactNode; error?: boolean }) {
   return (
-    <Box component="label" sx={{ display: "block", fontSize: "0.75rem", fontWeight: 500, color: fr.colors.decisions.text.mention.grey.default, mb: fr.spacing("1v") }}>
+    <Box
+      component="label"
+      sx={{
+        display: "block",
+        fontSize: "1rem",
+        fontWeight: 700,
+        color: error ? fr.colors.decisions.text.default.error.default : fr.colors.decisions.text.default.grey.default,
+        mb: fr.spacing("1v"),
+      }}
+    >
       {children}
     </Box>
   )
 }
 
-export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, layout = "row" }: SearchBarProps) {
+function FieldError({ children }: { children: ReactNode }) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("1v"), mt: fr.spacing("1v"), fontSize: "0.75rem", color: fr.colors.decisions.text.default.error.default }}>
+      <Box component="span" className={fr.cx("fr-icon-error-fill", "fr-icon--sm")} aria-hidden="true" />
+      {children}
+    </Box>
+  )
+}
+
+export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuChange, layout = "row", qError, lieuError }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(initialQ)
   const [lieuInput, setLieuInput] = useState(initialLieuLabel ?? "")
   const [lieuValue, setLieuValue] = useState<LieuOption | null>(null)
@@ -88,6 +147,11 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     throwOnError: false,
   })
   const suggestions = suggestionData?.suggestions ?? []
+
+  // Options du dropdown : ligne d'action « Rechercher : {saisie} » + groupe Suggestions.
+  const metierOptions: MetierOption[] = inputValue.trim()
+    ? [{ kind: "free_text", value: inputValue }, ...suggestions.map((s): MetierOption => ({ kind: "suggestion", value: s }))]
+    : []
 
   // Suggestions pour le champ lieu
   const { data: lieuOptions } = useQuery({
@@ -143,48 +207,96 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     >
       {/* Champ métier */}
       <Box sx={{ flex: isColumn ? "none" : 2, width: isColumn ? "100%" : undefined }}>
-        <FieldLabel>Métier ou formation</FieldLabel>
+        <FieldLabel error={Boolean(qError)}>Que recherchez-vous ?</FieldLabel>
         <Autocomplete
           freeSolo
-          options={suggestions}
+          options={metierOptions}
+          getOptionLabel={(o) => (typeof o === "string" ? o : o.value)}
           inputValue={inputValue}
-          onInputChange={(_e, value) => {
+          onInputChange={(_e, value, reason) => {
+            // "reset" est déclenché par la sélection d'une option — ne pas écraser la saisie
+            // avec le libellé de la ligne « Rechercher : … ».
+            if (reason === "reset") return
             setInputValue(value)
             if (value === "") handleSubmit("", "free_text")
           }}
           onChange={(_e, value) => {
-            // onChange de l'Autocomplete = sélection d'une option de la liste → source "suggestion"
-            if (typeof value === "string" && value) {
-              handleSubmit(value, "suggestion")
+            if (!value) return
+            if (typeof value === "string") {
+              handleSubmit(value, "free_text")
+              return
             }
+            handleSubmit(value.value, value.kind === "suggestion" ? "suggestion" : "free_text")
           }}
+          renderOption={(props, option) =>
+            option.kind === "free_text" ? (
+              <Box
+                component="li"
+                {...props}
+                key="__free_text__"
+                sx={{
+                  minHeight: 60,
+                  px: "16px !important",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: fr.spacing("2v"),
+                  backgroundColor: `${fr.colors.decisions.background.contrast.blueFrance.default} !important`,
+                }}
+              >
+                <Box component="span" className={fr.cx("fr-icon-search-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} aria-hidden="true" />
+                <Box>
+                  <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>
+                    Rechercher :{" "}
+                    <Box component="span" sx={{ fontWeight: 700 }}>
+                      {option.value}
+                    </Box>
+                  </Box>
+                  <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>
+                </Box>
+              </Box>
+            ) : (
+              <Box
+                component="li"
+                {...props}
+                key={option.value}
+                sx={{ minHeight: 40, px: "16px !important", fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}
+              >
+                {highlightMatch(option.value, inputValue)}
+              </Box>
+            )
+          }
+          groupBy={(option) => (option.kind === "suggestion" ? "Suggestions" : "")}
+          renderGroup={(params) => (
+            <Box component="li" key={params.key}>
+              {params.group && <Box sx={{ px: "16px", lineHeight: "36px", fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>{params.group}</Box>}
+              <Box component="ul" sx={{ p: 0, m: 0, listStyle: "none" }}>
+                {params.children}
+              </Box>
+            </Box>
+          )}
+          slotProps={{ paper: { sx: POPPER_PAPER_SX } }}
           renderInput={(params) => (
             <TextField
               {...params}
-              placeholder="Rechercher un métier, une compétence..."
+              placeholder="Recherche par mot clé (métier, formation, entreprise, compétence,...)"
               variant="outlined"
               size="small"
               fullWidth
-              sx={dsfrFieldSx(inputValue.trim().length > 0)}
+              sx={fieldSx(Boolean(qError))}
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSubmit(inputValue, "free_text")
-              }}
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <Box component="span" className={fr.cx("fr-icon-search-line")} sx={{ mr: fr.spacing("1v"), color: fr.colors.decisions.text.mention.grey.default }} />
-                ),
               }}
             />
           )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
+        {qError && <FieldError>{qError}</FieldError>}
       </Box>
 
       {/* Champ lieu */}
       <Box sx={{ flex: isColumn ? "none" : "0 0 320px", width: isColumn ? "100%" : undefined }}>
-        <FieldLabel>Lieu</FieldLabel>
+        <FieldLabel error={Boolean(lieuError)}>Lieu</FieldLabel>
         <Autocomplete
           freeSolo
           // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
@@ -211,25 +323,18 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               selectLieu(value)
             }
           }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder="Ville, code postal..."
-              variant="outlined"
-              size="small"
-              fullWidth
-              sx={dsfrFieldSx(lieuInput.trim().length > 0)}
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <Box component="span" className={fr.cx("fr-icon-map-pin-2-line")} sx={{ mr: fr.spacing("1v"), color: fr.colors.decisions.text.mention.grey.default }} />
-                ),
-              }}
-            />
+          renderOption={(props, option, { index }) => (
+            <Box component="li" {...props} key={option.label} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
+              <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.label, lieuInput)}</Box>
+              {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
+            </Box>
           )}
+          slotProps={{ paper: { sx: POPPER_PAPER_SX } }}
+          renderInput={(params) => <TextField {...params} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
+        {lieuError && <FieldError>{lieuError}</FieldError>}
       </Box>
     </Box>
   )

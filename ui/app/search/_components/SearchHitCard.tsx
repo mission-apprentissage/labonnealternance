@@ -1,14 +1,23 @@
 import { fr } from "@codegouvfr/react-dsfr"
-import { Box } from "@mui/material"
-import Link from "next/link"
+import { Card } from "@codegouvfr/react-dsfr/Card"
+import { Box, Typography } from "@mui/material"
 import type { IGetRoutes, IResponse } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { JOB_START_TYPE } from "shared"
+import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
+import { newItemTypeToOldItemType } from "shared/constants/lbaitem"
+
+import type { ILbaItem } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
+import ItemDetailApplicationsStatus from "@/components/ItemDetail/ItemDetailServices/ItemDetailApplicationStatus"
+import { LbaJobEngagementTag } from "@/components/ItemDetail/LbaJobComponents/LbaJobEngagementTag"
+import { TagCandidatureSpontanee } from "@/components/ItemDetail/TagCandidatureSpontanee"
+import { TagEmploiFormation } from "@/components/ItemDetail/TagEmploiFormation"
+import { TagFormation } from "@/components/ItemDetail/TagFormation"
+import { TagOffreEmploi } from "@/components/ItemDetail/TagOffreEmploi"
+import { TagRecrutementUrgent } from "@/components/ItemDetail/TagRecrutementUrgent"
+import { getDaysSinceDate } from "@/utils/dateUtils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { buildHitDetailUrl, buildSearchUrl } from "../_utils/search.params.utils"
-
-// Highlight de recherche désactivé temporairement (cf. titleContent ci-dessous).
-// import { SearchHitPreview } from "./SearchHitPreview"
 
 type SearchResponse = IResponse<IGetRoutes["/v1/search"]>
 export type Hit = SearchResponse["hits"][number]
@@ -16,94 +25,122 @@ export type Hit = SearchResponse["hits"][number]
 interface SearchHitCardProps {
   hit: Hit
   currentParams: ISearchPageParams
-  isSelected?: boolean
-  onSelect?: (hit: Hit) => void
 }
 
-export function SearchHitCard({ hit, currentParams, isSelected, onSelect }: SearchHitCardProps) {
+const isAlgoCompany = (hit: Hit) => hit.is_algo_company === true
+const isFormation = (hit: Hit) => hit.type === "formation"
+
+// Mêmes badges que la carte legacy (composants feuilles réutilisés), pilotés par les
+// champs de search_items au lieu de l'ideaType legacy.
+function HitTags({ hit }: { hit: Hit }) {
+  const tags: React.ReactNode[] = []
+
+  if (isAlgoCompany(hit)) tags.push(<TagCandidatureSpontanee key="candidature-spontanee" />)
+  else if (isFormation(hit)) tags.push(<TagFormation key="formation" />)
+  else if (hit.is_formation_included) tags.push(<TagEmploiFormation key="emploi-formation" />)
+  else tags.push(<TagOffreEmploi key="offre-emploi" />)
+
+  if (hit.is_disabled_elligible) tags.push(<LbaJobEngagementTag key="handi" />)
+  if (hit.start_type === JOB_START_TYPE.DES_QUE_POSSIBLE) tags.push(<TagRecrutementUrgent key="urgent" />)
+
+  return <Box sx={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>{tags}</Box>
+}
+
+function CompanyLine({ hit }: { hit: Hit }) {
+  // Candidature spontanée : le titre est déjà le nom d'entreprise → on affiche le secteur.
+  if (isAlgoCompany(hit)) return <>Secteur d'activité : {hit.activity_sector ?? ""}</>
+  return hit.organization_name ? <>{hit.organization_name}</> : <i>Offre anonyme</i>
+}
+
+function DatePublication({ hit }: { hit: Hit }) {
+  // Comme en legacy : offres uniquement — la publication_date des candidatures spontanées
+  // est une date d'import, celle des formations est nulle.
+  if (isFormation(hit) || isAlgoCompany(hit) || !hit.publication_date) return null
+  const daysPublished = getDaysSinceDate(new Date(hit.publication_date))
+
+  return (
+    <Typography component="span" sx={{ color: fr.colors.decisions.text.mention.grey.default, py: fr.spacing("1v") }} className={fr.cx("fr-text--xs")}>
+      Publiée {daysPublished ? `depuis ${daysPublished} jour(s)` : "aujourd'hui"}
+    </Typography>
+  )
+}
+
+function CandidatureCount({ hit }: { hit: Hit }) {
+  if (!hit.smart_apply || hit.application_count == null) return null
+
+  return (
+    <Typography
+      component="span"
+      sx={{ whiteSpace: "nowrap", color: fr.colors.decisions.text.default.info.default, py: fr.spacing("1v") }}
+      className={fr.cx("fr-text--xs", "fr-text--bold", "fr-icon-flashlight-fill", "fr-icon--sm")}
+    >
+      {`${hit.application_count} CANDIDATURE${hit.application_count > 1 ? "S" : ""}`}
+    </Typography>
+  )
+}
+
+export function SearchHitCard({ hit, currentParams }: SearchHitCardProps) {
   const currentSearchUrl = buildSearchUrl(currentParams)
   const detailUrl = buildHitDetailUrl({ sub_type: hit.sub_type ?? "", url_id: hit.url_id ?? "", title: hit.title ?? "" }, currentSearchUrl)
 
-  const isFormation = hit.type === LBA_ITEM_TYPE.FORMATION
-  // Highlight de recherche désactivé temporairement : on affiche toujours le titre de l'offre/formation.
-  // const titleContent = hit.preview && hit.preview.length > 0 ? <SearchHitPreview preview={hit.preview} /> : (hit.title ?? "")
-  const titleContent = hit.title ?? ""
-
-  // Accent gauche bleu france via box-shadow inset (sélection) : conserve le box 1px
-  // complet sur les 4 côtés — pas de bord gauche manquant ni de décalage de contenu.
-  const accent = `inset 3px 0 0 0 ${fr.colors.decisions.border.actionHigh.blueFrance.default}`
-  const elevation = "0 2px 8px rgba(0,0,0,0.12)"
-
-  const cardContent = (
-    <Box
-      sx={{
-        position: "relative",
-        border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-        borderRadius: "4px",
-        p: fr.spacing("4v"),
-        pr: fr.spacing("8v"),
-        mb: fr.spacing("3v"),
-        backgroundColor: isSelected ? fr.colors.decisions.background.alt.blueFrance.default : fr.colors.decisions.background.default.grey.default,
-        boxShadow: isSelected ? accent : "none",
-        transition: "box-shadow 0.12s ease, border-color 0.12s ease",
-        "&:hover": {
-          boxShadow: isSelected ? `${accent}, ${elevation}` : elevation,
-        },
-        cursor: "pointer",
-      }}
-    >
-      <span className={fr.cx("fr-badge", "fr-badge--sm", isFormation ? "fr-badge--success" : "fr-badge--info")}>{isFormation ? "Formation" : "Offre d'emploi"}</span>
-
-      <Box
-        sx={{
-          mt: fr.spacing("2v"),
-          mb: fr.spacing("1v"),
-          fontSize: "0.9375rem",
-          fontWeight: 700,
-          color: fr.colors.decisions.text.title.grey.default,
-          lineHeight: 1.3,
-        }}
-      >
-        {titleContent}
-      </Box>
-
-      <Box sx={{ color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.8125rem", lineHeight: 1.4 }}>
-        {hit.organization_name}
-        {hit.address && ` · ${hit.address}`}
-      </Box>
-
-      {hit.distance != null && (
-        <Box sx={{ mt: fr.spacing("1v"), color: fr.colors.decisions.text.mention.grey.default, fontSize: "0.75rem", lineHeight: 1.4 }}>
-          {hit.distance} km(s) du lieu de recherche
-        </Box>
-      )}
-
-      <Box
-        component="span"
-        className={fr.cx("fr-icon-arrow-right-line")}
-        aria-hidden="true"
-        sx={{
-          position: "absolute",
-          right: fr.spacing("3v"),
-          top: "50%",
-          transform: "translateY(-50%)",
-          color: fr.colors.decisions.text.actionHigh.blueFrance.default,
-        }}
-      />
-    </Box>
-  )
-
-  if (onSelect) {
-    return (
-      <Box onClick={() => onSelect(hit)} sx={{ textDecoration: "none", color: "inherit", display: "block" }}>
-        {cardContent}
-      </Box>
-    )
-  }
+  // Encart « déjà postulé » legacy réutilisé tel quel : il ne consomme que ideaType, id et
+  // contact.hasEmail — reconstruits depuis le hit (mêmes clés localStorage que le legacy →
+  // historique de candidatures partagé entre les deux moteurs).
+  const applicationStatusItem = {
+    ideaType: newItemTypeToOldItemType(hit.sub_type as LBA_ITEM_TYPE),
+    id: hit.url_id,
+    contact: { hasEmail: hit.smart_apply === true },
+  } as unknown as ILbaItem
 
   return (
-    <Link href={detailUrl} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
-      {cardContent}
-    </Link>
+    <Box sx={{ mb: fr.spacing("3v"), ".fr-card__title a::before": { zIndex: "unset" } }}>
+      <Card
+        background
+        style={{ paddingBottom: fr.spacing("1v") }}
+        shadow
+        enlargeLink
+        horizontal
+        linkProps={{ href: detailUrl, prefetch: false }}
+        start={<HitTags hit={hit} />}
+        title={
+          <Typography component="span" className={fr.cx("fr-text--bold", "fr-text--md")} sx={{ color: fr.colors.decisions.text.actionHigh.grey.default }}>
+            {hit.title ?? ""}
+          </Typography>
+        }
+        desc={
+          <Box component="span" sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("3v") }}>
+            <Typography component="span" className={fr.cx("fr-text--sm")} color={fr.colors.decisions.text.actionHigh.grey.default}>
+              <CompanyLine hit={hit} />
+            </Typography>
+            <Typography component="span" sx={{ color: fr.colors.decisions.text.title.grey.default }} className={fr.cx("fr-text--xs")}>
+              {hit.address}
+              {hit.distance != null && (
+                <>
+                  <br />
+                  <Typography component="span" sx={{ my: 0, fontWeight: 400, color: fr.colors.decisions.text.mention.grey.default }} className={fr.cx("fr-text--xs")}>
+                    {hit.distance} km(s) du lieu de recherche
+                  </Typography>
+                </>
+              )}
+            </Typography>
+
+            <Box
+              component="span"
+              sx={{
+                alignItems: { xs: "left", sm: "left", md: "center" },
+                gap: { xs: fr.spacing("2v"), md: fr.spacing("1v") },
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+              }}
+            >
+              <DatePublication hit={hit} />
+              <CandidatureCount hit={hit} />
+              <ItemDetailApplicationsStatus item={applicationStatusItem} />
+            </Box>
+          </Box>
+        }
+        size="medium"
+      />
+    </Box>
   )
 }

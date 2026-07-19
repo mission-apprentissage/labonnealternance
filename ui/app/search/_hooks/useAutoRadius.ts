@@ -3,7 +3,7 @@ import type { ISearchPageParams } from "../_utils/search.params.utils"
 import type { useSearchResults } from "./useSearchResults"
 
 const RADIUS_STEP = 20
-const RADIUS_MAX = 100
+export const RADIUS_MAX = 100
 
 /**
  * Élargit automatiquement le rayon par paliers de 20 km (20, 40, … jusqu'à 100)

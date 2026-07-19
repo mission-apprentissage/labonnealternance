@@ -12,22 +12,29 @@ import { PublicHeader } from "@/app/_components/PublicHeader"
 
 import { useAutoRadius } from "../_hooks/useAutoRadius"
 import { useSearchResults } from "../_hooks/useSearchResults"
-import type { ISearchPageParams } from "../_utils/search.params.utils"
+import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
-import { SearchActiveFilters } from "./SearchActiveFilters"
 import { SearchBar } from "./SearchBar"
-import { SearchDetailPanel } from "./SearchDetailPanel"
-import { SearchFilters } from "./SearchFilters"
-import type { Hit } from "./SearchHitCard"
+import { clearedFilters, SearchFilters } from "./SearchFilters"
 import { SearchMobilePanel } from "./SearchMobilePanel"
 import { SearchResultsList } from "./SearchResultsList"
 import { SearchSortSelect } from "./SearchSortSelect"
+import { SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
 
 interface SearchSplitPageClientProps {
   initialParams: ISearchPageParams
 }
 
 type MobilePanel = null | "search" | "filters"
+
+/** Lien « Sortir du nouveau moteur de recherche » → legacy /recherche VIERGE (aucune traduction de params). */
+function ExitNewSearchLink() {
+  return (
+    <Box component="a" href="/recherche" className={fr.cx("fr-link", "fr-link--sm", "fr-icon-arrow-go-back-line", "fr-link--icon-left")} sx={{ whiteSpace: "nowrap" }}>
+      Sortir du nouveau moteur de recherche
+    </Box>
+  )
+}
 
 export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientProps) {
   const rawSearchParams = useSearchParams()
@@ -45,121 +52,97 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
     [router]
   )
 
-  const allHits = result.data?.pages.flatMap((p) => p.hits) ?? []
   const nbHits = result.data?.pages.at(-1)?.nbHits ?? 0
-  const selectedHit: Hit | null = params.selected ? (allHits.find((h) => h.url_id === params.selected) ?? null) : null
+  const facets = result.data?.pages[0]?.facets
+  const handiCount = result.data?.pages[0]?.counts?.is_disabled_elligible
 
   const activeFilterCount =
     (params.type_filter_label?.length ?? 0) +
     (params.contract_type?.length ?? 0) +
     (params.level?.length ?? 0) +
-    (params.activity_sector?.length ?? 0) +
-    (params.organization_name ? 1 : 0)
+    (params.is_algo_company !== undefined ? 1 : 0) +
+    (params.start_date ? 1 : 0) +
+    (params.handi ? 1 : 0) +
+    (params.urgent ? 1 : 0) +
+    (params.smart_apply ? 1 : 0)
 
   function handleSearch(q: string, source: "suggestion" | "free_text") {
-    navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0, selected: undefined })
+    navigateSilent({ ...params, q: q || undefined, q_source: q ? source : undefined, page: 0 })
   }
 
   function handleLieuChange(lieu: { label: string; latitude: number; longitude: number } | null) {
     // Nouveau lieu → on repart du rayon le plus étroit (élargissement auto ensuite).
     if (lieu) {
-      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, radius: 20, page: 0, selected: undefined })
+      navigateSilent({ ...params, lieu_label: lieu.label, latitude: lieu.latitude, longitude: lieu.longitude, radius: 20, page: 0 })
     } else {
-      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, radius: 20, page: 0, selected: undefined })
+      navigateSilent({ ...params, lieu_label: undefined, latitude: undefined, longitude: undefined, radius: 20, page: 0 })
     }
   }
 
+  // Changement de type de recherche : les filtres actifs ne s'appliquent plus forcément au
+  // nouveau mode (chips différentes) → remis à zéro, comme le tri s'il n'existe pas en mode
+  // formations.
+  function handleModeChange(mode: SearchMode) {
+    const cleared = clearedFilters(params)
+    const sortValidInMode = mode === "formations" ? params.sort === "proximity" : true
+    navigateSilent({ ...cleared, mode, sort: sortValidInMode ? params.sort : undefined })
+  }
+
   function handleRadiusChange(radius: number) {
-    navigateSilent({ ...params, radius, page: 0, selected: undefined })
+    navigateSilent({ ...params, radius, page: 0 })
   }
 
   useAutoRadius({ params, result, onRadiusChange: handleRadiusChange })
 
   function handleFilterChange(newParams: ISearchPageParams) {
-    navigateSilent({ ...newParams, selected: undefined })
-  }
-
-  function handleHitSelect(hit: Hit) {
-    navigateSilent({ ...params, selected: hit.url_id ?? undefined })
-  }
-
-  function clearAllFilters() {
-    navigateSilent({
-      ...params,
-      type_filter_label: undefined,
-      contract_type: undefined,
-      level: undefined,
-      activity_sector: undefined,
-      organization_name: undefined,
-      page: 0,
-      selected: undefined,
-    })
+    navigateSilent(newParams)
   }
 
   return (
     <>
-      <Box
-        component="main"
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: fr.colors.decisions.background.alt.grey.default,
-          minHeight: "100dvh",
-          // Desktop : hauteur fixe pour le scroll interne du split (footer révélé en scrollant la page). Mobile : flux naturel.
-          height: { lg: "100dvh" },
-          overflow: { lg: "hidden" },
-        }}
-      >
-        <Box sx={{ flexShrink: 0 }}>
-          <PublicHeader />
-        </Box>
+      <Box component="main" sx={{ display: "flex", flexDirection: "column", backgroundColor: fr.colors.decisions.background.alt.grey.default, minHeight: "100dvh" }}>
+        <PublicHeader />
 
-        {/* Desktop : vue scindée (affichage piloté par CSS pour éviter le flash d'hydratation) */}
-        <Box sx={{ display: { xs: "none", lg: "flex" }, flexDirection: "column", flex: 1, minHeight: 0, overflow: "hidden" }}>
-          {/* Barre recherche + filtres */}
-          <Box
-            sx={{
-              flexShrink: 0,
-              backgroundColor: fr.colors.decisions.background.default.grey.default,
-              borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-            }}
-          >
-            {/* Barre exclue de la largeur dynamique : conteneur fixe (xl) comme le legacy. */}
-            <DefaultContainer sx={{ py: fr.spacing("4v") }}>
-              <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
-              <Box sx={{ pt: fr.spacing("4v") }}>
-                <SearchFilters params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
-              </Box>
-              <SearchActiveFilters params={params} onNavigate={handleFilterChange} />
-            </DefaultContainer>
-          </Box>
-
-          {/* Split */}
-          <DefaultContainer sx={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}>
+        {/* Desktop : bandeau de recherche + liste mono-colonne (affichage piloté par CSS pour éviter le flash d'hydratation) */}
+        <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1 }}>
+          <DefaultContainer sx={{ py: fr.spacing("4v") }}>
+            {/* Bandeau : champs + chips, panneau blanc arrondi comme le design */}
             <Box
               sx={{
-                flex: "0 0 480px",
-                overflowY: "auto",
-                borderRight: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-                pr: fr.spacing("5v"),
-                py: fr.spacing("4v"),
+                backgroundColor: fr.colors.decisions.background.default.grey.default,
+                borderRadius: "8px",
+                p: fr.spacing("6v"),
+                boxShadow: "0 2px 6px rgba(0,0,18,0.08)",
               }}
             >
-              <Box sx={{ mb: fr.spacing("3v") }}>
-                <SearchSortSelect params={params} onNavigate={handleFilterChange} />
+              <Box sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
+                <Box sx={{ flex: 1 }}>
+                  <SearchBar initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+                </Box>
+                <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
               </Box>
-              <SearchResultsList result={result} params={params} selectedHitId={params.selected} onHitSelect={handleHitSelect} />
+              <Box sx={{ display: "flex", alignItems: "flex-end", gap: fr.spacing("3v"), pt: fr.spacing("4v") }}>
+                <Box sx={{ flex: 1 }}>
+                  <SearchFilters params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
+                </Box>
+                <ExitNewSearchLink />
+              </Box>
             </Box>
 
-            <Box sx={{ flex: 1, overflowY: "auto", px: fr.spacing("8v"), py: fr.spacing("4v") }}>
-              <SearchDetailPanel hit={selectedHit} currentParams={params} />
+            {/* Ligne tri + compteur */}
+            <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", py: fr.spacing("4v") }}>
+              <SearchSortSelect params={params} onNavigate={handleFilterChange} />
+              <Box sx={{ fontWeight: 700, color: fr.colors.decisions.text.title.grey.default }}>
+                {nbHits} résultat{nbHits > 1 ? "s" : ""}
+              </Box>
             </Box>
+
+            <SearchResultsList result={result} params={params} />
           </DefaultContainer>
         </Box>
 
-        {/* Mobile : liste plein écran + 2 boutons (affichage piloté par CSS) */}
+        {/* Mobile : liste plein écran + 2 boutons (barre résumé + modales dédiées au lot mobile) */}
         <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
-          {/* Barre d'actions mobile */}
           <Box
             sx={{
               position: "sticky",
@@ -182,7 +165,6 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
             </Button>
           </Box>
 
-          {/* Liste plein écran */}
           <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
             <Box sx={{ mb: fr.spacing("3v") }}>
               <SearchSortSelect params={params} onNavigate={handleFilterChange} />
@@ -204,7 +186,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
             footer={
               <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("3v") }}>
                 {activeFilterCount > 1 && (
-                  <Button priority="tertiary no outline" onClick={clearAllFilters}>
+                  <Button priority="tertiary no outline" onClick={() => handleFilterChange(clearedFilters(params))}>
                     Tout effacer
                   </Button>
                 )}
@@ -214,7 +196,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
               </Box>
             }
           >
-            <SearchFilters variant="sections" params={params} facets={result.data?.pages[0]?.facets} onNavigate={handleFilterChange} />
+            <SearchFilters variant="sections" params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
           </SearchMobilePanel>
         )}
       </Box>
