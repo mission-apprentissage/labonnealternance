@@ -17,15 +17,17 @@ function OptInBanner({ onOptIn }: { onOptIn: () => void }) {
       sx={{
         display: "flex",
         alignItems: "center",
+        justifyContent: "center",
         gap: fr.spacing("3v"),
         flexWrap: "wrap",
-        mt: fr.spacing("2v"),
-        pt: fr.spacing("3v"),
-        borderTop: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
+        px: fr.spacing("4v"),
+        py: fr.spacing("2v"),
+        borderRadius: "4px",
+        backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
       }}
     >
       <Box component="span" className={fr.cx("fr-icon-search-line")} sx={{ color: fr.colors.decisions.text.actionHigh.blueFrance.default }} aria-hidden="true" />
-      <Box component="span" sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.default.grey.default }}>
+      <Box component="span" sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.default.grey.default, textAlign: "center" }}>
         <Box component="strong">Nouvelle recherche !</Box> Un nouveau moteur de recherche est en expérimentation, venez l'essayer par ici
       </Box>
       <Box
