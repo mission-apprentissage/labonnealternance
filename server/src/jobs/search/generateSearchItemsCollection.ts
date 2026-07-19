@@ -12,6 +12,7 @@ import { logger } from "@/common/logger"
 import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import { sanitizeTextField } from "@/common/utils/stringUtils"
+import { GEIQ_WHITELIST } from "@/jobs/offrePartenaire/geiqWhitelist"
 import type { Message } from "@/services/mistralai/mistralai.service"
 import { submitMistralBatch } from "@/services/mistralai/mistralai.service"
 
@@ -174,6 +175,20 @@ const getTypeFilterLabel = (partner_label: JOBPARTNERS_LABEL, fromCfa?: boolean)
       return "Offres d'emploi partenaires"
   }
 }
+
+const GEIQ_SIRETS = new Set(GEIQ_WHITELIST)
+
+// contract_start à l'epoch (01/01/1970) = date manquante mal encodée côté source partenaire →
+// null (sinon ces offres passent tous les filtres start_date $lte et trient en tête du tri
+// par date de début).
+const sanitizeContractStart = (date: Date | null | undefined): Date | null => (date && date.getTime() > 0 ? date : null)
+
+/**
+ * « Emploi avec formation incluse » : offre émise par un CFA (délégation à un mandataire)
+ * ou par un GEIQ (whitelist SIRET). Ces offres sont exclues du mode « Emplois uniquement ».
+ */
+const isFormationIncluded = (job: { is_delegated?: boolean | null; workplace_siret?: string | null }): boolean =>
+  job.is_delegated === true || (job.workplace_siret != null && GEIQ_SIRETS.has(job.workplace_siret))
 
 const getJobType = (partner_label: string) => {
   switch (partner_label) {
@@ -425,6 +440,7 @@ export const fillSearchItemsCollection = async () => {
             start_type: null,
             is_start_flexible: null,
             is_algo_company: false,
+            is_formation_included: null,
             description: stripHtmlToText(formation.contenu),
           },
         }
@@ -446,6 +462,7 @@ export const fillSearchItemsCollection = async () => {
       start_type: null,
       is_start_flexible: null,
       is_algo_company: false,
+      is_formation_included: null,
       smart_apply: null,
       application_count: null,
       title: formation.intitule_rco || "",
@@ -477,10 +494,11 @@ export const fillSearchItemsCollection = async () => {
         {
           $set: {
             is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
-            start_date: job.contract_start ?? null,
+            start_date: sanitizeContractStart(job.contract_start),
             start_type: job.contract_start_type ?? null,
             is_start_flexible: job.contract_start_is_flexible ?? null,
             is_algo_company: false,
+            is_formation_included: isFormationIncluded(job),
             description: stripHtmlToText(job.offer_description),
           },
         }
@@ -498,10 +516,11 @@ export const fillSearchItemsCollection = async () => {
       contract_type: job.contract_type,
       publication_date: job.offer_creation ?? null,
       is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
-      start_date: job.contract_start ?? null,
+      start_date: sanitizeContractStart(job.contract_start),
       start_type: job.contract_start_type ?? null,
       is_start_flexible: job.contract_start_is_flexible ?? null,
       is_algo_company: false,
+      is_formation_included: isFormationIncluded(job),
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       title: job.offer_title || "",
@@ -530,7 +549,16 @@ export const fillSearchItemsCollection = async () => {
     if (existingIds.has(jobId)) {
       await searchItemsCollection.updateOne(
         { _id: job._id },
-        { $set: { is_disabled_elligible: job.contract_is_disabled_elligible ?? false, start_date: null, start_type: null, is_start_flexible: null, is_algo_company: true } }
+        {
+          $set: {
+            is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
+            start_date: null,
+            start_type: null,
+            is_start_flexible: null,
+            is_algo_company: true,
+            is_formation_included: false,
+          },
+        }
       )
       processedIds.add(jobId)
       return
@@ -550,6 +578,8 @@ export const fillSearchItemsCollection = async () => {
       start_type: null,
       is_start_flexible: null,
       is_algo_company: true,
+      // Entreprise, pas une offre : ni CFA ni GEIQ au sens « formation incluse ».
+      is_formation_included: false,
       smart_apply: job.apply_email ? true : false,
       application_count: job.application_count,
       // title des recruteurs = nom d'entreprise → même canonicalisation que organization_name.

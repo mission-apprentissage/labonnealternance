@@ -96,11 +96,14 @@ export function buildSearchMatchWords(highlights: Highlight[]): Array<{ word: st
   return result.sort((a, b) => b.count - a.count)
 }
 
-type SortOption = "proximity" | "smart_apply" | "date" | "applications"
+type SortOption = "proximity" | "date" | "applications" | "start_date"
+
+type SearchMode = "emplois" | "formations" | "emplois_formation"
 
 interface ISearchFilters {
   q?: string
   type?: string
+  mode?: SearchMode
   type_filter_label?: string[]
   contract_type?: string[]
   level?: string[]
@@ -109,6 +112,8 @@ interface ISearchFilters {
   is_disabled_elligible?: boolean
   start_type?: JOB_START_TYPE
   start_date?: Date
+  smart_apply?: boolean
+  is_algo_company?: boolean
   sort?: SortOption
   latitude?: number
   longitude?: number
@@ -249,6 +254,25 @@ const buildStartDateFilter = (start_date: Date) => ({
   },
 })
 
+// Type de recherche (champ « Type de recherche » du front) : « emplois » exclut les offres
+// avec formation incluse (CFA/GEIQ, cf. is_formation_included dans generateSearchItemsCollection)
+// en plus des formations ; « emplois_formation » ne renvoie QUE ces offres CFA/GEIQ.
+const buildModeFilter = (mode: SearchMode): object => {
+  switch (mode) {
+    case "formations":
+      return { equals: { path: "type", value: "formation" } }
+    case "emplois_formation":
+      return { equals: { path: "is_formation_included", value: true } }
+    case "emplois":
+      return {
+        compound: {
+          must: [{ equals: { path: "type", value: "offre" } }],
+          mustNot: [{ equals: { path: "is_formation_included", value: true } }],
+        },
+      }
+  }
+}
+
 // Sémantique INCLUSIVE du filtre niveau : un doc sans niveau précisé ("" — recruteurs et
 // offres sans diplôme cible, ~83 % du corpus) ou "Indifférent" (fallback formations) est
 // compatible avec tout niveau sélectionné — il n'est pas incompatible, il est indifférent.
@@ -313,8 +337,25 @@ function buildTextBonusClauses(q?: string): object[] {
 }
 
 function buildCompoundOperator(filters: ISearchFilters) {
-  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, is_disabled_elligible, start_type, start_date, sort, latitude, longitude, radius } =
-    filters
+  const {
+    q,
+    type,
+    mode,
+    type_filter_label,
+    contract_type,
+    level,
+    activity_sector,
+    organization_name,
+    is_disabled_elligible,
+    start_type,
+    start_date,
+    smart_apply,
+    is_algo_company,
+    sort,
+    latitude,
+    longitude,
+    radius,
+  } = filters
   const hasGeo = latitude !== undefined && longitude !== undefined
   const proximity = sort === "proximity" && hasGeo
 
@@ -323,6 +364,7 @@ function buildCompoundOperator(filters: ISearchFilters) {
   const filter: object[] = []
 
   if (type) filter.push({ equals: { path: "type", value: type } })
+  if (mode) filter.push(buildModeFilter(mode))
   if (type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
   if (contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
   if (level?.length) filter.push(buildLevelFilter(level))
@@ -332,6 +374,11 @@ function buildCompoundOperator(filters: ISearchFilters) {
   if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
   if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
   if (start_date) filter.push(buildStartDateFilter(start_date))
+  // Filtre opt-in : seules les offres avec candidature simplifiée quand true.
+  if (smart_apply) filter.push({ equals: { path: "smart_apply", value: true } })
+  // Type d'offres d'emploi : true = entreprises à contacter (candidatures spontanées de
+  // l'algo), false = offres d'emploi. Absent = les deux (aucun filtre).
+  if (is_algo_company !== undefined) filter.push({ equals: { path: "is_algo_company", value: is_algo_company } })
   if (hasGeo) {
     filter.push({
       geoWithin: {
@@ -353,6 +400,11 @@ function buildCompoundOperator(filters: ISearchFilters) {
   // (valeur manquante avant 0 en ordre croissant) → on les écarte, comme le tri date.
   if (sort === "applications") {
     filter.push(HAS_APPLICATION_COUNT)
+  }
+  // Tri par date de début de contrat : même logique — les docs sans start_date (candidatures
+  // spontanées, formations) trieraient en tête en ordre croissant → écartés du tri.
+  if (sort === "start_date") {
+    filter.push(HAS_START_DATE)
   }
 
   // Tri par proximité : la porte de pertinence devient un filtre, et le score provient
@@ -386,8 +438,10 @@ function buildSortStage(filters: ISearchFilters): Record<string, unknown> {
     // date de publication — ils suivraient sinon en tête de tri (spec : affichés en fin).
     return { is_algo_company: { order: 1 }, publication_date: { order: -1 } }
   }
-  if (filters.sort === "smart_apply") {
-    return { smart_apply: { order: -1 }, score: { $meta: "searchScore", order: -1 }, application_count: { order: 1 } }
+  if (filters.sort === "start_date") {
+    // Démarrages les plus proches d'abord ; les docs sans date sont écartés en amont
+    // (filter HAS_START_DATE, cf. buildCompoundOperator).
+    return { start_date: { order: 1 }, score: { $meta: "searchScore", order: -1 } }
   }
   if (filters.sort === "applications") {
     // Moins de candidatures d'abord : maximise les chances du candidat et répartit les
@@ -429,14 +483,31 @@ function isDimensionActive(filters: ISearchFilters, key: FacetDimension): boolea
 // SAUF `exclude`. Ainsi une facette ne masque pas ses propres options en multi-sélection,
 // mais reflète bien les restrictions imposées par les AUTRES filtres (filtres synchronisés).
 function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | null) {
-  const { q, type, type_filter_label, contract_type, level, activity_sector, organization_name, is_disabled_elligible, start_type, start_date, latitude, longitude, radius } =
-    filters
+  const {
+    q,
+    type,
+    mode,
+    type_filter_label,
+    contract_type,
+    level,
+    activity_sector,
+    organization_name,
+    is_disabled_elligible,
+    start_type,
+    start_date,
+    smart_apply,
+    is_algo_company,
+    latitude,
+    longitude,
+    radius,
+  } = filters
   const hasGeo = latitude !== undefined && longitude !== undefined
   // Même porte de pertinence que la recherche → les counts de facettes reflètent le même result set.
   const gate = buildTextGate(q)
   const filter: object[] = []
 
   if (type) filter.push({ equals: { path: "type", value: type } })
+  if (mode) filter.push(buildModeFilter(mode))
   if (exclude !== "type_filter_label" && type_filter_label?.length) filter.push({ in: { path: "type_filter_label", value: type_filter_label } })
   if (exclude !== "contract_type" && contract_type?.length) filter.push({ in: { path: "contract_type", value: contract_type } })
   if (exclude !== "level" && level?.length) filter.push(buildLevelFilter(level))
@@ -446,6 +517,8 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (is_disabled_elligible) filter.push({ equals: { path: "is_disabled_elligible", value: true } })
   if (start_type) filter.push({ equals: { path: "start_type", value: start_type } })
   if (start_date) filter.push(buildStartDateFilter(start_date))
+  if (smart_apply) filter.push({ equals: { path: "smart_apply", value: true } })
+  if (is_algo_company !== undefined) filter.push({ equals: { path: "is_algo_company", value: is_algo_company } })
   if (hasGeo) filter.push({ geoWithin: { circle: { center: { type: "Point", coordinates: [longitude, latitude] }, radius: radius * 1000 }, path: "location" } })
 
   // Mêmes restrictions qu'en recherche pour les tris → les counts de facettes reflètent le result set réel.
@@ -455,12 +528,25 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
   if (filters.sort === "applications") {
     filter.push(HAS_APPLICATION_COUNT)
   }
+  if (filters.sort === "start_date") {
+    filter.push(HAS_START_DATE)
+  }
 
   if (!gate && !filter.length) filter.push({ exists: { path: "type" } })
   return { ...(gate ? { must: [gate] } : {}), filter }
 }
 
 type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
+
+// Compteur « employeur handi-accueillant » : is_disabled_elligible est un boolean indexé et les
+// facettes mongot ne supportent que string/number/date → count dédié via un $searchMeta
+// supplémentaire. Disjonctif comme les facettes : le filtre handi lui-même est exclu du compound
+// pour que le compteur reste stable quand l'utilisateur active le filtre.
+function buildHandiCountCompound(filters: ISearchFilters) {
+  const compound = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, null)
+  compound.filter.push({ equals: { path: "is_disabled_elligible", value: true } })
+  return compound
+}
 
 // Construit les groupes de $searchMeta minimisant le nombre de requêtes :
 // - 1 groupe pour toutes les dimensions NON sélectionnées (+ `type`), calculé avec tous les filtres actifs ;
@@ -486,12 +572,13 @@ export async function searchItems(params: ISearchFilters): Promise<{
   page: number
   nbPages: number
   facets?: ISearchFacets
+  counts?: { is_disabled_elligible: number }
 }> {
   const { page, hitsPerPage, latitude, longitude } = params
   const compound = buildCompoundOperator(params)
   const facetGroups = buildFacetGroups(params)
 
-  const [rows, ...metaArrays] = await Promise.all([
+  const [rows, handiCountRows, ...metaArrays] = await Promise.all([
     getDbCollection("search_items")
       .aggregate<SearchRow>([
         {
@@ -515,6 +602,19 @@ export async function searchItems(params: ISearchFilters): Promise<{
         },
         { $skip: page * hitsPerPage },
         { $limit: hitsPerPage },
+      ])
+      .toArray(),
+
+    // Compteur handi (affiché sur la chip « Employeur handi-accueillant »).
+    getDbCollection("search_items")
+      .aggregate<{ count?: { total?: number } }>([
+        {
+          $searchMeta: {
+            index: "search_items_index",
+            compound: buildHandiCountCompound(params),
+            count: { type: "total" },
+          },
+        },
       ])
       .toArray(),
 
@@ -574,7 +674,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
     }
   })
 
-  return { hits, nbHits, page, nbPages, facets }
+  return { hits, nbHits, page, nbPages, facets, counts: { is_disabled_elligible: handiCountRows[0]?.count?.total ?? 0 } }
 }
 
 // Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).

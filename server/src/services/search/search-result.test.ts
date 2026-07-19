@@ -318,7 +318,9 @@ const CORPUS = [
   //   Recruteur à 1 édition de "vigile", sans lien avec la sécurité → ne doit jamais matcher.
   generateSearchItemFixture({
     url_id: "recruteur-vigier",
-    type: "recruteur",
+    // Comme en prod (generateSearchItemsCollection) : les recruteurs sont des docs type
+    // "offre", distingués par sub_type/is_algo_company.
+    type: "offre",
     type_filter_label: "Candidature spontanée",
     sub_type: "recruteurs_lba",
     title: "Plomberie générale",
@@ -333,7 +335,7 @@ const CORPUS = [
   //   plus récente que toutes les offres) [Fadoua, "Assistant RH" et "Prothèses" en tri date].
   generateSearchItemFixture({
     url_id: "recruteur-travaux",
-    type: "recruteur",
+    type: "offre",
     type_filter_label: "Candidature spontanée",
     sub_type: "recruteurs_lba",
     title: "Conduite de travaux",
@@ -400,6 +402,20 @@ const CORPUS = [
     start_type: "precise_date",
     is_start_flexible: true,
     application_count: 12,
+  }),
+  // — mode « Emplois avec formation incluse » : offre émise par un CFA (is_delegated) ou un
+  //   GEIQ → exclue du mode « emplois », seule renvoyée par « emplois_formation ». Porte aussi
+  //   smart_apply pour le filtre « Candidature simplifiée ».
+  generateSearchItemFixture({
+    url_id: "offre-travaux-cfa",
+    type_filter_label: "Offres d'emploi postées par des écoles",
+    title: "Conducteur de travaux avec formation incluse",
+    description: "Contrat d'apprentissage : l'offre est associée à une formation au CFA.",
+    keywords: ["chantier", "btp"],
+    rome_labels: ["Conduite de travaux du BTP et de travaux paysagers"],
+    organization_name: "CFA du BTP",
+    is_formation_included: true,
+    smart_apply: true,
   }),
 ]
 
@@ -837,6 +853,70 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
       expect(rankOf(result, "offre-conducteur-travaux")).toBeLessThan(rankOf(result, "offre-travaux-flexible"))
       // Sans compteur, un doc trierait en tête (valeur manquante < 0) → exclu de ce tri.
       for (const hit of result.hits) expect(hit.application_count).not.toBeNull()
+    })
+  })
+
+  describe("type de recherche (mode) et filtres du redesign", () => {
+    it("mode=emplois : exclut les formations et les offres CFA/GEIQ, garde offres et candidatures spontanées", async () => {
+      const result = await search({ q: "conduite de travaux", mode: "emplois" })
+
+      expect(ids(result)).toContain("offre-conducteur-travaux")
+      expect(ids(result)).toContain("recruteur-travaux")
+      expect(ids(result)).not.toContain("offre-travaux-cfa")
+      for (const hit of result.hits) expect(hit.type).toBe("offre")
+    })
+
+    it("mode=formations : uniquement les formations", async () => {
+      const result = await search({ mode: "formations" })
+
+      expect(ids(result)).toContain("formation-mco")
+      for (const hit of result.hits) expect(hit.type).toBe("formation")
+    })
+
+    it("mode=emplois_formation : uniquement les offres CFA/GEIQ", async () => {
+      const result = await search({ mode: "emplois_formation" })
+
+      expect(ids(result)).toEqual(["offre-travaux-cfa"])
+    })
+
+    it("is_algo_company=true : uniquement les entreprises à contacter (candidatures spontanées)", async () => {
+      const result = await search({ q: "conduite de travaux", is_algo_company: true })
+
+      expect(ids(result)).toContain("recruteur-travaux")
+      expect(ids(result)).not.toContain("offre-conducteur-travaux")
+    })
+
+    it("is_algo_company=false : uniquement les offres d'emploi (sans les candidatures spontanées)", async () => {
+      const result = await search({ q: "conduite de travaux", is_algo_company: false })
+
+      expect(ids(result)).toContain("offre-conducteur-travaux")
+      expect(ids(result)).not.toContain("recruteur-travaux")
+    })
+
+    it("smart_apply=true : uniquement les offres avec candidature simplifiée", async () => {
+      const result = await search({ q: "conducteur de travaux", smart_apply: true })
+
+      expect(ids(result)).toContain("offre-travaux-cfa")
+      expect(ids(result)).not.toContain("offre-conducteur-travaux")
+    })
+
+    it("sort=start_date : démarrages les plus proches d'abord, docs sans date écartés", async () => {
+      const result = await search({ q: "conducteur de travaux", sort: "start_date" })
+
+      // aout (01/08) < handi (01/09) < flexible (01/12)
+      expect(rankOf(result, "offre-travaux-aout")).toBeLessThan(rankOf(result, "offre-travaux-handi"))
+      expect(rankOf(result, "offre-travaux-handi")).toBeLessThan(rankOf(result, "offre-travaux-flexible"))
+      // Sans date, un doc trierait en tête (valeur manquante avant toute date) → exclu de ce tri.
+      for (const hit of result.hits) expect(hit.start_date).not.toBeNull()
+    })
+
+    it("compteur handi : counts.is_disabled_elligible reflète le result set et reste stable filtre actif", async () => {
+      const sans = await search({ q: "conducteur de travaux" })
+      const avec = await search({ q: "conducteur de travaux", is_disabled_elligible: true })
+
+      expect(sans.counts?.is_disabled_elligible).toBe(1) // offre-travaux-handi
+      // Disjonctif : activer le filtre ne fait pas retomber le compteur de sa propre chip.
+      expect(avec.counts?.is_disabled_elligible).toBe(sans.counts?.is_disabled_elligible)
     })
   })
 

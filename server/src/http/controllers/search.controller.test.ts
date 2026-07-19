@@ -85,7 +85,7 @@ describe.skip("search.controller", () => {
         expect(response.statusCode).toBe(400)
       })
 
-      it.each(["proximity", "smart_apply", "date"])("accepte sort=%s", async (sort) => {
+      it.each(["proximity", "date", "applications", "start_date"])("accepte sort=%s", async (sort) => {
         const response = await httpClient().inject({ method: "GET", path: `/api/v1/search?sort=${sort}&latitude=48.86&longitude=2.35` })
 
         expect(response.statusCode).toBe(200)
