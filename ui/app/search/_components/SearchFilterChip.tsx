@@ -65,7 +65,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
   const palette = active ? CHIP_COLORS.active : CHIP_COLORS.default
 
   return (
-    <>
+    <Box sx={{ position: "relative", display: "inline-flex" }}>
       <ButtonBase
         ref={anchorRef}
         disabled={disabled}
@@ -97,6 +97,28 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         {active ? (activeLabel ?? label) : label}
         {isDropdown && <Box component="span" className={fr.cx(open ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line", "fr-icon--sm")} aria-hidden="true" />}
       </ButtonBase>
+      {/* Pastille de sélection des toggles (design Figma) : déborde du coin haut-droit.
+          Décorative — l'état est déjà porté par aria-pressed. */}
+      {!isDropdown && active && (
+        <Box
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            top: "-6px",
+            right: "-2px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 16,
+            height: 16,
+            borderRadius: "50%",
+            backgroundColor: "#FFFFFF",
+            color: fr.colors.decisions.text.actionHigh.blueFrance.default,
+            pointerEvents: "none",
+          }}
+          className={fr.cx("fr-icon-checkbox-circle-line", "fr-icon--sm")}
+        />
+      )}
       {isDropdown && (
         <Popper id={popperId} open={open} anchorEl={anchorRef.current} placement="bottom-start" transition sx={{ zIndex: (theme) => theme.zIndex.modal }}>
           {({ TransitionProps }) => (
@@ -110,7 +132,7 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
           )}
         </Popper>
       )}
-    </>
+    </Box>
   )
 }
 
