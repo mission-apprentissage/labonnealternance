@@ -74,21 +74,12 @@ export function SearchHomeForm() {
           <SearchBar layout="responsive" onSubmit={launchSearch} onQChange={setQ} onLieuChange={setLieu} />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={setMode} />
-        {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
-        <Box>{rechercherButton}</Box>
-      </Box>
-
-      {/* Mobile : champs factices → modale de saisie plein écran */}
-      <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: fr.spacing("4v") }}>
-        <MobileFakeField
-          label="Que recherchez-vous ?"
-          value={q}
-          placeholder="Recherche par mot clé (métier, formation, entreprise, compétence,...)"
-          onOpen={() => setMobilePanelOpen(true)}
-        />
-        <MobileFakeField label="Lieu" value={lieu?.label} placeholder="France entière" onOpen={() => setMobilePanelOpen(true)} />
-        <SearchTypeRechercheSelect value={mode} onChange={setMode} fullWidth />
-        {rechercherButton}
+        {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut) ; pleine largeur en mobile. */}
+        <Box sx={{ width: { xs: "100%", md: "auto" } }}>
+          <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, "free_text")} style={{ height: 48, justifyContent: "center", width: "100%" }}>
+            Rechercher
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ display: "flex", justifyContent: { xs: "center", md: "flex-end" } }}>
         <ExitNewSearchLink navigateToLegacy={false} />

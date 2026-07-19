@@ -17,7 +17,8 @@ export const SEARCH_MODE_OPTIONS: { value: SearchMode; label: string; hint: stri
 
 export function SearchTypeRechercheSelect({ value, onChange, fullWidth = false }: { value: SearchMode; onChange: (mode: SearchMode) => void; fullWidth?: boolean }) {
   return (
-    <Box sx={{ width: fullWidth ? "100%" : 232, flexShrink: 0 }}>
+    // En mobile (colonne), le select suit la largeur des champs ; 232px fixes en desktop.
+    <Box sx={{ width: fullWidth ? "100%" : { xs: "100%", md: 232 }, flexShrink: 0 }}>
       <Box
         component="label"
         id="search-mode-label"
