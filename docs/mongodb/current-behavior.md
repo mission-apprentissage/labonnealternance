@@ -76,9 +76,16 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 - **Cartes** : `SearchHitCard` au rendu legacy (Card DSFR, badges via les composants feuilles `Tag*`, distance, date de publication, compteur de candidatures, encart « déjà postulé » via `ItemDetailApplicationsStatus` — clés localStorage partagées avec le legacy). Navigation vers la page détail via `buildHitDetailUrl`.
 - **Tri** : `SearchSortSelect` (label « Trier par » au-dessus) : Les plus pertinentes / Proximité (désactivée sans géo) / Les offres les plus récentes / Les offres avec le moins de candidatures / Date de début de contrat. Mode Formations : pertinence + proximité seulement. Compteur « X résultats » à droite de la ligne de tri.
 - **État vide** : illustration legacy (`dosearch.svg`) + message, affiché seulement après épuisement de l'auto-rayon (100 km).
-- **Sortie du nouveau moteur** : lien « Sortir du nouveau moteur de recherche » → `/recherche` **vierge** (aucune traduction de params).
-- **Mobile** : header burger DSFR (`PublicHeader`) + 2 boutons sticky (« Modifier la recherche » / « Filtrer ») ouvrant des panneaux plein écran — refonte (barre résumé + modales) prévue au lot mobile. Bascule desktop/mobile en **CSS breakpoints (`lg` 992px)**, **pas de `useMediaQuery`** (évite le flash d'hydratation).
+- **Mobile** : barre résumé sticky 2 lignes (`SearchMobileSummaryBar` : mot clé / « lieu - type de recherche », loupe) ouvrant la modale Recherche (SearchBar colonne + radios type de recherche + Rechercher + lien de sortie) ; chips « Filtres (n) » et « Tri » ouvrant leurs modales — Filtres : sections empilées à application immédiate + bouton sticky « Voir les N résultats » (niveau en radios avec « Indifférent » = aucun filtre) ; Tri : bottom-sheet à application **différée** (bouton « Appliquer »). Bascule desktop/mobile en **CSS breakpoints (`lg` 992px)**, **pas de `useMediaQuery`** (évite le flash d'hydratation).
 - **Footer** : `Footer` DSFR rendu sous la page.
+
+### Coexistence legacy ↔ nouveau moteur (opt-in)
+
+- **Flag localStorage `lba-new-search-optin`** (hook [`useNewSearchOptIn`](../../ui/app/search/_hooks/useNewSearchOptIn.ts)), lu après le mount uniquement — le SSR rend toujours le legacy (pas de mismatch d'hydratation).
+- **Home** ([`HomeRechercheOptIn`](../../ui/app/(home)/_components/HomeRechercheOptIn.tsx)) : formulaire legacy + encart « Nouvelle recherche ! … Tester → » ; opt-in → formulaire du nouveau moteur **sans filtres** ([`SearchHomeForm`](../../ui/app/search/_components/SearchHomeForm.tsx) : champs + type de recherche + Rechercher → `/search/split`) + lien de sortie. **Recherche réinitialisée à chaque bascule** (aucune traduction de params).
+- **Lien « Sortir du nouveau moteur de recherche »** ([`ExitNewSearchLink`](../../ui/app/search/_components/ExitNewSearchLink.tsx)) : désactive le flag + télémétrie ; depuis les résultats → `/recherche` vierge ; sur la home → réaffiche le legacy sur place.
+- **Entrées** : le menu « Je recherche une alternance » suit le flag (`/search/split` si opt-in) ; la quick access « Recherche avancée » du header a été retirée.
+- **Télémétrie** : événements Matomo `new_search_optin` / `new_search_optout` avec `search_engine` (`production` / `beta-v1`, cf. `SEARCH_ENGINES` dans [`matomoUtils.ts`](../../ui/utils/matomoUtils.ts)) et `pathname` de la page d'origine. Tracking des cartes distinguant le moteur : second temps.
 
 ### Rayon automatique
 
