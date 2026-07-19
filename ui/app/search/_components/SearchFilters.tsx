@@ -60,6 +60,16 @@ const isFutureDate = (isoDate?: string): boolean => {
 
 const TYPE_FILTER_LABEL_DISTANCE = "Formation à distance"
 
+// Popper à checkboxes : neutralise les marges basses du fieldset DSFR (1rem sur le fieldset
+// ET sur son dernier élément) pour retomber sur le padding vertical du panneau (8px),
+// identique aux poppers mono-choix.
+const CHECKBOX_POPPER_SX = {
+  px: "16px",
+  pt: "8px",
+  "& .fr-fieldset": { mb: 0 },
+  "& .fr-fieldset__element:last-child": { mb: 0 },
+}
+
 /** Les filtres remis à zéro par « Réinitialiser les filtres » (q, lieu, mode et tri conservés). */
 export function clearedFilters(params: ISearchPageParams): ISearchPageParams {
   return {
@@ -171,7 +181,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
           activeLabel={offresChecked ? "Offres d'emploi en alternance" : "Entreprises à contacter"}
           active={params.is_algo_company !== undefined}
           popperContent={
-            <Box sx={{ px: "16px", pt: "8px", "& .fr-fieldset__element:last-child": { mb: 0 } }}>
+            <Box sx={CHECKBOX_POPPER_SX}>
               <Checkbox
                 small
                 options={[
@@ -242,7 +252,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
           activeLabel={params.contract_type?.length ? multiLabel(params.contract_type) : undefined}
           active={Boolean(params.contract_type?.length)}
           popperContent={
-            <Box sx={{ px: "16px", pt: "8px", "& .fr-fieldset__element:last-child": { mb: 0 } }}>
+            <Box sx={CHECKBOX_POPPER_SX}>
               <Checkbox
                 small
                 options={contractOptions.map((option) => ({
