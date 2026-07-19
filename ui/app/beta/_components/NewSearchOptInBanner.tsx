@@ -34,18 +34,22 @@ export function NewSearchOptInBanner({ navigateToNewSearch = false }: { navigate
         backgroundColor: fr.colors.decisions.background.contrast.blueFrance.default,
       }}
     >
-      <Box component="span" className={fr.cx("fr-icon-search-line")} sx={{ color: fr.colors.decisions.text.actionHigh.blueFrance.default }} aria-hidden="true" />
-      <Box component="span" sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.default.grey.default, textAlign: "center" }}>
-        <Box component="strong">Nouvelle recherche !</Box> Un nouveau moteur de recherche est en expérimentation, venez l'essayer par ici
-      </Box>
-      <Box
-        component="button"
-        type="button"
-        onClick={handleOptIn}
-        className={fr.cx("fr-link", "fr-link--sm", "fr-icon-arrow-right-line", "fr-link--icon-right")}
-        sx={{ whiteSpace: "nowrap" }}
-      >
-        Tester
+      {/* Icône à gauche, message en flux avec le lien « Tester → » À LA SUITE du texte
+          (inline) — pas en dessous, même quand le texte passe sur plusieurs lignes. */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: fr.spacing("2v"), minWidth: 0 }}>
+        <Box component="span" className={fr.cx("fr-icon-search-line")} sx={{ color: fr.colors.decisions.text.actionHigh.blueFrance.default, flexShrink: 0 }} aria-hidden="true" />
+        <Box component="span" sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.default.grey.default, textAlign: { xs: "left", md: "center" } }}>
+          <Box component="strong">Nouvelle recherche !</Box> Un nouveau moteur de recherche est en expérimentation, venez l'essayer par ici{" "}
+          <Box
+            component="button"
+            type="button"
+            onClick={handleOptIn}
+            className={fr.cx("fr-link", "fr-link--sm", "fr-icon-arrow-right-line", "fr-link--icon-right")}
+            sx={{ whiteSpace: "nowrap", verticalAlign: "baseline" }}
+          >
+            Tester
+          </Box>
+        </Box>
       </Box>
     </Box>
   )
