@@ -30,13 +30,14 @@ function paramsToQuerystring(params: ISearchPageParams) {
   return qs
 }
 
-export function useSearchResults(params: ISearchPageParams) {
+export function useSearchResults(params: ISearchPageParams, { enabled = true }: { enabled?: boolean } = {}) {
   // page exclu du queryKey — chaque page est chargée via pageParam par useInfiniteQuery
   const baseQs = paramsToQuerystring(params)
 
   return useInfiniteQuery({
     queryKey: ["/v1/search", baseQs],
     queryFn: ({ signal, pageParam }) => apiGet("/v1/search", { querystring: { ...baseQs, page: pageParam } as never }, { signal }),
+    enabled,
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPageParam + 1 < lastPage.nbPages) return lastPageParam + 1

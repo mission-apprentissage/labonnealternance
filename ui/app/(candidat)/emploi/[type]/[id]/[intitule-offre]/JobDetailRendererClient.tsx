@@ -10,6 +10,7 @@ import { Footer } from "@/app/_components/Footer"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { useBetaDetailNavigation } from "@/app/beta/_hooks/useBetaDetailNavigation"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import AideApprentissage from "@/components/ItemDetail/AideApprentissage"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
@@ -124,11 +125,15 @@ function JobDetail({
       search_address: rechercheParams.geo?.address || "non_renseigné",
     })
   }, [selectedItem.id, resultList, rechercheParams.job_name, rechercheParams.geo?.address])
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({
+  const legacyNavigation = useBuildNavigation({
     items: resultList,
     currentItemId: selectedItem.id,
     rechercheParams: rechercheParams,
   })
+  // Ouverture depuis le nouveau moteur (?from=/beta/recherche…) : précédent/suivant naviguent
+  // dans les résultats de /beta/recherche et « fermer » y retourne, au lieu du legacy.
+  const betaNavigation = useBetaDetailNavigation()
+  const { swipeHandlers, goNext, goPrev } = betaNavigation ?? legacyNavigation
 
   const kind = selectedItem.ideaType
   const isMandataire = Boolean(selectedItem?.company?.mandataire)
@@ -138,7 +143,7 @@ function JobDetail({
     if (kind === LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES) return (selectedItem as ILbaItemPartnerJobJson).id
     return null
   })()
-  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
+  const handleClose = betaNavigation ? betaNavigation.handleClose : () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath())
 
   const [firstNaf] = selectedItem?.nafs as ILbaItemNaf[]
   const actualTitle = kind === LBA_ITEM_TYPE.RECRUTEURS_LBA && firstNaf ? firstNaf.label : selectedItem.title

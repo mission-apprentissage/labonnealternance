@@ -15,6 +15,7 @@ import { Footer } from "@/app/_components/Footer"
 import type { IUseRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { useBetaDetailNavigation } from "@/app/beta/_hooks/useBetaDetailNavigation"
 import { useBuildNavigation } from "@/app/hooks/useBuildNavigation"
 import { useFormationPrdvTracker } from "@/app/hooks/useFormationPrdvTracker"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
@@ -70,8 +71,12 @@ function TrainingDetailPage({
   const router = useRouter()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("lg"))
-  const { swipeHandlers, goNext, goPrev } = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
-  const handleClose = () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false })
+  const legacyNavigation = useBuildNavigation({ items: resultList, currentItemId: selectedItem.id, rechercheParams: rechercheParams })
+  // Ouverture depuis le nouveau moteur (?from=/beta/recherche…) : précédent/suivant naviguent
+  // dans les résultats de /beta/recherche et « fermer » y retourne, au lieu du legacy.
+  const betaNavigation = useBetaDetailNavigation()
+  const { swipeHandlers, goNext, goPrev } = betaNavigation ?? legacyNavigation
+  const handleClose = betaNavigation ? betaNavigation.handleClose : () => router.push(PAGES.dynamic.recherche(rechercheParams).getPath(), { scroll: false })
 
   const contextPRDV = {
     cle_ministere_educatif: selectedItem.id,
