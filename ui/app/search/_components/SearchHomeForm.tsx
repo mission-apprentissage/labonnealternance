@@ -62,7 +62,8 @@ export function SearchHomeForm() {
           <SearchBar layout="responsive" onSubmit={launchSearch} onQChange={setQ} onLieuChange={setLieu} />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={setMode} />
-        <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, "free_text")}>
+        {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
+        <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, "free_text")} style={{ height: 48, justifyContent: "center" }}>
           Rechercher
         </Button>
       </Box>
