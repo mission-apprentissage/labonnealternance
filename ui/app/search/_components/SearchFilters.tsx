@@ -3,7 +3,9 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox"
 import Input from "@codegouvfr/react-dsfr/Input"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
+import type { ReactNode } from "react"
 import { useMemo } from "react"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
@@ -24,7 +26,7 @@ interface SearchFiltersProps {
   /** Compteur d'offres handi-accueillantes (counts.is_disabled_elligible de l'API) — seul filtre avec compteur. */
   handiCount?: number
   onNavigate: (newParams: ISearchPageParams) => void
-  /** "bar" : rangée de chips desktop ; "sections" : panneau mobile (cases empilées). */
+  /** "bar" : rangée de chips desktop ; "sections" : modale Filtres mobile (sections empilées). */
   variant?: "bar" | "sections"
 }
 
@@ -103,27 +105,16 @@ export function hasActiveFilters(params: ISearchPageParams): boolean {
   )
 }
 
-/** Section de cases à cocher inline (panneau mobile — refonte complète au lot mobile). */
-function CheckboxSection({ title, options, value, onChange }: { title: string; options: string[]; value: string[]; onChange: (vals: string[]) => void }) {
-  const toggle = (optionValue: string) => {
-    onChange(value.includes(optionValue) ? value.filter((v) => v !== optionValue) : [...value, optionValue])
-  }
-
+/** Section de la modale Filtres mobile : titre gras + contenu, séparée par un filet. */
+function MobileSection({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <Box sx={{ py: fr.spacing("2v"), borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}` }}>
-      <Box component="h3" className={fr.cx("fr-h6")} sx={{ margin: 0, mb: fr.spacing("2v") }}>
-        {title}
-      </Box>
-      {options.length === 0 && <Box sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>}
-      {options.length > 0 && (
-        <Checkbox
-          small
-          options={options.map((option) => ({
-            label: option,
-            nativeInputProps: { checked: value.includes(option), onChange: () => toggle(option) },
-          }))}
-        />
+    <Box sx={{ py: fr.spacing("4v"), borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`, "& .fr-fieldset": { mb: 0 } }}>
+      {title && (
+        <Box component="h3" sx={{ margin: 0, mb: fr.spacing("3v"), fontSize: "1rem", fontWeight: 700, color: fr.colors.decisions.text.default.grey.default }}>
+          {title}
+        </Box>
       )}
+      {children}
     </Box>
   )
 }
@@ -143,20 +134,6 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
     [facets?.level, params.level]
   )
 
-  if (variant === "sections") {
-    return (
-      <Box>
-        <CheckboxSection
-          title="Contrat"
-          options={contractOptions}
-          value={params.contract_type ?? []}
-          onChange={(vals) => navigate({ contract_type: vals.length ? vals : undefined })}
-        />
-        <CheckboxSection title="Niveau" options={levelOptions} value={params.level ?? []} onChange={(vals) => navigate({ level: vals.length ? vals : undefined })} />
-      </Box>
-    )
-  }
-
   const isFormations = params.mode === "formations"
   const selectedLevel = params.level?.[0]
   const futureStartDate = isFutureDate(params.start_date)
@@ -173,6 +150,139 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
 
   const distanceActive = params.type_filter_label?.includes(TYPE_FILTER_LABEL_DISTANCE) ?? false
 
+  const toggleContract = (option: string) => {
+    const current = params.contract_type ?? []
+    const next = current.includes(option) ? current.filter((v) => v !== option) : [...current, option]
+    navigate({ contract_type: next.length ? next : undefined })
+  }
+
+  const setStartDate = (value: string | undefined) => {
+    // Date future : « Recrutement urgent » (dès que possible) n'a plus de sens → retiré.
+    navigate({ start_date: value, urgent: isFutureDate(value) ? undefined : params.urgent })
+  }
+
+  const offerKindCheckboxOptions = [
+    {
+      label: "Offres d'emploi en alternance",
+      nativeInputProps: { checked: offresChecked, onChange: () => toggleOfferKind("offres") },
+    },
+    {
+      label: "Entreprises à contacter",
+      hintText: "Vous pouvez leur adresser vos candidatures spontanées",
+      nativeInputProps: { checked: entreprisesChecked, onChange: () => toggleOfferKind("entreprises") },
+    },
+  ]
+
+  const startDateInput = (
+    <Input
+      label="À partir du"
+      nativeInputProps={{
+        type: "date",
+        value: params.start_date ?? "",
+        onChange: (e) => setStartDate(e.target.value || undefined),
+      }}
+    />
+  )
+
+  if (variant === "sections") {
+    return (
+      <Box sx={{ "& > :last-child": { borderBottom: "none" } }}>
+        {!isFormations && params.mode === "emplois" && (
+          <MobileSection title="Type d'offres d'emploi">
+            <Checkbox small options={offerKindCheckboxOptions} />
+          </MobileSection>
+        )}
+
+        {!isFormations && <MobileSection title="Date de début de contrat">{startDateInput}</MobileSection>}
+
+        <MobileSection title="Niveau d'études visé">
+          <RadioButtons
+            small
+            legend=""
+            options={[
+              {
+                label: "Indifférent",
+                nativeInputProps: { checked: !selectedLevel, onChange: () => navigate({ level: undefined }) },
+              },
+              ...levelOptions.map((option) => ({
+                label: option,
+                nativeInputProps: { checked: option === selectedLevel, onChange: () => navigate({ level: [option] }) },
+              })),
+            ]}
+          />
+        </MobileSection>
+
+        {!isFormations && (
+          <MobileSection title="Type de contrat">
+            <Checkbox
+              small
+              options={contractOptions.map((option) => ({
+                label: option,
+                nativeInputProps: { checked: params.contract_type?.includes(option) ?? false, onChange: () => toggleContract(option) },
+              }))}
+            />
+            {contractOptions.length === 0 && <Box sx={{ fontSize: "0.875rem", color: fr.colors.decisions.text.disabled.grey.default }}>Aucune option disponible</Box>}
+          </MobileSection>
+        )}
+
+        {!isFormations && (
+          <>
+            <MobileSection>
+              <Checkbox
+                small
+                options={[
+                  {
+                    label: `Employeur handi-accueillant${handiCount !== undefined ? ` (${handiCount})` : ""}`,
+                    nativeInputProps: { checked: params.handi === true, onChange: () => navigate({ handi: params.handi ? undefined : true }) },
+                  },
+                ]}
+              />
+            </MobileSection>
+            <MobileSection>
+              <Checkbox
+                small
+                options={[
+                  {
+                    label: "Recrutement urgent",
+                    nativeInputProps: { checked: params.urgent === true, disabled: futureStartDate, onChange: () => navigate({ urgent: params.urgent ? undefined : true }) },
+                  },
+                ]}
+              />
+            </MobileSection>
+            <MobileSection>
+              <Checkbox
+                small
+                options={[
+                  {
+                    label: "Candidature simplifiée",
+                    nativeInputProps: { checked: params.smart_apply === true, onChange: () => navigate({ smart_apply: params.smart_apply ? undefined : true }) },
+                  },
+                ]}
+              />
+            </MobileSection>
+          </>
+        )}
+
+        {isFormations && (
+          <MobileSection>
+            <Checkbox
+              small
+              options={[
+                {
+                  label: "Formations à distance",
+                  nativeInputProps: {
+                    checked: distanceActive,
+                    onChange: () => navigate({ type_filter_label: distanceActive ? undefined : [TYPE_FILTER_LABEL_DISTANCE] }),
+                  },
+                },
+              ]}
+            />
+          </MobileSection>
+        )}
+      </Box>
+    )
+  }
+
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", gap: fr.spacing("2v"), alignItems: "center" }}>
       {!isFormations && params.mode === "emplois" && (
@@ -182,20 +292,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
           active={params.is_algo_company !== undefined}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>
-              <Checkbox
-                small
-                options={[
-                  {
-                    label: "Offres d'emploi en alternance",
-                    nativeInputProps: { checked: offresChecked, onChange: () => toggleOfferKind("offres") },
-                  },
-                  {
-                    label: "Entreprises à contacter",
-                    hintText: "Vous pouvez leur adresser vos candidatures spontanées",
-                    nativeInputProps: { checked: entreprisesChecked, onChange: () => toggleOfferKind("entreprises") },
-                  },
-                ]}
-              />
+              <Checkbox small options={offerKindCheckboxOptions} />
             </Box>
           }
         />
@@ -206,22 +303,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
           label="Date de début de contrat"
           activeLabel={params.start_date ? `À partir du ${formatDateFr(params.start_date)}` : undefined}
           active={Boolean(params.start_date)}
-          popperContent={
-            <Box sx={{ px: "16px", pt: "8px" }}>
-              <Input
-                label="À partir du"
-                nativeInputProps={{
-                  type: "date",
-                  value: params.start_date ?? "",
-                  onChange: (e) => {
-                    const value = e.target.value || undefined
-                    // Date future : « Recrutement urgent » (dès que possible) n'a plus de sens → retiré.
-                    navigate({ start_date: value, urgent: isFutureDate(value) ? undefined : params.urgent })
-                  },
-                }}
-              />
-            </Box>
-          }
+          popperContent={<Box sx={{ px: "16px", pt: "8px" }}>{startDateInput}</Box>}
         />
       )}
 
@@ -257,14 +339,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
                 small
                 options={contractOptions.map((option) => ({
                   label: option,
-                  nativeInputProps: {
-                    checked: params.contract_type?.includes(option) ?? false,
-                    onChange: () => {
-                      const current = params.contract_type ?? []
-                      const next = current.includes(option) ? current.filter((v) => v !== option) : [...current, option]
-                      navigate({ contract_type: next.length ? next : undefined })
-                    },
-                  },
+                  nativeInputProps: { checked: params.contract_type?.includes(option) ?? false, onChange: () => toggleContract(option) },
                 }))}
               />
             </Box>

@@ -6,7 +6,7 @@ import { Box, FormControl, MenuItem, Select } from "@mui/material"
 import type { ISearchPageParams, SortOption } from "../_utils/search.params.utils"
 
 // "" = tri par défaut (pertinence) : permet de RETIRER un tri actif.
-const SORT_LABELS: { value: SortOption | ""; label: string }[] = [
+export const SORT_LABELS: { value: SortOption | ""; label: string }[] = [
   { value: "", label: "Les plus pertinentes" },
   { value: "proximity", label: "Proximité avec le lieu de recherche" },
   { value: "date", label: "Les offres les plus récentes" },
@@ -16,7 +16,7 @@ const SORT_LABELS: { value: SortOption | ""; label: string }[] = [
 
 // Mode « Formations uniquement » : seuls pertinence et proximité ont un sens (pas de date de
 // publication fiable, pas de candidatures ni de date de début côté formations).
-const FORMATION_SORTS = new Set<SortOption | "">(["", "proximity"])
+export const FORMATION_SORTS = new Set<SortOption | "">(["", "proximity"])
 
 /**
  * Select « Trier par » (label au-dessus, valeur affichée dans le champ). Pilote le param

@@ -22,6 +22,11 @@ interface SearchFilterChipProps {
   popperContent?: ReactNode
   /** Variante toggle : bascule à chaque clic. */
   onToggle?: () => void
+  /**
+   * Variante déclencheur de modale (chips mobile « Filtres (n) » / « Tri ») : caret sans
+   * popper, `onToggle` ouvre la modale — pas d'aria-pressed ni de pastille de sélection.
+   */
+  dialogTrigger?: boolean
 }
 
 const CHIP_COLORS = {
@@ -41,7 +46,7 @@ const CHIP_COLORS = {
   },
 }
 
-export function SearchFilterChip({ label, activeLabel, active, disabled = false, popperContent, onToggle }: SearchFilterChipProps) {
+export function SearchFilterChip({ label, activeLabel, active, disabled = false, popperContent, onToggle, dialogTrigger = false }: SearchFilterChipProps) {
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLButtonElement>(null)
   const popperId = useId()
@@ -72,9 +77,9 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         aria-expanded={isDropdown ? open : undefined}
-        aria-haspopup={isDropdown ? "true" : undefined}
+        aria-haspopup={isDropdown ? "true" : dialogTrigger ? "dialog" : undefined}
         aria-controls={isDropdown && open ? popperId : undefined}
-        aria-pressed={!isDropdown ? active : undefined}
+        aria-pressed={!isDropdown && !dialogTrigger ? active : undefined}
         sx={{
           height: 32,
           borderRadius: "16px",
@@ -95,11 +100,13 @@ export function SearchFilterChip({ label, activeLabel, active, disabled = false,
         }}
       >
         {active ? (activeLabel ?? label) : label}
-        {isDropdown && <Box component="span" className={fr.cx(open ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line", "fr-icon--sm")} aria-hidden="true" />}
+        {(isDropdown || dialogTrigger) && (
+          <Box component="span" className={fr.cx(open ? "fr-icon-arrow-up-s-line" : "fr-icon-arrow-down-s-line", "fr-icon--sm")} aria-hidden="true" />
+        )}
       </ButtonBase>
       {/* Pastille de sélection des toggles (design Figma) : déborde du coin haut-droit.
           Décorative — l'état est déjà porté par aria-pressed. */}
-      {!isDropdown && active && (
+      {!isDropdown && !dialogTrigger && active && (
         <Box
           aria-hidden="true"
           sx={{

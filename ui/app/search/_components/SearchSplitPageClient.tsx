@@ -2,10 +2,10 @@
 
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useState } from "react"
-
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
@@ -17,15 +17,17 @@ import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.u
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
 import { SearchMobilePanel } from "./SearchMobilePanel"
+import { SearchMobileSummaryBar } from "./SearchMobileSummaryBar"
+import { SearchMobileTriModal } from "./SearchMobileTriModal"
 import { SearchResultsList } from "./SearchResultsList"
 import { SearchSortSelect } from "./SearchSortSelect"
-import { SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
+import { SEARCH_MODE_OPTIONS, SearchTypeRechercheSelect } from "./SearchTypeRechercheSelect"
 
 interface SearchSplitPageClientProps {
   initialParams: ISearchPageParams
 }
 
-type MobilePanel = null | "search" | "filters"
+type MobilePanel = null | "search" | "filters" | "tri"
 
 /** Lien « Sortir du nouveau moteur de recherche » → legacy /recherche VIERGE (aucune traduction de params). */
 function ExitNewSearchLink() {
@@ -141,7 +143,7 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
           </DefaultContainer>
         </Box>
 
-        {/* Mobile : liste plein écran + 2 boutons (barre résumé + modales dédiées au lot mobile) */}
+        {/* Mobile : barre résumé (2 lignes + chips Filtres/Tri) et liste plein écran */}
         <Box sx={{ display: { xs: "flex", lg: "none" }, flexDirection: "column", flex: 1, minHeight: 0 }}>
           <Box
             sx={{
@@ -149,35 +151,49 @@ export function SearchSplitPageClient({ initialParams }: SearchSplitPageClientPr
               top: 0,
               zIndex: 30,
               flexShrink: 0,
-              display: "flex",
-              gap: fr.spacing("2v"),
               px: fr.spacing("4v"),
               py: fr.spacing("2v"),
               backgroundColor: fr.colors.decisions.background.default.grey.default,
               borderBottom: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
             }}
           >
-            <Button priority="secondary" iconId="fr-icon-search-line" onClick={() => setPanel("search")} style={{ flex: 1, justifyContent: "center" }}>
-              Modifier la recherche
-            </Button>
-            <Button priority="secondary" iconId="fr-icon-filter-line" onClick={() => setPanel("filters")} style={{ flex: 1, justifyContent: "center" }}>
-              Filtrer{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-            </Button>
+            <SearchMobileSummaryBar
+              params={params}
+              activeFilterCount={activeFilterCount}
+              onOpenSearch={() => setPanel("search")}
+              onOpenFilters={() => setPanel("filters")}
+              onOpenTri={() => setPanel("tri")}
+            />
           </Box>
 
           <Box sx={{ flex: 1, px: fr.spacing("4v"), py: fr.spacing("2v") }}>
-            <Box sx={{ mb: fr.spacing("3v") }}>
-              <SearchSortSelect params={params} onNavigate={handleFilterChange} />
-            </Box>
             <SearchResultsList result={result} params={params} />
           </Box>
         </Box>
 
         {panel === "search" && (
           <SearchMobilePanel title="Modifier la recherche" onClose={() => setPanel(null)}>
-            <SearchBar layout="column" initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+            <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
+              <SearchBar layout="column" initialQ={params.q} initialLieuLabel={params.lieu_label} onSubmit={handleSearch} onLieuChange={handleLieuChange} />
+              <RadioButtons
+                legend="Type de recherche"
+                options={SEARCH_MODE_OPTIONS.map((option) => ({
+                  label: option.label,
+                  hintText: option.hint,
+                  nativeInputProps: { checked: params.mode === option.value, onChange: () => handleModeChange(option.value) },
+                }))}
+              />
+              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
+                <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)}>
+                  Rechercher
+                </Button>
+                <ExitNewSearchLink />
+              </Box>
+            </Box>
           </SearchMobilePanel>
         )}
+
+        {panel === "tri" && <SearchMobileTriModal params={params} onNavigate={handleFilterChange} onClose={() => setPanel(null)} />}
 
         {panel === "filters" && (
           <SearchMobilePanel
