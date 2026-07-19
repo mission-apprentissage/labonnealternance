@@ -100,8 +100,10 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
         {/* Desktop : bandeau de recherche + liste mono-colonne (affichage piloté par CSS pour éviter le flash d'hydratation) */}
         <Box sx={{ display: { xs: "none", lg: "block" }, flex: 1 }}>
           <DefaultContainer sx={{ py: fr.spacing("4v") }}>
-            {/* Bandeau : champs + chips, panneau blanc arrondi comme le design — sticky au scroll */}
-            <Box sx={{ position: "sticky", top: 0, zIndex: 30 }}>
+            {/* Bandeau : champs + chips, panneau blanc arrondi comme le design — sticky au scroll.
+                z-index > 500 : les cartes DSFR shadow portent z-index calc(--ground + 500) ;
+                on reste sous les poppers des chips et les modales (1250-1300). */}
+            <Box sx={{ position: "sticky", top: 0, zIndex: 1000 }}>
               {/* Cache derrière les coins arrondis : couleur du fond de page, invisible au repos,
                   masque les résultats qui défileraient dans les encoches une fois le bandeau collé. */}
               <Box aria-hidden="true" sx={{ position: "absolute", top: 0, left: 0, right: 0, height: "8px", backgroundColor: fr.colors.decisions.background.alt.grey.default }} />
@@ -147,7 +149,8 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
             sx={{
               position: "sticky",
               top: 0,
-              zIndex: 30,
+              // > 500 (cartes DSFR shadow), < 1250 (modales mobiles).
+              zIndex: 1000,
               flexShrink: 0,
               px: fr.spacing("4v"),
               py: fr.spacing("2v"),
