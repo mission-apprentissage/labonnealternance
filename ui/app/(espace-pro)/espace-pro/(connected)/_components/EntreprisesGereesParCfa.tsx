@@ -17,11 +17,19 @@ export function EntreprisesGereesParCfa({ cfaId, userId }: { cfaId: string; user
   const [currentEntreprise, setCurrentEntreprise] = useState<IRecruiterJson | null>(null)
   const confirmationSuppression = useDisclosure()
 
-  const { data: entreprises, isLoading } = useQuery({
+  const {
+    data: entreprises,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["entreprisesGereesParCfa", cfaId],
     queryFn: () => getEntreprisesManagedByCfa(cfaId),
     enabled: Boolean(cfaId),
   })
+
+  if (error) {
+    throw error
+  }
 
   if (isLoading) {
     return <CircularProgress size={60} thickness={4} sx={{ color: "primary.main" }} />
