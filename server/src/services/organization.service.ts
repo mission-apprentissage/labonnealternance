@@ -119,7 +119,7 @@ export const upsertEntrepriseData = async (
       .toArray()
     await asyncForEach(users, async (user) => {
       const userAndOrganization: UserAndOrganization = { user, organization: { entreprise: savedEntreprise, type: ENTREPRISE } }
-      const result = await autoValidateUserRoleOnCompany(userAndOrganization, origin)
+      const result = await autoValidateUserRoleOnCompany(userAndOrganization)
       if (result.validated) {
         await checkForJobActivations(user._id, savedEntreprise._id)
         const role = rolesToUpdate.find((role) => role.user_id.toString() === user._id.toString())

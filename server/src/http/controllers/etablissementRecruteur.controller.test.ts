@@ -71,7 +71,7 @@ describe("POST /etablissement/creation", () => {
     last_name: "Doe",
     phone: "0612345678",
     establishment_siret: "42476141900045",
-    origin: "lba",
+    origin: "Labonnealternance",
     opco: OPCOS_LABEL.AKTO,
     idcc: "3248",
     type: ENTREPRISE,
@@ -83,7 +83,7 @@ describe("POST /etablissement/creation", () => {
     first_name: "John",
     last_name: "Doe",
     phone: "0612345678",
-    origin: "lba",
+    origin: "Labonnealternance",
     type: CFA,
     establishment_siret: "52151363000017",
   } as const

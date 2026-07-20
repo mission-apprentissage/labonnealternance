@@ -161,7 +161,7 @@ export const CreationCompteForm = ({
   )
 }
 
-export default function CreationCompte({ type, isWidget = false, origin = "lba" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
+export default function CreationCompte({ type, isWidget = false, origin = "Labonnealternance" }: { type: EntrepriseOrCfaType; isWidget?: boolean; origin?: string }) {
   const [organisationType, setOrganisationType] = useState<EntrepriseOrCfaType>(type)
   const { setWidget } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)

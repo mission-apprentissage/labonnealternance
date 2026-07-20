@@ -38,7 +38,7 @@ export function generateCfaFixture(data: Partial<ICFA> = {}): ICFA {
       },
     },
     raison_sociale: "PERFORM COIFFURES",
-    origin: "lba",
+    origin: "Labonnealternance",
     createdAt: new Date("2024-05-03T12:22:59.141Z"),
     updatedAt: new Date("2024-05-03T12:57:13.974Z"),
 
