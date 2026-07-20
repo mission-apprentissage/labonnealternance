@@ -1,4 +1,3 @@
-import memoize from "memoizee"
 import { ObjectId } from "mongodb"
 import { OPCOS_LABEL } from "shared/constants/recruteur"
 import type { IOpco } from "shared/models/opco.model"
@@ -71,15 +70,6 @@ export const insertOpcos = async (opcoDatas: Omit<IOpco, "_id">[]) => {
     }
   )
 }
-
-/**
- * @description retourne le nom court d'un opco en paramètre
- * @param {string} longName
- * @returns {string}
- */
-const getOpcoShortName = (longName: string) => Object.keys(OPCOS_LABEL).find((k) => OPCOS_LABEL[k] === longName)
-
-export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
 
 /**
  * @description Filtre une liste de jobs pour ne laisser que ceux qui ont la valeur opcoUrl ou opco
