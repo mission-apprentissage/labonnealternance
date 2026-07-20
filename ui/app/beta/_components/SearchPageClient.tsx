@@ -49,7 +49,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   const nbHits = result.data?.pages.at(-1)?.nbHits ?? 0
   const facets = result.data?.pages[0]?.facets
-  const handiCount = result.data?.pages[0]?.counts?.is_disabled_elligible
+  const counts = result.data?.pages[0]?.counts
 
   // search_results_displayed : une fois par recherche distincte (q/lieu/mode/filtres/tri),
   // pas à chaque page chargée via « Voir plus » — même événement que le legacy, enrichi de
@@ -158,7 +158,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
                 </Box>
                 <Box sx={{ pt: fr.spacing("4v") }}>
-                  <SearchFilters params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
+                  <SearchFilters params={params} facets={facets} counts={counts} onNavigate={handleFilterChange} />
                 </Box>
                 <Box sx={{ display: "flex", justifyContent: "flex-end", pt: fr.spacing("3v") }}>
                   <ExitNewSearchLink />
@@ -248,7 +248,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               </Box>
             }
           >
-            <SearchFilters variant="sections" params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
+            <SearchFilters variant="sections" params={params} facets={facets} counts={counts} onNavigate={handleFilterChange} />
           </SearchMobilePanel>
         )}
       </Box>

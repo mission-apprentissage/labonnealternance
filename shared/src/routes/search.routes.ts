@@ -94,6 +94,8 @@ export const zSearchRoutes = {
           counts: z
             .object({
               is_disabled_elligible: z.number().describe("Nombre d'offres éligibles handicap dans le result set (hors filtre handi lui-même)"),
+              urgent: z.number().describe("Nombre d'offres à démarrage dès que possible dans le result set (hors filtre urgent lui-même)"),
+              smart_apply: z.number().describe("Nombre d'offres à candidature simplifiée dans le result set (hors filtre smart_apply lui-même)"),
             })
             .optional(),
         }),

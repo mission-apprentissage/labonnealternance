@@ -23,12 +23,15 @@ interface FacetCounts {
 interface SearchFiltersProps {
   params: ISearchPageParams
   facets?: FacetCounts
-  /** Compteur d'offres handi-accueillantes (counts.is_disabled_elligible de l'API) — seul filtre avec compteur. */
-  handiCount?: number
+  /** Compteurs des chips booléennes (counts de l'API : handi, urgent, candidature simplifiée). */
+  counts?: { is_disabled_elligible?: number; urgent?: number; smart_apply?: number }
   onNavigate: (newParams: ISearchPageParams) => void
   /** "bar" : rangée de chips desktop ; "sections" : modale Filtres mobile (sections empilées). */
   variant?: "bar" | "sections"
 }
+
+/** Suffixe « (N) » des libellés de chips à compteur. */
+const withCount = (label: string, count?: number) => (count !== undefined ? `${label} (${count})` : label)
 
 // Valeurs de niveau « indifférentes » (toujours incluses côté API) : pas des options de filtre.
 const LEVEL_AGNOSTIC_VALUES = new Set(["", "Indifférent"])
@@ -119,7 +122,7 @@ function MobileSection({ title, children }: { title?: string; children: ReactNod
   )
 }
 
-export function SearchFilters({ params, facets, handiCount, onNavigate, variant = "bar" }: SearchFiltersProps) {
+export function SearchFilters({ params, facets, counts, onNavigate, variant = "bar" }: SearchFiltersProps) {
   const navigate = (patch: Partial<ISearchPageParams>) => onNavigate({ ...params, ...patch, page: 0 })
 
   const contractOptions = useMemo(
@@ -232,7 +235,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
                 small
                 options={[
                   {
-                    label: `Employeur handi-accueillant${handiCount !== undefined ? ` (${handiCount})` : ""}`,
+                    label: withCount("Employeur handi-accueillant", counts?.is_disabled_elligible),
                     nativeInputProps: { checked: params.handi === true, onChange: () => navigate({ handi: params.handi ? undefined : true }) },
                   },
                 ]}
@@ -243,7 +246,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
                 small
                 options={[
                   {
-                    label: "Recrutement urgent",
+                    label: withCount("Recrutement urgent", counts?.urgent),
                     nativeInputProps: { checked: params.urgent === true, disabled: futureStartDate, onChange: () => navigate({ urgent: params.urgent ? undefined : true }) },
                   },
                 ]}
@@ -254,7 +257,7 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
                 small
                 options={[
                   {
-                    label: "Candidature simplifiée",
+                    label: withCount("Candidature simplifiée", counts?.smart_apply),
                     nativeInputProps: { checked: params.smart_apply === true, onChange: () => navigate({ smart_apply: params.smart_apply ? undefined : true }) },
                   },
                 ]}
@@ -350,17 +353,21 @@ export function SearchFilters({ params, facets, handiCount, onNavigate, variant 
       {!isFormations && (
         <>
           <SearchFilterChip
-            label={`Employeur handi-accueillant${handiCount !== undefined ? ` (${handiCount})` : ""}`}
+            label={withCount("Employeur handi-accueillant", counts?.is_disabled_elligible)}
             active={params.handi === true}
             onToggle={() => navigate({ handi: params.handi ? undefined : true })}
           />
           <SearchFilterChip
-            label="Recrutement urgent"
+            label={withCount("Recrutement urgent", counts?.urgent)}
             active={params.urgent === true}
             disabled={futureStartDate}
             onToggle={() => navigate({ urgent: params.urgent ? undefined : true })}
           />
-          <SearchFilterChip label="Candidature simplifiée" active={params.smart_apply === true} onToggle={() => navigate({ smart_apply: params.smart_apply ? undefined : true })} />
+          <SearchFilterChip
+            label={withCount("Candidature simplifiée", counts?.smart_apply)}
+            active={params.smart_apply === true}
+            onToggle={() => navigate({ smart_apply: params.smart_apply ? undefined : true })}
+          />
         </>
       )}
 

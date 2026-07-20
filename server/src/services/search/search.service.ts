@@ -1,5 +1,5 @@
 import type { ISearchItem } from "shared/models/index"
-import type { JOB_START_TYPE } from "shared/models/job.model"
+import { JOB_START_TYPE } from "shared/models/job.model"
 
 import { getDistanceInKm } from "@/common/utils/geolib"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
@@ -538,14 +538,22 @@ function buildFacetCompound(filters: ISearchFilters, exclude: FacetDimension | n
 
 type FacetMetaRow = { facet?: Record<string, { buckets: { _id: string; count: number }[] }> }
 
-// Compteur « employeur handi-accueillant » : is_disabled_elligible est un boolean indexé et les
-// facettes mongot ne supportent que string/number/date → count dédié via un $searchMeta
-// supplémentaire. Disjonctif comme les facettes : le filtre handi lui-même est exclu du compound
+// Compteurs des chips booléennes (« Employeur handi-accueillant », « Recrutement urgent »,
+// « Candidature simplifiée ») : champs boolean/token indexés non facettables (les facettes
+// mongot ne supportent que string/number/date) → un count dédié par chip via $searchMeta.
+// Disjonctif comme les facettes : le filtre de la chip est exclu de son propre compound
 // pour que le compteur reste stable quand l'utilisateur active le filtre.
-function buildHandiCountCompound(filters: ISearchFilters) {
-  const compound = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, null)
-  compound.filter.push({ equals: { path: "is_disabled_elligible", value: true } })
-  return compound
+function buildChipCountCompounds(filters: ISearchFilters) {
+  const handi = buildFacetCompound({ ...filters, is_disabled_elligible: undefined }, null)
+  handi.filter.push({ equals: { path: "is_disabled_elligible", value: true } })
+
+  const urgent = buildFacetCompound({ ...filters, start_type: undefined }, null)
+  urgent.filter.push({ equals: { path: "start_type", value: JOB_START_TYPE.DES_QUE_POSSIBLE } })
+
+  const smartApply = buildFacetCompound({ ...filters, smart_apply: undefined }, null)
+  smartApply.filter.push({ equals: { path: "smart_apply", value: true } })
+
+  return { is_disabled_elligible: handi, urgent, smart_apply: smartApply }
 }
 
 // Construit les groupes de $searchMeta minimisant le nombre de requêtes :
@@ -572,13 +580,15 @@ export async function searchItems(params: ISearchFilters): Promise<{
   page: number
   nbPages: number
   facets?: ISearchFacets
-  counts?: { is_disabled_elligible: number }
+  counts?: { is_disabled_elligible: number; urgent: number; smart_apply: number }
 }> {
   const { page, hitsPerPage, latitude, longitude } = params
   const compound = buildCompoundOperator(params)
   const facetGroups = buildFacetGroups(params)
+  const chipCountCompounds = buildChipCountCompounds(params)
+  const chipCountKeys = Object.keys(chipCountCompounds) as (keyof typeof chipCountCompounds)[]
 
-  const [rows, handiCountRows, ...metaArrays] = await Promise.all([
+  const [rows, chipCountArrays, ...metaArrays] = await Promise.all([
     getDbCollection("search_items")
       .aggregate<SearchRow>([
         {
@@ -605,18 +615,22 @@ export async function searchItems(params: ISearchFilters): Promise<{
       ])
       .toArray(),
 
-    // Compteur handi (affiché sur la chip « Employeur handi-accueillant »).
-    getDbCollection("search_items")
-      .aggregate<{ count?: { total?: number } }>([
-        {
-          $searchMeta: {
-            index: "search_items_index",
-            compound: buildHandiCountCompound(params),
-            count: { type: "total" },
-          },
-        },
-      ])
-      .toArray(),
+    // Compteurs des chips booléennes (handi, urgent, candidature simplifiée) — un $searchMeta chacun.
+    Promise.all(
+      chipCountKeys.map((key) =>
+        getDbCollection("search_items")
+          .aggregate<{ count?: { total?: number } }>([
+            {
+              $searchMeta: {
+                index: "search_items_index",
+                compound: chipCountCompounds[key],
+                count: { type: "total" },
+              },
+            },
+          ])
+          .toArray()
+      )
+    ),
 
     // Une requête $searchMeta par groupe de facettes (faceting disjonctif).
     ...facetGroups.map((group) =>
@@ -674,7 +688,9 @@ export async function searchItems(params: ISearchFilters): Promise<{
     }
   })
 
-  return { hits, nbHits, page, nbPages, facets, counts: { is_disabled_elligible: handiCountRows[0]?.count?.total ?? 0 } }
+  const counts = Object.fromEntries(chipCountKeys.map((key, i) => [key, chipCountArrays[i][0]?.count?.total ?? 0])) as Record<keyof typeof chipCountCompounds, number>
+
+  return { hits, nbHits, page, nbPages, facets, counts }
 }
 
 // Autocomplétion sur le contenu indexé (title + rome_labels, edgeGram).
