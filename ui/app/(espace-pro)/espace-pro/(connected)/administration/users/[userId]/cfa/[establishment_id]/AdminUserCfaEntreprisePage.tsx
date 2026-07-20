@@ -38,7 +38,7 @@ export default function AdminUserCfaEntreprisePage() {
   // Même queryKey que ListeOffres : les offres de recrutement en alternance sont utilisées pour
   // que les invalidations internes à OffresTabs (prolongation, suppression d'offre) rafraîchissent cette page.
   const { data: recruiter, isLoading: recruiterLoading } = useQuery({
-    queryKey: ["offre-liste"],
+    queryKey: ["offre-liste", establishment_id],
     enabled: Boolean(establishment_id),
     queryFn: () => getFormulaire(establishment_id),
   })
