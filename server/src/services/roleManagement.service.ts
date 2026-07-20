@@ -21,7 +21,7 @@ import { sendWelcomeEmailToUserRecruteur } from "./userRecruteur.service"
 import { activateUser, hasActiveRoleOnAnotherOrganization } from "./userWithAccount.service"
 
 export const modifyPermissionToUser = async (
-  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id" | "origin">,
+  props: Pick<IRoleManagement, "authorized_id" | "authorized_type" | "user_id">,
   eventProps: Pick<IRoleManagementEvent, "reason" | "validation_type" | "granted_by" | "status">
 ): Promise<IRoleManagement> => {
   const now = new Date()
@@ -234,7 +234,6 @@ const adminOrOpcoUpdatePermissionToUser = async ({
       user_id: userId,
       authorized_id: role.authorized_id,
       authorized_type: role.authorized_type,
-      origin: "action admin ou opco",
     },
     {
       validation_type: VALIDATION_UTILISATEUR.MANUAL,

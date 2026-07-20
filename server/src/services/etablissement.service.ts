@@ -176,13 +176,13 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   }
 }
 
-export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization, origin: string) => {
+export const autoValidateUserRoleOnCompany = async (userAndEntreprise: UserAndOrganization) => {
   const { isValid: validated, validator } = await isCompanyValid(userAndEntreprise)
   const reason = `validaton par : ${validator}`
   if (validated) {
-    await authorizeUserOnEntreprise(userAndEntreprise, origin, reason)
+    await authorizeUserOnEntreprise(userAndEntreprise, reason)
   } else {
-    await setUserHasToBeManuallyValidated(userAndEntreprise, origin)
+    await setUserHasToBeManuallyValidated(userAndEntreprise)
   }
   return { validated }
 }
@@ -502,12 +502,12 @@ export const entrepriseOnboardingWorkflow = {
 
     if (isUserValidated) {
       await modifyPermissionToUser(
-        { user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE, origin },
+        { user_id: managingUser._id, authorized_id: entreprise._id.toString(), authorized_type: AccessEntityType.ENTREPRISE },
         { validation_type: VALIDATION_UTILISATEUR.AUTO, status: AccessStatus.GRANTED, reason: "création par clef API" }
       )
       validated = true
     } else {
-      const result = await autoValidateUserRoleOnCompany({ user: managingUser, organization: { type: ENTREPRISE, entreprise } }, origin)
+      const result = await autoValidateUserRoleOnCompany({ user: managingUser, organization: { type: ENTREPRISE, entreprise } })
       validated = result.validated
     }
 

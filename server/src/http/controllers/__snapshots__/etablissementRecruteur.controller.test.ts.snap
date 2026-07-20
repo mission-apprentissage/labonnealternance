@@ -5,7 +5,7 @@ exports[`POST /etablissement/creation > Création d'entreprise > Vérifie que le
   "email": "email@email.com",
   "first_name": "John",
   "last_name": "Doe",
-  "origin": "lba",
+  "origin": "Labonnealternance",
   "phone": "0612345678",
 }
 `;
@@ -15,7 +15,7 @@ exports[`POST /etablissement/creation > Création de CFA > Vérifie que le CFA e
   "email": "email@email.com",
   "first_name": "John",
   "last_name": "Doe",
-  "origin": "lba",
+  "origin": "Labonnealternance",
   "phone": "0612345678",
 }
 `;
