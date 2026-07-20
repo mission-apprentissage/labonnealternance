@@ -83,6 +83,9 @@ const guideCfaPage = () => {
             <Grid size={{ md: 3, xs: 12 }}>
               <AllerPlusLoinItem {...ARTICLES["la-carte-etudiant-des-metiers"]} />
             </Grid>
+            <Grid size={{ md: 3, xs: 12 }}>
+              <AllerPlusLoinItem {...ARTICLES["accompagner-vos-alternants"]} />
+            </Grid>
           </Grid>
           <Grid container size={12} spacing={fr.spacing("4v")}>
             <Grid size={12} my={fr.spacing("6v")}>

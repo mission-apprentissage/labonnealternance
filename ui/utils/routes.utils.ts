@@ -304,6 +304,15 @@ export const PAGES = {
         description: "Délivrance de la carte d'étudiant des métiers par les CFA : obligations, délais (30 jours), avantages et réductions pour les alternants.",
       }),
     },
+    guideCfaAccompagnerVosAlternants: {
+      getPath: () => `/guide-cfa/accompagner-vos-alternants` as string,
+      title: "Accompagner vos alternants dans leurs démarches de candidatures",
+      index: true,
+      getMetadata: () => ({
+        title: "Guide CFA | Accompagner vos alternants",
+        description: "Comment les candidatures spontanées augmentent les chances de trouver son futur employeur.",
+      }),
+    },
     jeSuisRecruteur: {
       getPath: () => `/je-suis-recruteur` as string,
       title: "Je suis recruteur",

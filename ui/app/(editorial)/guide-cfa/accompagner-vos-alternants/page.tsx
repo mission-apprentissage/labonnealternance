@@ -11,9 +11,9 @@ import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
 import { BandeauAuthentificationCfa } from "../BandeauAuthentificationCfa"
 
-export const metadata: Metadata = PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getMetadata()
+export const metadata: Metadata = PAGES.static.guideCfaAccompagnerVosAlternants.getMetadata()
 
-const LaCarteEtudiantDesMetiersPage = async () => {
+const AccompagnerVosAlternantsPage = async () => {
   const { user } = await getSession()
   const isCfaConnected = user && user.type === AUTHTYPE.CFA
   const linkCarteEtudiantDesMetiers = isCfaConnected ? PAGES.static.espaceProCfaCarteDEtudiantDesMetiers.getPath() : PAGES.static.authentification.getPath()
@@ -26,13 +26,13 @@ const LaCarteEtudiantDesMetiersPage = async () => {
   return (
     <LayoutArticle
       pages={pages}
-      title={ARTICLES["la-carte-etudiant-des-metiers"].title}
-      updatedAt={<UpdatedAtSection date={ARTICLES["la-carte-etudiant-des-metiers"].updatedAt} />}
+      title={ARTICLES["accompagner-vos-alternants"].title}
+      updatedAt={<UpdatedAtSection date={ARTICLES["accompagner-vos-alternants"].updatedAt} />}
       bandeau={!user && <BandeauAuthentificationCfa />}
       description={<></>}
       allerPlusLoinItems={[]}
       parentPage={PAGES.static.guideCfa}
-      page={PAGES.static.guideCfaLaCarteEtudiantDesMetiers}
+      page={PAGES.static.guideCfaAccompagnerVosAlternants}
     >
       <Section>
         <Paragraph>
@@ -64,4 +64,4 @@ const LaCarteEtudiantDesMetiersPage = async () => {
   )
 }
 
-export default LaCarteEtudiantDesMetiersPage
+export default AccompagnerVosAlternantsPage
