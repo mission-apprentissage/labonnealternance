@@ -20,6 +20,13 @@ export const MATOMO_EVENTS = {
   JOB_CREATION_STARTED: "job_creation_started",
   JOB_CREATION_COMPLETED: "job_creation_completed",
   JOB_CREATION_FT_PARTNERSHIP_STEP: "job_creation_ft_partnership_step",
+  OFFER_EDIT_CLICKED: "offer_edit_clicked",
+  OFFER_EXTEND_CLICKED: "offer_extend_clicked",
+  OFFER_VIEW_ONLINE_CLICKED: "offer_view_online_clicked",
+  OFFER_PRINT_CLICKED: "offer_print_clicked",
+  OFFER_LINK_COPIED: "offer_link_copied",
+  OFFER_CFA_SHARE_CLICKED: "offer_cfa_share_clicked",
+  OFFER_DELETE_CONFIRMED: "offer_delete_confirmed",
 }
 
 export function getMatomoJobOfferType(ideaType: LBA_ITEM_TYPE | LBA_ITEM_TYPE_OLD): LBA_ITEM_TYPE | "non_renseigné" {
