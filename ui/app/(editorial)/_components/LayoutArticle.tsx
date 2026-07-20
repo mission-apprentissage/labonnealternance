@@ -54,8 +54,8 @@ export const LayoutArticle = ({
     <DefaultContainer sx={{ marginBottom: fr.spacing("10v") }}>
       <Grid container spacing={fr.spacing("6v")} id="editorial-content-container">
         <Grid container sx={{ marginBottom: fr.spacing("6v") }}>
-          <Grid size={{ md: 1, xs: 0 }}></Grid>
-          <Grid size={{ md: 10, xs: 12 }}>
+          <Grid size={{ md: 2, xs: 0 }}></Grid>
+          <Grid size={{ md: 8, xs: 12 }}>
             <Typography component="h1" variant="h1" sx={{ marginBottom: fr.spacing("6v") }}>
               {title}
             </Typography>
@@ -66,7 +66,7 @@ export const LayoutArticle = ({
               {children}
             </Box>
           </Grid>
-          <Grid size={{ md: 1, xs: 0 }}></Grid>
+          <Grid size={{ md: 2, xs: 0 }}></Grid>
         </Grid>
         {redirectionInterne}
         {allerPlusLoinItems?.length > 0 && (
