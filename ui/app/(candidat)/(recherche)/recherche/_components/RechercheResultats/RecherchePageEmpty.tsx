@@ -3,7 +3,6 @@ import { Box } from "@mui/material"
 import { RechercheTitle } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultats/RechercheTitle"
 import { RechercheResultatsPlaceholder } from "@/app/(candidat)/(recherche)/recherche/_components/RechercheResultatsPlaceholder"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { RechercheOptInBanner } from "../RecherchePageComponent"
 import { RechercheHeader } from "./RechercheHeader"
 import { RechercheMobileEmpty } from "./RechercheMobileEmpty"
 import { RechercheMobileFormUpdate } from "./RechercheMobileFormUpdate"
@@ -39,7 +38,6 @@ export function RecherchePageEmpty(props: { rechercheParams: IRecherchePageParam
       >
         <RechercheTitle viewType={props.rechercheParams.viewType} />
         <RechercheHeader {...props} />
-        <RechercheOptInBanner />
         <Box
           sx={{
             overflow: "hidden",

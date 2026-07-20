@@ -7,14 +7,13 @@ import type { Virtualizer } from "@tanstack/react-virtual"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { LBA_ITEM_TYPE_OLD } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
-import { useIsWidget } from "@/app/(candidat)/(recherche)/RechercheLayoutClient"
 import { useNavigateToRecherchePage } from "@/app/(candidat)/(recherche)/recherche/_hooks/useNavigateToRecherchePage"
 import { useRechercheResults } from "@/app/(candidat)/(recherche)/recherche/_hooks/useRechercheResults"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { isItemReferenceInList } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 import { scrollToVirtualItem } from "@/app/(candidat)/(recherche)/recherche/_utils/scrollToVirtualItem"
-import { NewSearchOptInBanner } from "@/app/beta/_components/NewSearchOptInBanner"
 import { BackToTopButton } from "@/components/ItemDetail/BackToTopButton"
+import { RechercheOptInBanner } from "./RechercheOptInBanner"
 import { RechercheHeader } from "./RechercheResultats/RechercheHeader"
 import { RechercheMobileFormUpdate } from "./RechercheResultats/RechercheMobileFormUpdate"
 import { RecherchePageEmpty } from "./RechercheResultats/RecherchePageEmpty"
@@ -85,7 +84,10 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
   return (
     <Box>
       <RecherchePageHeader rechercheParams={props.rechercheParams} />
-      <RechercheOptInBanner />
+      {/* En desktop, l'encart est rendu DANS le container du moteur (RechercheHeader) ; ici uniquement pour le mobile. */}
+      <Box sx={{ display: { xs: "block", lg: "none" } }}>
+        <RechercheOptInBanner />
+      </Box>
       <VirtualContainer
         scrollElementRef={scrollElement}
         virtualizerRef={virtualizerRef}
@@ -96,18 +98,6 @@ function RecherchePageComponentWithParams(props: { rechercheParams: IRecherchePa
         onInitialScrollDone={onInitialScrollDone}
         useWindowScroll
       />
-    </Box>
-  )
-}
-
-/** Encart d'invitation au nouveau moteur, sous le header de recherche — jamais dans les widgets (iframes partenaires). */
-export function RechercheOptInBanner() {
-  const isWidget = useIsWidget()
-  if (isWidget) return null
-
-  return (
-    <Box sx={{ maxWidth: "xl", margin: "auto", mt: fr.spacing("4v"), px: fr.spacing("4v") }}>
-      <NewSearchOptInBanner navigateToNewSearch />
     </Box>
   )
 }
