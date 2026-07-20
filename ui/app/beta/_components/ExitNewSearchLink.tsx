@@ -6,7 +6,7 @@ import { Box } from "@mui/material"
 import { useNewSearchOptIn } from "../_hooks/useNewSearchOptIn"
 
 /**
- * Lien « Sortir du nouveau moteur de recherche » : désactive l'opt-in (+ télémétrie) puis,
+ * Lien « Revenir au moteur de recherche principal » : désactive l'opt-in (+ télémétrie) puis,
  * depuis la page de résultats, navigue vers le legacy `/recherche` VIERGE (aucune traduction
  * de params). Sur la home (`navigateToLegacy=false`), la désactivation du flag suffit — le
  * formulaire legacy se réaffiche sur place.
@@ -18,14 +18,14 @@ export function ExitNewSearchLink({ navigateToLegacy = true }: { navigateToLegac
   if (!navigateToLegacy) {
     return (
       <Box component="button" type="button" onClick={optOut} className={className} sx={{ whiteSpace: "nowrap" }}>
-        Sortir du nouveau moteur de recherche
+        Revenir au moteur de recherche principal
       </Box>
     )
   }
 
   return (
     <Box component="a" href="/recherche" onClick={optOut} className={className} sx={{ whiteSpace: "nowrap" }}>
-      Sortir du nouveau moteur de recherche
+      Revenir au moteur de recherche principal
     </Box>
   )
 }

@@ -83,7 +83,7 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 
 - **Flag localStorage `lba-new-search-optin`** (hook [`useNewSearchOptIn`](../../ui/app/beta/_hooks/useNewSearchOptIn.ts)), lu après le mount uniquement — le SSR rend toujours le legacy (pas de mismatch d'hydratation).
 - **Home** ([`HomeRechercheOptIn`](../../ui/app/(home)/_components/HomeRechercheOptIn.tsx)) : formulaire legacy + encart « Nouvelle recherche ! … Tester → » ; opt-in → formulaire du nouveau moteur **sans filtres** ([`SearchHomeForm`](../../ui/app/beta/_components/SearchHomeForm.tsx) : champs + type de recherche + Rechercher → `/beta/recherche`) + lien de sortie. **Recherche réinitialisée à chaque bascule** (aucune traduction de params).
-- **Lien « Sortir du nouveau moteur de recherche »** ([`ExitNewSearchLink`](../../ui/app/beta/_components/ExitNewSearchLink.tsx)) : désactive le flag + télémétrie ; depuis les résultats → `/recherche` vierge ; sur la home → réaffiche le legacy sur place.
+- **Lien « Revenir au moteur de recherche principal »** ([`ExitNewSearchLink`](../../ui/app/beta/_components/ExitNewSearchLink.tsx)) : désactive le flag + télémétrie ; depuis les résultats → `/recherche` vierge ; sur la home → réaffiche le legacy sur place.
 - **Entrées** : le menu « Je recherche une alternance » suit le flag (`/beta/recherche` si opt-in) ; la quick access « Recherche avancée » du header a été retirée.
 - **Télémétrie** : événements Matomo `new_search_optin` / `new_search_optout` avec `search_engine` (`production` / `beta-v1`, cf. `SEARCH_ENGINES` dans [`matomoUtils.ts`](../../ui/utils/matomoUtils.ts)) et `pathname` de la page d'origine. Tracking des cartes distinguant le moteur : second temps.
 
