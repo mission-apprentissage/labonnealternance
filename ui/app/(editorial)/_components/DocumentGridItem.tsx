@@ -32,6 +32,7 @@ export const DocumentGridItem = ({ title, link }: { title: string; link: string 
         }}
         linkProps={{
           href: link,
+          target: "_blank",
         }}
         size="small"
         enlargeLink
