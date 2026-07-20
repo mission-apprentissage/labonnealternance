@@ -239,6 +239,10 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               handleSubmit(value, "free_text")
               return
             }
+            // Reflète la sélection dans le champ (onInputChange ignore le reason "reset",
+            // le libellé sélectionné ne serait pas affiché sinon).
+            setInputValue(value.value)
+            onQChange?.(value.value)
             handleSubmit(value.value, value.kind === "suggestion" ? "suggestion" : "free_text")
           }}
           renderOption={(props, option) =>

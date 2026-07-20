@@ -20,12 +20,15 @@ type Lieu = { label: string; latitude: number; longitude: number }
 /**
  * Formulaire du nouveau moteur affiché sur la page d'accueil pour les utilisateurs ayant
  * opté pour la nouvelle version : champs + type de recherche, SANS filtres (cf. Figma).
- * State local — la recherche ne part vers /beta/recherche qu'au submit (bouton, Entrée ou
- * sélection d'une suggestion).
+ * State local — la recherche ne part vers /beta/recherche qu'au clic sur le bouton
+ * Rechercher (Entrée et la sélection d'une suggestion ne font que remplir le champ).
  */
 export function SearchHomeForm() {
   const router = useRouter()
   const [q, setQ] = useState("")
+  // Source de la valeur du champ métier pour la télémétrie ("suggestion" si elle vient
+  // d'une sélection dans l'autocomplete, "free_text" dès que l'utilisateur retape).
+  const [qSource, setQSource] = useState<QSource>("free_text")
   const [lieu, setLieu] = useState<Lieu | null>(null)
   const [mode, setMode] = useState<SearchMode>(DEFAULT_SEARCH_MODE)
 
@@ -71,12 +74,27 @@ export function SearchHomeForm() {
       <RechercheFormTitle />
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: fr.spacing("3v"), alignItems: { xs: "stretch", md: "flex-end" } }}>
         <Box sx={{ flex: 1 }}>
-          <SearchBar layout="responsive" onSubmit={launchSearch} onQChange={setQ} onLieuChange={setLieu} />
+          {/* Comportement voulu (07/2026, susceptible d'évoluer) : sur la home, Entrée ou la
+              sélection d'une suggestion REMPLIT le champ métier sans déclencher la recherche —
+              seul le bouton Rechercher lance la navigation. Pour revenir au lancement direct,
+              rebrancher launchSearch sur onSubmit. */}
+          <SearchBar
+            layout="responsive"
+            onSubmit={(query, source) => {
+              setQ(query)
+              setQSource(source)
+            }}
+            onQChange={(value) => {
+              setQ(value)
+              setQSource("free_text")
+            }}
+            onLieuChange={setLieu}
+          />
         </Box>
         <SearchTypeRechercheSelect value={mode} onChange={setMode} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut) ; pleine largeur en mobile. */}
         <Box sx={{ width: { xs: "100%", md: "auto" } }}>
-          <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, "free_text")} style={{ height: 48, justifyContent: "center", width: "100%" }}>
+          <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, qSource)} style={{ height: 48, justifyContent: "center", width: "100%" }}>
             Rechercher
           </Button>
         </Box>
