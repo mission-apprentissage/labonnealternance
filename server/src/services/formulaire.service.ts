@@ -394,9 +394,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   const mainRole =
     ownRole ??
     (isAdmin
-      ? ((await getDbCollection("rolemanagements")
-          .find({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() })
-          .toArray())
+      ? ((await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }).toArray())
           .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
           .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null)
       : null)
