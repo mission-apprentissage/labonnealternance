@@ -157,10 +157,10 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   </Box>
                   <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
                 </Box>
-                <Box sx={{ display: "flex", alignItems: "flex-end", gap: fr.spacing("3v"), pt: fr.spacing("4v") }}>
-                  <Box sx={{ flex: 1 }}>
-                    <SearchFilters params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
-                  </Box>
+                <Box sx={{ pt: fr.spacing("4v") }}>
+                  <SearchFilters params={params} facets={facets} handiCount={handiCount} onNavigate={handleFilterChange} />
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", pt: fr.spacing("3v") }}>
                   <ExitNewSearchLink />
                 </Box>
               </Box>
