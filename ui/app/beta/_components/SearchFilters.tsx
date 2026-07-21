@@ -6,7 +6,9 @@ import Input from "@codegouvfr/react-dsfr/Input"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import type { ReactNode } from "react"
-import { useMemo } from "react"
+import { useMemo, useRef } from "react"
+
+import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUtils"
 
 import type { ISearchPageParams } from "../_utils/search.params.utils"
 import { SearchChipOptionRow, SearchFilterChip } from "./SearchFilterChip"
@@ -123,7 +125,24 @@ function MobileSection({ title, children }: { title?: string; children: ReactNod
 }
 
 export function SearchFilters({ params, facets, counts, onNavigate, variant = "bar" }: SearchFiltersProps) {
-  const navigate = (patch: Partial<ISearchPageParams>) => onNavigate({ ...params, ...patch, page: 0 })
+  // search_filter_opened : dropdown ouvert puis refermé SANS application (spec tracking filtres).
+  // `navigate` marque le dropdown ouvert comme « appliqué » ; la fermeture sans application émet l'événement.
+  const openDropdownRef = useRef<{ filterName: string; applied: boolean } | null>(null)
+  const trackDropdown = (filterName: string) => (open: boolean) => {
+    if (open) {
+      openDropdownRef.current = { filterName, applied: false }
+      return
+    }
+    if (openDropdownRef.current?.filterName === filterName && !openDropdownRef.current.applied) {
+      pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_FILTER_OPENED, filter_name: filterName, search_engine: SEARCH_ENGINES.BETA })
+    }
+    openDropdownRef.current = null
+  }
+
+  const navigate = (patch: Partial<ISearchPageParams>) => {
+    if (openDropdownRef.current) openDropdownRef.current.applied = true
+    onNavigate({ ...params, ...patch, page: 0 })
+  }
 
   const contractOptions = useMemo(
     () => buildOptionValues(facets?.contract_type, params.contract_type).sort((a, b) => a.localeCompare(b, "fr")),
@@ -293,6 +312,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
           label="Type d'offres d'emploi"
           activeLabel={offresChecked ? "Offres d'emploi en alternance" : "Entreprises à contacter"}
           active={params.is_algo_company !== undefined}
+          onOpenChange={trackDropdown("job_offer_type")}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>
               <Checkbox small options={offerKindCheckboxOptions} />
@@ -306,6 +326,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
           label="Date de début de contrat"
           activeLabel={params.start_date ? `À partir du ${formatDateFr(params.start_date)}` : undefined}
           active={Boolean(params.start_date)}
+          onOpenChange={trackDropdown("contract_start_date")}
           popperContent={<Box sx={{ px: "16px", pt: "8px" }}>{startDateInput}</Box>}
         />
       )}
@@ -314,6 +335,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
         label="Niveau d'études visé"
         activeLabel={selectedLevel}
         active={Boolean(selectedLevel)}
+        onOpenChange={trackDropdown("education_level")}
         popperContent={
           <Box>
             {levelOptions.map((option) => (
@@ -336,6 +358,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
           label="Type de contrat"
           activeLabel={params.contract_type?.length ? multiLabel(params.contract_type) : undefined}
           active={Boolean(params.contract_type?.length)}
+          onOpenChange={trackDropdown("contract_type")}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>
               <Checkbox

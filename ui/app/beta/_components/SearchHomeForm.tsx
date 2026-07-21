@@ -12,6 +12,7 @@ import { MATOMO_EVENTS, pushMatomoEvent, SEARCH_ENGINES } from "@/utils/matomoUt
 
 import type { QSource, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, DEFAULT_SEARCH_MODE } from "../_utils/search.params.utils"
+import { searchTypeOf } from "../_utils/search.tracking.utils"
 import { ExitNewSearchLink } from "./ExitNewSearchLink"
 import { SearchBar } from "./SearchBar"
 import { SearchMobilePanel } from "./SearchMobilePanel"
@@ -117,6 +118,12 @@ export function SearchHomeForm() {
     setQSource("free_text")
   }
 
+  // Même événement que le sélecteur de la page de résultats (spec tracking filtres).
+  const handleModeChange = (newMode: SearchMode) => {
+    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(newMode), search_engine: SEARCH_ENGINES.BETA })
+    setMode(newMode)
+  }
+
   return (
     <Box
       sx={{
@@ -158,7 +165,7 @@ export function SearchHomeForm() {
         <Box sx={{ flex: 1 }}>
           <SearchBar layout="row" onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
         </Box>
-        <SearchTypeRechercheSelect value={mode} onChange={setMode} />
+        <SearchTypeRechercheSelect value={mode} onChange={handleModeChange} />
         {/* Même hauteur que les champs (48px — le bouton DSFR fait 40px par défaut). */}
         <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, qSource)} style={{ height: 48, justifyContent: "center" }}>
           Rechercher
@@ -179,7 +186,7 @@ export function SearchHomeForm() {
               options={SEARCH_MODE_OPTIONS.map((option) => ({
                 label: option.label,
                 hintText: option.hint,
-                nativeInputProps: { checked: mode === option.value, onChange: () => setMode(option.value) },
+                nativeInputProps: { checked: mode === option.value, onChange: () => handleModeChange(option.value) },
               }))}
             />
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

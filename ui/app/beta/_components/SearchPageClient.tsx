@@ -15,6 +15,8 @@ import { useAutoRadius } from "../_hooks/useAutoRadius"
 import { useSearchResults } from "../_hooks/useSearchResults"
 import type { ISearchPageParams, SearchMode } from "../_utils/search.params.utils"
 import { buildSearchUrl, parseSearchPageParams } from "../_utils/search.params.utils"
+import type { FilterChange } from "../_utils/search.tracking.utils"
+import { diffFilterChanges, searchTypeOf } from "../_utils/search.tracking.utils"
 import { ExitNewSearchLink } from "./ExitNewSearchLink"
 import { SearchBar } from "./SearchBar"
 import { clearedFilters, SearchFilters } from "./SearchFilters"
@@ -51,14 +53,43 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   const facets = result.data?.pages[0]?.facets
   const counts = result.data?.pages[0]?.counts
 
+  // Changements de filtres en attente de leurs compteurs : la spec veut results_count et
+  // active_filters_count APRÈS application — on mémorise le diff au clic et on pousse les
+  // événements quand les résultats de la nouvelle recherche sont affichés (effet ci-dessous).
+  const pendingFilterChangesRef = useRef<{ searchKey: string; changes: FilterChange[] } | null>(null)
+
+  const searchKeyOf = (p: ISearchPageParams) => {
+    const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = p
+    return JSON.stringify(trackedParams)
+  }
+
   // search_results_displayed : une fois par recherche distincte (q/lieu/mode/filtres/tri),
   // pas à chaque page chargée via « Voir plus » — même événement que le legacy, enrichi de
   // search_engine. Les compteurs par type viennent de la facette `type` du result set.
   const lastTrackedSearchKeyRef = useRef<string | null>(null)
   useEffect(() => {
     if (!result.data) return
-    const { page: _page, hitsPerPage: _hitsPerPage, q_source: _qSource, ...trackedParams } = params
-    const searchKey = JSON.stringify(trackedParams)
+    // keepPreviousData : pendant le refetch, result.data appartient à la recherche PRÉCÉDENTE
+    // → attendre les données fraîches (sinon compteurs faux sur les événements ci-dessous).
+    if (result.isPlaceholderData) return
+    const searchKey = searchKeyOf(params)
+
+    // Flush des search_filter_applied/removed de la recherche affichée (compteurs post-application).
+    if (pendingFilterChangesRef.current?.searchKey === searchKey) {
+      const totalResults = result.data.pages.at(-1)?.nbHits ?? 0
+      for (const change of pendingFilterChangesRef.current.changes) {
+        pushMatomoEvent({
+          event: change.action === "applied" ? MATOMO_EVENTS.SEARCH_FILTER_APPLIED : MATOMO_EVENTS.SEARCH_FILTER_REMOVED,
+          filter_name: change.filter_name,
+          filter_value: change.filter_value,
+          active_filters_count: activeFilterCount,
+          results_count: totalResults,
+          search_engine: SEARCH_ENGINES.BETA,
+        })
+      }
+      pendingFilterChangesRef.current = null
+    }
+
     if (lastTrackedSearchKeyRef.current === searchKey) return
     lastTrackedSearchKeyRef.current = searchKey
     pushMatomoEvent({
@@ -71,7 +102,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       search_diploma: params.level?.[0] ?? "indifferent",
       search_engine: SEARCH_ENGINES.BETA,
     })
-  }, [result.data, params, facets])
+  })
+  // NB : effet sans tableau de deps (gardes idempotentes par searchKey) — il doit relire
+  // activeFilterCount et le ref pending à chaque affichage de résultats.
 
   const activeFilterCount =
     (params.type_filter_label?.length ?? 0) +
@@ -110,8 +143,10 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
 
   // Changement de type de recherche : les filtres actifs ne s'appliquent plus forcément au
   // nouveau mode (chips différentes) → remis à zéro, comme le tri s'il n'existe pas en mode
-  // formations.
+  // formations. Le clear implicite n'émet PAS de search_filter_removed (c'est un changement
+  // de mode, pas des retraits unitaires — documenté sur Notion).
   function handleModeChange(mode: SearchMode) {
+    pushMatomoEvent({ event: MATOMO_EVENTS.SEARCH_TYPE_CHANGED, search_type: searchTypeOf(mode), search_engine: SEARCH_ENGINES.BETA })
     const cleared = clearedFilters(params)
     const sortValidInMode = mode === "formations" ? params.sort === "proximity" : true
     navigateSilent({ ...cleared, mode, sort: sortValidInMode ? params.sort : undefined })
@@ -124,6 +159,16 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
   useAutoRadius({ params, result, onRadiusChange: handleRadiusChange })
 
   function handleFilterChange(newParams: ISearchPageParams) {
+    // Mémorise le diff de filtres (un événement par valeur modifiée) — poussé avec les
+    // compteurs post-application quand les résultats de la nouvelle recherche s'affichent.
+    // Changements en rafale avant l'arrivée des résultats : les diffs s'accumulent.
+    const changes = diffFilterChanges(params, newParams)
+    if (changes.length) {
+      pendingFilterChangesRef.current = {
+        searchKey: searchKeyOf(newParams),
+        changes: [...(pendingFilterChangesRef.current?.changes ?? []), ...changes],
+      }
+    }
     navigateSilent(newParams)
   }
 

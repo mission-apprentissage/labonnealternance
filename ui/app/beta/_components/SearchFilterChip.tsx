@@ -27,6 +27,8 @@ interface SearchFilterChipProps {
    * popper, `onToggle` ouvre la modale — pas d'aria-pressed ni de pastille de sélection.
    */
   dialogTrigger?: boolean
+  /** Notifie l'ouverture/fermeture du dropdown (télémétrie « ouvert sans application »). */
+  onOpenChange?: (open: boolean) => void
 }
 
 const CHIP_COLORS = {
@@ -46,16 +48,22 @@ const CHIP_COLORS = {
   },
 }
 
-export function SearchFilterChip({ label, activeLabel, active, disabled = false, popperContent, onToggle, dialogTrigger = false }: SearchFilterChipProps) {
+export function SearchFilterChip({ label, activeLabel, active, disabled = false, popperContent, onToggle, dialogTrigger = false, onOpenChange }: SearchFilterChipProps) {
   const [open, setOpen] = useState(false)
   const anchorRef = useRef<HTMLButtonElement>(null)
   const popperId = useId()
   const isDropdown = popperContent !== undefined
 
-  const close = () => setOpen(false)
+  // Notification hors de l'updater React (StrictMode double-invoque les updaters).
+  const setOpenNotified = (next: boolean) => {
+    if (next !== open) onOpenChange?.(next)
+    setOpen(next)
+  }
+
+  const close = () => setOpenNotified(false)
 
   const handleClick = () => {
-    if (isDropdown) setOpen((prev) => !prev)
+    if (isDropdown) setOpenNotified(!open)
     else onToggle?.()
   }
 
