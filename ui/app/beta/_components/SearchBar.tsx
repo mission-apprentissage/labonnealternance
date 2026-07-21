@@ -54,6 +54,46 @@ const fieldSx = (error?: boolean) => ({
 const POPPER_PAPER_SX = { mt: "4px", borderRadius: "4px", py: "8px", boxShadow: "0 6px 18px rgba(0,0,18,0.16)" }
 
 /**
+ * Cap la hauteur de la liste de suggestions à l'espace visible SOUS le champ : sur mobile,
+ * le clavier virtuel réduit le visualViewport (pas le layout viewport) et masquerait le bas
+ * de la liste (40vh par défaut MUI). Écoute resize/scroll du visualViewport tant que le
+ * dropdown est ouvert — le clavier s'anime APRÈS l'ouverture. Desktop : le calcul dépasse
+ * 40vh et le `min()` le neutralise.
+ */
+function useListboxMaxHeight() {
+  const [maxHeight, setMaxHeight] = useState<string>("40vh")
+  const inputRef = useRef<HTMLElement | null>(null)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    const update = () => {
+      const input = inputRef.current
+      if (!input) return
+      const vv = window.visualViewport
+      const visibleBottom = vv ? vv.height + vv.offsetTop : window.innerHeight
+      const available = Math.floor(visibleBottom - input.getBoundingClientRect().bottom - 12)
+      setMaxHeight(available > 0 ? `min(40vh, ${available}px)` : "40vh")
+    }
+    update()
+    const vv = window.visualViewport
+    vv?.addEventListener("resize", update)
+    vv?.addEventListener("scroll", update)
+    return () => {
+      vv?.removeEventListener("resize", update)
+      vv?.removeEventListener("scroll", update)
+    }
+  }, [open])
+
+  return {
+    maxHeight,
+    inputRef,
+    onOpen: () => setOpen(true),
+    onClose: () => setOpen(false),
+  }
+}
+
+/**
  * Sous-chaîne matchée en gras dans les suggestions ("La **Coiff**erie"), insensible à la
  * casse et aux accents. Le mapping des index reste 1:1 : chaque code point est normalisé
  * individuellement (on ne garde que le caractère de base).
@@ -137,6 +177,9 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
 
   const debouncedInput = useThrottle(inputValue, 300)
   const debouncedLieu = useThrottle(lieuInput, 300)
+
+  const metierListbox = useListboxMaxHeight()
+  const lieuListbox = useListboxMaxHeight()
 
   const isColumn = layout === "column"
   // Valeurs sx par layout : "responsive" = colonne en xs, rangée en md+ (formulaire home).
@@ -224,6 +267,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           freeSolo
           options={metierOptions}
           getOptionLabel={(o) => (typeof o === "string" ? o : o.value)}
+          onOpen={metierListbox.onOpen}
+          onClose={metierListbox.onClose}
           inputValue={inputValue}
           onInputChange={(_e, value, reason) => {
             // "reset" est déclenché par la sélection d'une option — ne pas écraser la saisie
@@ -292,10 +337,11 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               </Box>
             </Box>
           )}
-          slotProps={{ paper: { sx: POPPER_PAPER_SX } }}
+          slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: metierListbox.maxHeight } } }}
           renderInput={(params) => (
             <TextField
               {...params}
+              inputRef={metierListbox.inputRef}
               placeholder="Recherche par mot clé (métier, formation, entreprise, compétence,...)"
               variant="outlined"
               size="small"
@@ -323,6 +369,8 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
           options={lieuSuggestions}
           getOptionLabel={(o) => (typeof o === "string" ? o : o.label)}
           isOptionEqualToValue={(o, v) => (typeof v === "string" ? o.label === v : o.label === v.label)}
+          onOpen={lieuListbox.onOpen}
+          onClose={lieuListbox.onClose}
           inputValue={lieuInput}
           value={lieuValue}
           onBlur={handleLieuBlur}
@@ -347,8 +395,10 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
               {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
             </Box>
           )}
-          slotProps={{ paper: { sx: POPPER_PAPER_SX } }}
-          renderInput={(params) => <TextField {...params} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />}
+          slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: lieuListbox.maxHeight } } }}
+          renderInput={(params) => (
+            <TextField {...params} inputRef={lieuListbox.inputRef} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />
+          )}
           noOptionsText="Aucune suggestion"
           filterOptions={(x) => x}
         />
