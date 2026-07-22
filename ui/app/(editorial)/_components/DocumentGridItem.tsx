@@ -3,7 +3,7 @@ import Card from "@codegouvfr/react-dsfr/Card"
 import { Box, Grid, Typography } from "@mui/material"
 import Image from "next/image"
 
-export const DocumentGridItem = ({ title, link }: { title: string; link: string }) => {
+export const DocumentGridItem = ({ title, link, download }: { title: string; link: string; download?: string }) => {
   return (
     <Grid
       size={{ md: 4, xs: 12 }}
@@ -32,8 +32,7 @@ export const DocumentGridItem = ({ title, link }: { title: string; link: string 
         }}
         linkProps={{
           href: link,
-          target: "_blank",
-          rel: "noopener noreferrer",
+          ...(download ? { download } : { target: "_blank", rel: "noopener noreferrer" }),
         }}
         size="small"
         enlargeLink

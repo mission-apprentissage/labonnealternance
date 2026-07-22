@@ -201,7 +201,11 @@ const guideCfaPage = () => {
                 title="Convention de réduction ou d’allongement de la durée du contrat d’apprentissage"
                 link="https://www.legifrance.gouv.fr/download/pdf?id=RXAkPiH46HPlfBr9nv5wqIvKSk5AJ5_K4MfKeTuWgLs="
               />
-              <DocumentGridItem title="Télécharger l’affiche La bonne alternance, à exposer dans votre CFA (format A3)." link="/ressources/affiche-cfa-avril-2026.pdf" />
+              <DocumentGridItem
+                download="affiche-cfa-avril-2026.pdf"
+                title="Télécharger l’affiche La bonne alternance, à exposer dans votre CFA (format A3)."
+                link="/ressources/affiche-cfa-avril-2026.pdf"
+              />
             </Grid>
           </Grid>
           <Grid size={12} my={fr.spacing("6v")}>
