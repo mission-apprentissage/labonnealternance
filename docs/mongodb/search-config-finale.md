@@ -59,20 +59,22 @@ Analyzer `lucene.standard`, source collection `search_synonyms` (seedée depuis 
 
 ---
 
-## 4. Requête — boosting par champ
+## 4. Requête — porte de pertinence & boosting par champ
 
-`buildTextClauses` (`search.service.ts`) génère une clause `text` par champ, combinées en `should` (`minimumShouldMatch: 1`), avec `fuzzy: { maxEdits: 1, prefixLength: 1 }` :
+`buildTextGate` (`search.service.ts`) : une clause de couverture par terme (`buildTermCoverageClause`), combinées avec un `minimumShouldMatch` dynamique (tous ≤ 2 termes, n−1 pour 3-4, 75 % au-delà). La tokenisation retire les stopwords grammaticaux, du domaine (apprenti, alternance…) **et de diplôme** (bac, bts, cap, licence, master, pro… — recette #3 : « bac pro commerce » doit cibler « commerce », le niveau se filtre par la facette).
 
-| Champ | Boost | Justification |
+Voies de couverture d'un terme (boost) :
+
+| Champ | Boost | Conditions |
 |---|---|---|
-| `rome_labels` | ×8 | Signal métier déterministe, homogène aux 3 types |
-| `title` | ×7 | Intitulé poste/formation (fort) ; nom entreprise pour recruteurs |
-| `keywords` | ×5 | Enrichissement Mistral |
-| `organization_name` | ×3 | Recherche par nom d'organisme (`lba_company`) |
-| `description` | ×2 | Contexte (offres/formations) — vide pour recruteurs |
-| synonymes (`lba_synonyms`) | — | Clause `text` multi `standard`, expansion d'abréviations |
+| `rome_labels` | ×8 | fuzzy si terme ≥ 8 (`maxEdits: 1, prefixLength: 2`) — pas de fuzzy en dessous (« vente » ≈ « verte », « manager » ≈ « manger », recette #3) |
+| `title` | ×7 | idem |
+| `organization_name` | ×6 | jamais de fuzzy (noms propres : « vigile » → VIGIER) |
+| `keywords` | ×5 | requête **mono-terme : recruteurs uniquement** (un keyword générique faisait entrer des offres hors sujet) ; multi-termes : tous types (le msm exige les autres termes ailleurs) |
+| `autocomplete` title/rome_labels | ×3 | **mono-terme uniquement** (troncature volontaire « compta » → comptable ; en multi-termes « product » couvrait « production ») |
+| synonymes `lba_synonyms` | ×6 | clause **`phrase`** (séquence exigée — en `text`, « vigile » → « agent de sécurité » laissait entrer tout doc contenant « agent ») sur `title` + `rome_labels` seulement (la clause matche aussi la requête brute : l'étendre à keywords/description rouvrirait la porte dérobée) |
 
-`prefixLength: 1` : 1er caractère exact → réduit le bruit du fuzzy.
+Bonus de score (`should`, n'élargissent pas le result set) : phrase title/rome_labels ×10, phrase organization_name ×8, `keywords` ×3, `description` ×1.
 
 Conséquence de l'homogénéité : un recruteur remonte sur une requête métier (`"boulanger"`) via `rome_labels`/`keywords`, **sans dépendre** de son nom d'entreprise (`title`) ni d'une description qu'il n'a pas.
 

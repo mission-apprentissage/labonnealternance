@@ -1,3 +1,4 @@
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import type { ISearchItem } from "shared/models/index"
 import { JOB_START_TYPE } from "shared/models/job.model"
 
@@ -137,12 +138,14 @@ type SearchRow = ISearchItem & {
   _meta: { count: { total: number } }
 }
 
+// Chemins de la clause synonymes : title + rome_labels uniquement. La clause matche la
+// requête BRUTE en plus des expansions — l'étendre à description/keywords rouvrirait une
+// porte dérobée dans le result set (un keyword générique suffisait à faire entrer un doc,
+// recette #3). Les expansions du référentiel sont des intitulés métier : ils vivent dans
+// title/rome_labels.
 const SYNONYM_MULTI_PATHS = [
   { value: "title", multi: "standard" },
-  { value: "description", multi: "standard" },
-  { value: "keywords", multi: "standard" },
   { value: "rome_labels", multi: "standard" },
-  { value: "organization_name", multi: "standard" },
 ]
 
 // ─── Tokenisation de la requête (couverture par terme) ─────────────────────────────────────
@@ -181,6 +184,23 @@ const QUERY_STOPWORDS = new Set([
   "alternant",
   "alternance",
   "apprentissage",
+  // Mots de diplôme : très fréquents dans les titres/descriptions d'offres, ils couvrent
+  // sans discriminer le métier ("bac pro commerce" matchait carrossier/serveur via
+  // bac + pro, recette #3). Le niveau se filtre par la facette dédiée ; le bonus phrase
+  // (requête entière) continue de favoriser les intitulés exacts type "Bac pro commerce".
+  "bac",
+  "bachelor",
+  "bp",
+  "bts",
+  "but",
+  "cap",
+  "deust",
+  "diplome",
+  "dut",
+  "licence",
+  "master",
+  "mastere",
+  "pro",
 ])
 
 const QUERY_DIACRITICS = /[̀-ͯ]/g
@@ -219,12 +239,13 @@ export function tokenizeQuery(q: string): string[] {
   return terms
 }
 
-// Fuzzy par longueur de terme : pas de fuzzy sur les termes courts (un acronyme comme "esf" ne
-// doit pas matcher "ESG" à 1 edit), préfixe protégé plus long sur les termes moyens.
+// Fuzzy par longueur de terme : réservé aux termes longs (≥ 8). Sur les termes courts et
+// moyens, 1 edit change le mot : "esf" → "ESG", "vente" → "verte" (paysagistes),
+// "product" → "produits", "manager" → "manger" (recette #3). Préfixe protégé de 2 pour
+// éviter les dérives en début de mot.
 const fuzzyFor = (term: string): { maxEdits: number; prefixLength: number } | undefined => {
-  if (term.length <= 4) return undefined
-  if (term.length <= 7) return { maxEdits: 1, prefixLength: 2 }
-  return { maxEdits: 1, prefixLength: 1 }
+  if (term.length <= 7) return undefined
+  return { maxEdits: 1, prefixLength: 2 }
 }
 
 // Nombre minimal de termes couverts exigé : tous jusqu'à 2 termes, n−1 pour 3-4, 75 % au-delà.
@@ -281,9 +302,18 @@ const LEVEL_AGNOSTIC_VALUES = ["", "Indifférent"]
 const buildLevelFilter = (level: string[]) => ({ in: { path: "level", value: [...level, ...LEVEL_AGNOSTIC_VALUES] } })
 
 // Clause de couverture d'UN terme : le terme est cherché sur tous les champs pondérés
-// (boosting par champ), + l'index autocomplete (edgeGram) pour les abréviations/troncatures
-// ("compta" → "comptable"). Un doc "couvre" le terme s'il matche au moins un champ.
-function buildTermCoverageClause(term: string): object {
+// (boosting par champ). Un doc "couvre" le terme s'il matche au moins un champ.
+// Le comportement diffère en requête MONO-terme vs multi-termes (recette #3) :
+// - autocomplete (edgeGram) réservé au mono-terme : troncature volontaire ("compta" →
+//   "comptable"). En multi-termes il couvrait par préfixe accidentel ("product manager" :
+//   « product » couvert par « production » → boucheries).
+// - keywords (Mistral) : en mono-terme, couverture réservée aux recruteurs (seul texte riche
+//   avec rome_labels) — un keyword générique ("communication", "commercial") suffisait à
+//   faire entrer des offres hors sujet. En multi-termes, keywords couvre pour tous : le msm
+//   exige déjà les autres termes ailleurs ("monteur vidéo" : « vidéo » légitimement couvert
+//   par les keywords d'une offre dont le title porte « monteur »). Les keywords restent un
+//   signal de score pour tous les types (cf. buildTextBonusClauses).
+function buildTermCoverageClause(term: string, isSingleTerm: boolean): object {
   const fuzzy = fuzzyFor(term)
   const text = (path: string, boost: number) => ({ text: { query: term, path, ...(fuzzy ? { fuzzy } : {}), score: { boost: { value: boost } } } })
   return {
@@ -297,9 +327,13 @@ function buildTermCoverageClause(term: string): object {
         // de score seulement, cf. buildTextBonusClauses) : un terme mentionné uniquement dans
         // la description ne suffit pas à faire entrer le doc dans le result set.
         { text: { query: term, path: "organization_name", score: { boost: { value: 6 } } } },
-        text("keywords", 5),
-        { autocomplete: { query: term, path: "title", score: { boost: { value: 3 } } } },
-        { autocomplete: { query: term, path: "rome_labels", score: { boost: { value: 3 } } } },
+        isSingleTerm ? { compound: { must: [text("keywords", 5)], filter: [{ equals: { path: "sub_type", value: LBA_ITEM_TYPE.RECRUTEURS_LBA } }] } } : text("keywords", 5),
+        ...(isSingleTerm
+          ? [
+              { autocomplete: { query: term, path: "title", score: { boost: { value: 3 } } } },
+              { autocomplete: { query: term, path: "rome_labels", score: { boost: { value: 3 } } } },
+            ]
+          : []),
       ],
       minimumShouldMatch: 1,
     },
@@ -314,25 +348,30 @@ function buildTermCoverageClause(term: string): object {
  * d'alternative de couverture, avec un boost aligné sur les matchs directs).
  * NB $search : `synonyms` et `fuzzy` sont mutuellement exclusifs sur une même clause `text` —
  * la structure les sépare (fuzzy dans les clauses par terme, synonymes sur la requête entière).
+ * Opérateur `phrase` (et non `text`) pour les synonymes : `text` matche l'expansion token par
+ * token (« vigile » → « agent de sécurité » laissait entrer tout doc contenant « agent » —
+ * agents commerciaux compris, recette #3) ; `phrase` exige la séquence complète du synonyme.
  */
 function buildTextGate(q?: string): object | null {
   if (!q?.trim()) return null
   const terms = tokenizeQuery(q)
-  const coverage = terms.length ? [{ compound: { should: terms.map(buildTermCoverageClause), minimumShouldMatch: msmFor(terms.length) } }] : []
-  const synonyms = { text: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", score: { boost: { value: 6 } } } }
+  const coverage = terms.length ? [{ compound: { should: terms.map((term) => buildTermCoverageClause(term, terms.length === 1)), minimumShouldMatch: msmFor(terms.length) } }] : []
+  const synonyms = { phrase: { query: q, path: SYNONYM_MULTI_PATHS, synonyms: "lba_synonyms", slop: 0, score: { boost: { value: 6 } } } }
   return { compound: { should: [...coverage, synonyms], minimumShouldMatch: 1 } }
 }
 
 // Bonus de score (bloc `should`, n'élargit pas le result set) : adjacence/ordre des termes.
 // phrase sur title/rome_labels départage "Product Manager" des docs aux termes épars ; phrase
 // sur organization_name fait dominer le match employeur sur les mentions en description ;
-// text sur description départage les docs qui couvrent aussi le sujet dans leur descriptif
-// (le champ n'est plus une voie d'entrée dans le result set, seulement un signal de classement).
+// text sur description et keywords départagent les docs qui couvrent aussi le sujet dans
+// leur descriptif / leurs mots-clés (ces champs ne sont plus une voie d'entrée dans le
+// result set — keywords reste une entrée pour les seuls recruteurs, cf. couverture).
 function buildTextBonusClauses(q?: string): object[] {
   if (!q?.trim()) return []
   return [
     { phrase: { query: q, path: ["title", "rome_labels"], slop: 2, score: { boost: { value: 10 } } } },
     { phrase: { query: q, path: "organization_name", slop: 1, score: { boost: { value: 8 } } } },
+    { text: { query: q, path: "keywords", score: { boost: { value: 3 } } } },
     { text: { query: q, path: "description", score: { boost: { value: 1 } } } },
   ]
 }

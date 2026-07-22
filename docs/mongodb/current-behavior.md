@@ -98,6 +98,8 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 
 ## Limitations connues
 
+- **Recall des recruteurs algo** : le legacy matche les recruteurs par code ROME (métier saisi → ROME → recruteurs) ; le nouveau moteur matche par texte (`rome_labels`/`keywords`). Un intitulé hors vocabulaire ROME (« chargé de déploiement », « product manager », « agriculteur ») ne remonte pas les recruteurs pertinents — ticket dédié (pont sémantique métier→ROME ou enrichissement Mistral des keywords recruteurs).
+
 - **Tri par défaut sans `q`** (cf. §1) : ni « plus proche » ni « plus récent » d'abord. Les tris explicites `proximity` et `date` lèvent cette limite, mais ne sont appliqués que si l'utilisateur les sélectionne.
 - Le `radius` par défaut de l'API reste `30` ([`search.routes.ts`](../../shared/src/routes/search.routes.ts)) ; côté front les vues forcent `20` et l'auto-élargissement.
 - Données legacy : un document sans `location` (non régénéré par `fillSearchItemsCollection`) sort des recherches géo et a une `distance` nulle (plus de job de backfill).

@@ -417,6 +417,84 @@ const CORPUS = [
     is_formation_included: true,
     smart_apply: true,
   }),
+  // — recette #3 : pièges de la porte de pertinence.
+  // "vigile" s'étend en "agent(e) de sécurité" : l'expansion doit matcher en SÉQUENCE —
+  //   l'agent commercial ne doit plus entrer via le token "agent" seul [Marion, KO].
+  generateSearchItemFixture({
+    url_id: "recruteur-agent-commercial",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "Prospection commerciale",
+    description: "",
+    keywords: ["prospection", "clientèle"],
+    rome_labels: ["Agent commercial / Agente commerciale"],
+    organization_name: "FORCE DE VENTE SUD",
+    is_algo_company: true,
+  }),
+  // "vente" ne doit plus matcher "verte(s)" par fuzzy (paysagistes) [Aurélie, KO].
+  generateSearchItemFixture({
+    url_id: "offre-paysagiste",
+    title: "Ouvrier paysagiste",
+    description: "Entretien des espaces verts et création de haies vertes.",
+    keywords: ["espaces verts", "jardin"],
+    rome_labels: ["Aménagement et entretien des espaces verts"],
+    organization_name: "JardiSud",
+  }),
+  generateSearchItemFixture({
+    url_id: "offre-conseiller-vente",
+    title: "Conseiller de vente en alternance",
+    description: "Accueil client et vente en magasin.",
+    keywords: ["vente", "magasin"],
+    rome_labels: ["Vente en habillement et accessoires de la personne"],
+    organization_name: "ModeStore",
+  }),
+  // "product manager" : la boucherie matchait "manager" (rayon) + "product" (edgeGram
+  //   production / fuzzy produits) [Marion, KO].
+  generateSearchItemFixture({
+    url_id: "recruteur-boucherie",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "Boucherie",
+    description: "",
+    keywords: ["viande", "produits alimentaires", "manager de rayon"],
+    rome_labels: ["Boucherie", "Vente de produits alimentaires", "Management/gérance de rayon produits frais"],
+    organization_name: "BOUCHERIE DU MARCHE",
+    is_algo_company: true,
+  }),
+  // Mots de diplôme : "bac pro commerce" faisait entrer tout doc "Bac pro exigé" [Aurélie, KO].
+  generateSearchItemFixture({
+    url_id: "offre-carrossier-bacpro",
+    title: "Apprenti Carrossier H/F",
+    description: "Préparation d'un Bac pro carrosserie au sein de notre atelier.",
+    keywords: ["carrosserie", "automobile"],
+    rome_labels: ["Carrosserie automobile"],
+    organization_name: "AutoRepar",
+  }),
+  // Keyword générique : une OFFRE portant "communication" en keyword ne doit plus entrer sur
+  //   la requête mono-terme "communication" [Aurélie, KO] ; un RECRUTEUR le peut toujours
+  //   (keywords = son seul texte riche avec rome_labels).
+  generateSearchItemFixture({
+    url_id: "offre-gestion-paie",
+    title: "Gestionnaire de paie",
+    description: "Traitement de la paie et administration du personnel.",
+    keywords: ["paie", "communication", "rigueur"],
+    // rome_labels sans "ressources humaines" ni "assistant" : la fixture ne doit pas
+    // interférer avec le test de tri par date "assistant ressources humaines".
+    rome_labels: ["Gestion de la paie du personnel"],
+    organization_name: "PaieServices",
+    publication_date: new Date("2024-12-01T10:00:00.000Z"),
+  }),
+  generateSearchItemFixture({
+    url_id: "recruteur-agence-com",
+    type_filter_label: "Candidature spontanée",
+    sub_type: "recruteurs_lba",
+    title: "AGENCE WAM",
+    description: "",
+    keywords: ["communication", "publicité"],
+    rome_labels: ["Élaboration de plan média"],
+    organization_name: "AGENCE WAM",
+    is_algo_company: true,
+  }),
 ]
 
 // Groupes de synonymes minimaux pour reproduire les cas "acronymes" de la recette.
@@ -788,6 +866,52 @@ describe.runIf(RUN_RELEVANCE)("search-result — pertinence du moteur de recherc
 
       expect(ids(result)).toContain("recruteur-travaux")
       expect(ids(result)).toContain("offre-conducteur-travaux")
+    })
+  })
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // 2ter. CORRIGÉS PAR LA RECETTE #3 — synonymes en séquence, fuzzy resserré,
+  // edgeGram/keywords réservés selon le contexte, mots de diplôme neutralisés.
+  describe("corrigés par la recette #3", () => {
+    it("synonymes en séquence : 'vigile' ne remonte plus les agents commerciaux via le token 'agent' [Marion, KO]", async () => {
+      const result = await search({ q: "vigile" })
+
+      expect(ids(result)).toContain("offre-securite")
+      expect(ids(result)).not.toContain("recruteur-agent-commercial")
+    })
+
+    it("fuzzy resserré : 'vente' ne matche plus 'verte' (paysagistes) [Aurélie, KO]", async () => {
+      const result = await search({ q: "vente" })
+
+      expect(ids(result)).toContain("offre-conseiller-vente")
+      expect(ids(result)).not.toContain("offre-paysagiste")
+    })
+
+    it("multi-termes sans edgeGram ni fuzzy accidentels : 'product manager' ne remonte plus les boucheries [Marion, KO]", async () => {
+      const result = await search({ q: "product manager" })
+
+      expect(rankOf(result, "offre-product-manager")).toBe(0)
+      expect(ids(result)).not.toContain("recruteur-boucherie")
+    })
+
+    it("mots de diplôme neutralisés : 'bac pro commerce' cible le commerce, pas les offres 'Bac pro exigé' [Aurélie, KO]", async () => {
+      const result = await search({ q: "bac pro commerce" })
+
+      expect(ids(result)).toContain("offre-conseiller-commerce")
+      expect(ids(result)).not.toContain("offre-carrossier-bacpro")
+    })
+
+    it("keyword générique : la requête mono-terme 'communication' n'ouvre plus les offres par keywords [Aurélie, KO]", async () => {
+      const result = await search({ q: "communication" })
+
+      expect(ids(result)).toContain("offre-charge-communication")
+      expect(ids(result)).not.toContain("offre-gestion-paie")
+    })
+
+    it("keywords restent une porte d'entrée pour les recruteurs (seul texte riche avec rome_labels)", async () => {
+      const result = await search({ q: "communication" })
+
+      expect(ids(result)).toContain("recruteur-agence-com")
     })
   })
 
