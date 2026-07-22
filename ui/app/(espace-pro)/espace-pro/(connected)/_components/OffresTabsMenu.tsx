@@ -120,6 +120,7 @@ export const OffresTabsMenu = ({
       onClick: (e) => {
         e.preventDefault()
         e.stopPropagation()
+        pushMatomoEvent({ event: MATOMO_EVENTS.OFFER_DELETE_CLICKED })
         openSuppression(row)
       },
       type: "button",

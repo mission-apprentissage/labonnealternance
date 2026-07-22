@@ -26,6 +26,7 @@ export const MATOMO_EVENTS = {
   OFFER_PRINT_CLICKED: "offer_print_clicked",
   OFFER_LINK_COPIED: "offer_link_copied",
   OFFER_CFA_SHARE_CLICKED: "offer_cfa_share_clicked",
+  OFFER_DELETE_CLICKED: "offer_delete_clicked",
   OFFER_DELETE_CONFIRMED: "offer_delete_confirmed",
 }
 
