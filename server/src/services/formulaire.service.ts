@@ -398,6 +398,9 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
           .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
           .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null)
       : null)
+  if (!mainRole && isAdmin) {
+    return []
+  }
   if (!mainRole) {
     throw internal(`inattendu: mainRole vide pour userId=${userId}`)
   }
