@@ -81,7 +81,7 @@ const AccompagnerVosAlternantsPage = async () => {
         </Paragraph>
         <ParagraphList
           listItems={[
-            "L’entreprise ne sait pas pourquoi le candidat la contacte, le message d’accroche doit être limpide et aller droit au but, sans oublier les informations essentielles pour que le recruteur puisse se projeter : quelle formation prépare le candidat (éviter les acronymes peu parlant) ? quel poste vise-t’il ? Quel est le rythme de la formation ? etc.",
+            "L’entreprise ne sait pas pourquoi le candidat la contacte, le message d’accroche doit être limpide et aller droit au but, sans oublier les informations essentielles pour que le recruteur puisse se projeter : quelle formation prépare le candidat (éviter les acronymes peu parlant) ? quel poste vise-t-il ? Quel est le rythme de la formation ? etc.",
             "Sur La bonne alternance, les fiches entreprises auxquelles adresser des candidatures spontanées présentent des conseils aux candidats, invitez vos alternants à les lire attentivement !",
           ]}
         />
