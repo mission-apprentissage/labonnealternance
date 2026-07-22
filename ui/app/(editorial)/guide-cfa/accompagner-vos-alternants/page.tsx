@@ -6,19 +6,17 @@ import { DescriptionSection } from "@/app/(editorial)/_components/DescriptionSec
 import { LayoutArticle } from "@/app/(editorial)/_components/LayoutArticle"
 import { Paragraph } from "@/app/(editorial)/_components/Paragraph"
 import { ParagraphList } from "@/app/(editorial)/_components/ParagraphList"
+import { RedirectionInterne } from "@/app/(editorial)/_components/RedirectionInterne"
 import { Section } from "@/app/(editorial)/_components/Section"
 import { UpdatedAtSection } from "@/app/(editorial)/_components/UpdatedAtSection"
 import { ARTICLES as ARTICLES_PARTAGES } from "@/app/(editorial)/guide/const"
 import { ARTICLES } from "@/app/(editorial)/guide-cfa/const"
 import { DsfrLink } from "@/components/dsfr/DsfrLink"
-import { getSession } from "@/utils/getSession"
 import { PAGES } from "@/utils/routes.utils"
-import { BandeauAuthentificationCfa } from "../BandeauAuthentificationCfa"
 
 export const metadata: Metadata = PAGES.static.guideCfaAccompagnerVosAlternants.getMetadata()
 
 const AccompagnerVosAlternantsPage = async () => {
-  const { user } = await getSession()
   const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaAccompagnerVosAlternants]
 
   return (
@@ -26,7 +24,6 @@ const AccompagnerVosAlternantsPage = async () => {
       pages={pages}
       title={ARTICLES["accompagner-vos-alternants"].title}
       updatedAt={<UpdatedAtSection date={ARTICLES["accompagner-vos-alternants"].updatedAt} />}
-      bandeau={!user && <BandeauAuthentificationCfa />}
       description={
         <DescriptionSection
           descriptionParts={[
@@ -37,6 +34,7 @@ const AccompagnerVosAlternantsPage = async () => {
       }
       allerPlusLoinItems={[ARTICLES_PARTAGES["decouvrir-l-alternance"], ARTICLES_PARTAGES["apprentissage-et-handicap"], ARTICLES["la-carte-etudiant-des-metiers"]]}
       parentPage={PAGES.static.guideCfa}
+      redirectionInterne={<RedirectionInterne source="guide-cfa" />}
       page={PAGES.static.guideCfaAccompagnerVosAlternants}
     >
       <Section title="Comment La bonne alternance identifie ces entreprises auprès desquelles adresser des candidatures spontanées">
