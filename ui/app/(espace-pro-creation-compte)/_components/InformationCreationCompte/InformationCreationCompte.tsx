@@ -16,7 +16,7 @@ import { InformationOpco } from "@/app/(espace-pro-creation-compte)/_components/
 import { OpcoSelect } from "@/app/(espace-pro)/_components/OpcoSelect"
 import InformationLegaleEntreprise from "@/app/(espace-pro)/espace-pro/(connected)/_components/InformationLegaleEntreprise"
 import { AUTHTYPE } from "@/common/contants"
-import { phoneValidation } from "@/common/validation/fieldValidations"
+import { personNameValidation, phoneValidation } from "@/common/validation/fieldValidations"
 import { AnimationContainer } from "@/components/espace_pro/index"
 import { WidgetContext } from "@/context/contextWidget"
 import { ArrowRightLine } from "@/theme/components/icons"
@@ -65,8 +65,8 @@ const Formulaire = ({
         origin: origin ?? "Labonnealternance",
       }}
       validationSchema={Yup.object().shape({
-        last_name: Yup.string().required("champ obligatoire"),
-        first_name: Yup.string().required("champ obligatoire"),
+        last_name: personNameValidation().required("champ obligatoire"),
+        first_name: personNameValidation().required("champ obligatoire"),
         phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().min(1, "champ obligatoire").required("champ obligatoire") : Yup.string(),
