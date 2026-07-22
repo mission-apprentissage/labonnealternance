@@ -277,7 +277,7 @@ export default (server: Server) => {
           const {
             referentiel: { contacts },
             cfa,
-          } = await validateEligibiliteCfa(establishment_siret, origin)
+          } = await validateEligibiliteCfa(establishment_siret)
 
           const organization: Organization = { type: CFA, cfa }
           const { user: userCfa } = await createOrganizationUser({
