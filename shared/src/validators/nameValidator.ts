@@ -4,10 +4,6 @@ const personNameAllowedCharactersRegex = /^[\p{L}\p{M}\s'’-]+$/u
 const personNameLetterRegex = /\p{L}/u
 
 export const validatePersonName = (value: string): boolean => {
-  if (!value) {
-    return false
-  }
-
   const normalizedValue = value.trim()
 
   if (!normalizedValue || !personNameAllowedCharactersRegex.test(normalizedValue)) {
