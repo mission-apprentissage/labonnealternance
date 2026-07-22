@@ -5,6 +5,8 @@ import Button from "@codegouvfr/react-dsfr/Button"
 import { Box } from "@mui/material"
 import type { ReactNode } from "react"
 
+import { useLockBodyScroll } from "../_hooks/useLockBodyScroll"
+
 interface SearchMobilePanelProps {
   /** Sans titre : header réduit au bouton « Fermer » aligné à droite (modale de la home). */
   title?: string
@@ -20,6 +22,8 @@ interface SearchMobilePanelProps {
  * unique du POC. Head titre + croix, body scrollable, footer sticky optionnel.
  */
 export function SearchMobilePanel({ title, ariaLabel, onClose, children, footer }: SearchMobilePanelProps) {
+  useLockBodyScroll()
+
   return (
     <Box
       role="dialog"
@@ -34,6 +38,10 @@ export function SearchMobilePanel({ title, ariaLabel, onClose, children, footer 
         backgroundColor: fr.colors.decisions.background.default.grey.default,
         display: "flex",
         flexDirection: "column",
+        // Effet tiroir à l'ouverture (bas → haut).
+        "@keyframes search-panel-slide-up": { from: { transform: "translateY(100%)" }, to: { transform: "translateY(0)" } },
+        animation: "search-panel-slide-up 0.25s ease-out",
+        "@media (prefers-reduced-motion: reduce)": { animation: "none" },
       }}
     >
       <Box

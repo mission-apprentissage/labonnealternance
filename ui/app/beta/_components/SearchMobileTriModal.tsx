@@ -6,6 +6,7 @@ import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import { useState } from "react"
 
+import { useLockBodyScroll } from "../_hooks/useLockBodyScroll"
 import type { ISearchPageParams, SortOption } from "../_utils/search.params.utils"
 import { FORMATION_SORTS, SORT_LABELS } from "./SearchSortSelect"
 
@@ -21,6 +22,8 @@ interface SearchMobileTriModalProps {
  * qu'au clic sur « Appliquer ».
  */
 export function SearchMobileTriModal({ params, onNavigate, onClose }: SearchMobileTriModalProps) {
+  useLockBodyScroll()
+
   const [selected, setSelected] = useState<SortOption | "">(params.sort ?? "")
   const hasGeo = params.latitude !== undefined && params.longitude !== undefined
   const options = params.mode === "formations" ? SORT_LABELS.filter((o) => FORMATION_SORTS.has(o.value)) : SORT_LABELS
@@ -47,6 +50,10 @@ export function SearchMobileTriModal({ params, onNavigate, onClose }: SearchMobi
           pb: fr.spacing("4v"),
           maxHeight: "85dvh",
           overflowY: "auto",
+          // Effet tiroir à l'ouverture (bas → haut) — le backdrop reste fixe.
+          "@keyframes search-tri-slide-up": { from: { transform: "translateY(100%)" }, to: { transform: "translateY(0)" } },
+          animation: "search-tri-slide-up 0.25s ease-out",
+          "@media (prefers-reduced-motion: reduce)": { animation: "none" },
         }}
       >
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>

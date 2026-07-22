@@ -45,7 +45,10 @@ function MobileFakeField({ value, onOpen }: { value?: string; onOpen: () => void
         px: "14px",
         backgroundColor: "#FFFFFF",
         border: `1px solid ${fr.colors.decisions.border.default.grey.default}`,
-        borderRadius: "4px",
+        // Collé au bouton loupe (groupe champ + bouton) : coins droits à plat, pas de
+        // bordure droite (le bouton plein prend le relais).
+        borderRight: "none",
+        borderRadius: "4px 0 0 4px",
         fontSize: "1rem",
         color: value ? fr.colors.decisions.text.default.grey.default : fr.colors.decisions.text.mention.grey.default,
         "&:focus-visible": { outline: "2px solid #0a76f6", outlineOffset: 2 },
@@ -145,7 +148,7 @@ export function SearchHomeForm() {
         </Box>
         {/* minWidth 0 sur la rangée ET le wrapper flex du faux champ : sans eux, le contenu
             nowrap impose sa largeur min → le champ déborde de l'écran. */}
-        <Box sx={{ display: "flex", gap: fr.spacing("2v"), minWidth: 0 }}>
+        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <MobileFakeField value={q} onOpen={() => setMobilePanelOpen(true)} />
           </Box>
@@ -155,7 +158,10 @@ export function SearchHomeForm() {
             title="Ouvrir la recherche"
             aria-haspopup="dialog"
             onClick={() => setMobilePanelOpen(true)}
-            style={{ height: 48, flexShrink: 0 }}
+            // Hauteur DSFR icône-seule plafonnée à 2.5rem (max-height) → déplafonnée en
+            // inline pour s'aligner sur les 48px du champ. La largeur garde le plafond
+            // DSFR (2.5rem).
+            style={{ height: 48, maxHeight: 48, flexShrink: 0, borderRadius: "0 4px 4px 0" }}
           />
         </Box>
       </Box>
@@ -172,7 +178,7 @@ export function SearchHomeForm() {
         </Button>
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: { xs: "flex-start", md: "flex-end" } }}>
+      <Box sx={{ display: "flex", justifyContent: { xs: "center", md: "flex-end" } }}>
         <ExitNewSearchLink navigateToLegacy={false} />
       </Box>
 
