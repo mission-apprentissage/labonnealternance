@@ -27,6 +27,8 @@ interface SearchFiltersProps {
   facets?: FacetCounts
   /** Compteurs des chips booléennes (counts de l'API : handi, urgent, candidature simplifiée). */
   counts?: { is_disabled_elligible?: number; urgent?: number; smart_apply?: number }
+  /** Total de résultats de la recherche courante — sert à désactiver les filtres qui n'affineraient rien. */
+  nbHits?: number
   onNavigate: (newParams: ISearchPageParams) => void
   /** "bar" : rangée de chips desktop ; "sections" : modale Filtres mobile (sections empilées). */
   variant?: "bar" | "sections"
@@ -124,7 +126,7 @@ function MobileSection({ title, children }: { title?: string; children: ReactNod
   )
 }
 
-export function SearchFilters({ params, facets, counts, onNavigate, variant = "bar" }: SearchFiltersProps) {
+export function SearchFilters({ params, facets, counts, nbHits, onNavigate, variant = "bar" }: SearchFiltersProps) {
   // search_filter_opened : dropdown ouvert puis refermé SANS application (spec tracking filtres).
   // `navigate` marque le dropdown ouvert comme « appliqué » ; la fermeture sans application émet l'événement.
   const openDropdownRef = useRef<{ filterName: string; applied: boolean } | null>(null)
@@ -160,6 +162,16 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
   const selectedLevel = params.level?.[0]
   const futureStartDate = isFutureDate(params.start_date)
 
+  // Un filtre booléen « n'affine pas » la recherche quand aucun résultat ne le satisfait
+  // (l'activer viderait la liste) ou quand tous le satisfont déjà (l'activer ne changerait
+  // rien) → désactivé. Jamais désactivé s'il est actif (toujours démontable) ni pendant le
+  // chargement (compteurs indéfinis).
+  const boolFilterDisabled = (isActive: boolean, count?: number): boolean => !isActive && count !== undefined && nbHits !== undefined && (count === 0 || count === nbHits)
+
+  const handiDisabled = boolFilterDisabled(params.handi === true, counts?.is_disabled_elligible)
+  const urgentDisabled = futureStartDate || boolFilterDisabled(params.urgent === true, counts?.urgent)
+  const smartApplyDisabled = boolFilterDisabled(params.smart_apply === true, counts?.smart_apply)
+
   // Type d'offres : 2 cases indépendantes portées par le param multi is_algo_company
   // (false = offres, true = entreprises à contacter). Les deux cochées : la sélection reste
   // affichée mais aucun filtre n'est envoyé à l'API (équivaut à « tout », cf. useSearchResults).
@@ -174,6 +186,9 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
   const offerKindLabels = [...(offresChecked ? ["Offres d'emploi en alternance"] : []), ...(entreprisesChecked ? ["Entreprises à contacter"] : [])]
 
   const distanceActive = params.type_filter_label?.includes(TYPE_FILTER_LABEL_DISTANCE) ?? false
+  // Compteur de la facette « Formation à distance » : valeur absente des facettes chargées = 0 résultat.
+  const distanceCount = facets?.type_filter_label ? (facets.type_filter_label[TYPE_FILTER_LABEL_DISTANCE] ?? 0) : undefined
+  const distanceDisabled = boolFilterDisabled(distanceActive, distanceCount)
 
   const toggleContract = (option: string) => {
     const current = params.contract_type ?? []
@@ -258,7 +273,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
                 options={[
                   {
                     label: withCount("Employeur handi-engagé", counts?.is_disabled_elligible),
-                    nativeInputProps: { checked: params.handi === true, onChange: () => navigate({ handi: params.handi ? undefined : true }) },
+                    nativeInputProps: { checked: params.handi === true, disabled: handiDisabled, onChange: () => navigate({ handi: params.handi ? undefined : true }) },
                   },
                 ]}
               />
@@ -269,7 +284,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
                 options={[
                   {
                     label: withCount("Recrutement urgent", counts?.urgent),
-                    nativeInputProps: { checked: params.urgent === true, disabled: futureStartDate, onChange: () => navigate({ urgent: params.urgent ? undefined : true }) },
+                    nativeInputProps: { checked: params.urgent === true, disabled: urgentDisabled, onChange: () => navigate({ urgent: params.urgent ? undefined : true }) },
                   },
                 ]}
               />
@@ -280,7 +295,11 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
                 options={[
                   {
                     label: withCount("Candidature simplifiée", counts?.smart_apply),
-                    nativeInputProps: { checked: params.smart_apply === true, onChange: () => navigate({ smart_apply: params.smart_apply ? undefined : true }) },
+                    nativeInputProps: {
+                      checked: params.smart_apply === true,
+                      disabled: smartApplyDisabled,
+                      onChange: () => navigate({ smart_apply: params.smart_apply ? undefined : true }),
+                    },
                   },
                 ]}
               />
@@ -297,6 +316,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
                   label: "Formations à distance",
                   nativeInputProps: {
                     checked: distanceActive,
+                    disabled: distanceDisabled,
                     onChange: () => navigate({ type_filter_label: distanceActive ? undefined : [TYPE_FILTER_LABEL_DISTANCE] }),
                   },
                 },
@@ -338,6 +358,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
         label="Niveau d'études visé"
         activeLabel={selectedLevel}
         active={Boolean(selectedLevel)}
+        disabled={levelOptions.length === 0}
         onOpenChange={trackDropdown("education_level")}
         popperContent={
           <Box>
@@ -361,6 +382,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
           label="Type de contrat"
           activeLabel={params.contract_type?.length ? multiLabel(params.contract_type) : undefined}
           active={Boolean(params.contract_type?.length)}
+          disabled={contractOptions.length === 0}
           onOpenChange={trackDropdown("contract_type")}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>
@@ -381,17 +403,19 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
           <SearchFilterChip
             label={withCount("Employeur handi-engagé", counts?.is_disabled_elligible)}
             active={params.handi === true}
+            disabled={handiDisabled}
             onToggle={() => navigate({ handi: params.handi ? undefined : true })}
           />
           <SearchFilterChip
             label={withCount("Recrutement urgent", counts?.urgent)}
             active={params.urgent === true}
-            disabled={futureStartDate}
+            disabled={urgentDisabled}
             onToggle={() => navigate({ urgent: params.urgent ? undefined : true })}
           />
           <SearchFilterChip
             label={withCount("Candidature simplifiée", counts?.smart_apply)}
             active={params.smart_apply === true}
+            disabled={smartApplyDisabled}
             onToggle={() => navigate({ smart_apply: params.smart_apply ? undefined : true })}
           />
         </>
@@ -401,6 +425,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
         <SearchFilterChip
           label="Formations à distance"
           active={distanceActive}
+          disabled={distanceDisabled}
           onToggle={() => navigate({ type_filter_label: distanceActive ? undefined : [TYPE_FILTER_LABEL_DISTANCE] })}
         />
       )}

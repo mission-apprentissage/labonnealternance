@@ -232,7 +232,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   <SearchTypeRechercheSelect value={params.mode} onChange={handleModeChange} />
                 </Box>
                 <Box sx={{ pt: fr.spacing("4v") }}>
-                  <SearchFilters params={params} facets={facets} counts={counts} onNavigate={handleFilterChange} />
+                  <SearchFilters params={params} facets={facets} counts={counts} nbHits={result.data ? nbHits : undefined} onNavigate={handleFilterChange} />
                 </Box>
                 <Box sx={{ display: "flex", justifyContent: "flex-end", pt: fr.spacing("3v") }}>
                   <ExitNewSearchLink />
@@ -322,7 +322,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
               </Box>
             }
           >
-            <SearchFilters variant="sections" params={params} facets={facets} counts={counts} onNavigate={handleFilterChange} />
+            <SearchFilters variant="sections" params={params} facets={facets} counts={counts} nbHits={result.data ? nbHits : undefined} onNavigate={handleFilterChange} />
           </SearchMobilePanel>
         )}
       </Box>
