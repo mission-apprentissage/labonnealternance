@@ -21,7 +21,7 @@ export function DsfrLink({
   external?: "auto" | boolean
   style?: CSSProperties
   className?: string
-  download?: string | boolean
+  download?: string
 } & LinkProps) {
   const { href, ...rest } = props
 
