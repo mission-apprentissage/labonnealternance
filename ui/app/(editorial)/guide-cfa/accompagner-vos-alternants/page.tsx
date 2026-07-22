@@ -114,11 +114,13 @@ const AccompagnerVosAlternantsPage = async () => {
           spontanées sont complémentaires. Les jeunes qui utilisent les deux ont mécaniquement plus de chances de trouver.
         </Paragraph>
         <Paragraph>
-          <Box sx={{ display: "flex", flexDirection: "row" }}>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: fr.spacing("6v") }}>
             <Image src="/images/guides/guide-cfa/telechargement_affiche.png" alt="Affiche La bonne alternance" width={139} height={198} />
-            <DsfrLink href="/ressources/affiche-cfa-avril-2026.pdf" style={{ flex: 1, marginLeft: "1rem" }}>
-              Télécharger l’affiche La bonne alternance, à exposer dans votre CFA.
-            </DsfrLink>
+            <Box sx={{ flex: 1 }}>
+              <DsfrLink download="affiche-cfa-avril-2026.pdf" href="/ressources/affiche-cfa-avril-2026.pdf" style={{ color: "#000" }}>
+                Télécharger l’affiche La bonne alternance, à exposer dans votre CFA.
+              </DsfrLink>
+            </Box>
           </Box>
         </Paragraph>
       </Section>
