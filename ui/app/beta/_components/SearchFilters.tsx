@@ -257,7 +257,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
                 small
                 options={[
                   {
-                    label: withCount("Employeur handi-accueillant", counts?.is_disabled_elligible),
+                    label: withCount("Employeur handi-engagé", counts?.is_disabled_elligible),
                     nativeInputProps: { checked: params.handi === true, onChange: () => navigate({ handi: params.handi ? undefined : true }) },
                   },
                 ]}
@@ -379,7 +379,7 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
       {!isFormations && (
         <>
           <SearchFilterChip
-            label={withCount("Employeur handi-accueillant", counts?.is_disabled_elligible)}
+            label={withCount("Employeur handi-engagé", counts?.is_disabled_elligible)}
             active={params.handi === true}
             onToggle={() => navigate({ handi: params.handi ? undefined : true })}
           />

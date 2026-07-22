@@ -13,7 +13,7 @@ export interface ISearchPageParams {
   organization_name?: string
   start_date?: string // date de début de contrat souhaitée (YYYY-MM-DD)
   urgent?: boolean // recrutement urgent (start_type=des_que_possible)
-  handi?: boolean // employeur handi-accueillant (is_disabled_elligible=true)
+  handi?: boolean // employeur handi-engagé (is_disabled_elligible=true)
   smart_apply?: boolean // candidature simplifiée disponible
   is_algo_company?: boolean[] // types d'offres cochés : true = entreprises à contacter, false = offres d'emploi ; les deux cochés = sélection affichée mais aucun filtre API (équivaut à « tout »)
   sort?: SortOption // tri des résultats (défaut : pertinence)

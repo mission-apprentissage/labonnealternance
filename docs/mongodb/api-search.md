@@ -52,7 +52,7 @@ GET /api/v1/search
 }
 ```
 
-- **`counts.is_disabled_elligible`** : nombre d'offres éligibles handicap dans le result set (compteur de la chip « Employeur handi-accueillant »). Disjonctif : le filtre handi lui-même est exclu de son calcul (le compteur ne retombe pas quand on l'active). Les facettes mongot ne supportant pas les booleans, il est calculé via un `$searchMeta` dédié.
+- **`counts.is_disabled_elligible`** : nombre d'offres éligibles handicap dans le result set (compteur de la chip « Employeur handi-engagé »). Disjonctif : le filtre handi lui-même est exclu de son calcul (le compteur ne retombe pas quand on l'active). Les facettes mongot ne supportant pas les booleans, il est calculé via un `$searchMeta` dédié.
 
 ## Champs d'un résultat (`ISearchItem`)
 
