@@ -108,6 +108,26 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/beta/rech
   return `${basePath}${qs ? `?${qs}` : ""}`
 }
 
+/**
+ * Titre de la page de résultats, aligné sur le comportement du moteur legacy
+ * (buildSearchTitle + PAGES.dynamic.recherche/rechercheFormation dans routes.utils.ts) :
+ * contexte « - {métier} à {lieu} » ajouté seulement si un métier est saisi ; sans géo,
+ * « sur la France entière » ; géo sans label de lieu → pas de mention de lieu.
+ */
+export function buildSearchPageTitle(params: ISearchPageParams): string {
+  const base = params.mode === "formations" ? "Formations en alternance" : "Offres en alternance"
+  let context = ""
+  if (params.q) {
+    context = ` - ${params.q}`
+    if (params.lieu_label) {
+      context += ` à ${params.lieu_label}`
+    } else if (params.latitude === undefined) {
+      context += " sur la France entière"
+    }
+  }
+  return `${base}${context} | La bonne alternance`
+}
+
 export function buildHitDetailUrl(hit: { sub_type: string; url_id: string; title: string }, currentSearchUrl: string): string {
   const slug = toKebabCase(hit.title || "offre")
   const from = encodeURIComponent(currentSearchUrl)

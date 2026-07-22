@@ -78,6 +78,7 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 - **État vide** : illustration legacy (`dosearch.svg`) + message, affiché seulement après épuisement de l'auto-rayon (100 km).
 - **Mobile** : barre résumé sticky 2 lignes (`SearchMobileSummaryBar` : mot clé / « lieu - type de recherche », loupe) ouvrant la modale Recherche (SearchBar colonne + radios type de recherche + Rechercher + lien de sortie) ; chips « Filtres (n) » et « Tri » ouvrant leurs modales — Filtres : sections empilées à application immédiate + bouton sticky « Voir les N résultats » (niveau en radios avec « Indifférent » = aucun filtre) ; Tri : bottom-sheet à application **différée** (bouton « Appliquer »). Bascule desktop/mobile en **CSS breakpoints (`lg` 992px)**, **pas de `useMediaQuery`** (évite le flash d'hydratation).
 - **Footer** : `Footer` DSFR rendu sous la page.
+- **Titre de page (`<title>`)** : ajusté à la recherche comme le legacy (`generateMetadata` + [`buildSearchPageTitle`](../../ui/app/beta/_utils/search.params.utils.ts)) : `Offres en alternance - {métier} à {lieu} | La bonne alternance` (« Formations en alternance » en mode formations ; « sur la France entière » sans géo ; pas de contexte sans métier). Mis à jour à chaque `router.replace` (re-fetch RSC).
 
 ### Coexistence legacy ↔ nouveau moteur (opt-in)
 
