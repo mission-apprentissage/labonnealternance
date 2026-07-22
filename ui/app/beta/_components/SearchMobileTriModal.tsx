@@ -69,11 +69,9 @@ export function SearchMobileTriModal({ params, onNavigate, onClose }: SearchMobi
             },
           }))}
         />
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button priority="primary" onClick={apply}>
-            Appliquer
-          </Button>
-        </Box>
+        <Button priority="primary" onClick={apply} style={{ width: "100%", justifyContent: "center" }}>
+          Appliquer
+        </Button>
       </Box>
     </Box>
   )

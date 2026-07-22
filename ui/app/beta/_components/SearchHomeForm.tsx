@@ -3,7 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr"
 import Button from "@codegouvfr/react-dsfr/Button"
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
-import { Box, ButtonBase, Divider } from "@mui/material"
+import { Box, ButtonBase } from "@mui/material"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
@@ -176,11 +176,12 @@ export function SearchHomeForm() {
         <ExitNewSearchLink navigateToLegacy={false} />
       </Box>
 
+      {/* Même design que la modale de la page de résultats (SearchPageClient, panel "search") ;
+          seul le comportement diffère : ici le bouton lance la recherche (application différée). */}
       {mobilePanelOpen && (
-        <SearchMobilePanel ariaLabel="Votre recherche" onClose={() => setMobilePanelOpen(false)}>
+        <SearchMobilePanel title="Votre recherche" onClose={() => setMobilePanelOpen(false)}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: fr.spacing("4v") }}>
             <SearchBar layout="column" initialQ={q} initialLieuLabel={lieu?.label} onSubmit={fillQ} onQChange={handleQChange} onLieuChange={setLieu} />
-            <Divider />
             <RadioButtons
               legend="Type de recherche"
               options={SEARCH_MODE_OPTIONS.map((option) => ({
@@ -189,12 +190,10 @@ export function SearchHomeForm() {
                 nativeInputProps: { checked: mode === option.value, onChange: () => handleModeChange(option.value) },
               }))}
             />
-            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, qSource)}>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
+              <Button priority="primary" iconId="fr-icon-search-line" onClick={() => launchSearch(q, qSource)} style={{ width: "100%", justifyContent: "center" }}>
                 Rechercher
               </Button>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
               <ExitNewSearchLink navigateToLegacy={false} />
             </Box>
           </Box>

@@ -265,7 +265,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 }))}
               />
               <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: fr.spacing("4v") }}>
-                <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)}>
+                <Button priority="primary" iconId="fr-icon-search-line" onClick={() => setPanel(null)} style={{ width: "100%", justifyContent: "center" }}>
                   Rechercher
                 </Button>
                 <ExitNewSearchLink />
@@ -288,7 +288,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                   </Button>
                 )}
                 <Button priority="primary" onClick={() => setPanel(null)} style={{ flex: 1, justifyContent: "center" }}>
-                  Voir les {nbHits} résultats
+                  {nbHits > 1 ? `Voir les ${nbHits} résultats` : `Voir ${nbHits} résultat`}
                 </Button>
               </Box>
             }
