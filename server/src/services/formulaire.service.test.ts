@@ -372,7 +372,7 @@ describe("getFormulairesForCfaManagedEnterprises", () => {
     expect(recruiters[0].managed_by).toBe(grantedUser._id.toString())
   })
 
-  it("should throw an internal error for an admin without an own role when no CFA role is GRANTED", async () => {
+  it("should return an empty array for an admin without an own role when no CFA role is GRANTED", async () => {
     const deniedUser = generateUserWithAccountFixture({ email: "only-denied@mail.fr" })
     await getDbCollection("userswithaccounts").insertOne(deniedUser)
     const deniedRole = generateRoleManagementFixture({
@@ -384,6 +384,15 @@ describe("getFormulairesForCfaManagedEnterprises", () => {
     await getDbCollection("rolemanagements").insertOne(deniedRole)
 
     const adminUserId = new ObjectId()
-    await expect(getFormulairesForCfaManagedEnterprises(adminUserId, cfa._id, true)).rejects.toThrow(`inattendu: mainRole vide pour userId=${adminUserId}`)
+    const recruiters = await getFormulairesForCfaManagedEnterprises(adminUserId, cfa._id, true)
+
+    expect(recruiters).toEqual([])
+  })
+
+  it("should return an empty array for an admin without an own role when the cfa has no role at all", async () => {
+    const adminUserId = new ObjectId()
+    const recruiters = await getFormulairesForCfaManagedEnterprises(adminUserId, cfa._id, true)
+
+    expect(recruiters).toEqual([])
   })
 })
