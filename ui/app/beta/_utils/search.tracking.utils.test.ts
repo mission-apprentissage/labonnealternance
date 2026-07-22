@@ -21,11 +21,18 @@ describe("diffFilterChanges", () => {
     ])
   })
 
-  it("gère le tri-état job_offer_type (bascule = removed + applied)", () => {
-    expect(diffFilterChanges(base, { ...base, is_algo_company: true })).toEqual([{ action: "applied", filter_name: "job_offer_type", filter_value: "Entreprises à contacter" }])
-    expect(diffFilterChanges({ ...base, is_algo_company: true }, { ...base, is_algo_company: false })).toEqual([
-      { action: "removed", filter_name: "job_offer_type", filter_value: "Entreprises à contacter" },
+  it("trace job_offer_type par valeur cochée/décochée (multi-sélection)", () => {
+    expect(diffFilterChanges(base, { ...base, is_algo_company: [true] })).toEqual([{ action: "applied", filter_name: "job_offer_type", filter_value: "Entreprises à contacter" }])
+    expect(diffFilterChanges({ ...base, is_algo_company: [true] }, { ...base, is_algo_company: [false] })).toEqual([
       { action: "applied", filter_name: "job_offer_type", filter_value: "Offres d'emploi en alternance" },
+      { action: "removed", filter_name: "job_offer_type", filter_value: "Entreprises à contacter" },
+    ])
+    // Les deux cochées (aucun filtre API) : chaque case reste trackée individuellement.
+    expect(diffFilterChanges({ ...base, is_algo_company: [false] }, { ...base, is_algo_company: [false, true] })).toEqual([
+      { action: "applied", filter_name: "job_offer_type", filter_value: "Entreprises à contacter" },
+    ])
+    expect(diffFilterChanges({ ...base, is_algo_company: [false, true] }, { ...base, is_algo_company: [true] })).toEqual([
+      { action: "removed", filter_name: "job_offer_type", filter_value: "Offres d'emploi en alternance" },
     ])
   })
 
@@ -58,7 +65,7 @@ describe("diffFilterChanges", () => {
       level: ["Bac"],
       urgent: true,
       smart_apply: true,
-      is_algo_company: false,
+      is_algo_company: [false],
       start_date: "2026-09-01",
     }
     const changes = diffFilterChanges(active, base)

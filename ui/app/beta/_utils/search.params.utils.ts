@@ -15,7 +15,7 @@ export interface ISearchPageParams {
   urgent?: boolean // recrutement urgent (start_type=des_que_possible)
   handi?: boolean // employeur handi-accueillant (is_disabled_elligible=true)
   smart_apply?: boolean // candidature simplifiée disponible
-  is_algo_company?: boolean // type d'offres : true = entreprises à contacter, false = offres d'emploi, absent = les deux
+  is_algo_company?: boolean[] // types d'offres cochés : true = entreprises à contacter, false = offres d'emploi ; les deux cochés = sélection affichée mais aucun filtre API (équivaut à « tout »)
   sort?: SortOption // tri des résultats (défaut : pertinence)
   latitude?: number
   longitude?: number
@@ -54,6 +54,11 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     return undefined
   }
 
+  function getBoolMulti(key: string): boolean[] | undefined {
+    const vals = [...new Set(search.getAll(key).filter((v) => v === "true" || v === "false"))].map((v) => v === "true")
+    return vals.length ? vals : undefined
+  }
+
   return {
     q: search.get("q") || undefined,
     q_source: Q_SOURCES.includes(search.get("source") as QSource) ? (search.get("source") as QSource) : undefined,
@@ -68,7 +73,7 @@ export function parseSearchPageParams(search: URLSearchParams): ISearchPageParam
     urgent: getBool("urgent"),
     handi: getBool("handi"),
     smart_apply: getBool("smart_apply"),
-    is_algo_company: getBool("is_algo_company"),
+    is_algo_company: getBoolMulti("is_algo_company"),
     sort: SORT_OPTIONS.includes(search.get("sort") as SortOption) ? (search.get("sort") as SortOption) : undefined,
     latitude: search.get("latitude") ? parseFloat(search.get("latitude")!) : undefined,
     longitude: search.get("longitude") ? parseFloat(search.get("longitude")!) : undefined,
@@ -96,7 +101,7 @@ export function buildSearchUrl(params: ISearchPageParams, basePath = "/beta/rech
   if (params.urgent !== undefined) query.set("urgent", params.urgent.toString())
   if (params.handi !== undefined) query.set("handi", params.handi.toString())
   if (params.smart_apply !== undefined) query.set("smart_apply", params.smart_apply.toString())
-  if (params.is_algo_company !== undefined) query.set("is_algo_company", params.is_algo_company.toString())
+  for (const val of params.is_algo_company ?? []) query.append("is_algo_company", val.toString())
   if (params.sort) query.set("sort", params.sort)
   if (params.latitude !== undefined) query.set("latitude", params.latitude.toString())
   if (params.longitude !== undefined) query.set("longitude", params.longitude.toString())

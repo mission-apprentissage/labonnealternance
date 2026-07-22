@@ -1,9 +1,25 @@
 import { describe, expect, it } from "vitest"
 
 import type { ISearchPageParams } from "./search.params.utils"
-import { buildSearchPageTitle } from "./search.params.utils"
+import { buildSearchPageTitle, buildSearchUrl, parseSearchPageParams } from "./search.params.utils"
 
 const base: ISearchPageParams = { mode: "emplois", radius: 20, page: 0, hitsPerPage: 20 }
+
+describe("is_algo_company multi-valeurs (type d'offres d'emploi)", () => {
+  it("parse un param répété en tableau, dédupliqué, valeurs invalides ignorées", () => {
+    expect(parseSearchPageParams(new URLSearchParams("is_algo_company=false")).is_algo_company).toEqual([false])
+    expect(parseSearchPageParams(new URLSearchParams("is_algo_company=false&is_algo_company=true")).is_algo_company).toEqual([false, true])
+    expect(parseSearchPageParams(new URLSearchParams("is_algo_company=true&is_algo_company=true")).is_algo_company).toEqual([true])
+    expect(parseSearchPageParams(new URLSearchParams("is_algo_company=oui")).is_algo_company).toBeUndefined()
+    expect(parseSearchPageParams(new URLSearchParams("")).is_algo_company).toBeUndefined()
+  })
+
+  it("round-trip URL : les deux cases cochées persistent dans l'URL", () => {
+    const url = buildSearchUrl({ ...base, is_algo_company: [false, true] })
+    expect(url).toBe("/beta/recherche?is_algo_company=false&is_algo_company=true")
+    expect(parseSearchPageParams(new URL(url, "https://x").searchParams).is_algo_company).toEqual([false, true])
+  })
+})
 
 describe("buildSearchPageTitle", () => {
   it("sans métier : titre de base seul, quel que soit le lieu", () => {

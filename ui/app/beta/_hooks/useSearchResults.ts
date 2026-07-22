@@ -23,7 +23,9 @@ function paramsToQuerystring(params: ISearchPageParams) {
   if (params.urgent) qs.start_type = "des_que_possible"
   if (params.handi) qs.is_disabled_elligible = "true"
   if (params.smart_apply) qs.smart_apply = "true"
-  if (params.is_algo_company !== undefined) qs.is_algo_company = params.is_algo_company.toString()
+  // Un seul type d'offres coché → filtre API ; les deux cochés (ou aucun) → pas de filtre,
+  // la sélection « tout » équivaut à l'absence de filtre.
+  if (params.is_algo_company?.length === 1) qs.is_algo_company = params.is_algo_company[0].toString()
   if (params.sort) qs.sort = params.sort
   if (params.latitude !== undefined) qs.latitude = params.latitude
   if (params.longitude !== undefined) qs.longitude = params.longitude

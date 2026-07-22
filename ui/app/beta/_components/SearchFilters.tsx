@@ -106,7 +106,7 @@ export function hasActiveFilters(params: ISearchPageParams): boolean {
       params.urgent !== undefined ||
       params.handi !== undefined ||
       params.smart_apply !== undefined ||
-      params.is_algo_company !== undefined
+      params.is_algo_company?.length
   )
 }
 
@@ -160,15 +160,18 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
   const selectedLevel = params.level?.[0]
   const futureStartDate = isFutureDate(params.start_date)
 
-  // Type d'offres : 2 cases dérivées du param is_algo_company (false = offres, true =
-  // entreprises à contacter). Cocher la seconde case = retirer le filtre (les deux ensemble
-  // équivalent à « tout »).
-  const offresChecked = params.is_algo_company === false
-  const entreprisesChecked = params.is_algo_company === true
+  // Type d'offres : 2 cases indépendantes portées par le param multi is_algo_company
+  // (false = offres, true = entreprises à contacter). Les deux cochées : la sélection reste
+  // affichée mais aucun filtre n'est envoyé à l'API (équivaut à « tout », cf. useSearchResults).
+  const offresChecked = params.is_algo_company?.includes(false) ?? false
+  const entreprisesChecked = params.is_algo_company?.includes(true) ?? false
   const toggleOfferKind = (kind: "offres" | "entreprises") => {
-    const target = kind === "offres" ? false : true
-    navigate({ is_algo_company: params.is_algo_company === target ? undefined : params.is_algo_company === undefined ? target : undefined })
+    const target = kind === "entreprises"
+    const current = params.is_algo_company ?? []
+    const next = current.includes(target) ? current.filter((v) => v !== target) : [...current, target]
+    navigate({ is_algo_company: next.length ? next : undefined })
   }
+  const offerKindLabels = [...(offresChecked ? ["Offres d'emploi en alternance"] : []), ...(entreprisesChecked ? ["Entreprises à contacter"] : [])]
 
   const distanceActive = params.type_filter_label?.includes(TYPE_FILTER_LABEL_DISTANCE) ?? false
 
@@ -310,8 +313,8 @@ export function SearchFilters({ params, facets, counts, onNavigate, variant = "b
       {!isFormations && params.mode === "emplois" && (
         <SearchFilterChip
           label="Type d'offres d'emploi"
-          activeLabel={offresChecked ? "Offres d'emploi en alternance" : "Entreprises à contacter"}
-          active={params.is_algo_company !== undefined}
+          activeLabel={offerKindLabels.length ? multiLabel(offerKindLabels) : undefined}
+          active={offerKindLabels.length > 0}
           onOpenChange={trackDropdown("job_offer_type")}
           popperContent={
             <Box sx={CHECKBOX_POPPER_SX}>

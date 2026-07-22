@@ -17,12 +17,15 @@ export interface FilterChange {
 
 const TYPE_FILTER_LABEL_DISTANCE = "Formation à distance"
 
-// is_algo_company est tri-état : false = offres d'emploi, true = entreprises à contacter,
-// absent = les deux (pas de filtre).
+// is_algo_company est multi-valeurs : false = offres d'emploi, true = entreprises à
+// contacter. Les deux cochées ou aucune = pas de filtre API, mais chaque case reste
+// trackée individuellement (un événement par valeur cochée/décochée).
 const JOB_OFFER_TYPE_LABELS: Record<"true" | "false", string> = {
   false: "Offres d'emploi en alternance",
   true: "Entreprises à contacter",
 }
+
+const jobOfferTypeLabels = (values: boolean[] = []): string[] => values.map((v) => JOB_OFFER_TYPE_LABELS[String(v) as "true" | "false"])
 
 function diffList(name: string, prev: string[] = [], next: string[] = []): FilterChange[] {
   return [
@@ -40,15 +43,7 @@ function diffToggle(name: string, prev?: boolean, next?: boolean): FilterChange[
 export function diffFilterChanges(prev: ISearchPageParams, next: ISearchPageParams): FilterChange[] {
   const changes: FilterChange[] = []
 
-  // job_offer_type (tri-état) : un changement de valeur = removed(ancienne) + applied(nouvelle).
-  if (prev.is_algo_company !== next.is_algo_company) {
-    if (prev.is_algo_company !== undefined) {
-      changes.push({ action: "removed", filter_name: "job_offer_type", filter_value: JOB_OFFER_TYPE_LABELS[String(prev.is_algo_company) as "true" | "false"] })
-    }
-    if (next.is_algo_company !== undefined) {
-      changes.push({ action: "applied", filter_name: "job_offer_type", filter_value: JOB_OFFER_TYPE_LABELS[String(next.is_algo_company) as "true" | "false"] })
-    }
-  }
+  changes.push(...diffList("job_offer_type", jobOfferTypeLabels(prev.is_algo_company), jobOfferTypeLabels(next.is_algo_company)))
 
   // contract_start_date : valeur au mois (YYYY-MM — la spec ne veut pas le jour).
   const prevMonth = prev.start_date?.slice(0, 7)

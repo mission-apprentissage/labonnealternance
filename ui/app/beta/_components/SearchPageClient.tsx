@@ -110,7 +110,7 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
     (params.type_filter_label?.length ?? 0) +
     (params.contract_type?.length ?? 0) +
     (params.level?.length ?? 0) +
-    (params.is_algo_company !== undefined ? 1 : 0) +
+    (params.is_algo_company?.length ?? 0) +
     (params.start_date ? 1 : 0) +
     (params.handi ? 1 : 0) +
     (params.urgent ? 1 : 0) +
