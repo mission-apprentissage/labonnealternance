@@ -17,11 +17,13 @@ export const OffresTabsMenu = ({
   openSuppression,
   buildOfferEditionUrl,
   onOffreProlongationClick,
+  hideCfaShareAction = false,
 }: {
   row: any
   openSuppression: (row: any) => any
   buildOfferEditionUrl: (offerId: string) => string
   onOffreProlongationClick: (offerId: string) => void
+  hideCfaShareAction?: boolean
 }) => {
   const router = useRouter()
   const { user } = useAuth()
@@ -96,7 +98,7 @@ export const OffresTabsMenu = ({
         </Box>
       ),
     },
-    user.type !== AUTHTYPE.CFA
+    user.type !== AUTHTYPE.CFA && !hideCfaShareAction
       ? ({
           label: "Partager aux CFA à proximité",
           link: cfaOptionParams.link,

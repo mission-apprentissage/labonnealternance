@@ -181,7 +181,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { cfaId } = req.params
       const userFromRequest = getUserFromRequest(req, zRoutes.get["/etablissement/cfa/:cfaId/entreprises"]).value
-      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId)
+      const recruiters = await getFormulairesForCfaManagedEnterprises(userFromRequest._id, cfaId, Boolean(req.userAccess?.admin))
       recruiters.forEach((recruiter) => {
         recruiter.jobs.forEach((job) => {
           // @ts-expect-error

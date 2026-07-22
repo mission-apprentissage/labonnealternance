@@ -383,13 +383,24 @@ export const getFormulaireWithRomeDetailAndApplicationCount = async ({
   return getRecruiterFromJobsPartnerFilter({ userId, siret, addApplicationCounts: true })
 }
 
-export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId): Promise<IRecruiter[]> => {
-  const [mainRole, entreprisesManagedByCfa, cfa, user] = await Promise.all([
+export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, cfaId: ObjectId, isAdmin: boolean = false): Promise<IRecruiter[]> => {
+  const [ownRole, entreprisesManagedByCfa, cfa] = await Promise.all([
     getDbCollection("rolemanagements").findOne({ user_id: userId, authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }),
     getDbCollection("entreprise_managed_by_cfa").find({ cfa_id: cfaId }).toArray(),
     getDbCollection("cfas").findOne({ _id: cfaId }),
-    getDbCollection("userswithaccounts").findOne({ _id: userId }),
   ])
+  // Un admin n'a pas nécessairement de role CFA sur ce cfaId : on retombe sur le compte CFA
+  // propriétaire de l'organisation pour construire les establishment_id et filtrer les offres.
+  const mainRole =
+    ownRole ??
+    (isAdmin
+      ? ((await getDbCollection("rolemanagements").find({ authorized_type: AccessEntityType.CFA, authorized_id: cfaId.toString() }).toArray())
+          .filter((role) => getLastStatusEvent(role.status)?.status === AccessStatus.GRANTED)
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())[0] ?? null)
+      : null)
+  if (!mainRole && isAdmin) {
+    return []
+  }
   if (!mainRole) {
     throw internal(`inattendu: mainRole vide pour userId=${userId}`)
   }
@@ -399,8 +410,10 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
   if (!cfa) {
     throw notFound(`Aucun CFA ayant pour id ${cfaId.toString()}`)
   }
+  const cfaUserId = mainRole.user_id
+  const user = await getDbCollection("userswithaccounts").findOne({ _id: cfaUserId })
   if (!user) {
-    throw internal(`inattendu: user vide pour userId=${userId}`)
+    throw internal(`inattendu: user vide pour userId=${cfaUserId}`)
   }
   const entrepriseIds = entreprisesManagedByCfa.map(({ entreprise_id }) => entreprise_id)
   const entreprises = await getDbCollection("entreprises")
@@ -417,7 +430,7 @@ export const getFormulairesForCfaManagedEnterprises = async (userId: ObjectId, c
         $match: {
           partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA,
           workplace_siret: { $in: sirets },
-          managed_by: userId,
+          managed_by: cfaUserId,
         },
       },
       ...romeDetailJoin,
@@ -966,13 +979,15 @@ export const validateDelegatedCompanyPhoneAndEmail = (user: IUserWithAccount | I
 }
 
 type UpdateCfaManagedBody = z.output<(typeof zRoutes.post)["/formulaire/:establishment_id/informations"]["body"]>
-export const updateCfaManagedRecruiter = async (user: IUserWithAccount, establishment_id: string, payload: UpdateCfaManagedBody) => {
-  const mainRole = await getMainRoleManagement(user._id)
+export const updateCfaManagedRecruiter = async (establishment_id: string, payload: UpdateCfaManagedBody) => {
+  // Le compte CFA gestionnaire est celui encodé dans establishment_id, pas nécessairement l'appelant
+  // (un admin peut modifier ces informations pour le compte du CFA).
+  const { userId: cfaUserId, siret } = establishmentIdToUserIdAndSiret(establishment_id)
+  const mainRole = await getMainRoleManagement(cfaUserId)
   if (mainRole?.authorized_type !== AccessEntityType.CFA) {
-    throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${user._id}`)
+    throw new Error(`inattendu: mainRole doit être de type CFA pour le user id=${cfaUserId}`)
   }
   const cfaId = new ObjectId(mainRole.authorized_id)
-  const { siret } = establishmentIdToUserIdAndSiret(establishment_id)
   const entreprise = await getDbCollection("entreprises").findOne({ siret })
   if (!entreprise) {
     throw new Error(`inattendu: entreprise non trouvée pour l'establishment_id=${establishment_id}`)
