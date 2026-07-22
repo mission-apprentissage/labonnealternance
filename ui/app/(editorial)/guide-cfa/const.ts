@@ -11,4 +11,12 @@ export const ARTICLES: Record<string, { id: string; title: string; description: 
     path: PAGES.static.guideCfaLaCarteEtudiantDesMetiers.getPath(),
     updatedAt: "26/03/2026",
   },
+  ["accompagner-vos-alternants"]: {
+    id: "accompagner-vos-alternants",
+    title: PAGES.static.guideCfaAccompagnerVosAlternants.title,
+    description: PAGES.static.guideCfaAccompagnerVosAlternants.getMetadata().description,
+    imageUrl: `${IMAGE_BASE_PATH}accompagner-vos-alternants.svg`,
+    path: PAGES.static.guideCfaAccompagnerVosAlternants.getPath(),
+    updatedAt: "20/07/2026",
+  },
 }
