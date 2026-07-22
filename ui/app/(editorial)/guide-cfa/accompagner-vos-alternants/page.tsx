@@ -19,7 +19,7 @@ export const metadata: Metadata = PAGES.static.guideCfaAccompagnerVosAlternants.
 
 const AccompagnerVosAlternantsPage = async () => {
   const { user } = await getSession()
-  const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaLaCarteEtudiantDesMetiers]
+  const pages = [PAGES.static.guideCfa, PAGES.static.guideCfaAccompagnerVosAlternants]
 
   return (
     <LayoutArticle
