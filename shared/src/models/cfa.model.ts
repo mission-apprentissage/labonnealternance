@@ -11,7 +11,6 @@ const collectionName = "cfas" as const
 export const zCFA = z
   .object({
     _id: zObjectId,
-    origin: z.string().nullish(),
     createdAt: z.date(),
     updatedAt: z.date(),
     siret: z.string(),

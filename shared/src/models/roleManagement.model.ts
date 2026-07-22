@@ -38,7 +38,6 @@ const collectionName = "rolemanagements" as const
 export const ZRoleManagement = z
   .object({
     _id: zObjectId,
-    origin: z.string().describe("Origine de la creation"),
     status: z.array(ZRoleManagementEvent).describe("Evénements liés au cycle de vie de l'accès"),
     authorized_id: z.string().describe("ID de l'entité sur laquelle l'accès est exercé"),
     authorized_type: ZAccessEntityType.describe("Type de l'entité sur laquelle l'accès est exercé"),

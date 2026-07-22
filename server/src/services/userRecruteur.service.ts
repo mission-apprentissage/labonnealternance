@@ -89,7 +89,8 @@ export const userAndRoleAndOrganizationToUserRecruteur = (user: IUserWithAccount
   const roleType = role.authorized_type === AccessEntityType.OPCO ? OPCO : role.authorized_type === AccessEntityType.ADMIN ? ADMIN : null
   const type = roleType ?? organismeType ?? null
   if (!type) throw internal("unexpected: no type found")
-  const { siret, address, address_detail, geo_coordinates, origin, raison_sociale, enseigne } = organisme ?? {}
+  const { siret, address, address_detail, geo_coordinates, raison_sociale, enseigne } = organisme ?? {}
+  const origin = organisme && "origin" in organisme ? organisme.origin : undefined
   let entrepriseFields: {
     idcc: number | null
     opco: OPCOS_LABEL | null
@@ -174,7 +175,6 @@ export const createOrganizationUser = async ({
       user_id: user._id,
       authorized_id: orgId.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-      origin: userFields.origin ?? "création de compte",
     },
     statusEvent ?? {
       reason: "création de compte",
@@ -204,7 +204,6 @@ export const createOpcoUser = async (
       user_id: user._id,
       authorized_id: opco,
       authorized_type: AccessEntityType.OPCO,
-      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
@@ -230,7 +229,6 @@ export const createAdminUser = async (userProps: IUserWithAccountFields, { grant
       user_id: user._id,
       authorized_id: "",
       authorized_type: AccessEntityType.ADMIN,
-      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
@@ -348,7 +346,7 @@ export const setEntrepriseStatus = async (entrepriseId: IEntreprise["_id"], reas
   )
 }
 
-const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrganization, status: AccessStatus, origin: string, reason: string) => {
+const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrganization, status: AccessStatus, reason: string) => {
   const { type } = organization
   const orgId = type === CFA ? organization.cfa._id : organization.entreprise._id
   await modifyPermissionToUser(
@@ -356,7 +354,6 @@ const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrga
       user_id: user._id,
       authorized_id: orgId.toString(),
       authorized_type: type === ENTREPRISE ? AccessEntityType.ENTREPRISE : AccessEntityType.CFA,
-      origin,
     },
     {
       validation_type: VALIDATION_UTILISATEUR.AUTO,
@@ -366,12 +363,12 @@ const setAccessOfUserOnOrganization = async ({ user, organization }: UserAndOrga
   )
 }
 
-export const autoValidateUser = async (props: UserAndOrganization, origin: string, reason: string) => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, origin, reason)
+export const autoValidateUser = async (props: UserAndOrganization, reason: string) => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.GRANTED, reason)
 }
 
-export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, origin: string, reason = "pas de validation automatique possible") => {
-  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, origin, reason)
+export const setUserHasToBeManuallyValidated = async (props: UserAndOrganization, reason = "pas de validation automatique possible") => {
+  await setAccessOfUserOnOrganization(props, AccessStatus.AWAITING_VALIDATION, reason)
 }
 
 export const deactivateEntreprise = async (entrepriseId: IEntreprise["_id"], reason: string) => {
