@@ -84,6 +84,7 @@ export const zSearchRoutes = {
           facets: z
             .object({
               type: z.record(z.number()),
+              sub_type: z.record(z.number()).describe("Compteurs par sous-type (offres_emploi_lba, offres_emploi_partenaires, recruteurs_lba, formation)"),
               type_filter_label: z.record(z.number()),
               contract_type: z.record(z.number()),
               level: z.record(z.number()),

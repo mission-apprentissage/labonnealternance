@@ -6,6 +6,7 @@ import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons"
 import { Box } from "@mui/material"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { Footer } from "@/app/_components/Footer"
 import DefaultContainer from "@/app/_components/Layout/DefaultContainer"
 import { PublicHeader } from "@/app/_components/PublicHeader"
@@ -109,6 +110,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
       total_results: result.data.pages.at(-1)?.nbHits ?? 0,
       count_alternance: facets?.type?.offre ?? 0,
       count_formation: facets?.type?.formation ?? 0,
+      // Détail par type d'offre (spec Notion « À modifier dans search_results_displayed ») :
+      // facette sub_type du result set.
+      count_offer_lba: facets?.sub_type?.[LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA] ?? 0,
+      count_offer_partner: facets?.sub_type?.[LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES] ?? 0,
+      count_company_algo: facets?.sub_type?.[LBA_ITEM_TYPE.RECRUTEURS_LBA] ?? 0,
       search_job_name: params.q || "non_renseigné",
       search_address: params.lieu_label || "non_renseigné",
       search_diploma: params.level?.[0] ?? "indifferent",

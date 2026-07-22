@@ -124,6 +124,7 @@ interface ISearchFilters {
 
 interface ISearchFacets {
   type: Record<string, number>
+  sub_type: Record<string, number>
   type_filter_label: Record<string, number>
   contract_type: Record<string, number>
   level: Record<string, number>
@@ -467,6 +468,7 @@ type FacetDimension = (typeof FACET_DIMENSIONS)[number]
 
 const FACET_FIELD_DEFS: Record<string, object> = {
   type: { type: "string", path: "type" },
+  sub_type: { type: "string", path: "sub_type" },
   type_filter_label: { type: "string", path: "type_filter_label" },
   contract_type: { type: "string", path: "contract_type" },
   level: { type: "string", path: "level" },
@@ -557,13 +559,15 @@ function buildChipCountCompounds(filters: ISearchFilters) {
 }
 
 // Construit les groupes de $searchMeta minimisant le nombre de requêtes :
-// - 1 groupe pour toutes les dimensions NON sélectionnées (+ `type`), calculé avec tous les filtres actifs ;
+// - 1 groupe pour toutes les dimensions NON sélectionnées (+ `type` et `sub_type`,
+//   compteurs informatifs — sub_type alimente le détail par type d'offre de l'événement
+//   Matomo search_results_displayed), calculé avec tous les filtres actifs ;
 // - 1 groupe par dimension sélectionnée, calculé en excluant cette dimension.
 function buildFacetGroups(filters: ISearchFilters): { keys: string[]; compound: object }[] {
   const activeDims = FACET_DIMENSIONS.filter((k) => isDimensionActive(filters, k))
   const inactiveDims = FACET_DIMENSIONS.filter((k) => !activeDims.includes(k))
 
-  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type"], compound: buildFacetCompound(filters, null) }]
+  const groups: { keys: string[]; compound: object }[] = [{ keys: [...inactiveDims, "type", "sub_type"], compound: buildFacetCompound(filters, null) }]
   for (const dim of activeDims) groups.push({ keys: [dim], compound: buildFacetCompound(filters, dim) })
   return groups
 }
@@ -678,7 +682,7 @@ export async function searchItems(params: ISearchFilters): Promise<{
   })
 
   // Fusionne les buckets de chaque groupe en un seul objet de facettes.
-  const facets: ISearchFacets = { type: {}, type_filter_label: {}, contract_type: {}, level: {}, activity_sector: {}, organization_name: {} }
+  const facets: ISearchFacets = { type: {}, sub_type: {}, type_filter_label: {}, contract_type: {}, level: {}, activity_sector: {}, organization_name: {} }
   metaArrays.forEach((arr, i) => {
     const facet = arr[0]?.facet
     if (!facet) return

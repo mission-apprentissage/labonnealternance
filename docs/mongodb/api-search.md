@@ -42,6 +42,7 @@ GET /api/v1/search
   "nbPages": 8,
   "facets": {
     "type": { "offre": 120, "formation": 22 },
+    "sub_type": { "offres_emploi_lba": 60, "offres_emploi_partenaires": 45, "recruteurs_lba": 15, "formation": 22 },
     "type_filter_label": { "Offre d'emploi en alternance": 80, "...": 40 },
     "contract_type": { "Apprentissage": 95, "Contrat de professionnalisation": 25 },
     "level": { "3": 40, "4": 35, "5": 30, "6": 20, "7": 17 },
