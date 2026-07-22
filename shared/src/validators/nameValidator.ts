@@ -1,7 +1,7 @@
 export const PERSON_NAME_VALIDATION_MESSAGE = "Saisissez au moins 2 lettres"
 
 const personNameAllowedCharactersRegex = /^[\p{L}\p{M}\s'’-]+$/u
-const personNameLettersRegex = /\p{L}/gu
+const personNameLetterRegex = /\p{L}/u
 
 export const validatePersonName = (value: string): boolean => {
   if (!value) {
@@ -14,5 +14,16 @@ export const validatePersonName = (value: string): boolean => {
     return false
   }
 
-  return (normalizedValue.match(personNameLettersRegex)?.length ?? 0) >= 2
+  let letterCount = 0
+
+  for (const character of normalizedValue) {
+    if (personNameLetterRegex.test(character)) {
+      letterCount += 1
+      if (letterCount >= 2) {
+        return true
+      }
+    }
+  }
+
+  return false
 }

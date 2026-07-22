@@ -12,7 +12,7 @@ export const phoneValidation = () => {
 export const personNameValidation = () => {
   return Yup.string()
     .trim()
-    .test("valid-person-name", PERSON_NAME_VALIDATION_MESSAGE, (value) => !value || validatePersonName(value))
+    .test("valid-person-name", PERSON_NAME_VALIDATION_MESSAGE, (value) => value == null || value === "" || validatePersonName(value))
 }
 
 export const SIRETValidation = () => {
