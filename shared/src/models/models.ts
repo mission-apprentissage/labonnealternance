@@ -31,6 +31,7 @@ import geolocationsModel from "./geolocations.model.js"
 import jobsModel from "./jobs.model.js"
 import jobsPartnersModel from "./jobsPartners.model.js"
 import jobsPartnersComputedModel from "./jobsPartnersComputed.model.js"
+import mistralBatchJobsModel from "./mistralBatchJobs.model.js"
 import opcoModel from "./opco.model.js"
 import rawApecModel from "./rawApec.model.js"
 import rawAtlasModel from "./rawAtlas.model.js"
@@ -67,6 +68,7 @@ import roleManagementModel from "./roleManagement.model.js"
 import roleManagement360Model from "./roleManagement360.model.js"
 import romeModel from "./rome.model.js"
 import searchItemsModel from "./searchItems.model.js"
+import searchItemsKeywordsModel from "./searchItemsKeywords.model.js"
 import searchQueriesModel from "./searchQueries.model.js"
 import searchSuggestionsModel from "./searchSuggestions.model.js"
 import searchSynonymsModel from "./searchSynonyms.model.js"
@@ -154,6 +156,8 @@ const modelDescriptorMap = {
   [trafficSourcesModel.collectionName]: trafficSourcesModel,
   [sitemapModel.collectionName]: sitemapModel,
   [searchQueriesModel.collectionName]: searchQueriesModel,
+  [searchItemsKeywordsModel.collectionName]: searchItemsKeywordsModel,
+  [mistralBatchJobsModel.collectionName]: mistralBatchJobsModel,
   [searchSuggestionsModel.collectionName]: searchSuggestionsModel,
   [searchSynonymsModel.collectionName]: searchSynonymsModel,
   [seoVilleModel.collectionName]: seoVilleModel,

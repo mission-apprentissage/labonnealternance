@@ -1,445 +1,190 @@
-import { readFile } from "node:fs/promises"
+import { pipeline } from "node:stream/promises"
 
 import { ObjectId } from "bson"
-import type { IFormationCatalogue } from "shared"
+import type { AggregationCursor, FindCursor } from "mongodb"
 import { JOB_STATUS_ENGLISH } from "shared"
-import { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
-import type { IJobsPartnersOfferPrivate } from "shared/models/jobsPartners.model"
 import { JOBPARTNERS_LABEL } from "shared/models/jobsPartners.model"
-import type { ISearchItem } from "shared/models/searchItems.model"
 
 import { logger } from "@/common/logger"
-import { asyncForEach } from "@/common/utils/asyncUtils"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
-import { sanitizeTextField } from "@/common/utils/stringUtils"
-import { GEIQ_WHITELIST } from "@/jobs/offrePartenaire/geiqWhitelist"
-import type { Message } from "@/services/mistralai/mistralai.service"
-import { submitMistralBatch } from "@/services/mistralai/mistralai.service"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
+import { limitStream } from "@/common/utils/streamUtils"
+import type { IJobPartnerForSearchItem } from "@/services/search/searchItems.service"
+import {
+  buildFormationSearchItem,
+  buildJobOfferSearchItem,
+  buildRecruteurSearchItem,
+  dedupeRepeatedTitle,
+  formationProjection,
+  isFormationIncluded,
+  jobsProjection,
+  loadSearchItemBuildContext,
+  sanitizeContractStart,
+  stripHtmlToText,
+  upsertSearchItem,
+} from "@/services/search/searchItems.service"
 
-// Taille de tranche par job batch Mistral (mode fichier, jusqu'à 1M req / 512 Mo).
-// On borne pour limiter la mémoire du JSONL et le wall-clock de polling par job.
-const KEYWORDS_BATCH_CHUNK_SIZE = 50_000
+// Génération des mots-clés Mistral : déplacée dans searchItemsKeywords.service.ts
+// (cron continu + batch hebdo recruteurs + ramasse des jobs + import manuel).
 
-const formationProjection: Partial<Record<keyof IFormationCatalogue, 1>> = {
-  intitule_rco: 1,
-  contenu: 1,
-  niveau: 1,
-  lieu_formation_geopoint: 1,
-  lieu_formation_adresse: 1,
-  code_postal: 1,
-  localite: 1,
-  etablissement_formateur_entreprise_raison_sociale: 1,
-  entierement_a_distance: 1,
-  cle_ministere_educatif: 1,
-  rome_codes: 1,
-}
-
-const jobsProjection: Partial<Record<keyof IJobsPartnersOfferPrivate, 1>> = {
-  offer_title: 1,
-  offer_description: 1,
-  offer_rome_codes: 1,
-  offer_target_diploma: 1,
-  offer_creation: 1,
-
-  workplace_legal_name: 1,
-  workplace_address_label: 1,
-  workplace_geopoint: 1,
-  workplace_naf_label: 1,
-  workplace_siret: 1,
-  workplace_brand: 1,
-  workplace_name: 1,
-
-  partner_label: 1,
-  apply_email: 1,
-  is_delegated: 1,
-  contract_type: 1,
-  contract_start: 1,
-  contract_start_type: 1,
-  contract_start_is_flexible: 1,
-  contract_is_disabled_elligible: 1,
-}
+const NIGHTLY_CONCURRENCY = 100
 
 /**
- * Charge une fois le référentiel ROME en mémoire : code_rome → intitulé.
- * Réutilisé pour dériver `rome_labels` (signal métier déterministe) sur les 3 types de docs.
+ * Consomme un curseur Mongo en flux (mémoire bornée — les sources complètes ne sont jamais
+ * chargées en tableau) avec concurrence limitée. Une erreur d'item est capturée (Sentry)
+ * SANS interrompre le run ; l'_id fautif est tout de même marqué traité pour ne pas être
+ * purgé comme orphelin en fin de batch — le document indexé garde son état précédent.
  */
-const loadRomeLabelByCode = async (): Promise<Map<string, string>> => {
-  const docs = await getDbCollection("referentielromes")
-    .find({}, { projection: { _id: 0, "rome.code_rome": 1, "rome.intitule": 1 } })
-    .toArray()
-  const map = new Map<string, string>()
-  for (const doc of docs) {
-    const code = doc.rome?.code_rome
-    const intitule = doc.rome?.intitule
-    if (code && intitule) map.set(code, intitule)
-  }
-  return map
-}
-
-/** Résout des codes ROME en intitulés uniques (ignore les codes inconnus / vides). */
-const resolveRomeLabels = (codes: (string | null | undefined)[] | null | undefined, romeLabelByCode: Map<string, string>): string[] => {
-  const labels = (codes ?? []).map((code) => (code ? romeLabelByCode.get(code) : undefined)).filter((label): label is string => Boolean(label))
-  return [...new Set(labels)]
-}
-
-/**
- * Canonicalisation de casse des champs de facette (organization_name, activity_sector) :
- * les sources partenaires livrent des casses différentes ("CARREFOUR"/"Carrefour",
- * "PROGRAMMATION INFORMATIQUE"/"Programmation informatique") → chaque variante devient une
- * option distincte dans les filtres (type `token`, match exact). Toutes les variantes d'un
- * même libellé (comparaison insensible à la casse) convergent vers UNE forme canonique :
- * la plus "propre" (ni tout-majuscules ni tout-minuscules) déjà en base, sinon la plus
- * fréquente — on préserve ainsi "SNCF Voyageurs" ou "… PVC" au lieu de réécrire la casse.
- */
-const pickCanonicalVariant = (variants: { v: string; c: number }[]): string => {
-  let best = variants[0].v
-  let bestScore = -1
-  for (const { v, c } of variants) {
-    const isAllUpper = v === v.toUpperCase()
-    const isAllLower = v === v.toLowerCase()
-    const score = (isAllUpper || isAllLower ? 0 : 1_000_000) + c
-    if (score > bestScore) {
-      bestScore = score
-      best = v
-    }
-  }
-  return best
-}
-
-const buildCanonicalCaseMap = async (field: "organization_name" | "activity_sector"): Promise<Map<string, string>> => {
-  const rows = await getDbCollection("search_items")
-    .aggregate<{ _id: string; variants: { v: string; c: number }[] }>([
-      { $match: { [field]: { $nin: [null, ""] } } },
-      { $group: { _id: { lower: { $toLower: `$${field}` }, exact: `$${field}` }, count: { $sum: 1 } } },
-      { $group: { _id: "$_id.lower", variants: { $push: { v: "$_id.exact", c: "$count" } } } },
-    ])
-    .toArray()
-  return new Map(rows.map((row) => [row._id, pickCanonicalVariant(row.variants)]))
-}
-
-/** Applique la forme canonique ; une valeur inédite devient la référence de son groupe (cohérence intra-run). */
-const canonicalizeCase = (map: Map<string, string>, value: string): string => {
-  if (!value) return value
-  const key = value.toLowerCase()
-  const canonical = map.get(key)
-  if (!canonical) {
-    map.set(key, value)
-    return value
-  }
-  return canonical
-}
-
-// Vocabulaire de niveau UNIFIÉ avec celui des offres (offer_target_diploma.label, référentiel
-// standard de jobs_partners) : sinon la facette Niveau affiche deux libellés quasi-identiques
-// par niveau (un côté formations, un côté offres) et cocher l'un ne remonte pas l'autre.
-const convertFormationNiveauDiplome = (niveau: string) => {
-  switch (niveau) {
-    case "3 (CAP...)":
-      return "CAP, BEP (Infrabac)"
-    case "4 (BAC...)":
-      return "Bac, Bac Pro, BP (Bac)"
-    case "5 (BTS, DEUST...)":
-      return "BTS, DEUST (Bac+2)"
-    case "6 (Licence, BUT...)":
-      return "Licence, BUT, Licence Pro (Bac+3)"
-    case "7 (Master, titre ingénieur...)":
-      return "Master, titre ingénieur, grande école (Bac+5)"
-    default:
-      // Niveau inconnu = indifférent — remonte quel que soit le niveau coché (filtre inclusif).
-      return "Indifférent"
-  }
-}
-
-/**
- * Descriptions en texte brut : les sources livrent du HTML (balises + entités) qui s'affiche
- * tel quel dans les previews et pollue l'index (tokens parasites p/li/ul, cf. bug synonymes
- * "plaquiste"). Les fins de blocs deviennent des sauts de ligne pour ne pas coller les mots.
- */
-const stripHtmlToText = (text: string | null | undefined): string => {
-  if (!text) return ""
-  const withBreaks = text.replace(/<\/(p|li|ul|ol|div|h[1-6])>|<br\s*\/?>/gi, "\n")
-  return sanitizeTextField(withBreaks)
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim()
-}
-
-const getTypeFilterLabel = (partner_label: JOBPARTNERS_LABEL, fromCfa?: boolean) => {
-  if (fromCfa) return "Offres d'emploi postées par des écoles"
-  switch (partner_label) {
-    case "offres_emploi_lba":
-      return "Offres d'emploi La bonne alternance"
-    case "recruteurs_lba":
-      return "Candidatures spontanées"
-    default:
-      return "Offres d'emploi partenaires"
-  }
-}
-
-const GEIQ_SIRETS = new Set(GEIQ_WHITELIST)
-
-// Certains intitulés sources arrivent dupliqués (« BTS bâtiment BTS bâtiment » — formations
-// catalogue comme offres partenaires) : on ne garde qu'une occurrence, sinon le doublon
-// pollue les suggestions d'autocomplétion et les titres affichés.
-const dedupeRepeatedTitle = (title: string): string => {
-  const trimmed = title.trim()
-  if (trimmed.length <= 6) return trimmed
-  const half = Math.floor(trimmed.length / 2)
-  const first = trimmed.slice(0, half).trim()
-  const second = trimmed.slice(half).trim()
-  return first.toLowerCase() === second.toLowerCase() ? first : trimmed
-}
-
-// contract_start à l'epoch (01/01/1970) = date manquante mal encodée côté source partenaire →
-// null (sinon ces offres passent tous les filtres start_date $lte et trient en tête du tri
-// par date de début).
-const sanitizeContractStart = (date: Date | null | undefined): Date | null => (date && date.getTime() > 0 ? date : null)
-
-/**
- * « Emploi avec formation incluse » : offre émise par un CFA (délégation à un mandataire)
- * ou par un GEIQ (whitelist SIRET). Ces offres sont exclues du mode « Emplois uniquement ».
- */
-const isFormationIncluded = (job: { is_delegated?: boolean | null; workplace_siret?: string | null }): boolean =>
-  job.is_delegated === true || (job.workplace_siret != null && GEIQ_SIRETS.has(job.workplace_siret))
-
-const getJobType = (partner_label: string) => {
-  switch (partner_label) {
-    case LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_LBA
-    case LBA_ITEM_TYPE.RECRUTEURS_LBA:
-      return LBA_ITEM_TYPE.RECRUTEURS_LBA
-    default:
-      return LBA_ITEM_TYPE.OFFRES_EMPLOI_PARTENAIRES
-  }
-}
-
-const KEYWORDS_SYSTEM_PROMPT = `Extrais les mots-clés pertinents d'une offre d'alternance pour un moteur de recherche sémantique.
-Règles : uniquement des termes PRÉSENTS dans le texte (n'invente rien) ; compétences techniques/humaines et secteurs d'activité ; 5 à 15 mots-clés ; ignore le HTML.
-Réponds STRICTEMENT en JSON : {"keywords": ["mot1", "mot2"]}`
-
-const buildKeywordsMessages = (text: string): Message[] => [
-  { role: "system", content: KEYWORDS_SYSTEM_PROMPT },
-  { role: "user", content: text.substring(0, 2000) },
-]
-
-/** Parse la réponse Mistral `{"keywords": [...]}` en tableau de strings (null si invalide). */
-const parseKeywords = (content: string): string[] | null => {
-  try {
-    const parsed = JSON.parse(content)
-    const keywords = parsed?.keywords
-    if (Array.isArray(keywords) && keywords.every((k) => typeof k === "string")) return keywords
-    return null
-  } catch {
-    return null
-  }
-}
-
-/**
- * Applique un fichier JSONL de sortie d'un batch Mistral (téléchargé manuellement depuis
- * la console, ou via l'API) aux mots-clés de la collection `search_items`. Chaque ligne :
- * `{ custom_id, response: { body: { choices: [{ message: { content } }] } } }`.
- * Utile pour rattraper un batch finalisé après l'expiration du polling.
- */
-export const applyKeywordsBatchFile = async (payload?: { file?: string }) => {
-  const file = payload?.file
-  if (!file) throw new Error("Paramètre --file requis (chemin du JSONL de sortie Mistral)")
-
-  const searchItemsCollection = getDbCollection("search_items")
-  const text = await readFile(file, "utf8")
-
-  let updated = 0
-  let skipped = 0
-  for (const line of text.split("\n")) {
-    if (!line.trim()) continue
-    try {
-      const parsed = JSON.parse(line)
-      const content = parsed?.response?.body?.choices?.[0]?.message?.content
-      const keywords = typeof content === "string" ? parseKeywords(content) : null
-      if (parsed.custom_id && keywords && keywords.length > 0) {
-        await searchItemsCollection.updateOne({ _id: new ObjectId(parsed.custom_id) }, { $set: { keywords } })
-        updated++
-      } else {
-        skipped++
-      }
-    } catch {
-      skipped++
-    }
-  }
-
-  logger.info(`applyKeywordsBatchFile: ${updated} documents mis à jour, ${skipped} ignorés`)
-}
-
-/**
- * Soumet à Mistral (API Batch, fire-and-forget) la génération des mots-clés pour toutes les
- * offres de la collection `search_items` qui n'en ont pas encore — indépendamment de la façon dont
- * elles ont été insérées. Les formations sont exclues (pas de mots-clés). Découpé en tranches
- * (un job/fichier par tranche), PAS de polling : le script soumet tous les jobs et se termine.
- * Récupération : télécharger le JSONL de sortie de chaque job (console Mistral ou API) puis
- * l'appliquer via `yarn cli search:apply-keywords-batch --file <sortie.jsonl>`.
- * Exécutable seul via `yarn cli fillMissingSearchItemsKeywords` (simpleJobDefinitions).
- */
-export const fillMissingSearchItemsKeywords = async () => {
-  const searchItemsCollection = getDbCollection("search_items")
-  const docs = await searchItemsCollection
-    .find({ type: "offre", $or: [{ keywords: null }, { keywords: { $size: 0 } }] }, { projection: { _id: 1, title: 1, description: 1, rome_labels: 1 } })
-    .toArray()
-
-  // Texte source : titre + description (le titre porte souvent la forme la plus canonique du
-  // métier), à défaut les intitulés ROME (recruteurs, description vide — leur title = nom
-  // d'entreprise, sans valeur pour les mots-clés).
-  const withText = docs
-    .map((doc) => ({
-      id: doc._id,
-      text: (doc.description?.trim() ? [doc.title?.trim(), doc.description.trim()].filter(Boolean).join("\n") : (doc.rome_labels ?? []).join(", ")).trim(),
-    }))
-    .filter((d) => d.text)
-
-  const jobIds: string[] = []
-  for (let i = 0; i < withText.length; i += KEYWORDS_BATCH_CHUNK_SIZE) {
-    const chunk = withText.slice(i, i + KEYWORDS_BATCH_CHUNK_SIZE)
-    const jobId = await submitMistralBatch({
-      requests: chunk.map((doc) => ({ customId: doc.id.toString(), messages: buildKeywordsMessages(doc.text) })),
-      model: "mistral-small-latest",
-      // 400 : à 200, ~36 % des réponses étaient tronquées en plein JSON (15 mots-clés longs
-      // ne tiennent pas) → lignes ignorées à l'application du batch.
-      maxTokens: 400,
-      inputFileName: `keywords_batch_input_${i / KEYWORDS_BATCH_CHUNK_SIZE + 1}.jsonl`,
+const processCursorStream = async <T extends { _id: ObjectId }>(
+  cursor: FindCursor<T> | AggregationCursor<T>,
+  label: string,
+  processedIds: Set<string>,
+  processItem: (doc: T) => Promise<void>
+): Promise<void> => {
+  let count = 0
+  await pipeline(
+    cursor.stream(),
+    limitStream<T>({
+      concurrency: NIGHTLY_CONCURRENCY,
+      processItem: async (doc) => {
+        try {
+          count++
+          if (count % 50_000 === 0) logger.info(`fillSearchItemsCollection: ${label} — ${count} documents traités`)
+          await processItem(doc)
+        } catch (err) {
+          sentryCaptureException(err)
+        } finally {
+          processedIds.add(doc._id.toString())
+        }
+      },
     })
-    if (jobId) jobIds.push(jobId)
-    else logger.error(`fillMissingSearchItemsKeywords: échec de soumission de la tranche ${i / KEYWORDS_BATCH_CHUNK_SIZE + 1} (${chunk.length} requêtes)`)
-  }
-
-  logger.info(
-    `fillMissingSearchItemsKeywords: ${withText.length} offres sans keywords, ${jobIds.length} job(s) batch Mistral soumis : ${jobIds.join(", ")}. ` +
-      `Une fois terminés, appliquer chaque sortie via \`yarn cli search:apply-keywords-batch --file <sortie.jsonl>\`.`
   )
+  logger.info(`fillSearchItemsCollection: ${label} — ${count} documents traités`)
 }
 
+/**
+ * Réconciliation complète des sources (formations, offres actives, recruteurs) vers
+ * `search_items`. Sert de batch initial ET de réconciliation nightly (cron ~06:00, après
+ * processComputedAndImportToJobPartners) : rattrape tout ce que la sync incrémentale
+ * (appels explicites + cron delta, cf. searchItems.service.ts) aurait manqué, et purge
+ * les documents orphelins (disparus des sources — suppressions physiques comprises).
+ */
 export const fillSearchItemsCollection = async () => {
   // Récupérer les _id existants : on saute les docs déjà présents et on identifie les suppressions.
   const existingDocs = await getDbCollection("search_items")
     .find({}, { projection: { _id: 1 } })
     .toArray()
   const existingIds = new Set(existingDocs.map((doc) => doc._id.toString()))
-  const [formations, jobs, recruteur] = await Promise.all([
-    getDbCollection("formationcatalogues").find({}, { projection: formationProjection }).toArray(),
-    getDbCollection("jobs_partners")
-      .aggregate([
-        {
-          $match: {
-            partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
-            offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+
+  // Curseurs streamés (pas de .toArray() : les sources complètes ne tiennent pas en mémoire).
+  const formationsCursor = getDbCollection("formationcatalogues").find({}, { projection: formationProjection })
+  const jobsCursor = getDbCollection("jobs_partners").aggregate<IJobPartnerForSearchItem>([
+    {
+      $match: {
+        partner_label: { $ne: JOBPARTNERS_LABEL.RECRUTEURS_LBA },
+        offer_status: JOB_STATUS_ENGLISH.ACTIVE,
+      },
+    },
+    {
+      $lookup: {
+        from: "applications",
+        let: { jobIdStr: { $toString: "$_id" } },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$job_id", "$$jobIdStr"] },
+            },
           },
-        },
-        {
-          $lookup: {
-            from: "applications",
-            let: { jobIdStr: { $toString: "$_id" } },
-            pipeline: [
-              {
-                $match: {
-                  $expr: { $eq: ["$job_id", "$$jobIdStr"] },
-                },
-              },
-            ],
-            as: "applications",
-          },
-        },
-        {
-          $addFields: {
-            application_count: { $size: "$applications" },
-          },
-        },
-        {
-          $project: {
-            ...jobsProjection,
-            application_count: 1,
-          },
-        },
-      ])
-      // .limit(100_000) // limite levée : import complet des offres actives
-      .toArray(),
-    getDbCollection("jobs_partners")
-      .aggregate([
-        {
-          $match: {
-            partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
-          },
-        },
-        {
-          $lookup: {
-            from: "applications",
-            localField: "workplace_siret",
-            foreignField: "company_siret",
-            as: "applications",
-          },
-        },
-        {
-          $lookup: {
-            from: "raw_recruteurslba",
-            localField: "workplace_siret",
-            foreignField: "siret",
-            as: "rawR",
-          },
-        },
-        {
-          // rome_codes : priorité au classement de raw_recruteurslba (codes ordonnés par
-          // pertinence par l'algo), fallback sur offer_rome_codes de jobs_partners si la
-          // collection raw est vide/absente (cas local ou raw purgée) — sinon rome_labels
-          // resterait vide pour tous les recruteurs.
-          $addFields: {
-            rome_codes: {
-              $let: {
-                vars: {
-                  fromRaw: {
-                    $map: {
-                      input: {
-                        $ifNull: [{ $first: "$rawR.rome_codes" }, []],
-                      },
-                      as: "rc",
-                      in: "$$rc.rome_code",
-                    },
+        ],
+        as: "applications",
+      },
+    },
+    {
+      $addFields: {
+        application_count: { $size: "$applications" },
+      },
+    },
+    {
+      $project: {
+        ...jobsProjection,
+        application_count: 1,
+      },
+    },
+  ])
+  const recruteursCursor = getDbCollection("jobs_partners").aggregate<IJobPartnerForSearchItem>([
+    {
+      $match: {
+        partner_label: JOBPARTNERS_LABEL.RECRUTEURS_LBA,
+      },
+    },
+    {
+      $lookup: {
+        from: "applications",
+        localField: "workplace_siret",
+        foreignField: "company_siret",
+        as: "applications",
+      },
+    },
+    {
+      $lookup: {
+        from: "raw_recruteurslba",
+        localField: "workplace_siret",
+        foreignField: "siret",
+        as: "rawR",
+      },
+    },
+    {
+      // rome_codes : priorité au classement de raw_recruteurslba (codes ordonnés par
+      // pertinence par l'algo), fallback sur offer_rome_codes de jobs_partners si la
+      // collection raw est vide/absente (cas local ou raw purgée) — sinon rome_labels
+      // resterait vide pour tous les recruteurs.
+      $addFields: {
+        rome_codes: {
+          $let: {
+            vars: {
+              fromRaw: {
+                $map: {
+                  input: {
+                    $ifNull: [{ $first: "$rawR.rome_codes" }, []],
                   },
-                },
-                in: {
-                  $slice: [
-                    {
-                      $cond: [{ $gt: [{ $size: "$$fromRaw" }, 0] }, "$$fromRaw", { $ifNull: ["$offer_rome_codes", []] }],
-                    },
-                    6,
-                  ],
+                  as: "rc",
+                  in: "$$rc.rome_code",
                 },
               },
             },
-            application_count: {
-              $size: "$applications",
+            in: {
+              $slice: [
+                {
+                  $cond: [{ $gt: [{ $size: "$$fromRaw" }, 0] }, "$$fromRaw", { $ifNull: ["$offer_rome_codes", []] }],
+                },
+                6,
+              ],
             },
           },
         },
-        {
-          // Les intitulés ROME sont résolus côté JS via une Map en mémoire (resolveRomeLabels),
-          // partagée avec les offres/formations — plus de $lookup referentielromes par doc.
-          $project: {
-            ...jobsProjection,
-            application_count: 1,
-            rome_codes: 1,
-          },
+        application_count: {
+          $size: "$applications",
         },
-      ])
-      // .limit(80_000) // limite levée : import complet des recruteurs
-      .toArray(),
+      },
+    },
+    {
+      // Les intitulés ROME sont résolus côté JS via une Map en mémoire (resolveRomeLabels),
+      // partagée avec les offres/formations — plus de $lookup referentielromes par doc.
+      $project: {
+        ...jobsProjection,
+        application_count: 1,
+        rome_codes: 1,
+      },
+    },
   ])
 
-  const romeLabelByCode = await loadRomeLabelByCode()
-  // Cartes de canonicalisation de casse (facettes) — construites sur l'existant pour que les
-  // nouveaux docs convergent vers les formes déjà en base.
-  const [organizationCaseMap, sectorCaseMap] = await Promise.all([buildCanonicalCaseMap("organization_name"), buildCanonicalCaseMap("activity_sector")])
+  // Référentiels partagés avec les builders de la sync incrémentale (searchItems.service.ts).
+  const ctx = await loadSearchItemBuildContext()
 
   const processedIds = new Set<string>()
   const searchItemsCollection = getDbCollection("search_items")
 
-  // Process formations and insert immediately
-  await asyncForEach(formations, async (formation) => {
+  await processCursorStream(formationsCursor, "formations", processedIds, async (formation) => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
     if (existingIds.has(formation._id.toString())) {
@@ -458,50 +203,19 @@ export const fillSearchItemsCollection = async () => {
           },
         }
       )
-      processedIds.add(formation._id.toString())
       return
     }
 
-    const formationDoc: ISearchItem = {
-      _id: formation._id,
-      url_id: formation.cle_ministere_educatif,
-      type: "formation",
-      type_filter_label: formation.entierement_a_distance ? "Formation à distance" : "Formation en présentiel",
-      sub_type: LBA_ITEM_TYPE.FORMATION,
-      contract_type: null,
-      publication_date: null,
-      is_disabled_elligible: null,
-      start_date: null,
-      start_type: null,
-      is_start_flexible: null,
-      is_algo_company: false,
-      is_formation_included: null,
-      smart_apply: null,
-      application_count: null,
-      title: dedupeRepeatedTitle(formation.intitule_rco || ""),
-      description: stripHtmlToText(formation.contenu),
-      address: [formation.lieu_formation_adresse, formation.code_postal, formation.localite].filter(Boolean).join(" "),
-      location: {
-        type: "Point",
-        coordinates: [formation.lieu_formation_geopoint!.coordinates[0], formation.lieu_formation_geopoint!.coordinates[1]],
-      },
-      organization_name: canonicalizeCase(organizationCaseMap, formation.etablissement_formateur_entreprise_raison_sociale || ""),
-      level: convertFormationNiveauDiplome(formation.niveau || ""),
-      activity_sector: null,
-      keywords: null,
-      rome_labels: resolveRomeLabels(formation.rome_codes, romeLabelByCode),
-    }
-
-    await searchItemsCollection.replaceOne({ _id: formationDoc._id }, formationDoc, { upsert: true })
-    processedIds.add(formationDoc._id.toString())
+    // upsertSearchItem (pas replaceOne) : préserve les keywords d'un doc inséré par la sync
+    // incrémentale APRÈS le snapshot existingIds (le nightly dure jusqu'à 3 h en parallèle
+    // du cron delta et du cron keywords).
+    await upsertSearchItem(buildFormationSearchItem(formation, ctx))
   })
 
-  // Process jobs and insert immediately
-  await asyncForEach(jobs, async (job) => {
-    const jobId = job._id.toString()
+  await processCursorStream(jobsCursor, "offres", processedIds, async (job) => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
-    if (existingIds.has(jobId)) {
+    if (existingIds.has(job._id.toString())) {
       await searchItemsCollection.updateOne(
         { _id: job._id },
         {
@@ -514,53 +228,24 @@ export const fillSearchItemsCollection = async () => {
             is_formation_included: isFormationIncluded(job),
             title: dedupeRepeatedTitle(job.offer_title || ""),
             description: stripHtmlToText(job.offer_description),
+            // application_count sert au tri (search.service) et rien ne bumpe updated_at à
+            // chaque candidature : le nightly est la voie de rafraîchissement de ce compteur
+            // (déjà calculé par le $lookup du pipeline — gratuit).
+            application_count: job.application_count,
+            smart_apply: job.apply_email ? true : false,
           },
         }
       )
-      processedIds.add(jobId)
       return
     }
 
-    const jobDoc: ISearchItem = {
-      _id: job._id,
-      url_id: job._id.toString(),
-      type: "offre",
-      type_filter_label: getTypeFilterLabel(job.partner_label, job.is_delegated),
-      sub_type: getJobType(job.partner_label),
-      contract_type: job.contract_type,
-      publication_date: job.offer_creation ?? null,
-      is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
-      start_date: sanitizeContractStart(job.contract_start),
-      start_type: job.contract_start_type ?? null,
-      is_start_flexible: job.contract_start_is_flexible ?? null,
-      is_algo_company: false,
-      is_formation_included: isFormationIncluded(job),
-      smart_apply: job.apply_email ? true : false,
-      application_count: job.application_count,
-      title: dedupeRepeatedTitle(job.offer_title || ""),
-      description: stripHtmlToText(job.offer_description),
-      address: job.workplace_address_label || "",
-      location: {
-        type: "Point",
-        coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
-      },
-      organization_name: canonicalizeCase(organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
-      level: job.offer_target_diploma?.label || "",
-      activity_sector: job.workplace_naf_label ? canonicalizeCase(sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
-      keywords: null,
-      rome_labels: resolveRomeLabels(job.offer_rome_codes, romeLabelByCode),
-    }
-
-    await searchItemsCollection.replaceOne({ _id: jobDoc._id }, jobDoc, { upsert: true })
-    processedIds.add(jobDoc._id.toString())
+    await upsertSearchItem(buildJobOfferSearchItem(job, ctx))
   })
 
-  // Process recruteurs and insert immediately
-  await asyncForEach(recruteur, async (job) => {
-    const jobId = job._id.toString()
+  await processCursorStream(recruteursCursor, "recruteurs", processedIds, async (job) => {
     // Déjà en base → on conserve le doc (keywords compris), on resynchronise seulement les
     // champs contrat (backfill des ajouts de schéma sans régénérer la collection).
-    if (existingIds.has(jobId)) {
+    if (existingIds.has(job._id.toString())) {
       await searchItemsCollection.updateOne(
         { _id: job._id },
         {
@@ -571,49 +256,15 @@ export const fillSearchItemsCollection = async () => {
             is_start_flexible: null,
             is_algo_company: true,
             is_formation_included: false,
+            application_count: job.application_count,
+            smart_apply: job.apply_email ? true : false,
           },
         }
       )
-      processedIds.add(jobId)
       return
     }
 
-    const recruteurDoc: ISearchItem = {
-      _id: job._id,
-      url_id: job.workplace_siret,
-      type: "offre",
-      type_filter_label: getTypeFilterLabel(job.partner_label),
-      sub_type: getJobType(job.partner_label),
-      contract_type: ["Apprentissage", "Professionnalisation"],
-      publication_date: job.offer_creation ?? null,
-      is_disabled_elligible: job.contract_is_disabled_elligible ?? false,
-      // Candidature spontanée, pas une offre : aucune date/mode de démarrage de contrat.
-      start_date: null,
-      start_type: null,
-      is_start_flexible: null,
-      is_algo_company: true,
-      // Entreprise, pas une offre : ni CFA ni GEIQ au sens « formation incluse ».
-      is_formation_included: false,
-      smart_apply: job.apply_email ? true : false,
-      application_count: job.application_count,
-      // title des recruteurs = nom d'entreprise → même canonicalisation que organization_name.
-      title: canonicalizeCase(organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
-      // Pas une offre d'emploi → pas de vraie description. Le signal métier vit dans rome_labels.
-      description: "",
-      address: job.workplace_address_label || "",
-      location: {
-        type: "Point",
-        coordinates: [job.workplace_geopoint.coordinates[0], job.workplace_geopoint.coordinates[1]],
-      },
-      organization_name: canonicalizeCase(organizationCaseMap, job.workplace_name || job.workplace_brand || job.workplace_legal_name || ""),
-      level: job.offer_target_diploma?.label || "",
-      activity_sector: job.workplace_naf_label ? canonicalizeCase(sectorCaseMap, job.workplace_naf_label) : job.workplace_naf_label,
-      keywords: null,
-      rome_labels: resolveRomeLabels(job.rome_codes, romeLabelByCode),
-    }
-
-    await searchItemsCollection.replaceOne({ _id: recruteurDoc._id }, recruteurDoc, { upsert: true })
-    processedIds.add(recruteurDoc._id.toString())
+    await upsertSearchItem(buildRecruteurSearchItem(job, ctx))
   })
 
   // Delete documents that are no longer in the sources
@@ -624,6 +275,7 @@ export const fillSearchItemsCollection = async () => {
     })
   }
 
-  // Seconde passe : génération des mots-clés pour toutes les offres qui n'en ont pas.
-  // Non lancée ici (wall-clock batch Mistral) → job dédié : `yarn cli fillMissingSearchItemsKeywords`.
+  // Les mots-clés des documents `keywords: null` sont générés par les crons dédiés
+  // (generateSearchItemsKeywordsContinuous / submitSearchItemsKeywordsBatch) — cf.
+  // searchItemsKeywords.service.ts.
 }

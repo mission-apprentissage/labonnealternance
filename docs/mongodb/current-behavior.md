@@ -100,6 +100,29 @@ Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggesti
 
 ---
 
+## Synchronisation jobs_partners → search_items
+
+Mécanisme **hybride** ([`searchItems.service.ts`](../../server/src/services/search/searchItems.service.ts)) :
+
+1. **Appels explicites** (fire-and-forget, jamais bloquants pour l'action métier) dans les actions unitaires : création/activation/annulation/pourvue d'offre (formulaire, API v2, classification, max candidatures), désinscription recruteur (suppression physique).
+2. **Cron delta** (`*/15 min`, `syncSearchItemsDelta`) : jobs_partners dont `updated_at` ≥ now − 30 min (fenêtre 2× l'intervalle, idempotent) — couvre les écritures de masse (expiration, imports, dédoublonnage… toutes bumpent désormais `updated_at`, index dédié ajouté).
+3. **Réconciliation nightly** (`0 6 * * *`, `fillSearchItemsCollection`, après processComputedAndImportToJobPartners) : rattrape tout et purge les orphelins (suppressions physiques invisibles au delta).
+4. **Contrôle de dérive** (`30 7 * * *`, `controlSearchItemsDrift`) : counts jobs_partners vs search_items par famille, alerte Slack si écart > max(500, 1 %).
+
+Garanties : les `keywords` Mistral des docs indexés sont préservés par les upserts (`$setOnInsert` seulement) ; les documents `type: "formation"` ne sont jamais touchés par la sync des offres ; une offre non-ACTIVE ou supprimée de jobs_partners est retirée de l'index.
+
+### Keywords Mistral (génération continue)
+
+Automatisée de bout en bout ([`searchItemsKeywords.service.ts`](../../server/src/services/search/searchItemsKeywords.service.ts)) :
+
+- **Cache `search_items_keywords`** keyé par le **hash du texte source** (pas par doc) : les recruteurs partagent massivement les mêmes rome_labels (un appel par combinaison ROME distincte), les offres re-créées à texte identique sont gratuites, et une régénération de `search_items` ne perd plus les keywords. Convention : `keywords: null` = à générer, `[]` = traité sans résultat utilisable (pas de re-boucle).
+- **Cron continu** (`*/30 min`) : passe cache sur toute la file (c'est ainsi que les batchs se propagent), puis appels API **immédiats** pour les offres classiques en miss (plafond 300/run, concurrence 5, abandon après 5 erreurs API consécutives). Les recruteurs en miss attendent le batch.
+- **Batch hebdo recruteurs** (`0 18 * * SUN`, après leur rechargement de 10:00 UTC) : soumission Mistral Batch dédupliquée par hash (`customId = source_hash`), suivie dans **`mistral_batch_jobs`**.
+- **Ramasse horaire** (`applyPendingMistralBatches`) : vérifie les jobs `submitted`, télécharge et applique les sorties au cache — reprise garantie à travers les redéploiements ; échec → alerte Slack.
+- **Import manuel** conservé en secours (`yarn cli search:apply-keywords-batch --file <jsonl>`), compatible custom_id historiques (ObjectId) et courants (hash).
+
+---
+
 ## Limitations connues
 
 - **Recall des recruteurs algo** : le legacy matche les recruteurs par code ROME (métier saisi → ROME → recruteurs) ; le nouveau moteur matche par texte (`rome_labels`/`keywords`). Un intitulé hors vocabulaire ROME (« chargé de déploiement », « product manager », « agriculteur ») ne remonte pas les recruteurs pertinents — ticket dédié (pont sémantique métier→ROME ou enrichissement Mistral des keywords recruteurs).

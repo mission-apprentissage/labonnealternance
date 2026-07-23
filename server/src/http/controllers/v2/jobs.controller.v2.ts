@@ -2,6 +2,7 @@ import { badRequest } from "@hapi/boom"
 import { JOB_STATUS_ENGLISH, zRoutes } from "shared"
 import { getDbCollection } from "@/common/utils/mongodbUtils"
 import type { Server } from "@/http/server"
+import { syncJobPartnersToSearchItemsInBackground } from "@/services/search/searchItems.service"
 
 const config = {
   rateLimit: {
@@ -28,7 +29,8 @@ export default (server: Server) => {
       if (job.offer_status === JOB_STATUS_ENGLISH.POURVUE) {
         throw badRequest("Job is already provided")
       }
-      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE } })
+      await getDbCollection("jobs_partners").findOneAndUpdate({ _id: id }, { $set: { offer_status: JOB_STATUS_ENGLISH.POURVUE, updated_at: new Date() } })
+      syncJobPartnersToSearchItemsInBackground([id])
       return res.status(200).send({})
     }
   )
@@ -53,7 +55,7 @@ export default (server: Server) => {
       await getDbCollection("jobs_partners").findOneAndUpdate(
         { _id: id },
         {
-          $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE },
+          $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
           $push: {
             offer_status_history: {
               date: new Date(),
@@ -64,6 +66,7 @@ export default (server: Server) => {
           },
         }
       )
+      syncJobPartnersToSearchItemsInBackground([id])
       return res.status(200).send({})
     }
   )

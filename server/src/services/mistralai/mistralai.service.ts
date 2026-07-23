@@ -53,7 +53,31 @@ export const sendMistralMessages = async ({
 
 export type MistralBatchRequest = { customId: string; messages: Message[] }
 
-const BATCH_TERMINAL_STATUSES = new Set(["SUCCESS", "FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"])
+export const BATCH_TERMINAL_STATUSES = new Set(["SUCCESS", "FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"])
+
+/** Statut courant d'un job batch Mistral (pour la reprise différée par cron). */
+export const getMistralBatchJob = async (jobId: string) => mistral.batch.jobs.get({ jobId })
+
+/**
+ * Télécharge et parse le JSONL de sortie d'un job batch terminé.
+ * @returns Map custom_id → contenu texte de la réponse (les échecs sont simplement absents).
+ */
+export const downloadMistralBatchOutput = async (fileId: string): Promise<Map<string, string>> => {
+  const results = new Map<string, string>()
+  const stream = await mistral.files.download({ fileId })
+  const text = await new Response(stream).text()
+  for (const line of text.split("\n")) {
+    if (!line.trim()) continue
+    try {
+      const parsed = JSON.parse(line)
+      const content = parsed?.response?.body?.choices?.[0]?.message?.content
+      if (parsed.custom_id && typeof content === "string") results.set(parsed.custom_id, content)
+    } catch {
+      // ligne non parsable → ignorée
+    }
+  }
+  return results
+}
 
 /**
  * Soumet un job batch Mistral SANS attendre son résultat (fire-and-forget) : construit le
@@ -157,20 +181,7 @@ export const sendMistralBatch = async ({
       return results
     }
 
-    // Téléchargement + parsing du JSONL de sortie ({ custom_id, response: { body: { choices } } }).
-    const stream = await mistral.files.download({ fileId: current.outputFile })
-    const text = await new Response(stream).text()
-    for (const line of text.split("\n")) {
-      if (!line.trim()) continue
-      try {
-        const parsed = JSON.parse(line)
-        const content = parsed?.response?.body?.choices?.[0]?.message?.content
-        if (parsed.custom_id && typeof content === "string") results.set(parsed.custom_id, content)
-      } catch {
-        // ligne non parsable → ignorée
-      }
-    }
-    return results
+    return await downloadMistralBatchOutput(current.outputFile)
   } catch (error) {
     sentryCaptureException(error)
     console.error(error)

@@ -48,6 +48,7 @@ import { anonymizeLbaJobsPartners } from "./partnerJob.service"
 import { getEntrepriseEngagementFranceTravail } from "./referentielEngagementEntreprise.service"
 import { getComputedUserAccess, getGrantedRoles, getMainRoleManagement } from "./roleManagement.service"
 import { getRomeDetailsFromDB } from "./rome.service"
+import { syncJobPartnersToSearchItemsInBackground } from "./search/searchItems.service"
 import { saveJobTrafficSourceIfAny } from "./trafficSource.service"
 import { isUserEmailChecked, validateUserWithAccountEmail } from "./userWithAccount.service"
 
@@ -142,6 +143,8 @@ export const createJob = async ({
   })
 
   await getDbCollection("jobs_partners").insertOne(newJobPartner)
+  // Indexation immédiate dans search_items (no-op si l'offre est EN_ATTENTE).
+  syncJobPartnersToSearchItemsInBackground([newJobPartner._id])
 
   const userJobCount = await getDbCollection("jobs_partners").countDocuments({ managed_by: user._id, partner_label: JOBPARTNERS_LABEL.OFFRES_EMPLOI_LBA, workplace_siret: siret })
 
@@ -641,6 +644,7 @@ export const provideOffre = async (id: ObjectId): Promise<void> => {
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
   }
+  syncJobPartnersToSearchItemsInBackground([id])
 }
 
 /**
@@ -655,6 +659,7 @@ export const cancelOffre = async (id: ObjectId): Promise<void> => {
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
   }
+  syncJobPartnersToSearchItemsInBackground([id])
 }
 
 export const cancelOffreFromAdminInterface = async ({
@@ -677,6 +682,7 @@ export const cancelOffreFromAdminInterface = async ({
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
   }
+  syncJobPartnersToSearchItemsInBackground([id])
 }
 
 /**
@@ -741,6 +747,7 @@ const activateAndExtendOffre = async (id: ObjectId) => {
   if (!found) {
     throw new Error(`could not find lba offer with id=${id}`)
   }
+  syncJobPartnersToSearchItemsInBackground([id])
   return found
 }
 

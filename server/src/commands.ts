@@ -406,9 +406,12 @@ program
   .action(createJobAction("exportJobsToS3V2"))
 
 simpleJobDefinitions.forEach((jobDef) => {
-  const { description } = jobDef
+  const { description, cliOptions = [] } = jobDef
   const command = SimpleJobDefinition.getFctName(jobDef)
-  program.command(command).description(description).option("-q, --queued", "Run job asynchronously", false).action(createJobAction(command))
+  const cmd = program.command(command).description(description).option("-q, --queued", "Run job asynchronously", false)
+  // Options spécifiques au job (transmises telles quelles dans le payload — strings côté handler).
+  cliOptions.forEach(({ flags, description: optionDescription }) => cmd.option(flags, optionDescription))
+  cmd.action(createJobAction(command))
 })
 
 export async function startCLI() {

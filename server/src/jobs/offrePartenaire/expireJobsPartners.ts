@@ -7,7 +7,8 @@ export const expireJobsPartners = async () => {
   const result = await getDbCollection("jobs_partners").updateMany(
     { offer_status: JOB_STATUS_ENGLISH.ACTIVE, offer_expiration: { $lt: new Date() } },
     {
-      $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE },
+      // updated_at : requis par le cron delta search_items (syncSearchItemsDelta).
+      $set: { offer_status: JOB_STATUS_ENGLISH.ANNULEE, updated_at: new Date() },
       $push: {
         offer_status_history: {
           date: new Date(),

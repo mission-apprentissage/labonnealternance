@@ -39,6 +39,7 @@ import type { BrevoEventStatus } from "./brevo.service"
 import { isInfected } from "./clamav.service"
 import { buildLbaUrl } from "./jobs/jobOpportunity/jobOpportunity.service"
 import mailer from "./mailer.service"
+import { syncJobPartnersToSearchItemsInBackground } from "./search/searchItems.service"
 import { saveApplicationTrafficSourceIfAny } from "./trafficSource.service"
 import { validateUserWithAccountEmail } from "./userWithAccount.service"
 
@@ -657,6 +658,7 @@ const checkMaxApplicationCount = async (lbaJob: IJobOrCompanyV2) => {
         },
       }
     )
+    syncJobPartnersToSearchItemsInBackground([job._id])
   }
 }
 

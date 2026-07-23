@@ -9,6 +9,7 @@ import { getDbCollection } from "@/common/utils/mongodbUtils"
 import config from "@/config"
 import { obfuscateLbaCompanyApplications } from "./application.service"
 import mailer from "./mailer.service"
+import { syncJobPartnersToSearchItemsInBackground } from "./search/searchItems.service"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
@@ -95,6 +96,9 @@ async function unsubscribeCompanies(companies: IJobsPartnersOfferPrivate[], reas
 
   await getDbCollection("unsubscribedrecruteurslba").insertMany(unsubscribeObjects)
   await getDbCollection("jobs_partners").deleteMany({ _id: { $in: idsToDelete } })
+  // Suppression physique, invisible au cron delta (pas d'updated_at résiduel) → retrait
+  // explicite de l'index de recherche (la sync détecte les _id disparus et les supprime).
+  syncJobPartnersToSearchItemsInBackground(idsToDelete)
 
   if (reason === "OPPOSITION") {
     const siretsToObfuscate = companies.map((company) => company.workplace_siret!)

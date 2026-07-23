@@ -3,6 +3,8 @@ import { processEnedis } from "@/jobs/offrePartenaire/enedis/processEnedis"
 import { processMissingRomeAndImportToJobPartners } from "@/jobs/offrePartenaire/processMissingRomeAndImportToJobPartners"
 import { analyzeCfaBlockList } from "@/jobs/oneTimeJob/analyzeCfaBlockList"
 import { processScheduledRecruiterIntentions } from "@/services/application.service"
+import { controlSearchItemsDrift, syncSearchItemsDelta } from "@/services/search/searchItems.service"
+import { applyPendingMistralBatches, generateSearchItemsKeywordsContinuous, submitSearchItemsKeywordsBatch } from "@/services/search/searchItemsKeywords.service"
 import { generateSitemap } from "@/services/sitemap.service"
 import { anonimizeUsersWithAccounts } from "./anonymization/anonimizeUsersWithAccounts"
 import { anonymizeApplicantsAndApplications } from "./anonymization/anonymizeApplicantAndApplications"
@@ -92,12 +94,14 @@ import { opcoReminderJob } from "./recruiters/opcoReminderJob"
 import { updateSiretInfosInError } from "./recruiters/updateSiretInfosInErrorJob"
 import { importReferentielRome } from "./referentielRome/referentielRome"
 import { analyzeSearchQueries } from "./search/analyzeSearchQueries"
-import { fillMissingSearchItemsKeywords, fillSearchItemsCollection } from "./search/generateSearchItemsCollection"
+import { fillSearchItemsCollection } from "./search/generateSearchItemsCollection"
 import { updateSEO } from "./seo/updateSEO"
 
 type SimpleJobDefinition = {
   fct: (payload?: any) => Promise<unknown>
   description: string
+  /** Options commander supplémentaires (transmises dans le payload du job) — ex. `--since <date>`. */
+  cliOptions?: { flags: string; description: string }[]
 }
 
 export const SimpleJobDefinition = {
@@ -374,8 +378,27 @@ export const simpleJobDefinitions: SimpleJobDefinition[] = [
     description: "Génère/met à jour la collection search_items (formations, jobs, recruteurs) pour MongoDB Search",
   },
   {
-    fct: fillMissingSearchItemsKeywords,
-    description: "Génère les mots-clés (batch Mistral) des offres de la collection search_items qui n'en ont pas",
+    fct: generateSearchItemsKeywordsContinuous,
+    description: "Génère les mots-clés des search_items sans keywords : cache puis API Mistral immédiate (plafonné par run)",
+    cliOptions: [{ flags: "--limit <n>", description: "Plafond d'appels API immédiats pour ce run (défaut 300)" }],
+  },
+  {
+    fct: submitSearchItemsKeywordsBatch,
+    description: "Soumet un batch Mistral de génération de keywords (recruteurs par défaut, --recruteursOnly false pour tout), suivi dans mistral_batch_jobs",
+    cliOptions: [{ flags: "--recruteursOnly <bool>", description: "false pour soumettre tous les types de docs (défaut : recruteurs_lba uniquement)" }],
+  },
+  {
+    fct: applyPendingMistralBatches,
+    description: "Ramasse les batchs Mistral keywords terminés (téléchargement + application au cache)",
+  },
+  {
+    fct: syncSearchItemsDelta,
+    description: "Synchronise vers search_items les jobs_partners modifiés récemment (updated_at, fenêtre 30 min par défaut)",
+    cliOptions: [{ flags: "--since <date>", description: "Borne basse ISO 8601 des updated_at à synchroniser (défaut : now − 30 min)" }],
+  },
+  {
+    fct: controlSearchItemsDrift,
+    description: "Contrôle la dérive jobs_partners ↔ search_items et alerte Slack en cas d'écart",
   },
   {
     fct: analyzeSearchQueries,

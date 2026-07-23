@@ -2697,9 +2697,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mistralai/mistralai@npm:^2.2.5":
-  version: 2.2.6
-  resolution: "@mistralai/mistralai@npm:2.2.6"
+"@mistralai/mistralai@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@mistralai/mistralai@npm:2.5.0"
   dependencies:
     "@opentelemetry/semantic-conventions": ^1.40.0
     ws: ^8.18.0
@@ -2710,7 +2710,7 @@ __metadata:
   peerDependenciesMeta:
     "@opentelemetry/api":
       optional: true
-  checksum: 43502f25d6e728e251bb7c88d5c50607c4e6dd8b4a68275911c77bd0d4020a963f3c6b72d725c023b5d88dfff05fa04b51ba6f6ae9b97b03b98217ed856621e5
+  checksum: 06a8054041b731f499e99578635bd51e83cd08cfbaa13b51c32fa55fa18e96bba82ec154a53e0def71bc400e3962aa9b26c12d7e987e8ea94bc5050b1ef8864a
   languageName: node
   linkType: hard
 
@@ -16578,7 +16578,7 @@ __metadata:
     "@fastify/rate-limit": ^10.3.0
     "@getbrevo/brevo": ^3.0.1
     "@hapi/boom": ^10.0.1
-    "@mistralai/mistralai": ^2.2.5
+    "@mistralai/mistralai": ^2.5.0
     "@sentry/node": ^9.46.0
     "@sentry/profiling-node": ^9.46.0
     "@smithy/types": ^4.8.1
