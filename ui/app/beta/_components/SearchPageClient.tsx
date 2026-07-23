@@ -219,6 +219,9 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                     width: "100vw",
                     transform: "translateX(-50%)",
                     backgroundColor: fr.colors.decisions.background.default.grey.default,
+                    // L'ombre de séparation avec les résultats est portée par la bande
+                    // pleine largeur — le panneau, à plat, ne projette plus la sienne.
+                    boxShadow: "0 2px 6px rgba(0,0,18,0.08)",
                   }}
                 />
               )}
@@ -226,9 +229,11 @@ export function SearchPageClient({ initialParams }: SearchPageClientProps) {
                 sx={{
                   position: "relative",
                   backgroundColor: fr.colors.decisions.background.default.grey.default,
-                  borderRadius: "8px",
+                  // Collé : coins et ombre latérale du panneau masqués (il se fond dans la
+                  // bande pleine largeur, comme le bandeau du legacy).
+                  borderRadius: isStuck ? 0 : "8px",
                   p: fr.spacing("6v"),
-                  boxShadow: "0 2px 6px rgba(0,0,18,0.08)",
+                  boxShadow: isStuck ? "none" : "0 2px 6px rgba(0,0,18,0.08)",
                 }}
               >
                 <Box sx={{ display: "flex", gap: fr.spacing("3v"), alignItems: "flex-end" }}>
