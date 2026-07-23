@@ -12,6 +12,7 @@ export const SLACK_HERE_MENTION = "<!here>"
 // résout un pseudo vers une mention notifiante <@memberId> via config.slackTeamMemberIds ;
 // sans ID connu, retombe sur un @pseudo purement visuel (aucune notification)
 export const slackMention = (memberName: string): string => {
+  if ((memberName.startsWith("<") && memberName.endsWith(">")) || memberName.startsWith("@")) return memberName
   const memberId = config.slackTeamMemberIds[memberName]
   return memberId ? `<@${memberId}>` : `@${memberName}`
 }
