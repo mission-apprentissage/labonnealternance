@@ -52,4 +52,14 @@ describe("buildRechercheMetadata", () => {
       )
     })
   })
+
+  describe("recherche géo-restreinte sans libellé d'adresse (lat/lon sans address)", () => {
+    const geoSansAdresse = { job_name: "Data analyst", geo: { address: null, latitude: 45.75, longitude: 4.85 } }
+
+    it("n'ajoute pas de lieu au title et n'écrit pas « en France » dans la description", () => {
+      const { title, description } = buildRechercheMetadata(geoSansAdresse, "default")
+      expect(title).toBe("Alternance Data analyst : offres et formations | La bonne alternance")
+      expect(description).toBe("Toutes les offres et formations en alternance Data analyst. Postulez gratuitement sur le service public de l'alternance.")
+    })
+  })
 })

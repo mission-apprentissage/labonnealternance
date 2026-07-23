@@ -12,8 +12,11 @@ const SUFFIX = " | La bonne alternance"
 export function buildRechercheMetadata(rechercheParams: Partial<IRecherchePageParams> | null, kind: IRechercheMetaKind): { title: string; description: string } {
   const jobName = rechercheParams?.job_name?.trim() || null
   const address = rechercheParams?.geo?.address?.trim() || null
+  // Distingue 3 cas de géo : adresse libellée (" à Lyon") · géo sans libellé (recherche
+  // par rayon lat/lon sans param `address` → aucun lieu ajouté) · aucune géo (" en France").
+  const hasGeo = rechercheParams?.geo != null
   const lieuTitle = address ? ` à ${address}` : ""
-  const lieuDesc = address ? ` à ${address}` : " en France"
+  const lieuDesc = address ? ` à ${address}` : hasGeo ? "" : " en France"
 
   if (kind === "formation") {
     if (jobName) {
