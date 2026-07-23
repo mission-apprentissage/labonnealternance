@@ -4,9 +4,9 @@ import type { ETAT_UTILISATEUR, OPCOS_LABEL } from "shared/constants/index"
 import { ADMIN, CFA, ENTREPRISE, OPCO } from "shared/constants/index"
 import type { LBA_ITEM_TYPE } from "shared/constants/lbaitem"
 import { generateUri } from "shared/helpers/generateUri"
-
+import { buildRechercheMetadata } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.metadata.utils"
 import type { IRecherchePageParams } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
-import { buildRecherchePageParams, buildSearchTitle, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
+import { buildRecherchePageParams, IRechercheMode } from "@/app/(candidat)/(recherche)/recherche/_utils/recherche.route.utils"
 
 export interface IPage {
   getPath: (args?: any) => string
@@ -762,49 +762,31 @@ export const PAGES = {
     },
     recherche: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
       const search = buildRecherchePageParams(rechercheParams, IRechercheMode.DEFAULT)
-      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => ({
-          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: searchTitleContext
-            ? `Trouvez des offres d'emploi en alternance et des formations en apprentissage${searchTitleContext}. Postulez directement en ligne.`
-            : "Trouvez des offres d'emploi en alternance et des formations en apprentissage près de chez vous. Filtrez par métier, ville et type de contrat.",
-        }),
+        getMetadata: () => buildRechercheMetadata(rechercheParams, "default"),
         title: "Offres en alternance",
       }
     },
     rechercheFormation: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
       const search = buildRecherchePageParams(rechercheParams, IRechercheMode.FORMATIONS_ONLY)
-      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche-formation${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => ({
-          title: `Formations en alternance${searchTitleContext} | La bonne alternance`,
-          description: searchTitleContext
-            ? `Trouvez des formations en apprentissage${searchTitleContext}. Comparez les programmes et postulez en ligne.`
-            : "Trouvez des formations en apprentissage près de chez vous. Comparez les programmes par métier et par ville, postulez directement en ligne.",
-        }),
+        getMetadata: () => buildRechercheMetadata(rechercheParams, "formation"),
         title: "Formations en alternance",
       }
     },
     rechercheEmploi: (rechercheParams: Partial<IRecherchePageParams> | null): IPage => {
       const search = buildRecherchePageParams(rechercheParams, IRechercheMode.JOBS_ONLY)
-      const searchTitleContext = buildSearchTitle(rechercheParams)
 
       return {
         getPath: () => `/recherche-emploi${search ? `?${search}` : ""}` as string,
         index: false,
-        getMetadata: () => ({
-          title: `Offres en alternance${searchTitleContext} | La bonne alternance`,
-          description: searchTitleContext
-            ? `Trouvez des offres d'emploi en alternance${searchTitleContext}. Postulez directement en ligne.`
-            : "Trouvez des offres d'emploi en alternance près de chez vous. Filtrez par métier, ville et type de contrat, postulez directement en ligne.",
-        }),
+        getMetadata: () => buildRechercheMetadata(rechercheParams, "emploi"),
         title: "Offres en alternance",
       }
     },
