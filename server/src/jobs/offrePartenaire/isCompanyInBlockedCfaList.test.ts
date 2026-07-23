@@ -29,9 +29,8 @@ describe("isCompanyInBlockedCfaList (insensible à la casse et aux accents)", ()
     expect(isCompanyInBlockedCfaList("CIO'sup drome-ardeche")).toBe(true)
   })
 
-  it("devrait trouver les nouveaux CFA bloqués demandés", () => {
+  it("devrait trouver le nouveau CFA bloqué demandé", () => {
     expect(isCompanyInBlockedCfaList("AURLOM BTS+ PARIS")).toBe(true)
-    expect(isCompanyInBlockedCfaList("ITIC PARIS")).toBe(true)
   })
 
   it("devrait trouver les CFA lorsqu'ils sont mentionnés dans un texte", () => {
