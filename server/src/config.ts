@@ -20,6 +20,8 @@ const config = {
   },
   slackWebhookUrl: env.get("LBA_SLACK_WEBHOOK_URL").asString(),
   jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").asString(),
+  // map pseudo -> member ID Slack (ex: {"kevin":"U04XXXXXXXX"}), utilisée par slackMention
+  slackTeamMemberIds: env.get("LBA_SLACK_TEAM_MEMBER_IDS").default("{}").asJsonObject() as Record<string, string>,
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").required().asString(),
   },
