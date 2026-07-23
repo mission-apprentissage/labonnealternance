@@ -4,6 +4,7 @@ import { AUTHTYPE, CFA, ETAT_UTILISATEUR, OPCOS_LABEL } from "../constants/recru
 import { removeUrlsFromText } from "../helpers/common.js"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives.js"
 import { z } from "../helpers/zodWithOpenApi.js"
+import { PERSON_NAME_VALIDATION_MESSAGE, validatePersonName } from "../validators/nameValidator.js"
 
 import { ZGlobalAddress, ZPointGeometry } from "./address.model.js"
 import { zObjectId } from "./common.js"
@@ -30,10 +31,12 @@ export const ZUserRecruteurWritable = z
     last_name: z
       .string()
       .transform((value) => removeUrlsFromText(value))
+      .refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
       .describe("Nom de l'utilisateur"),
     first_name: z
       .string()
       .transform((value) => removeUrlsFromText(value))
+      .refine(validatePersonName, PERSON_NAME_VALIDATION_MESSAGE)
       .describe("Prénom de l'utilisateur"),
     opco: extensions.buildEnum(OPCOS_LABEL).nullable().describe("Information sur l'opco de l'entreprise"),
     idcc: z.number().nullable().describe("Identifiant convention collective de l'entreprise"),

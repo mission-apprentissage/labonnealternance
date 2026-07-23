@@ -137,6 +137,33 @@ describe("POST /etablissement/creation", () => {
       expect.soft(response.statusCode).toBe(200)
     })
 
+    it.each([
+      { first_name: "Jean-Paul", last_name: "D'Artagnan" },
+      { first_name: "Élodie", last_name: "François-Marie" },
+    ])("Accepte les noms valides avec accents et séparateurs", async ({ first_name, last_name }) => {
+      const response = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        first_name,
+        last_name,
+      })
+
+      expect.soft(response.statusCode).toBe(200)
+    })
+
+    it.each([
+      { first_name: ".", last_name: "Doe" },
+      { first_name: "John", last_name: "1" },
+      { first_name: " ", last_name: "Doe" },
+    ])("Refuse les noms et prénoms sans 2 lettres valides", async ({ first_name, last_name }) => {
+      const response = await callCreation({
+        ...defaultCreationEntreprisePayload,
+        first_name,
+        last_name,
+      })
+
+      expect.soft(response.statusCode).toBe(400)
+    })
+
     it("Envoie un email de confirmation dès la création de compte entreprise", async () => {
       const response = await callCreation(defaultCreationEntreprisePayload)
 
