@@ -62,4 +62,34 @@ describe("buildRechercheMetadata", () => {
       expect(description).toBe("Toutes les offres et formations en alternance Data analyst. Postulez gratuitement sur le service public de l'alternance.")
     })
   })
+
+  describe("canonical (déduplication des paramètres parasites)", () => {
+    it("métier + ville : garde job_name + lat/lon + address pour reproduire fidèlement la SERP géo", () => {
+      expect(buildRechercheMetadata(withJobAndCity, "default").alternates?.canonical).toBe("/recherche?job_name=Data+analyst&lat=45.75&lon=4.85&address=Lyon")
+    })
+
+    it("inclut romes + job_name dans un ordre stable", () => {
+      const params = { job_name: "Data analyst", romes: ["M1403"], geo: null }
+      expect(buildRechercheMetadata(params, "default").alternates?.canonical).toBe("/recherche?romes=M1403&job_name=Data+analyst")
+    })
+
+    it("droppe la géo sans libellé (recherche par rayon lat/lon sans address)", () => {
+      const geoSansAdresse = { job_name: "Data analyst", geo: { address: null, latitude: 45.75, longitude: 4.85 } }
+      expect(buildRechercheMetadata(geoSansAdresse, "default").alternates?.canonical).toBe("/recherche?job_name=Data+analyst")
+    })
+
+    it("ville seule (sans métier) : consolide vers le chemin nu (évite dup-title et cannibalisation des pages ville)", () => {
+      const villeSeule = { job_name: null, geo: { address: "Lyon", latitude: 45.75, longitude: 4.85 } }
+      expect(buildRechercheMetadata(villeSeule, "default").alternates?.canonical).toBe("/recherche")
+    })
+
+    it("pointe vers le bon chemin selon le mode", () => {
+      expect(buildRechercheMetadata(withJobOnly, "emploi").alternates?.canonical).toBe("/recherche-emploi?job_name=Data+analyst")
+      expect(buildRechercheMetadata(withJobOnly, "formation").alternates?.canonical).toBe("/recherche-formation?job_name=Data+analyst")
+    })
+
+    it("retombe sur le chemin nu sans critère de recherche", () => {
+      expect(buildRechercheMetadata(empty, "default").alternates?.canonical).toBe("/recherche")
+    })
+  })
 })
