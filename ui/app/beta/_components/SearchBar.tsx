@@ -121,6 +121,12 @@ export function highlightMatch(label: string, input: string): ReactNode {
 
 type LieuOption = { label: string; latitude: number; longitude: number }
 
+// Option « France entière » du champ lieu : proposée quand le champ est vide (Entrée la
+// sélectionne — autoHighlight), elle retire le lieu de la recherche. Le placeholder
+// « France entière » du champ vide reflète ensuite l'état appliqué.
+const FRANCE_ENTIERE_OPTION = { kind: "france_entiere", label: "France entière" } as const
+type LieuDropdownOption = LieuOption | typeof FRANCE_ENTIERE_OPTION
+
 // Option du dropdown métier : la 1ʳᵉ ligne relance la recherche en texte libre, les
 // suivantes sont les suggestions de l'endpoint suggest.
 type MetierOption = { kind: "free_text"; value: string } | { kind: "suggestion"; value: string }
@@ -221,6 +227,10 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
     latitude: item.value.coordinates[1],
     longitude: item.value.coordinates[0],
   }))
+
+  // Champ vide : seule l'option « France entière » est proposée ; en saisie, les suggestions
+  // BAN (Entrée sélectionne la 1ʳᵉ dans les deux cas, cf. autoHighlight).
+  const lieuDropdownOptions: LieuDropdownOption[] = lieuInput.trim() ? lieuSuggestions : [FRANCE_ENTIERE_OPTION]
 
   const handleSubmit = useCallback(
     (value: string, source: "suggestion" | "free_text") => {
@@ -364,11 +374,19 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
         <Autocomplete
           freeSolo
           // autoHighlight : la 1re suggestion est pré-surlignée → Entrée la sélectionne
-          // (au lieu de laisser un texte non validé).
+          // (au lieu de laisser un texte non validé). Vaut aussi pour « France entière »
+          // (seule option quand le champ est vide).
           autoHighlight
-          options={lieuSuggestions}
-          getOptionLabel={(o) => (typeof o === "string" ? o : o.label)}
-          isOptionEqualToValue={(o, v) => (typeof v === "string" ? o.label === v : o.label === v.label)}
+          // Ouvre le dropdown au focus : l'option « France entière » est proposée avant toute saisie.
+          openOnFocus
+          options={lieuDropdownOptions}
+          // Libellé vide pour « France entière » : le reset post-sélection de MUI réécrit
+          // l'input avec getOptionLabel — le champ doit rester vide (placeholder visible).
+          getOptionLabel={(o) => (typeof o === "string" ? o : "kind" in o ? "" : o.label)}
+          isOptionEqualToValue={(o, v) => {
+            if ("kind" in o) return false
+            return typeof v === "string" ? o.label === v : !("kind" in v) && o.label === v.label
+          }}
           onOpen={lieuListbox.onOpen}
           onClose={lieuListbox.onClose}
           inputValue={lieuInput}
@@ -385,16 +403,33 @@ export function SearchBar({ initialQ = "", initialLieuLabel, onSubmit, onLieuCha
             }
           }}
           onChange={(_e, value) => {
-            if (value && typeof value !== "string") {
-              selectLieu(value)
+            if (!value || typeof value === "string") return
+            // « France entière » : retire le lieu (équivalent de la croix, au clavier).
+            if ("kind" in value) {
+              setLieuValue(null)
+              setLieuInput("")
+              setAppliedLieuLabel("")
+              onLieuChange(null)
+              return
             }
+            selectLieu(value)
           }}
-          renderOption={(props, option, { index }) => (
-            <Box component="li" {...props} key={option.label} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
-              <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.label, lieuInput)}</Box>
-              {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
-            </Box>
-          )}
+          renderOption={(props, option, { index }) =>
+            "kind" in option ? (
+              <Box component="li" {...props} key="__france_entiere__" sx={{ minHeight: 60, px: "16px !important", display: "flex", alignItems: "center", gap: fr.spacing("2v") }}>
+                <Box component="span" className={fr.cx("fr-icon-map-pin-2-line", "fr-icon--sm")} sx={{ color: fr.colors.decisions.text.mention.grey.default }} aria-hidden="true" />
+                <Box>
+                  <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>France entière</Box>
+                  <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>
+                </Box>
+              </Box>
+            ) : (
+              <Box component="li" {...props} key={option.label} sx={{ minHeight: 40, px: "16px !important", display: "block !important" }}>
+                <Box sx={{ fontSize: "1rem", color: fr.colors.decisions.text.default.grey.default }}>{highlightMatch(option.label, lieuInput)}</Box>
+                {index === 0 && <Box sx={{ fontSize: "0.75rem", color: fr.colors.decisions.text.mention.grey.default }}>ou appuyer sur Entrée</Box>}
+              </Box>
+            )
+          }
           slotProps={{ paper: { sx: POPPER_PAPER_SX }, listbox: { sx: { maxHeight: lieuListbox.maxHeight } } }}
           renderInput={(params) => (
             <TextField {...params} inputRef={lieuListbox.inputRef} placeholder="France entière" variant="outlined" size="small" fullWidth sx={fieldSx(Boolean(lieuError))} />

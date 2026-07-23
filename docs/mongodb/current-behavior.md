@@ -88,6 +88,10 @@ Optimisation : 1 requête `$searchMeta` pour toutes les dimensions non sélectio
 - **Entrées** : le menu « Je recherche une alternance » suit le flag (`/beta/recherche` si opt-in) ; la quick access « Recherche avancée » du header a été retirée.
 - **Télémétrie** : événements Matomo `new_search_optin` / `new_search_optout` avec `search_engine` (`production` / `beta-v1`, cf. `SEARCH_ENGINES` dans [`matomoUtils.ts`](../../ui/utils/matomoUtils.ts)) et `pathname` de la page d'origine. Tracking des cartes distinguant le moteur : second temps.
 
+### Champ Lieu
+
+Autocomplete BAN (≥ 2 caractères), `autoHighlight` (Entrée = 1ʳᵉ suggestion). **Champ vide** : le dropdown (ouvert au focus) propose l'option « France entière » — la sélectionner (clic ou Entrée) retire le lieu de la recherche, équivalent de la croix. Jamais de texte fantôme : au blur sans sélection, le libellé du lieu appliqué est restauré.
+
 ### Rayon automatique
 
 - **Le champ rayon/distance est retiré de l'UI.**
