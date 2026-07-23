@@ -24,7 +24,7 @@ export const ZRecruteursLbaRaw = z.object({
   coordonneeLambertAbscisseEtablissement: z.number().nullable(),
   coordonneeLambertOrdonneeEtablissement: z.number().nullable(),
   rome_codes: z.array(z.object({ rome_code: z.string(), normalized_score: z.number() })),
-  handiengagee: z.string().nullish(),
+  handiengagee: z.boolean().nullish(), // TODO: mapper vers computed_jobs_partners
   site_web: z.string().nullish(),
 })
 
